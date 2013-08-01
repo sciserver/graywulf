@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EA6164BA-B283-46C2-874B-348D6BAD41AD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Jhu.Graywulf</RootNamespace>
+    <AssemblyName>Jhu.Graywulf.Test</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Activities" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
+      <Visible>False</Visible>
+    </CodeAnalysisDependentAssemblyPaths>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Constants.cs" />
+    <Compile Include="CrossAppDomainSingleton.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RemoteService\RemoteServiceTester.cs" />
+    <Compile Include="Scheduler\SchedulerTester.cs" />
+    <Compile Include="Activities\SerializableChecker.cs" />
+    <Compile Include="ServiceTesterBase.cs" />
+    <Compile Include="ServiceTesterToken.cs" />
+    <Compile Include="TestClassBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="App.original.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Src\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
+      <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
+      <Name>Jhu.Graywulf.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Src\Jhu.Graywulf.Format\Jhu.Graywulf.Format.csproj">
+      <Project>{AAF4C238-C3A9-422F-BE3F-6FF10D9D0062}</Project>
+      <Name>Jhu.Graywulf.Format</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Src\Jhu.Graywulf.IO\Jhu.Graywulf.IO.csproj">
+      <Project>{6797ED88-1D8C-491B-A036-4C42C4BF2EAF}</Project>
+      <Name>Jhu.Graywulf.IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Src\Jhu.Graywulf.Jobs\Jhu.Graywulf.Jobs.csproj">
+      <Project>{2BD2D467-D003-468D-9B97-83DDC6F2ED78}</Project>
+      <Name>Jhu.Graywulf.Jobs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Src\Jhu.Graywulf.Registry.Enum\Jhu.Graywulf.Registry.Enum.csproj">
+      <Project>{71599792-21CC-4E63-AFB5-2AFBDB3DF418}</Project>
+      <Name>Jhu.Graywulf.Registry.Enum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Src\Jhu.Graywulf.Registry\Jhu.Graywulf.Registry.csproj">
+      <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
+      <Name>Jhu.Graywulf.Registry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Src\Jhu.Graywulf.RemoteService.Server\Jhu.Graywulf.RemoteService.Server.csproj">
+      <Project>{3AC81304-44BA-4D55-A872-469BC11C9CBC}</Project>
+      <Name>Jhu.Graywulf.RemoteService.Server</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Src\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
+      <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
+      <Name>Jhu.Graywulf.RemoteService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Src\Jhu.Graywulf.Scheduler\Jhu.Graywulf.Scheduler.csproj">
+      <Project>{94AB6A2E-6877-4FED-87E2-1F9F17622F43}</Project>
+      <Name>Jhu.Graywulf.Scheduler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Src\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
+      <Project>{60920E0C-F7A1-47CE-85F6-7E6E3085FCF1}</Project>
+      <Name>Jhu.Graywulf.Schema</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="mscoree">
+      <Guid>{5477469E-83B1-11D2-8B49-00A0C9B7C9C4}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>4</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>$(ProjectDir)..\..\Src\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Test</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>copy $(ProjectDir)..\..\util\eseutil.exe $(TargetDir)
+copy $(ProjectDir)..\..\util\ese.dll $(TargetDir)</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
