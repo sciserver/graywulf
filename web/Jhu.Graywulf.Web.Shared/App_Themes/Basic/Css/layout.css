@@ -1,0 +1,80 @@
+﻿html, body
+{
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+    min-width: 100%;
+    overflow: hidden;
+}
+body
+{
+    margin: 0px;
+    padding: 0px;
+    background-color: #FFFFFF;
+}
+.dock-scroll
+{
+    overflow: auto;
+}
+form.Layout
+{
+}
+table.Layout
+{
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+    border-collapse: collapse;
+}
+table.Headline, table.Footline
+{
+    background-color: #333333;
+    color: #FFFFFF;
+}
+td.HeadlineLeft
+{
+    height: 22px;
+    padding: 0px;
+}
+.HeadlineLogo
+{
+    min-width: 300px;
+}
+td.HeadlineUser
+{
+    width: auto;
+}
+div.LayoutMenu
+{
+    padding: 0px;
+}
+div.LayoutToolbar
+{
+}
+td.Footline
+{
+    height: 20px;
+    padding-top: 0px;
+    text-align: center;
+    font-family: Calibri, Arial, Helvetica, Sans-Serif;
+    font-size: 12px;
+}
+td.Footline a
+{
+    color: #FFFFFF;
+    text-decoration: none;
+}
+td.Footline a:hover
+{
+    color: #FFFF00;
+    text-decoration: underline;
+}
+div.LayoutContent
+{
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    padding: 0px;
+    background-color: #FFFFFF;
+    color: #000000;
+}

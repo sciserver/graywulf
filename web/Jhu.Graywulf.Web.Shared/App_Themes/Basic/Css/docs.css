@@ -1,0 +1,40 @@
+﻿table.Docs
+{
+    width: 100%;
+    border-collapse: collapse;
+    border: 0px;
+}
+td.DocsText
+{
+    width: auto;
+    vertical-align: top;
+}
+td.DocsIndex
+{
+    width: 228px;
+    min-height: 400px;
+    border: 1px solid #C0C0C0;
+    vertical-align: top;
+}
+td.DocsGutter
+{
+    width: 8px;
+}
+h3.DocsItem
+{
+    margin-left: 8px;
+}
+ul.DocsItem
+{
+    padding-left: 1.5em;
+    list-style-type: circle;
+    list-style-position: inside;
+}
+li.DocsItem
+{
+    padding-left: 0px;
+}
+li.DocsItemSelected
+{
+    list-style-type: disc;
+}

@@ -1,0 +1,50 @@
+﻿<%-- Generic, to be shared between subsites --%>
+
+<asp:CustomValidator runat="Server" CssClass="FormValidator" />
+<asp:RequiredFieldValidator runat="Server" CssClass="FormValidator" />
+<asp:RegularExpressionValidator runat="Server" CssClass="FormValidator" />
+<jgwc:CaptchaValidator runat="Server" CssClass="FormValidator" />
+
+<jgwc:Toolbar runat="server" CssClass="Toolbar" />
+<jgwc:ToolbarButton runat="server" CssClass="ToolbarButton" CssClassHover="ToolbarButtonHover" CssClassDisabled="ToolbarButtonDisabled" />
+<jgwc:ToolbarElement runat="server" CssClass="ToolbarControl" />
+
+<jgwc:Toolbar runat="server" SkinId="Menu" CssClass="Menu" />
+<jgwc:ToolbarButton runat="server" SkinId="Menu" CssClass="MenuButton" CssClassHover="MenuButtonHover" CssClassDisabled="MenuButtonDisabled" />
+<jgwc:ToolbarSpan runat="server" SkinId="Menu" CssClass="MenuSpan" />
+
+<jgwc:TabHeader runat="server" CssClass="Tab" CssClassLeftSpan="TabLeft" CssClassRightSpan="TabSpan" />
+<jgwc:MultiViewTabHeader runat="server" CssClass="Tab" CssClassSelected="TabSelected" CssClassHover="TabHover" CssClassDisabled="TabDisabled" CssClassLeftSpan="TabLeft" CssClassRightSpan="TabSpan" />
+<jgwc:Tab runat="server" CssClass="Tab" CssClassDisabled="TabSelected" CssClassHover="TabHover" />
+
+<jgwc:MultiSelectListView runat="server" CssClassSelected="ListCellSelected" />
+<jgwc:MultiSelectGridView runat="server" CssClass="GridView" SelectedRowStyle-CssClass="GridViewSelected" />
+
+<jgwc:SiteMap runat="server" CssClass="DocsItem" CssClassSelected="DocsItemSelected" />
+
+<jgwc:UserStatus runat="server" CssClass="UserStatus" ImageUrl="icons/userstatus.png" />
+
+
+<jgwc:Form runat="server" SkinID="Welcome" ImageUrl="Icons/welcome.png" />
+<jgwc:Form runat="server" SkinID="Schema" ImageUrl="Icons/schemabrowser.png" />
+<jgwc:Form runat="server" SkinID="MyDb" ImageUrl="Icons/mydb.png" />
+<jgwc:Form runat="server" SkinID="ImportTable" ImageUrl="Icons/importtable.png" />
+<jgwc:Form runat="server" SkinID="ExportTable" ImageUrl="Icons/exporttable.png" />
+<jgwc:Form runat="server" SkinID="QueryJobDetails" ImageUrl="Icons/job.png" />
+<jgwc:Form runat="server" SkinID="ExportJobDetails" ImageUrl="Icons/job.png" />
+<jgwc:Form runat="server" SkinID="CancelJob" ImageUrl="Icons/canceljob.png" />
+<jgwc:Form runat="server" SkinID="ErrorJob" ImageUrl="Icons/error.png" />
+<jgwc:Form runat="server" SkinID="RenameObject" ImageUrl="Icons/renametable.png" />
+<jgwc:Form runat="server" SkinID="DropObject" ImageUrl="Icons/droptable.png" />
+<jgwc:Form runat="server" SkinID="Feedback" ImageUrl="Icons/email.png" />
+<jgwc:Form runat="server" SkinID="FeedbackSent" ImageUrl="Icons/emailsent.png" />
+<jgwc:Form runat="server" SkinID="Error" ImageUrl="Icons/error.png" />
+<jgwc:Form runat="server" SkinID="SignIn" ImageUrl="Icons/signin.png" />
+<jgwc:Form runat="server" SkinID="SignOut" ImageUrl="Icons/signout.png" />
+<jgwc:Form runat="server" SkinID="User" ImageUrl="Icons/user.png" />
+<jgwc:Form runat="server" SkinID="Activate" ImageUrl="Icons/activateuser.png" />
+<jgwc:Form runat="server" SkinID="ActivateSuccess" ImageUrl="Icons/activatesuccess.png" />
+<jgwc:Form runat="server" SkinID="RequestReset" ImageUrl="Icons/resetpassword.png" />
+<jgwc:Form runat="server" SkinID="ChangePassword" ImageUrl="Icons/resetpassword.png" />
+
+<%-- Column width --%>

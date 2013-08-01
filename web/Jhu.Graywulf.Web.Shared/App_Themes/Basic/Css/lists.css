@@ -1,0 +1,66 @@
+﻿table.GridView
+{
+    width: 100%;
+    border-collapse: separate;
+    border: 0px solid #FFFFFF;
+}
+table.GridView tr th, table.GridView tr td
+{
+    border: 2px solid #FFFFFF;
+    vertical-align: top;
+}
+table.GridView tr:hover
+{
+    background-color: #F0F0F0;
+}
+table.GridView tr th
+{
+    background-color: #CCCCCC;
+}
+td.GridViewIcon
+{
+    width: 24px;
+    text-align: center;
+}
+td.GridViewIcon img
+{
+    width: 16px;
+    height: 16px;
+}
+tr.GridViewSelected
+{
+    background-color: #D0D0FF;
+}
+td.GridViewSpan
+{
+    width: auto;
+}
+
+
+
+
+td.ListCell, td.ListHeader, td.ListCellCheckbox
+{
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+td.ListHeader, td.ListHeaderCheckbox
+{
+    font-weight: bold;
+}
+td.ListCellCheckbox, td.ListHeaderCheckbox
+{
+    width: 24px;
+    text-align: center;
+}
+
+div.ListPager
+{
+    width: 100%;
+    text-align: center;
+    background-color: #CCCCCC;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}

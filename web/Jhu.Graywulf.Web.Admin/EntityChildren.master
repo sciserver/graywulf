@@ -1,0 +1,50 @@
+﻿<%@ Master Language="C#" Inherits="Jhu.Graywulf.Web.Admin.EntityChildren" MasterPageFile="~/Admin.master"
+    CodeBehind="EntityChildren.master.cs" %>
+
+<asp:Content runat="server" ContentPlaceHolderID="toolbar">
+    <jgwac:EntityPath ID="path" runat="server" />
+</asp:Content>
+<asp:Content ID="Content2" runat="server" ContentPlaceHolderID="middle">
+    <div class="dock-left dock-container" style="width: 500px; margin-right: 8px">
+        <asp:UpdatePanel runat="server" class="dock-fill dock-container">
+            <ContentTemplate>
+                <div class="dock-top">
+                    <jgwc:MultiViewTabHeader ID="MainTabs" runat="server" MultiViewID="MainMultiViewTabs"
+                        CssClass="dock-top" />
+                </div>
+                <div class="TabFrame dock-fill dock-container">
+                    <div class="dock-top">
+                        <jgwac:EntityTitle ID="EntityTitle" runat="server" />
+                    </div>
+                    <div class="dock-bottom">
+                        <p class="FormButtons">
+                            <asp:ContentPlaceHolder runat="server" ID="FormButtons" />
+                        </p>
+                    </div>
+                    <div class="dock-fill dock-container">
+                        <asp:MultiView runat="server" ID="MainMultiViewTabs" ActiveViewIndex="0">
+                            <jgwc:TabView ID="tabViewMain" runat="server" Text="Details">
+                                <asp:ContentPlaceHolder runat="server" ID="FormDetails" />
+                            </jgwc:TabView>
+                            <jgwc:TabView ID="tabViewSettings" runat="server" Text="Settings">
+                                <jgwac:EntitySettings ID="EntitySettings1" runat="server" />
+                            </jgwc:TabView>
+                            <jgwc:TabView ID="tabViewProperties" runat="server" Text="Properties">
+                                <jgwac:EntityProperties ID="EntityProperties1" runat="server" />
+                            </jgwc:TabView>
+                            <jgwc:TabView ID="tabViewMonitor" runat="server" Text="Monitor">
+                            </jgwc:TabView>
+                        </asp:MultiView>
+                    </div>
+                </div>
+            </ContentTemplate>
+        </asp:UpdatePanel>
+    </div>
+    <div class="dock-fill dock-container">
+        <asp:UpdatePanel runat="server" class="dock-fill dock-container">
+            <ContentTemplate>
+                <asp:ContentPlaceHolder runat="server" ID="FormTabs" />
+            </ContentTemplate>
+        </asp:UpdatePanel>
+    </div>
+</asp:Content>

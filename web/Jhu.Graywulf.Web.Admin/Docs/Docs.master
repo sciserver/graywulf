@@ -1,0 +1,20 @@
+﻿<%@ Master Language="C#" MasterPageFile="~/Admin.master" AutoEventWireup="true" CodeBehind="Docs.master.cs"
+    Inherits="Jhu.Graywulf.Web.Admin.Docs.Docs" %>
+
+<asp:Content ID="Content3" ContentPlaceHolderID="middle" runat="server">
+    <table class="Docs">
+        <tr>
+            <td class="DocsIndex">
+                <h3 class="DocsItem">
+                    <a runat="server" href="~/Docs/Default.aspx">Documentation</a></h3>
+                <jgwc:SiteMap runat="server" RootPath="~/Docs" />
+            </td>
+            <td class="DocsGutter">
+                &nbsp;
+            </td>
+            <td class="DocsText">
+                <asp:ContentPlaceHolder runat="server" ID="Text" />
+            </td>
+        </tr>
+    </table>
+</asp:Content>

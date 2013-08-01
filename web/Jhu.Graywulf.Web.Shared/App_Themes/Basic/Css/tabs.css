@@ -1,0 +1,65 @@
+﻿table.Tab
+{
+    width: 100%;
+    height: 26px;
+    border-collapse: collapse;
+    border: 0px;
+    background-color: #FFFFFF;  
+}
+
+td.Tab, td.TabSelected, td.TabHover
+{
+    width: 100px;
+    min-width: 80px;
+    white-space:nowrap;
+    height: 26px;
+    text-align: center;
+    font-family: Calibri, Arial, Helvetica, Sans-Serif;
+	font-size: 10pt;
+	font-weight: bold;
+	background-color: #F0F0F0;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+
+td.Tab, td.TabHover
+{
+    border-left: 1px solid #C0C0C0;
+    border-top: 1px solid #C0C0C0;
+    border-right: 1px solid #C0C0C0;
+    border-bottom: 1px solid #C0C0C0;
+}
+
+td.TabHover
+{
+    background-color: #D0D0FF;
+}
+
+td.TabSelected
+{
+    background-color: #FFFFFF;
+    border-left: 1px solid #C0C0C0;
+    border-top: 1px solid #C0C0C0;
+    border-right: 1px solid #C0C0C0;
+    border-bottom: 0px;
+}
+
+td.TabLeft
+{
+    width: 4px;
+    border-bottom: 1px solid #C0C0C0;
+}
+
+td.TabSpan
+{
+    width: auto;
+    border-bottom: 1px solid #C0C0C0;
+}
+
+div.TabFrame
+{
+    padding: 8px;
+    border-left: 1px solid #C0C0C0;
+    border-right: 1px solid #C0C0C0;
+    border-bottom: 1px solid #C0C0C0;
+}

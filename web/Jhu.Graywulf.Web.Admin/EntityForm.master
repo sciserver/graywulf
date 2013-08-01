@@ -1,0 +1,44 @@
+﻿<%@ Master Language="C#" Inherits="Jhu.Graywulf.Web.Admin.EntityForm" MasterPageFile="~/Admin.master"
+    CodeBehind="EntityForm.master.cs" %>
+
+<asp:Content runat="server" ContentPlaceHolderID="toolbar">
+    <jgwac:EntityPath ID="path" runat="server" />
+</asp:Content>
+<asp:Content runat="server" ContentPlaceHolderID="middle">
+    <div class="DetailsFormFrame dock-top">
+        <asp:UpdatePanel runat="server">
+            <ContentTemplate>
+                <jgwac:EntityForm ID="entityForm" runat="server" />
+            </ContentTemplate>
+        </asp:UpdatePanel>
+    </div>
+    <div class="dock-bottom">
+        <p class="Message">
+            <asp:Label ID="Message" runat="server" Text="Label" Visible="False"></asp:Label></p>
+        <p class="FormButtons">
+            <asp:Button ID="Ok" runat="server" CssClass="FormButton" CommandName="Ok" OnCommand="Button_Command"
+                Text="OK" />
+            <asp:Button ID="Cancel" runat="server" CssClass="FormButton" CommandName="Cancel"
+                Text="Cancel" OnCommand="Button_Command" CausesValidation="False" />
+        </p>
+    </div>
+    <div class="dock-fill dock-container" style="margin-top: 8px;">
+        <asp:UpdatePanel runat="server" class="dock-fill dock-container">
+            <ContentTemplate>
+                <div class="dock-top">
+                    <jgwc:MultiViewTabHeader ID="MultiViewTabHeader1" runat="server" MultiViewID="MultiViewTabs" />
+                </div>
+                <div class="TabFrame dock-fill dock-container" style="overflow-y: scroll; overflow-x: hidden">
+                    <asp:MultiView runat="server" ID="MultiViewTabs" ActiveViewIndex="0">
+                        <jgwc:TabView ID="tabViewMain" runat="server" Text="Details">
+                            <asp:ContentPlaceHolder runat="server" ID="FormDetails" />
+                        </jgwc:TabView>
+                        <jgwc:TabView ID="tabViewSettings" runat="server" Text="Settings">
+                            <jgwac:EntitySettings ID="EntitySettings" runat="server" />
+                        </jgwc:TabView>
+                    </asp:MultiView>
+                </div>
+            </ContentTemplate>
+        </asp:UpdatePanel>
+    </div>
+</asp:Content>

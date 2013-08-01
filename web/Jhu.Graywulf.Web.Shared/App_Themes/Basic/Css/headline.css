@@ -1,0 +1,42 @@
+﻿table.Headline
+{
+    width: 100%;
+    border: 0px;
+    border-collapse: collapse;
+    padding: 0px;
+}
+td.HeadlineLeft
+{
+    width: 8px;
+    background-color: #990000;
+}
+td.HeadlineLogo
+{
+    width: 100px;
+    padding-left: 8px;
+    font-family: 'Arial Rounded MT Bold' , Calibri, Arial, Helvetica, Sans-Serif;
+    font-size: 16px;
+}
+td.HeadlineUser
+{
+    width: auto;
+    text-align: right;
+    padding-right: 8px;
+    font-family: Calibri, Arial, Helvetica, Sans-Serif;
+    font-size: 12px;
+}
+td.HeadlineUser a
+{
+    color: #FFFFFF;
+    text-decoration: none;
+}
+td.HeadlineUser a:hover
+{
+    color: #FFFF00;
+    text-decoration: underline;
+}
+img.UserStatus
+{
+    vertical-align: text-bottom;
+    padding-right: 5px;
+}
