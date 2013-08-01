@@ -1,0 +1,23 @@
+﻿<%@ Master Language="C#" MasterPageFile="~/App_Masters/Basic.master" AutoEventWireup="true"
+    CodeBehind="UI.master.cs" Inherits="Jhu.Graywulf.Web.UI.UI" %>
+
+<%@ Register Src="~/Controls/Menu.ascx" TagPrefix="jgwuc" TagName="Menu" %>
+<%@ Register Src="~/Controls/Footer.ascx" TagPrefix="jgwuc" TagName="Footer" %>
+<asp:Content runat="server" ContentPlaceHolderID="head">
+    <asp:ContentPlaceHolder runat="server" ID="head" />
+</asp:Content>
+<asp:Content runat="server" ContentPlaceHolderID="userStatus">
+    <jgwc:UserStatus ID="UserStatus" runat="server" />
+</asp:Content>
+<asp:Content runat="server" ContentPlaceHolderID="menu">
+    <jgwuc:Menu runat="server" />
+</asp:Content>
+<asp:Content runat="server" ContentPlaceHolderID="toolbar">
+    <asp:ContentPlaceHolder runat="server" ID="toolbar" />
+</asp:Content>
+<asp:Content runat="server" ContentPlaceHolderID="middle">
+    <asp:ContentPlaceHolder runat="server" ID="middle" />
+</asp:Content>
+<asp:Content runat="server" ContentPlaceHolderID="footer">
+    <jgwuc:Footer runat="server" />
+</asp:Content>
