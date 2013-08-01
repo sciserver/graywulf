@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Jhu.Graywulf.ParserLib;
+
+namespace Jhu.Graywulf.SqlParser
+{
+    public partial class LogicalNot
+    {
+
+        public static LogicalNot Create()
+        {
+            var not = new LogicalNot();
+
+            not.Stack.AddLast(Keyword.Create("NOT"));
+            
+            return not;
+        }
+
+    }
+}

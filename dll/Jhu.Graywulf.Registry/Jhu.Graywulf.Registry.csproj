@@ -1,0 +1,258 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Jhu.Graywulf</RootNamespace>
+    <AssemblyName>Jhu.Graywulf.Registry</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Smo, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.Smo.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.SqlEnum, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.SqlEnum.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Activities" />
+    <Reference Include="System.Activities.Presentation" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Registry\AppSettings.cs" />
+    <Compile Include="Registry\Cluster.cs" />
+    <Compile Include="Registry\Cluster.io.cs" />
+    <Compile Include="Registry\Constants.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Registry\Context.cs" />
+    <Compile Include="Registry\ContextManager.cs" />
+    <Compile Include="Registry\ContextObject.cs" />
+    <Compile Include="Registry\DatabaseDefinition.cs" />
+    <Compile Include="Registry\DatabaseDefinition.deploy.cs" />
+    <Compile Include="Registry\DatabaseDefinition.diag.cs" />
+    <Compile Include="Registry\DatabaseDefinition.discover.cs" />
+    <Compile Include="Registry\DatabaseDefinition.io.cs" />
+    <Compile Include="Registry\DatabaseInstance.cs" />
+    <Compile Include="Registry\DatabaseInstance.deploy.cs" />
+    <Compile Include="Registry\DatabaseInstance.diag.cs" />
+    <Compile Include="Registry\DatabaseInstance.discover.cs" />
+    <Compile Include="Registry\DatabaseInstance.io.cs" />
+    <Compile Include="Registry\DatabaseInstance.smo.cs" />
+    <Compile Include="Registry\DatabaseInstanceFile.cs" />
+    <Compile Include="Registry\DatabaseInstanceFile.discover.cs" />
+    <Compile Include="Registry\DatabaseInstanceFile.io.cs" />
+    <Compile Include="Registry\DatabaseInstanceFile.smo.cs" />
+    <Compile Include="Registry\DatabaseInstanceFileGroup.cs" />
+    <Compile Include="Registry\DatabaseInstanceFileGroup.discover.cs" />
+    <Compile Include="Registry\DatabaseInstanceFileGroup.io.cs" />
+    <Compile Include="Registry\DatabaseInstanceFileGroup.smo.cs" />
+    <Compile Include="Registry\DatabaseVersion.cs" />
+    <Compile Include="Registry\DatabaseVersion.io.cs" />
+    <Compile Include="Registry\DatabaseVersionMismatchException.cs" />
+    <Compile Include="Registry\DBColumnAttribute.cs" />
+    <Compile Include="Registry\DBHelper.cs" />
+    <Compile Include="Registry\DeployException.cs" />
+    <Compile Include="Registry\DeploymentPackage.cs" />
+    <Compile Include="Registry\DeploymentPackage.io.cs" />
+    <Compile Include="Registry\DiagnosticMessage.cs" />
+    <Compile Include="Registry\DiscoveryException.cs" />
+    <Compile Include="Registry\DiskVolume.cs" />
+    <Compile Include="Registry\DiskVolume.diag.cs" />
+    <Compile Include="Registry\DiskVolume.io.cs" />
+    <Compile Include="Registry\Domain.cs" />
+    <Compile Include="Registry\Domain.io.cs" />
+    <Compile Include="Registry\DuplicateNameException.cs" />
+    <Compile Include="Registry\Entity.cs" />
+    <Compile Include="Registry\Entity.deploy.cs" />
+    <Compile Include="Registry\Entity.diag.cs" />
+    <Compile Include="Registry\Entity.discover.cs" />
+    <Compile Include="Registry\Entity.io.cs" />
+    <Compile Include="Registry\Entity.validation.cs" />
+    <Compile Include="Registry\EntityFactory.cs" />
+    <Compile Include="Registry\EntityNames.Designer.cs">
+      <DependentUpon>EntityNames.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Registry\EntityNotFoundException.cs" />
+    <Compile Include="Registry\EntityProperty.cs" />
+    <Compile Include="Registry\EntityReference.cs" />
+    <Compile Include="Registry\EntityReferenceBase.cs" />
+    <Compile Include="Registry\Enum.cs" />
+    <Compile Include="Registry\ExceptionMessages.Designer.cs">
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Registry\ExpressionProperty.cs" />
+    <Compile Include="Registry\Federation.cs" />
+    <Compile Include="Registry\Federation.io.cs" />
+    <Compile Include="Registry\FileGroup.cs" />
+    <Compile Include="Registry\FileGroup.io.cs" />
+    <Compile Include="Registry\IEntityReference.cs" />
+    <Compile Include="Registry\InvalidConcurrencyVersionException.cs" />
+    <Compile Include="Registry\InvalidContextException.cs" />
+    <Compile Include="Registry\JobAdminRequestData.cs" />
+    <Compile Include="Registry\JobCheckpoint.cs" />
+    <Compile Include="Registry\JobDefinition.cs" />
+    <Compile Include="Registry\JobDefinition.io.cs" />
+    <Compile Include="Registry\JobInstance.cs" />
+    <Compile Include="Registry\JobInstance.io.cs" />
+    <Compile Include="Registry\JobInstanceFactory.cs" />
+    <Compile Include="Registry\JobParameter.cs" />
+    <Compile Include="Activities\LockEntity.cs" />
+    <Compile Include="Registry\LockingCollisionException.cs" />
+    <Compile Include="Registry\LogMessages.Designer.cs">
+      <DependentUpon>LogMessages.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Registry\Machine.cs" />
+    <Compile Include="Registry\Machine.diag.cs" />
+    <Compile Include="Registry\Machine.io.cs" />
+    <Compile Include="Registry\MachineRole.cs" />
+    <Compile Include="Registry\MachineRole.io.cs" />
+    <Compile Include="Registry\ParentEntityReference.cs" />
+    <Compile Include="Registry\Partition.cs" />
+    <Compile Include="Registry\Partition.io.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Registry\QueueDefinition.cs" />
+    <Compile Include="Registry\QueueDefinition.io.cs" />
+    <Compile Include="Registry\QueueInstance.cs" />
+    <Compile Include="Registry\QueueInstance.io.cs" />
+    <Compile Include="Registry\JobReflectionHelper.cs" />
+    <Compile Include="Registry\RegistryException.cs" />
+    <Compile Include="Activities\ReleaseEntity.cs" />
+    <Compile Include="Registry\RemoteDatabase.cs" />
+    <Compile Include="Registry\RemoteDatabase.io.cs" />
+    <Compile Include="Registry\ServerInstance.cs" />
+    <Compile Include="Registry\ServerInstance.deploy.cs" />
+    <Compile Include="Registry\ServerInstance.diag.cs" />
+    <Compile Include="Registry\ServerInstance.io.cs" />
+    <Compile Include="Registry\ServerVersion.cs" />
+    <Compile Include="Registry\ServerVersion.io.cs" />
+    <Compile Include="Registry\Slice.cs" />
+    <Compile Include="Registry\Slice.io.cs" />
+    <Compile Include="Registry\User.cs" />
+    <Compile Include="Registry\User.io.cs" />
+    <Compile Include="Registry\UserDatabaseInstance.cs" />
+    <Compile Include="Registry\UserDatabaseInstance.io.cs" />
+    <Compile Include="Registry\UserFactory.cs" />
+    <Compile Include="Registry\UserGroup.cs" />
+    <Compile Include="Registry\UserGroup.io.cs" />
+    <Compile Include="Registry\Util.cs" />
+    <Compile Include="Registry\ValidationMessage.cs" />
+    <Compile Include="Registry\ValidationMessages.Designer.cs">
+      <DependentUpon>ValidationMessages.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Registry\WebEntityFactory.cs" />
+    <Compile Include="Registry\WebJobInstanceFactory.cs" />
+    <Compile Include="Schema\DatasetFactory.cs" />
+    <Compile Include="Schema\GraywulfDataset.cs" />
+    <Compile Include="Schema\GraywulfSchemaManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Registry\EntityNames.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>EntityNames.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Registry\ExceptionMessages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Registry\LogMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LogMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Registry\ValidationMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ValidationMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
+      <Project>{57392DA3-E280-48EE-80C8-64E09FD8AFB5}</Project>
+      <Name>Jhu.Graywulf.Activities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
+      <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
+      <Name>Jhu.Graywulf.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Logging\Jhu.Graywulf.Logging.csproj">
+      <Project>{FD98FB58-A3E5-4D32-B6D6-3E20609C4D09}</Project>
+      <Name>Jhu.Graywulf.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Registry.Enum\Jhu.Graywulf.Registry.Enum.csproj">
+      <Project>{71599792-21CC-4E63-AFB5-2AFBDB3DF418}</Project>
+      <Name>Jhu.Graywulf.Registry.Enum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
+      <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
+      <Name>Jhu.Graywulf.RemoteService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
+      <Project>{60920E0C-F7A1-47CE-85F6-7E6E3085FCF1}</Project>
+      <Name>Jhu.Graywulf.Schema</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)
+copy $(TargetDir)$(TargetName).pdb $(SolutionDir)$(OutDir)</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

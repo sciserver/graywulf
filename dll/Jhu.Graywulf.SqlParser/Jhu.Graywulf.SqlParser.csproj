@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4DFC8F4C-C2FB-4AFB-B838-45A56F19FEAF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Jhu.Graywulf.SqlParser</RootNamespace>
+    <AssemblyName>Jhu.Graywulf.SqlParser</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Comma.cs" />
+    <Compile Include="CommentOrWhitespace.cs" />
+    <Compile Include="ComputedTableSource.cs" />
+    <Compile Include="ColumnName.cs" />
+    <Compile Include="Dot.cs" />
+    <Compile Include="SelectList.cs" />
+    <Compile Include="TableName.cs" />
+    <Compile Include="TableValuedFunctionCall.cs" />
+    <Compile Include="IColumnReference.cs" />
+    <Compile Include="ITableSource.cs" />
+    <Compile Include="QueryExpression.cs" />
+    <Compile Include="SimpleTableSource.cs" />
+    <Compile Include="SqlNameResolver.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SubqueryTableSource.cs" />
+    <Compile Include="Subquery.cs" />
+    <Compile Include="VariableTableSource.cs" />
+    <Compile Include="FunctionTableSource.cs" />
+    <Compile Include="Identifier.cs" />
+    <Compile Include="SqlCodeGen\Constants.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SqlCodeGen\MySqlCodeGenerator.cs" />
+    <Compile Include="SqlCodeGen\SqlCodeGeneratorBase.cs" />
+    <Compile Include="SqlCodeGen\SqlCodeGeneratorFactory.cs" />
+    <Compile Include="SqlCodeGen\SqlServerCodeGenerator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ColumnExpression.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ColumnIdentifier.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ColumnReference.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Enum.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ExceptionMessages.Designer.cs">
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Expression.cs" />
+    <Compile Include="IntoClause.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ITableReference.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LogicalExpressions\BinaryExpression.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LogicalExpressions\Brackets.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LogicalExpressions\CnfConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LogicalExpressions\DnfConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LogicalExpressions\Expression.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LogicalExpressions\ExpressionVisitor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LogicalExpressions\NfConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LogicalExpressions\OperatorAnd.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LogicalExpressions\OperatorNot.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LogicalExpressions\OperatorOr.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LogicalExpressions\Predicate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LogicalExpressions\UnaryExpression.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LogicalNot.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LogicalOperator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NameResolverException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NodeExtensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Predicate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="QuerySpecification.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SearchCondition.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SearchConditionBrackets.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SearchConditionNormalizer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SearchConditionReference.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SelectStatement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SqlParser.cs" />
+    <Compile Include="SqlValidator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TableAlias.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TableOrViewName.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TableReference.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TableSource.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TableStatistics.cs" />
+    <Compile Include="Util.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValidatorException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WhereClause.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Whitespace.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ExceptionMessages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
+      <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
+      <Name>Jhu.Graywulf.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.ParserLib\Jhu.Graywulf.ParserLib.csproj">
+      <Project>{4039B7D0-F8E5-49D8-A770-133DBED2EA75}</Project>
+      <Name>Jhu.Graywulf.ParserLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
+      <Project>{60920E0C-F7A1-47CE-85F6-7E6E3085FCF1}</Project>
+      <Name>Jhu.Graywulf.Schema</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>cd $(ProjectDir)\..\Jhu.Graywulf.SqlParser.Generator\$(OutDir)
+gwsqlpgen.exe generate -o ..\..\..\Jhu.Graywulf.SqlParser\SqlParser.cs
+</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)
+copy $(TargetDir)$(TargetName).pdb $(SolutionDir)$(OutDir)</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
