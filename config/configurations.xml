@@ -76,7 +76,7 @@
       <merge file="federation.config" />
       <merge file="remoteService.config" />
     </project>
-    <project name="Jhu.Graywulf.Parser.Test" path="..\GrayWulf\Test\Jhu.Graywulf.Parser.Test" type="console">
+    <project name="Jhu.Graywulf.SqlParser.UI" path="..\GrayWulf\Exe\Jhu.Graywulf.SqlParser.UI" type="console">
       <merge file="connectionStrings.config" />
       <merge file="cluster.config" />
       <merge file="federation.config" />
