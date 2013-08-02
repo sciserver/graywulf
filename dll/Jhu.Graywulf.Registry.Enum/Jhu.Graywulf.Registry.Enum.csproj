@@ -48,34 +48,34 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DatabaseFileType.cs" />
-    <Compile Include="FileCopyDirection.cs">
+    <Compile Include="Registry\DatabaseFileType.cs" />
+    <Compile Include="Registry\FileCopyDirection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Gender.cs" />
-    <Compile Include="JobParameterDirection.cs" />
-    <Compile Include="RunningState.cs" />
-    <Compile Include="DatabaseLayoutType.cs" />
-    <Compile Include="DeadlockPriority.cs" />
-    <Compile Include="DeploymentState.cs" />
-    <Compile Include="DiskVolumeType.cs" />
-    <Compile Include="EntityGroup.cs" />
-    <Compile Include="EntityMoveDirection.cs" />
-    <Compile Include="EntityType.cs" />
-    <Compile Include="FileGroupAllocationType.cs" />
-    <Compile Include="FileGroupLayoutType.cs" />
-    <Compile Include="FileGroupType.cs" />
-    <Compile Include="JobExecutionState.cs" />
-    <Compile Include="MachineRoleType.cs" />
-    <Compile Include="PartitionRangeType.cs" />
-    <Compile Include="RecurringPeriod.cs" />
-    <Compile Include="ScheduleType.cs" />
+    <Compile Include="Registry\Gender.cs" />
+    <Compile Include="Registry\JobParameterDirection.cs" />
+    <Compile Include="Registry\RunningState.cs" />
+    <Compile Include="Registry\DatabaseLayoutType.cs" />
+    <Compile Include="Registry\DeadlockPriority.cs" />
+    <Compile Include="Registry\DeploymentState.cs" />
+    <Compile Include="Registry\DiskVolumeType.cs" />
+    <Compile Include="Registry\EntityGroup.cs" />
+    <Compile Include="Registry\EntityMoveDirection.cs" />
+    <Compile Include="Registry\EntityType.cs" />
+    <Compile Include="Registry\FileGroupAllocationType.cs" />
+    <Compile Include="Registry\FileGroupLayoutType.cs" />
+    <Compile Include="Registry\FileGroupType.cs" />
+    <Compile Include="Registry\JobExecutionState.cs" />
+    <Compile Include="Registry\MachineRoleType.cs" />
+    <Compile Include="Registry\PartitionRangeType.cs" />
+    <Compile Include="Registry\RecurringPeriod.cs" />
+    <Compile Include="Registry\ScheduleType.cs" />
     <Compile Include="Sql\RunningState.cs" />
     <Compile Include="Sql\ScheduleType.cs" />
     <Compile Include="Sql\DeploymentState.cs" />
     <Compile Include="Sql\JobExecutionState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ValidationMessageSeverity.cs" />
+    <Compile Include="Registry\ValidationMessageSeverity.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Test Scripts\Test.sql">
@@ -88,6 +88,7 @@
       <SubType>Content</SubType>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)
 copy $(TargetDir)$(TargetName).pdb $(SolutionDir)$(OutDir)</PostBuildEvent>

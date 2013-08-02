@@ -52,19 +52,19 @@
     <Compile Include="RemoteService\RemoteServiceTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Src\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Src\Jhu.Graywulf.Jobs\Jhu.Graywulf.Jobs.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Jobs\Jhu.Graywulf.Jobs.csproj">
       <Project>{2BD2D467-D003-468D-9B97-83DDC6F2ED78}</Project>
       <Name>Jhu.Graywulf.Jobs</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Src\Jhu.Graywulf.RemoteService.Server\Jhu.Graywulf.RemoteService.Server.csproj">
+    <ProjectReference Include="..\..\exe\Jhu.Graywulf.RemoteService.Server\Jhu.Graywulf.RemoteService.Server.csproj">
       <Project>{3AC81304-44BA-4D55-A872-469BC11C9CBC}</Project>
       <Name>Jhu.Graywulf.RemoteService.Server</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Src\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
       <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
       <Name>Jhu.Graywulf.RemoteService</Name>
     </ProjectReference>
@@ -83,7 +83,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)..\..\Src\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.RemoteService.Test</PreBuildEvent>
+    <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.RemoteService.Test</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

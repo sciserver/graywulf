@@ -45,53 +45,47 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitwiseOperatorTest.cs" />
-    <Compile Include="CnfConverterTest.cs" />
-    <Compile Include="CodeGen\MySqlCodeGeneratorTest.cs" />
-    <Compile Include="CodeGen\SqlServerCodeGeneratorTest.cs" />
-    <Compile Include="CommentOrWhitespaceTest.cs" />
-    <Compile Include="DnfConverterTest.cs" />
-    <Compile Include="HavingTest.cs" />
-    <Compile Include="GroupByTest.cs" />
-    <Compile Include="PredicateTest.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="QuerySpecificationTest.cs" />
-    <Compile Include="SearchConditionNormalizerTest.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="SearchConditionTest.cs" />
-    <Compile Include="SqlNameResolverTest.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TableSourceExpressionTest.cs" />
-    <Compile Include="SelectListTest.cs" />
-    <Compile Include="FunctionCallTest.cs" />
-    <Compile Include="FunctionIdentifierTest.cs" />
-    <Compile Include="SelectStatementTest.cs" />
-    <Compile Include="TableOrViewNameTest.cs" />
-    <Compile Include="ColumnIdentifierTest.cs" />
-    <Compile Include="TopExpressionTest.cs" />
-    <Compile Include="ArithmeticOperatorTest.cs" />
-    <Compile Include="ExpressionTest.cs" />
+    <Compile Include="SqlParser\ArithmeticOperatorTest.cs" />
+    <Compile Include="SqlParser\BitwiseOperatorTest.cs" />
+    <Compile Include="SqlParser\CnfConverterTest.cs" />
+    <Compile Include="SqlParser\CodeGen\MySqlCodeGeneratorTest.cs" />
+    <Compile Include="SqlParser\CodeGen\SqlServerCodeGeneratorTest.cs" />
+    <Compile Include="SqlParser\ColumnIdentifierTest.cs" />
+    <Compile Include="SqlParser\CommentOrWhitespaceTest.cs" />
+    <Compile Include="SqlParser\DnfConverterTest.cs" />
+    <Compile Include="SqlParser\ExpressionTest.cs" />
+    <Compile Include="SqlParser\FunctionCallTest.cs" />
+    <Compile Include="SqlParser\FunctionIdentifierTest.cs" />
+    <Compile Include="SqlParser\GroupByTest.cs" />
+    <Compile Include="SqlParser\HavingTest.cs" />
+    <Compile Include="SqlParser\PredicateTest.cs" />
+    <Compile Include="SqlParser\QuerySpecificationTest.cs" />
+    <Compile Include="SqlParser\SearchConditionNormalizerTest.cs" />
+    <Compile Include="SqlParser\SearchConditionTest.cs" />
+    <Compile Include="SqlParser\SelectListTest.cs" />
+    <Compile Include="SqlParser\SelectStatementTest.cs" />
+    <Compile Include="SqlParser\SqlNameResolverTest.cs" />
+    <Compile Include="SqlParser\SqlParserTest.cs" />
+    <Compile Include="SqlParser\TableOrViewNameTest.cs" />
+    <Compile Include="SqlParser\TableSourceExpressionTest.cs" />
+    <Compile Include="SqlParser\TopExpressionTest.cs" />
+    <Compile Include="SqlParser\UnaryOperatorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SqlParserTest.cs" />
-    <Compile Include="UnaryOperatorTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Src\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Src\Jhu.Graywulf.ParserLib\Jhu.Graywulf.ParserLib.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.ParserLib\Jhu.Graywulf.ParserLib.csproj">
       <Project>{4039B7D0-F8E5-49D8-A770-133DBED2EA75}</Project>
       <Name>Jhu.Graywulf.ParserLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Src\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
       <Project>{60920E0C-F7A1-47CE-85F6-7E6E3085FCF1}</Project>
       <Name>Jhu.Graywulf.Schema</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Src\Jhu.Graywulf.SqlParser\Jhu.Graywulf.SqlParser.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.SqlParser\Jhu.Graywulf.SqlParser.csproj">
       <Project>{4DFC8F4C-C2FB-4AFB-B838-45A56F19FEAF}</Project>
       <Name>Jhu.Graywulf.SqlParser</Name>
     </ProjectReference>

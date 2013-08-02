@@ -8,7 +8,7 @@
     <ProjectGuid>{48DED106-FDAF-4310-AC05-37DB1A315711}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Jhu.Graywulf.CommandLineParser</RootNamespace>
+    <RootNamespace>Jhu.Graywulf</RootNamespace>
     <AssemblyName>Jhu.Graywulf.CommandLineParser</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -40,24 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArgumentParser.cs" />
-    <Compile Include="ArgumentParserException.cs" />
-    <Compile Include="OptionAttribute.cs" />
-    <Compile Include="ParameterAttribute.cs" />
-    <Compile Include="VerbAttribute.cs" />
-    <Compile Include="ExceptionMessages.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ExceptionMessages.resx</DependentUpon>
-    </Compile>
-    <Compile Include="PartialStringComparer.cs" />
+    <Compile Include="CommandLineParser\ArgumentParser.cs" />
+    <Compile Include="CommandLineParser\ArgumentParserException.cs" />
+    <Compile Include="CommandLineParser\ExceptionMessages.Designer.cs" />
+    <Compile Include="CommandLineParser\OptionAttribute.cs" />
+    <Compile Include="CommandLineParser\ParameterAttribute.cs" />
+    <Compile Include="CommandLineParser\PartialStringComparer.cs" />
+    <Compile Include="CommandLineParser\VerbAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ExceptionMessages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <EmbeddedResource Include="CommandLineParser\ExceptionMessages.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

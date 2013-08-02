@@ -50,16 +50,16 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CacheableParameterHelper.cs" />
+    <Compile Include="Components\CacheableParameterHelper.cs" />
+    <Compile Include="Components\CachedLazyDictionaryTest.cs" />
+    <Compile Include="Components\LazyDictionaryTest.cs" />
     <Compile Include="GenericParameterHelper.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CachedLazyDictionaryTest.cs" />
-    <Compile Include="LazyDictionaryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Src\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
     </ProjectReference>

@@ -8,7 +8,7 @@
     <ProjectGuid>{E9D182CF-746E-4E40-B01C-74A32FB70749}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Jhu.Graywulf.Web</RootNamespace>
+    <RootNamespace>Jhu.Graywulf</RootNamespace>
     <AssemblyName>Jhu.Graywulf.Web</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -46,92 +46,92 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApplicationBase.cs" />
-    <Compile Include="Captcha.aspx.cs">
+    <Compile Include="Web\ApplicationBase.cs" />
+    <Compile Include="Web\Captcha.aspx.cs">
       <DependentUpon>Captcha.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Constants.cs" />
-    <Compile Include="Controls\BoundField.cs" />
-    <Compile Include="Controls\CaptchaImage.cs" />
-    <Compile Include="Controls\CaptchaValidator.cs" />
-    <Compile Include="Controls\CodeMirror.cs" />
-    <Compile Include="Controls\BoundDateTimeField.cs" />
-    <Compile Include="Controls\BoundByteSizeField.cs" />
-    <Compile Include="Controls\DockingPanel.cs" />
-    <Compile Include="Controls\Form.cs" />
-    <Compile Include="Controls\Includer.cs" />
-    <Compile Include="Controls\Int32ArrayConverter.cs" />
-    <Compile Include="Controls\JobStatus.cs" />
-    <Compile Include="Controls\Labels.Designer.cs">
+    <Compile Include="Web\Constants.cs" />
+    <Compile Include="Web\Controls\BoundField.cs" />
+    <Compile Include="Web\Controls\CaptchaImage.cs" />
+    <Compile Include="Web\Controls\CaptchaValidator.cs" />
+    <Compile Include="Web\Controls\CodeMirror.cs" />
+    <Compile Include="Web\Controls\BoundDateTimeField.cs" />
+    <Compile Include="Web\Controls\BoundByteSizeField.cs" />
+    <Compile Include="Web\Controls\DockingPanel.cs" />
+    <Compile Include="Web\Controls\Form.cs" />
+    <Compile Include="Web\Controls\Includer.cs" />
+    <Compile Include="Web\Controls\Int32ArrayConverter.cs" />
+    <Compile Include="Web\Controls\JobStatus.cs" />
+    <Compile Include="Web\Controls\Labels.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Labels.resx</DependentUpon>
     </Compile>
-    <Compile Include="Controls\ListViewDataPager.cs" />
-    <Compile Include="Controls\MultiSelectGridView.cs" />
-    <Compile Include="Controls\MultiSelectListView.cs" />
-    <Compile Include="Controls\MultiViewTabHeader.cs" />
-    <Compile Include="Controls\SelectionField.cs" />
-    <Compile Include="Controls\SiteMap.cs" />
-    <Compile Include="Controls\Tab.cs" />
-    <Compile Include="Controls\TabHeader.cs" />
-    <Compile Include="Controls\TabView.cs" />
-    <Compile Include="Controls\UsageBar.cs" />
-    <Compile Include="Controls\UserStatus.cs">
+    <Compile Include="Web\Controls\ListViewDataPager.cs" />
+    <Compile Include="Web\Controls\MultiSelectGridView.cs" />
+    <Compile Include="Web\Controls\MultiSelectListView.cs" />
+    <Compile Include="Web\Controls\MultiViewTabHeader.cs" />
+    <Compile Include="Web\Controls\SelectionField.cs" />
+    <Compile Include="Web\Controls\SiteMap.cs" />
+    <Compile Include="Web\Controls\Tab.cs" />
+    <Compile Include="Web\Controls\TabHeader.cs" />
+    <Compile Include="Web\Controls\TabView.cs" />
+    <Compile Include="Web\Controls\UsageBar.cs" />
+    <Compile Include="Web\Controls\UserStatus.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="EmbeddedVirtualFile.cs" />
-    <Compile Include="Enum.cs" />
-    <Compile Include="EmbeddedVirtualPathProvider.cs" />
-    <Compile Include="Controls\ExpressionPropertyField.cs" />
-    <Compile Include="Feedback.aspx.cs">
+    <Compile Include="Web\EmbeddedVirtualFile.cs" />
+    <Compile Include="Web\Enum.cs" />
+    <Compile Include="Web\EmbeddedVirtualPathProvider.cs" />
+    <Compile Include="Web\Controls\ExpressionPropertyField.cs" />
+    <Compile Include="Web\Feedback.aspx.cs">
       <DependentUpon>Feedback.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Feedback.aspx.designer.cs">
+    <Compile Include="Web\Feedback.aspx.designer.cs">
       <DependentUpon>Feedback.aspx</DependentUpon>
     </Compile>
-    <Compile Include="JobDescription.cs" />
-    <Compile Include="JobDescriptionFactory.cs" />
-    <Compile Include="MasterPageBase.cs">
+    <Compile Include="Web\JobDescription.cs" />
+    <Compile Include="Web\JobDescriptionFactory.cs" />
+    <Compile Include="Web\MasterPageBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PageBase.cs">
+    <Compile Include="Web\PageBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Controls\Toolbar.cs" />
-    <Compile Include="Error.aspx.cs">
+    <Compile Include="Web\Controls\Toolbar.cs" />
+    <Compile Include="Web\Error.aspx.cs">
       <DependentUpon>Error.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Error.aspx.designer.cs">
+    <Compile Include="Web\Error.aspx.designer.cs">
       <DependentUpon>Error.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Controls\ToolbarElement.cs" />
-    <Compile Include="Controls\ToolbarButton.cs" />
-    <Compile Include="Controls\ToolbarSpan.cs" />
-    <Compile Include="UserControlBase.cs">
+    <Compile Include="Web\Controls\ToolbarElement.cs" />
+    <Compile Include="Web\Controls\ToolbarButton.cs" />
+    <Compile Include="Web\Controls\ToolbarSpan.cs" />
+    <Compile Include="Web\UserControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Util\ByteSizeFormatter.cs" />
-    <Compile Include="Util\DateFormatter.cs" />
-    <Compile Include="Util\DocumentationFormatter.cs" />
-    <Compile Include="Util\EmailTemplateUtility.cs" />
-    <Compile Include="Util\EmailSender.cs" />
-    <Compile Include="Util\JQuery.cs" />
-    <Compile Include="Util\UrlFormatter.cs" />
+    <Compile Include="Web\Util\ByteSizeFormatter.cs" />
+    <Compile Include="Web\Util\DateFormatter.cs" />
+    <Compile Include="Web\Util\DocumentationFormatter.cs" />
+    <Compile Include="Web\Util\EmailTemplateUtility.cs" />
+    <Compile Include="Web\Util\EmailSender.cs" />
+    <Compile Include="Web\Util\JQuery.cs" />
+    <Compile Include="Web\Util\UrlFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Controls\Labels.resx">
+    <EmbeddedResource Include="Web\Controls\Labels.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Labels.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Controls\ToolbarButton.js" />
-    <EmbeddedResource Include="Controls\MultiSelectListView.js" />
+    <EmbeddedResource Include="Web\Controls\ToolbarButton.js" />
+    <EmbeddedResource Include="Web\Controls\MultiSelectListView.js" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
@@ -160,28 +160,28 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Captcha.aspx">
+    <EmbeddedResource Include="Web\Captcha.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Error.aspx">
+    <EmbeddedResource Include="Web\Error.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Feedback.aspx">
+    <EmbeddedResource Include="Web\Feedback.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Controls\MultiSelectGridView.js" />
+    <EmbeddedResource Include="Web\Controls\MultiSelectGridView.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Controls\DockingPanel.js" />
+    <EmbeddedResource Include="Web\Controls\DockingPanel.js" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Controls\CodeMirror.js" />
+    <EmbeddedResource Include="Web\Controls\CodeMirror.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -45,13 +45,13 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GrammarInfoTest.cs" />
+    <Compile Include="ParserLib\GeneratorTest.cs" />
+    <Compile Include="ParserLib\GrammarInfoTest.cs" />
+    <Compile Include="ParserLib\TestGrammar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GeneratorTest.cs" />
-    <Compile Include="TestGrammar.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Src\Jhu.Graywulf.ParserLib\Jhu.Graywulf.ParserLib.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.ParserLib\Jhu.Graywulf.ParserLib.csproj">
       <Project>{4039B7D0-F8E5-49D8-A770-133DBED2EA75}</Project>
       <Name>Jhu.Graywulf.ParserLib</Name>
     </ProjectReference>

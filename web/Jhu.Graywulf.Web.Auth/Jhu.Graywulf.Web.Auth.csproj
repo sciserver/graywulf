@@ -170,15 +170,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jhu.Graywulf.Registry.Enum\Jhu.Graywulf.Registry.Enum.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry.Enum\Jhu.Graywulf.Registry.Enum.csproj">
       <Project>{71599792-21CC-4E63-AFB5-2AFBDB3DF418}</Project>
       <Name>Jhu.Graywulf.Registry.Enum</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.Registry\Jhu.Graywulf.Registry.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry\Jhu.Graywulf.Registry.csproj">
       <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
       <Name>Jhu.Graywulf.Registry</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
       <Project>{E9D182CF-746E-4E40-B01C-74A32FB70749}</Project>
       <Name>Jhu.Graywulf.Web</Name>
     </ProjectReference>
@@ -217,7 +217,10 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)..\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Web.Auth</PreBuildEvent>
+    <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Web.Auth
+xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Masters $(ProjectDir)App_Masters /I /E /Y
+xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Themes $(ProjectDir)App_Themes /I /E /Y
+</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

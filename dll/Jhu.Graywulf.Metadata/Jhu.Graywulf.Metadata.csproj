@@ -83,25 +83,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constants.cs" />
-    <Compile Include="Enum.cs" />
-    <Compile Include="Extractor.cs" />
-    <Compile Include="Generator.cs" />
-    <Compile Include="Parser.cs" />
-    <Compile Include="Verifier.cs" />
+    <Compile Include="Metadata\Constants.cs" />
+    <Compile Include="Metadata\Enum.cs" />
+    <Compile Include="Metadata\Extractor.cs" />
+    <Compile Include="Metadata\Generator.cs" />
+    <Compile Include="Metadata\Parser.cs" />
+    <Compile Include="Metadata\Verifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scripts.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Scripts.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Scripts.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Scripts.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

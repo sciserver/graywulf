@@ -8,7 +8,7 @@
     <ProjectGuid>{4DFC8F4C-C2FB-4AFB-B838-45A56F19FEAF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Jhu.Graywulf.SqlParser</RootNamespace>
+    <RootNamespace>Jhu.Graywulf</RootNamespace>
     <AssemblyName>Jhu.Graywulf.SqlParser</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -40,157 +40,157 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Comma.cs" />
-    <Compile Include="CommentOrWhitespace.cs" />
-    <Compile Include="ComputedTableSource.cs" />
-    <Compile Include="ColumnName.cs" />
-    <Compile Include="Dot.cs" />
-    <Compile Include="SelectList.cs" />
-    <Compile Include="TableName.cs" />
-    <Compile Include="TableValuedFunctionCall.cs" />
-    <Compile Include="IColumnReference.cs" />
-    <Compile Include="ITableSource.cs" />
-    <Compile Include="QueryExpression.cs" />
-    <Compile Include="SimpleTableSource.cs" />
-    <Compile Include="SqlNameResolver.cs">
+    <Compile Include="SqlParser\Comma.cs" />
+    <Compile Include="SqlParser\CommentOrWhitespace.cs" />
+    <Compile Include="SqlParser\ComputedTableSource.cs" />
+    <Compile Include="SqlParser\ColumnName.cs" />
+    <Compile Include="SqlParser\Dot.cs" />
+    <Compile Include="SqlParser\SelectList.cs" />
+    <Compile Include="SqlParser\TableName.cs" />
+    <Compile Include="SqlParser\TableValuedFunctionCall.cs" />
+    <Compile Include="SqlParser\IColumnReference.cs" />
+    <Compile Include="SqlParser\ITableSource.cs" />
+    <Compile Include="SqlParser\QueryExpression.cs" />
+    <Compile Include="SqlParser\SimpleTableSource.cs" />
+    <Compile Include="SqlParser\SqlNameResolver.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SubqueryTableSource.cs" />
-    <Compile Include="Subquery.cs" />
-    <Compile Include="VariableTableSource.cs" />
-    <Compile Include="FunctionTableSource.cs" />
-    <Compile Include="Identifier.cs" />
-    <Compile Include="SqlCodeGen\Constants.cs">
+    <Compile Include="SqlParser\SubqueryTableSource.cs" />
+    <Compile Include="SqlParser\Subquery.cs" />
+    <Compile Include="SqlParser\VariableTableSource.cs" />
+    <Compile Include="SqlParser\FunctionTableSource.cs" />
+    <Compile Include="SqlParser\Identifier.cs" />
+    <Compile Include="SqlParser\SqlCodeGen\Constants.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SqlCodeGen\MySqlCodeGenerator.cs" />
-    <Compile Include="SqlCodeGen\SqlCodeGeneratorBase.cs" />
-    <Compile Include="SqlCodeGen\SqlCodeGeneratorFactory.cs" />
-    <Compile Include="SqlCodeGen\SqlServerCodeGenerator.cs">
+    <Compile Include="SqlParser\SqlCodeGen\MySqlCodeGenerator.cs" />
+    <Compile Include="SqlParser\SqlCodeGen\SqlCodeGeneratorBase.cs" />
+    <Compile Include="SqlParser\SqlCodeGen\SqlCodeGeneratorFactory.cs" />
+    <Compile Include="SqlParser\SqlCodeGen\SqlServerCodeGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ColumnExpression.cs">
+    <Compile Include="SqlParser\ColumnExpression.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ColumnIdentifier.cs">
+    <Compile Include="SqlParser\ColumnIdentifier.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ColumnReference.cs">
+    <Compile Include="SqlParser\ColumnReference.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Enum.cs">
+    <Compile Include="SqlParser\Enum.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ExceptionMessages.Designer.cs">
+    <Compile Include="SqlParser\ExceptionMessages.Designer.cs">
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Expression.cs" />
-    <Compile Include="IntoClause.cs">
+    <Compile Include="SqlParser\Expression.cs" />
+    <Compile Include="SqlParser\IntoClause.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ITableReference.cs">
+    <Compile Include="SqlParser\ITableReference.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LogicalExpressions\BinaryExpression.cs">
+    <Compile Include="SqlParser\LogicalExpressions\BinaryExpression.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LogicalExpressions\Brackets.cs">
+    <Compile Include="SqlParser\LogicalExpressions\Brackets.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LogicalExpressions\CnfConverter.cs">
+    <Compile Include="SqlParser\LogicalExpressions\CnfConverter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LogicalExpressions\DnfConverter.cs">
+    <Compile Include="SqlParser\LogicalExpressions\DnfConverter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LogicalExpressions\Expression.cs">
+    <Compile Include="SqlParser\LogicalExpressions\Expression.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LogicalExpressions\ExpressionVisitor.cs">
+    <Compile Include="SqlParser\LogicalExpressions\ExpressionVisitor.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LogicalExpressions\NfConverter.cs">
+    <Compile Include="SqlParser\LogicalExpressions\NfConverter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LogicalExpressions\OperatorAnd.cs">
+    <Compile Include="SqlParser\LogicalExpressions\OperatorAnd.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LogicalExpressions\OperatorNot.cs">
+    <Compile Include="SqlParser\LogicalExpressions\OperatorNot.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LogicalExpressions\OperatorOr.cs">
+    <Compile Include="SqlParser\LogicalExpressions\OperatorOr.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LogicalExpressions\Predicate.cs">
+    <Compile Include="SqlParser\LogicalExpressions\Predicate.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LogicalExpressions\UnaryExpression.cs">
+    <Compile Include="SqlParser\LogicalExpressions\UnaryExpression.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LogicalNot.cs">
+    <Compile Include="SqlParser\LogicalNot.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LogicalOperator.cs">
+    <Compile Include="SqlParser\LogicalOperator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="NameResolverException.cs">
+    <Compile Include="SqlParser\NameResolverException.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="NodeExtensions.cs">
+    <Compile Include="SqlParser\NodeExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Predicate.cs">
+    <Compile Include="SqlParser\Predicate.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QuerySpecification.cs">
+    <Compile Include="SqlParser\QuerySpecification.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SearchCondition.cs">
+    <Compile Include="SqlParser\SearchCondition.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SearchConditionBrackets.cs">
+    <Compile Include="SqlParser\SearchConditionBrackets.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SearchConditionNormalizer.cs">
+    <Compile Include="SqlParser\SearchConditionNormalizer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SearchConditionReference.cs">
+    <Compile Include="SqlParser\SearchConditionReference.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SelectStatement.cs">
+    <Compile Include="SqlParser\SelectStatement.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SqlParser.cs" />
-    <Compile Include="SqlValidator.cs">
+    <Compile Include="SqlParser\SqlParser.cs" />
+    <Compile Include="SqlParser\SqlValidator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TableAlias.cs">
+    <Compile Include="SqlParser\TableAlias.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TableOrViewName.cs">
+    <Compile Include="SqlParser\TableOrViewName.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TableReference.cs">
+    <Compile Include="SqlParser\TableReference.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TableSource.cs">
+    <Compile Include="SqlParser\TableSource.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TableStatistics.cs" />
-    <Compile Include="Util.cs" />
+    <Compile Include="SqlParser\TableStatistics.cs" />
+    <Compile Include="SqlParser\Util.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ValidatorException.cs">
+    <Compile Include="SqlParser\ValidatorException.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WhereClause.cs">
+    <Compile Include="SqlParser\WhereClause.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Whitespace.cs" />
+    <Compile Include="SqlParser\Whitespace.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ExceptionMessages.resx">
+    <EmbeddedResource Include="SqlParser\ExceptionMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
@@ -212,9 +212,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>cd $(ProjectDir)\..\Jhu.Graywulf.SqlParser.Generator\$(OutDir)
-gwsqlpgen.exe generate -o ..\..\..\Jhu.Graywulf.SqlParser\SqlParser.cs
-</PreBuildEvent>
+    <PreBuildEvent>cd $(ProjectDir)\..\..\build\Jhu.Graywulf.SqlParser.Generator\$(OutDir)
+gwsqlpgen.exe generate -o ..\..\..\..\dll\Jhu.Graywulf.SqlParser\SqlParser\SqlParser.cs</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)

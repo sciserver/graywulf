@@ -82,7 +82,7 @@
     <Compile Include="Verb.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jhu.Graywulf.CommandLineParser\Jhu.Graywulf.CommandLineParser.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.CommandLineParser\Jhu.Graywulf.CommandLineParser.csproj">
       <Project>{48DED106-FDAF-4310-AC05-37DB1A315711}</Project>
       <Name>Jhu.Graywulf.CommandLineParser</Name>
     </ProjectReference>

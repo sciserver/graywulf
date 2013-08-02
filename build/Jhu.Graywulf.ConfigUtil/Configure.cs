@@ -15,6 +15,7 @@ namespace Jhu.Graywulf.ConfigUtil
 
         private string rootPath;
         private string configurationsFile;
+        private string configurationRoot;
         private string projectName;
 
         private string projectPath;
@@ -72,11 +73,15 @@ namespace Jhu.Graywulf.ConfigUtil
         private void ReadProjectSettings()
         {
             // Load xml file
-            XmlDocument conf = new XmlDocument();
+            var conf = new XmlDocument();
             conf.Load(Path.Combine(rootPath, configurationsFile));
 
+            // Fing config tag
+            var root = conf.DocumentElement;
+            configurationRoot = root.Attributes["root"].Value;
+
             // Find project node
-            XmlNode node = conf.SelectSingleNode(String.Format("/projects/project[@name='{0}']", projectName));
+            var node = root.SelectSingleNode(String.Format("projects/project[@name='{0}']", projectName));
 
             projectPath = node.Attributes["path"].Value;
             if (!Enum.TryParse<ProjectType>(node.Attributes["type"].Value, true, out projectType))
@@ -85,7 +90,7 @@ namespace Jhu.Graywulf.ConfigUtil
             }
 
             // Get merge nodes
-            XmlNodeList ms = node.SelectNodes(".//merge");
+            var ms = node.SelectNodes(".//merge");
 
             mergeList = new string[ms.Count];
             for (int i = 0; i < ms.Count; i++)
@@ -96,7 +101,7 @@ namespace Jhu.Graywulf.ConfigUtil
 
         private XmlDocument ReadOriginalConfig()
         {
-            XmlDocument config = new XmlDocument();
+            var config = new XmlDocument();
             config.Load(Path.Combine(rootPath, projectPath, Constants.OriginalConfigFileNames[projectType]));
 
             return config;
@@ -109,8 +114,8 @@ namespace Jhu.Graywulf.ConfigUtil
 
         private XmlDocument ReadMergeConfig(string merge)
         {
-            XmlDocument config = new XmlDocument();
-            config.Load(Path.Combine(rootPath, merge));
+            var config = new XmlDocument();
+            config.Load(Path.Combine(rootPath, configurationRoot, merge));
 
             return config;
         }

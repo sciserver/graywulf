@@ -110,14 +110,14 @@
     <None Include="App.original.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
       <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
       <Name>Jhu.Graywulf.RemoteService</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)..\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.RemoteService.Server</PreBuildEvent>
+    <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.RemoteService.Server</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>copy $(ProjectDir)..\..\util\eseutil.exe $(TargetDir)

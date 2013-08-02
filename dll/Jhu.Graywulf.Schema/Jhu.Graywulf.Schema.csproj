@@ -8,7 +8,7 @@
     <ProjectGuid>{60920E0C-F7A1-47CE-85F6-7E6E3085FCF1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Jhu.Graywulf.Schema</RootNamespace>
+    <RootNamespace>Jhu.Graywulf</RootNamespace>
     <AssemblyName>Jhu.Graywulf.Schema</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -46,70 +46,70 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AllObjectsLoadingEventArgs.cs">
+    <Compile Include="Schema\AllObjectsLoadingEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AppSettings.cs" />
-    <Compile Include="Constants.cs">
+    <Compile Include="Schema\AppSettings.cs" />
+    <Compile Include="Schema\Constants.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DatabaseObjectMetadata.cs" />
-    <Compile Include="DatasetCollection.cs" />
-    <Compile Include="DatasetStatistics.cs" />
-    <Compile Include="IDatabaseObjectName.cs" />
-    <Compile Include="IDatasetName.cs" />
-    <Compile Include="DataType.cs" />
-    <Compile Include="IIndexes.cs" />
-    <Compile Include="IndexColumn.cs" />
-    <Compile Include="Index.cs" />
-    <Compile Include="DatabaseObjectNames.Designer.cs">
+    <Compile Include="Schema\DatabaseObjectMetadata.cs" />
+    <Compile Include="Schema\DatasetCollection.cs" />
+    <Compile Include="Schema\DatasetStatistics.cs" />
+    <Compile Include="Schema\IDatabaseObjectName.cs" />
+    <Compile Include="Schema\IDatasetName.cs" />
+    <Compile Include="Schema\DataType.cs" />
+    <Compile Include="Schema\IIndexes.cs" />
+    <Compile Include="Schema\IndexColumn.cs" />
+    <Compile Include="Schema\Index.cs" />
+    <Compile Include="Schema\DatabaseObjectNames.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DatabaseObjectNames.resx</DependentUpon>
     </Compile>
-    <Compile Include="MySql\Constants.cs">
+    <Compile Include="Schema\MySql\Constants.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MySql\MySqlDataset.cs">
+    <Compile Include="Schema\MySql\MySqlDataset.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SchemaManager.cs" />
-    <Compile Include="SqlServer\Constants.cs" />
-    <Compile Include="SqlServer\SqlServerDataset.cs" />
-    <Compile Include="SqlServer\SqlServerSchemaManager.cs">
+    <Compile Include="Schema\SchemaManager.cs" />
+    <Compile Include="Schema\SqlServer\Constants.cs" />
+    <Compile Include="Schema\SqlServer\SqlServerDataset.cs" />
+    <Compile Include="Schema\SqlServer\SqlServerSchemaManager.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="StoredProcedure.cs" />
-    <Compile Include="DatasetBase.cs" />
-    <Compile Include="ScalarFunction.cs" />
-    <Compile Include="IColumns.cs" />
-    <Compile Include="IParameters.cs" />
-    <Compile Include="Parameter.cs" />
-    <Compile Include="TableOrView.cs" />
-    <Compile Include="TableStatistics.cs" />
-    <Compile Include="TableValuedFunction.cs" />
-    <Compile Include="Variable.cs" />
-    <Compile Include="VariableMetadata.cs" />
-    <Compile Include="View.cs" />
-    <Compile Include="Column.cs" />
-    <Compile Include="DatabaseObject.cs" />
-    <Compile Include="DatabaseObjectCollection.cs" />
-    <Compile Include="Enum.cs" />
-    <Compile Include="ExceptionMessages.Designer.cs">
+    <Compile Include="Schema\StoredProcedure.cs" />
+    <Compile Include="Schema\DatasetBase.cs" />
+    <Compile Include="Schema\ScalarFunction.cs" />
+    <Compile Include="Schema\IColumns.cs" />
+    <Compile Include="Schema\IParameters.cs" />
+    <Compile Include="Schema\Parameter.cs" />
+    <Compile Include="Schema\TableOrView.cs" />
+    <Compile Include="Schema\TableStatistics.cs" />
+    <Compile Include="Schema\TableValuedFunction.cs" />
+    <Compile Include="Schema\Variable.cs" />
+    <Compile Include="Schema\VariableMetadata.cs" />
+    <Compile Include="Schema\View.cs" />
+    <Compile Include="Schema\Column.cs" />
+    <Compile Include="Schema\DatabaseObject.cs" />
+    <Compile Include="Schema\DatabaseObjectCollection.cs" />
+    <Compile Include="Schema\Enum.cs" />
+    <Compile Include="Schema\ExceptionMessages.Designer.cs">
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SchemaException.cs" />
-    <Compile Include="Table.cs" />
+    <Compile Include="Schema\SchemaException.cs" />
+    <Compile Include="Schema\Table.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DatabaseObjectNames.resx">
+    <EmbeddedResource Include="Schema\DatabaseObjectNames.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>DatabaseObjectNames.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="ExceptionMessages.resx">
+    <EmbeddedResource Include="Schema\ExceptionMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
@@ -120,6 +120,7 @@
       <Name>Jhu.Graywulf.Components</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)

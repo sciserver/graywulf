@@ -51,6 +51,13 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Masters\Basic.master.cs">
+      <DependentUpon>Basic.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="App_Masters\Basic.master.designer.cs">
+      <DependentUpon>Basic.master</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Query.cs" />
     <Compile Include="UI.master.cs">
       <DependentUpon>UI.master</DependentUpon>
@@ -60,13 +67,6 @@
       <DependentUpon>UI.master</DependentUpon>
     </Compile>
     <Compile Include="AppSettings.cs" />
-    <Compile Include="App_Masters\Basic.master.cs">
-      <DependentUpon>Basic.master</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="App_Masters\Basic.master.designer.cs">
-      <DependentUpon>Basic.master</DependentUpon>
-    </Compile>
     <Compile Include="Controls\Footer.ascx.cs">
       <DependentUpon>Footer.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -280,7 +280,8 @@
     <Content Include="App_Themes\Basic\Css\syntaxhighlighter.css" />
     <Content Include="App_Themes\Basic\Css\tabs.css" />
     <Content Include="App_Themes\Basic\Css\toolbar.css" />
-    <Content Include="App_Themes\Basic\Generic.skin" />
+    <Content Include="App_Themes\Basic\Icons\activatesuccess.png" />
+    <Content Include="App_Themes\Basic\Icons\activateuser.png" />
     <Content Include="App_Themes\Basic\Icons\canceljob.png" />
     <Content Include="App_Themes\Basic\Icons\droptable.png" />
     <Content Include="App_Themes\Basic\Icons\email.png" />
@@ -291,10 +292,13 @@
     <Content Include="App_Themes\Basic\Icons\job.png" />
     <Content Include="App_Themes\Basic\Icons\mydb.png" />
     <Content Include="App_Themes\Basic\Icons\renametable.png" />
+    <Content Include="App_Themes\Basic\Icons\resetpassword.png" />
     <Content Include="App_Themes\Basic\Icons\schemabrowser.png" />
+    <Content Include="App_Themes\Basic\Icons\signin.png" />
+    <Content Include="App_Themes\Basic\Icons\signout.png" />
+    <Content Include="App_Themes\Basic\Icons\user.png" />
     <Content Include="App_Themes\Basic\Icons\userstatus.png" />
     <Content Include="App_Themes\Basic\Icons\welcome.png" />
-    <Content Include="App_Themes\Basic\Specific.skin" />
     <Content Include="CodeMirror\addon\comment\comment.js" />
     <Content Include="CodeMirror\addon\dialog\dialog.css" />
     <Content Include="CodeMirror\addon\dialog\dialog.js" />
@@ -346,24 +350,6 @@
     <Content Include="CodeMirror\keymap\vim.js" />
     <Content Include="CodeMirror\lib\codemirror.css" />
     <Content Include="CodeMirror\lib\codemirror.js" />
-    <Content Include="CodeMirror\lib\util\closetag.js" />
-    <Content Include="CodeMirror\lib\util\dialog.css" />
-    <Content Include="CodeMirror\lib\util\dialog.js" />
-    <Content Include="CodeMirror\lib\util\foldcode.js" />
-    <Content Include="CodeMirror\lib\util\formatting.js" />
-    <Content Include="CodeMirror\lib\util\javascript-hint.js" />
-    <Content Include="CodeMirror\lib\util\loadmode.js" />
-    <Content Include="CodeMirror\lib\util\match-highlighter.js" />
-    <Content Include="CodeMirror\lib\util\multiplex.js" />
-    <Content Include="CodeMirror\lib\util\overlay.js" />
-    <Content Include="CodeMirror\lib\util\pig-hint.js" />
-    <Content Include="CodeMirror\lib\util\runmode-standalone.js" />
-    <Content Include="CodeMirror\lib\util\runmode.js" />
-    <Content Include="CodeMirror\lib\util\search.js" />
-    <Content Include="CodeMirror\lib\util\searchcursor.js" />
-    <Content Include="CodeMirror\lib\util\simple-hint.css" />
-    <Content Include="CodeMirror\lib\util\simple-hint.js" />
-    <Content Include="CodeMirror\lib\util\xml-hint.js" />
     <Content Include="CodeMirror\mode\apl\apl.js" />
     <Content Include="CodeMirror\mode\apl\index.html" />
     <Content Include="CodeMirror\mode\asterisk\asterisk.js" />
@@ -433,7 +419,6 @@
     <Content Include="CodeMirror\mode\meta.js" />
     <Content Include="CodeMirror\mode\mirc\index.html" />
     <Content Include="CodeMirror\mode\mirc\mirc.js" />
-    <Content Include="CodeMirror\mode\mysql\mysql.js" />
     <Content Include="CodeMirror\mode\ntriples\index.html" />
     <Content Include="CodeMirror\mode\ntriples\ntriples.js" />
     <Content Include="CodeMirror\mode\ocaml\index.html" />
@@ -446,7 +431,6 @@
     <Content Include="CodeMirror\mode\php\php.js" />
     <Content Include="CodeMirror\mode\pig\index.html" />
     <Content Include="CodeMirror\mode\pig\pig.js" />
-    <Content Include="CodeMirror\mode\plsql\plsql.js" />
     <Content Include="CodeMirror\mode\properties\index.html" />
     <Content Include="CodeMirror\mode\properties\properties.js" />
     <Content Include="CodeMirror\mode\python\index.html" />
@@ -574,57 +558,6 @@
     <Content Include="Schema\IndexList.ascx" />
     <Content Include="Schema\ParameterList.ascx" />
     <Content Include="Schema\Peek.aspx" />
-    <Content Include="SyntaxHighlighter\scripts\shAutoloader.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushAppleScript.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushAS3.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushBash.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushColdFusion.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushCpp.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushCSharp.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushCss.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushDelphi.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushDiff.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushErlang.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushGroovy.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushJava.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushJavaFX.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushJScript.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushPerl.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushPhp.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushPlain.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushPowerShell.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushPython.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushRuby.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushSass.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushScala.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushSql.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushVb.js" />
-    <Content Include="SyntaxHighlighter\scripts\shBrushXml.js" />
-    <Content Include="SyntaxHighlighter\scripts\shCore.js" />
-    <Content Include="SyntaxHighlighter\scripts\shLegacy.js" />
-    <Content Include="SyntaxHighlighter\src\shAutoloader.js" />
-    <Content Include="SyntaxHighlighter\src\shCore.js" />
-    <Content Include="SyntaxHighlighter\src\shLegacy.js" />
-    <Content Include="SyntaxHighlighter\styles\shCore.css" />
-    <Content Include="SyntaxHighlighter\styles\shCoreDefault.css" />
-    <Content Include="SyntaxHighlighter\styles\shCoreDjango.css" />
-    <Content Include="SyntaxHighlighter\styles\shCoreEclipse.css" />
-    <Content Include="SyntaxHighlighter\styles\shCoreEmacs.css" />
-    <Content Include="SyntaxHighlighter\styles\shCoreFadeToGrey.css" />
-    <Content Include="SyntaxHighlighter\styles\shCoreMDUltra.css" />
-    <Content Include="SyntaxHighlighter\styles\shCoreMidnight.css" />
-    <Content Include="SyntaxHighlighter\styles\shCoreRDark.css" />
-    <Content Include="SyntaxHighlighter\styles\shThemeDefault.css" />
-    <Content Include="SyntaxHighlighter\styles\shThemeDjango.css" />
-    <Content Include="SyntaxHighlighter\styles\shThemeEclipse.css" />
-    <Content Include="SyntaxHighlighter\styles\shThemeEmacs.css" />
-    <Content Include="SyntaxHighlighter\styles\shThemeFadeToGrey.css" />
-    <Content Include="SyntaxHighlighter\styles\shThemeMDUltra.css" />
-    <Content Include="SyntaxHighlighter\styles\shThemeMidnight.css" />
-    <Content Include="SyntaxHighlighter\styles\shThemeRDark.css" />
-    <Content Include="Templates\ErrorFeedbackEmail.xml" />
-    <Content Include="Templates\FeedbackEmail.xml" />
-    <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.original.config" />
@@ -634,51 +567,51 @@
       <Project>{2887F181-7F61-4DF5-BD89-2800503D5F84}</Project>
       <Name>Jhu.SkyQuery</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.Format\Jhu.Graywulf.Format.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Format\Jhu.Graywulf.Format.csproj">
       <Project>{AAF4C238-C3A9-422F-BE3F-6FF10D9D0062}</Project>
       <Name>Jhu.Graywulf.Format</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.Install\Jhu.Graywulf.Install.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Install\Jhu.Graywulf.Install.csproj">
       <Project>{AC357A2C-5388-4D7F-B1AF-C78D9BF8326C}</Project>
       <Name>Jhu.Graywulf.Install</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.IO\Jhu.Graywulf.IO.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.IO\Jhu.Graywulf.IO.csproj">
       <Project>{6797ED88-1D8C-491B-A036-4C42C4BF2EAF}</Project>
       <Name>Jhu.Graywulf.IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.Jobs\Jhu.Graywulf.Jobs.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Jobs\Jhu.Graywulf.Jobs.csproj">
       <Project>{2BD2D467-D003-468D-9B97-83DDC6F2ED78}</Project>
       <Name>Jhu.Graywulf.Jobs</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.ParserLib\Jhu.Graywulf.ParserLib.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.ParserLib\Jhu.Graywulf.ParserLib.csproj">
       <Project>{4039B7D0-F8E5-49D8-A770-133DBED2EA75}</Project>
       <Name>Jhu.Graywulf.ParserLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.Registry.Enum\Jhu.Graywulf.Registry.Enum.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry.Enum\Jhu.Graywulf.Registry.Enum.csproj">
       <Project>{71599792-21CC-4E63-AFB5-2AFBDB3DF418}</Project>
       <Name>Jhu.Graywulf.Registry.Enum</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.Registry\Jhu.Graywulf.Registry.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry\Jhu.Graywulf.Registry.csproj">
       <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
       <Name>Jhu.Graywulf.Registry</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
       <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
       <Name>Jhu.Graywulf.RemoteService</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
       <Project>{60920E0C-F7A1-47CE-85F6-7E6E3085FCF1}</Project>
       <Name>Jhu.Graywulf.Schema</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.SqlParser\Jhu.Graywulf.SqlParser.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.SqlParser\Jhu.Graywulf.SqlParser.csproj">
       <Project>{4DFC8F4C-C2FB-4AFB-B838-45A56F19FEAF}</Project>
       <Name>Jhu.Graywulf.SqlParser</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
       <Project>{E9D182CF-746E-4E40-B01C-74A32FB70749}</Project>
       <Name>Jhu.Graywulf.Web</Name>
     </ProjectReference>
@@ -702,12 +635,18 @@
     <Content Include="Schema\Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="UI.master" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="App_Masters\Basic.master" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Themes\Basic\Basic.skin" />
-    <Content Include="UI.master" />
-    <None Include="App_Themes\Basic\Icons\Thumbs.db" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="CodeMirror\mode\coffeescript\LICENSE" />
     <None Include="CodeMirror\mode\livescript\LICENSE" />
     <None Include="CodeMirror\mode\livescript\livescript.ls" />
@@ -717,6 +656,11 @@
     <None Include="CodeMirror\mode\r\LICENSE" />
     <None Include="CodeMirror\mode\sieve\LICENSE" />
     <None Include="CodeMirror\mode\xquery\LICENSE" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CodeMirror\lib\util\" />
+    <Folder Include="CodeMirror\mode\mysql\" />
+    <Folder Include="CodeMirror\mode\plsql\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
@@ -739,7 +683,11 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)..\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Web.UI</PreBuildEvent>
+    <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Web.UI
+xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Masters $(ProjectDir)App_Masters /I /E /Y
+xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Themes $(ProjectDir)App_Themes /I /E /Y
+xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\CodeMirror $(ProjectDir)CodeMirror /I /E /Y
+xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\SyntaxHighlighter $(ProjectDir)SyntaxHighlighter /I /E /Y</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
