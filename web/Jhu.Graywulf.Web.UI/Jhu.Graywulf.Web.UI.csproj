@@ -563,7 +563,7 @@
     <Content Include="Web.original.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\SkyQuery\Src\Jhu.SkyQuery\Jhu.SkyQuery.csproj">
+    <ProjectReference Include="..\..\..\skyquery\dll\Jhu.SkyQuery\Jhu.SkyQuery.csproj">
       <Project>{2887F181-7F61-4DF5-BD89-2800503D5F84}</Project>
       <Name>Jhu.SkyQuery</Name>
     </ProjectReference>
