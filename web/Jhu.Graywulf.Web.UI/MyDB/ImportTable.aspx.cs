@@ -44,16 +44,16 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             tableName = newname;
         }
 
-        private DestinationTableParameters CreateDestination(string filename)
+        private DestinationTableParameters CreateDestination(string schemaName, string tableName)
         {
-            GetUniqueTableName("dbo", ref filename);
+            GetUniqueTableName(schemaName, ref tableName);
 
             var destination = new DestinationTableParameters();
             destination.Table = new Graywulf.Schema.Table()
             {
                 Dataset = MyDBDatabaseInstance.GetDataset(),
-                SchemaName = "dbo",
-                TableName = filename
+                SchemaName = schemaName,
+                TableName = tableName
             };
             destination.Operation = DestinationTableOperation.Create;
 
@@ -76,14 +76,24 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
             source.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read, compression);
 
-            var destination = CreateDestination(filename.Replace(".", "_"));
+            var destination = CreateDestination("dbo", filename.Replace(".", "_"));
 
             return new DataFileImporter(source, destination);
         }
 
         private DataFileImporter CreateImporterAdvanced()
         {
-            throw new NotImplementedException();
+            var format = FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
+            var source = FileFormatFactory.CreateFile(format);
+            
+            CompressionMethod compression;
+            Enum.TryParse<CompressionMethod>(CompressionMethod.SelectedValue, out compression);
+
+            source.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read, compression);
+
+            var destination = CreateDestination(SchemaName.Text, TableName.Text);
+
+            return new DataFileImporter(source, destination);
         }
 
         protected void RefreshForm()
@@ -93,11 +103,13 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             {
                 ColumnNamesInFirstLineRow.Visible = true;
                 GenerateIdentityRow.Visible = true;
+                CompressedRow.Visible = true;
             }
             else
             {
                 ColumnNamesInFirstLineRow.Visible = false;
                 GenerateIdentityRow.Visible = false;
+                CompressedRow.Visible = false;
             }
 
             if (DetailsTable.Visible)

@@ -129,8 +129,15 @@ namespace Jhu.Graywulf.Schema
         /// </remarks>
         private void OnDatasetLoading(object sender, LazyItemLoadingEventArgs<string, DatasetBase> e)
         {
-            e.Value = LoadDataset(e.Key);
-            e.IsFound = true;
+            try
+            {
+                e.Value = LoadDataset(e.Key);
+                e.IsFound = true;
+            }
+            catch (Exception)
+            {
+                e.IsFound = false;
+            }
         }
 
         protected virtual DatasetBase LoadDataset(string datasetName)

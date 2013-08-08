@@ -18,7 +18,9 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             MyDBDataset.Tables.LoadAll();
 
-            TableList.DataSource = MyDBDataset.Tables.Values;
+            // TODO: change this to support arbitrary sorting
+            var tables = MyDBDataset.Tables.Values.OrderBy(t => t.ObjectKey).ToArray();
+            TableList.DataSource = tables;
         }
 
         protected void TableSelected_ServerValidate(object source, ServerValidateEventArgs args)

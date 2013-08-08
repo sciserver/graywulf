@@ -76,6 +76,6 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 
         public abstract string GenerateTableSelectStarQuery(string linkedServerName, TableReference table, int top);
 
-        public abstract string GenerateMostRestrictiveTableQuery(TableReference table, int top);
+        public abstract string GenerateMostRestrictiveTableQuery(TableReference table, bool includePrimaryKey, int top);
     }
 }

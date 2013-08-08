@@ -121,13 +121,13 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::System.Web.UI.HtmlControls.HtmlTableRow CompressedRow;
         
         /// <summary>
-        /// Compressed control.
+        /// CompressionMethod control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox Compressed;
+        protected global::System.Web.UI.WebControls.DropDownList CompressionMethod;
         
         /// <summary>
         /// ColumnNamesInFirstLineRow control.

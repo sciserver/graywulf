@@ -243,6 +243,10 @@ namespace Jhu.Graywulf.SqlParser
                         {
                             ds = schemaManager.Datasets[ntr.DatasetName];
                         }
+                        catch (KeyNotFoundException ex)
+                        {
+                            throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, ntr.DatasetName, ntr.Node);
+                        }
                         catch (SchemaException ex)
                         {
                             throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, ntr.DatasetName, ntr.Node);

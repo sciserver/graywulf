@@ -181,7 +181,7 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             return String.Format(sql, topstr, tablename);
         }
 
-        public override string GenerateMostRestrictiveTableQuery(TableReference table, int top)
+        public override string GenerateMostRestrictiveTableQuery(TableReference table, bool includePrimaryKey, int top)
         {
             // Normalize search conditions and extract where clause
             var cn = new SearchConditionNormalizer();
@@ -199,15 +199,46 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             }
 
             // Now write the referenced columns
+            var referencedcolumns = new HashSet<string>(Jhu.Graywulf.Schema.SqlServer.SqlServerSchemaManager.Comparer);
+            
             int q = 0;
+            if (includePrimaryKey)
+            {
+                var t = table.DatabaseObject as Jhu.Graywulf.Schema.Table;
+                foreach (var cr in t.PrimaryKey.Columns.Values)
+                {
+                    var columnname = String.Format("[{0}].[{1}]", table.Alias, cr.ColumnName);
+
+                    if (!referencedcolumns.Contains(columnname))
+                    {
+                        if (q != 0)
+                        {
+                            sql.Write(", ");
+                        }
+                        sql.Write(columnname);
+                        q++;
+
+                        referencedcolumns.Add(columnname);
+                    }
+                }
+            }
+
+
             foreach (var cr in table.ColumnReferences.Where(c => c.IsReferenced))
             {
-                if (q != 0)
+                var columnname = cr.GetFullyResolvedName();
+
+                if (!referencedcolumns.Contains(columnname))
                 {
-                    sql.Write(", ");
+                    if (q != 0)
+                    {
+                        sql.Write(", ");
+                    }
+                    sql.Write(columnname);
+                    q++;
+
+                    referencedcolumns.Add(columnname);
                 }
-                sql.Write(cr.GetFullyResolvedName());
-                q++;
             }
 
             // From cluse
@@ -246,9 +277,13 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
                 cg.Execute(where, wh);
             };
 
+            //*** TODO: move into resource
             string sql = String.Format(@"
+IF OBJECT_ID('tempdb..##keys_{4}') IS NOT NULL
+DROP TABLE ##keys_{4}
+
 SELECT CAST({2} AS float) AS __key
-INTO ##keys
+INTO ##keys_{4}
 FROM {0} {1}
 {3};
 
@@ -260,18 +295,19 @@ IF (@step = 0) SET @step = NULL;
 WITH q AS
 (
 	SELECT __key, ROW_NUMBER() OVER (ORDER BY __key) __rn
-	FROM ##keys
+	FROM ##keys_{4}
 )
 SELECT __key, __rn
 FROM q
 WHERE __rn % @step = 1 OR __rn = @count;
 
-DROP TABLE ##keys;
+DROP TABLE ##keys_{4};
 ",
          GetResolvedTableName(table),      // TODO: Does it return database name???
          table.Alias == null ? "" : String.Format(" AS [{0}] ", table.Alias),
          table.Statistics.KeyColumn,
-         where.ToString());
+         where.ToString(),
+         Guid.NewGuid().ToString().Replace('-', '_'));
 
             return sql;
         }

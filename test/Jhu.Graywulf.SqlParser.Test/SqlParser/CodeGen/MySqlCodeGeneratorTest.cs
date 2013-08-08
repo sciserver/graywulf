@@ -105,7 +105,7 @@ FROM `Book` `b1`, `Book` `b2`", res);
 
         }
 
-        private string[] GenerateMostRestrictiveTableQueryTestHelper(string sql, int top)
+        private string[] GenerateMostRestrictiveTableQueryTestHelper(string sql, bool includePrimaryKey, int top)
         {
             var cg = new MySqlCodeGenerator();
             cg.ResolveNames = true;
@@ -119,7 +119,7 @@ FROM `Book` `b1`, `Book` `b2`", res);
                 // TODO: use qs.SourceTableReferences
                 foreach (var tr in qs.EnumerateSourceTableReferences(true))
                 {
-                    res.Add(cg.GenerateMostRestrictiveTableQuery(tr, top));
+                    res.Add(cg.GenerateMostRestrictiveTableQuery(tr, includePrimaryKey, top));
                 }
             }
 
@@ -134,7 +134,7 @@ FROM `Book` `b1`, `Book` `b2`", res);
 FROM Book b
 WHERE b.ID = 1";
 
-            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, 0);
+            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
 
             Assert.AreEqual(1, res.Length);
             Assert.AreEqual("SELECT `ID`, `Title` FROM `Book` `b` WHERE `b`.`ID` = 1", res[0]);
@@ -148,7 +148,7 @@ WHERE b.ID = 1";
 FROM Book a CROSS JOIN Book b
 WHERE b.ID = 1 AND a.ID IN (3, 4)";
 
-            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, 0);
+            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
 
             Assert.AreEqual(2, res.Length);
             Assert.AreEqual("SELECT `ID`, `Title` FROM `Book` `a` WHERE `a`.`ID` IN (3, 4)", res[0]);
@@ -167,7 +167,7 @@ SELECT Title, ID + 1
 FROM Book
 WHERE ID = 1";
 
-            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, 0);
+            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
 
             Assert.AreEqual(2, res.Length);
             Assert.AreEqual("SELECT `ID`, `Title` FROM `Book` WHERE `Book`.`ID` IN (2, 3)", res[0]);

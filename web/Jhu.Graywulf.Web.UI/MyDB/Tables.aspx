@@ -28,7 +28,7 @@
                 OnCommand="Button_Command" ValidationGroup="Table" />
         </p>
     </div>
-    <div class="TabFrame dock-fill">
+    <div class="TabFrame dock-fill dock-scroll">
         <jgwc:MultiSelectGridView runat="server" ID="TableList" AllowPaging="true" PageSize="25" AutoGenerateColumns="false"
             SelectionMode="Multiple" DataKeyNames="ObjectKey">
             <Columns>

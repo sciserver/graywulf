@@ -58,8 +58,10 @@
                             &nbsp;
                         </td>
                         <td class="FormField">
-                            <asp:CheckBox runat="server" ID="Compressed" Text="File is compressed using gzip."
-                                Checked="false" />
+                        <asp:DropDownList runat="server" ID="CompressionMethod">
+                            <asp:ListItem Value="None">No compression</asp:ListItem>
+                            <asp:ListItem Value="GZip">GZip</asp:ListItem>
+                        </asp:DropDownList>
                         </td>
                     </tr>
                     <tr runat="server" id="ColumnNamesInFirstLineRow" visible="false">

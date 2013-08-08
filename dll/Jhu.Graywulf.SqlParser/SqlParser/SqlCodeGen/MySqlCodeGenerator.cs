@@ -147,7 +147,7 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             return String.Format(sql, topstr, table.DatabaseObjectName);
         }
 
-        public override string GenerateMostRestrictiveTableQuery(TableReference table, int top)
+        public override string GenerateMostRestrictiveTableQuery(TableReference table, bool includePrimaryKey, int top)
         {
             // Normalize search conditions and extract where clause
             var cn = new SearchConditionNormalizer();

@@ -147,7 +147,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Cannot determine temp database"); // TODO ***
+                    throw new Exception("Cannot determine temp database", ex); // TODO ***
                 }
             }
             else if (AssignedServerInstanceReference.IsEmpty)
@@ -252,9 +252,6 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <returns></returns>
         public void FindRemoteTableReferences()
         {
-            // *** TODO: delete, not needed
-            //RemoteTableReferences.Clear();
-
             if (ExecutionMode == ExecutionMode.Graywulf /*&& query.CacheRemoteTables*/)
             {
                 SchemaManager sc = GetSchemaManager(false);
@@ -298,7 +295,7 @@ namespace Jhu.Graywulf.Jobs.Query
             cnr.NormalizeQuerySpecification(qs);
 
             var cg = SqlCodeGeneratorFactory.CreateCodeGenerator(ds);
-            source.Query = cg.GenerateMostRestrictiveTableQuery(table, 0);
+            source.Query = cg.GenerateMostRestrictiveTableQuery(table, true, 0);
 
             return source;
         }
@@ -333,6 +330,27 @@ namespace Jhu.Graywulf.Jobs.Query
             bcp.Execute();
 
             UnregisterCancelable(guid);
+        }
+
+        /// <summary>
+        /// Checks if table is a remote table cached locally and if so,
+        /// substitutes corresponding temp table name
+        /// </summary>
+        /// <param name="table"></param>
+        /// <returns></returns>
+        public string SubstituteRemoteTableName(TableReference table)
+        {
+            if (RemoteTableReferences.ContainsKey(table.UniqueName))
+            {
+                return String.Format("[{0}].[{1}].[{2}]",
+                    GetTemporaryDatabaseConnectionString().InitialCatalog,
+                    Query.TemporarySchemaName,
+                    TemporaryTables[table.UniqueName]);
+            }
+            else
+            {
+                return table.GetFullyResolvedName();
+            }
         }
 
         public virtual DatasetBase GetDestinationTableSchemaSourceDataset()
