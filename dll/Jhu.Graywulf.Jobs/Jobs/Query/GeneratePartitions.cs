@@ -48,16 +48,21 @@ namespace Jhu.Graywulf.Jobs.Query
                             // Try to find a server that contains all required datasets. This is true right now for
                             // SkyQuery where all databases are mirrored but will have to be updated later
 
-                            // Collect required datasets but
-                            var dss = query.FindRequiredDatasets().Values;
+                            // Collect all datasets that are required to answer the query
+                            var dss = query.FindRequiredDatasets();
 
-                            var reqds = (from ds in dss
+                            // Datasets that are mirrored and can be on any server
+                            var reqds = (from ds in dss.Values
                                          where !ds.IsSpecificInstanceRequired
                                          select ds.DatabaseDefinition.Guid).ToArray();
 
-                            var spds = (from ds in dss
+                            // Datasets that are only available at a specific server instance
+                            /*var spds = (from ds in dss.Values
                                         where ds.IsSpecificInstanceRequired && !ds.DatabaseDefinition.IsEmpty
-                                        select ds.DatabaseDefinition.Guid).ToArray();
+                                        select ds.DatabaseDefinition.Guid).ToArray();*/
+                            var spds = (from ds in dss.Values
+                                        where ds.IsSpecificInstanceRequired && !ds.DatabaseInstance.IsEmpty
+                                        select ds.DatabaseInstance.Guid).ToArray();
 
                             
                             var si = new ServerInstance(context);
