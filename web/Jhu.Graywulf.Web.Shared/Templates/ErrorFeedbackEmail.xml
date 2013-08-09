@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<messageTemplate>
+  <subject>[$ShortTitle] user feedback: [$Subject]</subject>
+  <body>User feedback from [$ShortTitle] was received.
+  
+Sender:  [$Name]
+         [$Email]
+Subject: [$Subject]
+
+Error:   [$ErrorMessage]
+JobGuid: [$JobGUID]
+EventID: [$EventID]
+
+Comments:
+
+[$Comments]
+
+
+    -------------------------------------
+    Powered by JHU Graywulf
+    (c) 2008-2013 The Johns Hopkins University
+    Department of Physics &amp; Astronomy
+
+For help, please e-mail to help@pha.jhu.edu</body>
+</messageTemplate>

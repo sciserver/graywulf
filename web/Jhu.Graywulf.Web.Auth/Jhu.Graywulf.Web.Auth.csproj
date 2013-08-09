@@ -52,35 +52,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Activate.aspx" />
-    <Content Include="App_Themes\Basic\Css\docs.css" />
-    <Content Include="App_Themes\Basic\Css\fonts.css" />
-    <Content Include="App_Themes\Basic\Css\forms.css" />
-    <Content Include="App_Themes\Basic\Css\headline.css" />
-    <Content Include="App_Themes\Basic\Css\layout.css" />
-    <Content Include="App_Themes\Basic\Css\lists.css" />
-    <Content Include="App_Themes\Basic\Css\menu.css" />
-    <Content Include="App_Themes\Basic\Css\tabs.css" />
-    <Content Include="App_Themes\Basic\Css\toolbar.css" />
-    <Content Include="App_Themes\Basic\Generic.skin" />
-    <Content Include="App_Themes\Basic\Icons\activatesuccess.png" />
-    <Content Include="App_Themes\Basic\Icons\activateuser.png" />
-    <Content Include="App_Themes\Basic\Icons\canceljob.png" />
-    <Content Include="App_Themes\Basic\Icons\droptable.png" />
-    <Content Include="App_Themes\Basic\Icons\email.png" />
-    <Content Include="App_Themes\Basic\Icons\emailsent.png" />
-    <Content Include="App_Themes\Basic\Icons\error.png" />
-    <Content Include="App_Themes\Basic\Icons\exporttable.png" />
-    <Content Include="App_Themes\Basic\Icons\importtable.png" />
-    <Content Include="App_Themes\Basic\Icons\job.png" />
-    <Content Include="App_Themes\Basic\Icons\mydb.png" />
-    <Content Include="App_Themes\Basic\Icons\renametable.png" />
-    <Content Include="App_Themes\Basic\Icons\schemabrowser.png" />
-    <Content Include="App_Themes\Basic\Icons\signin.png" />
-    <Content Include="App_Themes\Basic\Icons\signout.png" />
-    <Content Include="App_Themes\Basic\Icons\user.png" />
-    <Content Include="App_Themes\Basic\Icons\userstatus.png" />
-    <Content Include="App_Themes\Basic\Icons\welcome.png" />
-    <Content Include="App_Themes\Basic\Specific.skin" />
     <Content Include="Controls\Footer.ascx" />
     <Content Include="Controls\Menu.ascx" />
     <Content Include="Global.asax" />
@@ -88,8 +59,6 @@
     <Content Include="RequestReset.aspx" />
     <Content Include="SignIn.aspx" />
     <Content Include="SignOut.aspx" />
-    <Content Include="Templates\ActivationEmail.xml" />
-    <Content Include="Templates\RequestResetEmail.xml" />
     <Content Include="User.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -100,13 +69,6 @@
     </Compile>
     <Compile Include="Activate.aspx.designer.cs">
       <DependentUpon>Activate.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="App_Masters\Basic.master.cs">
-      <DependentUpon>Basic.master</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="App_Masters\Basic.master.designer.cs">
-      <DependentUpon>Basic.master</DependentUpon>
     </Compile>
     <Compile Include="Controls\Footer.ascx.cs">
       <DependentUpon>Footer.ascx</DependentUpon>
@@ -189,13 +151,6 @@
   <ItemGroup>
     <Content Include="Auth.master" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_Masters\Basic.master" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_Themes\Basic\Basic.skin" />
-    <None Include="App_Themes\Basic\Icons\Thumbs.db" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <ProjectExtensions>
@@ -220,6 +175,7 @@
     <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Web.Auth
 xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Masters $(ProjectDir)App_Masters /I /E /Y
 xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Themes $(ProjectDir)App_Themes /I /E /Y
+xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\Templates $(ProjectDir)Templates /I /E /Y
 </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

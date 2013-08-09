@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<messageTemplate>
+  <subject>[$Domain.ShortTitle] password reset request</subject>
+  <body>Dear [$FirstName] [$LastName],
+
+Your [$Domain.ShortTitle] user account information is below.
+
+User name: [@Name]
+
+To reset your password, please follow the link below.
+
+[$BaseUrl]ChangePassword.aspx?code=[$ActivationCode]
+
+
+     Sincerely,
+
+          The [$Domain.ShortTitle] Team
+          [$Email]
+
+
+
+-------------------------------------
+Powered by JHU Graywulf
+(c) 2008-2012 The Johns Hopkins University
+Department of Physics &amp; Astronomy
+
+For help, please e-mail to help@pha.jhu.edu</body>
+</messageTemplate>
