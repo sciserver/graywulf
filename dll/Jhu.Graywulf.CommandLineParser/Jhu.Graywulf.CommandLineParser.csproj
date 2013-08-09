@@ -42,7 +42,11 @@
   <ItemGroup>
     <Compile Include="CommandLineParser\ArgumentParser.cs" />
     <Compile Include="CommandLineParser\ArgumentParserException.cs" />
-    <Compile Include="CommandLineParser\ExceptionMessages.Designer.cs" />
+    <Compile Include="CommandLineParser\ExceptionMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+    </Compile>
     <Compile Include="CommandLineParser\OptionAttribute.cs" />
     <Compile Include="CommandLineParser\ParameterAttribute.cs" />
     <Compile Include="CommandLineParser\PartialStringComparer.cs" />
@@ -50,7 +54,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CommandLineParser\ExceptionMessages.resx" />
+    <EmbeddedResource Include="CommandLineParser\ExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

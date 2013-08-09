@@ -92,7 +92,14 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                 fc.Overwrite = true;
 
                 RegisterCancelable(workflowInstanceGuid, activityInstanceId, fc);
+
+                var start = DateTime.Now;
+                Console.WriteLine("copying {0}", Path.GetFileName(sourceFilename));
+
                 fc.Execute();
+
+                Console.WriteLine("copied {0} in {1}", Path.GetFileName(sourceFilename), (start - DateTime.Now).TotalSeconds);
+
                 UnregisterCancelable(workflowInstanceGuid, activityInstanceId, fc);
 
             }

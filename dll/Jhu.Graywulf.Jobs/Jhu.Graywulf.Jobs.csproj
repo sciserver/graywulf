@@ -61,7 +61,11 @@
     <Compile Include="Jobs\JobFactoryBase.cs" />
     <Compile Include="Jobs\MirrorDatabase\AttachDatabase.cs" />
     <Compile Include="Jobs\MirrorDatabase\DetachDatabase.cs" />
-    <Compile Include="Jobs\MirrorDatabase\ExceptionMessages.Designer.cs" />
+    <Compile Include="Jobs\MirrorDatabase\ExceptionMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+    </Compile>
     <Compile Include="Jobs\MirrorDatabase\FindDatabaseInstanceFiles.cs" />
     <Compile Include="Jobs\MirrorDatabase\FindSourcesAndDestinations.cs" />
     <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseFile.cs" />
@@ -96,7 +100,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Jobs\MirrorDatabase\ExceptionMessages.resx" />
+    <EmbeddedResource Include="Jobs\MirrorDatabase\ExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <XamlAppdef Include="Jobs\MirrorDatabase\MirrorDatabaseJob.xaml">
