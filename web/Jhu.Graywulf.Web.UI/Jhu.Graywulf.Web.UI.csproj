@@ -51,6 +51,20 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Masters\Basic.master.cs">
+      <DependentUpon>Basic.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="App_Masters\Basic.master.designer.cs">
+      <DependentUpon>Basic.master</DependentUpon>
+    </Compile>
+    <Compile Include="Check.aspx.cs">
+      <DependentUpon>Check.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Check.aspx.designer.cs">
+      <DependentUpon>Check.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Query.cs" />
     <Compile Include="UI.master.cs">
       <DependentUpon>UI.master</DependentUpon>
@@ -262,6 +276,37 @@
     <Compile Include="Util\QueryEditorUtil.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Themes\Basic\Css\codemirror.css" />
+    <Content Include="App_Themes\Basic\Css\docs.css" />
+    <Content Include="App_Themes\Basic\Css\fonts.css" />
+    <Content Include="App_Themes\Basic\Css\forms.css" />
+    <Content Include="App_Themes\Basic\Css\headline.css" />
+    <Content Include="App_Themes\Basic\Css\layout.css" />
+    <Content Include="App_Themes\Basic\Css\lists.css" />
+    <Content Include="App_Themes\Basic\Css\menu.css" />
+    <Content Include="App_Themes\Basic\Css\syntaxhighlighter.css" />
+    <Content Include="App_Themes\Basic\Css\tabs.css" />
+    <Content Include="App_Themes\Basic\Css\toolbar.css" />
+    <Content Include="App_Themes\Basic\Icons\activatesuccess.png" />
+    <Content Include="App_Themes\Basic\Icons\activateuser.png" />
+    <Content Include="App_Themes\Basic\Icons\canceljob.png" />
+    <Content Include="App_Themes\Basic\Icons\droptable.png" />
+    <Content Include="App_Themes\Basic\Icons\email.png" />
+    <Content Include="App_Themes\Basic\Icons\emailsent.png" />
+    <Content Include="App_Themes\Basic\Icons\error.png" />
+    <Content Include="App_Themes\Basic\Icons\exporttable.png" />
+    <Content Include="App_Themes\Basic\Icons\importtable.png" />
+    <Content Include="App_Themes\Basic\Icons\job.png" />
+    <Content Include="App_Themes\Basic\Icons\mydb.png" />
+    <Content Include="App_Themes\Basic\Icons\renametable.png" />
+    <Content Include="App_Themes\Basic\Icons\resetpassword.png" />
+    <Content Include="App_Themes\Basic\Icons\schemabrowser.png" />
+    <Content Include="App_Themes\Basic\Icons\signin.png" />
+    <Content Include="App_Themes\Basic\Icons\signout.png" />
+    <Content Include="App_Themes\Basic\Icons\user.png" />
+    <Content Include="App_Themes\Basic\Icons\userstatus.png" />
+    <Content Include="App_Themes\Basic\Icons\welcome.png" />
+    <Content Include="Check.aspx" />
     <Content Include="Controls\Footer.ascx" />
     <Content Include="Docs\Default.aspx" />
     <Content Include="Jobs\CancelJob.aspx" />
@@ -298,6 +343,10 @@
       <Project>{2887F181-7F61-4DF5-BD89-2800503D5F84}</Project>
       <Name>Jhu.SkyQuery</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
+      <Project>{57392DA3-E280-48EE-80C8-64E09FD8AFB5}</Project>
+      <Name>Jhu.Graywulf.Activities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
@@ -317,6 +366,10 @@
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Jobs\Jhu.Graywulf.Jobs.csproj">
       <Project>{2BD2D467-D003-468D-9B97-83DDC6F2ED78}</Project>
       <Name>Jhu.Graywulf.Jobs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Logging\Jhu.Graywulf.Logging.csproj">
+      <Project>{FD98FB58-A3E5-4D32-B6D6-3E20609C4D09}</Project>
+      <Name>Jhu.Graywulf.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.ParserLib\Jhu.Graywulf.ParserLib.csproj">
       <Project>{4039B7D0-F8E5-49D8-A770-133DBED2EA75}</Project>
@@ -371,7 +424,10 @@
   <ItemGroup>
     <Content Include="Web.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="App_Masters\Basic.master" />
+    <Content Include="App_Themes\Basic\Basic.skin" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <ProjectExtensions>

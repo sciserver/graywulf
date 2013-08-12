@@ -51,6 +51,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Themes\Basic\Css\codemirror.css" />
     <Content Include="App_Themes\Basic\Css\docs.css" />
     <Content Include="App_Themes\Basic\Css\fonts.css" />
     <Content Include="App_Themes\Basic\Css\forms.css" />
@@ -58,6 +59,7 @@
     <Content Include="App_Themes\Basic\Css\layout.css" />
     <Content Include="App_Themes\Basic\Css\lists.css" />
     <Content Include="App_Themes\Basic\Css\menu.css" />
+    <Content Include="App_Themes\Basic\Css\syntaxhighlighter.css" />
     <Content Include="App_Themes\Basic\Css\tabs.css" />
     <Content Include="App_Themes\Basic\Css\toolbar.css" />
     <Content Include="App_Themes\Basic\Icons\canceljob.png" />
@@ -339,8 +341,10 @@
     <Content Include="SyntaxHighlighter\styles\shThemeMDUltra.css" />
     <Content Include="SyntaxHighlighter\styles\shThemeMidnight.css" />
     <Content Include="SyntaxHighlighter\styles\shThemeRDark.css" />
+    <Content Include="Templates\ActivationEmail.xml" />
     <Content Include="Templates\ErrorFeedbackEmail.xml" />
     <Content Include="Templates\FeedbackEmail.xml" />
+    <Content Include="Templates\RequestResetEmail.xml" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

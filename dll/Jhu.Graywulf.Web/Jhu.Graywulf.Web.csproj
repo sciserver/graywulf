@@ -51,6 +51,16 @@
       <DependentUpon>Captcha.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Web\Check\CheckPageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\Check\CheckRoutineBase.cs" />
+    <Compile Include="Web\Check\CheckRoutineExecutor.cs" />
+    <Compile Include="Web\Check\DatabaseCheck.cs" />
+    <Compile Include="Web\Check\EmailCheck.cs" />
+    <Compile Include="Web\Check\EntityCheck.cs" />
+    <Compile Include="Web\Check\AssemblyCheck.cs" />
+    <Compile Include="Web\Check\UrlCheck.cs" />
     <Compile Include="Web\Constants.cs" />
     <Compile Include="Web\Controls\BoundField.cs" />
     <Compile Include="Web\Controls\CaptchaImage.cs" />

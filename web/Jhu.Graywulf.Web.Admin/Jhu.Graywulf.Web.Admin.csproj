@@ -51,6 +51,36 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Themes\Basic\Css\codemirror.css" />
+    <Content Include="App_Themes\Basic\Css\docs.css" />
+    <Content Include="App_Themes\Basic\Css\fonts.css" />
+    <Content Include="App_Themes\Basic\Css\forms.css" />
+    <Content Include="App_Themes\Basic\Css\headline.css" />
+    <Content Include="App_Themes\Basic\Css\layout.css" />
+    <Content Include="App_Themes\Basic\Css\lists.css" />
+    <Content Include="App_Themes\Basic\Css\menu.css" />
+    <Content Include="App_Themes\Basic\Css\syntaxhighlighter.css" />
+    <Content Include="App_Themes\Basic\Css\tabs.css" />
+    <Content Include="App_Themes\Basic\Css\toolbar.css" />
+    <Content Include="App_Themes\Basic\Icons\activatesuccess.png" />
+    <Content Include="App_Themes\Basic\Icons\activateuser.png" />
+    <Content Include="App_Themes\Basic\Icons\canceljob.png" />
+    <Content Include="App_Themes\Basic\Icons\droptable.png" />
+    <Content Include="App_Themes\Basic\Icons\email.png" />
+    <Content Include="App_Themes\Basic\Icons\emailsent.png" />
+    <Content Include="App_Themes\Basic\Icons\error.png" />
+    <Content Include="App_Themes\Basic\Icons\exporttable.png" />
+    <Content Include="App_Themes\Basic\Icons\importtable.png" />
+    <Content Include="App_Themes\Basic\Icons\job.png" />
+    <Content Include="App_Themes\Basic\Icons\mydb.png" />
+    <Content Include="App_Themes\Basic\Icons\renametable.png" />
+    <Content Include="App_Themes\Basic\Icons\resetpassword.png" />
+    <Content Include="App_Themes\Basic\Icons\schemabrowser.png" />
+    <Content Include="App_Themes\Basic\Icons\signin.png" />
+    <Content Include="App_Themes\Basic\Icons\signout.png" />
+    <Content Include="App_Themes\Basic\Icons\user.png" />
+    <Content Include="App_Themes\Basic\Icons\userstatus.png" />
+    <Content Include="App_Themes\Basic\Icons\welcome.png" />
     <Content Include="Cluster\ClusterDetails.aspx" />
     <Content Include="Cluster\ClusterForm.aspx" />
     <Content Include="Cluster\Default.aspx" />
@@ -243,6 +273,12 @@
       <DependentUpon>Messages.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="App_Masters\Basic.master.cs">
+      <DependentUpon>Basic.master</DependentUpon>
+    </Compile>
+    <Compile Include="App_Masters\Basic.master.designer.cs">
+      <DependentUpon>Basic.master</DependentUpon>
     </Compile>
     <Compile Include="Cluster\ClusterDetails.aspx.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
@@ -1012,7 +1048,10 @@
   <ItemGroup>
     <Content Include="Admin.master" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="App_Masters\Basic.master" />
+    <Content Include="App_Themes\Basic\Basic.skin" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <ProjectExtensions>
