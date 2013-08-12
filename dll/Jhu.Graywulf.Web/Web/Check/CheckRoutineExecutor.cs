@@ -43,10 +43,11 @@ namespace Jhu.Graywulf.Web.Check
 
             page.Response.Output.WriteLine("<pre>");
 
-            page.Response.Output.WriteLine("Executing {0} tests under the account {1}\\{2}...",
+            page.Response.Output.WriteLine("Executing {0} tests under the account {1}\\{2} on {3}",
                 routines.Count,
                 Environment.UserDomainName,
-                Environment.UserName);
+                Environment.UserName,
+                Environment.MachineName);
 
             int success = 0;
             int failed = 0;

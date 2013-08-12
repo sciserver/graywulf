@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Web.Check
             page.Response.Output.WriteLine("Delivery method: {0}", smtpclient.DeliveryMethod);
             page.Response.Output.WriteLine("Server: {0}:{1}", smtpclient.Host, smtpclient.Port);
 
-            var subject = String.Format("{0} test message", page.Domain.ShortTitle);
+            var subject = String.Format("{0} test message from {1}", page.Domain.ShortTitle, Environment.MachineName);
             var body = "Test message, please ignore.";
 
             var msg = EmailTemplateUtility.CreateMessage(
