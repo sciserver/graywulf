@@ -73,6 +73,8 @@ namespace Jhu.Graywulf.Registry
             Context.UserGuid = user.Guid;
             Context.UserName = user.Name;
 
+            Context.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.UserFactory.LoginUser", user.Guid));
+
             return user;
         }
 
