@@ -30,6 +30,10 @@ td.MenuButton, td.MenuSpan
     background-color: #D0D0D0;
     color: #000000;
 }
+td.MenuSpan
+{
+    width: auto;
+}
 td.MenuButtonHover
 {
     background-color: #800000;

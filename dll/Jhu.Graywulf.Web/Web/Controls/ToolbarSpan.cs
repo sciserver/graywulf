@@ -12,7 +12,6 @@ namespace Jhu.Graywulf.Web.Controls
         protected override void Render(HtmlTextWriter writer)
         {
             ControlStyle.AddAttributesToRender(writer);
-            writer.AddStyleAttribute("width", "auto");
             writer.RenderBeginTag("td");
             writer.RenderEndTag();
         }
