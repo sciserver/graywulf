@@ -67,7 +67,9 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
         protected override void OnSaveFormCompleted(bool newentity)
         {
-            if (newentity)
+            var svguid = new Guid(MyDbServerVersion.SelectedValue);
+            
+            if (newentity && svguid != Guid.Empty)
             {
                 var sv = new ServerVersion(RegistryContext);
                 sv.Guid = new Guid(MyDbServerVersion.SelectedValue);

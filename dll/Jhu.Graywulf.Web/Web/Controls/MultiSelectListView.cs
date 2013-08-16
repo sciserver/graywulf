@@ -98,7 +98,7 @@ namespace Jhu.Graywulf.Web.Controls
                 foreach (ListViewItem item in Items)
                 {
                     var key = GetKey(DataKeys[item.DisplayIndex]);
-                    var cb = (CheckBox)item.FindControl(SelectionCheckboxID);
+                    var cb = (ICheckBoxControl)item.FindControl(SelectionCheckboxID);
 
                     if (cb != null)
                     {
@@ -146,18 +146,26 @@ namespace Jhu.Graywulf.Web.Controls
                 var key = GetKey(DataKeys[item.DisplayIndex]);
                 var selected = selectedDataKeys.Contains(key);
 
-                var cb = item.FindControl(SelectionCheckboxID) as CheckBox;
+                var cb = item.FindControl(SelectionCheckboxID) as ICheckBoxControl;
 
                 if (cb != null)
                 {
                     cb.Checked = selected;
                 }
 
-                var se = item.FindControl(SelectionElementID) as HtmlControl;
+                var se = item.FindControl(SelectionElementID) as IAttributeAccessor;
                 
                 if (se != null && selected)
                 {
-                    se.Attributes["class"] = CssClassSelected;
+                    var cls = se.GetAttribute("class");
+                    if (cls == null)
+                    {
+                        se.SetAttribute("class", CssClassSelected);
+                    }
+                    else if (cls.IndexOf(CssClassSelected) < 0)
+                    {
+                        se.SetAttribute("class", cls + " " + CssClassSelected);
+                    }
                 }
             }
 

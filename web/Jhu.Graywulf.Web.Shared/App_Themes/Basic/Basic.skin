@@ -13,7 +13,7 @@
 <jgwc:ToolbarButton runat="server" SkinId="Menu" CssClass="MenuButton" CssClassHover="MenuButtonHover" CssClassDisabled="MenuButtonDisabled" />
 <jgwc:ToolbarSpan runat="server" SkinId="Menu" CssClass="MenuSpan" />
 
-<jgwc:TabHeader runat="server" CssClass="Tab" CssClassLeftSpan="TabLeft" CssClassRightSpan="TabSpan" />
+<jgwc:TabHeader runat="server" CssClass="Tab" CssClassLeftSpan="TabLeft" CssClassRightSpan="TabRightSpan" CssClassTopSpan="TabTop" CssClassBottomSpan="TabBottomSpan" />
 <jgwc:MultiViewTabHeader runat="server" CssClass="Tab" CssClassSelected="TabSelected" CssClassHover="TabHover" CssClassDisabled="TabDisabled" CssClassLeftSpan="TabLeft" CssClassRightSpan="TabSpan" />
 <jgwc:Tab runat="server" CssClass="Tab" CssClassDisabled="TabSelected" CssClassHover="TabHover" />
 

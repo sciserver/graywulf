@@ -136,3 +136,9 @@ img.Captcha
 {
     border: 1px solid #000000;
 }
+td.FormList
+{
+    width: 100%;
+    border: 1px solid #C0C0C0;
+    overflow: auto;
+}

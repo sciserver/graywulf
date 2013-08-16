@@ -27,6 +27,12 @@ namespace Jhu.Graywulf.Web.Controls
         #endregion
         #region Properties
 
+        public Orientation Orientation
+        {
+            get { return (Orientation)(ViewState["Orientation"] ?? Orientation.Horizontal); }
+            set { ViewState["Orientation"] = value; }
+        }
+
         [DefaultValue(""), Bindable(true), Themeable(true)]
         public string CssClassDisabled
         {
@@ -60,6 +66,20 @@ namespace Jhu.Graywulf.Web.Controls
         {
             get { return (string)(ViewState["CssClassRightSpan"] ?? String.Empty); }
             set { ViewState["CssClassRightSpan"] = value; }
+        }
+
+        [DefaultValue(""), Bindable(true), Themeable(true)]
+        public string CssClassTopSpan
+        {
+            get { return (string)(ViewState["CssClassTopSpan"] ?? String.Empty); }
+            set { ViewState["CssClassTopSpan"] = value; }
+        }
+
+        [DefaultValue(""), Bindable(true), Themeable(true)]
+        public string CssClassBottomSpan
+        {
+            get { return (string)(ViewState["CssClassBottomSpan"] ?? String.Empty); }
+            set { ViewState["CssClassBottomSpan"] = value; }
         }
 
         public List<Tab> Tabs
@@ -157,22 +177,51 @@ namespace Jhu.Graywulf.Web.Controls
             writer.AddAttribute("class", CssClass);
             writer.RenderBeginTag("table");
 
-            writer.RenderBeginTag("tr");
-
-            writer.AddAttribute("class", CssClassLeftSpan);
-            writer.RenderBeginTag("td");
-            writer.RenderEndTag();
-
-            foreach (var c in Controls.Cast<Control>())
+            if (Orientation == System.Web.UI.WebControls.Orientation.Horizontal)
             {
-                c.RenderControl(writer);
+                writer.RenderBeginTag("tr");
+
+                writer.AddAttribute("class", CssClassLeftSpan);
+                writer.RenderBeginTag("td");
+                writer.RenderEndTag();
+
+                foreach (var c in Controls.Cast<Control>())
+                {
+                    c.RenderControl(writer);
+                }
+
+                writer.AddAttribute("class", CssClassRightSpan);
+                writer.RenderBeginTag("td");
+                writer.RenderEndTag();
+
+                writer.RenderEndTag();
+            }
+            else if (Orientation == System.Web.UI.WebControls.Orientation.Vertical)
+            {
+                writer.RenderBeginTag("tr");
+                writer.AddAttribute("class", CssClassTopSpan);
+                writer.RenderBeginTag("td");
+                writer.RenderEndTag();
+                writer.RenderEndTag();
+
+                foreach (var c in Controls.Cast<Control>())
+                {
+                    writer.RenderBeginTag("tr");
+                    c.RenderControl(writer);
+                    writer.RenderEndTag();
+                }
+
+                writer.RenderBeginTag("tr");
+                writer.AddAttribute("class", CssClassBottomSpan);
+                writer.RenderBeginTag("td");
+                writer.RenderEndTag();
+                writer.RenderEndTag();
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
 
-            writer.AddAttribute("class", CssClassRightSpan);
-            writer.RenderBeginTag("td");
-            writer.RenderEndTag();
-
-            writer.RenderEndTag();
             writer.RenderEndTag();
         }
     }

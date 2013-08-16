@@ -35,13 +35,16 @@ td.ToolbarButton, td.ToolbarButtonHover, td.ToolbarButtonDisabled
     cursor: hand;
 }
 
-input.ToolbarControl, select.ToolbarControl
+input.ToolbarControl, select.ToolbarControl, span.ToolbarControl
 {
     border: 1px solid #000000;
     font-family: Calibri, Arial, Helvetica, sans-serif;
     font-size: 14px;
 }
-
+span.ToolbarControl
+{
+    padding: 1px;
+}
 
 td.ToolbarButton
 {

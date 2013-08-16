@@ -190,19 +190,19 @@ namespace Jhu.Graywulf.Web
 
         protected override void OnPreInit(EventArgs e)
         {
-            EnsureUserIdentified();
-
             base.OnPreInit(e);
+
+            EnsureUserIdentified();
         }
 
         protected override void OnLoad(EventArgs e)
         {
+            base.OnLoad(e);
+
             if (!IsPostBack && Request.UrlReferrer != null)
             {
                 OriginalReferer = Request.UrlReferrer.ToString();
             }
-
-            base.OnLoad(e);
         }
 
         protected override void OnUnload(EventArgs e)

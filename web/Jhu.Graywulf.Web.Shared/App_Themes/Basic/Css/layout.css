@@ -16,9 +16,6 @@ body
 {
     overflow: auto;
 }
-form.Layout
-{
-}
 table.Layout
 {
     margin: 0px;
@@ -26,7 +23,7 @@ table.Layout
     padding: 0px;
     border-collapse: collapse;
 }
-table.Headline, table.Footline
+table.Headline, table.Footline, div.LayoutFootline
 {
     background-color: #333333;
     color: #FFFFFF;
@@ -51,20 +48,21 @@ div.LayoutMenu
 div.LayoutToolbar
 {
 }
-td.Footline
+td.Footline, div.LayoutFootline
 {
-    height: 20px;
-    padding-top: 0px;
+    height: 18px;
+    padding-top: 3px;
+    --padding-bottom: 3px;
     text-align: center;
     font-family: Calibri, Arial, Helvetica, Sans-Serif;
     font-size: 12px;
 }
-td.Footline a
+td.Footline a, div.LayoutFootline a
 {
     color: #FFFFFF;
     text-decoration: none;
 }
-td.Footline a:hover
+td.Footline a:hover, div.LayoutFootline a:hover
 {
     color: #FFFF00;
     text-decoration: underline;

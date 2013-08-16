@@ -1,25 +1,48 @@
-﻿table.Tab
+﻿table.Tab, table.TabVertical
 {
-    width: 100%;
-    height: 26px;
     border-collapse: collapse;
     border: 0px;
     background-color: #FFFFFF;  
 }
 
+table.Tab
+{
+    width: 100%;
+    height: 26px;
+}
+
+table.TabVertical
+{
+    min-width: 120px;
+    width: 120px;
+    height: 100%;
+}
+
 td.Tab, td.TabSelected, td.TabHover
 {
-    width: 100px;
-    min-width: 80px;
     white-space:nowrap;
-    height: 26px;
-    text-align: center;
     font-family: Calibri, Arial, Helvetica, Sans-Serif;
 	font-size: 10pt;
 	font-weight: bold;
 	background-color: #F0F0F0;
 	padding-left: 8px;
 	padding-right: 8px;
+}
+
+table.Tab tr td.Tab, table.Tab tr td.TabSelected, table.Tab tr td.TabHover
+{
+    min-width: 80px;
+    width: 100px;
+    height: 26px;
+    text-align: center;
+}
+
+table.TabVertical tr td.Tab, table.TabVertical tr td.TabSelected, table.TabVertical tr td.TabHover
+{
+    min-width: 120px;
+    width: 120px;
+    height: 26px;
+    text-align: left;
 }
 
 td.Tab, td.TabHover
@@ -35,7 +58,7 @@ td.TabHover
     background-color: #D0D0FF;
 }
 
-td.TabSelected
+table.Tab tr td.TabSelected
 {
     background-color: #FFFFFF;
     border-left: 1px solid #C0C0C0;
@@ -44,22 +67,51 @@ td.TabSelected
     border-bottom: 0px;
 }
 
+table.TabVertical tr td.TabSelected
+{
+    background-color: #FFFFFF;
+    border-left: 1px solid #C0C0C0;
+    border-top: 1px solid #C0C0C0;
+    border-right: 0px;
+    border-bottom: 1px solid #C0C0C0;
+}
+
 td.TabLeft
 {
     width: 4px;
     border-bottom: 1px solid #C0C0C0;
 }
 
-td.TabSpan
+td.TabRightSpan
 {
     width: auto;
     border-bottom: 1px solid #C0C0C0;
+}
+
+td.TabTop
+{
+    height: 4px;
+    border-right: 1px solid #C0C0C0;
+}
+
+td.TabBottomSpan
+{
+    height: auto;
+    border-right: 1px solid #C0C0C0;
 }
 
 div.TabFrame
 {
     padding: 8px;
     border-left: 1px solid #C0C0C0;
+    border-right: 1px solid #C0C0C0;
+    border-bottom: 1px solid #C0C0C0;
+}
+
+div.TabFrameVertical
+{
+    padding: 8px;
+    border-top: 1px solid #C0C0C0;
     border-right: 1px solid #C0C0C0;
     border-bottom: 1px solid #C0C0C0;
 }
