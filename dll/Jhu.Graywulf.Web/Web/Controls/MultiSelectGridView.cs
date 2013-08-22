@@ -81,7 +81,7 @@ namespace Jhu.Graywulf.Web.Controls
                         selectedDataKeys = new HashSet<string>();
                         break;
                     case ListSelectionMode.Multiple:
-                        selectedDataKeys = (HashSet<string>)ViewState[ViewStateSelectedDataKeys];
+                        selectedDataKeys = (HashSet<string>)(ViewState[ViewStateSelectedDataKeys] ?? new HashSet<string>());
                         break;
                 }
 
