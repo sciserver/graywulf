@@ -220,10 +220,8 @@ namespace Jhu.Graywulf.Web
             base.OnUnload(e);
         }
 
-        protected override void OnError(EventArgs e)
+        protected Logging.Event LogError(Exception ex)
         {
-            var ex = Server.GetLastError();
-
             var error = new Logging.Event(AppRelativeVirtualPath, Guid.Empty);
             error.Exception = ex;
             error.ExceptionType = ex.GetType().Name;
@@ -232,6 +230,7 @@ namespace Jhu.Graywulf.Web
 
             if (context != null)
             {
+                error.UserGuid = context.UserGuid;
                 error.ContextGuid = context.ContextGuid;
             }
 
@@ -239,6 +238,15 @@ namespace Jhu.Graywulf.Web
             error.EventSource = Logging.EventSource.WebUI;
 
             Logging.Logger.Instance.LogEvent(error);
+
+            return error;
+        }
+
+        protected override void OnError(EventArgs e)
+        {
+            var ex = Server.GetLastError();
+
+            var error = LogError(ex);
 
             // Save exception to session for future use
             Session[Constants.SessionException] = ex;

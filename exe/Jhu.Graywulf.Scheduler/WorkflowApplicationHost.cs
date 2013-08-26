@@ -562,14 +562,12 @@ namespace Jhu.Graywulf.Scheduler
                         switch (workflow.Job.Status)
                         {
                             case JobStatus.Cancelled:
-                                // *** TODO: make sure all exceptions are serializable here
                                 WorkflowEvent(this, new HostEventArgs(WorkflowEventType.Cancelled, e.InstanceId));
                                 break;
                             case JobStatus.TimedOut:
                                 WorkflowEvent(this, new HostEventArgs(WorkflowEventType.TimedOut, e.InstanceId));
                                 break;
                             case JobStatus.Failed:
-                                // TODO: make sure exceptions are serializable!
                                 WorkflowEvent(this, new HostEventArgs(WorkflowEventType.Failed, e.InstanceId, workflow.LastException.Message));
                                 break;
                             default:

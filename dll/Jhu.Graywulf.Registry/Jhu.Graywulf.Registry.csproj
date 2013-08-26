@@ -168,6 +168,7 @@
     <Compile Include="Activities\ReleaseEntity.cs" />
     <Compile Include="Registry\RemoteDatabase.cs" />
     <Compile Include="Registry\RemoteDatabase.io.cs" />
+    <Compile Include="Registry\SecurityException.cs" />
     <Compile Include="Registry\ServerInstance.cs" />
     <Compile Include="Registry\ServerInstance.deploy.cs" />
     <Compile Include="Registry\ServerInstance.diag.cs" />

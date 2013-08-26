@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             // Check user ID
             if (job.UserGuidOwner != UserGuid)
             {
-                throw new SecurityException("Access denied.");  // TODO
+                throw new Registry.SecurityException("Access denied.");  // TODO
             }
 
             // Get query details

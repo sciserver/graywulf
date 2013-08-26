@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.Registry
                 {
                     if (!dr.Read())
                     {
-                        return null;
+                        throw new EntityNotFoundException(ExceptionMessages.LoginFailed);
                     }
 
                     user.LoadFromDataReader(dr);
@@ -58,15 +58,29 @@ namespace Jhu.Graywulf.Registry
             }
 
             // Compute password hash
+            bool hashok = true;
             byte[] hash = User.ComputePasswordHash(password);
 
             // Compare the hash with the one in the database
             if (hash.Length != user.PasswordHash.Length)
-                return null;
+            {
+                hashok = false;
+            }
             else
             {
                 for (int i = 0; i < hash.Length; i++)
-                    if (hash[i] != user.PasswordHash[i]) return null;
+                {
+                    if (hash[i] != user.PasswordHash[i])
+                    {
+                        hashok = false;
+                        break;
+                    }
+                }
+            }
+
+            if (!hashok)
+            {
+                throw new SecurityException(ExceptionMessages.LoginFailed);
             }
 
             // Update context

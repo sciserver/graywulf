@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.Web.Auth
                 }
                 catch (EntityNotFoundException)
                 {
-                    throw new SecurityException("Access denied");
+                    throw new Registry.SecurityException("Access denied");
                 }
             }
         }
