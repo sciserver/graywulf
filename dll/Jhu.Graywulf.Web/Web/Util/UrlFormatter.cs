@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Util
 
         private static string MakeRelativePath(string url)
         {
-            if (HttpContext.Current != null && VirtualPathUtility.IsAppRelative(url))
+            if (HttpContext.Current != null && !String.IsNullOrEmpty(url) && VirtualPathUtility.IsAppRelative(url))
             {
                 url = VirtualPathUtility.MakeRelative(
                     HttpContext.Current.Request.AppRelativeCurrentExecutionFilePath,
