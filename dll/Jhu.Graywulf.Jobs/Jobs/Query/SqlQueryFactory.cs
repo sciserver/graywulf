@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Xml;
 using System.Runtime.Serialization;
+using System.Activities;
 using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.Registry;
@@ -189,6 +190,20 @@ namespace Jhu.Graywulf.Jobs.Query
             job.Parameters["Query"].SetValue(query);
 
             return job;
+        }
+
+        public virtual Activity GetAsWorkflow(QueryBase query)
+        {
+            var wf = new SqlQueryJob();
+            SetWorkflowParameters(wf, query);
+            return wf;
+        }
+
+        protected void SetWorkflowParameters(IQueryJob wf, QueryBase query)
+        {
+            wf.Query = query;
+            wf.UserGuid = Guid.Empty;
+            wf.JobGuid = Guid.Empty;
         }
     }
 }
