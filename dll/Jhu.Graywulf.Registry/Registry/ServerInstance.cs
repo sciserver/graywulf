@@ -248,5 +248,13 @@ namespace Jhu.Graywulf.Registry
 
             return csb;
         }
+
+        public Schema.SqlServer.SqlServerDataset GetDataset()
+        {
+            return new Schema.SqlServer.SqlServerDataset()
+            {
+                ConnectionString = GetConnectionString().ConnectionString
+            };
+        }
     }
 }
