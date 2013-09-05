@@ -87,9 +87,9 @@ namespace Jhu.Graywulf.Activities
             stopRequested = false;
         }
 
-        private WorkflowApplication CreateWorkflowApplication(Activity wf)
+        private WorkflowApplication CreateWorkflowApplication(Activity wf, Dictionary<string, object> par)
         {
-            var wfapp = new WorkflowApplication(wf);
+            var wfapp = par == null ? new WorkflowApplication(wf) : new WorkflowApplication(wf, par);
 
             // Add necessary participants
             wfapp.Extensions.Add(graywulfLogger);
@@ -114,9 +114,9 @@ namespace Jhu.Graywulf.Activities
             }
         }
 
-        public Guid PrepareStartWorkflow(Activity wf)
+        public Guid PrepareStartWorkflow(Activity wf, Dictionary<string, object> par)
         {
-            var wfapp = CreateWorkflowApplication(wf);
+            var wfapp = CreateWorkflowApplication(wf, par);
 
             RegisterWorkflow(wfapp);
 
