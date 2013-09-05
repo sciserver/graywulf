@@ -220,7 +220,6 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
-
         #region Parsing functions
 
         public void Verify()
@@ -412,24 +411,17 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        public virtual void IsDestinationTableExisting()
+        public virtual void CheckDestinationTable()
         {
             AssertValidContext();
 
             if ((resultsetTarget & ResultsetTarget.DestinationTable) != 0)
             {
-                bool exists = IsTableExisting(
-                    GetDestinationDatabaseConnectionString().ConnectionString,
-                    destination.Table.SchemaName,
-                    destination.Table.TableName);
-
+                bool exists = IsTableExisting(destination.Table);
+                  
                 if (exists && (destination.Operation & DestinationTableOperation.Drop) != 0)
                 {
-                    DropTable(
-                        GetDestinationDatabaseConnectionString().ConnectionString,
-                        GetDestinationDatabaseConnectionString().InitialCatalog,
-                        destination.Table.SchemaName,
-                        destination.Table.TableName);
+                    DropTableOrView(destination.Table);
 
                     exists = false;
                     destination.Operation = destination.Operation & ~DestinationTableOperation.Drop;
@@ -449,7 +441,5 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
-
-        
     }
 }

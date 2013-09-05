@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Jobs.Query
             using (Context context = query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 query.InitializeQueryObject(context);
-                query.IsDestinationTableExisting();
+                query.CheckDestinationTable();
             }
         }
     }
