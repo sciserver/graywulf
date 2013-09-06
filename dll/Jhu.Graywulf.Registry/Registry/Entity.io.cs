@@ -296,11 +296,9 @@ namespace Jhu.Graywulf.Registry
             refdt.Columns.Add("ReferenceType", typeof(int));
             refdt.Columns.Add("ReferencedEntityGuid", typeof(Guid));
 
-            // TODO: test this change
-            // theoretically, this should work since modify function was changed to
-            // do updates and inserts to entity references
-            if (!IsExisting || isEntityReferencesLoaded)
-            //if (isEntityReferencesLoaded)
+            // We cannot save references when deserializing from xml because
+            // the references might not be there yet
+            if ((!IsExisting || isEntityReferencesLoaded) && !isDeserializing)
             {
                 foreach (var er in entityReferences.Values)
                 {

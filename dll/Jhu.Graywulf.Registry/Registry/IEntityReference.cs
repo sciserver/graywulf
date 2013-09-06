@@ -21,6 +21,10 @@ namespace Jhu.Graywulf.Registry
 
         int ReferenceType { get; }
 
+        string Name { get; set; }
+
+        Guid Guid { get; set; }
+
         Guid ReferencedEntityGuid { get; set; }
 
         bool IsEmpty { get; }
