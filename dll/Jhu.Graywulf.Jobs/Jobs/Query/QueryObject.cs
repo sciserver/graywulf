@@ -902,10 +902,10 @@ END";
 
             sql = String.Format(
                 sql,
-                tableOrView.DatabaseName,
+                !String.IsNullOrWhiteSpace(tableOrView.DatabaseName) ? tableOrView.DatabaseName : tableOrView.Dataset.DatabaseName,
                 tableOrView.SchemaName,
                 tableOrView.ObjectName,
-                tableOrView.ObjectType,ToString());
+                tableOrView.GetType().Name);
 
             ExecuteCommandNonQuery(sql, tableOrView.Dataset.ConnectionString);
         }

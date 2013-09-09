@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Jobs.Query
             using (Context context = queryPartition.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 query.InitializeQueryObject(context);
-                queryPartition.InitializeDestinationTable(context, activityContext.GetExtension<IScheduler>());
+                queryPartition.PrepareDestinationTable(context, activityContext.GetExtension<IScheduler>());
             }
         }
     }

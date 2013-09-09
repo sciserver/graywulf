@@ -40,6 +40,11 @@ namespace Jhu.Graywulf.IO
 
         protected override void OnExecute()
         {
+            if ((Destination.Operation & DestinationTableOperation.Drop) != 0)
+            {
+                DropDestinationTable();
+            }
+
             using (var cn = OpenSourceConnection())
             {
                 using (var tn = cn.BeginTransaction(IsolationLevel.ReadUncommitted))
@@ -53,15 +58,17 @@ namespace Jhu.Graywulf.IO
                         ccmd.ExecuteReader(dr =>
                         {
                             // *** TODO: implement other options
-                            switch (Destination.Operation)
+                            if ((Destination.Operation & DestinationTableOperation.Append) != 0)
                             {
-                                case DestinationTableOperation.Append:
-                                    break;
-                                case DestinationTableOperation.Create:
-                                    CreateDestinationTable(dr.GetSchemaTable());
-                                    break;
-                                default:
-                                    throw new NotImplementedException();
+                                // TODO: compare schema
+                            }
+                            else if ((Destination.Operation & DestinationTableOperation.Create) != 0)
+                            {
+                                CreateDestinationTable(dr.GetSchemaTable());
+                            }
+                            else
+                            {
+                                throw new NotImplementedException();
                             }
 
                             ExecuteBulkCopy(dr);

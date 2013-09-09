@@ -323,7 +323,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var destination = new DestinationTableParameters()
             {
                 Table = temptable,
-                Operation = DestinationTableOperation.Drop,
+                Operation = DestinationTableOperation.Drop | DestinationTableOperation.Create,
             };
 
             var bcp = CreateQueryImporter(source, destination, false);
@@ -346,18 +346,25 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="table"></param>
         /// <returns></returns>
-        public string SubstituteRemoteTableName(TableReference table)
+        public string SubstituteRemoteTableName(TableReference tr)
         {
-            if (RemoteTableReferences.ContainsKey(table.UniqueName))
+            if (RemoteTableReferences.ContainsKey(tr.UniqueName))
             {
-                return String.Format("[{0}].[{1}].[{2}]",
+                /*return String.Format("[{0}].[{1}].[{2}]",
                     GetTemporaryDatabaseConnectionString().InitialCatalog,
                     Query.TemporarySchemaName,
-                    TemporaryTables[table.UniqueName]);
+                    TemporaryTables[table.UniqueName]);*/
+
+                var table = TemporaryTables[tr.UniqueName];
+
+                return String.Format("[{0}].[{1}].[{2}]",
+                    !String.IsNullOrEmpty(table.DatabaseName) ? table.DatabaseName : table.Dataset.DatabaseName,
+                    table.SchemaName,
+                    table.TableName);
             }
             else
             {
-                return table.GetFullyResolvedName();
+                return tr.GetFullyResolvedName();
             }
         }
 
@@ -460,7 +467,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// have information about the database server the partition is executing on and
         /// the temporary tables are required to generate the destination table schema.
         /// </remarks>
-        public void InitializeDestinationTable(Context context, IScheduler scheduler)
+        public void PrepareDestinationTable(Context context, IScheduler scheduler)
         {
             switch (query.ExecutionMode)
             {
@@ -482,18 +489,30 @@ namespace Jhu.Graywulf.Jobs.Query
                                     Timeout = Query.QueryTimeout
                                 };
 
-                                // TODO: This might need some revision here
-                                switch (query.Destination.Operation)
+                                if ((query.Destination.Operation & DestinationTableOperation.Drop) != 0)
                                 {
-                                    case DestinationTableOperation.Drop | DestinationTableOperation.Create:
-                                    case DestinationTableOperation.Create:
-                                        CreateTableForBulkCopy(source, query.Destination, false);
-                                        break;
-                                    case DestinationTableOperation.Clear:
-                                        TruncateTable(query.Destination.Table);
-                                        break;
-                                    default:
-                                        throw new NotImplementedException();
+                                    DropTableOrView(query.Destination.Table);
+                                }
+
+                                if ((query.Destination.Operation & DestinationTableOperation.Create) != 0)
+                                {
+                                    CreateTableForBulkCopy(source, query.Destination, false);
+                                }
+                                else if ((query.Destination.Operation & DestinationTableOperation.Clear) != 0)
+                                {
+                                    // TODO: This might need some revision here
+                                    // what if schema differs?
+                                    TruncateTable(query.Destination.Table);
+                                }
+                                else if ((query.Destination.Operation & DestinationTableOperation.Append) != 0)
+                                {
+                                    // TODO: This might need some revision here
+                                    // what if schema differs?
+                                    throw new NotImplementedException();
+                                }
+                                else
+                                {
+                                    throw new NotImplementedException();
                                 }
                             }
 
@@ -535,9 +554,16 @@ namespace Jhu.Graywulf.Jobs.Query
                             Timeout = Query.QueryTimeout,
                         };
 
+                        // Change destination to Append, output table has already been created,
+                        // partitions only append to it
+                        var destination = new DestinationTableParameters(Query.Destination);
+                        destination.Operation = DestinationTableOperation.Append;
+
+                        // Change destination operation to
+
                         if ((Query.ResultsetTarget & (ResultsetTarget.TemporaryTable | ResultsetTarget.DestinationTable)) != 0)
                         {
-                            ExecuteBulkCopy(source, Query.Destination, false, Query.QueryTimeout);
+                            ExecuteBulkCopy(source, destination, false, Query.QueryTimeout);
                         }
                     }
                     break;

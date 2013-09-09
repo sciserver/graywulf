@@ -70,6 +70,33 @@ namespace Jhu.Graywulf.IO
 
         #endregion
 
+        protected void DropDestinationTable()
+        {
+            string sql = @"
+IF (OBJECT_ID('[{0}].[{1}].[{2}]') IS NOT NULL)
+BEGIN
+    DROP {3} [{0}].[{1}].[{2}]
+END";
+
+            sql = String.Format(
+                sql,
+                !String.IsNullOrWhiteSpace(Destination.Table.DatabaseName) ? Destination.Table.DatabaseName : Destination.Table.Dataset.DatabaseName,
+                Destination.Table.SchemaName,
+                Destination.Table.ObjectName,
+                Destination.Table.GetType().Name);
+
+            // TODO: move this to schema eventually
+            using (var cn = new SqlConnection(destination.Table.Dataset.ConnectionString))
+            {
+                cn.Open();
+
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         /// <summary>
         /// Creates the destination table
         /// </summary>

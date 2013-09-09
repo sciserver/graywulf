@@ -26,7 +26,6 @@ namespace Jhu.Graywulf.Schema
         [NonSerialized]
         private EntityProperty<DatabaseInstance> databaseInstance;
 
-        [NonSerialized]
         private string connectionStringCache;
 
         public Context Context
@@ -67,13 +66,14 @@ namespace Jhu.Graywulf.Schema
             {
                 if (connectionStringCache == null)
                 {
-                    connectionStringCache = GetSchemaConnectionString();
+                    connectionStringCache = CacheSchemaConnectionString();
                 }
 
                 return connectionStringCache;
             }
             set
             {
+                connectionStringCache = value;
                 //throw new InvalidOperationException("Connection string of graywulf datasets cannot be set directly."); // TODO
             }
         }
@@ -132,7 +132,7 @@ namespace Jhu.Graywulf.Schema
             this.databaseInstance.Context = context;
         }
 
-        private string GetSchemaConnectionString()
+        public string CacheSchemaConnectionString()
         {
             if (!databaseInstance.IsEmpty)
             {

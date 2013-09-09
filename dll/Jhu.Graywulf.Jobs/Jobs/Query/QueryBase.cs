@@ -418,24 +418,13 @@ namespace Jhu.Graywulf.Jobs.Query
             if ((resultsetTarget & ResultsetTarget.DestinationTable) != 0)
             {
                 bool exists = IsTableExisting(destination.Table);
-                  
-                if (exists && (destination.Operation & DestinationTableOperation.Drop) != 0)
-                {
-                    DropTableOrView(destination.Table);
 
-                    exists = false;
-                    destination.Operation = destination.Operation & ~DestinationTableOperation.Drop;
-                }
-
-                switch (destination.Operation)
+                if (exists && (destination.Operation & DestinationTableOperation.Drop) == 0)
                 {
-                    case DestinationTableOperation.Create:
-                        if (exists) throw new Exception("Output table already exists.");
-                        break;
-                    case DestinationTableOperation.Append:
-                    case DestinationTableOperation.Clear:
-                        throw new NotImplementedException();
-                    // **** TODO check format compatibility
+                    if ((destination.Operation & DestinationTableOperation.Create) == 0)
+                    {
+                        throw new Exception("Output table already exists.");    // *** TODO
+                    }
                 }
             }
         }
