@@ -95,6 +95,12 @@ namespace Jhu.Graywulf.Web.UI
             Util.QueryEditorUtil.GetQueryFromSession(this, out query, out selection, out executeSelectedOnly);
         }
 
+        protected Guid LastQueryJobGuid
+        {
+            get { return (Guid)Session["LastQueryJobGuid"]; }
+            set { Session["LastQueryJobGuid"] = value; }
+        }
+
         protected string SelectedSchemaObject
         {
             get { return (string)Session["SchemaSelectedObject"]; }

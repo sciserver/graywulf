@@ -221,13 +221,6 @@
     <Compile Include="Query\Results.aspx.designer.cs">
       <DependentUpon>Results.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Query\ResultsProgress.aspx.cs">
-      <DependentUpon>ResultsProgress.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Query\ResultsProgress.aspx.designer.cs">
-      <DependentUpon>ResultsProgress.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Schema\ColumnList.ascx.cs">
       <DependentUpon>ColumnList.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -327,7 +320,6 @@
     <Content Include="MyDB\Tabs.ascx" />
     <Content Include="Query\Default.aspx" />
     <Content Include="Query\Results.aspx" />
-    <Content Include="Query\ResultsProgress.aspx" />
     <Content Include="Schema\ColumnList.ascx" />
     <Content Include="Schema\DbObjectDetails.ascx" />
     <Content Include="Schema\Default.aspx" />

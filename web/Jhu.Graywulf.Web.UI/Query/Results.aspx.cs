@@ -4,7 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using schema = Jhu.Graywulf.Schema;
+using System.Web;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.SqlParser.SqlCodeGen;
@@ -21,12 +21,37 @@ namespace Jhu.Graywulf.Web.UI.Query
             return "~/Query/Results.aspx";
         }
 
-        protected void Page_Load(object sender, EventArgs e)
+        protected void RenderOutput()
         {
-            var ji = new JobInstance(RegistryContext);
-            ji.Guid = Guid.Parse(Request.QueryString["guid"]);
-            ji.Load();
+            try
+            {
+                var ji = new JobInstance(RegistryContext);
+                ji.Guid = LastQueryJobGuid;
+                ji.Load();
 
+                if (ji.JobExecutionStatus != JobExecutionState.Completed)
+                {
+                    RenderExecuting();
+                }
+                else
+                {
+                    RenderResults(ji);
+                }
+            }
+            catch (Exception ex)
+            {
+                RenderException(ex);
+            }
+        }
+
+        private void RenderExecuting()
+        {
+            Response.Output.WriteLine("Executing query...");
+            Response.Output.WriteLine("<script language=\"javascript\">refreshResults();</script>");
+        }
+
+        private void RenderResults(JobInstance ji)
+        {
             var q = (QueryBase)ji.Parameters["Query"].GetValue();
 
             var codegen = new SqlServerCodeGenerator();
@@ -39,17 +64,17 @@ namespace Jhu.Graywulf.Web.UI.Query
                 100);
 
 
-            using (IDbConnection cn = new SqlConnection())
+            using (var cn = new SqlConnection())
             {
                 cn.ConnectionString = SchemaManager.Datasets["MYDB"].ConnectionString;
                 cn.Open();
 
-                using (IDbCommand cmd = cn.CreateCommand())
+                using (var cmd = cn.CreateCommand())
                 {
                     cmd.CommandText = sql;
                     cmd.CommandType = CommandType.Text;
 
-                    using (IDataReader dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
+                    using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
                     {
                         RenderTable(dr);
                     }
@@ -59,11 +84,9 @@ namespace Jhu.Graywulf.Web.UI.Query
 
         private void RenderTable(IDataReader dr)
         {
-            StringWriter output = new StringWriter();
+            var output = Response.Output;
 
             output.WriteLine("<table border=\"1\" cellspacing=\"0\" style=\"border-collapse:collapse\">");
-
-
 
             // header
             output.WriteLine("<tr>");
@@ -89,8 +112,22 @@ namespace Jhu.Graywulf.Web.UI.Query
 
 
             output.WriteLine("</table>");
+        }
 
-            dataTable.Text = output.ToString();
+        private void RenderException(Exception ex)
+        {
+            var error = LogError(ex);
+
+            // Save exception to session for future use
+            Session[Constants.SessionException] = ex;
+            Session[Constants.SessionExceptionEventID] = error.EventId;
+
+            Server.ClearError();
+
+            Response.Output.WriteLine("<p>An exception occured: {0}</p>", ex.Message);
+            Response.Output.WriteLine(
+                "<p><a href=\"{0}\">Click here to report error.</a></p>",
+                VirtualPathUtility.MakeRelative(Page.AppRelativeVirtualPath, Jhu.Graywulf.Web.Feedback.GetErrorReportUrl()));
         }
     }
 }
