@@ -23,6 +23,7 @@ namespace Jhu.Graywulf.Logging
         private Guid entityGuidFrom;
         private Guid entityGuidTo;
         private string exceptionType;
+        private string site;
         private string message;
         private string stackTrace;
 
@@ -113,6 +114,12 @@ namespace Jhu.Graywulf.Logging
             set { exceptionType = value; }
         }
 
+        public string Site
+        {
+            get { return site; }
+            set { site = value; }
+        }
+
         public string Message
         {
             get { return message; }
@@ -138,13 +145,12 @@ namespace Jhu.Graywulf.Logging
                 exception = value;
                 if (exception != null)
                 {
-                    message = exception.Message;
-                    stackTrace = exception.StackTrace;
-                    exceptionType = exception.GetType().ToString();
+                    ReadFromException();
                 }
                 else
                 {
                     message = null;
+                    site = null;
                     stackTrace = null;
                     exceptionType = null;
                 }
@@ -185,6 +191,7 @@ namespace Jhu.Graywulf.Logging
             this.entityGuidFrom = Guid.Empty;
             this.entityGuidTo = Guid.Empty;
             this.exceptionType = null;
+            this.site = null;
             this.message = null;
             this.stackTrace = null;
 
@@ -208,6 +215,7 @@ namespace Jhu.Graywulf.Logging
             this.entityGuidFrom = old.entityGuidFrom;
             this.entityGuidTo = old.entityGuidTo;
             this.exceptionType = old.exceptionType;
+            this.site = old.site;
             this.message = old.message;
             this.stackTrace = old.stackTrace;
 
@@ -234,10 +242,26 @@ namespace Jhu.Graywulf.Logging
             this.entityGuidTo = dr.GetGuid(++o);
             this.exceptionType = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.message = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.site = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.stackTrace = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.exception = null;
 
             return o;
+        }
+
+        private void ReadFromException()
+        {
+            message = exception.Message;
+            site = null;
+            stackTrace = exception.StackTrace;
+            exceptionType = exception.GetType().ToString();
+
+            if (exception is SqlException)
+            {
+                var sqlex = (SqlException)exception;
+
+                site = sqlex.Server;
+            }
         }
     }
 }

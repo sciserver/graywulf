@@ -47,6 +47,7 @@ namespace Jhu.Graywulf.Logging
             createEventCommand.Parameters.Add("@EntityGuidFrom", SqlDbType.UniqueIdentifier);
             createEventCommand.Parameters.Add("@EntityGuidTo", SqlDbType.UniqueIdentifier);
             createEventCommand.Parameters.Add("@ExceptionType", SqlDbType.NVarChar, 255);
+            createEventCommand.Parameters.Add("@Site", SqlDbType.NVarChar, 255);
             createEventCommand.Parameters.Add("@Message", SqlDbType.NVarChar, 1024);
             createEventCommand.Parameters.Add("@StackTrace", SqlDbType.NVarChar);
 
@@ -78,6 +79,7 @@ namespace Jhu.Graywulf.Logging
             createEventCommand.Parameters["@EntityGuidFrom"].Value = e.EntityGuidFrom;
             createEventCommand.Parameters["@EntityGuidTo"].Value = e.EntityGuidTo;
             createEventCommand.Parameters["@ExceptionType"].Value = e.ExceptionType == null ? (object)DBNull.Value : (object)e.ExceptionType;
+            createEventCommand.Parameters["@Site"].Value = e.Site == null ? (object)DBNull.Value : (object)e.Site;
             createEventCommand.Parameters["@Message"].Value = e.Message == null ? (object)DBNull.Value : (object)e.Message;
             createEventCommand.Parameters["@StackTrace"].Value = e.StackTrace == null ? (object)DBNull.Value : (object)e.StackTrace;
         }
