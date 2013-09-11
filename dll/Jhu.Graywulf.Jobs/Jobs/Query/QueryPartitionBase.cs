@@ -489,6 +489,9 @@ namespace Jhu.Graywulf.Jobs.Query
                                     Timeout = Query.QueryTimeout
                                 };
 
+                                // TODO: this is screwed up here
+                                // drop table in every partition... call it only once
+
                                 if ((query.Destination.Operation & DestinationTableOperation.Drop) != 0)
                                 {
                                     DropTableOrView(query.Destination.Table);
@@ -516,6 +519,7 @@ namespace Jhu.Graywulf.Jobs.Query
                                 }
                             }
 
+                            query.IsDestinationTableInitialized = true;
                         }
                     }
                     break;
