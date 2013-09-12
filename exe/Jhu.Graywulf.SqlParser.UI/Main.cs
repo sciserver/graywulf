@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.Parser.Test
                     var nr = qf.CreateNameResolver();
                     nr.SchemaManager = sm;
 
-                    nr.DefaultDatasetName = "MYDB";
+                    nr.DefaultTableDatasetName = "MYDB";
                     nr.Execute((SqlParser.SelectStatement)rootNode);
 
                     //List<SqlParser.TableReference> rt = new List<SqlParser.TableReference>(qs.e);

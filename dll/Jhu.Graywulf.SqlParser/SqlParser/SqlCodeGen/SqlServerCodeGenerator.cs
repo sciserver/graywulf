@@ -57,11 +57,6 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 
         public override bool WriteTableAlias(TableAlias node)
         {
-            /*if (ResolveAliases)
-            {
-                return false;
-            }*/
-            
             if (ResolveNames)
             {
                 Writer.Write("[{0}]", Util.RemoveIdentifierQuotes(node.Value));
@@ -87,6 +82,32 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             }
         }
 
+        public override bool WriteFunctionCall(FunctionCall node)
+        {
+            if (ResolveNames)
+            {
+                Writer.Write(GetResolvedFunctionName(node.FunctionReference));
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public override bool WriteTableValuedFunctionCall(TableValuedFunctionCall node)
+        {
+            if (ResolveNames)
+            {
+                Writer.Write(GetResolvedTableName(node.TableReference));
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
         protected override string QuoteIdentifier(string identifier)
         {
             return String.Format("[{0}]", identifier);
@@ -96,7 +117,7 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 
         private string GetResolvedTableName(TableReference table)
         {
-            if (table.IsUdf || table.IsSubquery || table.IsComputed)
+            if (table.IsSubquery || table.IsComputed)
             {
                 return QuoteIdentifier(table.Alias);
             }
@@ -115,6 +136,32 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
                     if (table.DatabaseName != null) res += QuoteIdentifier(table.DatabaseName) + ".";
                     if (table.SchemaName != null) res += QuoteIdentifier(table.SchemaName) + ".";
                     if (table.DatabaseObjectName != null) res += QuoteIdentifier(table.DatabaseObjectName);
+
+                    return res;
+                }
+            }
+        }
+
+        private string GetResolvedFunctionName(FunctionReference function)
+        {
+            if (!function.IsUdf)
+            {
+                throw new NotImplementedException();    // *** TODO
+            }
+            else
+            {
+                if (function.DatabaseObject != null)
+                {
+                    return function.DatabaseObject.GetFullyResolvedName();
+                }
+                else
+                {
+                    string res = String.Empty;
+
+                    // If it's not resolved yet
+                    if (function.DatabaseName != null) res += QuoteIdentifier(function.DatabaseName) + ".";
+                    if (function.SchemaName != null) res += QuoteIdentifier(function.SchemaName) + ".";
+                    if (function.DatabaseObjectName != null) res += QuoteIdentifier(function.DatabaseObjectName);
 
                     return res;
                 }

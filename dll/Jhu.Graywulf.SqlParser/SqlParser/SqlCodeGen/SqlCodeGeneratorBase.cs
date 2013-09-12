@@ -49,6 +49,10 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 
         public abstract bool WriteTableOrViewName(TableOrViewName node);
 
+        public abstract bool WriteFunctionCall(FunctionCall node);
+
+        public abstract bool WriteTableValuedFunctionCall(TableValuedFunctionCall node);
+
         public bool WriteIdentifier(Identifier node)
         {
             if (quoteIdentifiers)
