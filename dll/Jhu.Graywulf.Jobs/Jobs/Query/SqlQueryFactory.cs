@@ -108,7 +108,6 @@ namespace Jhu.Graywulf.Jobs.Query
             query.DefaultSchemaName = settings[Settings.DefaultSchemaName];
             query.DefaultDatasetName = settings[Settings.DefaultDatasetName];
             query.QueryTimeout = int.Parse(settings[Settings.LongQueryTimeout]);
-            query.ResultsetTarget = ResultsetTarget.DestinationTable;
             query.TemporaryDestinationTableName = "output"; // ****** TODO add to settings
             query.KeepTemporaryDestinationTable = true;
 
@@ -135,7 +134,7 @@ namespace Jhu.Graywulf.Jobs.Query
             tempds.IsOnLinkedServer = false;
             tempds.DatabaseVersion.Value = federation.TempDatabaseVersion;
             query.TemporaryDataset = tempds;
-            query.TemporarySchemaName = settings[Settings.TemporarySchemaName];
+            query.TemporaryDataset.DefaultSchemaName = settings[Settings.TemporarySchemaName];
         }
 
         protected override void GetInitializedQuery_SingleServer(QueryBase query, string queryString, string outputTable, SqlServerDataset mydbds, SqlServerDataset tempds)
@@ -146,7 +145,6 @@ namespace Jhu.Graywulf.Jobs.Query
             query.DefaultSchemaName = "dbo";
             query.DefaultDatasetName = "MYDB";
             query.QueryTimeout = 7200;
-            query.ResultsetTarget = ResultsetTarget.DestinationTable;
             query.TemporaryDestinationTableName = "output"; // ****** TODO add to settings
             query.KeepTemporaryDestinationTable = true;
 
@@ -162,7 +160,6 @@ namespace Jhu.Graywulf.Jobs.Query
 
             // Set up temporary database
             query.TemporaryDataset = tempds;
-            query.TemporarySchemaName = "dbo";
         }
 
         public override JobInstance ScheduleAsJob(QueryBase query, string queueName, string comments)

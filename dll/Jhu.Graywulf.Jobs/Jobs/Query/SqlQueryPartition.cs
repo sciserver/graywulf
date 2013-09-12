@@ -116,7 +116,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             SubstituteDatabaseNames(AssignedServerInstance.Guid, Query.SourceDatabaseVersionName);
-            SubstituteRemoteTableNames(TemporaryDatabaseInstanceReference.Value.GetDataset(), Query.TemporarySchemaName);
+            SubstituteRemoteTableNames(TemporaryDatabaseInstanceReference.Value.GetDataset(), Query.TemporaryDataset.DefaultSchemaName);
 
             var sw = new StringWriter();
             var cg = new SqlServerCodeGenerator();

@@ -169,7 +169,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        public DatasetBase GetTemporaryDatabaseDataset()
+        public SqlServerDataset GetTemporaryDatabaseDataset()
         {
             switch (ExecutionMode)
             {
@@ -210,7 +210,7 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 Dataset = tempds,
                 DatabaseName = tempds.DatabaseName,
-                SchemaName = query.TemporarySchemaName,
+                SchemaName = tempds.DefaultSchemaName,
                 TableName = tempname,
             };
         }
@@ -480,7 +480,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
                         lock (query.syncRoot)
                         {
-                            if (!query.IsDestinationTableInitialized && (query.ResultsetTarget & ResultsetTarget.DestinationTable) != 0)
+                            // Only initialize target table if it's still uninitialzed
+                            if (!query.IsDestinationTableInitialized)
                             {
                                 var source = new SourceQueryParameters()
                                 {
@@ -563,12 +564,7 @@ namespace Jhu.Graywulf.Jobs.Query
                         var destination = new DestinationTableParameters(Query.Destination);
                         destination.Operation = DestinationTableOperation.Append;
 
-                        // Change destination operation to
-
-                        if ((Query.ResultsetTarget & (ResultsetTarget.TemporaryTable | ResultsetTarget.DestinationTable)) != 0)
-                        {
-                            ExecuteBulkCopy(source, destination, false, Query.QueryTimeout);
-                        }
+                        ExecuteBulkCopy(source, destination, false, Query.QueryTimeout);
                     }
                     break;
                 default:
