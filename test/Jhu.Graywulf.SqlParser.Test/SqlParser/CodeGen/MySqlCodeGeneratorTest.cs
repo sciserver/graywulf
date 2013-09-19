@@ -31,8 +31,8 @@ namespace Jhu.Graywulf.SqlCodeGen.Test
             var select = (SelectStatement)p.Execute(new SelectStatement(), query);
 
             SqlNameResolver nr = new SqlNameResolver();
-            nr.DefaultTableDatasetName = "Test";
-            nr.DefaultTableSchemaName = "dbo";
+            nr.DefaultDatasetName = "Test";
+            nr.DefaultSchemaName = "dbo";
             nr.SchemaManager = CreateSchemaManager();
             nr.Execute(select);
 

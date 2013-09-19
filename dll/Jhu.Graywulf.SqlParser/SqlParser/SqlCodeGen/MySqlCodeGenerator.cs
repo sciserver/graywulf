@@ -78,32 +78,6 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             }
         }
 
-        public override bool WriteFunctionCall(FunctionCall node)
-        {
-            if (ResolveNames)
-            {
-                Writer.Write(GetFunctionReferenceName(node.FunctionReference));
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        public override bool WriteTableValuedFunctionCall(TableValuedFunctionCall node)
-        {
-            if (ResolveNames)
-            {
-                Writer.Write(GetTableReferenceName(node.TableReference));
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
         private string GetTableReferenceName(TableReference tableReference)
         {
             string res = String.Empty;
@@ -132,29 +106,6 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
                 else
                 {
                     res = QuoteIdentifier(tableReference.Alias);
-                }
-            }
-
-            return res;
-        }
-
-        private string GetFunctionReferenceName(FunctionReference function)
-        {
-            string res = String.Empty;
-
-            if (!function.IsUdf)
-            {
-                throw new NotImplementedException();
-            }
-            else
-            {
-                if (function.DatabaseObject != null)
-                {
-                    if (function.DatabaseObject.ObjectName != null) res += QuoteIdentifier(function.DatabaseObject.ObjectName);
-                }
-                else
-                {
-                    if (function.DatabaseObjectName != null) res += QuoteIdentifier(function.DatabaseObjectName);
                 }
             }
 

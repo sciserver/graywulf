@@ -9,54 +9,12 @@ namespace Jhu.Graywulf.SqlParser
 {
     public class SqlNameResolver
     {
-        private static readonly HashSet<string> SystemFunctionNames = new HashSet<string>(Schema.SchemaManager.Comparer)
-        {
-            "OPENDATASOURCE", "OPENQUERY", "OPENROWSET", "OPENXML",
-
-            "AVG", "MIN", "CHECKSUM_AGG", "SUM", "COUNT", "STDEV", "COUNT_BIG", "STDEVP", "GROUPING", "VAR", "GROUPING_ID", "VARP", "MAX",
-
-            "RANK", "NTILE", "DENSE_RANK", "ROW_NUMBER",
- 
-            "CAST", "CONVERT", "PARSE", "TRY_CAST", "TRY_CONVERT", "TRY_PARSE",
-
-            "SYSDATETIME", "SYSDATETIMEOFFSET", "SYSUTCDATETIME", "CURRENT_TIMESTAMP", "GETDATE", "GETUTCDATE", "DATENAME", "DATEPART", "DAY", "MONTH", "YEAR",
-            "DATEFROMPARTS", "DATETIME2FROMPARTS", "DATETIMEFROMPARTS", "DATETIMEOFFSETFROMPARTS", "SMALLDATETIMEFROMPARTS", "TIMEFROMPARTS",
-            "DATEDIFF", "DATEADD", "EOMONTH", "SWITCHOFFSET", "TODATETIMEOFFSET",
-
-            "CHOOSE", "IIF",
-
-            "ABS", "DEGREES", "RAND", "ACOS", "EXP", "ROUND", "ASIN", "FLOOR", "SIGN", "ATAN", "LOG", "SIN", "ATN2", "LOG10", "SQRT", "CEILING",
-            "PI", "SQUARE", "COS", "POWER", "TAN", "COT", "RADIANS",
- 
-            "INDEX_COL", "APP_NAME", "INDEXKEY_PROPERTY", "APPLOCK_MODE", "INDEXPROPERTY", "APPLOCK_TEST", "ASSEMBLYPROPERTY", "OBJECT_DEFINITION",
-            "COL_LENGTH", "OBJECT_ID", "COL_NAME", "OBJECT_NAME", "COLUMNPROPERTY", "OBJECT_SCHEMA_NAME", "DATABASE_PRINCIPAL_ID", "OBJECTPROPERTY",
-            "DATABASEPROPERTYEX", "OBJECTPROPERTYEX", "DB_ID", "ORIGINAL_DB_NAME", "DB_NAME", "PARSENAME", "FILE_ID", "SCHEMA_ID", "FILE_IDEX",
-            "SCHEMA_NAME", "FILE_NAME", "SCOPE_IDENTITY", "FILEGROUP_ID", "SERVERPROPERTY", "FILEGROUP_NAME", "STATS_DATE", "FILEGROUPPROPERTY",
-            "TYPE_ID", "FILEPROPERTY", "TYPE_NAME", "FULLTEXTCATALOGPROPERTY", "TYPEPROPERTY", "FULLTEXTSERVICEPROPERTY",
- 
-            "CERTENCODED", "PWDCOMPARE", "CERTPRIVATEKEY", "PWDENCRYPT", "CURRENT_USER", "SCHEMA_ID", "DATABASE_PRINCIPAL_ID", "SCHEMA_NAME", 
-            "SESSION_USER", "SUSER_ID", "SUSER_SID", "HAS_PERMS_BY_NAME", "SUSER_SNAME", "IS_MEMBER", "SYSTEM_USER", "IS_ROLEMEMBER", "SUSER_NAME", 
-            "IS_SRVROLEMEMBER", "USER_ID", "ORIGINAL_LOGIN", "USER_NAME", "PERMISSIONS",
- 
-            "ASCII", "LTRIM", "SOUNDEX", "CHAR", "NCHAR", "SPACE", "CHARINDEX", "PATINDEX", "STR", "CONCAT", "QUOTENAME", "STUFF", "DIFFERENCE",
-            "REPLACE", "SUBSTRING", "FORMAT", "REPLICATE", "UNICODE", "LEFT", "REVERSE", "UPPER", "LEN", "RIGHT", "LOWER", "RTRIM", 
- 
-            "ERROR_SEVERITY", "ERROR_STATE", "FORMATMESSAGE", "GETANSINULL", "GET_FILESTREAM_TRANSACTION_CONTEXT", "HOST_ID", "BINARY_CHECKSUM",
-            "HOST_NAME", "CHECKSUM", "ISNULL", "CONNECTIONPROPERTY", "ISNUMERIC", "CONTEXT_INFO", "MIN_ACTIVE_ROWVERSION", "CURRENT_REQUEST_ID",
-            "NEWID", "ERROR_LINE", "NEWSEQUENTIALID", "ERROR_MESSAGE", "ROWCOUNT_BIG", "ERROR_NUMBER", "XACT_STATE", "ERROR_PROCEDURE",
-
-            "PATINDEX", "TEXTVALID", "TEXTPTR",
-        };
-
         #region Property storage variables
 
         private SchemaManager schemaManager;
 
-        private string defaultTableDatasetName;
-        private string defaultTableSchemaName;
-
-        private string defaultFunctionDatasetName;
-        private string defaultFunctionSchemaName;
+        private string defaultDatasetName;
+        private string defaultSchemaName;
 
         #endregion
         #region Properties
@@ -74,32 +32,20 @@ namespace Jhu.Graywulf.SqlParser
         /// Gets or sets the default dataset name to be assumed when no
         /// dataset is specified
         /// </summary>
-        public string DefaultTableDatasetName
+        public string DefaultDatasetName
         {
-            get { return defaultTableDatasetName; }
-            set { defaultTableDatasetName = value; }
+            get { return defaultDatasetName; }
+            set { defaultDatasetName = value; }
         }
 
         /// <summary>
         /// Gets or sets the default schema name to be assumed when no
         /// schema name is specified
         /// </summary>
-        public string DefaultTableSchemaName
+        public string DefaultSchemaName
         {
-            get { return defaultTableSchemaName; }
-            set { defaultTableSchemaName = value; }
-        }
-
-        public string DefaultFunctionDatasetName
-        {
-            get { return defaultFunctionDatasetName; }
-            set { defaultFunctionDatasetName = value; }
-        }
-
-        public string DefaultFunctionSchemaName
-        {
-            get { return defaultFunctionSchemaName; }
-            set { defaultFunctionSchemaName = value; }
+            get { return defaultSchemaName; }
+            set { defaultSchemaName = value; }
         }
 
         #endregion
@@ -120,8 +66,8 @@ namespace Jhu.Graywulf.SqlParser
         {
             this.schemaManager = null;
 
-            this.defaultTableDatasetName = String.Empty;
-            this.defaultTableSchemaName = "dbo";
+            this.defaultDatasetName = String.Empty;
+            this.defaultSchemaName = "dbo";
         }
 
         #endregion
@@ -164,9 +110,6 @@ namespace Jhu.Graywulf.SqlParser
             var orderby = selectStatement.OrderByClause;
 
             ResolveOrderByClause(orderby, firstqs);
-
-            SubstituteFunctionDefaults(selectStatement);
-            ResolveFunctionReferences(selectStatement);
         }
 
         protected void ResolveQueryExpression(QueryExpression qe, int depth)
@@ -247,26 +190,13 @@ namespace Jhu.Graywulf.SqlParser
         {
             foreach (var tr in qs.EnumerateSourceTableReferences(false))
             {
-                if (tr.IsTableOrView)
+                if (!tr.IsSubquery)
                 {
-                    tr.SubstituteDefaults(defaultTableDatasetName, defaultTableSchemaName);
-                }
-                else if (tr.IsUdf)
-                {
-                    tr.SubstituteDefaults(defaultFunctionDatasetName, defaultFunctionSchemaName);
+                    tr.SubstituteDefaults(defaultDatasetName, defaultSchemaName);
                 }
             }
-        }
 
-        protected void SubstituteFunctionDefaults(Node node)
-        {
-            foreach (var fc in node.EnumerateDescendantsRecursive<FunctionCall>())
-            {
-                if (fc.FunctionReference.IsUdf)
-                {
-                    fc.FunctionReference.SubstituteDefaults(defaultFunctionDatasetName, defaultFunctionSchemaName);
-                }
-            }
+            // TODO: extend this to support Code database functions
         }
 
         /// <summary>
@@ -600,49 +530,6 @@ namespace Jhu.Graywulf.SqlParser
             }
         }
 
-        protected void ResolveFunctionReferences(Node n)
-        {
-            foreach (object o in n.Nodes)
-            {
-                // Skip the into and clause and subqueries
-                if (!(o is IntoClause))
-                {
-                    if (o is Node)
-                    {
-                        ResolveFunctionReferences((Node)o);   // Recursive call
-                    }
-                }
-            }
-
-            if (n is IFunctionReference && ((IFunctionReference)n).FunctionReference != null)
-            {
-                ResolveFunctionReference((IFunctionReference)n);
-            }
-        }
-
-        protected void ResolveFunctionReference(IFunctionReference node)
-        {
-            // *** TODO: handle sys function here
-            if (!node.FunctionReference.IsUdf)
-            {
-                throw new NotImplementedException();
-            }
-            else
-            {
-                // Check if dataset specified and make sure it's valid
-                if (node.FunctionReference.DatasetName != null)
-                {
-                    if (!schemaManager.Datasets.ContainsKey(node.FunctionReference.DatasetName))
-                    {
-                        throw CreateException(ExceptionMessages.UnresolvableDatasetReference, null, node.FunctionReference.DatasetName, (Node)node);
-                    }
-                }
-
-                node.FunctionReference.DatabaseObject =
-                    schemaManager.Datasets[node.FunctionReference.DatasetName].ScalarFunctions[node.FunctionReference.DatabaseName, node.FunctionReference.SchemaName, node.FunctionReference.DatabaseObjectName];
-            }
-        }
-
         /// <summary>
         /// Adds default aliases to columns with no aliases specified in the query
         /// </summary>
@@ -655,6 +542,7 @@ namespace Jhu.Graywulf.SqlParser
             {
                 var cr = ce.ColumnReference;
 
+                int q = 0;
                 string alias;
 
                 if (cr.ColumnAlias == null)
@@ -701,6 +589,39 @@ namespace Jhu.Graywulf.SqlParser
 
         private void CopyResultsColumns(QuerySpecification qs)
         {
+            /*
+            int q = 0;
+            foreach (var ce in qs.EnumerateSelectListColumnExpressions())
+            {
+                var cr = ce.ColumnReference;
+
+                if (cr.IsStar)
+                {
+                    if (cr.TableReference.IsUndefined)
+                    {
+                        // Copy all columns from all table sources
+                        foreach (var tr in qs.SourceTableReferences.Values)
+                        {
+                            foreach (var ccr in tr.ColumnReferences)
+                            {
+                                CopyResultsColumn(qs, ccr, ref q);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var ccr in cr.TableReference.ColumnReferences)
+                        {
+                            CopyResultsColumn(qs, ccr, ref q);
+                        }
+                    }
+                }
+                else
+                {
+                    CopyResultsColumn(qs, cr, ref q);
+                }
+            }*/
+
             int index = 0;
 
             foreach (var ce in qs.EnumerateSelectListColumnExpressions())
@@ -711,6 +632,13 @@ namespace Jhu.Graywulf.SqlParser
                 qs.ResultsTableReference.ColumnReferences.Add(cr);
             }
         }
+
+        /*
+        private void CopyResultsColumn(QuerySpecification qs, ColumnReference cr, ref int index)
+        {
+            cr.SelectListIndex = index++;
+            qs.ResultsTableReference.ColumnReferences.Add(cr);
+        }*/
 
         /// <summary>
         /// Creates and parameterizes and exception to be thrown by the name resolver.

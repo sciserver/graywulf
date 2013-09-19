@@ -17,12 +17,36 @@ namespace Jhu.Graywulf.Schema.MySql
         {
             { DatabaseObjectType.Table, "BASE TABLE" },
             { DatabaseObjectType.View, "VIEW" },
-            //{ DatabaseObjectType.SqlTableValuedFunction, "TF"},
+            {DatabaseObjectType.StoredProcedure,"PROCEDURE"},
+            {DatabaseObjectType.ScalarFunction,"FUNCTION"},
+            //{DatabaseObjectType.TableValuedFunction,"TFUNCTION"},
+           
+            
+            /*
+             { DatabaseObjectType.SqlTableValuedFunction, "FUNCTION"},
             //{ DatabaseObjectType.ClrTableValuedFunction, "FT"},
-            //{ DatabaseObjectType.SqlScalarFunction, "FN" },
-            //{ DatabaseObjectType.ClrScalarFunction, "FS" },
-            //{ DatabaseObjectType.SqlStoredProcedure, "P" },
-            //{ DatabaseObjectType.ClrStoredProcedure, "PC" },
+            { DatabaseObjectType.SqlScalarFunction, "FN" },
+            { DatabaseObjectType.ClrScalarFunction, "FS" },
+            { DatabaseObjectType.SqlStoredProcedure, "PROCEDURE" },
+            { DatabaseObjectType.ClrStoredProcedure, "sPROCEDUEa" },
+             */
+        };
+
+        public static readonly Dictionary<DatabaseObjectType, string> MySqlObjectTypeNames = new Dictionary<DatabaseObjectType, string>()
+        {
+            { DatabaseObjectType.Table, "TABLE" },
+            { DatabaseObjectType.View, "VIEW" },
+            { DatabaseObjectType.StoredProcedure, "ROUTINE" },
+            { DatabaseObjectType.ScalarFunction, "ROUTINE" },
+            
+            /*
+            { DatabaseObjectType.SqlTableValuedFunction, "FUNCTION"},
+            { DatabaseObjectType.SqlInlineTableValuedFunction, "FUNCTION"},
+            { DatabaseObjectType.ClrTableValuedFunction, "FUNCTION"},
+            { DatabaseObjectType.SqlScalarFunction, "ROUTINE" },
+            { DatabaseObjectType.ClrScalarFunction, "ROUTINE" },
+            { DatabaseObjectType.SqlStoredProcedure, "ROUTINE" },
+            { DatabaseObjectType.ClrStoredProcedure, "ROUTINE" },*/
         };
 
     }

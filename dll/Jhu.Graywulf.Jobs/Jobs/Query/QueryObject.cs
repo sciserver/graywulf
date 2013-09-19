@@ -465,8 +465,8 @@ namespace Jhu.Graywulf.Jobs.Query
                 var nr = queryFactory.Value.CreateNameResolver();
                 nr.SchemaManager = GetSchemaManager(forceReinitialize);
 
-                nr.DefaultTableSchemaName = defaultSchemaName;
-                nr.DefaultTableDatasetName = defaultDatasetName;
+                nr.DefaultSchemaName = defaultSchemaName;
+                nr.DefaultDatasetName = defaultDatasetName;
 
                 nr.Execute(selectStatement);
 
