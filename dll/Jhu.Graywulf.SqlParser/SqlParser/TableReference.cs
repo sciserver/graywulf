@@ -161,7 +161,7 @@ namespace Jhu.Graywulf.SqlParser
         {
             get
             {
-                if (isUdf || isSubquery || isComputed)
+                if (isSubquery || isComputed)
                 {
                     return String.Format("[{0}]", alias);
                 }
@@ -170,7 +170,7 @@ namespace Jhu.Graywulf.SqlParser
                     string res = String.Empty;
 
                     // If it's not resolved yet
-                    if (datasetName != null) res += datasetName + ":";
+                    if (datasetName != null) res += String.Format("[{0}]:", datasetName);
                     if (databaseName != null) res += String.Format("[{0}].", databaseName);
                     if (schemaName != null) res += String.Format("[{0}].", schemaName);
                     if (databaseObjectName != null) res += String.Format("[{0}]", databaseObjectName);
@@ -237,22 +237,6 @@ namespace Jhu.Graywulf.SqlParser
 
             this.node = qs;
         }
-
-        /*
-        public TableReference(SimpleTableSource ts)
-        {
-            InitializeMembers();
-            InterpretTableOrViewName(ts.TableOrViewName);
-            InterpretTableSource(ts);
-        }*/
-
-        /*
-        public TableReference(FunctionTableSource ts)
-        {
-            InitializeMembers();
-            InterpretTableSource(ts);
-            InterpretFunctionCall();
-        }*/
 
         public TableReference(VariableTableSource ts)
         {
@@ -516,7 +500,8 @@ namespace Jhu.Graywulf.SqlParser
             }
             else
             {
-                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableDatasetReference, datasetName, node.Line, node.Col));
+                // TODO: move this to name resolver instead
+                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableTableReference, databaseObjectName, node.Line, node.Col));
             }
 
             // Copy columns to the table reference in appropriate order
@@ -559,7 +544,7 @@ namespace Jhu.Graywulf.SqlParser
         /// </remarks>
         public string GetFullyResolvedName()
         {
-            if (isUdf || isSubquery || isComputed)
+            if (isSubquery || isComputed)
             {
                 return String.Format("[{0}]", alias);
             }

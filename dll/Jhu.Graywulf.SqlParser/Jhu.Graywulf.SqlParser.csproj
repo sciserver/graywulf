@@ -44,7 +44,10 @@
     <Compile Include="SqlParser\CommentOrWhitespace.cs" />
     <Compile Include="SqlParser\ComputedTableSource.cs" />
     <Compile Include="SqlParser\ColumnName.cs" />
+    <Compile Include="SqlParser\FunctionCall.cs" />
+    <Compile Include="SqlParser\FunctionReference.cs" />
     <Compile Include="SqlParser\Dot.cs" />
+    <Compile Include="SqlParser\IFunctionReference.cs" />
     <Compile Include="SqlParser\SelectList.cs" />
     <Compile Include="SqlParser\TableName.cs" />
     <Compile Include="SqlParser\TableValuedFunctionCall.cs" />
@@ -57,6 +60,7 @@
     </Compile>
     <Compile Include="SqlParser\SubqueryTableSource.cs" />
     <Compile Include="SqlParser\Subquery.cs" />
+    <Compile Include="SqlParser\FunctionIdentifier.cs" />
     <Compile Include="SqlParser\VariableTableSource.cs" />
     <Compile Include="SqlParser\FunctionTableSource.cs" />
     <Compile Include="SqlParser\Identifier.cs" />

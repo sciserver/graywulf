@@ -25,14 +25,15 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private int queryTimeout;
 
+        // TODO: clean this up to treat TEMP, CODE, source and STAT the same way, if possible...
         private SqlServerDataset temporaryDataset;
         private SqlServerDataset codeDataset;
 
         private DestinationTableParameters destination;
         private bool isDestinationTableInitialized;
 
-        private string temporaryDestinationTableName;
-        private bool keepTemporaryDestinationTable;
+        private string temporaryDestinationTableName;   // *** matbe delete this
+        private bool keepTemporaryDestinationTable;     // *** delete this too
 
         private string sourceDatabaseVersionName;
         private string statDatabaseVersionName;

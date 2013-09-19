@@ -135,6 +135,9 @@
   <data name="StarColumnNotAllowed" xml:space="preserve">
     <value>Stars (*) in column expressions are not allowed but found at ({1},{2}).</value>
   </data>
+  <data name="UnknownFunctionName" xml:space="preserve">
+    <value>Unknown function name found at ({1},{2}).</value>
+  </data>
   <data name="UnresolvableColumnReference" xml:space="preserve">
     <value>Unresolvable column name '{0}' found at ({1},{2}).</value>
   </data>
@@ -142,7 +145,7 @@
     <value>Unresolvable dataset name '{0}' found at ({1},{2}).</value>
   </data>
   <data name="UnresolvableTableReference" xml:space="preserve">
-    <value>Unresolvable table name '{0}' found at ({1},{2}).</value>
+    <value>Unresolvable table or view name '{0}' found at ({1},{2}).</value>
   </data>
   <data name="UnresolvableUdfReference" xml:space="preserve">
     <value>Unresolvable function name '{0}' found at ({1},{2}).</value>

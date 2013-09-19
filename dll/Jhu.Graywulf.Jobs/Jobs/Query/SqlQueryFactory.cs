@@ -105,8 +105,10 @@ namespace Jhu.Graywulf.Jobs.Query
 
             query.SourceDatabaseVersionName = settings[Settings.HotDatabaseVersionName];
             query.StatDatabaseVersionName = settings[Settings.StatDatabaseVersionName];
-            query.DefaultSchemaName = settings[Settings.DefaultSchemaName];
+
             query.DefaultDatasetName = settings[Settings.DefaultDatasetName];
+            query.DefaultSchemaName = settings[Settings.DefaultSchemaName];
+            
             query.QueryTimeout = int.Parse(settings[Settings.LongQueryTimeout]);
             query.TemporaryDestinationTableName = "output"; // ****** TODO add to settings
             query.KeepTemporaryDestinationTable = true;
@@ -135,6 +137,13 @@ namespace Jhu.Graywulf.Jobs.Query
             tempds.DatabaseVersion.Value = federation.TempDatabaseVersion;
             query.TemporaryDataset = tempds;
             query.TemporaryDataset.DefaultSchemaName = settings[Settings.TemporarySchemaName];
+
+            // Set up code database
+            var codeds = new GraywulfDataset();
+            codeds.IsOnLinkedServer = false;
+            codeds.DatabaseVersion.Value = federation.CodeDatabaseVersion;
+            query.CodeDataset = codeds;
+            query.CodeDataset.DefaultSchemaName = "dbo";    // *** TODO
         }
 
         protected override void GetInitializedQuery_SingleServer(QueryBase query, string queryString, string outputTable, SqlServerDataset mydbds, SqlServerDataset tempds)

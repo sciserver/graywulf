@@ -462,12 +462,7 @@ namespace Jhu.Graywulf.Jobs.Query
             if (interpretedQueryString == null || forceReinitialize)
             {
                 // --- Execute name resolution
-                var nr = queryFactory.Value.CreateNameResolver();
-                nr.SchemaManager = GetSchemaManager(forceReinitialize);
-
-                nr.DefaultSchemaName = defaultSchemaName;
-                nr.DefaultDatasetName = defaultDatasetName;
-
+                var nr = CreateNameResolver(forceReinitialize);
                 nr.Execute(selectStatement);
 
                 // --- Normalize where conditions
@@ -531,6 +526,17 @@ namespace Jhu.Graywulf.Jobs.Query
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        protected virtual SqlNameResolver CreateNameResolver(bool forceReinitialize)
+        {
+            var nr = queryFactory.Value.CreateNameResolver();
+            nr.SchemaManager = GetSchemaManager(forceReinitialize);
+
+            nr.DefaultTableSchemaName = defaultSchemaName;
+            nr.DefaultTableDatasetName = defaultDatasetName;
+            
+            return nr;
         }
 
         #endregion

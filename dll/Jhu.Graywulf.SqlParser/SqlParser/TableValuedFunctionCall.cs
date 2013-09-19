@@ -16,16 +16,20 @@ namespace Jhu.Graywulf.SqlParser
             set { tableReference = value; }
         }
 
-        public bool IsUdf
+        public UdfIdentifier UdfIdentifier
         {
             get
             {
                 var fi = FindDescendant<FunctionIdentifier>();
-
                 var udfi = fi.FindDescendant<UdfIdentifier>();
 
-                return udfi != null;
+                return udfi;
             }
+        }
+
+        public bool IsUdf
+        {
+            get { return UdfIdentifier != null; }
         }
 
         public TableValuedFunctionCall()
@@ -47,12 +51,5 @@ namespace Jhu.Graywulf.SqlParser
 
             return base.Interpret();
         }
-
-        /*
-        public override bool AcceptCodeGenerator(CodeGenerator cg)
-        {
-            return ((SqlCodeGen.SqlCodeGeneratorBase)cg).WriteTableOrViewName(this);
-        }
-         * */
     }
 }
