@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     {
                         var scheduler = activityContext.GetExtension<IScheduler>();
 
-                        queryPartition.DatabaseVersionName = queryPartition.Query.SourceDatabaseVersionName;
+                        //queryPartition.DatabaseVersionName = queryPartition.Query.SourceDatabaseVersionName; TODO: delete
                         queryPartition.InitializeQueryObject(context, scheduler, false);
 
                         var dss = queryPartition.FindRequiredDatasets();

@@ -457,8 +457,30 @@ namespace Jhu.Graywulf.SqlParser
                 calist = new List<ColumnAlias>(cal.EnumerateDescendants<ColumnAlias>());
             }
 
+            // Get dataset description
+            DatasetBase ds;
+            try
+            {
+                ds = schemaManager.Datasets[datasetName];
+            }
+            catch (SchemaException ex)
+            {
+                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableDatasetReference, datasetName, node.Line, node.Col), ex);
+            }
+
             int q = 0;
-            foreach (var cd in schemaManager.Datasets[datasetName].TableValuedFunctions[databaseName, schemaName, databaseObjectName].Columns.Values)
+            TableValuedFunction tvf;
+            if (ds.TableValuedFunctions.ContainsKey(databaseName, schemaName, databaseObjectName))
+            {
+                tvf = ds.TableValuedFunctions[databaseName, schemaName, databaseObjectName];
+            }
+            else
+            {
+                // TODO: move this to name resolver instead
+                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableUdfReference, databaseObjectName, node.Line, node.Col));
+            }
+
+            foreach (var cd in tvf.Columns.Values)
             {
                 var cr = new ColumnReference(this, cd);
 

@@ -25,15 +25,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private int queryTimeout;
 
-        // TODO: clean this up to treat TEMP, CODE, source and STAT the same way, if possible...
-        private SqlServerDataset temporaryDataset;
-        private SqlServerDataset codeDataset;
-
         private DestinationTableParameters destination;
         private bool isDestinationTableInitialized;
-
-        private string temporaryDestinationTableName;   // *** matbe delete this
-        private bool keepTemporaryDestinationTable;     // *** delete this too
 
         private string sourceDatabaseVersionName;
         private string statDatabaseVersionName;
@@ -69,23 +62,6 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         /// <summary>
-        /// Gets or sets the dataset to be used for temporary tables.
-        /// </summary>
-        [DataMember]
-        public SqlServerDataset TemporaryDataset
-        {
-            get { return temporaryDataset; }
-            set { temporaryDataset = value; }
-        }
-
-        [DataMember]
-        public SqlServerDataset CodeDataset
-        {
-            get { return codeDataset; }
-            set { codeDataset = value; }
-        }
-
-        /// <summary>
         /// Gets or sets the destination table of the query
         /// </summary>
         [DataMember]
@@ -103,20 +79,6 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             get { return isDestinationTableInitialized; }
             internal set { isDestinationTableInitialized = value; }
-        }
-
-        [DataMember]
-        public string TemporaryDestinationTableName
-        {
-            get { return temporaryDestinationTableName; }
-            set { temporaryDestinationTableName = value; }
-        }
-
-        [DataMember]
-        public bool KeepTemporaryDestinationTable
-        {
-            get { return keepTemporaryDestinationTable; }
-            set { keepTemporaryDestinationTable = value; }
         }
 
         [DataMember]
@@ -180,14 +142,8 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             this.queryTimeout = 60; // TODO ***
 
-            this.temporaryDataset = null;
-            this.codeDataset = null;
-
             this.destination = new DestinationTableParameters();
             this.isDestinationTableInitialized = false;
-
-            this.temporaryDestinationTableName = String.Empty;
-            this.keepTemporaryDestinationTable = false;
 
             this.sourceDatabaseVersionName = String.Empty;
             this.statDatabaseVersionName = String.Empty;
@@ -205,14 +161,8 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             this.queryTimeout = old.queryTimeout;
 
-            this.temporaryDataset = old.temporaryDataset;
-            this.codeDataset = old.codeDataset;
-
             this.destination = old.destination;
             this.isDestinationTableInitialized = old.isDestinationTableInitialized;
-
-            this.temporaryDestinationTableName = old.temporaryDestinationTableName;
-            this.keepTemporaryDestinationTable = old.keepTemporaryDestinationTable;
 
             this.sourceDatabaseVersionName = old.sourceDatabaseVersionName;
             this.statDatabaseVersionName = old.statDatabaseVersionName;

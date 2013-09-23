@@ -182,13 +182,6 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        protected override void UpdateContext()
-        {
-            base.UpdateContext();
-
-            if (this.TemporaryDatabaseInstanceReference != null) this.TemporaryDatabaseInstanceReference.Context = Context;
-        }
-
         public Table GetTemporaryTable(string tableName)
         {
             string tempname;
@@ -213,6 +206,45 @@ namespace Jhu.Graywulf.Jobs.Query
                 SchemaName = tempds.DefaultSchemaName,
                 TableName = tempname,
             };
+        }
+
+        public Table GetOutputTable()
+        {
+            return GetTemporaryTable("output");
+        }
+
+        protected void LoadCodeDatabaseInstance(bool forceReinitialize)
+        {
+            // *** TODO: merge with LoadTemporaryDatabaseInstance
+
+            if (!AssignedServerInstanceReference.IsEmpty && (CodeDatabaseInstanceReference.IsEmpty || forceReinitialize))
+            {
+                var gwds = (GraywulfDataset)query.CodeDataset;
+                gwds.Context = Context;
+                var dd = gwds.DatabaseVersion.Value.DatabaseDefinition;
+
+                dd.LoadDatabaseInstances(false);
+                foreach (var di in dd.DatabaseInstances.Values)
+                {
+                    di.Context = Context;
+                }
+
+                // Find database instance that is on the same machine
+                try
+                {
+                    // TODO: only server instance and database definition is checked here, maybe database version would be better
+                    CodeDatabaseInstanceReference.Value = dd.DatabaseInstances.Values.FirstOrDefault(ddi => ddi.ServerInstanceReference.Guid == AssignedServerInstance.Guid);
+                    CodeDatabaseInstanceReference.Value.GetConnectionString();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Cannot determine code database", ex); // TODO ***
+                }
+            }
+            else if (AssignedServerInstanceReference.IsEmpty)
+            {
+                CodeDatabaseInstanceReference.Value = null;
+            }
         }
 
         /// <summary>
@@ -252,6 +284,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     break;
                 case ExecutionMode.Graywulf:
                     LoadTemporaryDatabaseInstance(forceReinitialize);
+                    LoadCodeDatabaseInstance(forceReinitialize);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -440,7 +473,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     break;
                 case ExecutionMode.Graywulf:
                     // In graywulf mode results are written into a temporary table first
-                    var temptable = GetTemporaryTable(Query.TemporaryDestinationTableName);
+                    var temptable = GetOutputTable();
                     TemporaryTables.TryAdd(temptable.TableName, temptable);
                     DropTableOrView(temptable);     // TODO: not needed
 
@@ -548,7 +581,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 case ExecutionMode.Graywulf:
                     {
                         var sql = "SELECT tablealias.* FROM [{0}].[{1}].[{2}] AS tablealias";
-                        var temptable = GetTemporaryTable(Query.TemporaryDestinationTableName);
+                        var temptable = GetOutputTable();
 
                         sql = String.Format(sql, temptable.DatabaseName, temptable.SchemaName, temptable.TableName);
 

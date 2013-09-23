@@ -45,12 +45,15 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private string queryString;
 
-        private string databaseVersionName;
-        private string defaultDatasetName;
-        private string defaultSchemaName;
-
+        private SqlServerDataset defaultDataset;
+        private SqlServerDataset temporaryDataset;
+        private SqlServerDataset codeDataset;
         private List<DatasetBase> customDatasets;
 
+        //private string databaseVersionName;
+        //private string defaultDatasetName;
+        //private string defaultSchemaName;
+      
         private ExecutionMode executionMode;
 
         [NonSerialized]
@@ -69,6 +72,9 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private ConcurrentDictionary<string, Table> temporaryTables;
         private ConcurrentDictionary<string, View> temporaryViews;
+
+        [NonSerialized]
+        private EntityProperty<DatabaseInstance> codeDatabaseInstanceReference;
 
         #endregion
         #region Properties
@@ -135,6 +141,7 @@ namespace Jhu.Graywulf.Jobs.Query
             set { queryString = value; }
         }
 
+#if false
         /// <summary>
         /// 
         /// </summary>
@@ -161,6 +168,28 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             get { return defaultSchemaName; }
             set { defaultSchemaName = value; }
+        }
+#endif
+
+        [DataMember]
+        public SqlServerDataset DefaultDataset
+        {
+            get { return defaultDataset; }
+            set { defaultDataset = value; }
+        }
+
+        [DataMember]
+        public SqlServerDataset TemporaryDataset
+        {
+            get { return temporaryDataset; }
+            set { temporaryDataset = value; }
+        }
+
+        [DataMember]
+        public SqlServerDataset CodeDataset
+        {
+            get { return codeDataset; }
+            set { codeDataset = value; }
         }
 
         /// <summary>
@@ -234,6 +263,11 @@ namespace Jhu.Graywulf.Jobs.Query
             get { return temporaryViews; }
         }
 
+        protected EntityProperty<DatabaseInstance> CodeDatabaseInstanceReference
+        {
+            get { return codeDatabaseInstanceReference; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -269,11 +303,14 @@ namespace Jhu.Graywulf.Jobs.Query
 
             this.queryString = null;
 
-            this.databaseVersionName = null;
-            this.defaultDatasetName = null;
-            this.defaultSchemaName = null;
-
+            this.defaultDataset = null;
+            this.temporaryDataset = null;
+            this.codeDataset = null;
             this.customDatasets = new List<DatasetBase>();
+
+            /*this.databaseVersionName = null;
+            this.defaultDatasetName = null;
+            this.defaultSchemaName = null;*/
 
             this.executionMode = ExecutionMode.SingleServer;
 
@@ -288,6 +325,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
             this.temporaryTables = new ConcurrentDictionary<string, Table>(SchemaManager.Comparer);
             this.temporaryViews = new ConcurrentDictionary<string, View>(SchemaManager.Comparer);
+
+            this.codeDatabaseInstanceReference = new EntityProperty<DatabaseInstance>();
         }
 
         private void CopyMembers(QueryObject old)
@@ -304,10 +343,12 @@ namespace Jhu.Graywulf.Jobs.Query
 
             this.queryString = old.queryString;
 
-            this.databaseVersionName = old.databaseVersionName;
-            this.defaultDatasetName = old.defaultDatasetName;
-            this.defaultSchemaName = old.defaultSchemaName;
-
+            //this.databaseVersionName = old.databaseVersionName;
+            //this.defaultDatasetName = old.defaultDatasetName;
+            //this.defaultSchemaName = old.defaultSchemaName;
+            this.defaultDataset = old.defaultDataset;
+            this.temporaryDataset = old.temporaryDataset;
+            this.codeDataset = old.codeDataset;
             this.customDatasets = new List<DatasetBase>(old.customDatasets);
 
             this.executionMode = old.executionMode;
@@ -323,6 +364,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
             this.temporaryTables = new ConcurrentDictionary<string, Table>(old.temporaryTables, SchemaManager.Comparer);
             this.temporaryViews = new ConcurrentDictionary<string, View>(old.temporaryViews, SchemaManager.Comparer);
+
+            this.codeDatabaseInstanceReference = new EntityProperty<DatabaseInstance>(old.codeDatabaseInstanceReference);
         }
 
         #endregion
@@ -347,6 +390,16 @@ namespace Jhu.Graywulf.Jobs.Query
             if (assignedServerInstanceReference != null)
             {
                 assignedServerInstanceReference.Context = context;
+            }
+
+            if (temporaryDatabaseInstanceReference != null)
+            {
+                temporaryDatabaseInstanceReference.Context = Context;
+            }
+
+            if (codeDatabaseInstanceReference != null)
+            {
+                codeDatabaseInstanceReference.Context = Context;
             }
         }
 
@@ -410,7 +463,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             foreach (var tr in selectStatement.EnumerateSourceTableReferences(true))
             {
-                if (!tr.IsSubquery && !tr.IsComputed)
+                if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
                 {
                     // Filter out non-graywulf datasets
                     if (!ds.ContainsKey(tr.DatasetName) && (sc.Datasets[tr.DatasetName] is GraywulfDataset))
@@ -533,8 +586,11 @@ namespace Jhu.Graywulf.Jobs.Query
             var nr = queryFactory.Value.CreateNameResolver();
             nr.SchemaManager = GetSchemaManager(forceReinitialize);
 
-            nr.DefaultTableSchemaName = defaultSchemaName;
-            nr.DefaultTableDatasetName = defaultDatasetName;
+            nr.DefaultTableDatasetName = defaultDataset.Name;
+            nr.DefaultTableSchemaName = defaultDataset.DefaultSchemaName;
+
+            nr.DefaultFunctionDatasetName = codeDataset.Name;
+            nr.DefaultFunctionSchemaName = codeDataset.DefaultSchemaName;
             
             return nr;
         }
@@ -561,7 +617,10 @@ namespace Jhu.Graywulf.Jobs.Query
 
                         foreach (var tr in SelectStatement.EnumerateSourceTableReferences(true))
                         {
-                            SubstituteDatabaseName(tr, serverInstance, databaseVersion);
+                            if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
+                            {
+                                SubstituteDatabaseName(tr, serverInstance, databaseVersion);
+                            }
                         }
                     }
                     break;

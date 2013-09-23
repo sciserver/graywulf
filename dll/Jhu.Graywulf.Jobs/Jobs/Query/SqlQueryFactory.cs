@@ -105,13 +105,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
             query.SourceDatabaseVersionName = settings[Settings.HotDatabaseVersionName];
             query.StatDatabaseVersionName = settings[Settings.StatDatabaseVersionName];
-
-            query.DefaultDatasetName = settings[Settings.DefaultDatasetName];
-            query.DefaultSchemaName = settings[Settings.DefaultSchemaName];
             
             query.QueryTimeout = int.Parse(settings[Settings.LongQueryTimeout]);
-            query.TemporaryDestinationTableName = "output"; // ****** TODO add to settings
-            query.KeepTemporaryDestinationTable = true;
 
             // Add MyDB as custom source
             var mydbds = new GraywulfDataset();
@@ -120,6 +115,8 @@ namespace Jhu.Graywulf.Jobs.Query
             mydbds.DatabaseInstance.Value = user.GetUserDatabaseInstance(federation.MyDBDatabaseVersion);
             mydbds.CacheSchemaConnectionString();
             query.CustomDatasets.Add(mydbds);
+
+            query.DefaultDataset = mydbds;
 
             // Set up MYDB for destination
             // ****** TODO add output table name to settings */
@@ -140,6 +137,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             // Set up code database
             var codeds = new GraywulfDataset();
+            codeds.Name = "Code";   //  *** TODO
             codeds.IsOnLinkedServer = false;
             codeds.DatabaseVersion.Value = federation.CodeDatabaseVersion;
             query.CodeDataset = codeds;
@@ -151,11 +149,9 @@ namespace Jhu.Graywulf.Jobs.Query
             query.ExecutionMode = ExecutionMode.SingleServer;
             query.QueryString = queryString;
 
-            query.DefaultSchemaName = "dbo";
-            query.DefaultDatasetName = "MYDB";
             query.QueryTimeout = 7200;
-            query.TemporaryDestinationTableName = "output"; // ****** TODO add to settings
-            query.KeepTemporaryDestinationTable = true;
+
+            query.DefaultDataset = mydbds;
 
             // Add MyDB as custom source
             query.CustomDatasets.Add(mydbds);
