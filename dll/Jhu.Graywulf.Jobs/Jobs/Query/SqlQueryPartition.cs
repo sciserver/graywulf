@@ -66,8 +66,8 @@ namespace Jhu.Graywulf.Jobs.Query
             var qs = SelectStatement.EnumerateQuerySpecifications().First<QuerySpecification>();
 
             // Check if it is a partitioned query and append partitioning conditions, if necessary
-            var ts = qs.EnumerateSourceTables(false).First();
-            if (ts is SimpleTableSource && ((SimpleTableSource)ts).IsPartitioned)
+            var ts = qs.EnumerateSourceTables(false).FirstOrDefault();
+            if (ts != null && ts is SimpleTableSource && ((SimpleTableSource)ts).IsPartitioned)
             {
                 AppendPartitioningConditions(qs, (SimpleTableSource)ts);
             }
