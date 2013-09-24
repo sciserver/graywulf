@@ -111,7 +111,7 @@ namespace Jhu.Graywulf.Schema.Test
             SqlServerDataset target = CreateTarget();
 
             target.TableValuedFunctions.LoadAll();
-            Assert.IsTrue(target.TableValuedFunctions.Count == 0);
+            Assert.IsTrue(target.TableValuedFunctions.Count == 1);
 
             // TODO: test CLR and SQL functions separately
         }
@@ -122,7 +122,7 @@ namespace Jhu.Graywulf.Schema.Test
             SqlServerDataset target = CreateTarget();
 
             target.ScalarFunctions.LoadAll();
-            Assert.IsTrue(target.ScalarFunctions.Count == 0);
+            Assert.IsTrue(target.ScalarFunctions.Count == 1);
 
             // TODO: test CLR and SQL functions separately
         }

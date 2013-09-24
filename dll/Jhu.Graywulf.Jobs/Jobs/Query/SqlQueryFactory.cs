@@ -151,17 +151,20 @@ namespace Jhu.Graywulf.Jobs.Query
 
             query.QueryTimeout = 7200;
 
-            query.DefaultDataset = mydbds;
+            if (mydbds != null)
+            {
+                query.DefaultDataset = mydbds;
 
-            // Add MyDB as custom source
-            query.CustomDatasets.Add(mydbds);
+                // Add MyDB as custom source
+                query.CustomDatasets.Add(mydbds);
 
-            // Set up MYDB for destination
-            query.Destination.Table = new Table();
-            query.Destination.Table.Dataset = mydbds;
-            query.Destination.Table.DatabaseName = mydbds.DatabaseName;
-            query.Destination.Table.SchemaName = "dbo";
-            query.Destination.Operation = DestinationTableOperation.Drop | DestinationTableOperation.Create;
+                // Set up MYDB for destination
+                query.Destination.Table = new Table();
+                query.Destination.Table.Dataset = mydbds;
+                query.Destination.Table.DatabaseName = mydbds.DatabaseName;
+                query.Destination.Table.SchemaName = mydbds.DefaultSchemaName;
+                query.Destination.Operation = DestinationTableOperation.Drop | DestinationTableOperation.Create;
+            }
 
             // Set up temporary database
             query.TemporaryDataset = tempds;
