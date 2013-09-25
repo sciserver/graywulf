@@ -23,19 +23,27 @@ namespace Jhu.Graywulf.Web.UI.Query
 
         protected void RenderOutput()
         {
+            Response.Expires = -1;
+
             try
             {
                 var ji = new JobInstance(RegistryContext);
                 ji.Guid = LastQueryJobGuid;
                 ji.Load();
 
-                if (ji.JobExecutionStatus != JobExecutionState.Completed)
+                switch (ji.JobExecutionStatus)
                 {
-                    RenderExecuting();
-                }
-                else
-                {
-                    RenderResults(ji);
+                    case JobExecutionState.Completed:
+                        RenderResults(ji);
+                        break;
+                    case JobExecutionState.Scheduled:
+                    case JobExecutionState.Starting:
+                    case JobExecutionState.Executing:
+                        RenderExecuting();
+                        break;
+                    default:
+                        RenderFailed(ji);
+                        break;
                 }
             }
             catch (Exception ex)
@@ -112,6 +120,11 @@ namespace Jhu.Graywulf.Web.UI.Query
 
 
             output.WriteLine("</table>");
+        }
+
+        private void RenderFailed(JobInstance ji)
+        {
+            Response.Output.WriteLine("<p>An exception occured: {0}</p>", ji.ExceptionMessage);
         }
 
         private void RenderException(Exception ex)
