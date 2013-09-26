@@ -86,5 +86,5 @@
     </table>
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="FormButtons">
-    <jgwac:EntityButtons runat="server" ID="EntityButtons" />
+    <jgwac:EntityButtons runat="server" ID="EntityButtons" RunningStateButtonsVisible="true" />
 </asp:Content>
