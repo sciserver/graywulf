@@ -351,7 +351,7 @@ WHERE table_schema = @databaseName and table_name= @tableName;";
                             {
                                 ID = dr.GetInt32(0),
                                 Name = dr.GetString(1),
-                                DataType = DataType.GetType(dr.GetString(2)),
+                                DataType = DataType.GetType(dr.GetString(2)),       // TODO: implement mapping to SQL Server types here
                             };
 
                             res.TryAdd(cd.Name, cd);
@@ -604,7 +604,8 @@ WHERE p.SPECIFIC_NAME=@objectName AND p.SPECIFIC_SCHEMA=@databaseName; ";
 
         internal override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
-            throw new NotImplementedException();
+            // *** TODO: implement this instead of returning empty metadata
+            return new DatabaseObjectMetadata();
         }
 
         internal override void DropDatabaseObjectMetadata(DatabaseObject databaseObject)
@@ -617,9 +618,24 @@ WHERE p.SPECIFIC_NAME=@objectName AND p.SPECIFIC_SCHEMA=@databaseName; ";
             throw new NotImplementedException();
         }
 
-        internal override void LoadAllVariableMetadata(DatabaseObject databaseObject)
+        protected override void LoadAllColumnMetadata(DatabaseObject databaseObject)
         {
-            throw new NotImplementedException();
+            foreach (var v in ((IColumns)databaseObject).Columns.Values)
+            {
+                v.Metadata = new VariableMetadata();
+            }
+
+            // TODO: implement metadata load
+        }
+
+        protected override void LoadAllParameterMetadata(DatabaseObject databaseObject)
+        {
+            foreach (var v in ((IColumns)databaseObject).Columns.Values)
+            {
+                v.Metadata = new VariableMetadata();
+            }
+
+            // TODO: implement metadata load
         }
 
         internal override void DropAllVariableMetadata(DatabaseObject databaseObject)
@@ -696,17 +712,17 @@ WHERE p.SPECIFIC_NAME=@objectName AND p.SPECIFIC_SCHEMA=@databaseName; ";
         /// <returns></returns>
         protected MySqlConnection OpenConnection()
         {
-            MySqlConnectionStringBuilder csb = new MySqlConnectionStringBuilder(ConnectionString);
+            var csb = new MySqlConnectionStringBuilder(ConnectionString);
             csb.AutoEnlist = false;
 
-            MySqlConnection cn = new MySqlConnection(csb.ConnectionString);
+            var cn = new MySqlConnection(csb.ConnectionString);
             cn.Open();
             return cn;
         }
 
         public override string GetSpecializedConnectionString(string connectionString, bool integratedSecurity, string username, string password, bool enlist)
         {
-            MySqlConnectionStringBuilder csb = new MySqlConnectionStringBuilder(connectionString);
+            var csb = new MySqlConnectionStringBuilder(connectionString);
             csb.IntegratedSecurity = integratedSecurity;
             csb.UserID = username;
             csb.Password = password;

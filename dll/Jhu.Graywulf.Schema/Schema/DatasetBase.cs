@@ -425,7 +425,30 @@ namespace Jhu.Graywulf.Schema
 
         internal abstract void DropDatabaseObjectMetadata(DatabaseObject databaseObject);
 
-        internal abstract void LoadAllVariableMetadata(DatabaseObject databaseObject);
+        /// <summary>
+        /// Loads metadata of a variable (parameter, column, return value, etc.).
+        /// </summary>
+        /// <param name="variable"></param>
+        /// <returns></returns>
+        /// <remarks>Dataset is implemented to load all variable metadata of an
+        /// object in a batch to reduce roundtrips between the client and the
+        /// database server.</remarks>
+        internal void LoadAllVariableMetadata(DatabaseObject databaseObject)
+        {
+            if (databaseObject is IColumns)
+            {
+                LoadAllColumnMetadata(databaseObject);
+            }
+            
+            if (databaseObject is IParameters)
+            {
+                LoadAllParameterMetadata(databaseObject);
+            }
+        }
+
+        protected abstract void LoadAllColumnMetadata(DatabaseObject databaseObject);
+
+        protected abstract void LoadAllParameterMetadata(DatabaseObject databaseObject);
 
         internal abstract void SaveAllVariableMetadata(DatabaseObject databaseObject);
 

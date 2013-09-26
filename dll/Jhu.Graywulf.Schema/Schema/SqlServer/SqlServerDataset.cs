@@ -571,31 +571,10 @@ ORDER BY p.name";
         }
 
         /// <summary>
-        /// Loads metadata of a variable (parameter, column, return value, etc.).
-        /// </summary>
-        /// <param name="variable"></param>
-        /// <returns></returns>
-        /// <remarks>SqlServerDataset is implemented to load all variable metadata of an
-        /// object in a batch to reduce roundtrips between the client and the
-        /// database server.</remarks>
-        internal override void LoadAllVariableMetadata(DatabaseObject databaseObject)
-        {
-            if (databaseObject is IColumns)
-            {
-                LoadColumnMetadata(databaseObject);
-            }
-            
-            if (databaseObject is IParameters)
-            {
-                LoadParameterMetadata(databaseObject);
-            }
-        }
-
-        /// <summary>
         /// Loads column metadata for every column of a database object.
         /// </summary>
         /// <param name="databaseObject"></param>
-        private void LoadColumnMetadata(DatabaseObject databaseObject)
+        protected override void LoadAllColumnMetadata(DatabaseObject databaseObject)
         {
             var sql = @"
 SELECT c.name, p.name metaname, p.value
@@ -612,7 +591,7 @@ ORDER BY c.name, p.name";
         /// Loads parameter metadata of all parameters belonging to an object.
         /// </summary>
         /// <param name="databaseObject"></param>
-        private void LoadParameterMetadata(DatabaseObject databaseObject)
+        protected override void LoadAllParameterMetadata(DatabaseObject databaseObject)
         {
             var sql = @"
 SELECT c.name, p.name metaname, p.value

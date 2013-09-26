@@ -447,7 +447,7 @@ xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Themes $(ProjectDir)App_Themes
 xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\Templates $(ProjectDir)Templates /I /E /Y
 xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\CodeMirror $(ProjectDir)CodeMirror /I /E /Y
 xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\SyntaxHighlighter $(ProjectDir)SyntaxHighlighter /I /E /Y
-xcopy $(SolutionDir)docs\pages $(ProjectDir)docs\pages /I /E /Y</PreBuildEvent>
+REM xcopy $(SolutionDir)docs\pages $(ProjectDir)docs\pages /I /E /Y</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
