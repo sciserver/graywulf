@@ -17,147 +17,169 @@ namespace Jhu.Graywulf.Schema.Test.Schema
             return new MySqlDataset("test", Jhu.Graywulf.Test.Constants.TestConnectionStringMySql);
         }
 
-        [TestMethod]
-        public void TableLoadTest()
-        {
-            MySqlDataset target = CreateTarget();
-
-            // Get a single table
-            Table t1 = target.Tables["GraywulfSchemaTest", "", "Author"];
-            Assert.IsTrue(target.Tables.Count == 1);
-
-            // Get another with missing schema name
-            Table t2 = target.Tables["GraywulfSchemaTest", "", "Author"];
-            Assert.IsTrue(target.Tables.Count == 1);
-            Assert.AreEqual(t1, t2);
-
-            // Read from DB with missing schema name
-            Table t3 = target.Tables["GraywulfSchemaTest", "", "Book"];
-            Assert.IsTrue(target.Tables.Count == 2);
-            Assert.AreNotEqual(t1, t3);
-            Assert.AreEqual(t3.SchemaName, "");
-
-            // Try to load a non-existent table
-            try
-            {
-                Table t4 = target.Tables["GraywulfSchemaTest", "", "NonExistentTable"];
-                Assert.Fail();
-            }
-            catch (KeyNotFoundException)
-            {
-            }
-
-            // Try to load object that's not a table
-
-            // Use wrong database name
-        }
-
-        [TestMethod]
-        public void TableLoadAllTest()
-        {
-            MySqlDataset target = CreateTarget();
-            target.Tables.LoadAll();
-            //Assert.IsTrue(target.Tables.Count == 4);
-            Assert.IsTrue(target.Tables.IsAllLoaded);
-        }
-
-        [TestMethod]
-        public void TableColumnsTest()
-        {
-            MySqlDataset target = CreateTarget();
-
-            // Get a single table
-            Table t1 = target.Tables["GraywulfSchemaTest", "", "Author"];
-
-            Assert.IsTrue(t1.Columns.Count == 2);
-            Assert.IsTrue(t1.Columns["ID"].DataType.Name == "bigint");
-
-            // Test cache
-            Assert.AreEqual(t1.Columns, target.Tables["GraywulfSchemaTest", "", "Author"].Columns);
-            Assert.AreEqual(t1.Columns["ID"], target.Tables["GraywulfSchemaTest", "", "Author"].Columns["ID"]);
-        }
-
         //[TestMethod]
-        //public void TableRename()
+        //public void TableLoadTest()
         //{
         //    MySqlDataset target = CreateTarget();
 
+        //    // Get a single table
+        //    Table t1 = target.Tables["GraywulfSchemaTest", "", "Author"];
+        //    Assert.IsTrue(target.Tables.Count == 1);
+
+        //    // Get another with missing schema name
+        //    Table t2 = target.Tables["GraywulfSchemaTest", "", "Author"];
+        //    Assert.IsTrue(target.Tables.Count == 1);
+        //    Assert.AreEqual(t1, t2);
+
+        //    // Read from DB with missing schema name
+        //    Table t3 = target.Tables["GraywulfSchemaTest", "", "Book"];
+        //    Assert.IsTrue(target.Tables.Count == 2);
+        //    Assert.AreNotEqual(t1, t3);
+        //    Assert.AreEqual(t3.SchemaName, "");
+
+        //    // Try to load a non-existent table
+        //    try
+        //    {
+        //        Table t4 = target.Tables["GraywulfSchemaTest", "", "NonExistentTable"];
+        //        Assert.Fail();
+        //    }
+        //    catch (KeyNotFoundException)
+        //    {
+        //    }
+
+        //    // Try to load object that's not a table
+
+        //    // Use wrong database name
+        //}
+
+        //[TestMethod]
+        //public void TableLoadAllTest()
+        //{
+        //    MySqlDataset target = CreateTarget();
+        //    target.Tables.LoadAll();
+        //    //Assert.IsTrue(target.Tables.Count == 4);
+        //    Assert.IsTrue(target.Tables.IsAllLoaded);
+        //}
+
+        //[TestMethod]
+        //public void TableColumnsTest()
+        //{
+        //    MySqlDataset target = CreateTarget();
+
+        //    // Get a single table
+        //    Table t1 = target.Tables["GraywulfSchemaTest", "", "Author"];
+
+        //    Assert.IsTrue(t1.Columns.Count == 2);
+        //    Assert.IsTrue(t1.Columns["ID"].DataType.Name == "bigint");
+
+        //    // Test cache
+        //    Assert.AreEqual(t1.Columns, target.Tables["GraywulfSchemaTest", "", "Author"].Columns);
+        //    Assert.AreEqual(t1.Columns["ID"], target.Tables["GraywulfSchemaTest", "", "Author"].Columns["ID"]);
+        //}
+
+        //[TestMethod]
+        //public void TableIndexesTest()
+        //{
+        //    MySqlDataset target = CreateTarget();
+
+        //    // Get a single table
+        //    Table t1 = target.Tables["GraywulfSchemaTest", "", "Author"];
+
+        //    Assert.IsTrue(t1.Indexes.Count == 1);
+        //    Assert.IsTrue(t1.Indexes["PK_Author"].IsPrimaryKey);
+
+        //    // Test cache
+        //    Assert.AreEqual(t1.Indexes, target.Tables["GraywulfSchemaTest", "", "Author"].Indexes);
+        //    Assert.AreEqual(t1.Indexes["PK_Author"], target.Tables["GraywulfSchemaTest", "", "Author"].Indexes["PK_Author"]);
+        //}
+
+        //[TestMethod]
+        //public void TableIndexesColumnsTest()
+        //{
+        //    MySqlDataset target = CreateTarget();
+
+        //    // Get a single table
+        //    IndexColumn ic = target.Tables["GraywulfSchemaTest", "", "Author"].Indexes["PK_Author"].Columns["ID"];
+        //    Assert.IsTrue(ic.Ordering == IndexColumnOrdering.Ascending);
+
+        //    // Test cache
+        //    Assert.AreEqual(ic, target.Tables["GraywulfSchemaTest", "", "Author"].Indexes["PK_Author"].Columns["ID"]);
+        //}
+
+        //[TestMethod]
+        //public void TableValueFunctionTest()
+        //{
+        //    MySqlDataset target = CreateTarget();
+
+        //    target.TableValuedFunctions.LoadAll();
+        //    Assert.IsTrue(target.TableValuedFunctions.Count == 0);
+        //}
+
+        //[TestMethod]
+        //public void ScalarFunctionTest()
+        //{
+        //    MySqlDataset target = CreateTarget();
+
+        //    target.ScalarFunctions.LoadAll();
+        //    Assert.IsTrue(target.ScalarFunctions.Count == 0);
+        //}
+
+        //[TestMethod]
+        //public void StoredProcedureTest()
+        //{
+        //    MySqlDataset target = CreateTarget();
+
+        //    target.StoredProcedures.LoadAll();
+        //    Assert.IsTrue(target.StoredProcedures.Count == 1);
+        //}
+
+        //[TestMethod]
+        //public void StoredProcedureParametersTest()
+        //{
+        //    MySqlDataset target = CreateTarget();
+
+        //    StoredProcedure sp = target.StoredProcedures["GraywulfSchemaTest", "", "spTest"];
+
+        //    Assert.IsTrue(sp.Parameters.Count == 1);
+        //    Assert.IsTrue(sp.Parameters["hello"].DataType.Name == "varchar");
+        //}
 
 
+        //[TestMethod]
+        //public void MetaObjectsTest()
+        //{
+        //    MySqlDataset target = CreateTarget();
 
+        //    Table t1 = target.Tables["GraywulfSchemaTest", "", "book"];
+        //    Assert.IsTrue(t1.Metadata.Summary == "this is my own table comment");
+
+        //    Table t2 = target.Tables["GraywulfSchemaTest", "", "author"];
+        //    Assert.IsTrue(t2.Metadata.Summary == "");
+        //}
+
+        //[TestMethod]
+        //public void MetaColumnsTest()
+        //{
+        //    MySqlDataset target = CreateTarget();
+
+        //    Table t1 = target.Tables["GraywulfSchemaTest", "", "book"];
+        //    Column c1 = t1.Columns["ID"];
+        //    Assert.IsTrue(c1.Metadata.Summary == "id of user");
+
+        //    Table t2 = target.Tables["GraywulfSchemaTest", "", "author"];
+        //    Column c2 = t2.Columns["ID"];
+        //    Assert.IsTrue(c2.Metadata.Summary == "");
         //}
 
         [TestMethod]
-        public void TableIndexesTest()
+        public void MetaParametersTest()
         {
             MySqlDataset target = CreateTarget();
 
-            // Get a single table
-            Table t1 = target.Tables["GraywulfSchemaTest", "", "Author"];
-
-            Assert.IsTrue(t1.Indexes.Count == 1);
-            Assert.IsTrue(t1.Indexes["PK_Author"].IsPrimaryKey);
-
-            // Test cache
-            Assert.AreEqual(t1.Indexes, target.Tables["GraywulfSchemaTest", "", "Author"].Indexes);
-            Assert.AreEqual(t1.Indexes["PK_Author"], target.Tables["GraywulfSchemaTest", "", "Author"].Indexes["PK_Author"]);
+            Parameter p = target.StoredProcedures["GraywulfSchemaTest", "", "spTest"].Parameters["hello"];
+            //Parameter p = sp.Parameters["hello"];
+            Assert.IsTrue(p.Metadata.Summary == "spTestComment");
         }
 
-        [TestMethod]
-        public void TableIndexesColumnsTest()
-        {
-            MySqlDataset target = CreateTarget();
-
-            // Get a single table
-            IndexColumn ic = target.Tables["GraywulfSchemaTest", "", "Author"].Indexes["PK_Author"].Columns["ID"];
-            Assert.IsTrue(ic.Ordering == IndexColumnOrdering.Ascending);
-
-            // Test cache
-            Assert.AreEqual(ic, target.Tables["GraywulfSchemaTest", "", "Author"].Indexes["PK_Author"].Columns["ID"]);
-        }
-
-        [TestMethod]
-        public void TableValueFunctionTest()
-        {
-            MySqlDataset target = CreateTarget();
-
-            target.TableValuedFunctions.LoadAll();
-            Assert.IsTrue(target.TableValuedFunctions.Count == 0);
-
-            // TODO: test CLR and SQL functions separately
-        }
-
-        [TestMethod]
-        public void ScalarFunctionTest()
-        {
-            MySqlDataset target = CreateTarget();
-
-            target.ScalarFunctions.LoadAll();
-            Assert.IsTrue(target.ScalarFunctions.Count == 0);
-
-            // TODO: test CLR and SQL functions separately
-        }
-
-        [TestMethod]
-        public void StoredProcedureTest()
-        {
-            MySqlDataset target = CreateTarget();
-
-            target.StoredProcedures.LoadAll();
-            Assert.IsTrue(target.StoredProcedures.Count == 1);
-
-            // TODO: test CLR and SQL functions separately
-        }
-
-        [TestMethod]
-        public void StoredProcedureParametersTest()
-        {
-            MySqlDataset target = CreateTarget();
-
-            StoredProcedure sp = target.StoredProcedures["GraywulfSchemaTest", "", "spTest"];
-
-            Assert.IsTrue(sp.Parameters.Count == 1);
-            Assert.IsTrue(sp.Parameters["hello"].DataType.Name == "varchar");
-        }
     }
 }
