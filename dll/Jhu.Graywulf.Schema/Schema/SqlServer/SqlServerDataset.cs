@@ -335,7 +335,7 @@ ORDER BY c.column_id";
                                 IsIdentity = dr.GetBoolean(7)
                             };
 
-                            cd.DataType = DataType.GetType(
+                            cd.DataType = GetType(
                                 dr.GetString(2),
                                 dr.GetInt16(3),
                                 dr.GetByte(4),
@@ -436,7 +436,7 @@ ORDER BY ic.key_ordinal";
                                 IsNullable = dr.GetBoolean(9)
                             };
 
-                            ic.DataType = DataType.GetType(
+                            ic.DataType = GetType(
                                 dr.GetString(4),
                                 dr.GetInt16(5),
                                 dr.GetByte(6),
@@ -489,7 +489,7 @@ ORDER BY p.parameter_id";
                                 DefaultValue = dr.IsDBNull(8) ? null : dr.GetValue(8),
                             };
 
-                            par.DataType = DataType.GetType(
+                            par.DataType = GetType(
                                 dr.GetString(3),
                                 dr.GetInt16(4),
                                 dr.GetByte(5),
@@ -878,6 +878,7 @@ WHERE s.name = @schemaName AND o.name = @objectName
 
             return csb.ConnectionString;
         }
+
         public override DataType GetType(string name)
         {
             switch (name.ToLowerInvariant().Trim())
@@ -945,6 +946,24 @@ WHERE s.name = @schemaName AND o.name = @objectName
                 default:
                     throw new ArgumentOutOfRangeException("name");
             }
+        }
+
+        private DataType GetType(string name, short size)
+        {
+            var t = GetType(name);
+            t.Size = size;
+
+            return t;
+        }
+
+        private DataType GetType(string name, short size, byte scale, byte precision)
+        {
+            var t = GetType(name);
+            t.Size = size;
+            t.Scale = scale;
+            t.Precision = precision;
+
+            return t;
         }
 
     }

@@ -116,6 +116,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nm.vo.elte.hu", "nm.vo.elte.hu", "{43F275D3-D7BC-4F21-981B-30082B53C768}"
 	ProjectSection(SolutionItems) = preProject
 		config\nm.vo.elte.hu\activities.config = config\nm.vo.elte.hu\activities.config
+		config\nm.vo.elte.hu\app.config = config\nm.vo.elte.hu\app.config
 		config\nm.vo.elte.hu\cluster.config = config\nm.vo.elte.hu\cluster.config
 		config\nm.vo.elte.hu\connectionStrings.config = config\nm.vo.elte.hu\connectionStrings.config
 		config\nm.vo.elte.hu\domain.config = config\nm.vo.elte.hu\domain.config

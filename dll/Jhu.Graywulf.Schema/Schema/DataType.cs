@@ -606,24 +606,6 @@ namespace Jhu.Graywulf.Schema
 
         // TODO: missing: cursor, hierarchyid, table
 
-        public static DataType GetType(string name, short size)
-        {
-            var t = GetType(name);
-            t.Size = size;
-
-            return t;
-        }
-
-        public static DataType GetType(string name, short size, byte scale, byte precision)
-        {
-            var t = GetType(name);
-            t.Size = size;
-            t.Scale = scale;
-            t.Precision = precision;
-
-            return t;
-        }
-
         public static DataType GetType(Type type)
         {
             if (type == typeof(sbyte))
