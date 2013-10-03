@@ -271,6 +271,8 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         public abstract string GetFullyResolvedName();
 
+
+        public abstract DataType GetType(string name);
         /// <summary>
         /// When overloaded in derived classes, returns the fully qualified name of an object
         /// </summary>

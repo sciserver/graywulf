@@ -878,5 +878,74 @@ WHERE s.name = @schemaName AND o.name = @objectName
 
             return csb.ConnectionString;
         }
+        public override DataType GetType(string name)
+        {
+            switch (name.ToLowerInvariant().Trim())
+            {
+                case Constants.TypeNameTinyInt:
+                    return DataType.TinyInt;
+                case Constants.TypeNameSmallInt:
+                    return DataType.SmallInt;
+                case Constants.TypeNameInt:
+                    return DataType.Int;
+                case Constants.TypeNameBigInt:
+                    return DataType.BigInt;
+                case Constants.TypeNameBit:
+                    return DataType.Bit;
+                case Constants.TypeNameDecimal:
+                    return DataType.Decimal;
+                case Constants.TypeNameSmallMoney:
+                    return DataType.SmallMoney;
+                case Constants.TypeNameMoney:
+                    return DataType.Money;
+                case Constants.TypeNameNumeric:
+                    return DataType.Numeric;
+                case Constants.TypeNameReal:
+                    return DataType.Real;
+                case Constants.TypeNameFloat:
+                    return DataType.Float;
+                case Constants.TypeNameDate:
+                    return DataType.Date;
+                case Constants.TypeNameTime:
+                    return DataType.Time;
+                case Constants.TypeNameSmallDateTime:
+                    return DataType.SmallDateTime;
+                case Constants.TypeNameDateTime:
+                    return DataType.DateTime;
+                case Constants.TypeNameDateTime2:
+                    return DataType.DateTime2;
+                case Constants.TypeNameDateTimeOffset:
+                    return DataType.DateTimeOffset;
+                case Constants.TypeNameChar:
+                    return DataType.Char;
+                case Constants.TypeNameVarChar:
+                    return DataType.VarChar;
+                case Constants.TypeNameText:
+                    return DataType.Text;
+                case Constants.TypeNameNChar:
+                    return DataType.NChar;
+                case Constants.TypeNameNVarChar:
+                    return DataType.NVarChar;
+                case Constants.TypeNameNText:
+                    return DataType.NText;
+                case Constants.TypeNameXml:
+                    return DataType.Xml;
+                case Constants.TypeNameBinary:
+                    return DataType.Binary;
+                case Constants.TypeNameVarBinary:
+                    return DataType.VarBinary;
+                case Constants.TypeNameImage:
+                    return DataType.Image;
+                case Constants.TypeNameSqlVariant:
+                    return DataType.SqlVariant;
+                case Constants.TypeNameTimestamp:
+                    return DataType.Timestamp;
+                case Constants.TypeNameUniqueIdentifier:
+                    return DataType.UniqueIdentifier;
+                default:
+                    throw new ArgumentOutOfRangeException("name");
+            }
+        }
+
     }
 }

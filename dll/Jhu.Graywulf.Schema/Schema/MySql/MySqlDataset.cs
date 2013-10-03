@@ -337,7 +337,7 @@ WHERE table_schema = @databaseName and table_name= @tableName;";
                             {
                                 ID = dr.GetInt32(0),
                                 Name = dr.GetString(1),
-                                DataType = DataType.GetMySqlType(dr.GetString(2)),       // TODO: implement mapping to SQL Server types here
+                                DataType = GetType(dr.GetString(2)),       // TODO: implement mapping to SQL Server types here
                             };
 
                             res.TryAdd(cd.Name, cd);
@@ -461,7 +461,7 @@ where kcu.TABLE_NAME LIKE @tableName AND kcu.CONSTRAINT_NAME=@indexName;";
                                 Ordering = IndexColumnOrdering.Ascending
                             };
                             ic.IsIdentity = dr.GetValue(3).ToString() != "0" ? true : false;
-                            ic.DataType = DataType.GetMySqlType(
+                            ic.DataType = GetType(
                                 dr.GetString(4)/*,
                                 dr.IsDBNull(5) ? dr.GetInt16(5)  : new short(),
                                 dr.IsDBNull(6) ? dr.GetByte(6) : Byte.MinValue,
@@ -534,7 +534,7 @@ WHERE p.SPECIFIC_NAME=@objectName AND p.SPECIFIC_SCHEMA=@databaseName; ";
                                     else if (dr.GetString(2) == "INOUT") { par.Direction = ParameterDirection.InputOutput; }
                                 }
                                 else { par.Direction = ParameterDirection.ReturnValue; }
-                                par.DataType = DataType.GetMySqlType(
+                                par.DataType = GetType(
                                     dr.GetString(3)/*,
                                     dr.GetInt16(4),
                                     dr.GetByte(5),
@@ -683,7 +683,7 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@objtype", MySqlDbType.VarChar, 776).Value = obj.GetMySqlType().ToString();
+                    cmd.Parameters.Add("@objtype", MySqlDbType.VarChar, 776).Value = obj.GetType().ToString();
                     cmd.Parameters.Add("@objoldname", MySqlDbType.VarChar, 776).Value = oldname;
                     cmd.Parameters.Add("@objnewname", MySqlDbType.VarChar, 776).Value = objectName;
 
@@ -717,6 +717,98 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
         protected override DatasetStatistics LoadDatasetStatistics()
         {
             throw new NotImplementedException();
+        }
+
+        public override DataType GetType(string name)
+        {
+            switch (name.ToLowerInvariant().Trim())
+            {
+                case Constants.TypeNameTinyInt:
+                    return DataType.TinyInt;
+                case Constants.TypeNameSmallInt:
+                    return DataType.SmallInt;
+                case Constants.TypeNameInt:
+                    return DataType.Int;
+                case Constants.TypeNameBigInt:
+                    return DataType.BigInt;
+                case Constants.TypeNameBit:
+                    return DataType.Bit;
+                case Constants.TypeNameDecimal:
+                    return DataType.Decimal;
+                case Constants.TypeNameSmallMoney:
+                    return DataType.SmallMoney;
+                case Constants.TypeNameMoney:
+                    return DataType.Money;
+                case Constants.TypeNameNumeric:
+                    return DataType.Numeric;
+                case Constants.TypeNameReal:
+                    return DataType.Real;
+                case Constants.TypeNameFloat:
+                    return DataType.Float;
+                case Constants.TypeNameDate:
+                    return DataType.Date;
+                case Constants.TypeNameTime:
+                    return DataType.Time;
+                case Constants.TypeNameSmallDateTime:
+                    return DataType.SmallDateTime;
+                case Constants.TypeNameDateTime:
+                    return DataType.DateTime;
+                case Constants.TypeNameDateTime2:
+                    return DataType.DateTime2;
+                case Constants.TypeNameDateTimeOffset:
+                    return DataType.DateTimeOffset;
+                case Constants.TypeNameChar:
+                    return DataType.Char;
+                case Constants.TypeNameVarChar:
+                    return DataType.VarChar;
+                case Constants.TypeNameText:
+                    return DataType.Text;
+                case Constants.TypeNameNChar:
+                    return DataType.NChar;
+                case Constants.TypeNameNVarChar:
+                    return DataType.NVarChar;
+                case Constants.TypeNameNText:
+                    return DataType.NText;
+                case Constants.TypeNameXml:
+                    return DataType.Xml;
+                case Constants.TypeNameBinary:
+                    return DataType.Binary;
+                case Constants.TypeNameVarBinary:
+                    return DataType.VarBinary;
+                case Constants.TypeNameImage:
+                    return DataType.Image;
+                case Constants.TypeNameSqlVariant:
+                    return DataType.SqlVariant;
+                case Constants.TypeNameTimestamp:
+                    return DataType.Timestamp;
+                case Constants.TypeNameUniqueIdentifier:
+                    return DataType.UniqueIdentifier;
+
+                case Constants.TypeNameYear:
+                    return DataType.TinyInt;
+                case Constants.TypeNameTinyBlob:
+                    return DataType.NVarChar;
+                case Constants.TypeNameBlob:
+                    return DataType.Text;
+                case Constants.TypeNameMediumBlob:
+                    return DataType.Text;
+                case Constants.TypeNameLongBlob:
+                    return DataType.Text;
+                case Constants.TypeNameSet:
+                    return DataType.NVarChar;
+                case Constants.TypeNameEnum:
+                    return DataType.Text;
+                case Constants.TypeNameTinyText:
+                    return DataType.Text;
+                case Constants.TypeNameMediumText:
+                    return DataType.Text;
+                case Constants.TypeNameLongText:
+                    return DataType.Text;
+                case Constants.TypeNameGeometry:
+                    return DataType.Text;
+                default:
+                    throw new ArgumentOutOfRangeException("name");
+            }
         }
 
         /// <summary>
