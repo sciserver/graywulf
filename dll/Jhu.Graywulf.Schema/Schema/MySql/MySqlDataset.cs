@@ -337,7 +337,7 @@ WHERE table_schema = @databaseName and table_name= @tableName;";
                             {
                                 ID = dr.GetInt32(0),
                                 Name = dr.GetString(1),
-                                DataType = DataType.GetType(dr.GetString(2)),       // TODO: implement mapping to SQL Server types here
+                                DataType = DataType.GetMySqlType(dr.GetString(2)),       // TODO: implement mapping to SQL Server types here
                             };
 
                             res.TryAdd(cd.Name, cd);
@@ -461,7 +461,7 @@ where kcu.TABLE_NAME LIKE @tableName AND kcu.CONSTRAINT_NAME=@indexName;";
                                 Ordering = IndexColumnOrdering.Ascending
                             };
                             ic.IsIdentity = dr.GetValue(3).ToString() != "0" ? true : false;
-                            ic.DataType = DataType.GetType(
+                            ic.DataType = DataType.GetMySqlType(
                                 dr.GetString(4)/*,
                                 dr.IsDBNull(5) ? dr.GetInt16(5)  : new short(),
                                 dr.IsDBNull(6) ? dr.GetByte(6) : Byte.MinValue,
@@ -534,7 +534,7 @@ WHERE p.SPECIFIC_NAME=@objectName AND p.SPECIFIC_SCHEMA=@databaseName; ";
                                     else if (dr.GetString(2) == "INOUT") { par.Direction = ParameterDirection.InputOutput; }
                                 }
                                 else { par.Direction = ParameterDirection.ReturnValue; }
-                                par.DataType = DataType.GetType(
+                                par.DataType = DataType.GetMySqlType(
                                     dr.GetString(3)/*,
                                     dr.GetInt16(4),
                                     dr.GetByte(5),
@@ -683,7 +683,7 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.Add("@objtype", MySqlDbType.VarChar, 776).Value = obj.GetType().ToString();
+                    cmd.Parameters.Add("@objtype", MySqlDbType.VarChar, 776).Value = obj.GetMySqlType().ToString();
                     cmd.Parameters.Add("@objoldname", MySqlDbType.VarChar, 776).Value = oldname;
                     cmd.Parameters.Add("@objnewname", MySqlDbType.VarChar, 776).Value = objectName;
 

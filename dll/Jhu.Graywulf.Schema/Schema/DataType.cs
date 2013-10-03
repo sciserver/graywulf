@@ -675,6 +675,98 @@ namespace Jhu.Graywulf.Schema
             }
         }
 
+        public static DataType GetMySqlType(string name)
+        {
+            switch (name.ToLowerInvariant().Trim())
+            {
+                case Constants.TypeNameTinyInt:
+                    return TinyInt;
+                case Constants.TypeNameSmallInt:
+                    return SmallInt;
+                case Constants.TypeNameInt:
+                    return Int;
+                case Constants.TypeNameBigInt:
+                    return BigInt;
+                case Constants.TypeNameBit:
+                    return Bit;
+                case Constants.TypeNameDecimal:
+                    return Decimal;
+                case Constants.TypeNameSmallMoney:
+                    return SmallMoney;
+                case Constants.TypeNameMoney:
+                    return Money;
+                case Constants.TypeNameNumeric:
+                    return Numeric;
+                case Constants.TypeNameReal:
+                    return Real;
+                case Constants.TypeNameFloat:
+                    return Float;
+                case Constants.TypeNameDate:
+                    return Date;
+                case Constants.TypeNameTime:
+                    return Time;
+                case Constants.TypeNameSmallDateTime:
+                    return SmallDateTime;
+                case Constants.TypeNameDateTime:
+                    return DateTime;
+                case Constants.TypeNameDateTime2:
+                    return DateTime2;
+                case Constants.TypeNameDateTimeOffset:
+                    return DateTimeOffset;
+                case Constants.TypeNameChar:
+                    return Char;
+                case Constants.TypeNameVarChar:
+                    return VarChar;
+                case Constants.TypeNameText:
+                    return Text;
+                case Constants.TypeNameNChar:
+                    return NChar;
+                case Constants.TypeNameNVarChar:
+                    return NVarChar;
+                case Constants.TypeNameNText:
+                    return NText;
+                case Constants.TypeNameXml:
+                    return Xml;
+                case Constants.TypeNameBinary:
+                    return Binary;
+                case Constants.TypeNameVarBinary:
+                    return VarBinary;
+                case Constants.TypeNameImage:
+                    return Image;
+                case Constants.TypeNameSqlVariant:
+                    return SqlVariant;
+                case Constants.TypeNameTimestamp:
+                    return Timestamp;
+                case Constants.TypeNameUniqueIdentifier:
+                    return UniqueIdentifier;
+
+                case Constants.TypeNameYear:
+                    return TinyInt;
+                case Constants.TypeNameTinyBlob:
+                    return NVarChar;
+                case Constants.TypeNameBlob:
+                    return Text;
+                case Constants.TypeNameMediumBlob:
+                    return Text;
+                case Constants.TypeNameLongBlob:
+                    return Text;
+                case Constants.TypeNameSet:
+                    return NVarChar;
+                case Constants.TypeNameEnum:
+                    return Text;
+                case Constants.TypeNameTinyText:
+                    return Text;
+                case Constants.TypeNameMediumText:
+                    return Text;
+                case Constants.TypeNameLongText:
+                    return Text;
+                case Constants.TypeNameGeometry:
+                    return Text;
+                default:
+                    throw new ArgumentOutOfRangeException("name");
+            }
+        }
+
         public static DataType GetType(string name, short size)
         {
             var t = GetType(name);
