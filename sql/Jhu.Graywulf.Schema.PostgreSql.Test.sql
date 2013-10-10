@@ -12,7 +12,7 @@ CREATE TABLE TableWithPrimaryKey (
 	CONSTRAINT PK_TableWithPrimaryKey PRIMARY KEY ( ID)  
 );
 
-CREATE TABLE Tablewithalltypes(
+CREATE TABLE SampleData(
 	"column_smallint"			SMALLINT,
 	"column_integer"			INTEGER,
 	"column_bigint"				BIGINT,
