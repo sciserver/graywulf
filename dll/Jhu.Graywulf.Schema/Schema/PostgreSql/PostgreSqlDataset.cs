@@ -545,15 +545,16 @@ p.NUMERIC_PRECISION
 FROM
 
 INFORMATION_SCHEMA.PARAMETERS p
+INNER JOIN INFORMATION_SCHEMA.ROUTINES r ON r.SPECIFIC_NAME = p.SPECIFIC_NAME
 
-WHERE p.SPECIFIC_NAME=@objectName AND p.SPECIFIC_SCHEMA=@databaseName; ";
+WHERE r.ROUTINE_NAME = @objectName AND p.SPECIFIC_SCHEMA=@schemaName; ";
 
             sql = String.Format(sql, DatabaseObjectType.Table);
             using (var cn = OpenConnection())
             {
                 using (var cmd = new NpgsqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@databaseName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = obj.DatabaseName;
+                    cmd.Parameters.Add("@schemaName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = obj.SchemaName;
                     cmd.Parameters.Add("@objectName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = obj.ObjectName;
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -590,7 +591,34 @@ WHERE p.SPECIFIC_NAME=@objectName AND p.SPECIFIC_SCHEMA=@databaseName; ";
 
         internal override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
-            throw new NotImplementedException();
+            var sql = @"SELECT table_comment comment 
+FROM information_schema.tables t
+WHERE t.table_schema = @schemaName AND t.table_name = @objectName
+UNION
+SELECT routine_comment comment
+FROM information_schema.routines r
+WHERE r.routine_schema = @schemaName AND r.routine_name = @objectName ;";
+
+            using (var cn = OpenConnection())
+            {
+                using (var cmd = new NpgsqlCommand(sql, cn))
+                {
+                    cmd.Parameters.Add("@schemaName", NpgsqlTypes.NpgsqlDbType.Varchar).Value = databaseObject.SchemaName;
+                    cmd.Parameters.Add("@objectName", NpgsqlTypes.NpgsqlDbType.Varchar).Value = databaseObject.ObjectName;
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        var meta = new DatabaseObjectMetadata();
+
+                        while (dr.Read())
+                        {
+                            meta.Summary = dr.GetString(0);
+                        }
+
+                        return meta;
+                    }
+                }
+            }
         }
 
         internal override void DropDatabaseObjectMetadata(DatabaseObject databaseObject)
@@ -603,9 +631,62 @@ WHERE p.SPECIFIC_NAME=@objectName AND p.SPECIFIC_SCHEMA=@databaseName; ";
             throw new NotImplementedException();
         }
 
-        internal void LoadAllVariableMetadata(DatabaseObject databaseObject)
+        protected override void LoadAllColumnMetadata(DatabaseObject databaseObject)
         {
-            throw new NotImplementedException();
+            var sql = @"
+SELECT c.column_name,pgd.description
+FROM pg_catalog.pg_statio_all_tables as st
+  inner join pg_catalog.pg_description pgd on (pgd.objoid=st.relid)
+  inner join information_schema.columns c on (pgd.objsubid=c.ordinal_position
+    and  c.table_schema=@schemaName and c.table_name=@objectName);";
+            LoadAllVariableMetadata(sql, databaseObject, ((IColumns)databaseObject).Columns);
+        }
+
+        protected override void LoadAllParameterMetadata(DatabaseObject databaseObject)
+        {
+            var sql = @"
+SELECT p.parameter_name, r.routine_comment
+FROM information_schema.routines r
+INNER JOIN information_schema.parameters p ON p.specific_name = r.routine_name
+WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
+
+            LoadAllVariableMetadata(sql, databaseObject, ((IParameters)databaseObject).Parameters);
+        }
+
+        private void LoadAllVariableMetadata(string sql, DatabaseObject databaseObject, IDictionary variables)
+        {
+            foreach (Variable v in variables.Values)
+            {
+                v.Metadata = new VariableMetadata();
+            }
+
+            using (var cn = OpenConnection())
+            {
+                using (var cmd = new NpgsqlCommand(sql, cn))
+                {
+                    cmd.Parameters.Add("@schemaName", NpgsqlTypes.NpgsqlDbType.Varchar).Value = databaseObject.SchemaName;
+                    cmd.Parameters.Add("@objectName", NpgsqlTypes.NpgsqlDbType.Varchar).Value = databaseObject.ObjectName;
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        string variablename = null;
+                        VariableMetadata meta = null;
+
+                        while (dr.Read())
+                        {
+                            string name = dr.GetString(0);
+                            string value = dr.GetString(1);
+
+                            if (name != variablename)
+                            {
+                                meta = ((Variable)variables[name]).Metadata;
+                                variablename = name;
+                            }
+                            meta.Summary = value;
+                        }
+                    }
+                }
+            }
         }
 
         internal override void DropAllVariableMetadata(DatabaseObject databaseObject)
@@ -704,18 +785,97 @@ WHERE p.SPECIFIC_NAME=@objectName AND p.SPECIFIC_SCHEMA=@databaseName; ";
 
         public override DataType GetType(string name)
         {
-            throw new NotImplementedException();
+            switch (name.ToLowerInvariant().Trim())
+            {
+                case Constants.TypeNameSmallInt:
+                    return DataType.SmallInt;
+                case Constants.TypeNameInt:
+                    return DataType.Int;
+                case Constants.TypeNameBigInt:
+                    return DataType.BigInt;
+                case Constants.TypeNameNumeric:
+                    return DataType.Numeric;
+                case Constants.TypeNameReal:
+                    return DataType.Real;
+                case Constants.TypeNameDoublePrecisione:
+                    return DataType.Real;
+                case Constants.TypeNameMoney:
+                    return DataType.Money;
+                case Constants.TypeNameVarChar:
+                    return DataType.VarChar;
+                case Constants.TypeNameChar:
+                    return DataType.Char;
+                case Constants.TypeNameText:
+                    return DataType.Text;
+                case Constants.TypeNameBytea:
+                    return DataType.Binary;
+                case Constants.TypeNameTimestamp:
+                    return DataType.Timestamp;
+                case Constants.TypeNameTimestampWithTimeZone:
+                    return DataType.Timestamp;
+                case Constants.TypeNameDate:
+                    return DataType.Date;
+                case Constants.TypeNameTime:
+                    return DataType.Time;
+                case Constants.TypeNameTimeWithTimeZone:
+                    return DataType.Time;
+                case Constants.TypeNameInterval:
+                    return DataType.VarChar;// converting to varchar, need to convert
+                case Constants.TypeNameBoolean:
+                    return DataType.Bit;
+                case Constants.TypeNamePoint:
+                    return DataType.VarChar;
+                case Constants.TypeNameLine:
+                    return DataType.VarChar;
+                case Constants.TypeNameLseg:
+                    return DataType.VarChar;
+                case Constants.TypeNameBox:
+                    return DataType.VarChar;
+                case Constants.TypeNamePath:
+                    return DataType.VarChar;
+                case Constants.TypeNamePolygon:
+                    return DataType.VarChar;
+                case Constants.TypeNameCircle:
+                    return DataType.VarChar;
+                case Constants.TypeNameCidr:
+                    return DataType.VarChar;
+                case Constants.TypeNameInet:
+                    return DataType.VarChar;
+                case Constants.TypeNameMacaddr:
+                    return DataType.VarChar;
+                case Constants.TypeNameBit:
+                    return DataType.Bit;
+                case Constants.TypeNameBitVarying:
+                    return DataType.Bit;//check is it works
+                case Constants.TypeNameTsvector:
+                    return DataType.VarChar;
+                case Constants.TypeNameUuid:
+                    return DataType.VarChar;
+                case Constants.TypeNameXml:
+                    return DataType.Xml;
+                case Constants.TypeNameJson:
+                    return DataType.Text;
+                case Constants.TypeNameArray:
+                    return DataType.VarChar;//need to modify
+                case Constants.TypeNameInt4Range:
+                    return DataType.Int;
+                case Constants.TypeNameInt8Range:
+                    return DataType.BigInt;
+                case Constants.TypeNameNumRange:
+                    return DataType.Numeric;
+                case Constants.TypeNameTsRange:
+                    return DataType.Timestamp;
+                case Constants.TypeNameTstzRange:
+                    return DataType.Timestamp;
+                case Constants.TypeNameDateRange:
+                    return DataType.Date;
+                case Constants.TypeNameOid:
+                    return DataType.VarChar;
+                default:
+                    throw new ArgumentOutOfRangeException("name");
+            }
         }
 
-        protected override void LoadAllColumnMetadata(DatabaseObject databaseObject)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void LoadAllParameterMetadata(DatabaseObject databaseObject)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
 

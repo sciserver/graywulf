@@ -137,26 +137,59 @@ namespace Jhu.Graywulf.Schema.Test.Schema
         //    // TODO: test CLR and SQL functions separately
         //}
 
+        [TestMethod]
+        public void StoredProcedureTest()
+        {
+            PostgreSqlDataset target = CreateTarget();
+
+            target.StoredProcedures.LoadAll();
+            Assert.IsTrue(target.StoredProcedures.Count == 1);
+
+            // TODO: test CLR and SQL functions separately
+        }
+
+        [TestMethod]
+        public void StoredProcedureParametersTest()
+        {
+            PostgreSqlDataset target = CreateTarget();
+
+            StoredProcedure sp = target.StoredProcedures["GraywulfSchemaTest", "public", "sptest"];
+            Assert.IsTrue(target.StoredProcedures.Count == 1);
+
+            Assert.IsTrue(sp.Parameters.Count == 1);
+            Assert.IsTrue(sp.Parameters["hello"].DataType.Name == "varchar");
+        }
+
         //[TestMethod]
-        //public void StoredProcedureTest()
+        //public void MetaObjectsTest()
         //{
         //    PostgreSqlDataset target = CreateTarget();
 
-        //    target.StoredProcedures.LoadAll();
-        //    Assert.IsTrue(target.StoredProcedures.Count == 1);
+        //    Table t1 = target.Tables["GraywulfSchemaTest", "", "book"];
+        //    Assert.IsTrue(t1.Metadata.Summary == "this is my own table comment");
 
-        //    // TODO: test CLR and SQL functions separately
+        //    Table t2 = target.Tables["GraywulfSchemaTest", "", "author"];
+        //    Assert.IsTrue(t2.Metadata.Summary == "");
         //}
 
+        [TestMethod]
+        public void MetaColumnsTest()
+        {
+            PostgreSqlDataset target = CreateTarget();
+
+            Table t1 = target.Tables["GraywulfSchemaTest", "public", "book"];
+            Column c1 = t1.Columns["id"];
+            Assert.IsTrue(c1.Metadata.Summary == "id of user");
+        }
         //[TestMethod]
-        //public void StoredProcedureParametersTest()
+        //public void MetaParametersTest()
         //{
         //    PostgreSqlDataset target = CreateTarget();
 
-        //    StoredProcedure sp = target.StoredProcedures["GraywulfSchemaTest", "public", "spTest"];
-
-        //    Assert.IsTrue(sp.Parameters.Count == 1);
-        //    Assert.IsTrue(sp.Parameters["@hello"].DataType.Name == "nvarchar");
+        //    Parameter p = target.StoredProcedures["GraywulfSchemaTest", "public", "sptest"].Parameters["hello"];
+        //    //Parameter p = sp.Parameters["hello"];
+        //    Assert.IsTrue(p.Metadata.Summary == "spTestComment");
         //}
+
     }
 }

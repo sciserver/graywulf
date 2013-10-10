@@ -729,83 +729,61 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
                     return DataType.SmallInt;
                 case Constants.TypeNameInt:
                     return DataType.Int;
+                case Constants.TypeNameMediumInt:
+                    return DataType.BigInt;
                 case Constants.TypeNameBigInt:
                     return DataType.BigInt;
-                case Constants.TypeNameBit:
-                    return DataType.Bit;
-                case Constants.TypeNameDecimal:
-                    return DataType.Decimal;
-                case Constants.TypeNameSmallMoney:
-                    return DataType.SmallMoney;
-                case Constants.TypeNameMoney:
-                    return DataType.Money;
-                case Constants.TypeNameNumeric:
-                    return DataType.Numeric;
-                case Constants.TypeNameReal:
-                    return DataType.Real;
                 case Constants.TypeNameFloat:
                     return DataType.Float;
+                case Constants.TypeNameDouble:
+                    return DataType.Real;
+                case Constants.TypeNameDecimal:
+                    return DataType.Decimal;
                 case Constants.TypeNameDate:
                     return DataType.Date;
-                case Constants.TypeNameTime:
-                    return DataType.Time;
-                case Constants.TypeNameSmallDateTime:
-                    return DataType.SmallDateTime;
-                case Constants.TypeNameDateTime:
-                    return DataType.DateTime;
-                case Constants.TypeNameDateTime2:
-                    return DataType.DateTime2;
-                case Constants.TypeNameDateTimeOffset:
-                    return DataType.DateTimeOffset;
-                case Constants.TypeNameChar:
-                    return DataType.Char;
-                case Constants.TypeNameVarChar:
-                    return DataType.VarChar;
-                case Constants.TypeNameText:
-                    return DataType.Text;
-                case Constants.TypeNameNChar:
-                    return DataType.NChar;
-                case Constants.TypeNameNVarChar:
-                    return DataType.NVarChar;
-                case Constants.TypeNameNText:
-                    return DataType.NText;
-                case Constants.TypeNameXml:
-                    return DataType.Xml;
-                case Constants.TypeNameBinary:
-                    return DataType.Binary;
-                case Constants.TypeNameVarBinary:
-                    return DataType.VarBinary;
-                case Constants.TypeNameImage:
-                    return DataType.Image;
-                case Constants.TypeNameSqlVariant:
-                    return DataType.SqlVariant;
-                case Constants.TypeNameTimestamp:
-                    return DataType.Timestamp;
-                case Constants.TypeNameUniqueIdentifier:
-                    return DataType.UniqueIdentifier;
-
                 case Constants.TypeNameYear:
                     return DataType.TinyInt;
-                case Constants.TypeNameTinyBlob:
-                    return DataType.NVarChar;
-                case Constants.TypeNameBlob:
-                    return DataType.Text;
-                case Constants.TypeNameMediumBlob:
-                    return DataType.Text;
-                case Constants.TypeNameLongBlob:
-                    return DataType.Text;
-                case Constants.TypeNameSet:
-                    return DataType.NVarChar;
-                case Constants.TypeNameEnum:
-                    return DataType.Text;
+                case Constants.TypeNameTime:
+                    return DataType.Time;
+                case Constants.TypeNameDateTime:
+                    return DataType.DateTime;
+                case Constants.TypeNameTimestamp:
+                    return DataType.Timestamp;
                 case Constants.TypeNameTinyText:
+                    return DataType.Text;
+                case Constants.TypeNameText:
                     return DataType.Text;
                 case Constants.TypeNameMediumText:
                     return DataType.Text;
                 case Constants.TypeNameLongText:
                     return DataType.Text;
+                case Constants.TypeNameTinyBlob:
+                    return DataType.NVarChar;
+                case Constants.TypeNameBlob:
+                    return DataType.NVarChar;
+                case Constants.TypeNameMediumBlob:
+                    return DataType.NVarChar;
+                case Constants.TypeNameLongBlob:
+                    return DataType.NVarChar;
+                case Constants.TypeNameBit:
+                    return DataType.Bit;
+                case Constants.TypeNameSet:
+                    return DataType.NVarChar;
+                case Constants.TypeNameEnum:
+                    return DataType.NVarChar;
+                case Constants.TypeNameBinary:
+                    return DataType.Binary;
+                case Constants.TypeNameVarBinary:
+                    return DataType.VarBinary;
                 case Constants.TypeNameGeometry:
-                    return DataType.Text;
+                    return DataType.NVarChar;
+                case Constants.TypeNameChar:
+                    return DataType.Char;
+                case Constants.TypeNameVarChar:
+                    return DataType.VarChar;
+                case Constants.TypeNameXml:
+                    return DataType.Xml;
+
                 default:
                     throw new ArgumentOutOfRangeException("name");
             }

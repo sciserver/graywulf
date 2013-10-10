@@ -181,5 +181,53 @@ namespace Jhu.Graywulf.Schema.Test.Schema
             Assert.IsTrue(p.Metadata.Summary == "spTestComment");
         }
 
+        [TestMethod]
+        public void TableColumnsDataTypeTest()
+        {
+            MySqlDataset target = CreateTarget();
+
+            //Get a single table
+            Table t1 = target.Tables["GraywulfSchemaTest", "", "tablewithalltypes"];
+
+            Assert.IsTrue(t1.Columns.Count == 39);
+            Assert.IsTrue(t1.Columns["column_bool"].DataType.Name == "tinyint");
+            Assert.IsTrue(t1.Columns["column_tinyint"].DataType.Name == "tinyint");
+            Assert.IsTrue(t1.Columns["column_smallint"].DataType.Name == "smallint");
+            Assert.IsTrue(t1.Columns["column_mediumint"].DataType.Name == "bigint");
+            Assert.IsTrue(t1.Columns["column_integer"].DataType.Name == "int");
+            Assert.IsTrue(t1.Columns["column_bigint"].DataType.Name == "bigint");
+            Assert.IsTrue(t1.Columns["column_int"].DataType.Name == "int");
+            Assert.IsTrue(t1.Columns["column_float"].DataType.Name == "float");
+            Assert.IsTrue(t1.Columns["column_double"].DataType.Name == "real");
+            Assert.IsTrue(t1.Columns["column_decimal"].DataType.Name == "decimal");
+            Assert.IsTrue(t1.Columns["column_date"].DataType.Name == "date");
+            Assert.IsTrue(t1.Columns["column_datetime"].DataType.Name == "datetime");
+            Assert.IsTrue(t1.Columns["column_year"].DataType.Name == "tinyint");
+            Assert.IsTrue(t1.Columns["column_time"].DataType.Name == "time");
+            Assert.IsTrue(t1.Columns["column_timestamp"].DataType.Name == "timestamp");
+            Assert.IsTrue(t1.Columns["column_tinytext"].DataType.Name == "text");
+            Assert.IsTrue(t1.Columns["column_text"].DataType.Name == "text");
+            Assert.IsTrue(t1.Columns["column_mediumtext"].DataType.Name == "text");
+            Assert.IsTrue(t1.Columns["column_longtext"].DataType.Name == "text");
+            Assert.IsTrue(t1.Columns["column_tinyblob"].DataType.Name == "nvarchar");
+            Assert.IsTrue(t1.Columns["column_blob"].DataType.Name == "nvarchar");
+            Assert.IsTrue(t1.Columns["column_mediumblob"].DataType.Name == "nvarchar");
+            Assert.IsTrue(t1.Columns["column_longblob"].DataType.Name == "nvarchar");
+            Assert.IsTrue(t1.Columns["column_bit"].DataType.Name == "bit");
+            Assert.IsTrue(t1.Columns["column_set"].DataType.Name == "nvarchar");
+            Assert.IsTrue(t1.Columns["column_enum"].DataType.Name == "nvarchar");
+            Assert.IsTrue(t1.Columns["column_binary"].DataType.Name == "binary");
+            Assert.IsTrue(t1.Columns["column_varbinary"].DataType.Name == "varbinary");
+            Assert.IsTrue(t1.Columns["column_geometry"].DataType.Name == "nvarchar");
+            Assert.IsTrue(t1.Columns["column_char"].DataType.Name == "char");
+            Assert.IsTrue(t1.Columns["column_nchar"].DataType.Name == "char");
+            Assert.IsTrue(t1.Columns["column_varchar"].DataType.Name == "varchar");
+            Assert.IsTrue(t1.Columns["column_nvarchar"].DataType.Name == "varchar");
+            Assert.IsTrue(t1.Columns["column_real"].DataType.Name == "real");
+
+            //Test cache
+            Assert.AreEqual(t1.Columns, target.Tables["GraywulfSchemaTest", "", "tablewithalltypes"].Columns);
+            Assert.AreEqual(t1.Columns["column_tinyint"], target.Tables["GraywulfSchemaTest", "", "tablewithalltypes"].Columns["column_tinyint"]);
+        }
     }
 }
