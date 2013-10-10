@@ -115,27 +115,6 @@ namespace Jhu.Graywulf.Schema.Test.Schema
             Assert.AreEqual(ic, target.Tables["GraywulfSchemaTest", "public", "author"].Indexes["pk_author"].Columns["id"]);
         }
 
-        //[TestMethod]
-        //public void TableValueFunctionTest()
-        //{
-        //    PostgreSqlDataset target = CreateTarget();
-
-        //    target.TableValuedFunctions.LoadAll();
-        //    Assert.IsTrue(target.TableValuedFunctions.Count == 0);
-
-        //    // TODO: test CLR and SQL functions separately
-        //}
-
-        //[TestMethod]
-        //public void ScalarFunctionTest()
-        //{
-        //    PostgreSqlDataset target = CreateTarget();
-
-        //    target.ScalarFunctions.LoadAll();
-        //    Assert.IsTrue(target.ScalarFunctions.Count == 0);
-
-        //    // TODO: test CLR and SQL functions separately
-        //}
 
         [TestMethod]
         public void StoredProcedureTest()

@@ -187,7 +187,7 @@ namespace Jhu.Graywulf.Schema.Test.Schema
             MySqlDataset target = CreateTarget();
 
             //Get a single table
-            Table t1 = target.Tables["GraywulfSchemaTest", "", "tablewithalltypes"];
+            Table t1 = target.Tables["GraywulfSchemaTest", "", "SampleData"];
 
             Assert.IsTrue(t1.Columns.Count == 39);
             Assert.IsTrue(t1.Columns["column_bool"].DataType.Name == "tinyint");
@@ -226,8 +226,8 @@ namespace Jhu.Graywulf.Schema.Test.Schema
             Assert.IsTrue(t1.Columns["column_real"].DataType.Name == "real");
 
             //Test cache
-            Assert.AreEqual(t1.Columns, target.Tables["GraywulfSchemaTest", "", "tablewithalltypes"].Columns);
-            Assert.AreEqual(t1.Columns["column_tinyint"], target.Tables["GraywulfSchemaTest", "", "tablewithalltypes"].Columns["column_tinyint"]);
+            Assert.AreEqual(t1.Columns, target.Tables["GraywulfSchemaTest", "", "SampleData"].Columns);
+            Assert.AreEqual(t1.Columns["column_tinyint"], target.Tables["GraywulfSchemaTest", "", "SampleData"].Columns["column_tinyint"]);
         }
     }
 }
