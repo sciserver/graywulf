@@ -5,6 +5,7 @@
       <merge file="connectionStrings.config" />
       <merge file="activities.config" />
       <merge file="remoteService.config" />
+      <merge file="app.config" />
     </project>
     <project name="Jhu.Graywulf.Web.Auth" path="..\Graywulf\Web\Jhu.Graywulf.Web.Auth" type="web">
       <merge file="connectionStrings.config" />
@@ -12,6 +13,7 @@
       <merge file="cluster.config" />
       <merge file="domain.config" />
       <merge file="web.config" />
+      <merge file="app.config" />
     </project>
     <project name="Jhu.Graywulf.Web.UI" path="..\Graywulf\Web\Jhu.Graywulf.Web.UI" type="web">
       <merge file="connectionStrings.config" />
@@ -21,16 +23,20 @@
       <merge file="federation.config" />
       <merge file="activities.config" />
       <merge file="web.config" />
+      <merge file="app.config" />
     </project>
     <project name="Jhu.Graywulf.RemoteService.Server" path="..\Graywulf\Exe\Jhu.Graywulf.RemoteService.Server" type="console">
       <merge file="remoteService.config" />
+      <merge file="app.config" />
     </project>
     <project name="Jhu.Graywulf.RemoteService.Test" path="..\Graywulf\Test\Jhu.Graywulf.RemoteService.Test" type="console">
       <merge file="remoteService.config" />
+      <merge file="app.config" />
     </project>
     <project name="Jhu.Graywulf.IO.Test" path="..\Graywulf\Test\Jhu.Graywulf.IO.Test" type="console">
       <merge file="connectionStrings.config" />
       <merge file="remoteService.config" />
+      <merge file="app.config" />
     </project>
     <project name="Jhu.Graywulf.Scheduler" path="..\Graywulf\Exe\Jhu.Graywulf.Scheduler" type="console">
       <merge file="connectionStrings.config" />
@@ -38,6 +44,7 @@
       <merge file="activities.config" />
       <merge file="scheduler.config" />
       <merge file="remoteService.config" />
+      <merge file="app.config" />
     </project>
     <project name="Jhu.Graywulf.Test" path="..\Graywulf\Test\Jhu.Graywulf.Test" type="console">
       <merge file="connectionStrings.config" />
@@ -46,6 +53,7 @@
       <merge file="activities.config" />
       <merge file="scheduler.config" />
       <merge file="remoteService.config" />
+      <merge file="app.config" />
     </project>
     <project name="Jhu.Graywulf.Scheduler.Test" path="..\Graywulf\Test\Jhu.Graywulf.Scheduler.Test" type="console">
       <merge file="connectionStrings.config" />
@@ -54,6 +62,7 @@
       <merge file="activities.config" />
       <merge file="scheduler.config" />
       <merge file="remoteService.config" />
+      <merge file="app.config" />
     </project>
     <project name="Jhu.Graywulf.Jobs.Test" path="..\Graywulf\Test\Jhu.Graywulf.Jobs.Test" type="console">
       <merge file="connectionStrings.config" />
@@ -63,28 +72,33 @@
       <merge file="activities.config" />
       <merge file="scheduler.config" />
       <merge file="remoteService.config" />
+      <merge file="app.config" />
     </project>
     <project name="Jhu.Graywulf.Install.CmdLineUtil" path="..\Graywulf\Exe\Jhu.Graywulf.Install.CmdLineUtil" type="console">
       <merge file="connectionStrings.config" />
       <merge file="activities.config" />
       <merge file="cluster.config" />
       <merge file="federation.config" />
+      <merge file="app.config" />
     </project>
     <project name="Jhu.Graywulf.Jobs.CmdLineUtil" path="..\Graywulf\Exe\Jhu.Graywulf.Jobs.CmdLineUtil" type="console">
       <merge file="connectionStrings.config" />
       <merge file="cluster.config" />
       <merge file="federation.config" />
       <merge file="remoteService.config" />
+      <merge file="app.config" />
     </project>
     <project name="Jhu.Graywulf.SqlParser.UI" path="..\GrayWulf\Exe\Jhu.Graywulf.SqlParser.UI" type="console">
       <merge file="connectionStrings.config" />
       <merge file="cluster.config" />
       <merge file="federation.config" />
+      <merge file="app.config" />
     </project>
     <project name="Jhu.Graywulf.Metadata.CmdLineUtil" path="..\Graywulf\Exe\Jhu.Graywulf.Metadata.CmdLineUtil" type="console">
       <merge file="connectionStrings.config" />
       <merge file="cluster.config" />
       <merge file="federation.config" />
+      <merge file="app.config" />
     </project>
   </projects>
 </config>

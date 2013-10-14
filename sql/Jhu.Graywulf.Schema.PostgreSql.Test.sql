@@ -1,6 +1,6 @@
 create database Graywulf_Test;
 
-CREATE USER graywulf WITH PASSWORD 'XqA98Pdt.';
+CREATE USER graywulf WITH PASSWORD 'password';
 GRANT ALL PRIVILEGES ON DATABASE Graywulf_Test to graywulf;
 GRANT ALL ON SCHEMA public TO graywulf;
  
@@ -35,7 +35,7 @@ CREATE TABLE SampleData(
       "column_timestampwithtimezone"	TIMESTAMPTZ,
       "column_date"				DATE,
       "column_time"				TIME,
-      "column_time"				TIMETZ,
+      "column_timewithtimezone"				TIMETZ,
       "column_interval"			INTERVAL,
       "column_bool"				BOOLEAN,
       "column_point"			POINT,

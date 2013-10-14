@@ -9,7 +9,7 @@ namespace Jhu.Graywulf.Test
     {
         public static readonly string TestConnectionString = "Data Source=localhost;Initial Catalog=Graywulf_Test;Integrated Security=true";
         public static readonly string TestConnectionStringMySql = "SERVER=localhost;DATABASE=Graywulf_Test;UID=graywulf;PASSWORD=password;";
-        public static readonly string TestConnectionStringPostgreSql = "host=localhost;port=5432;database=Graywulf_Text;user id=graywulf;password=password";
+        public static readonly string TestConnectionStringPostgreSql = "host=localhost;port=5432;database=Graywulf_Test;user id=graywulf;password=password";
 
         public static readonly string Localhost = Environment.MachineName;
 
