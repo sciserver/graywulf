@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
         {
             if (ResolveNames)
             {
-                Writer.Write(node.ColumnReference.GetFullyResolvedName());
+                Writer.Write(GetResolvedColumnName(node.ColumnReference));
                 return false;
             }
             else
@@ -114,6 +114,11 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
         }
 
         // ---
+
+        private string GetResolvedColumnName(ColumnReference column)
+        {
+            return String.Format("{0}.{1}", GetResolvedTableName(column.TableReference), QuoteIdentifier(column.ColumnName));
+        }
 
         private string GetResolvedTableName(TableReference table)
         {

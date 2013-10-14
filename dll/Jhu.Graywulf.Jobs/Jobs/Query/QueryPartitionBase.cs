@@ -350,7 +350,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public void CopyRemoteTable(TableReference table, SourceQueryParameters source)
         {
             // Temp table name
-            var temptable = GetTemporaryTable(table.UniqueName);
+            var temptable = GetTemporaryTable(table.EscapedUniqueName);
             TemporaryTables.TryAdd(table.UniqueName, temptable);
 
             var destination = new DestinationTableParameters()

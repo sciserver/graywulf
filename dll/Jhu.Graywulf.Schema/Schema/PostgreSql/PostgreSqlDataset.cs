@@ -591,7 +591,12 @@ WHERE r.ROUTINE_NAME = @objectName AND p.SPECIFIC_SCHEMA=@schemaName; ";
 
         internal override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
-            var sql = @"SELECT table_comment comment 
+            return new DatabaseObjectMetadata();
+
+#if false
+            // buggy code, fix
+            var sql = @"
+SELECT table_comment comment 
 FROM information_schema.tables t
 WHERE t.table_schema = @schemaName AND t.table_name = @objectName
 UNION
@@ -619,6 +624,7 @@ WHERE r.routine_schema = @schemaName AND r.routine_name = @objectName ;";
                     }
                 }
             }
+#endif
         }
 
         internal override void DropDatabaseObjectMetadata(DatabaseObject databaseObject)
@@ -797,7 +803,7 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
                     return DataType.Numeric;
                 case Constants.TypeNameReal:
                     return DataType.Real;
-                case Constants.TypeNameDoublePrecisione:
+                case Constants.TypeNameDoublePrecision:
                     return DataType.Real;
                 case Constants.TypeNameMoney:
                     return DataType.Money;
@@ -872,7 +878,8 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
                 case Constants.TypeNameOid:
                     return DataType.VarChar;
                 default:
-                    throw new ArgumentOutOfRangeException("name");
+                    //throw new ArgumentOutOfRangeException("name");
+                    return DataType.Unknown;
             }
         }
 

@@ -49,6 +49,7 @@
     <Compile Include="SqlParser\Dot.cs" />
     <Compile Include="SqlParser\IFunctionReference.cs" />
     <Compile Include="SqlParser\SelectList.cs" />
+    <Compile Include="SqlParser\SqlCodeGen\PostgreSqlCodeGenerator.cs" />
     <Compile Include="SqlParser\TableName.cs" />
     <Compile Include="SqlParser\TableValuedFunctionCall.cs" />
     <Compile Include="SqlParser\IColumnReference.cs" />

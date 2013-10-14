@@ -6,7 +6,7 @@ using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Schema.PostgreSql
 {
-    class Constants
+    public static class Constants
     {
         public const string PostgreSqlProviderName = "Npgsql";
 
@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql
         public const string TypeNameBigInt = "bigint";
         public const string TypeNameNumeric = "numeric";
         public const string TypeNameReal = "real";
-        public const string TypeNameDoublePrecisione = "double_precision";
+        public const string TypeNameDoublePrecision = "double precision";   // *** removed underscore
         public const string TypeNameMoney = "money";
         public const string TypeNameVarChar = "character varying";
         public const string TypeNameChar = "character";

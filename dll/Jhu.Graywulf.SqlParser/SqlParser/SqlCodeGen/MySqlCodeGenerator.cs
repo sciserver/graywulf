@@ -216,7 +216,16 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
                 {
                     sql.Write(", ");
                 }
-                sql.Write("`{0}`", cr.ColumnName);
+
+                if (cr.DataType.IsInteger)
+                {
+                    // Here a cast to a type that is accepted by SQL Server has to be made
+                    sql.Write("CAST(`{0}` AS SIGNED) AS `{0}`", cr.ColumnName);
+                }
+                else
+                {
+                    sql.Write("`{0}`", cr.ColumnName);
+                }
                 q++;
             }
 

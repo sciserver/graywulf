@@ -522,7 +522,7 @@ namespace Jhu.Graywulf.Format
 
                 if (cols[i].DataType == null || colranks[i] < rank)
                 {
-                    cols[i].DataType = DataType.GetType(type);
+                    cols[i].DataType = DataType.Create(type);
                     cols[i].DataType.Size = (short)size;
                 }
 

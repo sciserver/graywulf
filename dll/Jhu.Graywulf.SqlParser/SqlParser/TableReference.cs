@@ -198,6 +198,29 @@ namespace Jhu.Graywulf.SqlParser
             }
         }
 
+        public string EscapedUniqueName
+        {
+            get
+            {
+                if (isSubquery || isComputed)
+                {
+                    return alias;
+                }
+                else
+                {
+                    string res = String.Empty;
+
+                    // If it's not resolved yet
+                    if (datasetName != null) res += String.Format("{0}_", Util.EscapeIdentifierName(datasetName));
+                    if (databaseName != null) res += String.Format("{0}_", Util.EscapeIdentifierName(databaseName));
+                    if (schemaName != null) res += String.Format("{0}_", Util.EscapeIdentifierName(schemaName));
+                    if (databaseObjectName != null) res += String.Format("{0}", Util.EscapeIdentifierName(databaseObjectName));
+
+                    return res;
+                }
+            }
+        }
+
         public List<ColumnReference> ColumnReferences
         {
             get { return columnReferences; }

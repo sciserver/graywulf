@@ -74,14 +74,6 @@ namespace Jhu.Graywulf.Jobs.Query
 
             SubstituteDatabaseNames(AssignedServerInstance.Guid, Query.SourceDatabaseVersionName);
             SubstituteRemoteTableNames(TemporaryDatabaseInstanceReference.Value.GetDataset(), Query.TemporaryDataset.DefaultSchemaName);
-
-            // Generate code
-            var sw = new StringWriter();
-            var cg = new SqlServerCodeGenerator();
-            cg.ResolveNames = true;
-            cg.Execute(sw, SelectStatement);
-
-            InterpretedQueryString = sw.ToString();
         }
 
         private void AppendPartitioningConditions(QuerySpecification qs, SimpleTableSource ts)
@@ -132,7 +124,14 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected override string GetOutputSelectQuery()
         {
-            return InterpretedQueryString;
+            // Generate code
+            var sw = new StringWriter();
+            var cg = new SqlServerCodeGenerator();
+            cg.ResolveNames = true;
+
+            cg.Execute(sw, SelectStatement);
+
+            return sw.ToString();
         }
 
         public override void PrepareCopyResultset(Context context)

@@ -18,5 +18,12 @@ namespace Jhu.Graywulf.SqlParser
                 return id;
             }
         }
+
+        public static string EscapeIdentifierName(string name)
+        {
+            var res = name.Replace(".", "_");
+
+            return res;
+        }
     }
 }

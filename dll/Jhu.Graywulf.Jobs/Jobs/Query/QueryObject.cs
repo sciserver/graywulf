@@ -699,13 +699,15 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private void SubstituteRemoteTableName(SchemaManager sm, TableReference tr, DatasetBase temporaryDataset, string temporarySchemaName)
         {
+            var un = tr.UniqueName;
+
             // TODO: write function to determine if a table is to be copied
             if (tr.IsCachable && TemporaryTables.ContainsKey(tr.UniqueName) &&
                 IsRemoteDataset(sm.Datasets[tr.DatasetName]))
             {
                 tr.DatabaseName = temporaryDataset.DatabaseName;
                 tr.SchemaName = temporarySchemaName;
-                tr.DatabaseObjectName = TemporaryTables[tr.UniqueName].TableName;
+                tr.DatabaseObjectName = TemporaryTables[un].TableName;
                 tr.DatabaseObject = null;
             }
         }
@@ -1002,7 +1004,6 @@ END";
 
         protected IQueryImporter CreateQueryImporter(SourceQueryParameters source, DestinationTableParameters destination, bool local)
         {
-            var srchost = GetHostnameFromSqlConnectionString(source.Dataset.ConnectionString);
             var desthost = GetHostnameFromSqlConnectionString(destination.Table.Dataset.ConnectionString);
 
             IQueryImporter qi;

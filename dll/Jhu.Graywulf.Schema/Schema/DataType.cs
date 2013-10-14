@@ -606,7 +606,7 @@ namespace Jhu.Graywulf.Schema
 
         // TODO: missing: cursor, hierarchyid, table
 
-        public static DataType GetType(Type type)
+        public static DataType Create(Type type)
         {
             if (type == typeof(sbyte))
             {
@@ -687,13 +687,14 @@ namespace Jhu.Graywulf.Schema
             }
         }
 
+#if false
         public static DataType GetType(DataRow dr)
         {
             var type = GetType((Type)dr[Schema.Constants.SchemaColumnDataType]);
 
-            type.Size = (short)(int)dr[Schema.Constants.SchemaColumnColumnSize];
-            type.Precision = (short)dr[Schema.Constants.SchemaColumnNumericPrecision];
-            type.Scale = (short)dr[Schema.Constants.SchemaColumnNumericScale];
+            type.Size = Convert.ToInt16(dr[Schema.Constants.SchemaColumnColumnSize]);
+            type.Precision = Convert.ToInt16(dr[Schema.Constants.SchemaColumnNumericPrecision]);
+            type.Scale = Convert.ToInt16(dr[Schema.Constants.SchemaColumnNumericScale]);
             
             //type.IsMax = (bool)dr[Schema.Constants.SchemaColumnIsLong];
             //type.Name = dr[Schema.Constants.SchemaColumnProviderSpecificDataType];
@@ -707,6 +708,7 @@ namespace Jhu.Graywulf.Schema
 
             return type;
         }
+#endif
 
         private string name;
         private Type type;
@@ -778,18 +780,6 @@ namespace Jhu.Graywulf.Schema
         public bool IsMax
         {
             get { return size == -1; }
-            /* TODO: delete
-            set
-            {
-                if (value && maxSize != -1)
-                {
-                    throw new InvalidOperationException();
-                }
-                else if (value)
-                {
-                    size = -1;
-                }
-            }*/
         }
 
         public short MaxSize
@@ -802,6 +792,96 @@ namespace Jhu.Graywulf.Schema
         {
             get { return varSize; }
             set { varSize = value; }
+        }
+
+        public bool IsSigned
+        {
+            get
+            {
+                switch (sqlDbType)
+                {
+                    case System.Data.SqlDbType.BigInt:
+                    case System.Data.SqlDbType.Decimal:
+                    case System.Data.SqlDbType.Float:
+                    case System.Data.SqlDbType.Int:
+                    case System.Data.SqlDbType.Money:
+                    case System.Data.SqlDbType.Real:
+                    case System.Data.SqlDbType.SmallInt:
+                    case System.Data.SqlDbType.SmallMoney:
+                        return true;
+                    case System.Data.SqlDbType.Bit:
+                    case System.Data.SqlDbType.Binary:
+                    case System.Data.SqlDbType.Char:
+                    case System.Data.SqlDbType.Date:
+                    case System.Data.SqlDbType.DateTime:
+                    case System.Data.SqlDbType.DateTime2:
+                    case System.Data.SqlDbType.DateTimeOffset:
+                    case System.Data.SqlDbType.Image:
+                    case System.Data.SqlDbType.NChar:
+                    case System.Data.SqlDbType.NText:
+                    case System.Data.SqlDbType.NVarChar:
+                    case System.Data.SqlDbType.SmallDateTime:
+                    case System.Data.SqlDbType.Structured:
+                    case System.Data.SqlDbType.Text:
+                    case System.Data.SqlDbType.Time:
+                    case System.Data.SqlDbType.Timestamp:
+                    case System.Data.SqlDbType.TinyInt:
+                    case System.Data.SqlDbType.Udt:
+                    case System.Data.SqlDbType.UniqueIdentifier:
+                    case System.Data.SqlDbType.VarBinary:
+                    case System.Data.SqlDbType.VarChar:
+                    case System.Data.SqlDbType.Variant:
+                    case System.Data.SqlDbType.Xml:
+                        return false;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        }
+
+        public bool IsInteger
+        {
+            get
+            {
+                switch (sqlDbType)
+                {
+                    case System.Data.SqlDbType.BigInt:
+                    case System.Data.SqlDbType.Int:
+                    case System.Data.SqlDbType.SmallInt:
+                    case System.Data.SqlDbType.TinyInt:
+                        return true;
+                    case System.Data.SqlDbType.Decimal:
+                    case System.Data.SqlDbType.Float:                    
+                    case System.Data.SqlDbType.Money:
+                    case System.Data.SqlDbType.Real:
+                    case System.Data.SqlDbType.SmallMoney:
+                    case System.Data.SqlDbType.Bit:
+                    case System.Data.SqlDbType.Binary:
+                    case System.Data.SqlDbType.Char:
+                    case System.Data.SqlDbType.Date:
+                    case System.Data.SqlDbType.DateTime:
+                    case System.Data.SqlDbType.DateTime2:
+                    case System.Data.SqlDbType.DateTimeOffset:
+                    case System.Data.SqlDbType.Image:
+                    case System.Data.SqlDbType.NChar:
+                    case System.Data.SqlDbType.NText:
+                    case System.Data.SqlDbType.NVarChar:
+                    case System.Data.SqlDbType.SmallDateTime:
+                    case System.Data.SqlDbType.Structured:
+                    case System.Data.SqlDbType.Text:
+                    case System.Data.SqlDbType.Time:
+                    case System.Data.SqlDbType.Timestamp:
+                    case System.Data.SqlDbType.Udt:
+                    case System.Data.SqlDbType.UniqueIdentifier:
+                    case System.Data.SqlDbType.VarBinary:
+                    case System.Data.SqlDbType.VarChar:
+                    case System.Data.SqlDbType.Variant:
+                    case System.Data.SqlDbType.Xml:
+                        return false;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
         }
 
         protected DataType()

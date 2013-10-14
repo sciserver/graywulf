@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.SqlCodeGen
             }
             else
             {
-                throw new NotImplementedException();
+                return new PostgreSqlCodeGenerator();
             }
         }
 

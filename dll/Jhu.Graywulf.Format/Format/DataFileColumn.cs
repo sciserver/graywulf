@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
 
             this.Name = name;
-            this.DataType = DataType.GetType(type);
+            this.DataType = DataType.Create(type);
         }
 
 

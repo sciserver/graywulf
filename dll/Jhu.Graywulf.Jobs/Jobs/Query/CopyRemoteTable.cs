@@ -26,16 +26,13 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
         {
-            //QueryPartitionBase querypartition = (QueryPartitionBase)QueryPartition.Get(activityContext).Clone();
             QueryPartitionBase querypartition = (QueryPartitionBase)QueryPartition.Get(activityContext);
             
             TableReference remotetable = null;
             SourceQueryParameters source;
 
             using (Context context = querypartition.Query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
-            {
-                //querypartition.InitializeQueryObject(context);
-                
+            {       
                 remotetable = querypartition.RemoteTableReferences[RemoteTable.Get(activityContext)];
                 source = querypartition.PrepareCopyRemoteTable(remotetable);
             }

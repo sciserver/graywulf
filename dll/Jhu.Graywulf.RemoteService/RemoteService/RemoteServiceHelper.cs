@@ -131,7 +131,9 @@ namespace Jhu.Graywulf.RemoteService
 
         public static void EnsureRoleAccess()
         {
-            if (OperationContext.Current != null && !Thread.CurrentPrincipal.IsInRole(AppSettings.UserGroup))
+            if (OperationContext.Current != null &&
+                (StringComparer.InvariantCultureIgnoreCase.Compare(Thread.CurrentPrincipal.Identity.Name,AppSettings.UserGroup) == 0 &&
+                !Thread.CurrentPrincipal.IsInRole(AppSettings.UserGroup)))
             {
                 throw new SecurityException("Access denied.");
             }
