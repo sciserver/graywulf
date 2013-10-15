@@ -29,9 +29,9 @@ namespace Jhu.Graywulf.SqlParser.Test
             var nr = new SqlNameResolver();
             nr.SchemaManager = CreateSchemaManager();
             nr.DefaultTableDatasetName = "Test";
-            nr.DefaultTableSchemaName = "dbo";
+            //nr.DefaultTableSchemaName = "dbo"; TODO: delete
             nr.DefaultFunctionDatasetName = "Test";
-            nr.DefaultFunctionSchemaName = "dbo";
+            //nr.DefaultFunctionSchemaName = "dbo"; TODO: delete
             nr.Execute(ss);
         }
 

@@ -217,11 +217,19 @@ namespace Jhu.Graywulf.SqlParser
         /// </summary>
         /// <param name="defaultDataSetName"></param>
         /// <param name="defaultSchemaName"></param>
-        public void SubstituteDefaults(string defaultDataSetName, string defaultSchemaName)
+        public void SubstituteDefaults(SchemaManager schemaManager, string defaultDataSetName)
         {
             // This cannot be called for subqueries
-            if (this.datasetName == null) this.datasetName = defaultDataSetName;
-            if (this.schemaName == null) this.schemaName = defaultSchemaName;
+
+            if (this.datasetName == null)
+            {
+                this.datasetName = defaultDataSetName;
+            }
+
+            if (this.schemaName == null)
+            {
+                this.schemaName = schemaManager.Datasets[this.datasetName].DefaultSchemaName;
+            }
         }
 
         /*

@@ -82,6 +82,7 @@ namespace Jhu.Graywulf.Schema
             {
                 Name = rd.Name,
                 IsCacheable = true,
+                DefaultSchemaName = "public",
             };
 
             ds.ConnectionString = ds.GetSpecializedConnectionString(

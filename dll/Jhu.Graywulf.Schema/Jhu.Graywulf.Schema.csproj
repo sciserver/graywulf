@@ -133,7 +133,9 @@
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)
 copy $(TargetDir)$(TargetName).pdb $(SolutionDir)$(OutDir)
-copy $(TargetDir)MySql.Data.dll $(SolutionDir)$(OutDir)</PostBuildEvent>
+copy $(TargetDir)MySql.Data.dll $(SolutionDir)$(OutDir)
+copy $(TargetDir)Npgsql.dll $(SolutionDir)$(OutDir)
+copy $(TargetDir)Mono.Security.dll $(SolutionDir)$(OutDir)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

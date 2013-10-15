@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql
     [DataContract(Namespace = "")]
     public class PostgreSqlDataset : DatasetBase
     {
-        protected string defaultSchemaName;
+        
         protected bool isOnLinkedServer;
         protected bool isRemoteDataset;
         /// <summary>
@@ -36,20 +36,6 @@ namespace Jhu.Graywulf.Schema.PostgreSql
             get { return Constants.PostgreSqlProviderName; }
         }
 
-        /// <summary>
-        /// Gets or sets the default schema name.
-        /// </summary>
-        /// <remarks>
-        /// In case of no schema name is specified in queries referencing
-        /// this data set, the default schema name will be used.
-        /// The default value is 'dbo'.
-        /// </remarks>
-        [DataMember]
-        public string DefaultSchemaName
-        {
-            get { return defaultSchemaName; }
-            set { defaultSchemaName = value; }
-        }
         /// <summary>
         /// Gets or sets the database name associated with this dataset.
         /// </summary>
@@ -121,7 +107,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.defaultSchemaName = "public";
+            this.DefaultSchemaName = "public";
             this.isOnLinkedServer = false;
             this.isRemoteDataset = false;
         }
@@ -132,7 +118,6 @@ namespace Jhu.Graywulf.Schema.PostgreSql
         /// <param name="old"></param>
         private void CopyMembers(PostgreSqlDataset old)
         {
-            this.defaultSchemaName = old.defaultSchemaName;
             this.isOnLinkedServer = old.isOnLinkedServer;
             this.isRemoteDataset = old.isRemoteDataset;
         }
@@ -168,7 +153,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql
             }
             else
             {
-                return String.Format(format, this.GetFullyResolvedName(), this.defaultSchemaName, databaseObject.ObjectName);
+                return String.Format(format, this.GetFullyResolvedName(), this.DefaultSchemaName, databaseObject.ObjectName);
             }
         }
 
@@ -311,7 +296,7 @@ AND INFORMATION_SCHEMA.TABLES.TABLE_TYPE IN ({0})  AND INFORMATION_SCHEMA.TABLES
         {
             if (String.IsNullOrWhiteSpace(schemaName))
             {
-                schemaName = defaultSchemaName;
+                schemaName = DefaultSchemaName;
             }
             return String.Format("{0}|{1}|{2}|{3}|{4}", objectType, datasetName, databaseName, schemaName, objectName);
         }
@@ -328,7 +313,14 @@ AND INFORMATION_SCHEMA.TABLES.TABLE_TYPE IN ({0})  AND INFORMATION_SCHEMA.TABLES
                 }
             }
 
-            return res.Substring(1);
+            if (String.IsNullOrEmpty(res))
+            {
+                return String.Empty;
+            }
+            else
+            {
+                return res.Substring(1);
+            }
         }
         //TODO SIZE
         /// <summary>

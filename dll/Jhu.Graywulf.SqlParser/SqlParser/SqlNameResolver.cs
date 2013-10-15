@@ -53,10 +53,10 @@ namespace Jhu.Graywulf.SqlParser
         private SchemaManager schemaManager;
 
         private string defaultTableDatasetName;
-        private string defaultTableSchemaName;
+        //private string defaultTableSchemaName;
 
         private string defaultFunctionDatasetName;
-        private string defaultFunctionSchemaName;
+        //private string defaultFunctionSchemaName;
 
         #endregion
         #region Properties
@@ -84,11 +84,11 @@ namespace Jhu.Graywulf.SqlParser
         /// Gets or sets the default schema name to be assumed when no
         /// schema name is specified
         /// </summary>
-        public string DefaultTableSchemaName
+        /*public string DefaultTableSchemaName
         {
             get { return defaultTableSchemaName; }
             set { defaultTableSchemaName = value; }
-        }
+        }*/
 
         public string DefaultFunctionDatasetName
         {
@@ -96,11 +96,11 @@ namespace Jhu.Graywulf.SqlParser
             set { defaultFunctionDatasetName = value; }
         }
 
-        public string DefaultFunctionSchemaName
+        /*public string DefaultFunctionSchemaName
         {
             get { return defaultFunctionSchemaName; }
             set { defaultFunctionSchemaName = value; }
-        }
+        }*/
 
         #endregion
         #region Constructors and initializers
@@ -121,10 +121,10 @@ namespace Jhu.Graywulf.SqlParser
             this.schemaManager = null;
 
             this.defaultTableDatasetName = String.Empty;
-            this.defaultTableSchemaName = "dbo";
+            //this.defaultTableSchemaName = "dbo";
 
             this.defaultFunctionDatasetName = String.Empty;
-            this.defaultFunctionSchemaName = "dbo";
+            //this.defaultFunctionSchemaName = "dbo";
         }
 
         #endregion
@@ -252,11 +252,11 @@ namespace Jhu.Graywulf.SqlParser
             {
                 if (tr.IsTableOrView)
                 {
-                    tr.SubstituteDefaults(defaultTableDatasetName, defaultTableSchemaName);
+                    tr.SubstituteDefaults(SchemaManager, defaultTableDatasetName);
                 }
                 else if (tr.IsUdf)
                 {
-                    tr.SubstituteDefaults(defaultFunctionDatasetName, defaultFunctionSchemaName);
+                    tr.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
                 }
             }
         }
@@ -265,7 +265,7 @@ namespace Jhu.Graywulf.SqlParser
         {
             foreach (var fi in node.EnumerateDescendantsRecursive<FunctionIdentifier>())
             {
-                fi.FunctionReference.SubstituteDefaults(defaultFunctionDatasetName, defaultFunctionSchemaName);
+                fi.FunctionReference.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
             }
         }
 

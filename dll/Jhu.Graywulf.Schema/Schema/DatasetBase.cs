@@ -29,6 +29,7 @@ namespace Jhu.Graywulf.Schema
         private bool isCacheable;
         private bool isMutable;
         private string name;
+        private string defaultSchemaName;
         private string connectionString;
 
         [NonSerialized]
@@ -92,6 +93,21 @@ namespace Jhu.Graywulf.Schema
         {
             get { return name; }
             set { name = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the default schema name.
+        /// </summary>
+        /// <remarks>
+        /// In case of no schema name is specified in queries referencing
+        /// this data set, the default schema name will be used.
+        /// The default value is 'dbo'.
+        /// </remarks>
+        [DataMember]
+        public string DefaultSchemaName
+        {
+            get { return defaultSchemaName; }
+            set { defaultSchemaName = value; }
         }
 
         /// <summary>
@@ -197,6 +213,7 @@ namespace Jhu.Graywulf.Schema
 
             this.isCacheable = false;
             this.name = String.Empty;
+            this.defaultSchemaName = String.Empty;
 
             this.connectionString = null;
 
@@ -219,10 +236,11 @@ namespace Jhu.Graywulf.Schema
         {
             this.cachedVersion = DateTime.Now.Ticks;
 
-            this.IsCacheable = old.IsCacheable;
-            this.Name = old.Name;
+            this.isCacheable = old.isCacheable;
+            this.name = old.name;
+            this.defaultSchemaName = old.defaultSchemaName;
 
-            this.ConnectionString = old.ConnectionString;
+            this.connectionString = old.connectionString;
 
             // No deep copy here
             this.tables = new DatabaseObjectCollection<Table>(this);

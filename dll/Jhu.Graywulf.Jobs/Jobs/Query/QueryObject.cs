@@ -587,10 +587,7 @@ namespace Jhu.Graywulf.Jobs.Query
             nr.SchemaManager = GetSchemaManager(forceReinitialize);
 
             nr.DefaultTableDatasetName = defaultDataset.Name;
-            nr.DefaultTableSchemaName = defaultDataset.DefaultSchemaName;
-
             nr.DefaultFunctionDatasetName = codeDataset.Name;
-            nr.DefaultFunctionSchemaName = codeDataset.DefaultSchemaName;
             
             return nr;
         }

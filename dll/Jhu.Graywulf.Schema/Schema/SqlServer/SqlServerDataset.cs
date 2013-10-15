@@ -17,8 +17,6 @@ namespace Jhu.Graywulf.Schema.SqlServer
     [DataContract(Namespace = "")]
     public class SqlServerDataset : DatasetBase
     {
-        protected string defaultSchemaName;
-
         protected bool isOnLinkedServer;
         protected bool isRemoteDataset;
 
@@ -37,21 +35,6 @@ namespace Jhu.Graywulf.Schema.SqlServer
         public override string ProviderName
         {
             get { return Constants.SqlServerProviderName; }
-        }
-
-        /// <summary>
-        /// Gets or sets the default schema name.
-        /// </summary>
-        /// <remarks>
-        /// In case of no schema name is specified in queries referencing
-        /// this data set, the default schema name will be used.
-        /// The default value is 'dbo'.
-        /// </remarks>
-        [DataMember]
-        public string DefaultSchemaName
-        {
-            get { return defaultSchemaName; }
-            set { defaultSchemaName = value; }
         }
 
         /// <summary>
@@ -129,7 +112,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.defaultSchemaName = "dbo";
+            this.DefaultSchemaName = "dbo";
 
             this.isOnLinkedServer = false;
             this.isRemoteDataset = false;
@@ -178,7 +161,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
             }
             else
             {
-                return String.Format(format, this.GetFullyResolvedName(), this.defaultSchemaName, databaseObject.ObjectName);
+                return String.Format(format, this.GetFullyResolvedName(), this.DefaultSchemaName, databaseObject.ObjectName);
             }
         }
 
@@ -195,7 +178,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
         {
             if (String.IsNullOrWhiteSpace(schemaName))
             {
-                schemaName = defaultSchemaName;
+                schemaName = DefaultSchemaName;
             }
 
             return String.Format("{0}|{1}|{2}|{3}|{4}", objectType, datasetName, databaseName, schemaName, objectName);
