@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql
     [DataContract(Namespace = "")]
     public class PostgreSqlDataset : DatasetBase
     {
-        
+        protected string defaultSchemaName;
         protected bool isOnLinkedServer;
         protected bool isRemoteDataset;
         /// <summary>
@@ -36,6 +36,20 @@ namespace Jhu.Graywulf.Schema.PostgreSql
             get { return Constants.PostgreSqlProviderName; }
         }
 
+        /// <summary>
+        /// Gets or sets the default schema name.
+        /// </summary>
+        /// <remarks>
+        /// In case of no schema name is specified in queries referencing
+        /// this data set, the default schema name will be used.
+        /// The default value is 'dbo'.
+        /// </remarks>
+        [DataMember]
+        public string DefaultSchemaName
+        {
+            get { return defaultSchemaName; }
+            set { defaultSchemaName = value; }
+        }
         /// <summary>
         /// Gets or sets the database name associated with this dataset.
         /// </summary>
@@ -107,7 +121,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.DefaultSchemaName = "public";
+            this.defaultSchemaName = "public";
             this.isOnLinkedServer = false;
             this.isRemoteDataset = false;
         }
@@ -118,6 +132,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql
         /// <param name="old"></param>
         private void CopyMembers(PostgreSqlDataset old)
         {
+            this.defaultSchemaName = old.defaultSchemaName;
             this.isOnLinkedServer = old.isOnLinkedServer;
             this.isRemoteDataset = old.isRemoteDataset;
         }
@@ -153,7 +168,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql
             }
             else
             {
-                return String.Format(format, this.GetFullyResolvedName(), this.DefaultSchemaName, databaseObject.ObjectName);
+                return String.Format(format, this.GetFullyResolvedName(), this.defaultSchemaName, databaseObject.ObjectName);
             }
         }
 
@@ -296,7 +311,7 @@ AND INFORMATION_SCHEMA.TABLES.TABLE_TYPE IN ({0})  AND INFORMATION_SCHEMA.TABLES
         {
             if (String.IsNullOrWhiteSpace(schemaName))
             {
-                schemaName = DefaultSchemaName;
+                schemaName = defaultSchemaName;
             }
             return String.Format("{0}|{1}|{2}|{3}|{4}", objectType, datasetName, databaseName, schemaName, objectName);
         }
@@ -313,14 +328,7 @@ AND INFORMATION_SCHEMA.TABLES.TABLE_TYPE IN ({0})  AND INFORMATION_SCHEMA.TABLES
                 }
             }
 
-            if (String.IsNullOrEmpty(res))
-            {
-                return String.Empty;
-            }
-            else
-            {
-                return res.Substring(1);
-            }
+            return res.Substring(1);
         }
         //TODO SIZE
         /// <summary>
@@ -541,7 +549,7 @@ INNER JOIN INFORMATION_SCHEMA.ROUTINES r ON r.SPECIFIC_NAME = p.SPECIFIC_NAME
 
 WHERE r.ROUTINE_NAME = @objectName AND p.SPECIFIC_SCHEMA=@schemaName; ";
 
-            sql = String.Format(sql, DatabaseObjectType.Table);
+            //sql = String.Format(sql, DatabaseObjectType.Table);
             using (var cn = OpenConnection())
             {
                 using (var cmd = new NpgsqlCommand(sql, cn))
@@ -552,7 +560,7 @@ WHERE r.ROUTINE_NAME = @objectName AND p.SPECIFIC_SCHEMA=@schemaName; ";
                     {
                         while (dr.Read())
                         {
-                            var par = new Parameter()
+                            var par = new Parameter(obj)
                             {
                                 ID = dr.GetInt32(0),
                                 Name = dr.GetString(1),
@@ -583,19 +591,14 @@ WHERE r.ROUTINE_NAME = @objectName AND p.SPECIFIC_SCHEMA=@schemaName; ";
 
         internal override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
-            return new DatabaseObjectMetadata();
-
-#if false
-            // buggy code, fix
-            var sql = @"
-SELECT table_comment comment 
-FROM information_schema.tables t
-WHERE t.table_schema = @schemaName AND t.table_name = @objectName
-UNION
-SELECT routine_comment comment
-FROM information_schema.routines r
-WHERE r.routine_schema = @schemaName AND r.routine_name = @objectName ;";
-
+            var sql = @"SELECT DISTINCT
+pg_catalog.obj_description(c.oid) AS table_comment,
+c.relname AS table_name
+FROM pg_class c
+LEFT JOIN pg_attribute a ON a.attrelid = c.oid
+LEFT JOIN pg_namespace d ON d.oid = c.relnamespace        
+WHERE c.relname = @objectName AND d.nspname= @schemaName
+;";
             using (var cn = OpenConnection())
             {
                 using (var cmd = new NpgsqlCommand(sql, cn))
@@ -609,14 +612,13 @@ WHERE r.routine_schema = @schemaName AND r.routine_name = @objectName ;";
 
                         while (dr.Read())
                         {
-                            meta.Summary = dr.GetString(0);
+                            meta.Summary = dr.IsDBNull(0) ? "" : dr.GetString(0);
                         }
 
                         return meta;
                     }
                 }
             }
-#endif
         }
 
         internal override void DropDatabaseObjectMetadata(DatabaseObject databaseObject)
@@ -642,13 +644,50 @@ FROM pg_catalog.pg_statio_all_tables as st
 
         protected override void LoadAllParameterMetadata(DatabaseObject databaseObject)
         {
-            var sql = @"
-SELECT p.parameter_name, r.routine_comment
-FROM information_schema.routines r
-INNER JOIN information_schema.parameters p ON p.specific_name = r.routine_name
-WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
+            var sql = @"SELECT  pgd.description,proargnames
+FROM    pg_catalog.pg_namespace n
+inner JOIN    pg_catalog.pg_proc p ON p.pronamespace = n.oid
+inner join pg_catalog.pg_description pgd on (pgd.objoid=p.oid)
+WHERE   nspname = @schemaName and proname= @objectName;";
 
-            LoadAllVariableMetadata(sql, databaseObject, ((IParameters)databaseObject).Parameters);
+            var variables = ((IParameters)databaseObject).Parameters;
+
+            foreach (Variable v in variables.Values)
+            {
+                v.Metadata = new VariableMetadata();
+            }
+
+            using (var cn = OpenConnection())
+            {
+                using (var cmd = new NpgsqlCommand(sql, cn))
+                {
+                    cmd.Parameters.Add("@schemaName", NpgsqlTypes.NpgsqlDbType.Varchar).Value = databaseObject.SchemaName;
+                    cmd.Parameters.Add("@objectName", NpgsqlTypes.NpgsqlDbType.Varchar).Value = databaseObject.ObjectName;
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        VariableMetadata meta = null;
+
+                        while (dr.Read())
+                        {
+                            string value = dr.GetString(0);
+                            var paramname =dr.GetValue(1) as string[];
+                            if (paramname.Count()>0) 
+                            {
+                                var paramlist = paramname;//.Replace("{", "").Replace("}", "").Split(',');
+
+                                foreach (var v in paramlist)
+                                {
+                                    meta = ((Variable)variables[v]).Metadata;
+                                    meta.Summary = value;
+                                }
+                            }
+                            
+                            
+                        }
+                    }
+                }
+            }
         }
 
         private void LoadAllVariableMetadata(string sql, DatabaseObject databaseObject, IDictionary variables)
@@ -814,9 +853,9 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
                 case Constants.TypeNameDate:
                     return DataType.Date;
                 case Constants.TypeNameTime:
-                    return DataType.Time;
+                    return DataType.DateTime;
                 case Constants.TypeNameTimeWithTimeZone:
-                    return DataType.Time;
+                    return DataType.DateTime;
                 case Constants.TypeNameInterval:
                     return DataType.VarChar;// converting to varchar, need to convert
                 case Constants.TypeNameBoolean:
@@ -862,15 +901,14 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
                 case Constants.TypeNameNumRange:
                     return DataType.Numeric;
                 case Constants.TypeNameTsRange:
-                    return DataType.Timestamp;
+                    return DataType.DateTime;
                 case Constants.TypeNameTstzRange:
-                    return DataType.Timestamp;
+                    return DataType.DateTime;
                 case Constants.TypeNameDateRange:
                     return DataType.Date;
                 case Constants.TypeNameOid:
                     return DataType.VarChar;
                 default:
-                    //throw new ArgumentOutOfRangeException("name");
                     return DataType.Unknown;
             }
         }

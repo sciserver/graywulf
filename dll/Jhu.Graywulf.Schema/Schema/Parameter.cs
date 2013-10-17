@@ -52,6 +52,11 @@ namespace Jhu.Graywulf.Schema
             InitializeMembers();
         }
 
+        public Parameter(DatabaseObject parent)
+            : base(parent)
+        { InitializeMembers(); }
+
+
         /// <summary>
         /// Copy constructor
         /// </summary>

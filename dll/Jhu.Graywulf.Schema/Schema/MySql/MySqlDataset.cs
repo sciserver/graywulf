@@ -520,7 +520,7 @@ WHERE p.SPECIFIC_NAME=@objectName AND p.SPECIFIC_SCHEMA=@databaseName; ";
                         {
                             while (dr.Read())
                             {
-                                var par = new Parameter()
+                                var par = new Parameter(obj)
                                 {
                                     ID = dr.GetInt32(0),
                                     Name = dr.GetString(1),
@@ -785,7 +785,7 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
                     return DataType.Xml;
 
                 default:
-                    throw new ArgumentOutOfRangeException("name");
+                     return DataType.Unknown;
             }
         }
 
