@@ -551,7 +551,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </remarks>
         protected virtual SchemaManager GetSchemaManager(bool clearCache)
         {
-            SchemaManager sc = CreateSchemaManager();
+            var sc = CreateSchemaManager();
 
             if (clearCache)
             {

@@ -29,16 +29,22 @@ namespace Jhu.Graywulf.Web.UI
                     schemaManager = new GraywulfSchemaManager(RegistryContext, Jhu.Graywulf.Registry.Federation.AppSettings.FederationName);
 
                     // Load datasets from the federation
-                    schemaManager.Datasets.LoadAll();
+                    if (schemaManager.Datasets.IsEmpty)
+                    {
+                        schemaManager.Datasets.LoadAll();
+                    }
 
                     // Add custom datasets (MYDB)
                     var mydb = MyDBDatabaseInstance;
 
-                    var mydbds = new SqlServerDataset();
-                    mydbds.ConnectionString = mydb.GetConnectionString().ConnectionString;
-                    mydbds.Name = mydb.DatabaseDefinition.Name;
-                    mydbds.DefaultSchemaName = "dbo";    // **** TODO?
-                    mydbds.IsMutable = true;
+                    var mydbds = new SqlServerDataset()
+                    {
+                        ConnectionString = mydb.GetConnectionString().ConnectionString,
+                        Name = mydb.DatabaseDefinition.Name,
+                        DefaultSchemaName = "dbo",    // **** TODO?
+                        IsCacheable = false,
+                        IsMutable = true,
+                    };
 
                     schemaManager.Datasets[mydbds.Name] = mydbds;
                 }
