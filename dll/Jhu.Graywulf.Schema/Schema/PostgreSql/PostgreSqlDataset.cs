@@ -341,7 +341,7 @@ AND INFORMATION_SCHEMA.TABLES.TABLE_TYPE IN ({0})  AND INFORMATION_SCHEMA.TABLES
             var res = new ConcurrentDictionary<string, Column>();
 
             string sql = @"
-SELECT ordinal_position, column_name, data_type, is_nullable
+SELECT ordinal_position, column_name, data_type, COALESCE(character_maximum_length, -1) AS ""max_length"", COALESCE(numeric_scale, -1) AS ""scale"", COALESCE(numeric_precision, -1) AS ""precision"", is_nullable
 FROM information_schema.columns
 WHERE table_catalog = @databaseName and table_name= @tableName and table_schema=@schemaName;";
 
@@ -361,9 +361,14 @@ WHERE table_catalog = @databaseName and table_name= @tableName and table_schema=
                             {
                                 ID = dr.GetInt32(0),
                                 Name = dr.GetString(1),
-                                DataType = GetType(dr.GetString(2)),
-                                IsNullable = ( dr.GetString(3).ToUpper() == "YES" ) ? true : false,                                
+                                IsNullable = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(6), "yes") == 0)
                             };
+
+                            cd.DataType = GetTypeFromProviderSpecificName(
+                                dr.GetString(2),
+                                Convert.ToInt32(dr.GetInt32(3)),
+                                Convert.ToInt16(dr.GetInt32(4)),
+                                Convert.ToInt16(dr.GetInt32(5)));
 
                             res.TryAdd(cd.Name, cd);
                         }
@@ -503,7 +508,7 @@ where kcu.TABLE_NAME=@tableName;";
                                 IsIdentity = dr.GetString(3).ToUpper() == "YES" ? true : false,
                                 Ordering = IndexColumnOrdering.Ascending
                             };
-                            ic.DataType = GetType(
+                            ic.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(4)/*,
                                 dr.IsDBNull(5) ? dr.GetInt16(5)  : new short(),
                                 dr.IsDBNull(6) ? dr.GetByte(6) : Byte.MinValue,
@@ -574,7 +579,7 @@ WHERE r.ROUTINE_NAME = @objectName AND p.SPECIFIC_SCHEMA=@schemaName; ";
                                 else if (dr.GetString(2) == "INOUT") { par.Direction = ParameterDirection.InputOutput; }
                             }
                             else { par.Direction = ParameterDirection.ReturnValue; }
-                            par.DataType = GetType(
+                            par.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(3)/*,
                                 dr.GetInt16(4),
                                 dr.GetByte(5),
@@ -820,7 +825,7 @@ WHERE   nspname = @schemaName and proname= @objectName;";
             return csb.ConnectionString;
         }
 
-        public override DataType GetType(string name)
+        protected override DataType GetTypeFromProviderSpecificName(string name)
         {
             switch (name.ToLowerInvariant().Trim())
             {
@@ -847,9 +852,9 @@ WHERE   nspname = @schemaName and proname= @objectName;";
                 case Constants.TypeNameBytea:
                     return DataType.Binary;
                 case Constants.TypeNameTimestamp:
-                    return DataType.Timestamp;
+                    return DataType.DateTime;
                 case Constants.TypeNameTimestampWithTimeZone:
-                    return DataType.Timestamp;
+                    return DataType.DateTime;
                 case Constants.TypeNameDate:
                     return DataType.Date;
                 case Constants.TypeNameTime:
@@ -857,7 +862,7 @@ WHERE   nspname = @schemaName and proname= @objectName;";
                 case Constants.TypeNameTimeWithTimeZone:
                     return DataType.DateTime;
                 case Constants.TypeNameInterval:
-                    return DataType.VarChar;// converting to varchar, need to convert
+                    return DataType.VarChar;    // *** TODO converting to varchar, need to convert
                 case Constants.TypeNameBoolean:
                     return DataType.Bit;
                 case Constants.TypeNamePoint:
@@ -883,7 +888,7 @@ WHERE   nspname = @schemaName and proname= @objectName;";
                 case Constants.TypeNameBit:
                     return DataType.Bit;
                 case Constants.TypeNameBitVarying:
-                    return DataType.Bit;//check is it works
+                    return DataType.Bit;            // *** TODO check is it works
                 case Constants.TypeNameTsvector:
                     return DataType.VarChar;
                 case Constants.TypeNameUuid:
@@ -893,7 +898,7 @@ WHERE   nspname = @schemaName and proname= @objectName;";
                 case Constants.TypeNameJson:
                     return DataType.Text;
                 case Constants.TypeNameArray:
-                    return DataType.VarChar;//need to modify
+                    return DataType.VarChar;        // *** TODO need to modify
                 case Constants.TypeNameInt4Range:
                     return DataType.Int;
                 case Constants.TypeNameInt8Range:
@@ -905,7 +910,7 @@ WHERE   nspname = @schemaName and proname= @objectName;";
                 case Constants.TypeNameTstzRange:
                     return DataType.DateTime;
                 case Constants.TypeNameDateRange:
-                    return DataType.Date;
+                    return DataType.Date;       // *** TODO
                 case Constants.TypeNameOid:
                     return DataType.VarChar;
                 default:

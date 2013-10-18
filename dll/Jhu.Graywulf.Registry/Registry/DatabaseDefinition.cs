@@ -334,15 +334,13 @@ namespace Jhu.Graywulf.Registry
         public SqlConnectionStringBuilder GetConnectionString()
         {
             // Only database definitions attached to a federation have schema source servers.
-    
-
             SqlConnectionStringBuilder csb;
 
             if (!SchemaSourceServerInstanceReference.IsEmpty)
             {
                 csb = this.SchemaSourceServerInstance.GetConnectionString();
             }
-            if (Parent is Federation)
+            else if (Parent is Federation)
             {
                 csb = this.Federation.SchemaSourceServerInstance.GetConnectionString();
             }

@@ -13,7 +13,7 @@ using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.SqlParser;
-using Jhu.Graywulf.SqlCodeGen;
+using Jhu.Graywulf.SqlParser.SqlCodeGen;
 using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Jobs.Query

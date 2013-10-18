@@ -427,7 +427,7 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Size = 1,
                     HasSize = true,
-                    MaxSize = 8000,
+                    MaxSize = 4000,
                     VarSize = true,
                 };
             }
@@ -446,7 +446,7 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Size = 1,
                     HasSize = true,
-                    MaxSize = 8000,
+                    MaxSize = 4000,
                     VarSize = true,
                 };
             }
@@ -606,116 +606,133 @@ namespace Jhu.Graywulf.Schema
 
         // TODO: missing: cursor, hierarchyid, table
 
-        public static DataType Create(Type type)
+        public static DataType Create(Type type, int size)
         {
+            DataType res;
+
             if (type == typeof(sbyte))
             {
-                return DataType.TinyInt;
+                res = DataType.TinyInt;
             }
             else if (type == typeof(Int16))
             {
-                return DataType.SmallInt;
+                res = DataType.SmallInt;
             }
             else if (type == typeof(Int32))
             {
-                return DataType.Int;
+                res = DataType.Int;
             }
             else if (type == typeof(Int64))
             {
-                return DataType.BigInt;
+                res = DataType.BigInt;
             }
             else if (type == typeof(byte))
             {
                 // SQL Server returns byte for tinyint for some reason
                 var dt = DataType.TinyInt;
                 dt.type = typeof(byte);
-                return dt;
+                res = dt;
             }
             else if (type == typeof(UInt16))
             {
-                return DataType.SmallInt;
+                res = DataType.SmallInt;
             }
             else if (type == typeof(UInt32))
             {
-                return DataType.Int;
+                res = DataType.Int;
             }
             else if (type == typeof(UInt64))
             {
-                return DataType.BigInt;
+                res = DataType.BigInt;
             }
             else if (type == typeof(bool))
             {
-                return DataType.Bit;
+                res = DataType.Bit;
             }
             else if (type == typeof(float))
             {
-                return DataType.Real;
+                res = DataType.Real;
             }
             else if (type == typeof(double))
             {
-                return DataType.Float;
+                res = DataType.Float;
             }
             else if (type == typeof(decimal))
             {
-                return DataType.Money;
+                res = DataType.Money;
             }
             else if (type == typeof(char))
             {
                 var dt = DataType.Char;
                 dt.Size = 1;
-                return dt;
+                res = dt;
             }
             else if (type == typeof(string))
             {
-                return DataType.NVarChar;
+                res = DataType.NVarChar;
             }
             else if (type == typeof(DateTime))
             {
-                return DataType.DateTime;
+                res = DataType.DateTime;
             }
             else if (type == typeof(Guid))
             {
-                return DataType.UniqueIdentifier;
+                res = DataType.UniqueIdentifier;
             }
             else if (type == typeof(byte[]))
             {
-                return DataType.VarBinary;
+                res = DataType.VarBinary;
             }
             else
             {
                 throw new NotImplementedException();
             }
+
+            if (res.hasSize)
+            {
+                // SQL Server return 2G for max length columns
+                if (size > 8000)
+                {
+                    res.size = -1;
+                }
+                else
+                {
+                    res.size = size;
+                }
+            }
+
+            return res;
         }
 
-#if false
-        public static DataType GetType(DataRow dr)
+        public static DataType Create(DataRow dr)
         {
-            var type = GetType((Type)dr[Schema.Constants.SchemaColumnDataType]);
+            var type = Create(
+                (Type)dr[Schema.Constants.SchemaColumnDataType],
+                Convert.ToInt32(dr[Schema.Constants.SchemaColumnColumnSize]));
 
-            type.Size = Convert.ToInt16(dr[Schema.Constants.SchemaColumnColumnSize]);
             type.Precision = Convert.ToInt16(dr[Schema.Constants.SchemaColumnNumericPrecision]);
             type.Scale = Convert.ToInt16(dr[Schema.Constants.SchemaColumnNumericScale]);
             
-            //type.IsMax = (bool)dr[Schema.Constants.SchemaColumnIsLong];
+            // TODO: delete ???
+            //type.isMax = (bool)dr[Schema.Constants.SchemaColumnIsLong] || type.size == -1;
             //type.Name = dr[Schema.Constants.SchemaColumnProviderSpecificDataType];
             //this.Name = dr[Schema.Constants.SchemaColumnProviderType];
 
-            /* TODO:
-    if (col.Type == typeof(string) && col.Size == 1)
-    {
-        col.Type = typeof(char);
-    }*/
+            /* 
+            if (col.Type == typeof(string) && col.Size == 1)
+            {
+                col.Type = typeof(char);
+            }*/
 
             return type;
         }
-#endif
 
         private string name;
         private Type type;
         private SqlDbType sqlDbType;
         private short scale;
         private short precision;
-        private short size;
+        private int size;
         private bool hasSize;
         private short maxSize;
         private bool varSize;
@@ -723,7 +740,7 @@ namespace Jhu.Graywulf.Schema
         public string Name
         {
             get { return name; }
-            set { name = value; }
+            private set { name = value; }
         }
 
         public string NameWithSize
@@ -733,6 +750,10 @@ namespace Jhu.Graywulf.Schema
                 if (!hasSize)
                 {
                     return name;
+                }
+                else if (size == -1)
+                {
+                    return String.Format("{0} (max)", name);
                 }
                 else
                 {
@@ -765,7 +786,7 @@ namespace Jhu.Graywulf.Schema
             set { precision = value; }
         }
 
-        public short Size
+        public int Size
         {
             get { return size; }
             set { size = value; }

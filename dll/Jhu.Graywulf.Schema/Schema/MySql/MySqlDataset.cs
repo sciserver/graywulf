@@ -318,7 +318,7 @@ AND INFORMATION_SCHEMA.TABLES.TABLE_TYPE IN({0})";
             var res = new ConcurrentDictionary<string, Column>();
 
             var sql = @"
-SELECT ordinal_position, column_name, data_type
+SELECT ordinal_position, column_name, data_type, COALESCE(character_maximum_length, -1) AS `max_length`, COALESCE(numeric_scale, -1) AS `scale`, COALESCE(numeric_precision, -1) AS `precision`, is_nullable
 FROM information_schema.columns
 WHERE table_schema = @databaseName and table_name= @tableName;";
 
@@ -337,8 +337,14 @@ WHERE table_schema = @databaseName and table_name= @tableName;";
                             {
                                 ID = dr.GetInt32(0),
                                 Name = dr.GetString(1),
-                                DataType = GetType(dr.GetString(2)),       // TODO: implement mapping to SQL Server types here
+                                IsNullable = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(6), "yes") == 0)
                             };
+
+                            cd.DataType = GetTypeFromProviderSpecificName(
+                                dr.GetString(2),
+                                Convert.ToInt32(dr.GetInt32(3)),
+                                Convert.ToInt16(dr.GetInt32(4)),
+                                Convert.ToInt16(dr.GetInt32(5)));
 
                             res.TryAdd(cd.Name, cd);
                         }
@@ -461,7 +467,7 @@ where kcu.TABLE_NAME LIKE @tableName AND kcu.CONSTRAINT_NAME=@indexName;";
                                 Ordering = IndexColumnOrdering.Ascending
                             };
                             ic.IsIdentity = dr.GetValue(3).ToString() != "0" ? true : false;
-                            ic.DataType = GetType(
+                            ic.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(4)/*,
                                 dr.IsDBNull(5) ? dr.GetInt16(5)  : new short(),
                                 dr.IsDBNull(6) ? dr.GetByte(6) : Byte.MinValue,
@@ -534,7 +540,7 @@ WHERE p.SPECIFIC_NAME=@objectName AND p.SPECIFIC_SCHEMA=@databaseName; ";
                                     else if (dr.GetString(2) == "INOUT") { par.Direction = ParameterDirection.InputOutput; }
                                 }
                                 else { par.Direction = ParameterDirection.ReturnValue; }
-                                par.DataType = GetType(
+                                par.DataType = GetTypeFromProviderSpecificName(
                                     dr.GetString(3)/*,
                                     dr.GetInt16(4),
                                     dr.GetByte(5),
@@ -719,7 +725,7 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
             throw new NotImplementedException();
         }
 
-        public override DataType GetType(string name)
+        protected override DataType GetTypeFromProviderSpecificName(string name)
         {
             switch (name.ToLowerInvariant().Trim())
             {

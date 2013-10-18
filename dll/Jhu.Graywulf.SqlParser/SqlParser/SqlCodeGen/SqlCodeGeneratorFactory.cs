@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.SqlParser.SqlCodeGen;
 
-namespace Jhu.Graywulf.SqlCodeGen
+namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 {
     public class SqlCodeGeneratorFactory
     {

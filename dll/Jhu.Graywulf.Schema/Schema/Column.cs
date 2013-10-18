@@ -140,7 +140,7 @@ namespace Jhu.Graywulf.Schema
             this.IsNullable = dr[Schema.Constants.SchemaColumnAllowDBNull] == DBNull.Value ? false : (bool)dr[Schema.Constants.SchemaColumnAllowDBNull];
             this.IsHidden = dr[Schema.Constants.SchemaColumnIsHidden] == DBNull.Value ? false : (bool)dr[Schema.Constants.SchemaColumnIsHidden];
 
-            this.DataType = DataType.Create((Type)dr[Schema.Constants.SchemaColumnDataType]);
+            this.DataType = DataType.Create(dr);
         }
     }
 }

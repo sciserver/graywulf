@@ -21,9 +21,9 @@ namespace Jhu.Graywulf.Format
         {
             var f = new CsvFile(new StringReader(csv));
 
-            f.Columns.Add(new DataFileColumn("one", typeof(int)));
-            f.Columns.Add(new DataFileColumn("two", typeof(int)));
-            f.Columns.Add(new DataFileColumn("three", typeof(int)));
+            f.Columns.Add(new DataFileColumn("one", typeof(int), 4));
+            f.Columns.Add(new DataFileColumn("two", typeof(int), 4));
+            f.Columns.Add(new DataFileColumn("three", typeof(int), 4));
 
             return f.OpenDataReader();
         }

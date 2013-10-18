@@ -20,6 +20,8 @@ namespace Jhu.Graywulf.Schema
             ds.DatabaseDefinition.Value = dd;
             ds.IsCacheable = true;
 
+            ds.CacheSchemaConnectionString();
+
             return ds;
         }
 

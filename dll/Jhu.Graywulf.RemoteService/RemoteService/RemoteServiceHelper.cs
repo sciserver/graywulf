@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.RemoteService
             cf.Credentials.Windows.ClientCredential = System.Net.CredentialCache.DefaultNetworkCredentials;
             cf.Credentials.Windows.AllowedImpersonationLevel = TokenImpersonationLevel.Delegation;
 
-              return cf.CreateChannel();
+            return cf.CreateChannel();
         }
         
 

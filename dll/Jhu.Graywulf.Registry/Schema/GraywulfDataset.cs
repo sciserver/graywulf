@@ -66,7 +66,7 @@ namespace Jhu.Graywulf.Schema
             {
                 if (connectionStringCache == null)
                 {
-                    connectionStringCache = CacheSchemaConnectionString();
+                    CacheSchemaConnectionString();
                 }
 
                 return connectionStringCache;
@@ -132,19 +132,19 @@ namespace Jhu.Graywulf.Schema
             this.databaseInstance.Context = context;
         }
 
-        public string CacheSchemaConnectionString()
+        public void CacheSchemaConnectionString()
         {
             if (!databaseInstance.IsEmpty)
             {
-                return databaseInstance.Value.GetConnectionString().ConnectionString;
+                connectionStringCache = databaseInstance.Value.GetConnectionString().ConnectionString;
             }
             else if (!databaseVersion.IsEmpty)
             {
-                return databaseVersion.Value.DatabaseDefinition.GetConnectionString().ConnectionString;
+                connectionStringCache = databaseVersion.Value.DatabaseDefinition.GetConnectionString().ConnectionString;
             }
             else
             {
-                return databaseDefinition.Value.GetConnectionString().ConnectionString;
+                connectionStringCache = databaseDefinition.Value.GetConnectionString().ConnectionString;
             }
         }
     }

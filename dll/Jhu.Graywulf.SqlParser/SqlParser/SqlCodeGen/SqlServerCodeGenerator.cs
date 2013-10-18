@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Data;
 using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.Schema;
 
@@ -317,6 +318,76 @@ DROP TABLE ##keys_{4};
          table.Statistics.KeyColumn,
          where.ToString(),
          Guid.NewGuid().ToString().Replace('-', '_'));
+
+            return sql;
+        }
+
+        /// <summary>
+        /// Generates the SQL script to create the table
+        /// </summary>
+        /// <param name="schemaTable"></param>
+        /// <returns></returns>
+        public string GenerateCreateDestinationTableQuery(DataTable schemaTable, Table destinationTable)
+        {
+            var sql = "CREATE TABLE [{0}].[{1}] ({2})";
+            var columnlist = String.Empty;
+            var keylist = String.Empty;
+            var nokey = false;
+
+            int cidx = 0;
+            int kidx = 0;
+
+            for (int i = 0; i < schemaTable.Rows.Count; i++)
+            {
+                var column = new Column();
+                column.CopyFromSchemaTableRow(schemaTable.Rows[i]);
+
+                if (!column.IsHidden)
+                {
+                    if (cidx != 0)
+                    {
+                        columnlist += ",\r\n";
+                    }
+
+                    columnlist += String.Format(
+                        "{0} {1} {2} NULL",
+                        column.Name,
+                        column.DataType.NameWithSize,
+                        column.IsNullable ? "" : "NOT");
+
+                    cidx++;
+                }
+
+                if (column.IsKey)
+                {
+                    if (column.IsHidden)
+                    {
+                        // The key is not returned by the query, so no key can be specified on
+                        // the final table
+                        nokey = true;
+                    }
+
+                    if (kidx != 0)
+                    {
+                        keylist += ",\r\n";
+                    }
+
+                    keylist += String.Format("[{0}] ASC", column.Name);
+
+                    kidx++;
+                }
+            }
+
+            if (!String.IsNullOrEmpty(keylist) && !nokey)
+            {
+                columnlist += String.Format(
+                    @",
+CONSTRAINT [{0}] PRIMARY KEY CLUSTERED ({1})",
+                    String.Format("PK_{0}", destinationTable.TableName),
+                    keylist);
+            }
+
+            sql = String.Format(sql, destinationTable.SchemaName, destinationTable.TableName, columnlist);
 
             return sql;
         }

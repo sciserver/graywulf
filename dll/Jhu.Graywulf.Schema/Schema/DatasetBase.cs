@@ -290,7 +290,23 @@ namespace Jhu.Graywulf.Schema
         public abstract string GetFullyResolvedName();
 
 
-        public abstract DataType GetType(string name);
+        protected abstract DataType GetTypeFromProviderSpecificName(string name);
+
+        protected DataType GetTypeFromProviderSpecificName(string name, int size, short scale, short precision)
+        {
+            var t = GetTypeFromProviderSpecificName(name);
+
+            if (t.HasSize)
+            {
+                t.Size = size;
+            }
+
+            t.Scale = scale;
+            t.Precision = precision;
+
+            return t;
+        }
+
         /// <summary>
         /// When overloaded in derived classes, returns the fully qualified name of an object
         /// </summary>

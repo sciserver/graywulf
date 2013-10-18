@@ -9,7 +9,6 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.SqlParser.SqlCodeGen;
 using Jhu.Graywulf.ParserLib;
-using Jhu.Graywulf.SqlCodeGen;
 
 namespace Jhu.Graywulf.Web.UI.Schema
 {
@@ -96,22 +95,26 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
         private void RenderTable(IDataReader dr)
         {
+            var schemaTable = dr.GetSchemaTable();
+
             StringWriter output = new StringWriter();
 
             output.WriteLine("<table border=\"1\" cellspacing=\"0\" style=\"border-collapse:collapse\">");
-
-
 
             // header
             output.WriteLine("<tr>");
 
             for (int i = 0; i < dr.FieldCount; i++)
             {
-                output.WriteLine("<td class=\"header\" nowrap>{0}<br />{1}</td>", dr.GetName(i), dr.GetDataTypeName(i));
+                var column = new Column();
+                column.CopyFromSchemaTableRow(schemaTable.Rows[i]);
+
+                output.WriteLine("<td class=\"header\" nowrap>{0}<br />{1}</td>", column.Name, column.DataType.NameWithSize);
             }
 
             output.WriteLine("</tr>");
 
+            // Rows
             while (dr.Read())
             {
                 output.WriteLine("<tr>");
@@ -124,7 +127,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
                 output.WriteLine("</tr>");
             }
 
-
+            // Footer
             output.WriteLine("</table>");
 
             dataTable.Text = output.ToString();

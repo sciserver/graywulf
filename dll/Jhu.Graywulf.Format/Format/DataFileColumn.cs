@@ -44,12 +44,12 @@ namespace Jhu.Graywulf.Format
             this.DataType = type;
         }
 
-        public DataFileColumn(string name, Type type)
+        public DataFileColumn(string name, Type type, short size)
         {
             InitializeMembers();
 
             this.Name = name;
-            this.DataType = DataType.Create(type);
+            this.DataType = DataType.Create(type, size);
         }
 
 

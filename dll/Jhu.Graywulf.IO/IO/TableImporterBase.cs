@@ -8,6 +8,7 @@ using System.Threading;
 using System.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.SqlParser.SqlCodeGen;
 
 namespace Jhu.Graywulf.IO
 {
@@ -103,84 +104,20 @@ END";
         /// <param name="schemaTable"></param>
         protected void CreateDestinationTable(DataTable schemaTable)
         {
+            // Generate create table SQL
+            var cg = new SqlServerCodeGenerator();
+            var sql = cg.GenerateCreateDestinationTableQuery(schemaTable, destination.Table);
+
             // Execute CREATE TABLE query on destination
             using (var cn = new SqlConnection(destination.Table.Dataset.ConnectionString))
             {
                 cn.Open();
 
-                using (var cmd = new SqlCommand(BuildDestinationTableSql(schemaTable), cn))
+                using (var cmd = new SqlCommand(sql, cn))
                 {
                     cmd.ExecuteNonQuery();
                 }
             }
-        }
-
-        /// <summary>
-        /// Generates the SQL script to create the table
-        /// </summary>
-        /// <param name="schemaTable"></param>
-        /// <returns></returns>
-        protected string BuildDestinationTableSql(DataTable schemaTable)
-        {
-            var sql = "CREATE TABLE [{0}].[{1}] ({2})";
-            var columnlist = String.Empty;
-            var keylist = String.Empty;
-            var nokey = false;
-
-            int cidx = 0;
-            int kidx = 0;
-            for (int i = 0; i < schemaTable.Rows.Count; i++)
-            {
-                var column = new Column();
-                column.CopyFromSchemaTableRow(schemaTable.Rows[i]);
-
-                if (!column.IsHidden)
-                {
-                    if (cidx != 0)
-                    {
-                        columnlist += ",\r\n";
-                    }
-
-                    columnlist += String.Format(
-                        "{0} {1} {2} NULL",
-                        column.Name,
-                        column.DataType.NameWithSize,
-                        column.IsNullable ? "" : "NOT");
-
-                    cidx++;
-                }
-
-                if (column.IsKey)
-                {
-                    if (column.IsHidden)
-                    {
-                        // The key is not returned by the query, so no key can be specified on
-                        // the final table
-                        nokey = true;
-                    }
-
-                    if (kidx != 0)
-                    {
-                        keylist += ",\r\n";
-                    }
-
-                    keylist += String.Format("[{0}] ASC", column.Name);
-
-                    kidx++;
-                }
-            }
-
-            if (!String.IsNullOrEmpty(keylist) && !nokey)
-            {
-                columnlist += String.Format(
-                    ",\r\nCONSTRAINT [{0}] PRIMARY KEY CLUSTERED ({1})",
-                    String.Format("PK_{0}", destination.Table.TableName),
-                    keylist);
-            }
-
-            sql = String.Format(sql, destination.Table.SchemaName, destination.Table.TableName, columnlist);
-
-            return sql;
         }
 
         /// <summary>
