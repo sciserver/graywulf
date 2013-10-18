@@ -38,7 +38,10 @@ namespace Jhu.Graywulf.Registry
             // Get SMO object to the target database
             smo::Server sto = this.ServerInstance.GetSmoServer();
             smo::Database dto = new smo::Database(sto, this.DatabaseName);
+            
+            // Important non-default settings
             dto.RecoveryModel = smo.RecoveryModel.Simple;
+            dto.Collation = "SQL_Latin1_General_CP1_CI_AS";
 
             // --- Delete old LogFiles, FileGroups and create new ones ---
             DropLogFiles(dto);
