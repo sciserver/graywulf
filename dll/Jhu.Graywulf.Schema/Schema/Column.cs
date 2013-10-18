@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.Data;
+using System.Data.Common;
 
 namespace Jhu.Graywulf.Schema
 {
@@ -110,35 +111,37 @@ namespace Jhu.Graywulf.Schema
 
         public void CopyToSchemaTableRow(DataRow dr)
         {
-            dr[Schema.Constants.SchemaColumnColumnName] = this.Name;
-            dr[Schema.Constants.SchemaColumnColumnOrdinal] = this.ID;
-            dr[Schema.Constants.SchemaColumnColumnSize] = this.DataType.Size;
-            dr[Schema.Constants.SchemaColumnNumericPrecision] = this.DataType.Precision;
-            dr[Schema.Constants.SchemaColumnNumericScale] = this.DataType.Scale;
-            dr[Schema.Constants.SchemaColumnIsUnique] = this.IsIdentity;    //
-            dr[Schema.Constants.SchemaColumnIsKey] = this.isKey;
-            dr[Schema.Constants.SchemaColumnDataType] = this.DataType.Type;
-            dr[Schema.Constants.SchemaColumnAllowDBNull] = this.IsNullable;
-            dr[Schema.Constants.SchemaColumnProviderType] = this.DataType.Name;
-            dr[Schema.Constants.SchemaColumnIsAliased] = false; //
-            dr[Schema.Constants.SchemaColumnIsExpression] = false; //
-            dr[Schema.Constants.SchemaColumnIsIdentity] = this.IsIdentity;
-            dr[Schema.Constants.SchemaColumnIsAutoIncrement] = this.IsIdentity;
-            dr[Schema.Constants.SchemaColumnIsRowVersion] = false;
-            dr[Schema.Constants.SchemaColumnIsHidden] = this.IsHidden;
-            dr[Schema.Constants.SchemaColumnIsLong] = this.DataType.IsMax;
-            dr[Schema.Constants.SchemaColumnIsReadOnly] = true;
-            dr[Schema.Constants.SchemaColumnProviderSpecificDataType] = this.DataType.Name;
+            dr[SchemaTableColumn.ColumnName] = this.Name;
+            dr[SchemaTableColumn.ColumnOrdinal] = this.ID;
+            dr[SchemaTableColumn.ColumnSize] = this.DataType.Size;
+            dr[SchemaTableColumn.NumericPrecision] = this.DataType.Precision;
+            dr[SchemaTableColumn.NumericScale] = this.DataType.Scale;
+            dr[SchemaTableColumn.IsUnique] = this.IsIdentity;    //
+            dr[SchemaTableColumn.IsKey] = this.isKey;
+            dr[SchemaTableColumn.DataType] = this.DataType.Type;
+            dr[SchemaTableColumn.AllowDBNull] = this.IsNullable;
+            dr[SchemaTableColumn.ProviderType] = this.DataType.Name;
+            dr[SchemaTableColumn.IsAliased] = false; //
+            dr[SchemaTableColumn.IsExpression] = false; //
+            //dr[SchemaTableOptionalColumn.IsIdentity] = this.IsIdentity;
+            dr[SchemaTableOptionalColumn.IsAutoIncrement] = this.IsIdentity;
+            dr[SchemaTableOptionalColumn.IsRowVersion] = false;
+            dr[SchemaTableOptionalColumn.IsHidden] = this.IsHidden;
+            dr[SchemaTableColumn.IsLong] = this.DataType.IsMax;
+            dr[SchemaTableOptionalColumn.IsReadOnly] = true;
+            dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = this.DataType.Name;
+
+            
         }
 
         public void CopyFromSchemaTableRow(DataRow dr)
         {
-            this.ID = (int)dr[Schema.Constants.SchemaColumnColumnOrdinal];
-            this.Name = (string)dr[Schema.Constants.SchemaColumnColumnName];
-            this.IsIdentity = dr[Schema.Constants.SchemaColumnIsUnique] == DBNull.Value ? false : (bool)dr[Schema.Constants.SchemaColumnIsUnique];  //
-            this.IsKey = dr[Schema.Constants.SchemaColumnIsKey] == DBNull.Value ? false : (bool)dr[Schema.Constants.SchemaColumnIsKey];  //
-            this.IsNullable = dr[Schema.Constants.SchemaColumnAllowDBNull] == DBNull.Value ? false : (bool)dr[Schema.Constants.SchemaColumnAllowDBNull];
-            this.IsHidden = dr[Schema.Constants.SchemaColumnIsHidden] == DBNull.Value ? false : (bool)dr[Schema.Constants.SchemaColumnIsHidden];
+            this.ID = (int)dr[SchemaTableColumn.ColumnOrdinal];
+            this.Name = (string)dr[SchemaTableColumn.ColumnName];
+            this.isIdentity = dr[SchemaTableColumn.IsUnique] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.IsUnique];  //
+            this.isKey = dr[SchemaTableColumn.IsKey] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.IsKey];  //
+            this.isNullable = dr[SchemaTableColumn.AllowDBNull] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.AllowDBNull];
+            this.isHidden = dr[SchemaTableOptionalColumn.IsHidden] == DBNull.Value ? false : (bool)dr[SchemaTableOptionalColumn.IsHidden];
 
             this.DataType = DataType.Create(dr);
         }

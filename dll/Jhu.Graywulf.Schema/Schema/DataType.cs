@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
+using System.Data.Common;
 
 namespace Jhu.Graywulf.Schema
 {
@@ -707,11 +708,11 @@ namespace Jhu.Graywulf.Schema
         public static DataType Create(DataRow dr)
         {
             var type = Create(
-                (Type)dr[Schema.Constants.SchemaColumnDataType],
-                Convert.ToInt32(dr[Schema.Constants.SchemaColumnColumnSize]));
+                (Type)dr[SchemaTableColumn.DataType],
+                Convert.ToInt32(dr[SchemaTableColumn.ColumnSize]));
 
-            type.Precision = Convert.ToInt16(dr[Schema.Constants.SchemaColumnNumericPrecision]);
-            type.Scale = Convert.ToInt16(dr[Schema.Constants.SchemaColumnNumericScale]);
+            type.Precision = Convert.ToInt16(dr[SchemaTableColumn.NumericPrecision]);
+            type.Scale = Convert.ToInt16(dr[SchemaTableColumn.NumericScale]);
             
             // TODO: delete ???
             //type.isMax = (bool)dr[Schema.Constants.SchemaColumnIsLong] || type.size == -1;
@@ -946,13 +947,13 @@ namespace Jhu.Graywulf.Schema
 
         public void CopyToSchemaTableRow(DataRow dr)
         {
-            dr[Schema.Constants.SchemaColumnColumnSize] = this.Size;
-            dr[Schema.Constants.SchemaColumnNumericPrecision] = this.Precision;
-            dr[Schema.Constants.SchemaColumnNumericScale] = this.Scale;
-            dr[Schema.Constants.SchemaColumnDataType] = this.Type;
-            dr[Schema.Constants.SchemaColumnProviderType] = this.Name;
-            dr[Schema.Constants.SchemaColumnIsLong] = this.IsMax;
-            dr[Schema.Constants.SchemaColumnProviderSpecificDataType] = this.Name;
+            dr[SchemaTableColumn.ColumnSize] = this.Size;
+            dr[SchemaTableColumn.NumericPrecision] = this.Precision;
+            dr[SchemaTableColumn.NumericScale] = this.Scale;
+            dr[SchemaTableColumn.DataType] = this.Type;
+            dr[SchemaTableColumn.ProviderType] = this.Name;
+            dr[SchemaTableColumn.IsLong] = this.IsMax;
+            dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = this.Name;
         }
     }
 }

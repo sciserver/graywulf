@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
+using System.Data.Common;
 
 namespace Jhu.Graywulf.Format
 {
@@ -73,26 +74,26 @@ namespace Jhu.Graywulf.Format
         {
             DataTable dt = new DataTable();
 
-            dt.Columns.Add(Schema.Constants.SchemaColumnColumnName, typeof(string));
-            dt.Columns.Add(Schema.Constants.SchemaColumnColumnOrdinal, typeof(int));
-            dt.Columns.Add(Schema.Constants.SchemaColumnColumnSize, typeof(int));
-            dt.Columns.Add(Schema.Constants.SchemaColumnNumericPrecision, typeof(short));
-            dt.Columns.Add(Schema.Constants.SchemaColumnNumericScale, typeof(short));
-            dt.Columns.Add(Schema.Constants.SchemaColumnIsUnique, typeof(bool));
-            dt.Columns.Add(Schema.Constants.SchemaColumnIsKey, typeof(bool));
-            dt.Columns.Add(Schema.Constants.SchemaColumnDataType, typeof(Type));
-            dt.Columns.Add(Schema.Constants.SchemaColumnAllowDBNull, typeof(bool));
-            dt.Columns.Add(Schema.Constants.SchemaColumnProviderType, typeof(string));
-            dt.Columns.Add(Schema.Constants.SchemaColumnIsAliased, typeof(bool));
-            dt.Columns.Add(Schema.Constants.SchemaColumnIsExpression, typeof(bool));
-            dt.Columns.Add(Schema.Constants.SchemaColumnIsIdentity, typeof(bool));
-            dt.Columns.Add(Schema.Constants.SchemaColumnIsAutoIncrement, typeof(bool));
-            dt.Columns.Add(Schema.Constants.SchemaColumnIsRowVersion, typeof(bool));
-            dt.Columns.Add(Schema.Constants.SchemaColumnIsHidden, typeof(bool));
-            dt.Columns.Add(Schema.Constants.SchemaColumnIsLong, typeof(bool));
-            dt.Columns.Add(Schema.Constants.SchemaColumnIsReadOnly, typeof(bool));
-            dt.Columns.Add(Schema.Constants.SchemaColumnProviderSpecificDataType, typeof(string));
-            dt.Columns.Add(Schema.Constants.SchemaColumnDataTypeName, typeof(string));
+            dt.Columns.Add(SchemaTableColumn.ColumnName, typeof(string));
+            dt.Columns.Add(SchemaTableColumn.ColumnOrdinal, typeof(int));
+            dt.Columns.Add(SchemaTableColumn.ColumnSize, typeof(int));
+            dt.Columns.Add(SchemaTableColumn.NumericPrecision, typeof(short));
+            dt.Columns.Add(SchemaTableColumn.NumericScale, typeof(short));
+            dt.Columns.Add(SchemaTableColumn.IsUnique, typeof(bool));
+            dt.Columns.Add(SchemaTableColumn.IsKey, typeof(bool));
+            dt.Columns.Add(SchemaTableColumn.DataType, typeof(Type));
+            dt.Columns.Add(SchemaTableColumn.AllowDBNull, typeof(bool));
+            dt.Columns.Add(SchemaTableColumn.ProviderType, typeof(string));
+            dt.Columns.Add(SchemaTableColumn.IsAliased, typeof(bool));
+            dt.Columns.Add(SchemaTableColumn.IsExpression, typeof(bool));
+            //dt.Columns.Add(SchemaTableOptionalColumn.IsIdentity, typeof(bool));
+            dt.Columns.Add(SchemaTableOptionalColumn.IsAutoIncrement, typeof(bool));
+            dt.Columns.Add(SchemaTableOptionalColumn.IsRowVersion, typeof(bool));
+            dt.Columns.Add(SchemaTableOptionalColumn.IsHidden, typeof(bool));
+            dt.Columns.Add(SchemaTableColumn.IsLong, typeof(bool));
+            dt.Columns.Add(SchemaTableOptionalColumn.IsReadOnly, typeof(bool));
+            dt.Columns.Add(SchemaTableOptionalColumn.ProviderSpecificDataType, typeof(string));
+            //dt.Columns.Add(SchemaTableColumn.DataTypeName, typeof(string));
 
             // Add column ID
             int q = 0;
@@ -108,25 +109,25 @@ namespace Jhu.Graywulf.Format
         {
             var dr = dt.NewRow();
 
-            dr[Schema.Constants.SchemaColumnColumnName] = col.Name;
-            dr[Schema.Constants.SchemaColumnColumnOrdinal] = ordinal;
-            dr[Schema.Constants.SchemaColumnColumnSize] = col.DataType.Size;
-            dr[Schema.Constants.SchemaColumnNumericPrecision] = col.DataType.Precision;
-            dr[Schema.Constants.SchemaColumnNumericScale] = col.DataType.Scale;
-            dr[Schema.Constants.SchemaColumnIsUnique] = col.IsIdentity;
-            dr[Schema.Constants.SchemaColumnIsKey] = col.IsIdentity;
-            dr[Schema.Constants.SchemaColumnDataType] = col.DataType.Type;
-            dr[Schema.Constants.SchemaColumnAllowDBNull] = col.IsNullable;
-            dr[Schema.Constants.SchemaColumnProviderType] = col.DataType.Name;
-            dr[Schema.Constants.SchemaColumnIsAliased] = false;
-            dr[Schema.Constants.SchemaColumnIsExpression] = false;
-            dr[Schema.Constants.SchemaColumnIsIdentity] = col.IsIdentity;
-            dr[Schema.Constants.SchemaColumnIsAutoIncrement] = col.IsIdentity;
-            dr[Schema.Constants.SchemaColumnIsRowVersion] = false;
-            dr[Schema.Constants.SchemaColumnIsHidden] = false;
-            dr[Schema.Constants.SchemaColumnIsLong] = col.DataType.IsMax;
-            dr[Schema.Constants.SchemaColumnIsReadOnly] = true;
-            dr[Schema.Constants.SchemaColumnProviderSpecificDataType] = col.DataType.Name;
+            dr[SchemaTableColumn.ColumnName] = col.Name;
+            dr[SchemaTableColumn.ColumnOrdinal] = ordinal;
+            dr[SchemaTableColumn.ColumnSize] = col.DataType.Size;
+            dr[SchemaTableColumn.NumericPrecision] = col.DataType.Precision;
+            dr[SchemaTableColumn.NumericScale] = col.DataType.Scale;
+            dr[SchemaTableColumn.IsUnique] = col.IsIdentity;
+            dr[SchemaTableColumn.IsKey] = col.IsIdentity;
+            dr[SchemaTableColumn.DataType] = col.DataType.Type;
+            dr[SchemaTableColumn.AllowDBNull] = col.IsNullable;
+            dr[SchemaTableColumn.ProviderType] = col.DataType.Name;
+            dr[SchemaTableColumn.IsAliased] = false;
+            dr[SchemaTableColumn.IsExpression] = false;
+            //dr[SchemaTableOptionalColumn.IsIdentity] = col.IsIdentity;
+            dr[SchemaTableOptionalColumn.IsAutoIncrement] = col.IsIdentity;
+            dr[SchemaTableOptionalColumn.IsRowVersion] = false;
+            dr[SchemaTableOptionalColumn.IsHidden] = false;
+            dr[SchemaTableColumn.IsLong] = col.DataType.IsMax;
+            dr[SchemaTableOptionalColumn.IsReadOnly] = true;
+            dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = col.DataType.Name;
 
             dt.Rows.Add(dr);
         }

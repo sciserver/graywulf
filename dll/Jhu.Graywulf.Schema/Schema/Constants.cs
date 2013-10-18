@@ -40,6 +40,7 @@ namespace Jhu.Graywulf.Schema
         public const string TypeNameTimestamp = "timestamp";
         public const string TypeNameUniqueIdentifier = "uniqueidentifier";
 
+        /* TODO: delete
         public const string SchemaColumnColumnName = "ColumnName";
         public const string SchemaColumnColumnOrdinal = "ColumnOrdinal";
         public const string SchemaColumnColumnSize = "ColumnSize";
@@ -60,6 +61,7 @@ namespace Jhu.Graywulf.Schema
         public const string SchemaColumnIsReadOnly = "IsReadOnly";
         public const string SchemaColumnProviderSpecificDataType = "ProviderSpecificDataType";
         public const string SchemaColumnDataTypeName = "DataTypeName";
+         * */
 
         public static readonly Map<Type, DatabaseObjectType> DatabaseObjectTypes = new Map<Type, DatabaseObjectType>()
         {
