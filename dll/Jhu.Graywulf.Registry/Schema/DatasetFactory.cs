@@ -43,7 +43,6 @@ namespace Jhu.Graywulf.Schema
             var ds = new Schema.SqlServer.SqlServerDataset()
             {
                 Name = rd.Name,
-                //IsRemoteDataset = true,
                 IsOnLinkedServer = false,
                 IsCacheable = true,
             };

@@ -133,7 +133,7 @@ namespace Jhu.Graywulf.Schema
         {
             get
             {
-                if (String.IsNullOrWhiteSpace(schemaName))
+                if (!String.IsNullOrWhiteSpace(schemaName))
                 {
                     return String.Format("{0}.{1}", schemaName, objectName);
                 }

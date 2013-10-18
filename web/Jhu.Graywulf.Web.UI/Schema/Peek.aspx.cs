@@ -22,34 +22,28 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            schema::Table table = (schema::Table)SchemaManager.GetDatabaseObjectByKey(Request.QueryString["objid"]);
+            var tableOrView = (schema::TableOrView)SchemaManager.GetDatabaseObjectByKey(Request.QueryString["objid"]);
 
+            var codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(tableOrView.Dataset);
 
-            SqlCodeGeneratorBase codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(table.Dataset);
-
-            string sql = codegen.GenerateTableSelectStarQuery(
-                null,
-                null,
-                table.SchemaName,
-                table.TableName,
-                100);
+            var sql = codegen.GenerateSelectStarQuery(tableOrView, 100);
 
             DbProviderFactory dbf;
             string cstr;
 
-            GetServerSettings(table.Dataset, out cstr, out dbf);
+            GetServerSettings(tableOrView.Dataset, out cstr, out dbf);
 
-            using (IDbConnection cn = dbf.CreateConnection())
+            using (var cn = dbf.CreateConnection())
             {
-                cn.ConnectionString = table.Dataset.ConnectionString;
+                cn.ConnectionString = tableOrView.Dataset.ConnectionString;
                 cn.Open();
 
-                using (IDbCommand cmd = cn.CreateCommand())
+                using (var cmd = cn.CreateCommand())
                 {
                     cmd.CommandText = sql;
                     cmd.CommandType = CommandType.Text;
 
-                    using (IDataReader dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
+                    using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
                     {
                         RenderTable(dr);
                     }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Jhu.Graywulf.ParserLib;
-using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 {
@@ -166,32 +166,30 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             return res;
         }
 
-        // ---
-
-        public override string GenerateTableSelectStarQuery(string linkedServerName, string databaseName, string schemaName, string tableName, int top)
+        private string QuoteDatabaseObjectName(DatabaseObject dbobject)
         {
-            string sql = "SELECT t.* FROM {1} AS t {0}";
+            string res = String.Empty;
 
-            string topstr = String.Empty;
-            if (top != 0)
-            {
-                topstr = String.Format("LIMIT {0}", top);
-            }
-
-            return String.Format(sql, topstr, QuoteIdentifier(tableName));
+            return QuoteIdentifier(dbobject.ObjectName);
         }
 
-        public override string GenerateTableSelectStarQuery(string linkedServerName, TableReference table, int top)
+        // ---
+
+        public override string GenerateSelectStarQuery(TableOrView tableOrView, int top)
         {
             string sql = "SELECT t.* FROM {1} AS t {0}";
+            return String.Format(sql, GenerateTopExpression(top), QuoteDatabaseObjectName(tableOrView));
+        }
 
+        protected override string GenerateTopExpression(int top)
+        {
             string topstr = String.Empty;
             if (top != 0)
             {
                 topstr = String.Format("LIMIT {0}", top);
             }
 
-            return String.Format(sql, topstr, QuoteIdentifier(table.DatabaseObjectName));
+            return topstr;
         }
 
         public override string GenerateMostRestrictiveTableQuery(TableReference table, bool includePrimaryKey, int top)

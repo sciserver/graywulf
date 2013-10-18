@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Jhu.Graywulf.ParserLib;
-using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 {
@@ -173,64 +173,21 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="linkedServerName"></param>
-        /// <param name="databaseName"></param>
-        /// <param name="schemaName"></param>
-        /// <param name="tableName"></param>
-        /// <param name="top"></param>
-        /// <returns></returns>
-        /// <remarks>This is used by the web interface's 'peek' function</remarks>
-        public override string GenerateTableSelectStarQuery(string linkedServerName, string databaseName, string schemaName, string tableName, int top)
+        public override string GenerateSelectStarQuery(TableOrView tableOrView, int top)
         {
-            string sql = "SELECT {0} t.* FROM {1}{2}[{3}].[{4}] AS t";
-
-            string topstr = String.Empty;
-            if (top != 0)
-            {
-                topstr = String.Format("TOP {0}", top);
-            }
-
-            if (!String.IsNullOrWhiteSpace(linkedServerName))
-            {
-                linkedServerName = String.Format("[{0}].", linkedServerName);
-            }
-
-            if (!String.IsNullOrWhiteSpace(databaseName))
-            {
-                databaseName = String.Format("[{0}].", databaseName);
-            }
-
-            return String.Format(sql, topstr, linkedServerName, databaseName, schemaName, tableName);
+            var sql = "SELECT {0} * FROM {1}";
+            return String.Format(sql, GenerateTopExpression(top), tableOrView.GetFullyResolvedName());
         }
 
-
-        public override string GenerateTableSelectStarQuery(string linkedServerName, TableReference table, int top)
+        protected override string GenerateTopExpression(int top)
         {
-            var sql = "SELECT {0} {1}.* FROM {2}";
-
-            // top string
             var topstr = String.Empty;
             if (top != 0)
             {
                 topstr = String.Format("TOP {0}", top);
             }
 
-            // build table name
-            if (!String.IsNullOrWhiteSpace(linkedServerName))
-            {
-                linkedServerName = String.Format("[{0}].", linkedServerName);
-            }
-            var tablename = String.Format(
-                "{0}{1} {3}",
-                linkedServerName,
-                table.FullyQualifiedName,
-                table.Alias);
-
-
-            return String.Format(sql, topstr, tablename);
+            return topstr;
         }
 
         public override string GenerateMostRestrictiveTableQuery(TableReference table, bool includePrimaryKey, int top)

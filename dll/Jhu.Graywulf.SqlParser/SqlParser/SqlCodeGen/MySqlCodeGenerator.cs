@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Jhu.Graywulf.ParserLib;
-using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 {
@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 
                 if (node.TableReference != null)
                 {
-                    res += GetTableReferenceName(node.TableReference);
+                    res += QuoteTableReferenceName(node.TableReference);
                 }
 
                 if (res != String.Empty) res += ".";
@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
         {
             if (ResolveNames)
             {
-                Writer.Write(GetTableReferenceName(node.TableReference));
+                Writer.Write(QuoteTableReferenceName(node.TableReference));
                 return false;
             }
             else
@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
         {
             if (ResolveNames)
             {
-                Writer.Write(GetFunctionReferenceName(node.FunctionReference));
+                Writer.Write(QuoteFunctionReferenceName(node.FunctionReference));
                 return false;
             }
             else
@@ -95,7 +95,7 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
         {
             if (ResolveNames)
             {
-                Writer.Write(GetTableReferenceName(node.TableReference));
+                Writer.Write(QuoteTableReferenceName(node.TableReference));
                 return false;
             }
             else
@@ -104,7 +104,12 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             }
         }
 
-        private string GetTableReferenceName(TableReference tableReference)
+        protected override string QuoteIdentifier(string identifier)
+        {
+            return String.Format("`{0}`", UnquoteIdentifier(identifier));
+        }
+
+        private string QuoteTableReferenceName(TableReference tableReference)
         {
             string res = String.Empty;
 
@@ -138,7 +143,7 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             return res;
         }
 
-        private string GetFunctionReferenceName(FunctionReference function)
+        private string QuoteFunctionReferenceName(FunctionReference function)
         {
             string res = String.Empty;
 
@@ -161,39 +166,26 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             return res;
         }
 
-        protected override string QuoteIdentifier(string identifier)
+        private string QuoteDatabaseObjectName(DatabaseObject dbobject)
         {
-            return String.Format("`{0}`", UnquoteIdentifier(identifier));
+            return QuoteIdentifier(dbobject.ObjectName);
         }
 
-        // ---
-
-        // ---
-
-        public override string GenerateTableSelectStarQuery(string linkedServerName, string databaseName, string schemaName, string tableName, int top)
+        public override string GenerateSelectStarQuery(TableOrView tableOrView, int top)
         {
-            string sql = "SELECT t.* FROM `{1}` AS t {0}";
+            string sql = "SELECT t.* FROM {1} AS t {0}";
+            return String.Format(sql, GenerateTopExpression(top), QuoteDatabaseObjectName(tableOrView));
+        }
 
+        protected override string GenerateTopExpression(int top)
+        {
             string topstr = String.Empty;
             if (top != 0)
             {
                 topstr = String.Format("LIMIT {0}", top);
             }
 
-            return String.Format(sql, topstr, tableName);
-        }
-
-        public override string GenerateTableSelectStarQuery(string linkedServerName, TableReference table, int top)
-        {
-            string sql = "SELECT t.* FROM `{1}` AS t {0}";
-
-            string topstr = String.Empty;
-            if (top != 0)
-            {
-                topstr = String.Format("LIMIT {0}", top);
-            }
-
-            return String.Format(sql, topstr, table.DatabaseObjectName);
+            return topstr;
         }
 
         public override string GenerateMostRestrictiveTableQuery(TableReference table, bool includePrimaryKey, int top)
