@@ -118,7 +118,17 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 
         private string GetResolvedColumnName(ColumnReference column)
         {
-            return String.Format("{0}.{1}", GetResolvedTableName(column.TableReference), QuoteIdentifier(column.ColumnName));
+            string tablename;
+            if (!String.IsNullOrEmpty(column.TableReference.Alias))
+            {
+                tablename = QuoteIdentifier(column.TableReference.Alias);
+            }
+            else
+            {
+                tablename = GetResolvedTableName(column.TableReference);
+            }
+
+            return String.Format("{0}.{1}", tablename, QuoteIdentifier(column.ColumnName));
         }
 
         private string GetResolvedTableName(TableReference table)
@@ -358,6 +368,7 @@ DROP TABLE ##keys_{4};
                     cidx++;
                 }
 
+                /*
                 if (column.IsKey)
                 {
                     if (column.IsHidden)
@@ -376,8 +387,12 @@ DROP TABLE ##keys_{4};
 
                     kidx++;
                 }
+                 * */
             }
 
+            // Key generation code removed, key cannot be figured out automatically for
+            // join queries
+            /*
             if (!String.IsNullOrEmpty(keylist) && !nokey)
             {
                 columnlist += String.Format(
@@ -386,6 +401,7 @@ CONSTRAINT [{0}] PRIMARY KEY CLUSTERED ({1})",
                     String.Format("PK_{0}", destinationTable.TableName),
                     keylist);
             }
+             * */
 
             sql = String.Format(sql, destinationTable.SchemaName, destinationTable.TableName, columnlist);
 
