@@ -90,7 +90,7 @@ namespace Jhu.Graywulf.IO
                 {
                     using (var cmd = CreateSourceCommand(cn, tn))
                     {
-                        using (var dr = cmd.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo))
+                        using (var dr = cmd.ExecuteReader(CommandBehavior.SchemaOnly)) // TODO: removed | CommandBehavior.KeyInfo))
                         {
                             CreateDestinationTable(dr.GetSchemaTable());
                         }
