@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data;
 using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Format
@@ -44,12 +45,12 @@ namespace Jhu.Graywulf.Format
             this.DataType = type;
         }
 
-        public DataFileColumn(string name, Type type)
+        public DataFileColumn(string name, Type type, short size)
         {
             InitializeMembers();
 
             this.Name = name;
-            this.DataType = DataType.GetType(type);
+            this.DataType = DataType.Create(type, size);
         }
 
 

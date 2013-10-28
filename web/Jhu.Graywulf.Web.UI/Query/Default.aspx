@@ -3,6 +3,15 @@
 
 <asp:Content runat="server" ContentPlaceHolderID="head">
     <link rel="stylesheet" href="../CodeMirror/lib/codemirror.css">
+    <script language="javascript">
+        function refreshResults() {
+            setTimeout(loadResults, 1000);
+        }
+
+        function loadResults() {
+            $("#results").load("Results.aspx");
+        }
+    </script>
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="toolbar">
     <div id="ToolbarDiv">
@@ -17,7 +26,8 @@
             </jgwc:ToolbarElement>
             <jgwc:ToolbarElement ID="ToolbarElement2" runat="server">
                 <asp:Label ID="CommentsLabel" runat="server" Text="Comments:" /><br />
-                <asp:TextBox ID="Comments" runat="server" CssClass="ToolbarControl" Style="width: 100%;box-sizing: border-box;"></asp:TextBox>
+                <asp:TextBox ID="Comments" runat="server" CssClass="ToolbarControl" Style="width: 100%;
+                    box-sizing: border-box;"></asp:TextBox>
             </jgwc:ToolbarElement>
         </jgwc:Toolbar>
     </div>
@@ -25,9 +35,13 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="middle" runat="Server">
     <asp:UpdatePanel runat="server" class="dock-fill dock-container">
         <ContentTemplate>
-            <div runat="server" class="dock-bottom" visible="false" style="border: 1px solid #000000" id="ResultsDiv">
-                <iframe runat="server" id="ResultsFrame" style="width: 100%; height: 100%; border: 0px;">
-                </iframe>
+            <div runat="server" class="dock-bottom" visible="false" style="border: 1px solid #000000;"
+                id="ResultsDiv">
+                <div style="height: 150px; overflow: auto" id="results">
+                </div>
+                <script language="javascript">
+                    loadResults();
+                </script>
             </div>
             <div class="dock-bottom">
                 <table class="Toolbar">

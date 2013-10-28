@@ -20,6 +20,8 @@ namespace Jhu.Graywulf.Schema
             ds.DatabaseDefinition.Value = dd;
             ds.IsCacheable = true;
 
+            ds.CacheSchemaConnectionString();
+
             return ds;
         }
 
@@ -31,6 +33,8 @@ namespace Jhu.Graywulf.Schema
                     return CreateSqlServerDataset(rd);
                 case Schema.MySql.Constants.MySqlProviderName:
                     return CreateMySqlDataset(rd);
+                case Schema.PostgreSql.Constants.PostgreSqlProviderName:
+                    return CreatePostgreSqlDataset(rd);
                 default:
                     throw new NotImplementedException();
             }
@@ -41,7 +45,6 @@ namespace Jhu.Graywulf.Schema
             var ds = new Schema.SqlServer.SqlServerDataset()
             {
                 Name = rd.Name,
-                //IsRemoteDataset = true,
                 IsOnLinkedServer = false,
                 IsCacheable = true,
             };
@@ -62,6 +65,25 @@ namespace Jhu.Graywulf.Schema
             {
                 Name = rd.Name,
                 IsCacheable = true,
+            };
+
+            ds.ConnectionString = ds.GetSpecializedConnectionString(
+                rd.ConnectionString,
+                rd.IntegratedSecurity,
+                rd.Username,
+                rd.Password,
+                false);
+
+            return ds;
+        }
+
+        private static Schema.PostgreSql.PostgreSqlDataset CreatePostgreSqlDataset(RemoteDatabase rd)
+        {
+            var ds = new Schema.PostgreSql.PostgreSqlDataset()
+            {
+                Name = rd.Name,
+                IsCacheable = true,
+                DefaultSchemaName = "public",
             };
 
             ds.ConnectionString = ds.GetSpecializedConnectionString(

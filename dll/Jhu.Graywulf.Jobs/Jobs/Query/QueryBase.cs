@@ -10,6 +10,7 @@ using System.Runtime.Serialization;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.SqlParser.SqlCodeGen;
 using Jhu.Graywulf.IO;
@@ -24,15 +25,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private int queryTimeout;
 
-        private DatasetBase temporaryDataset;
-        private string temporarySchemaName;
-
         private DestinationTableParameters destination;
         private bool isDestinationTableInitialized;
-
-        private ResultsetTarget resultsetTarget;
-        private string temporaryDestinationTableName;
-        private bool keepTemporaryDestinationTable;
 
         private string sourceDatabaseVersionName;
         private string statDatabaseVersionName;
@@ -54,6 +48,12 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Properties
 
+        /// <summary>
+        /// Gets or sets the timeout of individual queries
+        /// </summary>
+        /// <remarks>
+        /// The overall timeout period is set by the timeout of the job.
+        /// </remarks>
         [DataMember]
         public int QueryTimeout
         {
@@ -61,20 +61,9 @@ namespace Jhu.Graywulf.Jobs.Query
             set { queryTimeout = value; }
         }
 
-        [DataMember]
-        public DatasetBase TemporaryDataset
-        {
-            get { return temporaryDataset; }
-            set { temporaryDataset = value; }
-        }
-
-        [DataMember]
-        public string TemporarySchemaName
-        {
-            get { return temporarySchemaName; }
-            set { temporarySchemaName = value; }
-        }
-
+        /// <summary>
+        /// Gets or sets the destination table of the query
+        /// </summary>
         [DataMember]
         public DestinationTableParameters Destination
         {
@@ -82,32 +71,14 @@ namespace Jhu.Graywulf.Jobs.Query
             set { destination = value; }
         }
 
-        [DataMember]
+        /// <summary>
+        /// Gets whether the destination table is initialized.
+        /// </summary>
+        [IgnoreDataMember]
         public bool IsDestinationTableInitialized
         {
             get { return isDestinationTableInitialized; }
-            set { isDestinationTableInitialized = value; }
-        }
-
-        [DataMember]
-        public ResultsetTarget ResultsetTarget
-        {
-            get { return resultsetTarget; }
-            set { resultsetTarget = value; }
-        }
-
-        [DataMember]
-        public string TemporaryDestinationTableName
-        {
-            get { return temporaryDestinationTableName; }
-            set { temporaryDestinationTableName = value; }
-        }
-
-        [DataMember]
-        public bool KeepTemporaryDestinationTable
-        {
-            get { return keepTemporaryDestinationTable; }
-            set { keepTemporaryDestinationTable = value; }
+            internal set { isDestinationTableInitialized = value; }
         }
 
         [DataMember]
@@ -171,15 +142,8 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             this.queryTimeout = 60; // TODO ***
 
-            this.temporaryDataset = null;
-            this.temporarySchemaName = "dbo";
-
             this.destination = new DestinationTableParameters();
             this.isDestinationTableInitialized = false;
-
-            this.resultsetTarget = ResultsetTarget.DestinationTable;
-            this.temporaryDestinationTableName = String.Empty;
-            this.keepTemporaryDestinationTable = false;
 
             this.sourceDatabaseVersionName = String.Empty;
             this.statDatabaseVersionName = String.Empty;
@@ -197,15 +161,8 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             this.queryTimeout = old.queryTimeout;
 
-            this.temporaryDataset = old.temporaryDataset;
-            this.temporarySchemaName = old.temporarySchemaName;
-
             this.destination = old.destination;
             this.isDestinationTableInitialized = old.isDestinationTableInitialized;
-
-            this.resultsetTarget = old.resultsetTarget;
-            this.temporaryDestinationTableName = old.temporaryDestinationTableName;
-            this.keepTemporaryDestinationTable = old.keepTemporaryDestinationTable;
 
             this.sourceDatabaseVersionName = old.sourceDatabaseVersionName;
             this.statDatabaseVersionName = old.statDatabaseVersionName;
@@ -220,7 +177,6 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
-
         #region Parsing functions
 
         public void Verify()
@@ -243,7 +199,7 @@ namespace Jhu.Graywulf.Jobs.Query
             IntoClause into = SelectStatement.FindDescendantRecursive<IntoClause>();
             if (into != null)
             {
-                
+
                 // **** TODO: test this with dataset name
                 //if (into.TableReference.DatasetName != null) this.destinationTable.Table.Dataset.Name = into.TableReference.DatasetName;
 
@@ -316,7 +272,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 var dd = new DatabaseDefinition(context);
                 dd.Guid = gds.DatabaseDefinition.Guid;
                 dd.Load();
-                
+
                 // Get a server from the scheduler
                 var si = new ServerInstance(Context);
                 si.Guid = Scheduler.GetNextServerInstance(new Guid[] { dd.Guid }, StatDatabaseVersionName, null);
@@ -412,44 +368,21 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        public virtual void IsDestinationTableExisting()
+        public virtual void CheckDestinationTable()
         {
             AssertValidContext();
 
-            if ((resultsetTarget & ResultsetTarget.DestinationTable) != 0)
+            bool exists = IsTableExisting(destination.Table);
+
+            if (exists && (destination.Operation & DestinationTableOperation.Drop) == 0)
             {
-                bool exists = IsTableExisting(
-                    GetDestinationDatabaseConnectionString().ConnectionString,
-                    destination.Table.SchemaName,
-                    destination.Table.TableName);
-
-                if (exists && (destination.Operation & DestinationTableOperation.Drop) != 0)
+                if ((destination.Operation & DestinationTableOperation.Create) == 0)
                 {
-                    DropTable(
-                        GetDestinationDatabaseConnectionString().ConnectionString,
-                        GetDestinationDatabaseConnectionString().InitialCatalog,
-                        destination.Table.SchemaName,
-                        destination.Table.TableName);
-
-                    exists = false;
-                    destination.Operation = destination.Operation & ~DestinationTableOperation.Drop;
-                }
-
-                switch (destination.Operation)
-                {
-                    case DestinationTableOperation.Create:
-                        if (exists) throw new Exception("Output table already exists.");
-                        break;
-                    case DestinationTableOperation.Append:
-                    case DestinationTableOperation.Clear:
-                        throw new NotImplementedException();
-                    // **** TODO check format compatibility
+                    throw new Exception("Output table already exists.");    // *** TODO
                 }
             }
         }
 
         #endregion
-
-        
     }
 }

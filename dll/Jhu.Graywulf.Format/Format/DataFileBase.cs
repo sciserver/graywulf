@@ -121,6 +121,7 @@ namespace Jhu.Graywulf.Format
 
         public virtual void Dispose()
         {
+            Close();
         }
 
         #endregion

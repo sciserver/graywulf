@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Jhu.Graywulf.ParserLib;
-using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 {
@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 
                 if (node.TableReference != null)
                 {
-                    res += GetTableReferenceName(node.TableReference);
+                    res += QuoteTableReferenceName(node.TableReference);
                 }
 
                 if (res != String.Empty) res += ".";
@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
         {
             if (ResolveNames)
             {
-                Writer.Write(GetTableReferenceName(node.TableReference));
+                Writer.Write(QuoteTableReferenceName(node.TableReference));
                 return false;
             }
             else
@@ -78,7 +78,38 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             }
         }
 
-        private string GetTableReferenceName(TableReference tableReference)
+        public override bool WriteFunctionIdentifier(FunctionIdentifier node)
+        {
+            if (ResolveNames)
+            {
+                Writer.Write(QuoteFunctionReferenceName(node.FunctionReference));
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public override bool WriteTableValuedFunctionCall(TableValuedFunctionCall node)
+        {
+            if (ResolveNames)
+            {
+                Writer.Write(QuoteTableReferenceName(node.TableReference));
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        protected override string QuoteIdentifier(string identifier)
+        {
+            return String.Format("`{0}`", UnquoteIdentifier(identifier));
+        }
+
+        private string QuoteTableReferenceName(TableReference tableReference)
         {
             string res = String.Empty;
 
@@ -112,39 +143,49 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             return res;
         }
 
-        protected override string QuoteIdentifier(string identifier)
+        private string QuoteFunctionReferenceName(FunctionReference function)
         {
-            return String.Format("`{0}`", UnquoteIdentifier(identifier));
+            string res = String.Empty;
+
+            if (!function.IsUdf)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                if (function.DatabaseObject != null)
+                {
+                    if (function.DatabaseObject.ObjectName != null) res += QuoteIdentifier(function.DatabaseObject.ObjectName);
+                }
+                else
+                {
+                    if (function.DatabaseObjectName != null) res += QuoteIdentifier(function.DatabaseObjectName);
+                }
+            }
+
+            return res;
         }
 
-        // ---
-
-        // ---
-
-        public override string GenerateTableSelectStarQuery(string linkedServerName, string databaseName, string schemaName, string tableName, int top)
+        private string QuoteDatabaseObjectName(DatabaseObject dbobject)
         {
-            string sql = "SELECT t.* FROM `{1}` AS t {0}";
+            return QuoteIdentifier(dbobject.ObjectName);
+        }
 
+        public override string GenerateSelectStarQuery(TableOrView tableOrView, int top)
+        {
+            string sql = "SELECT t.* FROM {1} AS t {0}";
+            return String.Format(sql, GenerateTopExpression(top), QuoteDatabaseObjectName(tableOrView));
+        }
+
+        protected override string GenerateTopExpression(int top)
+        {
             string topstr = String.Empty;
             if (top != 0)
             {
                 topstr = String.Format("LIMIT {0}", top);
             }
 
-            return String.Format(sql, topstr, tableName);
-        }
-
-        public override string GenerateTableSelectStarQuery(string linkedServerName, TableReference table, int top)
-        {
-            string sql = "SELECT t.* FROM `{1}` AS t {0}";
-
-            string topstr = String.Empty;
-            if (top != 0)
-            {
-                topstr = String.Format("LIMIT {0}", top);
-            }
-
-            return String.Format(sql, topstr, table.DatabaseObjectName);
+            return topstr;
         }
 
         public override string GenerateMostRestrictiveTableQuery(TableReference table, bool includePrimaryKey, int top)
@@ -167,7 +208,16 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
                 {
                     sql.Write(", ");
                 }
-                sql.Write("`{0}`", cr.ColumnName);
+
+                if (cr.DataType.IsInteger)
+                {
+                    // Here a cast to a type that is accepted by SQL Server has to be made
+                    sql.Write("CAST(`{0}` AS SIGNED) AS `{0}`", cr.ColumnName);
+                }
+                else
+                {
+                    sql.Write("`{0}`", cr.ColumnName);
+                }
                 q++;
             }
 

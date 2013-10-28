@@ -67,16 +67,19 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
         protected override void OnSaveFormCompleted(bool newentity)
         {
-            var svguid = new Guid(MyDbServerVersion.SelectedValue);
-            
-            if (newentity && svguid != Guid.Empty)
+            if (newentity)
             {
-                var sv = new ServerVersion(RegistryContext);
-                sv.Guid = new Guid(MyDbServerVersion.SelectedValue);
-                sv.Load();
+                var svguid = new Guid(MyDbServerVersion.SelectedValue);
 
-                var fi = new FederationInstaller(item);
-                fi.GenerateDefaultChildren(sv);
+                if (svguid != Guid.Empty)
+                {
+                    var sv = new ServerVersion(RegistryContext);
+                    sv.Guid = new Guid(MyDbServerVersion.SelectedValue);
+                    sv.Load();
+
+                    var fi = new FederationInstaller(item);
+                    fi.GenerateDefaultChildren(sv);
+                }
             }
         }
 

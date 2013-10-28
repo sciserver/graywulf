@@ -51,6 +51,7 @@ namespace Jhu.Graywulf.Registry
         #region Member Variables
 
         private bool isExisting;
+        private bool isDeserializing;
 
         // --- Background storage for properties ---
         private Guid guid;
@@ -96,6 +97,12 @@ namespace Jhu.Graywulf.Registry
         public bool IsExisting
         {
             get { return isExisting; }
+        }
+
+        internal bool IsDeserializing
+        {
+            get { return isDeserializing; }
+            set { isDeserializing = value; }
         }
 
         /// <summary>
@@ -480,6 +487,7 @@ namespace Jhu.Graywulf.Registry
             var now = DateTime.Now;
 
             this.isExisting = false;
+            this.isDeserializing = false;
 
             this.guid = Guid.Empty;
             this.concurrencyVersion = 0;

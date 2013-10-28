@@ -45,12 +45,15 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private string queryString;
 
-        private string databaseVersionName;
-        private string defaultDatasetName;
-        private string defaultSchemaName;
-
+        private SqlServerDataset defaultDataset;
+        private SqlServerDataset temporaryDataset;
+        private SqlServerDataset codeDataset;
         private List<DatasetBase> customDatasets;
 
+        //private string databaseVersionName;
+        //private string defaultDatasetName;
+        //private string defaultSchemaName;
+      
         private ExecutionMode executionMode;
 
         [NonSerialized]
@@ -67,8 +70,11 @@ namespace Jhu.Graywulf.Jobs.Query
         [NonSerialized]
         private EntityProperty<DatabaseInstance> temporaryDatabaseInstanceReference;
 
-        private ConcurrentDictionary<string, string> temporaryTables;
-        private ConcurrentDictionary<string, string> temporaryViews;
+        private ConcurrentDictionary<string, Table> temporaryTables;
+        private ConcurrentDictionary<string, View> temporaryViews;
+
+        [NonSerialized]
+        private EntityProperty<DatabaseInstance> codeDatabaseInstanceReference;
 
         #endregion
         #region Properties
@@ -135,6 +141,7 @@ namespace Jhu.Graywulf.Jobs.Query
             set { queryString = value; }
         }
 
+#if false
         /// <summary>
         /// 
         /// </summary>
@@ -161,6 +168,28 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             get { return defaultSchemaName; }
             set { defaultSchemaName = value; }
+        }
+#endif
+
+        [DataMember]
+        public SqlServerDataset DefaultDataset
+        {
+            get { return defaultDataset; }
+            set { defaultDataset = value; }
+        }
+
+        [DataMember]
+        public SqlServerDataset TemporaryDataset
+        {
+            get { return temporaryDataset; }
+            set { temporaryDataset = value; }
+        }
+
+        [DataMember]
+        public SqlServerDataset CodeDataset
+        {
+            get { return codeDataset; }
+            set { codeDataset = value; }
         }
 
         /// <summary>
@@ -224,14 +253,19 @@ namespace Jhu.Graywulf.Jobs.Query
             get { return temporaryDatabaseInstanceReference; }
         }
 
-        public ConcurrentDictionary<string, string> TemporaryTables
+        public ConcurrentDictionary<string, Table> TemporaryTables
         {
             get { return temporaryTables; }
         }
 
-        public ConcurrentDictionary<string, string> TemporaryViews
+        public ConcurrentDictionary<string, View> TemporaryViews
         {
             get { return temporaryViews; }
+        }
+
+        protected EntityProperty<DatabaseInstance> CodeDatabaseInstanceReference
+        {
+            get { return codeDatabaseInstanceReference; }
         }
 
         #endregion
@@ -269,11 +303,14 @@ namespace Jhu.Graywulf.Jobs.Query
 
             this.queryString = null;
 
-            this.databaseVersionName = null;
-            this.defaultDatasetName = null;
-            this.defaultSchemaName = null;
-
+            this.defaultDataset = null;
+            this.temporaryDataset = null;
+            this.codeDataset = null;
             this.customDatasets = new List<DatasetBase>();
+
+            /*this.databaseVersionName = null;
+            this.defaultDatasetName = null;
+            this.defaultSchemaName = null;*/
 
             this.executionMode = ExecutionMode.SingleServer;
 
@@ -286,8 +323,10 @@ namespace Jhu.Graywulf.Jobs.Query
 
             this.temporaryDatabaseInstanceReference = new EntityProperty<DatabaseInstance>();
 
-            this.temporaryTables = new ConcurrentDictionary<string, string>(SchemaManager.Comparer);
-            this.temporaryViews = new ConcurrentDictionary<string, string>(SchemaManager.Comparer);
+            this.temporaryTables = new ConcurrentDictionary<string, Table>(SchemaManager.Comparer);
+            this.temporaryViews = new ConcurrentDictionary<string, View>(SchemaManager.Comparer);
+
+            this.codeDatabaseInstanceReference = new EntityProperty<DatabaseInstance>();
         }
 
         private void CopyMembers(QueryObject old)
@@ -304,10 +343,12 @@ namespace Jhu.Graywulf.Jobs.Query
 
             this.queryString = old.queryString;
 
-            this.databaseVersionName = old.databaseVersionName;
-            this.defaultDatasetName = old.defaultDatasetName;
-            this.defaultSchemaName = old.defaultSchemaName;
-
+            //this.databaseVersionName = old.databaseVersionName;
+            //this.defaultDatasetName = old.defaultDatasetName;
+            //this.defaultSchemaName = old.defaultSchemaName;
+            this.defaultDataset = old.defaultDataset;
+            this.temporaryDataset = old.temporaryDataset;
+            this.codeDataset = old.codeDataset;
             this.customDatasets = new List<DatasetBase>(old.customDatasets);
 
             this.executionMode = old.executionMode;
@@ -321,8 +362,10 @@ namespace Jhu.Graywulf.Jobs.Query
 
             this.temporaryDatabaseInstanceReference = new EntityProperty<DatabaseInstance>(old.temporaryDatabaseInstanceReference);
 
-            this.temporaryTables = new ConcurrentDictionary<string, string>(old.temporaryTables, SchemaManager.Comparer);
-            this.temporaryViews = new ConcurrentDictionary<string, string>(old.temporaryViews, SchemaManager.Comparer);
+            this.temporaryTables = new ConcurrentDictionary<string, Table>(old.temporaryTables, SchemaManager.Comparer);
+            this.temporaryViews = new ConcurrentDictionary<string, View>(old.temporaryViews, SchemaManager.Comparer);
+
+            this.codeDatabaseInstanceReference = new EntityProperty<DatabaseInstance>(old.codeDatabaseInstanceReference);
         }
 
         #endregion
@@ -347,6 +390,16 @@ namespace Jhu.Graywulf.Jobs.Query
             if (assignedServerInstanceReference != null)
             {
                 assignedServerInstanceReference.Context = context;
+            }
+
+            if (temporaryDatabaseInstanceReference != null)
+            {
+                temporaryDatabaseInstanceReference.Context = Context;
+            }
+
+            if (codeDatabaseInstanceReference != null)
+            {
+                codeDatabaseInstanceReference.Context = Context;
             }
         }
 
@@ -402,15 +455,15 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </remarks>
         public Dictionary<string, GraywulfDataset> FindRequiredDatasets()
         {
-            SchemaManager sc = GetSchemaManager(false);
+            var sc = GetSchemaManager(false);
 
             // Collect list of required databases
             var ds = new Dictionary<string, GraywulfDataset>(SchemaManager.Comparer);
             var trs = new List<TableReference>();
 
-            foreach (TableReference tr in selectStatement.EnumerateSourceTableReferences(true))
+            foreach (var tr in selectStatement.EnumerateSourceTableReferences(true))
             {
-                if (!tr.IsSubquery && !tr.IsComputed)
+                if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
                 {
                     // Filter out non-graywulf datasets
                     if (!ds.ContainsKey(tr.DatasetName) && (sc.Datasets[tr.DatasetName] is GraywulfDataset))
@@ -462,12 +515,7 @@ namespace Jhu.Graywulf.Jobs.Query
             if (interpretedQueryString == null || forceReinitialize)
             {
                 // --- Execute name resolution
-                var nr = queryFactory.Value.CreateNameResolver();
-                nr.SchemaManager = GetSchemaManager(forceReinitialize);
-
-                nr.DefaultSchemaName = defaultSchemaName;
-                nr.DefaultDatasetName = defaultDatasetName;
-
+                var nr = CreateNameResolver(forceReinitialize);
                 nr.Execute(selectStatement);
 
                 // --- Normalize where conditions
@@ -503,7 +551,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </remarks>
         protected virtual SchemaManager GetSchemaManager(bool clearCache)
         {
-            SchemaManager sc = CreateSchemaManager();
+            var sc = CreateSchemaManager();
 
             if (clearCache)
             {
@@ -533,137 +581,19 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        protected virtual SqlNameResolver CreateNameResolver(bool forceReinitialize)
+        {
+            var nr = queryFactory.Value.CreateNameResolver();
+            nr.SchemaManager = GetSchemaManager(forceReinitialize);
+
+            nr.DefaultTableDatasetName = defaultDataset.Name;
+            nr.DefaultFunctionDatasetName = codeDataset.Name;
+            
+            return nr;
+        }
+
         #endregion
         #region Name substitution
-
-#if false
-        protected NameMapper CreateDatasetNameMapper(string databaseVersionName)
-        {
-            return CreateDatasetNameMapper(databaseVersionName, AssignedServerInstance.Guid, null, null);
-        }
-
-        protected NameMapper CreateDatasetNameMapper(string databaseVersionName, Guid serverInstance, string temporaryDatabaseName, string temporarySchemaName)
-        {
-            switch (ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-
-                    // Replace remote table references with temp table references
-                    foreach (TableReference tr in SelectStatement.EnumerateTableSourceReferences(true))
-                    {
-                        if (!tr.IsSubquery && temporaryTables.ContainsKey(tr.FullyQualifiedName))
-                        {
-                            throw new NotImplementedException();
-                        }
-                    }
-
-                    return null;
-                case ExecutionMode.Graywulf:
-                    {
-                        var sm = CreateSchemaManager(false);
-
-                        var mapper = new NameMapper();
-
-                        foreach (var tr in SelectStatement.EnumerateTableSourceReferences(true))
-                        {
-                            if (temporaryDatabaseName != null && temporaryTables.ContainsKey(tr.FullyQualifiedName))
-                            {
-                                // Replace remote table references with temp table references
-                                AddRemoteTableNameMapping(mapper, sm, tr, temporaryDatabaseName, temporarySchemaName);
-                            }
-                            else if (!tr.IsSubquery && !tr.IsComputed)
-                            {
-                                AddDatabaseNameMapping(mapper, sm, tr, serverInstance, databaseVersionName);
-                            }
-                        }
-
-                        return mapper;
-                    }
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        protected NameMapper CreateDatasetNameMapper(string databaseVersionName, Guid serverInstance, TableReference tr)
-        {
-            var sm = CreateSchemaManager(false);
-
-            var mappings = new NameMapper();
-            AddDatabaseNameMapping(mappings, sm, tr, serverInstance, databaseVersionName);
-
-            return mappings;
-        }
-
-        private void AddDatabaseNameMapping(NameMapper mapper, SchemaManager sm, TableReference tr, Guid serverInstance, string databaseVersionName)
-        {
-            var ds = sm.Datasets[tr.DatasetName];
-
-            // Graywulf datasets have changing database names depending on the server
-            // the database is on.
-            if (ds is GraywulfDataset)
-            {
-                var gwds = ds as GraywulfDataset;
-                gwds.Context = Context;
-
-                DatabaseInstance di;
-                if (gwds.IsSpecificInstanceRequired)
-                {
-                    di = gwds.DatabaseInstance.Value;
-                }
-                else
-                {
-                    // Find appropriate database instance
-                    di = new DatabaseInstance(Context);
-                    di.Guid = scheduler.GetDatabaseInstances(serverInstance, gwds.DatabaseDefinition.Guid, databaseVersionName)[0];
-                    di.Load();
-                }
-
-                var nm = new DatasetNameMapping()
-                {
-                    DatabaseName = di.DatabaseName
-                };
-
-                // If already exists, make sure it refers to the same database
-                if (mapper.DatasetNameMappings.ContainsKey(ds.Name))
-                {
-                    if (mapper.DatasetNameMappings[ds.Name].DatabaseName != nm.DatabaseName)
-                    {
-                        throw new InvalidOperationException();
-                    }
-                }
-                else
-                {
-                    mapper.DatasetNameMappings.Add(ds.Name, nm);
-                }
-            }
-        }
-
-        private void AddRemoteTableNameMapping(NameMapper mapper, SchemaManager sm, TableReference tr, string temporaryDatabaseName, string temporarySchemaName)
-        {
-            var nm = new DatabaseObjectNameMapping()
-            {
-                DatabaseName = temporaryDatabaseInstanceReference.Value.DatabaseName,
-                SchemaName = temporarySchemaName,
-                ObjectName = temporaryTables[tr.FullyQualifiedName],
-            };
-
-            mapper.DatabaseObjectNameMappings.Add(tr.FullyQualifiedName, nm);
-
-#if false
-            // TODO: old code, delete
-            // Replace name in the query
-            tr.TableOrViewDescription.SchemaName = temporarySchemaName;
-            tr.TableOrViewDescription.ObjectName = temporaryTables[tr.FullyQualifiedName];
-
-            GraywulfDataset dd = new GraywulfDataset(tr.TableOrViewDescription.Dataset);
-
-            dd.ConnectionString = temporaryDatabaseInstanceReference.Value.GetConnectionString().ConnectionString;
-            dd.IsCacheable = false;
-            dd.Name = "TEMP";   // TODO: ?
-            tr.TableOrViewDescription.Dataset = dd;
-#endif
-        }
-#endif
 
         /// <summary>
         /// Looks up actual database instance names on the specified server instance
@@ -684,7 +614,10 @@ namespace Jhu.Graywulf.Jobs.Query
 
                         foreach (var tr in SelectStatement.EnumerateSourceTableReferences(true))
                         {
-                            SubstituteDatabaseName(tr, serverInstance, databaseVersion);
+                            if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
+                            {
+                                SubstituteDatabaseName(tr, serverInstance, databaseVersion);
+                            }
                         }
                     }
                     break;
@@ -763,19 +696,21 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private void SubstituteRemoteTableName(SchemaManager sm, TableReference tr, DatasetBase temporaryDataset, string temporarySchemaName)
         {
+            var un = tr.UniqueName;
+
             // TODO: write function to determine if a table is to be copied
             if (tr.IsCachable && TemporaryTables.ContainsKey(tr.UniqueName) &&
                 IsRemoteDataset(sm.Datasets[tr.DatasetName]))
             {
                 tr.DatabaseName = temporaryDataset.DatabaseName;
                 tr.SchemaName = temporarySchemaName;
-                tr.DatabaseObjectName = TemporaryTables[tr.UniqueName];
+                tr.DatabaseObjectName = TemporaryTables[un].TableName;
                 tr.DatabaseObject = null;
             }
         }
 
         /// <summary>
-        /// Checks whther the given dataset is remote to the assigned server
+        /// Checks whether the given dataset is remote to the assigned server
         /// </summary>
         /// <param name="ds"></param>
         /// <returns></returns>
@@ -848,13 +783,53 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
-
         #region Generic SQL functions with cancel support
         // *** TODO: move all these to a util class
 
+        protected void ExecuteCommandNonQuery(string sql, string connectionString)
+        {
+            using (var cn = new SqlConnection(connectionString))
+            {
+                cn.Open();
+
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+#if !SKIPQUERIES
+                    cmd.ExecuteNonQuery();
+#endif
+                }
+            }
+        }
+
+        protected object ExecuteCommandScalar(string sql, string connectionString)
+        {
+            using (SqlConnection cn = new SqlConnection(connectionString))
+            {
+                cn.Open();
+
+                using (SqlCommand cmd = new SqlCommand(sql, cn))
+                {
+                    return cmd.ExecuteScalar();
+                }
+            }
+        }
+
+        protected void ExecuteLongCommandNonQuery(string sql, string connectionString, int timeout)
+        {
+            using (var cn = new SqlConnection(connectionString))
+            {
+                cn.Open();
+
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    cmd.CommandTimeout = timeout;
+                    ExecuteLongCommandNonQuery(cmd);
+                }
+            }
+        }
+
         protected void ExecuteLongCommandNonQuery(SqlCommand cmd)
         {
-
             var guid = Guid.NewGuid();
             var ccmd = new CancelableDbCommand(cmd);
 
@@ -870,7 +845,6 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 UnregisterCancelable(guid);
             }
-
         }
 
         protected object ExecuteLongCommandScalar(SqlCommand cmd)
@@ -914,13 +888,25 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Specialized SQL manipulation function
 
-        protected void CreateTable(string destinationDatabaseConnectionString, string destinationSchemaName, string destinationTableName, IEnumerable<ColumnReference> columns)
+        protected bool IsTableExisting(Table table)
+        {
+            // TODO: rewrite this and move function to schema
+
+            string sql = String.Format(
+                "SELECT COUNT(*) FROM sys.objects WHERE object_id = OBJECT_ID(N'[{0}].[{1}]') AND type in (N'U')",
+                table.SchemaName,
+                table.TableName);
+
+            return (int)ExecuteCommandScalar(sql, table.Dataset.ConnectionString) == 1;
+        }
+
+        protected void CreateTable(TableReference table)
         {
             string sql = "CREATE TABLE [{0}].[{1}] ({2})";
             string columnlist = String.Empty;
 
             int q = 0;
-            foreach (ColumnReference cr in columns)
+            foreach (var cr in table.ColumnReferences)
             {
                 if (q != 0)
                 {
@@ -931,73 +917,110 @@ namespace Jhu.Graywulf.Jobs.Query
                 q++;
             }
 
-            // Execute CREATE TABLE query 
-            using (SqlConnection dcn = new SqlConnection(destinationDatabaseConnectionString))
-            {
-                dcn.Open();
+            sql = String.Format(sql, table.SchemaName, table.DatabaseObjectName, columnlist);
 
-                sql = String.Format(sql, destinationSchemaName, destinationTableName, columnlist);
-
-                using (SqlCommand cmd = new SqlCommand(sql, dcn))
-                {
-                    cmd.ExecuteNonQuery();
-                }
-            }
+            ExecuteCommandNonQuery(sql, table.DatabaseObject.Dataset.ConnectionString);
         }
 
-        protected bool IsTableExisting(string databaseConnectionString, string schemaName, string tableName)
+        protected void CreateTableForBulkCopy(SourceQueryParameters source, DestinationTableParameters destination, bool local)
+        {
+#if !SKIPQUERIES
+
+            var bcp = CreateQueryImporter(source, destination, local);
+            bcp.CreateDestinationTable();
+
+#endif
+        }
+
+        protected void ExecuteBulkCopy(SourceQueryParameters source, DestinationTableParameters destination, bool local, int timeout)
+        {
+            var bcp = CreateQueryImporter(source, destination, local);
+            bcp.Destination.BulkInsertTimeout = timeout;
+
+            var guid = Guid.NewGuid();
+            RegisterCancelable(guid, bcp);
+
+#if !SKIPQUERIES
+            bcp.Execute();
+#endif
+
+            UnregisterCancelable(guid);
+        }
+
+        protected void TruncateTable(Table table)
+        {
+            // TODO: move this to schema eventually
+            string sql = String.Format("TRUNCATE TABLE [{0}].[{1}]", table.SchemaName, table.TableName);
+
+            ExecuteCommandNonQuery(sql, table.Dataset.ConnectionString);
+        }
+
+        protected void DropTableOrView(TableOrView tableOrView)
+        {
+            // TODO: move this to schema eventually
+            string sql = @"
+IF (OBJECT_ID('[{0}].[{1}].[{2}]') IS NOT NULL)
+BEGIN
+    DROP {3} [{0}].[{1}].[{2}]
+END";
+
+            sql = String.Format(
+                sql,
+                !String.IsNullOrWhiteSpace(tableOrView.DatabaseName) ? tableOrView.DatabaseName : tableOrView.Dataset.DatabaseName,
+                tableOrView.SchemaName,
+                tableOrView.ObjectName,
+                tableOrView.GetType().Name);
+
+            ExecuteCommandNonQuery(sql, tableOrView.Dataset.ConnectionString);
+        }
+
+        protected void ExecuteSelectInto(SourceQueryParameters source, DestinationTableParameters destination)
+        {
+
+            string sql = String.Format(
+                "SELECT __tablealias.* INTO [{0}].[{1}].[{2}] FROM ({3}) AS __tablealias",
+                !String.IsNullOrWhiteSpace(destination.Table.DatabaseName) ? destination.Table.DatabaseName : destination.Table.Dataset.DatabaseName,
+                destination.Table.SchemaName,
+                destination.Table.TableName,
+                source.Query);
+
+            ExecuteLongCommandNonQuery(sql, source.Dataset.ConnectionString, source.Timeout);
+        }
+
+        protected void ExecuteInsertInto(SourceQueryParameters source, DestinationTableParameters destination)
         {
             string sql = String.Format(
-                "SELECT COUNT(*) FROM sys.objects WHERE object_id = OBJECT_ID(N'[{0}].[{1}]') AND type in (N'U')",
-                schemaName,
-                tableName);
+                "INSERT [{0}].[{1}].[{2}] WITH (TABLOCKX) SELECT __tablealias.* FROM ({3}) AS __tablealias",
+                !String.IsNullOrWhiteSpace(destination.Table.DatabaseName) ? destination.Table.DatabaseName : destination.Table.Dataset.DatabaseName,
+                destination.Table.SchemaName,
+                destination.Table.TableName,
+                source.Query);
 
-            using (SqlConnection cn = new SqlConnection(databaseConnectionString))
-            {
-                cn.Open();
-
-                using (SqlCommand cmd = new SqlCommand(sql, cn))
-                {
-                    return (int)cmd.ExecuteScalar() == 1;
-                }
-            }
+            ExecuteLongCommandNonQuery(sql, source.Dataset.ConnectionString, source.Timeout);
         }
 
-        protected IQueryImporter CreateQueryImporter(DatasetBase dataset, string sourceQuery, string destinationDatabaseConnectionString, string destinationSchemaName, string destinationTableName)
+        protected IQueryImporter CreateQueryImporter(SourceQueryParameters source, DestinationTableParameters destination, bool local)
         {
-            var qi = CreateQueryImporter(destinationDatabaseConnectionString, destinationSchemaName, destinationTableName);
+            var desthost = GetHostnameFromSqlConnectionString(destination.Table.Dataset.ConnectionString);
 
-            // Create bulk operation
-            var source = new SourceQueryParameters();
-            source.Dataset = dataset;
-            source.Query = sourceQuery;
+            IQueryImporter qi;
+
+            if (local)
+            {
+                qi = new QueryImporter();
+            }
+            else
+            {
+                qi = RemoteServiceHelper.CreateObject<IQueryImporter>(desthost);
+            }
 
             qi.Source = source;
-
-            return qi;
-        }
-
-        protected IQueryImporter CreateQueryImporter(string destinationDatabaseConnectionString, string destinationSchemaName, string destinationTableName)
-        {
-            var host = GetHostnameFromSqlConnectionString(destinationDatabaseConnectionString);
-
-            var destination = new DestinationTableParameters();
-            destination.Table = new Table()
-            {
-                Dataset = new SqlServerDataset("", destinationDatabaseConnectionString),
-                SchemaName = destinationSchemaName,
-                TableName = destinationTableName
-            };
-            destination.Operation = DestinationTableOperation.Append;
-
-
-            var qi = RemoteServiceHelper.CreateObject<IQueryImporter>(host);
             qi.Destination = destination;
 
             return qi;
         }
 
-        protected string GetHostnameFromSqlConnectionString(string connectionString)
+        private string GetHostnameFromSqlConnectionString(string connectionString)
         {
             // Determine server name from connection string
             // This is required, because bulk copy can go into databases that are only known
@@ -1017,164 +1040,6 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             return System.Net.Dns.GetHostEntry(host).HostName;
-        }
-
-        /// <summary>
-        /// Takes a query, analyzes its columns and creates a table with the same schema
-        /// in the destination database
-        /// </summary>
-        /// <param name="sourceDatabaseConnectionString"></param>
-        /// <param name="sourceQuery"></param>
-        /// <param name="destinationDatabaseConnectionString"></param>
-        /// <param name="destinationSchemaName"></param>
-        /// <param name="destinationTableName"></param>
-        protected void CreateTableForBulkCopy(DatasetBase dataset, string sourceQuery, string destinationDatabaseConnectionString, string destinationSchemaName, string destinationTableName)
-        {
-#if !SKIPQUERIES
-
-            var bcp = CreateQueryImporter(dataset, sourceQuery, destinationDatabaseConnectionString, destinationSchemaName, destinationTableName);
-            bcp.CreateDestinationTable();
-
-#endif
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sourceDatabaseConnectionString"></param>
-        /// <param name="sourceQuery"></param>
-        /// <param name="destinationDatabaseConnectionString"></param>
-        /// <param name="destinationSchemaName"></param>
-        /// <param name="destinationTableName"></param>
-        /// <remarks>
-        /// Function assumes that destination table is already created
-        /// </remarks>
-        protected void ExecuteBulkCopy(DatasetBase dataset, string sourceQuery, string destinationDatabaseConnectionString, string destinationSchemaName, string destinationTableName, int timeout)
-        {
-            var bcp = CreateQueryImporter(dataset, sourceQuery, destinationDatabaseConnectionString, destinationSchemaName, destinationTableName);
-            bcp.Source.Timeout = timeout;
-            bcp.Destination.BulkInsertTimeout = timeout;
-
-            var guid = Guid.NewGuid();
-            RegisterCancelable(guid, bcp);
-
-#if !SKIPQUERIES
-            bcp.Execute();
-#endif
-
-            UnregisterCancelable(guid);
-        }
-
-
-        // TODO: clean up this a little bit
-
-        protected void ExecuteSelectInto(string sourceDatabaseConnectionString, string sourceQuery, string destinationDatabaseName, string destinationSchemaName, string destinationTableName, int timeout)
-        {
-#if !SKIPQUERIES
-            string sql = String.Format("SELECT __tablealias.* INTO [{0}].[{1}].[{2}] FROM ({3}) AS __tablealias",
-                                       destinationDatabaseName,
-                                       destinationSchemaName,
-                                       destinationTableName,
-                                       sourceQuery);
-
-            using (SqlConnection cn = new SqlConnection(sourceDatabaseConnectionString))
-            {
-                cn.Open();
-
-                using (SqlCommand cmd = new SqlCommand(sql, cn))
-                {
-                    cmd.CommandTimeout = timeout;
-
-                    ExecuteLongCommandNonQuery(cmd);
-                }
-            }
-#endif
-        }
-
-        protected void ExecuteInsertInto(string sourceDatabaseConnectionString, string sourceQuery, string destinationDatabaseName, string destinationSchemaName, string destinationTableName, int timeout)
-        {
-#if !SKIPQUERIES
-            string sql = String.Format("INSERT [{0}].[{1}].[{2}] SELECT __tablealias.* FROM ({3}) AS __tablealias",
-                                       destinationDatabaseName,
-                                       destinationSchemaName,
-                                       destinationTableName,
-                                       sourceQuery);
-
-            using (SqlConnection cn = new SqlConnection(sourceDatabaseConnectionString))
-            {
-                cn.Open();
-
-                using (SqlCommand cmd = new SqlCommand(sql, cn))
-                {
-                    cmd.CommandTimeout = timeout;
-                    ExecuteLongCommandNonQuery(cmd);
-                }
-            }
-#endif
-        }
-
-        protected void TruncateTable(string connectionString, string schema, string table)
-        {
-#if !SKIPQUERIES
-            string sql = String.Format("TRUNCATE TABLE [{0}].[{1}]", schema, table);
-
-            using (SqlConnection cn = new SqlConnection(connectionString))
-            {
-                cn.Open();
-
-                using (SqlCommand cmd = new SqlCommand(sql, cn))
-                {
-                    cmd.ExecuteNonQuery();
-                }
-            }
-#endif
-        }
-
-        protected void DropTable(string connectionString, string database, string schema, string table)
-        {
-#if !SKIPQUERIES
-            string sql = String.Format(@"
-USE [{0}]
-
-IF (EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '{1}' AND  TABLE_NAME = '{2}'))
-BEGIN
-    DROP TABLE [{0}].[{1}].[{2}]
-END", database, schema, table);
-
-            using (SqlConnection cn = new SqlConnection(connectionString))
-            {
-                cn.Open();
-
-                using (SqlCommand cmd = new SqlCommand(sql, cn))
-                {
-                    cmd.ExecuteNonQuery();
-                }
-            }
-#endif
-        }
-
-        protected void DropView(string connectionString, string database, string schema, string view)
-        {
-#if !SKIPQUERIES
-            string sql = String.Format(@"
-USE [{0}]
-
-IF (EXISTS (SELECT * FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA = '{1}' AND  TABLE_NAME = '{2}'))
-BEGIN
-    DROP VIEW [{0}].[{1}].[{2}]
-END", database, schema, view);
-
-            using (SqlConnection cn = new SqlConnection(connectionString))
-            {
-                cn.Open();
-
-                using (SqlCommand cmd = new SqlCommand(sql, cn))
-                {
-                    cmd.ExecuteNonQuery();
-                }
-            }
-#endif
         }
 
         #endregion

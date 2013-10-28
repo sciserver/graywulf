@@ -23,6 +23,12 @@ namespace Jhu.Graywulf.Components
             InitializeMembers();
 
             this.cacheStore = cacheStore;
+            
+            // Copy everything from cache to local
+            foreach (var cc in cacheStore)
+            {
+                localStore.TryAdd(cc.Key, cc.Value);
+            }
         }
 
         private void InitializeMembers()

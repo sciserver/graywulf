@@ -336,6 +336,7 @@ ORDER BY Number
                     if (entity.ParentReference.IsEmpty && depth == 0 ||
                         !entity.ParentReference.IsEmpty && depth == entity.ParentReference.Name.Count(c => c == '.') + 1)
                     {
+                        entity.IsDeserializing = true;
                         entity.Context = this.Context;
 
                         if (!entity.ParentReference.IsEmpty)
@@ -356,60 +357,10 @@ ORDER BY Number
 
             foreach (var entity in entities)
             {
+                entity.IsDeserializing = false;     // Allows saving entity references
                 entity.ResolveNameReferences();
                 entity.Save();
             }
-
-#if false
-            // Create a context for writing into the database
-            //using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
-            //{
-
-
-            // Writing into the database is done in multiple runs until
-            // any unsaved entity is found among the deserialized entities.
-            // This is a simpler way of resorving all entity cross-references
-            // than writing a dependency resolver.
-            bool found = true;
-            while (found)
-            {
-                found = false;
-                foreach (Entity e in entities)
-                {
-                    if (e.Guid == Guid.Empty)
-                    {
-                        found = true;
-
-                        // TODO this is a hack here, write dependecy walker instead!
-                        // It will blow up if entity references other entities
-                        // not existing in the database, so we just catch the exceptions
-                        // and run through all the entities
-                        try
-                        {
-                            Console.Error.Write("Creating {0}...", e.Name);
-
-                            e.Context = this.Context;
-
-                            if (!e.ParentReference.IsEmpty)
-                            {
-                                Console.Write(" looking up parent {0}...", e.ParentReference.Name);
-                                e.ResolveParentReference();
-                            }
-
-                            e.Save();
-
-                            Console.Error.WriteLine("  done.");
-                        }
-                        catch (System.Exception)
-                        {
-                        }
-                    }
-                }
-            }
-            
-        
-            //}
-#endif
 
             return entities;
         }

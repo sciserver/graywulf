@@ -20,21 +20,46 @@ BEGIN
 	select @@version;
 END//
 
-CREATE TABLE SampleData (
-	`float` FLOAT NULL,
-	`double` FLOAT NULL,
-	`decimal` DECIMAL NULL,
-	`nvarchar(50)` nvarchar(50) NULL,
-	`bigint` bigint NULL,
-	`int` int NOT NULL,
-	`tinyint` tinyint NULL,
-	`smallint` smallint NULL,
-	`bit` bit NULL,
-	`ntext` nvarchar(65535) NULL,
-	`char` char(1) NULL,
-	`datetime` datetime NULL,
-	`guid` CHAR(38) NULL
-)
+CREATE TABLE SampleData(
+      column_bool		BOOL,
+      column_tinyint	TINYINT,
+      column_utinyint	TINYINT UNSIGNED,
+      column_smallint	SMALLINT,
+      column_usmallint	SMALLINT UNSIGNED,
+      column_mediumint	MEDIUMINT,
+      column_umediumint	MEDIUMINT UNSIGNED,
+      column_integer	INTEGER,
+      column_uinteger	INTEGER UNSIGNED,
+      column_bigint		BIGINT,
+      column_ubigint	BIGINT UNSIGNED,
+      column_int		INT,
+      column_float		FLOAT,
+      column_double		DOUBLE,
+      column_decimal	DECIMAL(13,0),
+      column_date		DATE,
+      column_datetime	DATETIME,        
+      column_year		YEAR, 
+      column_time		TIME,
+      column_timestamp	TIMESTAMP,
+      column_tinytext	TINYTEXT,
+      column_text		TEXT,
+      column_mediumtext	MEDIUMTEXT,
+      column_longtext	LONGTEXT,
+      column_tinyblob	TINYBLOB,
+      column_blob		BLOB,
+      column_mediumblob	MEDIUMBLOB,
+      column_longblob	LONGBLOB,
+      column_bit		BIT,
+      column_set		Set("alma","korte"),
+      column_enum		Enum("also","felso"),
+      column_binary		BINARY,
+      column_varbinary	VARBINARY(3),
+	  column_geometry	geometry,
+	  column_char	char,
+	  column_nchar	nchar,
+	  column_varchar	varchar(4),
+	  column_nvarchar	nvarchar(4)
+)  
 ENGINE=InnoDB//
 
 CREATE TABLE BookAuthor (

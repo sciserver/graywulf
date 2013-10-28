@@ -29,6 +29,7 @@ namespace Jhu.Graywulf.Schema
         private bool isCacheable;
         private bool isMutable;
         private string name;
+        private string defaultSchemaName;
         private string connectionString;
 
         [NonSerialized]
@@ -92,6 +93,21 @@ namespace Jhu.Graywulf.Schema
         {
             get { return name; }
             set { name = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the default schema name.
+        /// </summary>
+        /// <remarks>
+        /// In case of no schema name is specified in queries referencing
+        /// this data set, the default schema name will be used.
+        /// The default value is 'dbo'.
+        /// </remarks>
+        [DataMember]
+        public string DefaultSchemaName
+        {
+            get { return defaultSchemaName; }
+            set { defaultSchemaName = value; }
         }
 
         /// <summary>
@@ -197,6 +213,7 @@ namespace Jhu.Graywulf.Schema
 
             this.isCacheable = false;
             this.name = String.Empty;
+            this.defaultSchemaName = String.Empty;
 
             this.connectionString = null;
 
@@ -219,10 +236,11 @@ namespace Jhu.Graywulf.Schema
         {
             this.cachedVersion = DateTime.Now.Ticks;
 
-            this.IsCacheable = old.IsCacheable;
-            this.Name = old.Name;
+            this.isCacheable = old.isCacheable;
+            this.name = old.name;
+            this.defaultSchemaName = old.defaultSchemaName;
 
-            this.ConnectionString = old.ConnectionString;
+            this.connectionString = old.connectionString;
 
             // No deep copy here
             this.tables = new DatabaseObjectCollection<Table>(this);
@@ -270,6 +288,24 @@ namespace Jhu.Graywulf.Schema
         /// When overloaded returns the fully resolved name of the dataset
         /// </summary>
         public abstract string GetFullyResolvedName();
+
+
+        protected abstract DataType GetTypeFromProviderSpecificName(string name);
+
+        protected DataType GetTypeFromProviderSpecificName(string name, int size, short scale, short precision)
+        {
+            var t = GetTypeFromProviderSpecificName(name);
+
+            if (t.HasSize)
+            {
+                t.Size = size;
+            }
+
+            t.Scale = scale;
+            t.Precision = precision;
+
+            return t;
+        }
 
         /// <summary>
         /// When overloaded in derived classes, returns the fully qualified name of an object
@@ -425,7 +461,30 @@ namespace Jhu.Graywulf.Schema
 
         internal abstract void DropDatabaseObjectMetadata(DatabaseObject databaseObject);
 
-        internal abstract void LoadAllVariableMetadata(DatabaseObject databaseObject);
+        /// <summary>
+        /// Loads metadata of a variable (parameter, column, return value, etc.).
+        /// </summary>
+        /// <param name="variable"></param>
+        /// <returns></returns>
+        /// <remarks>Dataset is implemented to load all variable metadata of an
+        /// object in a batch to reduce roundtrips between the client and the
+        /// database server.</remarks>
+        internal void LoadAllVariableMetadata(DatabaseObject databaseObject)
+        {
+            if (databaseObject is IColumns)
+            {
+                LoadAllColumnMetadata(databaseObject);
+            }
+            
+            if (databaseObject is IParameters)
+            {
+                LoadAllParameterMetadata(databaseObject);
+            }
+        }
+
+        protected abstract void LoadAllColumnMetadata(DatabaseObject databaseObject);
+
+        protected abstract void LoadAllParameterMetadata(DatabaseObject databaseObject);
 
         internal abstract void SaveAllVariableMetadata(DatabaseObject databaseObject);
 

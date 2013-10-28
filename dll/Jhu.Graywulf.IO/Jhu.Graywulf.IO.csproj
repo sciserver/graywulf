@@ -80,6 +80,10 @@
       <Project>{AAF4C238-C3A9-422F-BE3F-6FF10D9D0062}</Project>
       <Name>Jhu.Graywulf.Format</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.ParserLib\Jhu.Graywulf.ParserLib.csproj">
+      <Project>{4039B7D0-F8E5-49D8-A770-133DBED2EA75}</Project>
+      <Name>Jhu.Graywulf.ParserLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
       <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
       <Name>Jhu.Graywulf.RemoteService</Name>

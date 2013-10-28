@@ -8,7 +8,7 @@ namespace Jhu.Graywulf.Web.Controls
 {
     public class SelectionField : CheckBoxField
     {
-        internal const string SelectionCheckBoxID = "SelectionCheckBox";
+        public const string DefaultSelectionCheckBoxID = "SelectionCheckBox";
 
         public SelectionField()
         {
@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Web.Controls
             if ((cell.Controls.Count == 0))
             {
                 CheckBox chk = new CheckBox();
-                chk.ID = SelectionField.SelectionCheckBoxID;
+                chk.ID = SelectionField.DefaultSelectionCheckBoxID;
                 cell.Controls.Add(chk);
             }
         }

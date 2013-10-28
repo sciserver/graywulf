@@ -89,7 +89,7 @@ namespace Jhu.Graywulf.Web.Controls
                 foreach (GridViewRow row in Rows)
                 {
                     var key = GetKey(DataKeys[row.RowIndex]);
-                    var cb = (CheckBox)row.FindControl(SelectionField.SelectionCheckBoxID);
+                    var cb = (CheckBox)row.FindControl(SelectionField.DefaultSelectionCheckBoxID);
 
                     if (cb != null)
                     {
@@ -142,7 +142,7 @@ namespace Jhu.Graywulf.Web.Controls
                 var key = GetKey(DataKeys[row.RowIndex]);
                 var selected = selectedDataKeys.Contains(key);
 
-                var cb = row.FindControl(SelectionField.SelectionCheckBoxID) as CheckBox;
+                var cb = row.FindControl(SelectionField.DefaultSelectionCheckBoxID) as CheckBox;
 
                 if (cb != null)
                 {
@@ -159,7 +159,7 @@ namespace Jhu.Graywulf.Web.Controls
             {
                 var descriptor = new ScriptControlDescriptor("Graywulf.MultiSelectGridView", this.ClientID);
                 descriptor.AddProperty("SelectionMode", this.SelectionMode);
-                descriptor.AddProperty("SelectionCheckboxID", SelectionField.SelectionCheckBoxID);
+                descriptor.AddProperty("SelectionCheckboxID", SelectionField.DefaultSelectionCheckBoxID);
                 descriptor.AddProperty("CssClass", this.CssClass);
                 descriptor.AddProperty("SelectedRowCssClass", this.SelectedRowStyle.CssClass);
 

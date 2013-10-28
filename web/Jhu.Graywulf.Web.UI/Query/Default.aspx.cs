@@ -56,7 +56,8 @@ namespace Jhu.Graywulf.Web.UI.Query
 
                 var ji = ScheduleQuery(queuename, q);
 
-                ResultsFrame.Attributes.Add("src", String.Format("ResultsProgress.aspx?guid={0}", ji.Guid));
+                LastQueryJobGuid = ji.Guid;
+
                 ResultsDiv.Visible = true;
                 CloseResults.Visible = true;
             }

@@ -251,7 +251,6 @@ namespace Jhu.Graywulf.Registry
         public SqlConnectionStringBuilder GetConnectionString()
         {
             SqlConnectionStringBuilder csb = this.ServerInstance.GetConnectionString();
-
             csb.InitialCatalog = this.databaseName;
 
             return csb;
@@ -259,12 +258,9 @@ namespace Jhu.Graywulf.Registry
 
         public Schema.SqlServer.SqlServerDataset GetDataset()
         {
-            SqlConnectionStringBuilder csb = this.ServerInstance.GetConnectionString();
-            csb.InitialCatalog = this.databaseName;
-
             return new Schema.SqlServer.SqlServerDataset()
             {
-                ConnectionString = csb.ConnectionString
+                ConnectionString = GetConnectionString().ConnectionString
             };
         }
     }

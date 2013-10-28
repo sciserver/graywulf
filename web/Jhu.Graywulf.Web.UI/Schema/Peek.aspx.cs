@@ -9,7 +9,6 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.SqlParser.SqlCodeGen;
 using Jhu.Graywulf.ParserLib;
-using Jhu.Graywulf.SqlCodeGen;
 
 namespace Jhu.Graywulf.Web.UI.Schema
 {
@@ -22,34 +21,28 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            schema::Table table = (schema::Table)SchemaManager.GetDatabaseObjectByKey(Request.QueryString["objid"]);
+            var tableOrView = (schema::TableOrView)SchemaManager.GetDatabaseObjectByKey(Request.QueryString["objid"]);
 
+            var codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(tableOrView.Dataset);
 
-            SqlCodeGeneratorBase codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(table.Dataset);
-
-            string sql = codegen.GenerateTableSelectStarQuery(
-                null,
-                null,
-                table.SchemaName,
-                table.TableName,
-                100);
+            var sql = codegen.GenerateSelectStarQuery(tableOrView, 100);
 
             DbProviderFactory dbf;
             string cstr;
 
-            GetServerSettings(table.Dataset, out cstr, out dbf);
+            GetServerSettings(tableOrView.Dataset, out cstr, out dbf);
 
-            using (IDbConnection cn = dbf.CreateConnection())
+            using (var cn = dbf.CreateConnection())
             {
-                cn.ConnectionString = table.Dataset.ConnectionString;
+                cn.ConnectionString = tableOrView.Dataset.ConnectionString;
                 cn.Open();
 
-                using (IDbCommand cmd = cn.CreateCommand())
+                using (var cmd = cn.CreateCommand())
                 {
                     cmd.CommandText = sql;
                     cmd.CommandType = CommandType.Text;
 
-                    using (IDataReader dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
+                    using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
                     {
                         RenderTable(dr);
                     }
@@ -102,22 +95,26 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
         private void RenderTable(IDataReader dr)
         {
+            var schemaTable = dr.GetSchemaTable();
+
             StringWriter output = new StringWriter();
 
             output.WriteLine("<table border=\"1\" cellspacing=\"0\" style=\"border-collapse:collapse\">");
-
-
 
             // header
             output.WriteLine("<tr>");
 
             for (int i = 0; i < dr.FieldCount; i++)
             {
-                output.WriteLine("<td class=\"header\" nowrap>{0}<br />{1}</td>", dr.GetName(i), dr.GetDataTypeName(i));
+                var column = new Column();
+                column.CopyFromSchemaTableRow(schemaTable.Rows[i]);
+
+                output.WriteLine("<td class=\"header\" nowrap>{0}<br />{1}</td>", column.Name, column.DataType.NameWithSize);
             }
 
             output.WriteLine("</tr>");
 
+            // Rows
             while (dr.Read())
             {
                 output.WriteLine("<tr>");
@@ -130,7 +127,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
                 output.WriteLine("</tr>");
             }
 
-
+            // Footer
             output.WriteLine("</table>");
 
             dataTable.Text = output.ToString();

@@ -147,30 +147,41 @@ namespace Jhu.Graywulf.Web
             // that could break old job definitions once the job format changes. It's
             // save to read parameters from the xml representation directly.
 
-            JobDescription res = new JobDescription();
+            var res = new JobDescription();
             res.Job = job;
 
             if (queryJobDefinitions.ContainsKey(job.JobDefinitionReference.Guid))
             {
                 res.JobType = JobType.Query;
 
-                var xml = new XmlDocument();
-                xml.LoadXml(job.Parameters["Query"].XmlValue);
+                // debug code
+                if (job.Parameters.ContainsKey("Query"))
+                {
+                    var xml = new XmlDocument();
+                    xml.LoadXml(job.Parameters["Query"].XmlValue);
 
-                res.Query = GetXmlInnerText(xml, "Query/QueryString");
-                res.SchemaName = GetXmlInnerText(xml, "Query/Destination/Table/SchemaName");
-                res.ObjectName = GetXmlInnerText(xml, "Query/Destination/Table/ObjectName");
+                    res.Query = GetXmlInnerText(xml, "Query/QueryString");
+                    res.SchemaName = GetXmlInnerText(xml, "Query/Destination/Table/SchemaName");
+                    res.ObjectName = GetXmlInnerText(xml, "Query/Destination/Table/ObjectName");
+                }
+                else
+                {
+                    // This is probably a wrong job in the database
+                }
             }
             else if (exportJobDefinitions.ContainsKey(job.JobDefinitionReference.Guid))
             {
                 res.JobType = JobType.ExportTable;
 
-                var xml = new XmlDocument();
-                xml.LoadXml(job.Parameters["Parameters"].XmlValue);
+                if (job.Parameters.ContainsKey("Parameters"))
+                {
+                    var xml = new XmlDocument();
+                    xml.LoadXml(job.Parameters["Parameters"].XmlValue);
 
-                res.SchemaName = GetXmlInnerText(xml, "ExportTable/Source/SchemaName");
-                res.ObjectName = GetXmlInnerText(xml, "ExportTable/Source/ObjectName");
-                res.Path = GetXmlInnerText(xml, "ExportTable/Destination/Path");
+                    res.SchemaName = GetXmlInnerText(xml, "ExportTable/Source/SchemaName");
+                    res.ObjectName = GetXmlInnerText(xml, "ExportTable/Source/ObjectName");
+                    res.Path = GetXmlInnerText(xml, "ExportTable/Destination/Path");
+                }
             }
             else
             {

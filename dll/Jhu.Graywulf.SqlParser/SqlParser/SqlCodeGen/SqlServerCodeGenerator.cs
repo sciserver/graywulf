@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Data;
 using Jhu.Graywulf.ParserLib;
-using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 {
@@ -46,7 +47,7 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
         {
             if (ResolveNames)
             {
-                Writer.Write(node.ColumnReference.GetFullyResolvedName());
+                Writer.Write(GetResolvedColumnName(node.ColumnReference));
                 return false;
             }
             else
@@ -57,11 +58,6 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 
         public override bool WriteTableAlias(TableAlias node)
         {
-            /*if (ResolveAliases)
-            {
-                return false;
-            }*/
-            
             if (ResolveNames)
             {
                 Writer.Write("[{0}]", Util.RemoveIdentifierQuotes(node.Value));
@@ -87,6 +83,32 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             }
         }
 
+        public override bool WriteFunctionIdentifier(FunctionIdentifier node)
+        {
+            if (ResolveNames)
+            {
+                Writer.Write(GetResolvedFunctionName(node.FunctionReference));
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public override bool WriteTableValuedFunctionCall(TableValuedFunctionCall node)
+        {
+            if (ResolveNames)
+            {
+                Writer.Write(GetResolvedTableName(node.TableReference));
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
         protected override string QuoteIdentifier(string identifier)
         {
             return String.Format("[{0}]", identifier);
@@ -94,9 +116,24 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 
         // ---
 
+        private string GetResolvedColumnName(ColumnReference column)
+        {
+            string tablename;
+            if (!String.IsNullOrEmpty(column.TableReference.Alias))
+            {
+                tablename = QuoteIdentifier(column.TableReference.Alias);
+            }
+            else
+            {
+                tablename = GetResolvedTableName(column.TableReference);
+            }
+
+            return String.Format("{0}.{1}", tablename, QuoteIdentifier(column.ColumnName));
+        }
+
         private string GetResolvedTableName(TableReference table)
         {
-            if (table.IsUdf || table.IsSubquery || table.IsComputed)
+            if (table.IsSubquery || table.IsComputed)
             {
                 return QuoteIdentifier(table.Alias);
             }
@@ -121,64 +158,47 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="linkedServerName"></param>
-        /// <param name="databaseName"></param>
-        /// <param name="schemaName"></param>
-        /// <param name="tableName"></param>
-        /// <param name="top"></param>
-        /// <returns></returns>
-        /// <remarks>This is used by the web interface's 'peek' function</remarks>
-        public override string GenerateTableSelectStarQuery(string linkedServerName, string databaseName, string schemaName, string tableName, int top)
+        private string GetResolvedFunctionName(FunctionReference function)
         {
-            string sql = "SELECT {0} t.* FROM {1}{2}[{3}].[{4}] AS t";
-
-            string topstr = String.Empty;
-            if (top != 0)
+            if (!function.IsUdf)
             {
-                topstr = String.Format("TOP {0}", top);
+                return function.GetFullyResolvedName();
             }
-
-            if (!String.IsNullOrWhiteSpace(linkedServerName))
+            else
             {
-                linkedServerName = String.Format("[{0}].", linkedServerName);
-            }
+                if (function.DatabaseObject != null)
+                {
+                    return function.DatabaseObject.GetFullyResolvedName();
+                }
+                else
+                {
+                    string res = String.Empty;
 
-            if (!String.IsNullOrWhiteSpace(databaseName))
-            {
-                databaseName = String.Format("[{0}].", databaseName);
-            }
+                    // If it's not resolved yet
+                    if (function.DatabaseName != null) res += QuoteIdentifier(function.DatabaseName) + ".";
+                    if (function.SchemaName != null) res += QuoteIdentifier(function.SchemaName) + ".";
+                    if (function.DatabaseObjectName != null) res += QuoteIdentifier(function.DatabaseObjectName);
 
-            return String.Format(sql, topstr, linkedServerName, databaseName, schemaName, tableName);
+                    return res;
+                }
+            }
         }
 
-
-        public override string GenerateTableSelectStarQuery(string linkedServerName, TableReference table, int top)
+        public override string GenerateSelectStarQuery(TableOrView tableOrView, int top)
         {
-            var sql = "SELECT {0} {1}.* FROM {2}";
+            var sql = "SELECT {0} * FROM {1}";
+            return String.Format(sql, GenerateTopExpression(top), tableOrView.GetFullyResolvedName());
+        }
 
-            // top string
+        protected override string GenerateTopExpression(int top)
+        {
             var topstr = String.Empty;
             if (top != 0)
             {
                 topstr = String.Format("TOP {0}", top);
             }
 
-            // build table name
-            if (!String.IsNullOrWhiteSpace(linkedServerName))
-            {
-                linkedServerName = String.Format("[{0}].", linkedServerName);
-            }
-            var tablename = String.Format(
-                "{0}{1} {3}",
-                linkedServerName,
-                table.FullyQualifiedName,
-                table.Alias);
-
-
-            return String.Format(sql, topstr, tablename);
+            return topstr;
         }
 
         public override string GenerateMostRestrictiveTableQuery(TableReference table, bool includePrimaryKey, int top)
@@ -308,6 +328,82 @@ DROP TABLE ##keys_{4};
          table.Statistics.KeyColumn,
          where.ToString(),
          Guid.NewGuid().ToString().Replace('-', '_'));
+
+            return sql;
+        }
+
+        /// <summary>
+        /// Generates the SQL script to create the table
+        /// </summary>
+        /// <param name="schemaTable"></param>
+        /// <returns></returns>
+        public string GenerateCreateDestinationTableQuery(DataTable schemaTable, Table destinationTable)
+        {
+            var sql = "CREATE TABLE [{0}].[{1}] ({2})";
+            var columnlist = String.Empty;
+            var keylist = String.Empty;
+            var nokey = false;
+
+            int cidx = 0;
+            int kidx = 0;
+
+            for (int i = 0; i < schemaTable.Rows.Count; i++)
+            {
+                var column = new Column();
+                column.CopyFromSchemaTableRow(schemaTable.Rows[i]);
+
+                if (!column.IsHidden)
+                {
+                    if (cidx != 0)
+                    {
+                        columnlist += ",\r\n";
+                    }
+
+                    columnlist += String.Format(
+                        "{0} {1} {2} NULL",
+                        column.Name,
+                        column.DataType.NameWithSize,
+                        column.IsNullable ? "" : "NOT");
+
+                    cidx++;
+                }
+
+                /*
+                if (column.IsKey)
+                {
+                    if (column.IsHidden)
+                    {
+                        // The key is not returned by the query, so no key can be specified on
+                        // the final table
+                        nokey = true;
+                    }
+
+                    if (kidx != 0)
+                    {
+                        keylist += ",\r\n";
+                    }
+
+                    keylist += String.Format("[{0}] ASC", column.Name);
+
+                    kidx++;
+                }
+                 * */
+            }
+
+            // Key generation code removed, key cannot be figured out automatically for
+            // join queries
+            /*
+            if (!String.IsNullOrEmpty(keylist) && !nokey)
+            {
+                columnlist += String.Format(
+                    @",
+CONSTRAINT [{0}] PRIMARY KEY CLUSTERED ({1})",
+                    String.Format("PK_{0}", destinationTable.TableName),
+                    keylist);
+            }
+             * */
+
+            sql = String.Format(sql, destinationTable.SchemaName, destinationTable.TableName, columnlist);
 
             return sql;
         }

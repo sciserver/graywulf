@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
+using System.Data.Common;
 
 namespace Jhu.Graywulf.Schema
 {
@@ -427,7 +428,7 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Size = 1,
                     HasSize = true,
-                    MaxSize = 8000,
+                    MaxSize = 4000,
                     VarSize = true,
                 };
             }
@@ -446,7 +447,7 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Size = 1,
                     HasSize = true,
-                    MaxSize = 8000,
+                    MaxSize = 4000,
                     VarSize = true,
                 };
             }
@@ -606,191 +607,123 @@ namespace Jhu.Graywulf.Schema
 
         // TODO: missing: cursor, hierarchyid, table
 
-        public static DataType GetType(string name)
+        public static DataType Create(Type type, int size)
         {
-            switch (name.ToLowerInvariant().Trim())
-            {
-                case Constants.TypeNameTinyInt:
-                    return TinyInt;
-                case Constants.TypeNameSmallInt:
-                    return SmallInt;
-                case Constants.TypeNameInt:
-                    return Int;
-                case Constants.TypeNameBigInt:
-                    return BigInt;
-                case Constants.TypeNameBit:
-                    return Bit;
-                case Constants.TypeNameDecimal:
-                    return Decimal;
-                case Constants.TypeNameSmallMoney:
-                    return SmallMoney;
-                case Constants.TypeNameMoney:
-                    return Money;
-                case Constants.TypeNameNumeric:
-                    return Numeric;
-                case Constants.TypeNameReal:
-                    return Real;
-                case Constants.TypeNameFloat:
-                    return Float;
-                case Constants.TypeNameDate:
-                    return Date;
-                case Constants.TypeNameTime:
-                    return Time;
-                case Constants.TypeNameSmallDateTime:
-                    return SmallDateTime;
-                case Constants.TypeNameDateTime:
-                    return DateTime;
-                case Constants.TypeNameDateTime2:
-                    return DateTime2;
-                case Constants.TypeNameDateTimeOffset:
-                    return DateTimeOffset;
-                case Constants.TypeNameChar:
-                    return Char;
-                case Constants.TypeNameVarChar:
-                    return VarChar;
-                case Constants.TypeNameText:
-                    return Text;
-                case Constants.TypeNameNChar:
-                    return NChar;
-                case Constants.TypeNameNVarChar:
-                    return NVarChar;
-                case Constants.TypeNameNText:
-                    return NText;
-                case Constants.TypeNameXml:
-                    return Xml;
-                case Constants.TypeNameBinary:
-                    return Binary;
-                case Constants.TypeNameVarBinary:
-                    return VarBinary;
-                case Constants.TypeNameImage:
-                    return Image;
-                case Constants.TypeNameSqlVariant:
-                    return SqlVariant;
-                case Constants.TypeNameTimestamp:
-                    return Timestamp;
-                case Constants.TypeNameUniqueIdentifier:
-                    return UniqueIdentifier;
-                default:
-                    throw new ArgumentOutOfRangeException("name");
-            }
-        }
+            DataType res;
 
-        public static DataType GetType(string name, short size)
-        {
-            var t = GetType(name);
-            t.Size = size;
-
-            return t;
-        }
-
-        public static DataType GetType(string name, short size, byte scale, byte precision)
-        {
-            var t = GetType(name);
-            t.Size = size;
-            t.Scale = scale;
-            t.Precision = precision;
-
-            return t;
-        }
-
-        public static DataType GetType(Type type)
-        {
             if (type == typeof(sbyte))
             {
-                return DataType.TinyInt;
+                res = DataType.TinyInt;
             }
             else if (type == typeof(Int16))
             {
-                return DataType.SmallInt;
+                res = DataType.SmallInt;
             }
             else if (type == typeof(Int32))
             {
-                return DataType.Int;
+                res = DataType.Int;
             }
             else if (type == typeof(Int64))
             {
-                return DataType.BigInt;
+                res = DataType.BigInt;
             }
             else if (type == typeof(byte))
             {
                 // SQL Server returns byte for tinyint for some reason
                 var dt = DataType.TinyInt;
                 dt.type = typeof(byte);
-                return dt;
+                res = dt;
             }
             else if (type == typeof(UInt16))
             {
-                return DataType.SmallInt;
+                res = DataType.SmallInt;
             }
             else if (type == typeof(UInt32))
             {
-                return DataType.Int;
+                res = DataType.Int;
             }
             else if (type == typeof(UInt64))
             {
-                return DataType.BigInt;
+                res = DataType.BigInt;
             }
             else if (type == typeof(bool))
             {
-                return DataType.Bit;
+                res = DataType.Bit;
             }
             else if (type == typeof(float))
             {
-                return DataType.Real;
+                res = DataType.Real;
             }
             else if (type == typeof(double))
             {
-                return DataType.Float;
+                res = DataType.Float;
             }
             else if (type == typeof(decimal))
             {
-                return DataType.Money;
+                res = DataType.Money;
             }
             else if (type == typeof(char))
             {
                 var dt = DataType.Char;
                 dt.Size = 1;
-                return dt;
+                res = dt;
             }
             else if (type == typeof(string))
             {
-                return DataType.NVarChar;
+                res = DataType.NVarChar;
             }
             else if (type == typeof(DateTime))
             {
-                return DataType.DateTime;
+                res = DataType.DateTime;
             }
             else if (type == typeof(Guid))
             {
-                return DataType.UniqueIdentifier;
+                res = DataType.UniqueIdentifier;
             }
             else if (type == typeof(byte[]))
             {
-                return DataType.VarBinary;
+                res = DataType.VarBinary;
             }            
             else
             {
                 throw new NotImplementedException();
             }
+
+            if (res.hasSize)
+            {
+                // SQL Server return 2G for max length columns
+                if (size > 8000)
+                {
+                    res.size = -1;
+                }
+                else
+                {
+                    res.size = size;
+                }
+            }
+
+            return res;
         }
 
-        public static DataType GetType(DataRow dr)
+        public static DataType Create(DataRow dr)
         {
-            var type = GetType((Type)dr[Schema.Constants.SchemaColumnDataType]);
+            var type = Create(
+                (Type)dr[SchemaTableColumn.DataType],
+                Convert.ToInt32(dr[SchemaTableColumn.ColumnSize]));
 
-            type.Size = (short)(int)dr[Schema.Constants.SchemaColumnColumnSize];
-            type.Precision = (short)dr[Schema.Constants.SchemaColumnNumericPrecision];
-            type.Scale = (short)dr[Schema.Constants.SchemaColumnNumericScale];
+            type.Precision = Convert.ToInt16(dr[SchemaTableColumn.NumericPrecision]);
+            type.Scale = Convert.ToInt16(dr[SchemaTableColumn.NumericScale]);
             
-            //type.IsMax = (bool)dr[Schema.Constants.SchemaColumnIsLong];
+            // TODO: delete ???
+            //type.isMax = (bool)dr[Schema.Constants.SchemaColumnIsLong] || type.size == -1;
             //type.Name = dr[Schema.Constants.SchemaColumnProviderSpecificDataType];
             //this.Name = dr[Schema.Constants.SchemaColumnProviderType];
 
-            /* TODO:
-    if (col.Type == typeof(string) && col.Size == 1)
-    {
-        col.Type = typeof(char);
-    }*/
+            /* 
+            if (col.Type == typeof(string) && col.Size == 1)
+            {
+                col.Type = typeof(char);
+            }*/
 
             return type;
         }
@@ -800,7 +733,7 @@ namespace Jhu.Graywulf.Schema
         private SqlDbType sqlDbType;
         private short scale;
         private short precision;
-        private short size;
+        private int size;
         private bool hasSize;
         private short maxSize;
         private bool varSize;
@@ -808,7 +741,7 @@ namespace Jhu.Graywulf.Schema
         public string Name
         {
             get { return name; }
-            set { name = value; }
+            private set { name = value; }
         }
 
         public string NameWithSize
@@ -818,6 +751,10 @@ namespace Jhu.Graywulf.Schema
                 if (!hasSize)
                 {
                     return name;
+                }
+                else if (size == -1)
+                {
+                    return String.Format("{0} (max)", name);
                 }
                 else
                 {
@@ -850,7 +787,7 @@ namespace Jhu.Graywulf.Schema
             set { precision = value; }
         }
 
-        public short Size
+        public int Size
         {
             get { return size; }
             set { size = value; }
@@ -865,18 +802,6 @@ namespace Jhu.Graywulf.Schema
         public bool IsMax
         {
             get { return size == -1; }
-            /* TODO: delete
-            set
-            {
-                if (value && maxSize != -1)
-                {
-                    throw new InvalidOperationException();
-                }
-                else if (value)
-                {
-                    size = -1;
-                }
-            }*/
         }
 
         public short MaxSize
@@ -889,6 +814,96 @@ namespace Jhu.Graywulf.Schema
         {
             get { return varSize; }
             set { varSize = value; }
+        }
+
+        public bool IsSigned
+        {
+            get
+            {
+                switch (sqlDbType)
+                {
+                    case System.Data.SqlDbType.BigInt:
+                    case System.Data.SqlDbType.Decimal:
+                    case System.Data.SqlDbType.Float:
+                    case System.Data.SqlDbType.Int:
+                    case System.Data.SqlDbType.Money:
+                    case System.Data.SqlDbType.Real:
+                    case System.Data.SqlDbType.SmallInt:
+                    case System.Data.SqlDbType.SmallMoney:
+                        return true;
+                    case System.Data.SqlDbType.Bit:
+                    case System.Data.SqlDbType.Binary:
+                    case System.Data.SqlDbType.Char:
+                    case System.Data.SqlDbType.Date:
+                    case System.Data.SqlDbType.DateTime:
+                    case System.Data.SqlDbType.DateTime2:
+                    case System.Data.SqlDbType.DateTimeOffset:
+                    case System.Data.SqlDbType.Image:
+                    case System.Data.SqlDbType.NChar:
+                    case System.Data.SqlDbType.NText:
+                    case System.Data.SqlDbType.NVarChar:
+                    case System.Data.SqlDbType.SmallDateTime:
+                    case System.Data.SqlDbType.Structured:
+                    case System.Data.SqlDbType.Text:
+                    case System.Data.SqlDbType.Time:
+                    case System.Data.SqlDbType.Timestamp:
+                    case System.Data.SqlDbType.TinyInt:
+                    case System.Data.SqlDbType.Udt:
+                    case System.Data.SqlDbType.UniqueIdentifier:
+                    case System.Data.SqlDbType.VarBinary:
+                    case System.Data.SqlDbType.VarChar:
+                    case System.Data.SqlDbType.Variant:
+                    case System.Data.SqlDbType.Xml:
+                        return false;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        }
+
+        public bool IsInteger
+        {
+            get
+            {
+                switch (sqlDbType)
+                {
+                    case System.Data.SqlDbType.BigInt:
+                    case System.Data.SqlDbType.Int:
+                    case System.Data.SqlDbType.SmallInt:
+                    case System.Data.SqlDbType.TinyInt:
+                        return true;
+                    case System.Data.SqlDbType.Decimal:
+                    case System.Data.SqlDbType.Float:                    
+                    case System.Data.SqlDbType.Money:
+                    case System.Data.SqlDbType.Real:
+                    case System.Data.SqlDbType.SmallMoney:
+                    case System.Data.SqlDbType.Bit:
+                    case System.Data.SqlDbType.Binary:
+                    case System.Data.SqlDbType.Char:
+                    case System.Data.SqlDbType.Date:
+                    case System.Data.SqlDbType.DateTime:
+                    case System.Data.SqlDbType.DateTime2:
+                    case System.Data.SqlDbType.DateTimeOffset:
+                    case System.Data.SqlDbType.Image:
+                    case System.Data.SqlDbType.NChar:
+                    case System.Data.SqlDbType.NText:
+                    case System.Data.SqlDbType.NVarChar:
+                    case System.Data.SqlDbType.SmallDateTime:
+                    case System.Data.SqlDbType.Structured:
+                    case System.Data.SqlDbType.Text:
+                    case System.Data.SqlDbType.Time:
+                    case System.Data.SqlDbType.Timestamp:
+                    case System.Data.SqlDbType.Udt:
+                    case System.Data.SqlDbType.UniqueIdentifier:
+                    case System.Data.SqlDbType.VarBinary:
+                    case System.Data.SqlDbType.VarChar:
+                    case System.Data.SqlDbType.Variant:
+                    case System.Data.SqlDbType.Xml:
+                        return false;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
         }
 
         protected DataType()
@@ -932,13 +947,13 @@ namespace Jhu.Graywulf.Schema
 
         public void CopyToSchemaTableRow(DataRow dr)
         {
-            dr[Schema.Constants.SchemaColumnColumnSize] = this.Size;
-            dr[Schema.Constants.SchemaColumnNumericPrecision] = this.Precision;
-            dr[Schema.Constants.SchemaColumnNumericScale] = this.Scale;
-            dr[Schema.Constants.SchemaColumnDataType] = this.Type;
-            dr[Schema.Constants.SchemaColumnProviderType] = this.Name;
-            dr[Schema.Constants.SchemaColumnIsLong] = this.IsMax;
-            dr[Schema.Constants.SchemaColumnProviderSpecificDataType] = this.Name;
+            dr[SchemaTableColumn.ColumnSize] = this.Size;
+            dr[SchemaTableColumn.NumericPrecision] = this.Precision;
+            dr[SchemaTableColumn.NumericScale] = this.Scale;
+            dr[SchemaTableColumn.DataType] = this.Type;
+            dr[SchemaTableColumn.ProviderType] = this.Name;
+            dr[SchemaTableColumn.IsLong] = this.IsMax;
+            dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = this.Name;
         }
     }
 }

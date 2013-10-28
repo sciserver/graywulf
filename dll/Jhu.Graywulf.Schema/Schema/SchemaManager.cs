@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Schema
         /// <remarks>
         /// This collection is handled by the DatasetCollection class
         /// </remarks>
-        protected static readonly Cache<string, DatasetBase> datasetCache;
+        private static readonly Cache<string, DatasetBase> datasetCache;
 
         /// <summary>
         /// Static constructor that initializes the global cache

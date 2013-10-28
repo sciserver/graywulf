@@ -54,6 +54,7 @@
     </Compile>
     <Compile Include="Activities\DequeueItem.cs" />
     <Compile Include="Activities\EnqueueItem.cs" />
+    <Compile Include="Activities\Enum.cs" />
     <Compile Include="Activities\ExceptionMessages.Designer.cs">
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -61,6 +62,7 @@
     </Compile>
     <Compile Include="Activities\GraywulfAsyncCodeActivity.cs" />
     <Compile Include="Activities\GraywulfTrackingParticipant.cs" />
+    <Compile Include="Activities\HostEventArgs.cs" />
     <Compile Include="Activities\ICheckpoint.cs" />
     <Compile Include="Activities\IGraywulfActivity.cs" />
     <Compile Include="Activities\IScheduler.cs" />
@@ -69,6 +71,7 @@
       <DependentUpon>RetryDesigner.xaml</DependentUpon>
     </Compile>
     <Compile Include="Activities\SchedulerException.cs" />
+    <Compile Include="Activities\WorkflowApplicationHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

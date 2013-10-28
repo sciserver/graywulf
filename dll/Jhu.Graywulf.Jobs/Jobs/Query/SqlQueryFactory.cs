@@ -5,10 +5,12 @@ using System.Text;
 using System.IO;
 using System.Xml;
 using System.Runtime.Serialization;
+using System.Activities;
 using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Jobs.Query
@@ -103,19 +105,18 @@ namespace Jhu.Graywulf.Jobs.Query
 
             query.SourceDatabaseVersionName = settings[Settings.HotDatabaseVersionName];
             query.StatDatabaseVersionName = settings[Settings.StatDatabaseVersionName];
-            query.DefaultSchemaName = settings[Settings.DefaultSchemaName];
-            query.DefaultDatasetName = settings[Settings.DefaultDatasetName];
+            
             query.QueryTimeout = int.Parse(settings[Settings.LongQueryTimeout]);
-            query.ResultsetTarget = ResultsetTarget.DestinationTable;
-            query.TemporaryDestinationTableName = "output"; // ****** TODO add to settings
-            query.KeepTemporaryDestinationTable = true;
 
             // Add MyDB as custom source
             var mydbds = new GraywulfDataset();
             mydbds.Name = settings[Settings.DefaultDatasetName];
             mydbds.DefaultSchemaName = settings[Settings.DefaultSchemaName];
             mydbds.DatabaseInstance.Value = user.GetUserDatabaseInstance(federation.MyDBDatabaseVersion);
+            mydbds.CacheSchemaConnectionString();
             query.CustomDatasets.Add(mydbds);
+
+            query.DefaultDataset = mydbds;
 
             // Set up MYDB for destination
             // ****** TODO add output table name to settings */
@@ -132,51 +133,41 @@ namespace Jhu.Graywulf.Jobs.Query
             tempds.IsOnLinkedServer = false;
             tempds.DatabaseVersion.Value = federation.TempDatabaseVersion;
             query.TemporaryDataset = tempds;
-            query.TemporarySchemaName = settings[Settings.TemporarySchemaName];
+            query.TemporaryDataset.DefaultSchemaName = settings[Settings.TemporarySchemaName];
+
+            // Set up code database
+            var codeds = new GraywulfDataset();
+            codeds.Name = "Code";   //  *** TODO
+            codeds.IsOnLinkedServer = false;
+            codeds.DatabaseVersion.Value = federation.CodeDatabaseVersion;
+            query.CodeDataset = codeds;
+            query.CodeDataset.DefaultSchemaName = "dbo";    // *** TODO
         }
 
-        protected override void GetInitializedQuery_SingleServer(QueryBase query, string queryString, string outputTable)
+        protected override void GetInitializedQuery_SingleServer(QueryBase query, string queryString, string outputTable, SqlServerDataset mydbds, SqlServerDataset tempds)
         {
             query.ExecutionMode = ExecutionMode.SingleServer;
             query.QueryString = queryString;
 
-            query.DefaultSchemaName = "dbo";
-            query.DefaultDatasetName = "MYDB";
             query.QueryTimeout = 7200;
-            query.ResultsetTarget = ResultsetTarget.DestinationTable;
-            query.TemporaryDestinationTableName = "output"; // ****** TODO add to settings
-            query.KeepTemporaryDestinationTable = true;
 
-            // Add MyDB as custom source
-            /*
-            GraywulfDataset mydbds = new GraywulfDataset();
-            mydbds.Name = settings["DefaultDatasetName"];
-            mydbds.DefaultSchemaName = settings["DefaultSchema"];
-            mydbds.DatabaseInstanceName = user.MyDbDatabaseInstance.GetFullyQualifiedName();
-            query.CustomDatasets.Add(mydbds);
+            if (mydbds != null)
+            {
+                query.DefaultDataset = mydbds;
 
-            // Set up MYDB for destination
-            query.DestinationDataset = mydbds;
-            query.DestinationSchemaName = "dbo";
-            if (String.IsNullOrWhiteSpace(outputTable))
-            {
-                query.DestinationTableName = "outputtable"; // ****** TODO add to settings
+                // Add MyDB as custom source
+                query.CustomDatasets.Add(mydbds);
+
+                // Set up MYDB for destination
+                query.Destination.Table = new Table();
+                query.Destination.Table.Dataset = mydbds;
+                query.Destination.Table.DatabaseName = mydbds.DatabaseName;
+                query.Destination.Table.SchemaName = mydbds.DefaultSchemaName;
+                query.Destination.Operation = DestinationTableOperation.Drop | DestinationTableOperation.Create;
             }
-            else
-            {
-                query.DestinationTableName = outputTable;
-            }
-            query.DestinationTableOperation = DestinationTableOperation.Drop | DestinationTableOperation.Create;
-             * */
 
             // Set up temporary database
-            /*
-            GraywulfDataset tempds = new GraywulfDataset();
-            tempds.IsOnLinkedServer = false;
-            tempds.DatabaseDefinitionName = federation.TempDatabaseDefinition.GetFullyQualifiedName();
             query.TemporaryDataset = tempds;
-             * */
-            query.TemporarySchemaName = "dbo";
         }
 
         public override JobInstance ScheduleAsJob(QueryBase query, string queueName, string comments)
@@ -189,6 +180,21 @@ namespace Jhu.Graywulf.Jobs.Query
             job.Parameters["Query"].SetValue(query);
 
             return job;
+        }
+
+        public virtual Activity GetAsWorkflow(QueryBase query)
+        {
+            return new SqlQueryJob();
+        }
+
+        public virtual Dictionary<string, object> GetWorkflowParameters(QueryBase query)
+        {
+            return new Dictionary<string, object>()
+            {
+                { "Query", query },
+                { "UserGuid", Guid.Empty },
+                { "JobGuid", Guid.Empty },
+            };
         }
     }
 }

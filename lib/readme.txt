@@ -13,3 +13,9 @@ MySql.Web.dll
 
 Copy these from MySQL Connector/Net.
 http://dev.mysql.com/downloads/connector/net/
+
+Mono.Security.dll
+Npgsql.dll
+
+Copy these from the npgsql web site.
+http://npgsql.projects.pgfoundry.org/

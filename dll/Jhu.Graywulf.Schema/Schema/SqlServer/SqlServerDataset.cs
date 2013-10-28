@@ -17,8 +17,6 @@ namespace Jhu.Graywulf.Schema.SqlServer
     [DataContract(Namespace = "")]
     public class SqlServerDataset : DatasetBase
     {
-        protected string defaultSchemaName;
-
         protected bool isOnLinkedServer;
         protected bool isRemoteDataset;
 
@@ -37,21 +35,6 @@ namespace Jhu.Graywulf.Schema.SqlServer
         public override string ProviderName
         {
             get { return Constants.SqlServerProviderName; }
-        }
-
-        /// <summary>
-        /// Gets or sets the default schema name.
-        /// </summary>
-        /// <remarks>
-        /// In case of no schema name is specified in queries referencing
-        /// this data set, the default schema name will be used.
-        /// The default value is 'dbo'.
-        /// </remarks>
-        [DataMember]
-        public string DefaultSchemaName
-        {
-            get { return defaultSchemaName; }
-            set { defaultSchemaName = value; }
         }
 
         /// <summary>
@@ -129,7 +112,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.defaultSchemaName = "dbo";
+            this.DefaultSchemaName = "dbo";
 
             this.isOnLinkedServer = false;
             this.isRemoteDataset = false;
@@ -178,7 +161,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
             }
             else
             {
-                return String.Format(format, this.GetFullyResolvedName(), this.defaultSchemaName, databaseObject.ObjectName);
+                return String.Format(format, this.GetFullyResolvedName(), this.DefaultSchemaName, databaseObject.ObjectName);
             }
         }
 
@@ -195,7 +178,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
         {
             if (String.IsNullOrWhiteSpace(schemaName))
             {
-                schemaName = defaultSchemaName;
+                schemaName = DefaultSchemaName;
             }
 
             return String.Format("{0}|{1}|{2}|{3}|{4}", objectType, datasetName, databaseName, schemaName, objectName);
@@ -335,11 +318,11 @@ ORDER BY c.column_id";
                                 IsIdentity = dr.GetBoolean(7)
                             };
 
-                            cd.DataType = DataType.GetType(
+                            cd.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(2),
-                                dr.GetInt16(3),
-                                dr.GetByte(4),
-                                dr.GetByte(5));
+                                Convert.ToInt32(dr.GetValue(3)),
+                                Convert.ToInt16(dr.GetValue(4)),
+                                Convert.ToInt16(dr.GetValue(5)));
 
                             res.TryAdd(cd.Name, cd);
                         }
@@ -436,11 +419,11 @@ ORDER BY ic.key_ordinal";
                                 IsNullable = dr.GetBoolean(9)
                             };
 
-                            ic.DataType = DataType.GetType(
+                            ic.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(4),
-                                dr.GetInt16(5),
-                                dr.GetByte(6),
-                                dr.GetByte(7));
+                                Convert.ToInt32(dr.GetValue(5)),
+                                Convert.ToInt16(dr.GetValue(6)),
+                                Convert.ToInt16(dr.GetValue(7)));
 
                             res.TryAdd(ic.Name, ic);
                         }
@@ -489,11 +472,11 @@ ORDER BY p.parameter_id";
                                 DefaultValue = dr.IsDBNull(8) ? null : dr.GetValue(8),
                             };
 
-                            par.DataType = DataType.GetType(
+                            par.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(3),
-                                dr.GetInt16(4),
-                                dr.GetByte(5),
-                                dr.GetByte(6));
+                                Convert.ToInt32(dr.GetValue(4)),
+                                Convert.ToInt16(dr.GetValue(5)),
+                                Convert.ToInt16(dr.GetValue(6)));
 
                             res.TryAdd(par.Name, par);
                         }
@@ -571,31 +554,10 @@ ORDER BY p.name";
         }
 
         /// <summary>
-        /// Loads metadata of a variable (parameter, column, return value, etc.).
-        /// </summary>
-        /// <param name="variable"></param>
-        /// <returns></returns>
-        /// <remarks>SqlServerDataset is implemented to load all variable metadata of an
-        /// object in a batch to reduce roundtrips between the client and the
-        /// database server.</remarks>
-        internal override void LoadAllVariableMetadata(DatabaseObject databaseObject)
-        {
-            if (databaseObject is IColumns)
-            {
-                LoadColumnMetadata(databaseObject);
-            }
-            
-            if (databaseObject is IParameters)
-            {
-                LoadParameterMetadata(databaseObject);
-            }
-        }
-
-        /// <summary>
         /// Loads column metadata for every column of a database object.
         /// </summary>
         /// <param name="databaseObject"></param>
-        private void LoadColumnMetadata(DatabaseObject databaseObject)
+        protected override void LoadAllColumnMetadata(DatabaseObject databaseObject)
         {
             var sql = @"
 SELECT c.name, p.name metaname, p.value
@@ -612,7 +574,7 @@ ORDER BY c.name, p.name";
         /// Loads parameter metadata of all parameters belonging to an object.
         /// </summary>
         /// <param name="databaseObject"></param>
-        private void LoadParameterMetadata(DatabaseObject databaseObject)
+        protected override void LoadAllParameterMetadata(DatabaseObject databaseObject)
         {
             var sql = @"
 SELECT c.name, p.name metaname, p.value
@@ -898,6 +860,75 @@ WHERE s.name = @schemaName AND o.name = @objectName
             csb.Enlist = enlist;
 
             return csb.ConnectionString;
+        }
+
+        protected override DataType GetTypeFromProviderSpecificName(string name)
+        {
+            switch (name.ToLowerInvariant().Trim())
+            {
+                case Constants.TypeNameTinyInt:
+                    return DataType.TinyInt;
+                case Constants.TypeNameSmallInt:
+                    return DataType.SmallInt;
+                case Constants.TypeNameInt:
+                    return DataType.Int;
+                case Constants.TypeNameBigInt:
+                    return DataType.BigInt;
+                case Constants.TypeNameBit:
+                    return DataType.Bit;
+                case Constants.TypeNameDecimal:
+                    return DataType.Decimal;
+                case Constants.TypeNameSmallMoney:
+                    return DataType.SmallMoney;
+                case Constants.TypeNameMoney:
+                    return DataType.Money;
+                case Constants.TypeNameNumeric:
+                    return DataType.Numeric;
+                case Constants.TypeNameReal:
+                    return DataType.Real;
+                case Constants.TypeNameFloat:
+                    return DataType.Float;
+                case Constants.TypeNameDate:
+                    return DataType.Date;
+                case Constants.TypeNameTime:
+                    return DataType.Time;
+                case Constants.TypeNameSmallDateTime:
+                    return DataType.SmallDateTime;
+                case Constants.TypeNameDateTime:
+                    return DataType.DateTime;
+                case Constants.TypeNameDateTime2:
+                    return DataType.DateTime2;
+                case Constants.TypeNameDateTimeOffset:
+                    return DataType.DateTimeOffset;
+                case Constants.TypeNameChar:
+                    return DataType.Char;
+                case Constants.TypeNameVarChar:
+                    return DataType.VarChar;
+                case Constants.TypeNameText:
+                    return DataType.Text;
+                case Constants.TypeNameNChar:
+                    return DataType.NChar;
+                case Constants.TypeNameNVarChar:
+                    return DataType.NVarChar;
+                case Constants.TypeNameNText:
+                    return DataType.NText;
+                case Constants.TypeNameXml:
+                    return DataType.Xml;
+                case Constants.TypeNameBinary:
+                    return DataType.Binary;
+                case Constants.TypeNameVarBinary:
+                    return DataType.VarBinary;
+                case Constants.TypeNameImage:
+                    return DataType.Image;
+                case Constants.TypeNameSqlVariant:
+                    return DataType.SqlVariant;
+                case Constants.TypeNameTimestamp:
+                    return DataType.Timestamp;
+                case Constants.TypeNameUniqueIdentifier:
+                    return DataType.UniqueIdentifier;
+                default:
+                    throw new ArgumentOutOfRangeException("name");
+            }
         }
     }
 }

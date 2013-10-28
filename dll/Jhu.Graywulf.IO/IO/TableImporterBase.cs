@@ -8,6 +8,7 @@ using System.Threading;
 using System.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.SqlParser.SqlCodeGen;
 
 namespace Jhu.Graywulf.IO
 {
@@ -70,18 +71,27 @@ namespace Jhu.Graywulf.IO
 
         #endregion
 
-        /// <summary>
-        /// Creates the destination table
-        /// </summary>
-        /// <param name="schemaTable"></param>
-        protected void CreateDestinationTable(DataTable schemaTable)
+        protected void DropDestinationTable()
         {
-            // Execute CREATE TABLE query on destination
+            string sql = @"
+IF (OBJECT_ID('[{0}].[{1}].[{2}]') IS NOT NULL)
+BEGIN
+    DROP {3} [{0}].[{1}].[{2}]
+END";
+
+            sql = String.Format(
+                sql,
+                !String.IsNullOrWhiteSpace(Destination.Table.DatabaseName) ? Destination.Table.DatabaseName : Destination.Table.Dataset.DatabaseName,
+                Destination.Table.SchemaName,
+                Destination.Table.ObjectName,
+                Destination.Table.GetType().Name);
+
+            // TODO: move this to schema eventually
             using (var cn = new SqlConnection(destination.Table.Dataset.ConnectionString))
             {
                 cn.Open();
 
-                using (var cmd = new SqlCommand(BuildDestinationTableSql(schemaTable), cn))
+                using (var cmd = new SqlCommand(sql, cn))
                 {
                     cmd.ExecuteNonQuery();
                 }
@@ -89,71 +99,25 @@ namespace Jhu.Graywulf.IO
         }
 
         /// <summary>
-        /// Generates the SQL script to create the table
+        /// Creates the destination table
         /// </summary>
         /// <param name="schemaTable"></param>
-        /// <returns></returns>
-        protected string BuildDestinationTableSql(DataTable schemaTable)
+        protected void CreateDestinationTable(DataTable schemaTable)
         {
-            var sql = "CREATE TABLE [{0}].[{1}] ({2})";
-            var columnlist = String.Empty;
-            var keylist = String.Empty;
-            var nokey = false;
+            // Generate create table SQL
+            var cg = new SqlServerCodeGenerator();
+            var sql = cg.GenerateCreateDestinationTableQuery(schemaTable, destination.Table);
 
-            int cidx = 0;
-            int kidx = 0;
-            for (int i = 0; i < schemaTable.Rows.Count; i++)
+            // Execute CREATE TABLE query on destination
+            using (var cn = new SqlConnection(destination.Table.Dataset.ConnectionString))
             {
-                var column = new Column();
-                column.CopyFromSchemaTableRow(schemaTable.Rows[i]);
+                cn.Open();
 
-                if (!column.IsHidden)
+                using (var cmd = new SqlCommand(sql, cn))
                 {
-                    if (cidx != 0)
-                    {
-                        columnlist += ",\r\n";
-                    }
-
-                    columnlist += String.Format(
-                        "{0} {1} {2} NULL",
-                        column.Name,
-                        column.DataType.NameWithSize,
-                        column.IsNullable ? "" : "NOT");
-
-                    cidx++;
-                }
-
-                if (column.IsKey)
-                {
-                    if (column.IsHidden)
-                    {
-                        // The key is not returned by the query, so no key can be specified on
-                        // the final table
-                        nokey = true;
-                    }
-
-                    if (kidx != 0)
-                    {
-                        keylist += ",\r\n";
-                    }
-
-                    keylist += String.Format("[{0}] ASC", column.Name);
-
-                    kidx++;
+                    cmd.ExecuteNonQuery();
                 }
             }
-
-            if (!String.IsNullOrEmpty(keylist) && !nokey)
-            {
-                columnlist += String.Format(
-                    ",\r\nCONSTRAINT [{0}] PRIMARY KEY CLUSTERED ({1})",
-                    String.Format("PK_{0}", destination.Table.TableName),
-                    keylist);
-            }
-
-            sql = String.Format(sql, destination.Table.SchemaName, destination.Table.TableName, columnlist);
-
-            return sql;
         }
 
         /// <summary>

@@ -71,7 +71,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                             query.AssignedServerInstance = si;
 
-                            query.DatabaseVersionName = query.StatDatabaseVersionName;
+                            //query.DatabaseVersionName = query.StatDatabaseVersionName;    //*** TODO: delete
 
                             // *** TODO: find optimal number of partitions
                             // TODO: replace "2" with a value from settings

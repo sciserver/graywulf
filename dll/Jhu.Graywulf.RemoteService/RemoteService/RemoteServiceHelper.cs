@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.RemoteService
             cf.Credentials.Windows.ClientCredential = System.Net.CredentialCache.DefaultNetworkCredentials;
             cf.Credentials.Windows.AllowedImpersonationLevel = TokenImpersonationLevel.Delegation;
 
-              return cf.CreateChannel();
+            return cf.CreateChannel();
         }
         
 
@@ -131,7 +131,9 @@ namespace Jhu.Graywulf.RemoteService
 
         public static void EnsureRoleAccess()
         {
-            if (OperationContext.Current != null && !Thread.CurrentPrincipal.IsInRole(AppSettings.UserGroup))
+            if (OperationContext.Current != null &&
+                (StringComparer.InvariantCultureIgnoreCase.Compare(Thread.CurrentPrincipal.Identity.Name,AppSettings.UserGroup) == 0 &&
+                !Thread.CurrentPrincipal.IsInRole(AppSettings.UserGroup)))
             {
                 throw new SecurityException("Access denied.");
             }
