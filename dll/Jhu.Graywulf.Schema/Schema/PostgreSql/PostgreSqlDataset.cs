@@ -7,6 +7,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using System.Data;
 using Npgsql;
+using Jhu.Graywulf.Types;
 
 namespace Jhu.Graywulf.Schema.PostgreSql
 { /// <summary>

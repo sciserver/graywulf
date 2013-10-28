@@ -5,6 +5,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using System.Data;
 using System.Data.Common;
+using Jhu.Graywulf.Types;
 
 namespace Jhu.Graywulf.Schema
 {

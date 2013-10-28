@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Data;
 using MySql.Data.MySqlClient;
 using System.Collections;
+using Jhu.Graywulf.Types;
 
 namespace Jhu.Graywulf.Schema.MySql
 {

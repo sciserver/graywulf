@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Components;
+using Jhu.Graywulf.Types;
 
 namespace Jhu.Graywulf.Schema
 {

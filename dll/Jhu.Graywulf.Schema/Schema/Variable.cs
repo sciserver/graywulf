@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Components;
+using Jhu.Graywulf.Types;
 
 namespace Jhu.Graywulf.Schema
 {

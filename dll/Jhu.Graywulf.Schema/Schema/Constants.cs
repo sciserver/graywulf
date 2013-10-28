@@ -8,6 +8,7 @@ namespace Jhu.Graywulf.Schema
 {
     public static class Constants
     {
+        /* TODO: delete
         public const string TypeNameUnknown = "unknown";
         public const string TypeNameTinyInt = "tinyint";
         public const string TypeNameSmallInt = "smallint";
@@ -39,6 +40,7 @@ namespace Jhu.Graywulf.Schema
         public const string TypeNameSqlVariant = "sql_variant";
         public const string TypeNameTimestamp = "timestamp";
         public const string TypeNameUniqueIdentifier = "uniqueidentifier";
+         * */
 
         /* TODO: delete
         public const string SchemaColumnColumnName = "ColumnName";
