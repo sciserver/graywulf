@@ -616,7 +616,7 @@ ORDER BY c.name, p.name";
 
                             if (name != variablename)
                             {
-                                meta = ((Variable)variables[name]).Metadata;
+                                meta = (VariableMetadata)((Variable)variables[name]).Metadata;
                                 variablename = name;
                             }
 

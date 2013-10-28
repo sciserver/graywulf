@@ -684,7 +684,7 @@ WHERE   nspname = @schemaName and proname= @objectName;";
 
                                 foreach (var v in paramlist)
                                 {
-                                    meta = ((Variable)variables[v]).Metadata;
+                                    meta = (VariableMetadata)((Variable)variables[v]).Metadata;
                                     meta.Summary = value;
                                 }
                             }
@@ -722,7 +722,7 @@ WHERE   nspname = @schemaName and proname= @objectName;";
 
                             if (name != variablename)
                             {
-                                meta = ((Variable)variables[name]).Metadata;
+                                meta = (VariableMetadata)((Variable)variables[name]).Metadata;
                                 variablename = name;
                             }
                             meta.Summary = value;

@@ -108,7 +108,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
             for (int i = 0; i < dr.FieldCount; i++)
             {
                 var column = new Column();
-                column.CopyFromSchemaTableRow(schemaTable.Rows[i]);
+                TypeUtil.CopyColumnFromSchemaTableRow(column, schemaTable.Rows[i]);
 
                 output.WriteLine("<td class=\"header\" nowrap>{0}<br />{1}</td>", column.Name, column.DataType.NameWithSize);
             }

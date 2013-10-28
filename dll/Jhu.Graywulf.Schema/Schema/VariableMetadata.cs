@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jhu.Graywulf.Types;
 
 namespace Jhu.Graywulf.Schema
 {
-    public class VariableMetadata
+    public class VariableMetadata : IVariableMetadata
     {
         private string summary;
         private string unit;
@@ -28,10 +29,6 @@ namespace Jhu.Graywulf.Schema
             get { return content; }
             set { content = value; }
         }
-
-        //public string Utype { get; set; }
-        //public string Enum { get; set; }
-        //public string UCD { get; set; }
 
         public VariableMetadata()
         {

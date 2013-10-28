@@ -62,6 +62,10 @@
       <Project>{60920E0C-F7A1-47CE-85F6-7E6E3085FCF1}</Project>
       <Name>Jhu.Graywulf.Schema</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Types\Jhu.Graywulf.Types.csproj">
+      <Project>{72607E61-5546-453A-8CFB-DD2A061B5C34}</Project>
+      <Name>Jhu.Graywulf.Types</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Test\Jhu.Graywulf.Test.csproj">
       <Project>{EA6164BA-B283-46C2-874B-348D6BAD41AD}</Project>
       <Name>Jhu.Graywulf.Test</Name>

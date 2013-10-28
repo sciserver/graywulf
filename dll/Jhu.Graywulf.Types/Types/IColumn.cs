@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Types
 {
-    interface IColumn : IVariable
+    public interface IColumn : IVariable
     {
         bool IsNullable { get; set; }
         bool IsIdentity { get; set; }

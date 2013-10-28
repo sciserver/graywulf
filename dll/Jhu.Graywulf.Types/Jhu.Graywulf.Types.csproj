@@ -46,6 +46,7 @@
     <Compile Include="Types\IColumn.cs" />
     <Compile Include="Types\IVariable.cs" />
     <Compile Include="Types\IVariableMetadata.cs" />
+    <Compile Include="Types\TypeUtil.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

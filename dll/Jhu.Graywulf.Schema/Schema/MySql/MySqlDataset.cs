@@ -649,7 +649,7 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
 
                             if (name != variablename)
                             {
-                                meta = ((Variable)variables[name]).Metadata;
+                                meta = (VariableMetadata)((Variable)variables[name]).Metadata;
                                 variablename = name;
                             }
                             meta.Summary = value;

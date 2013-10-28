@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Schema
     /// </summary>
     [Serializable]
     [DataContract(Namespace = "")]
-    public class Column : Variable, ICloneable
+    public class Column : Variable, IColumn, ICloneable
     {
         private bool isNullable;
         private bool isIdentity;
@@ -133,18 +133,6 @@ namespace Jhu.Graywulf.Schema
             dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = this.DataType.Name;
 
             
-        }
-
-        public void CopyFromSchemaTableRow(DataRow dr)
-        {
-            this.ID = (int)dr[SchemaTableColumn.ColumnOrdinal];
-            this.Name = (string)dr[SchemaTableColumn.ColumnName];
-            this.isIdentity = dr[SchemaTableColumn.IsUnique] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.IsUnique];  //
-            this.isKey = dr[SchemaTableColumn.IsKey] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.IsKey];  //
-            this.isNullable = dr[SchemaTableColumn.AllowDBNull] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.AllowDBNull];
-            this.isHidden = dr[SchemaTableOptionalColumn.IsHidden] == DBNull.Value ? false : (bool)dr[SchemaTableOptionalColumn.IsHidden];
-
-            this.DataType = DataType.Create(dr);
         }
     }
 }

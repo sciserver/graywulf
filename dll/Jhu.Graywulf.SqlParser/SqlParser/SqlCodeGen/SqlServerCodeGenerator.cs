@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Data;
 using Jhu.Graywulf.ParserLib;
+using Jhu.Graywulf.Types;
 using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.SqlParser.SqlCodeGen
@@ -350,7 +351,7 @@ DROP TABLE ##keys_{4};
             for (int i = 0; i < schemaTable.Rows.Count; i++)
             {
                 var column = new Column();
-                column.CopyFromSchemaTableRow(schemaTable.Rows[i]);
+                TypeUtil.CopyColumnFromSchemaTableRow(column, schemaTable.Rows[i]);
 
                 if (!column.IsHidden)
                 {
