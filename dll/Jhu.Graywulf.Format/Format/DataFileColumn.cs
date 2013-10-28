@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using Jhu.Graywulf.Types;
-using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Format
 {
-    public class DataFileColumn : Column
+    public class DataFileColumn : IColumn
     {
         public static DataFileColumn Identity
         {
@@ -25,7 +24,72 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        private int id;
+        private string name;
+        private DataType dataType;
+        private DataFileColumnMetadata metadata;
+        private bool isNullable;
+        private bool isIdentity;
+        private bool isKey;
+        private bool isHidden;
         private string format;
+
+        /// <summary>
+        /// Ordinal ID of the objects (column, parameter, etc).
+        /// </summary>
+        public int ID
+        {
+            get { return id; }
+            set { id = value; }
+        }
+
+        /// <summary>
+        /// Name of the variable
+        /// </summary>
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+
+        /// <summary>
+        /// Data type
+        /// </summary>
+        public DataType DataType
+        {
+            get { return dataType; }
+            set { dataType = value; }
+        }
+
+        public IVariableMetadata Metadata
+        {
+            get { return metadata; }
+            set { metadata = (DataFileColumnMetadata)value; }
+        }
+
+        public bool IsNullable
+        {
+            get { return isNullable; }
+            set { isNullable = value; }
+        }
+
+        public bool IsIdentity
+        {
+            get { return isIdentity; }
+            set { isIdentity = value; }
+        }
+
+        public bool IsKey
+        {
+            get { return isKey; }
+            set { isKey = value; }
+        }
+
+        public bool IsHidden
+        {
+            get { return isHidden; }
+            set { isHidden = value; }
+        }
 
         public string Format
         {

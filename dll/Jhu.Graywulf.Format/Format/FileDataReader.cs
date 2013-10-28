@@ -43,6 +43,7 @@ namespace Jhu.Graywulf.Format
             return parent.Read();
         }
 
+        /*
         public bool Read(XmlReader reader)
         {
             if (columnIndex == null)
@@ -51,7 +52,7 @@ namespace Jhu.Graywulf.Format
             }
 
             return parent.Read(reader);
-        }
+        }*/
 
         public bool NextResult()
         {

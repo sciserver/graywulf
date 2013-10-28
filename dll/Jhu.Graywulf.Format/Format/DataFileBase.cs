@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.IO;
-using Jhu.Graywulf.Schema;
 using System.Xml;
+using Jhu.Graywulf.Types;
 
 namespace Jhu.Graywulf.Format
 {
@@ -380,8 +380,7 @@ namespace Jhu.Graywulf.Format
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 var col = new DataFileColumn();
-                col.CopyFromSchemaTableRow(dt.Rows[i]);
-
+                TypeUtil.CopyColumnFromSchemaTableRow(col, dt.Rows[i]);
                 columns.Add(col);
             }
 

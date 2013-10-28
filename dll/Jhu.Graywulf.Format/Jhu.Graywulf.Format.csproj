@@ -48,6 +48,7 @@
     <Compile Include="Format\CsvFile.cs" />
     <Compile Include="Format\DataFileBase.cs" />
     <Compile Include="Format\DataFileColumn.cs" />
+    <Compile Include="Format\DataFileColumnMetadata.cs" />
     <Compile Include="Format\Enum.cs" />
     <Compile Include="Format\FileDataReader.cs" />
     <Compile Include="Format\FileDataWriter.cs" />
@@ -61,8 +62,6 @@
     </Compile>
     <Compile Include="Format\FormattedData.cs" />
     <Compile Include="Format\TextDataFile.cs" />
-    <Compile Include="Format\VOTable.cs" />
-    <Compile Include="Format\VOTableKeywords.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

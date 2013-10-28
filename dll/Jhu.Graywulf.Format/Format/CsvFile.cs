@@ -6,7 +6,6 @@ using System.Data;
 using System.IO;
 using System.Globalization;
 using System.Xml;
-using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Format
 {
