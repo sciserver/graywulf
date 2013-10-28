@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.IO;
 using System.Globalization;
+using System.Xml;
 using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Format
@@ -263,12 +264,14 @@ namespace Jhu.Graywulf.Format
             }
 
             // TODO: add logic to handle nulls
-
             rowCounter++;
 
             return true;
         }
-
+        protected override bool OnRead(object[] values, XmlReader reader)
+        {
+            return false;
+        }
         #endregion
 
         /// <summary>
@@ -422,5 +425,6 @@ namespace Jhu.Graywulf.Format
                 return base.GetFormatterDelegate(column);
             }
         }
+       
     }
 }

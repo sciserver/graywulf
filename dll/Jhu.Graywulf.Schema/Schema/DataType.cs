@@ -683,7 +683,7 @@ namespace Jhu.Graywulf.Schema
             else if (type == typeof(byte[]))
             {
                 res = DataType.VarBinary;
-            }
+            }            
             else
             {
                 throw new NotImplementedException();

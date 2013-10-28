@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.IO;
 using Jhu.Graywulf.Schema;
+using System.Xml;
 
 namespace Jhu.Graywulf.Format
 {
@@ -198,6 +199,8 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+
+
         /// <summary>
         /// When overloaded in derived class, opens the data file for writing
         /// </summary>
@@ -213,7 +216,7 @@ namespace Jhu.Graywulf.Format
             if (baseStream == null)
             {
                 // No open stream yet
-                baseStream = new FileStream(Path, System.IO.FileMode.Create, FileAccess.Write, FileShare.None);
+                baseStream = new FileStream(Path, System.IO.FileMode.Create, FileAccess.Write, FileShare.None);                                
                 ownsBaseStream = true;
             }
 
@@ -300,6 +303,24 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+
+        /// <summary>
+        /// Reads the next row from the data file
+        /// </summary>
+        /// <returns></returns>
+        internal bool Read(XmlReader reader)
+        {
+            if (!OnRead(rowValues, reader))
+            {
+                rowValues = null;
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
         /// <summary>
         /// Advances to the next resultset in the data file
         /// </summary>
@@ -331,6 +352,14 @@ namespace Jhu.Graywulf.Format
         /// <param name="values"></param>
         /// <returns></returns>
         protected abstract bool OnRead(object[] values);
+
+        /// <summary>
+        /// When overriden in derived classes, reads the next data row from
+        /// the data file
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        protected abstract bool OnRead(object[] values, XmlReader reader);
 
         /// <summary>
         /// Overriden classes call this function to mark the end of the resultset
@@ -381,11 +410,37 @@ namespace Jhu.Graywulf.Format
             Close();
         }
 
+        //public void WriteFromDataReaderVOTable(IDataReader dr)
+        //{
+        //    if (columns.Count == 0)
+        //    {
+        //        DetectColumns(dr);
+        //    }
+
+        //    OpenForWrite();
+
+        //    OnWriteHeader();
+            
+
+        //    while (dr.Read())
+        //    {
+        //        dr.GetValues(rowValues);
+        //        OnWrite(rowValues);
+        //    }
+
+        //    OnWriteFooter();
+
+        //    Close();
+        //}
+
+
         protected abstract void OnWriteHeader();
 
         protected abstract void OnWrite(object[] values);
 
         protected abstract void OnWriteFooter();
+
+        
 
         #endregion
         #region Column functions
@@ -395,7 +450,6 @@ namespace Jhu.Graywulf.Format
             // Instantiate array to store actual row values
             rowValues = new object[columns.Count];
         }
-
         #endregion
     }
 }

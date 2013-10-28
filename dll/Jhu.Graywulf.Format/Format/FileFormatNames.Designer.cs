@@ -68,5 +68,16 @@ namespace Jhu.Graywulf.Format {
                 return ResourceManager.GetString("Jhu.Graywulf.Format.CsvFile", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to CSV (comma separated).
+        /// </summary>
+        internal static string Jhu_Graywulf_Format_votable
+        {
+            get
+            {
+                return ResourceManager.GetString("Jhu.Graywulf.Format.VOTable", resourceCulture);
+            }
+        }
     }
 }
