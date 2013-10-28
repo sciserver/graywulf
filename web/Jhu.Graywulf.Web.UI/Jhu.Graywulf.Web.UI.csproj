@@ -450,12 +450,12 @@
   </ProjectExtensions>
   <PropertyGroup>
     <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Web.UI
-xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Masters $(ProjectDir)App_Masters /I /E /Y
-xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Themes $(ProjectDir)App_Themes /I /E /Y
-xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\Templates $(ProjectDir)Templates /I /E /Y
-xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\CodeMirror $(ProjectDir)CodeMirror /I /E /Y
-xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\SyntaxHighlighter $(ProjectDir)SyntaxHighlighter /I /E /Y
-xcopy $(SolutionDir)docs\pages $(ProjectDir)docs\pages /I /E /Y</PreBuildEvent>
+c:\windows\system32\xcopy.exe   $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Masters $(ProjectDir)App_Masters /I /E /Y
+c:\windows\system32\xcopy.exe    $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Themes $(ProjectDir)App_Themes /I /E /Y
+c:\windows\system32\xcopy.exe   $(ProjectDir)..\Jhu.Graywulf.Web.Shared\Templates $(ProjectDir)Templates /I /E /Y
+c:\windows\system32\xcopy.exe   $(ProjectDir)..\Jhu.Graywulf.Web.Shared\CodeMirror $(ProjectDir)CodeMirror /I /E /Y
+c:\windows\system32\xcopy.exe   $(ProjectDir)..\Jhu.Graywulf.Web.Shared\SyntaxHighlighter $(ProjectDir)SyntaxHighlighter /I /E /Y
+rem c:\windows\system32\xcopy.exe   $(SolutionDir)docs\pages $(ProjectDir)docs\pages /I /E /Y</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

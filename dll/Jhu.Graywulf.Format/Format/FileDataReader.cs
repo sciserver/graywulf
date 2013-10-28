@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
+using System.Xml;
 
 namespace Jhu.Graywulf.Format
 {
@@ -40,6 +41,16 @@ namespace Jhu.Graywulf.Format
             }
 
             return parent.Read();
+        }
+
+        public bool Read(XmlReader reader)
+        {
+            if (columnIndex == null)
+            {
+                BuildColumnIndex();
+            }
+
+            return parent.Read(reader);
         }
 
         public bool NextResult()
