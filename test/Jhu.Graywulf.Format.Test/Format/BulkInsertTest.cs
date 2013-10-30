@@ -16,10 +16,13 @@ namespace Jhu.Graywulf.Format
         private FileDataReader OpenSimpleReader(string csv)
         {
             var f = new CsvFile(new StringReader(csv));
+            var b = new CsvFileBlock(f);
 
-            f.Columns.Add(new DataFileColumn("one", typeof(int), 4));
-            f.Columns.Add(new DataFileColumn("two", typeof(int), 4));
-            f.Columns.Add(new DataFileColumn("three", typeof(int), 4));
+            b.Columns.Add(new DataFileColumn("one", typeof(int), 4));
+            b.Columns.Add(new DataFileColumn("two", typeof(int), 4));
+            b.Columns.Add(new DataFileColumn("three", typeof(int), 4));
+
+            f.AppendBlock(b);
 
             return f.OpenDataReader();
         }
