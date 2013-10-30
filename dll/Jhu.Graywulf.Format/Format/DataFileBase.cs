@@ -203,7 +203,6 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        /*
         /// <summary>
         /// Opens a 
         /// </summary>
@@ -220,7 +219,6 @@ namespace Jhu.Graywulf.Format
             this.FileMode = mode;
             this.compression = compression;
         }
-        */
 
         /// <summary>
         /// When overloaded in derived classes, opens the data file for reading
@@ -376,7 +374,7 @@ namespace Jhu.Graywulf.Format
         /// <remarks>
         /// Blocks can be predefined, in case data columns are set externally.
         /// </remarks>
-        protected internal DataFileBlockBase ReadNextBlock()
+        internal DataFileBlockBase ReadNextBlock()
         {
             if (blockCounter != -1)
             {
@@ -398,9 +396,12 @@ namespace Jhu.Graywulf.Format
                 {
                     // Create a new block automatically, if collection is not predefined
                     nextBlock = OnReadNextBlock(null);
-                    blocks.Add(nextBlock);
+                    if (nextBlock != null)
+                    {
+                        blocks.Add(nextBlock);
+                    }
                 }
-                
+
                 if (nextBlock != null)
                 {
                     nextBlock.OnReadHeader();
@@ -430,7 +431,40 @@ namespace Jhu.Graywulf.Format
 
         protected internal abstract void OnReadFooter();
 
-        #region DataReader functions
+        protected abstract void OnWriteHeader();
+
+        private void WriteNextBlock(IDataReader dr)
+        {
+            blockCounter++;
+
+            DataFileBlockBase nextBlock;
+
+            if (blockCounter < blocks.Count)
+            {
+                nextBlock = OnWriteNextBlock(blocks[blockCounter], dr);
+            }
+            else
+            {
+                // Create a new block automatically, if collection is not predefined
+                nextBlock = OnWriteNextBlock(null, dr);
+                if (nextBlock != null)
+                {
+                    blocks.Add(nextBlock);
+                }
+            }
+
+            if (nextBlock != null)
+            {
+                nextBlock.DetectColumns(dr);
+                nextBlock.Write(dr);
+            }
+        }
+
+        protected abstract void OnWriteFooter();
+
+        protected abstract DataFileBlockBase OnWriteNextBlock(DataFileBlockBase block, IDataReader dr);
+
+        #region DataReader and Writer functions
         /// <summary>
         /// Returns a FileDataReader that can iterate through the rows of
         /// the data file.
@@ -441,25 +475,26 @@ namespace Jhu.Graywulf.Format
             return new FileDataReader(this);
         }
 
+        public void WriteFromDataReader(IDataReader dr)
+        {
+            OpenForWrite();
+
+            OnWriteHeader();
+
+            do
+            {
+                WriteNextBlock(dr);
+            }
+            while (dr.NextResult());
+
+            OnWriteFooter();
+
+            Close();
+        }
+
         #endregion
 
 #if false
-
-        /// <summary>
-        /// Reads the next row from the data file
-        /// </summary>
-        /// <returns></returns>
-        internal bool Read()
-        {
-            if (!OnRead(rowValues))
-            {
-                rowValues = null;
-                return false;
-            }
-            else
-            {
-                return true;
-            }
         }
 
 
@@ -528,7 +563,7 @@ namespace Jhu.Graywulf.Format
             rowValues = null;
         }
 
-        #region DataWriter functions
+        
 
         public void DetectColumns(IDataReader dr)
         {
@@ -543,28 +578,6 @@ namespace Jhu.Graywulf.Format
             }
 
             OnColumnsCreated();
-        }
-
-        public void WriteFromDataReader(IDataReader dr)
-        {
-            if (columns.Count == 0)
-            {
-                DetectColumns(dr);
-            }
-
-            OpenForWrite();
-
-            OnWriteHeader();
-
-            while (dr.Read())
-            {
-                dr.GetValues(rowValues);
-                OnWrite(rowValues);
-            }
-
-            OnWriteFooter();
-
-            Close();
         }
 
         //public void WriteFromDataReaderVOTable(IDataReader dr)
@@ -598,8 +611,6 @@ namespace Jhu.Graywulf.Format
         protected abstract void OnWriteFooter();
 
         
-
-        #endregion
         #region Column functions
 
         protected virtual void OnColumnsCreated()

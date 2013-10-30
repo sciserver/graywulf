@@ -39,6 +39,8 @@ namespace Jhu.Graywulf.Format
         {
         }
 
+        #region Column functions
+
         protected override void OnColumnsCreated()
         {
             if ((file.FileMode & DataFileMode.Read) != 0)
@@ -101,5 +103,7 @@ namespace Jhu.Graywulf.Format
                 }
             }
         }
+
+        #endregion
     }
 }

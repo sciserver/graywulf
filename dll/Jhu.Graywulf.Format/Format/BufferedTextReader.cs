@@ -13,17 +13,39 @@ namespace Jhu.Graywulf.Format
     /// </summary>
     public class BufferedTextReader
     {
+        /// <summary>
+        /// Reference to the text reader wrapping the input stream.
+        /// </summary>
         private TextReader baseReader;
 
+        /// <summary>
+        /// Keeps track of the current line's number
+        /// </summary>
         private long lineCounter;
+
+        /// <summary>
+        /// If buffering is turned on, lines are saved into this buffer
+        /// to support rewind of files wrapping non-seekable streams.
+        /// </summary>
         private List<string> lineBuffer;
+
+        /// <summary>
+        /// Marks if line buffering is turned on
+        /// </summary>
         private bool lineBufferOn;
 
+        /// <summary>
+        /// Gets the number of the current line
+        /// </summary>
         public long LineCounter
         {
             get { return lineCounter; }
         }
 
+        /// <summary>
+        /// Creates a new object by wrapping a TextReader
+        /// </summary>
+        /// <param name="baseReader"></param>
         public BufferedTextReader(TextReader baseReader)
         {
             InitializeMembers();
@@ -31,6 +53,9 @@ namespace Jhu.Graywulf.Format
             this.baseReader = baseReader;
         }
 
+        /// <summary>
+        /// Initializes member variables
+        /// </summary>
         private void InitializeMembers()
         {
             this.baseReader = null;
@@ -72,6 +97,21 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /// <summary>
+        /// Skips a given number of lines.
+        /// </summary>
+        /// <param name="count"></param>
+        public void SkipLines(int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                ReadLine();
+            }
+        }
+
+        /// <summary>
+        /// Turns line buffering on
+        /// </summary>
         public void StartLineBuffer()
         {
             // Line buffer can only be turned on at the beginning
@@ -89,11 +129,17 @@ namespace Jhu.Graywulf.Format
             lineBufferOn = true;
         }
 
+        /// <summary>
+        /// Turns line buffering off.
+        /// </summary>
         public void StopLineBuffer()
         {
             lineBufferOn = false;
         }
 
+        /// <summary>
+        /// Rewinds line buffer to the beginning of the file
+        /// </summary>
         public void RewindLineBuffer()
         {
             if (lineBuffer == null && lineCounter > 0)

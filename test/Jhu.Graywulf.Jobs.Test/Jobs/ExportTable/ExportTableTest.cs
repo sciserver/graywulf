@@ -83,11 +83,11 @@ namespace Jhu.Graywulf.Jobs.ExportTable
                     var ji = LoadJob(guid);
                     Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
 
-                    var file = ((ExportTable)ji.Parameters["Parameters"].GetValue()).Destination.Path;
+                    var uri = ((ExportTable)ji.Parameters["Parameters"].GetValue()).Destination.Uri;
 
-                    Assert.IsTrue(File.Exists(file));
+                    Assert.IsTrue(File.Exists(uri.PathAndQuery));
 
-                    File.Delete(file);
+                    File.Delete(uri.PathAndQuery);
                 }
             }
         }

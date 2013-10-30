@@ -20,9 +20,9 @@ namespace Jhu.Graywulf.IO
             source.Dataset = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset("TEST", Test.Constants.TestConnectionString);
             source.Query = "SELECT * FROM SampleData";
 
-            var path = String.Format(@"\\{0}\{1}\{2}.txt", Test.Constants.RemoteHost1, Test.Constants.GWCode, name);
+            var uri = new Uri(String.Format(@"file://{0}/{1}/{2}.txt", Test.Constants.RemoteHost1, Test.Constants.GWCode, name));
 
-            var destination = new CsvFile(path, DataFileMode.Write);
+            var destination = new CsvFile(uri, DataFileMode.Write);
 
             IDataFileExporter dfe = null;
             if (remote)
@@ -47,8 +47,8 @@ namespace Jhu.Graywulf.IO
 
             dfe.Execute();
 
-            Assert.IsTrue(File.Exists(dfe.Destination.Path));
-            File.Delete(dfe.Destination.Path);
+            Assert.IsTrue(File.Exists(dfe.Destination.Uri.PathAndQuery));
+            File.Delete(dfe.Destination.Uri.PathAndQuery);
         }
 
         [TestMethod]
@@ -63,10 +63,10 @@ namespace Jhu.Graywulf.IO
                 dfe.Execute();
 
                 var d = dfe.Destination;
-                var p = dfe.Destination.Path;
+                var p = dfe.Destination.Uri;
 
-                Assert.IsTrue(File.Exists(dfe.Destination.Path));
-                File.Delete(dfe.Destination.Path);
+                Assert.IsTrue(File.Exists(dfe.Destination.Uri.PathAndQuery));
+                File.Delete(dfe.Destination.Uri.PathAndQuery);
             }
         }
     }

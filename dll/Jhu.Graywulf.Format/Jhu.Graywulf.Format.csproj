@@ -44,24 +44,42 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Format\BufferedTextReader.cs" />
     <Compile Include="Format\Constants.cs" />
-    <Compile Include="Format\CsvFile.cs" />
+    <Compile Include="Format\CsvFile.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Format\CsvFileBlock.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Format\DataFileBase.cs" />
+    <Compile Include="Format\DataFileBlockBase.cs" />
     <Compile Include="Format\DataFileColumn.cs" />
     <Compile Include="Format\DataFileColumnMetadata.cs" />
     <Compile Include="Format\Enum.cs" />
     <Compile Include="Format\FileDataReader.cs" />
-    <Compile Include="Format\FileDataWriter.cs" />
     <Compile Include="Format\FileFormatDescription.cs" />
-    <Compile Include="Format\FileFormatException.cs" />
+    <Compile Include="Format\FileFormatException.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Format\FileFormatFactory.cs" />
     <Compile Include="Format\FileFormatNames.Designer.cs">
       <DependentUpon>FileFormatNames.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Format\FormattedData.cs" />
-    <Compile Include="Format\TextDataFile.cs" />
+    <Compile Include="Format\FormattedDataFile.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Format\FormattedDataFileBlock.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Format\TextDataFile.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Format\TextDataFileBlock.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

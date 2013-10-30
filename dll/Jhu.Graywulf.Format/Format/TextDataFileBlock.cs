@@ -21,89 +21,21 @@ namespace Jhu.Graywulf.Format
             get { return (TextDataFile)file; }
         }
 
+        #region Constructors and initializers
+
         public TextDataFileBlock(TextDataFile file)
             :base(file)
         {
             InitializeMembers();
-
-            CreateBufferedReader();
         }
 
         private void InitializeMembers()
         {
-        }
-
-        private void CreateBufferedReader()
-        {
             this.textBuffer = new BufferedTextReader(File.TextReader);
         }
 
-        private void SkipLines()
-        {
-            for (int i = 0; i < File.SkipLinesCount; i++)
-            {
-                File.TextReader.ReadLine();
-            }
-        }
-
-        protected internal override void OnReadHeader()
-        {
-            // Make sure it's the first line
-            if (TextBuffer.LineCounter > 0)
-            {
-                throw new InvalidOperationException();  // *** TODO
-            }
-
-            if (File.AutoDetectColumns)
-            {
-                // Buffering is needed to detect columns automatically
-                TextBuffer.StartLineBuffer();
-
-                string[] parts;
-
-                DataFileColumn[] cols = null;      // detected columns
-                int[] colranks = null;
-
-                // If column names are in the first line, use them to generate names
-                if (File.ColumnNamesInFirstLine)
-                {
-                    GetNextLineParts(out parts, false);
-                    DetectColumnsFromParts(parts, true, out cols, out colranks);
-                }
-
-                SkipLines();
-
-                // Try to figure out the type of columns from the first n rows
-                // Try to read some rows to detect
-                int q = 0;
-                while (q < File.AutoDetectColumnsCount && GetNextLineParts(out parts, true))
-                {
-                    if (q == 0 && cols == null)
-                    {
-                        DetectColumnsFromParts(parts, false, out cols, out colranks);
-                    }
-
-                    if (cols.Length != parts.Length)
-                    {
-                        throw new FileFormatException();    // TODO
-                    }
-
-                    DetectColumnTypes(parts, cols, colranks);
-
-                    q++;
-                }
-
-                // Rewind stream
-                TextBuffer.RewindLineBuffer();
-                TextBuffer.StopLineBuffer();
-
-                CreateColumns(cols);
-            }
-            else
-            {
-                CreateColumns(Columns.ToArray());
-            }
-        }
+        #endregion
+        #region Column functions
 
         /// <summary>
         /// Detects columns from a set of values.
@@ -137,18 +69,80 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        protected abstract bool GetNextLineParts(out string[] parts, bool skipComments);
+        #endregion
+        #region Read functions
+
+        protected abstract bool ReadNextLineParts(out string[] parts, bool skipComments);
+
+        protected internal override void OnReadHeader()
+        {
+            // Make sure it's the first line
+            if (TextBuffer.LineCounter > 0)
+            {
+                throw new InvalidOperationException();  // *** TODO
+            }
+
+            if (File.AutoDetectColumns)
+            {
+                // Buffering is needed to detect columns automatically
+                TextBuffer.StartLineBuffer();
+
+                string[] parts;
+
+                DataFileColumn[] cols = null;      // detected columns
+                int[] colranks = null;
+
+                // If column names are in the first line, use them to generate names
+                if (File.ColumnNamesInFirstLine)
+                {
+                    ReadNextLineParts(out parts, false);
+                    DetectColumnsFromParts(parts, true, out cols, out colranks);
+                }
+
+                TextBuffer.SkipLines(File.SkipLinesCount);
+
+                // Try to figure out the type of columns from the first n rows
+                // Try to read some rows to detect
+                int q = 0;
+                while (q < File.AutoDetectColumnsCount && ReadNextLineParts(out parts, true))
+                {
+                    if (q == 0 && cols == null)
+                    {
+                        DetectColumnsFromParts(parts, false, out cols, out colranks);
+                    }
+
+                    if (cols.Length != parts.Length)
+                    {
+                        throw new FileFormatException();    // TODO
+                    }
+
+                    DetectColumnTypes(parts, cols, colranks);
+
+                    q++;
+                }
+
+                // Rewind stream
+                TextBuffer.RewindLineBuffer();
+                TextBuffer.StopLineBuffer();
+
+                CreateColumns(cols);
+            }
+            else
+            {
+                CreateColumns(Columns.ToArray());
+            }
+        }
 
         protected internal override bool OnReadNextRow(object[] values)
         {
             // Skip the first few lines of the file
             if (TextBuffer.LineCounter == 0)
             {
-                SkipLines();
+                TextBuffer.SkipLines(File.SkipLinesCount);
             }
 
             string[] parts;
-            var res = GetNextLineParts(out parts, true);
+            var res = ReadNextLineParts(out parts, true);
 
             if (!res)
             {
@@ -188,5 +182,15 @@ namespace Jhu.Graywulf.Format
         {
             // No need to read to the end if no more blocks
         }
+
+        #endregion
+        #region Write functions
+
+        protected override void OnWriteFooter()
+        {
+            // No footer in text files
+        }
+
+        #endregion
     }
 }

@@ -63,6 +63,11 @@ namespace Jhu.Graywulf.Format
             get { return inputReader; }
         }
 
+        protected internal TextWriter TextWriter
+        {
+            get { return outputWriter; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -327,6 +332,16 @@ namespace Jhu.Graywulf.Format
             {
                 throw new InvalidOperationException("Text files must consist of a single block.");
             }
+        }
+
+        protected override void OnWriteHeader()
+        {
+            // Header is written by the first block
+        }
+
+        protected override void OnWriteFooter()
+        {
+            // No footer in text files
         }
     }
 }

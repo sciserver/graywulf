@@ -169,53 +169,14 @@ namespace Jhu.Graywulf.Format
             // No footer in csv files
         }
 
+        protected override DataFileBlockBase OnWriteNextBlock(DataFileBlockBase block, IDataReader dr)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
 #if false
-        #region Writer functions
-
-        protected override void OnWriteHeader()
-        {
-            var line = new StringBuilder();
-
-            line.Append(comment);
-
-            for (int i = 0; i < Columns.Count; i++)
-            {
-                if (i > 0)
-                {
-                    line.Append(separator);
-                }
-
-                line.Append(Columns[i].Name.Replace(separator, '_'));    // TODO
-            }
-
-            WriteLine(line.ToString());
-        }
-
-        protected override void OnWrite(object[] values)
-        {
-            var line = new StringBuilder();
-
-            for (int i = 0; i < Columns.Count; i++)
-            {
-                if (i > 0)
-                {
-                    line.Append(separator);
-                }
-
-                line.Append(ColumnFormatters[i](values[i], Columns[i].Format));
-            }
-
-            WriteLine(line.ToString());
-        }
-
-        protected override void OnWriteFooter()
-        {
-            // nothing to do here
-        }
-
-        #endregion
 
         protected override FormatterDelegate GetFormatterDelegate(DataFileColumn column)
         {

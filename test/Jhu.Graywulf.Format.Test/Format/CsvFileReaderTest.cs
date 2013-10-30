@@ -12,7 +12,7 @@ using System.Xml;
 namespace Jhu.Graywulf.Format
 {
     [TestClass]
-    public class CsvFileTest
+    public class CsvFileReaderTest
     {
         private System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.InvariantCulture;
 

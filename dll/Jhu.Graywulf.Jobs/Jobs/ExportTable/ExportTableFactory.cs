@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             path = Path.Combine(path, String.Format("{0}_{1}_{2}{3}.gz", Context.UserName, job.JobID, source.ObjectName, format.DefaultExtension));
 
             var destination = new FileFormatFactory().CreateFile(format);
-            destination.Path = path;
+            destination.Uri = new Uri(String.Format("file:///{0}", path));
             destination.FileMode = DataFileMode.Write;
             destination.Compression = CompressionMethod.GZip;
 
@@ -85,7 +85,7 @@ namespace Jhu.Graywulf.Jobs.ExportTable
                 var tf = (TextDataFile)destination;
                 tf.Encoding = Encoding.ASCII;
                 tf.Culture = System.Globalization.CultureInfo.InvariantCulture;
-                tf.GenerateIdentity = false;
+                tf.GenerateIdentityColumn = false;
                 tf.ColumnNamesInFirstLine = true;
             }
 

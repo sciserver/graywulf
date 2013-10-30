@@ -17,12 +17,12 @@ namespace Jhu.Graywulf.IO
         private IDataFileImporter GetDataFileImporter(string name, bool remote)
         {
             var source = new CsvFile(
-                String.Format(@"\\{0}\{1}\RemoteImportTest.csv", Test.Constants.RemoteHost1, Test.Constants.GWCode),
+                new Uri(String.Format(@"file://{0}/{1}/RemoteImportTest.csv", Test.Constants.RemoteHost1, Test.Constants.GWCode)),
                 DataFileMode.Read);
-            source.GenerateIdentity = true;
+            source.GenerateIdentityColumn = true;
             source.ColumnNamesInFirstLine = true;
 
-            File.WriteAllText(source.Path, "#first, second, third, fourth\r\n1,2,3,4");
+            File.WriteAllText(source.Uri.PathAndQuery, "#first, second, third, fourth\r\n1,2,3,4");
 
             var destination = new DestinationTableParameters();
             destination.Table = new Schema.Table()
@@ -61,8 +61,8 @@ namespace Jhu.Graywulf.IO
             Assert.IsTrue(IsTableExisting(dfi.Destination));
             DropTable(dfi.Destination);
 
-            File.Delete(dfi.Source.Path);
-            Assert.IsFalse(File.Exists(dfi.Source.Path));
+            File.Delete(dfi.Source.Uri.PathAndQuery);
+            Assert.IsFalse(File.Exists(dfi.Source.Uri.PathAndQuery));
         }
 
         [TestMethod]
@@ -79,8 +79,8 @@ namespace Jhu.Graywulf.IO
                 Assert.IsTrue(IsTableExisting(dfi.Destination));
                 DropTable(dfi.Destination);
 
-                File.Delete(dfi.Source.Path);
-                Assert.IsFalse(File.Exists(dfi.Source.Path));
+                File.Delete(dfi.Source.Uri.PathAndQuery);
+                Assert.IsFalse(File.Exists(dfi.Source.Uri.PathAndQuery));
             }
         }
     }

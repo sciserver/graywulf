@@ -12,11 +12,10 @@ using System.Xml;
 namespace Jhu.Graywulf.Format
 {
     [TestClass]
-    public class CsvFileTest
+    public class CsvFileWriterTest
     {
         private System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.InvariantCulture;
 
-#if false
         [TestMethod]
         public void SimpleWriterTest()
         {
@@ -50,15 +49,13 @@ namespace Jhu.Graywulf.Format
 //                w.ToString());
 
         }
-#endif
 
-#if false
         [TestMethod]
         public void CompressedWriterTest()
         {
-            var path = "CsvFileTest_CompressedWriterTest.csv.gz";
+            var uri = new Uri("file:///CsvFileTest_CompressedWriterTest.csv.gz");
 
-            using (var csv = new CsvFile(path, DataFileMode.Write))
+            using (var csv = new CsvFile(uri, DataFileMode.Write))
             {
                 csv.Compression = CompressionMethod.GZip;
 
@@ -77,14 +74,8 @@ namespace Jhu.Graywulf.Format
                 }
             }
 
-            Assert.IsTrue(File.Exists(path));
-            File.Delete(path);
+            Assert.IsTrue(File.Exists(uri.PathAndQuery));
+            File.Delete(uri.PathAndQuery);
         }
-
-#endif
-
-
-
-
     }
 }

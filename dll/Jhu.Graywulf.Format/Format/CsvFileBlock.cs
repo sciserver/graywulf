@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Format
         /// <remarks>
         /// This function supports quoted strings.
         /// </remarks>
-        protected override bool GetNextLineParts(out string[] parts, bool skipComments)
+        protected override bool ReadNextLineParts(out string[] parts, bool skipComments)
         {
             string line;
             List<string> res = new List<string>();
@@ -121,16 +121,41 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-#if false
+        protected override void OnWriteHeader()
+        {
+            var line = new StringBuilder();
 
-        protected override bool OnRead(object[] values)
-        {
-            
+            line.Append(File.Comment);
+
+            for (int i = 0; i < Columns.Count; i++)
+            {
+                if (i > 0)
+                {
+                    line.Append(File.Separator);
+                }
+
+                line.Append(Columns[i].Name.Replace(File.Separator, '_'));    // TODO
+            }
+
+            File.TextWriter.WriteLine(line.ToString());
         }
-        protected override bool OnRead(object[] values, XmlReader reader)
+
+        protected override void OnWriteNextRow(object[] values)
         {
-            return false;
+            var line = new StringBuilder();
+
+            for (int i = 0; i < Columns.Count; i++)
+            {
+                if (i > 0)
+                {
+                    line.Append(File.Separator);
+                }
+
+                line.Append(ColumnFormatters[i](values[i], Columns[i].Format));
+            }
+
+            File.TextWriter.WriteLine(line.ToString());
         }
-#endif
+
     }
 }
