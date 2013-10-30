@@ -14,8 +14,6 @@ namespace Jhu.Graywulf.Format
     {
         [NonSerialized]
         private bool nextResultsCalled;
-        [NonSerialized]
-        private long rowCounter;
 
         private char comment;
         private char quote;
@@ -99,38 +97,38 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
-        public CsvFile(string path, DataFileMode fileMode)
-            : base(path, fileMode)
+        public CsvFile(Uri uri, DataFileMode fileMode)
+            : base(uri, fileMode)
         {
             InitializeMembers();
         }
 
-        public CsvFile(string path, bool detectEncoding)
-            : this(path, detectEncoding, null)
+        public CsvFile(Uri uri, bool detectEncoding)
+            : this(uri, detectEncoding, null)
         {
             // overload
         }
 
-        public CsvFile(string path, CultureInfo culture)
-            : this(path, true, culture)
+        public CsvFile(Uri uri, CultureInfo culture)
+            : this(uri, true, culture)
         {
             // overload
         }
 
-        public CsvFile(string path, bool detectEncoding, CultureInfo culture)
-            : base(path, detectEncoding, culture)
+        public CsvFile(Uri uri, bool detectEncoding, CultureInfo culture)
+            : base(uri, detectEncoding, culture)
         {
             InitializeMembers();
         }
 
-        public CsvFile(string path, DataFileMode fileMode, Encoding encoding)
-            : this(path, fileMode, encoding, null)
+        public CsvFile(Uri uri, DataFileMode fileMode, Encoding encoding)
+            : this(uri, fileMode, encoding, null)
         {
             // overload
         }
 
-        public CsvFile(string path, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
-            : base(path, fileMode, encoding, culture)
+        public CsvFile(Uri uri, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
+            : base(uri, fileMode, encoding, culture)
         {
             InitializeMembers();
         }
@@ -147,224 +145,33 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region DataFileBase overloads
 
-        private void SkipLines()
-        {
-            for (int i = 0; i < SkipLinesCount; i++)
-            {
-                ReadLine();
-            }
-        }
-
-        protected override void OnDetectColumns(int rowCount)
-        {
-            if (LineCounter > 0)
-            {
-                throw new InvalidOperationException();  // *** TODO
-            }
-
-            // Buffering is needed to detect columns automatically
-            StartLineBuffer();
-
-
-            string[] parts;
-
-            DataFileColumn[] cols = null;      // detected columns
-            int[] colranks = null;
-
-            if (ColumnNamesInFirstLine)
-            {
-                parts = ReadLine().TrimStart(comment).Split(separator);
-                DetectColumnsFromParts(parts, true, out cols, out colranks);
-            }
-
-            SkipLines();
-
-            // Try to figure out the type of columns from the first n rows
-            // Try to read some rows to detect
-            int q = 0;
-            while (q < rowCount && GetNextLineParts(out parts))
-            {
-                if (q == 0 && cols == null)
-                {
-                    DetectColumnsFromParts(parts, false, out cols, out colranks);
-                }
-
-                if (cols.Length != parts.Length)
-                {
-                    throw new FileFormatException();    // TODO
-                }
-
-                DetectColumnTypes(parts, cols, colranks);
-
-                q++;
-            }
-
-            this.Columns.Clear();
-            this.Columns.AddRange(cols);
-
-            // Rewind stream
-            RewindLineBuffer();
-        }
-
-        protected override bool OnNextResult()
+        /// <summary>
+        /// Advanced the file to the next block.
+        /// </summary>
+        /// <param name="block"></param>
+        /// <returns></returns>
+        protected override DataFileBlockBase OnReadNextBlock(DataFileBlockBase block)
         {
             // Only allow calling this function once
             if (nextResultsCalled)
             {
-                return false;
+                return null;
             }
 
             nextResultsCalled = true;
-            rowCounter = 0;
 
-            // if no columns are set, try to detect them from the file
-            if (Columns.Count == 0)
-            {
-                DetectColumns(RowsToDetectColumns);
-            }
-
-            return true;
+            // Create a new block object, if necessary
+            return block ?? new CsvFileBlock(this);
         }
 
-        protected override bool OnRead(object[] values)
+        protected internal override void OnReadFooter()
         {
-            if (rowCounter == 0)
-            {
-                StopLineBuffer();
-                SkipLines();
-            }
-
-            string[] parts;
-            var res = GetNextLineParts(out parts);
-
-            if (!res)
-            {
-                return false;
-            }
-
-            // Now parse the parts
-            int pi = 0;
-            for (int i = 0; i < Columns.Count; i++)
-            {
-                if (Columns[i].IsIdentity && GenerateIdentity)
-                {
-                    // IDs are 1 based (like in SQL server)
-                    values[i] = rowCounter + 1;     // TODO: might need to convert to a smaller type?
-                }
-                else
-                {
-                    if (!ColumnParsers[i](parts[pi], out values[i]))
-                    {
-                        throw new FormatException();    // TODO: add logic to skip exceptions
-                    }
-
-                    pi++;
-                }
-            }
-
-            // TODO: add logic to handle nulls
-            rowCounter++;
-
-            return true;
+            // No footer in csv files
         }
-        protected override bool OnRead(object[] values, XmlReader reader)
-        {
-            return false;
-        }
+
         #endregion
 
-        /// <summary>
-        /// Returns the next line in the file braked up into parts
-        /// along separators.
-        /// </summary>
-        /// <param name="inputReader"></param>
-        /// <param name="parts"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// This function support quoted strings.
-        /// </remarks>
-        private bool GetNextLineParts(out string[] parts)
-        {
-            string line;
-            List<string> res = new List<string>();
-
-            int ci = 0;
-            bool inquote = false;
-            string part = String.Empty;
-
-            while (true)
-            {
-                if ((line = ReadLine()) == null)
-                {
-                    parts = null;
-                    return false;
-                }
-
-                // skip empty lines
-                if (!inquote && line.Length == 0)
-                {
-                    continue;
-                }
-
-                // skip comments
-                if (!inquote && line[0] == comment)
-                {
-                    continue;
-                }
-
-                // Loop over characters in line
-                while (ci <= line.Length)
-                {
-                    if (inquote && ci == line.Length)   // Inside a quote and end of line reached
-                    {
-                        line = ReadLine();
-
-                        if (line == null)
-                        {
-                            throw new Exception();  // TODO: unexpected end of line
-                        }
-
-                        ci = 0;
-                    }
-                    if (!inquote && ci == line.Length || line[ci] == separator)
-                    {
-                        res.Add(part);
-                        part = String.Empty;
-
-                        if (ci == line.Length)  // Outside a quote and end of line reached
-                        {
-                            parts = res.ToArray();
-                            return true;
-                        }
-                    }
-                    else if (line[ci] == quote)     // quote
-                    {
-                        if (!inquote)
-                        {
-                            inquote = true;
-                        }
-                        else
-                        {
-                            if (ci < line.Length - 1 && line[ci + 1] == quote)
-                            {
-                                // double quote
-                                part += quote;
-                                ci++;
-                            }
-
-                            inquote = false;
-                        }
-                    }
-                    else
-                    {
-                        part += line[ci];
-                    }
-
-                    ci++;
-                }
-            }
-        }
-
+#if false
         #region Writer functions
 
         protected override void OnWriteHeader()
@@ -424,6 +231,6 @@ namespace Jhu.Graywulf.Format
                 return base.GetFormatterDelegate(column);
             }
         }
-       
+#endif
     }
 }

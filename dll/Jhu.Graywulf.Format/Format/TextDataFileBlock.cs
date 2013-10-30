@@ -1,0 +1,192 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Jhu.Graywulf.Types;
+
+namespace Jhu.Graywulf.Format
+{
+    public abstract class TextDataFileBlock : FormattedDataFileBlock
+    {
+        [NonSerialized]
+        private BufferedTextReader textBuffer;
+
+        protected BufferedTextReader TextBuffer
+        {
+            get { return textBuffer; }
+        }
+
+        private TextDataFile File
+        {
+            get { return (TextDataFile)file; }
+        }
+
+        public TextDataFileBlock(TextDataFile file)
+            :base(file)
+        {
+            InitializeMembers();
+
+            CreateBufferedReader();
+        }
+
+        private void InitializeMembers()
+        {
+        }
+
+        private void CreateBufferedReader()
+        {
+            this.textBuffer = new BufferedTextReader(File.TextReader);
+        }
+
+        private void SkipLines()
+        {
+            for (int i = 0; i < File.SkipLinesCount; i++)
+            {
+                File.TextReader.ReadLine();
+            }
+        }
+
+        protected internal override void OnReadHeader()
+        {
+            // Make sure it's the first line
+            if (TextBuffer.LineCounter > 0)
+            {
+                throw new InvalidOperationException();  // *** TODO
+            }
+
+            if (File.AutoDetectColumns)
+            {
+                // Buffering is needed to detect columns automatically
+                TextBuffer.StartLineBuffer();
+
+                string[] parts;
+
+                DataFileColumn[] cols = null;      // detected columns
+                int[] colranks = null;
+
+                // If column names are in the first line, use them to generate names
+                if (File.ColumnNamesInFirstLine)
+                {
+                    GetNextLineParts(out parts, false);
+                    DetectColumnsFromParts(parts, true, out cols, out colranks);
+                }
+
+                SkipLines();
+
+                // Try to figure out the type of columns from the first n rows
+                // Try to read some rows to detect
+                int q = 0;
+                while (q < File.AutoDetectColumnsCount && GetNextLineParts(out parts, true))
+                {
+                    if (q == 0 && cols == null)
+                    {
+                        DetectColumnsFromParts(parts, false, out cols, out colranks);
+                    }
+
+                    if (cols.Length != parts.Length)
+                    {
+                        throw new FileFormatException();    // TODO
+                    }
+
+                    DetectColumnTypes(parts, cols, colranks);
+
+                    q++;
+                }
+
+                // Rewind stream
+                TextBuffer.RewindLineBuffer();
+                TextBuffer.StopLineBuffer();
+
+                CreateColumns(cols);
+            }
+            else
+            {
+                CreateColumns(Columns.ToArray());
+            }
+        }
+
+        /// <summary>
+        /// Detects columns from a set of values.
+        /// </summary>
+        /// <param name="parts"></param>
+        /// <param name="useNames"></param>
+        /// <param name="cols"></param>
+        /// <param name="colRanks"></param>
+        /// <remarks>
+        /// If it is the first line and useName is true, it will use them as column names,
+        /// otherwise parts are only counted, columns are created for each and automatically generated
+        /// names are used.
+        /// </remarks>
+        protected void DetectColumnsFromParts(string[] parts, bool useNames, out DataFileColumn[] cols, out int[] colRanks)
+        {
+            cols = new DataFileColumn[parts.Length];
+            colRanks = new int[parts.Length];
+
+            for (int i = 0; i < cols.Length; i++)
+            {
+                cols[i] = new DataFileColumn();
+
+                if (useNames)
+                {
+                    cols[i].Name = parts[i].Trim();
+                }
+                else
+                {
+                    cols[i].Name = String.Format("Col{0}", i);  // *** TODO: use constants
+                }
+            }
+        }
+
+        protected abstract bool GetNextLineParts(out string[] parts, bool skipComments);
+
+        protected internal override bool OnReadNextRow(object[] values)
+        {
+            // Skip the first few lines of the file
+            if (TextBuffer.LineCounter == 0)
+            {
+                SkipLines();
+            }
+
+            string[] parts;
+            var res = GetNextLineParts(out parts, true);
+
+            if (!res)
+            {
+                return false;
+            }
+
+            // Now parse the parts
+            int pi = 0;
+            for (int i = 0; i < Columns.Count; i++)
+            {
+                if (!Columns[i].IsIdentity)
+                {
+                    if (!ColumnParsers[i](parts[pi], out values[i]))
+                    {
+                        throw new FormatException();    // TODO: add logic to skip exceptions
+                    }
+
+                    pi++;
+                }
+                else
+                {
+                    values[i] = null;   // Identity value will be filled in by the data reader
+                }
+            }
+
+            // TODO: add logic to handle nulls
+
+            return true;
+        }
+
+        protected internal override void OnReadFooter()
+        {
+            // No footer in text files
+        }
+
+        protected internal override void OnReadToFinish()
+        {
+            // No need to read to the end if no more blocks
+        }
+    }
+}

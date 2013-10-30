@@ -9,22 +9,16 @@ using System.Xml;
 
 namespace Jhu.Graywulf.Format
 {
-   public abstract class FormattedData : DataFileBase
+    public abstract class FormattedDataFile : DataFileBase
     {
-                
+        public delegate bool ParserDelegate(string value, out object result);
+        public delegate string FormatterDelegate(object value, string format);
+
         private Encoding encoding;
         private bool detectEncoding;
         private CultureInfo culture;
         private NumberStyles numberStyle;
         private DateTimeStyles dateTimeStyle;
-        public delegate bool ParserDelegate(string value, out object result);
-        public delegate string FormatterDelegate(object value, string format);
-        
-        [NonSerialized]
-        public ParserDelegate[] columnParsers;
-        [NonSerialized]
-        public FormatterDelegate[] columnFormatters;
-        private bool generateIdentity;
 
         public bool DetectEncoding
         {
@@ -44,18 +38,12 @@ namespace Jhu.Graywulf.Format
             set { culture = value; }
         }
 
-        public bool GenerateIdentity
-        {
-            get { return generateIdentity; }
-            set { generateIdentity = value; }
-        }
-
-        protected FormattedData()
+        protected FormattedDataFile()
         {
         }
 
-        protected FormattedData(string path, bool detectEncoding, CultureInfo culture)
-            : base(path, DataFileMode.Read)
+        protected FormattedDataFile(Uri uri, bool detectEncoding, CultureInfo culture)
+            : base(uri, DataFileMode.Read)
         {
             InitializeMembers();
             this.detectEncoding = detectEncoding;
@@ -63,12 +51,12 @@ namespace Jhu.Graywulf.Format
             this.culture = culture;
         }
 
-        protected FormattedData(string path, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
-            : base(path, fileMode)
+        protected FormattedDataFile(Uri uri, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
+            : base(uri, fileMode)
         {
-            if (path == null)
+            if (uri == null)
             {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException("uri");
             }
 
             InitializeMembers();
@@ -78,98 +66,62 @@ namespace Jhu.Graywulf.Format
             this.culture = culture;
         }
 
-        protected FormattedData(string path, CultureInfo culture)
-            : base(path, DataFileMode.Read)
+        protected FormattedDataFile(Uri uri, CultureInfo culture)
+            : base(uri, DataFileMode.Read)
         {
             InitializeMembers();
-            
+
             this.encoding = null;
             this.culture = culture;
         }
 
-        protected FormattedData(TextReader input, CultureInfo culture) {
+        protected FormattedDataFile(TextReader input, CultureInfo culture)
+        {
 
             InitializeMembers();
             this.encoding = null;
-            this.culture = culture;        
+            this.culture = culture;
         }
 
-        protected FormattedData(XmlReader input, CultureInfo culture)
+        protected FormattedDataFile(XmlReader input, CultureInfo culture)
         {
             InitializeMembers();
             this.encoding = null;
             this.culture = culture;
         }
-        
-       protected FormattedData(TextWriter output, Encoding encoding, CultureInfo culture)
-       {
+
+        protected FormattedDataFile(TextWriter output, Encoding encoding, CultureInfo culture)
+        {
             InitializeMembers();
             this.encoding = encoding;
-            this.culture = culture;        
-       }
+            this.culture = culture;
+        }
 
-       protected FormattedData(XmlWriter write, DataFileMode fileMode)
-       {
-           InitializeMembers();
-       }
+        protected FormattedDataFile(XmlWriter write, DataFileMode fileMode)
+        {
+            InitializeMembers();
+        }
 
-       protected FormattedData(string path, DataFileMode fileMode)
-       {
-           InitializeMembers();
-       }
+        protected FormattedDataFile(string path, DataFileMode fileMode)
+        {
+            InitializeMembers();
+        }
 
-       protected FormattedData(XmlTextWriter write, Encoding encoding, CultureInfo culture) 
-       {
-           InitializeMembers();
-       }
-       
-       private void InitializeMembers()
-       {        
+        protected FormattedDataFile(XmlTextWriter write, Encoding encoding, CultureInfo culture)
+        {
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
+        {
             this.detectEncoding = true;
             this.encoding = null;
             this.culture = null;
             this.numberStyle = NumberStyles.Float;
             this.dateTimeStyle = DateTimeStyles.None;
-
-            this.generateIdentity = true;
-       }
-
-       private void InitializeColumnParsers()
-       {
-            columnParsers = new ParserDelegate[Columns.Count];
-
-            for (int i = 0; i < columnParsers.Length; i++)
-            {
-                columnParsers[i] = GetParserDelegate(Columns[i]);
-            }
-       }
-
-       private void InitializeColumnFormatters()
-       {
-            columnFormatters = new FormatterDelegate[Columns.Count];
-
-            for (int i = 0; i < columnFormatters.Length; i++)
-            {
-                columnFormatters[i] = GetFormatterDelegate(Columns[i]);
-            }
-       }
-
-       protected override void OnColumnsCreated()
-       {
-            base.OnColumnsCreated();
-
-            if ((FileMode & DataFileMode.Read) != 0)
-            {
-                InitializeColumnParsers();
-            }
-
-            if ((FileMode & DataFileMode.Write) != 0)
-            {
-                InitializeColumnFormatters();
-            }
         }
 
-        protected virtual ParserDelegate GetParserDelegate(DataFileColumn column)
+        public virtual ParserDelegate GetParserDelegate(DataFileColumn column)
         {
             var t = column.DataType.Type;
 
@@ -342,7 +294,7 @@ namespace Jhu.Graywulf.Format
             throw new NotImplementedException();
         }
 
-        protected virtual FormatterDelegate GetFormatterDelegate(DataFileColumn column)
+        public virtual FormatterDelegate GetFormatterDelegate(DataFileColumn column)
         {
             var t = column.DataType.Type;
 
@@ -462,8 +414,8 @@ namespace Jhu.Graywulf.Format
 
             throw new NotImplementedException();
         }
-       
-        protected bool GetBestColumnTypeEstimate(string value, out Type type, out int size, out int rank)
+
+        public bool GetBestColumnTypeEstimate(string value, out Type type, out int size, out int rank)
         {
             if (String.IsNullOrEmpty(value))
             {
@@ -482,7 +434,7 @@ namespace Jhu.Graywulf.Format
             // while the number of decimal digits could be used, standard .net functions don't provide
             // this functionality, so we always assume double by default
 
-            rank = 0;        
+            rank = 0;
 
             Int32 int32v;
             if (Int32.TryParse(value, numberStyle, culture, out int32v))
@@ -500,7 +452,7 @@ namespace Jhu.Graywulf.Format
                 size = 0;
                 return true;
             }
-            rank++;          
+            rank++;
 
             double doublev;
             if (double.TryParse(value, numberStyle, culture, out doublev))
@@ -551,7 +503,5 @@ namespace Jhu.Graywulf.Format
             size = value.Length;
             return true;
         }
-
     }
 }
-

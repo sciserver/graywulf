@@ -11,13 +11,30 @@ namespace Jhu.Graywulf.Format
     {
         private DataFileBase parent;
         private Dictionary<string, int> columnIndex;
+        private int blockCounter;
+        private long rowCounter;
+        private object[] rowValues;
+        private int[] isIdentity;
 
         #region Constructors and initializers
 
         internal FileDataReader(DataFileBase parent)
         {
+            InizializeMembers();
+
             this.parent = parent;
+
+            NextResult();
+        }
+
+        private void InizializeMembers()
+        {
+            this.parent = null;
             this.columnIndex = null;
+            this.blockCounter = -1;
+            this.rowCounter = -1;
+            this.rowValues = null;
+            this.isIdentity = null;
         }
 
         public void Dispose()
@@ -33,14 +50,33 @@ namespace Jhu.Graywulf.Format
             get { return -1; }
         }
 
+        /// <summary>
+        /// Reads the next row from the data file's current block.
+        /// </summary>
+        /// <returns></returns>
         public bool Read()
         {
-            if (columnIndex == null)
+            if (rowCounter == -1)
             {
-                BuildColumnIndex();
+                InitializeColumns();
             }
 
-            return parent.Read();
+            if (parent.CurrentBlock.OnReadNextRow(rowValues))
+            {
+                rowCounter++;
+
+                // Generate identity values
+                for (int i = 0; i < isIdentity.Length; i++)
+                {
+                    rowValues[i] = rowCounter + 1;  // identity values start from 1, usually
+                }
+                
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /*
@@ -56,7 +92,16 @@ namespace Jhu.Graywulf.Format
 
         public bool NextResult()
         {
-            return parent.NextResult();
+            if (parent.ReadNextBlock() != null)
+            {
+                blockCounter++;
+                return true;
+            }
+            else
+            {
+                blockCounter = -1;
+                return false;
+            }
         }
 
         public bool IsClosed
@@ -71,14 +116,25 @@ namespace Jhu.Graywulf.Format
 
         #region Column functions
 
-        private void BuildColumnIndex()
+        private void InitializeColumns()
         {
-            columnIndex = new Dictionary<string, int>();
+            var colc = parent.CurrentBlock.Columns.Count;
+            var ids = new List<int>();
 
-            for (int i = 0; i < parent.Columns.Count; i++)
+            columnIndex = new Dictionary<string, int>();
+            rowValues = new object[colc];
+
+            for (int i = 0; i < colc; i++)
             {
-                columnIndex.Add(parent.Columns[i].Name, i);
+                columnIndex.Add(parent.CurrentBlock.Columns[i].Name, i);
+
+                if (parent.CurrentBlock.Columns[i].IsIdentity)
+                {
+                    ids.Add(i);
+                }
             }
+
+            isIdentity = ids.ToArray();
         }
 
         public DataTable GetSchemaTable()
@@ -108,7 +164,7 @@ namespace Jhu.Graywulf.Format
 
             // Add column ID
             int q = 0;
-            foreach (var col in parent.Columns)
+            foreach (var col in parent.CurrentBlock.Columns)
             {
                 AddSchemaTableColumn(dt, col, q++);
             }
@@ -148,32 +204,32 @@ namespace Jhu.Graywulf.Format
 
         public int FieldCount
         {
-            get { return parent.Columns.Count; }
+            get { return parent.CurrentBlock.Columns.Count; }
         }
 
         public object this[string name]
         {
-            get { return parent.RowValues[columnIndex[name]]; }
+            get { return rowValues[columnIndex[name]]; }
         }
 
         public object this[int i]
         {
-            get { return parent.RowValues[i]; }
+            get { return rowValues[i]; }
         }
 
         public string GetDataTypeName(int i)
         {
-            return parent.Columns[i].DataType.Name;
+            return parent.CurrentBlock.Columns[i].DataType.Name;
         }
 
         public Type GetFieldType(int i)
         {
-            return parent.Columns[i].DataType.Type;
+            return parent.CurrentBlock.Columns[i].DataType.Type;
         }
 
         public string GetName(int i)
         {
-            return parent.Columns[i].Name;
+            return parent.CurrentBlock.Columns[i].Name;
         }
 
         public int GetOrdinal(string name)
@@ -183,22 +239,22 @@ namespace Jhu.Graywulf.Format
 
         public object GetValue(int i)
         {
-            return parent.RowValues[i];
+            return rowValues[i];
         }
 
         public int GetValues(object[] values)
         {
-            for (int i = 0; i < parent.RowValues.Length; i++)
+            for (int i = 0; i < rowValues.Length; i++)
             {
-                values[i] = parent.RowValues[i];
+                values[i] = rowValues[i];
             }
 
-            return parent.RowValues.Length;
+            return rowValues.Length;
         }
 
         public bool IsDBNull(int i)
         {
-            return parent.RowValues[i] == null;
+            return rowValues[i] == null;
         }
 
         #endregion
@@ -206,62 +262,62 @@ namespace Jhu.Graywulf.Format
 
         public bool GetBoolean(int i)
         {
-            return (bool)parent.RowValues[i];
+            return (bool)rowValues[i];
         }
 
         public byte GetByte(int i)
         {
-            return (byte)parent.RowValues[i];
+            return (byte)rowValues[i];
         }
 
         public short GetInt16(int i)
         {
-            return (Int16)parent.RowValues[i];
+            return (Int16)rowValues[i];
         }
 
         public int GetInt32(int i)
         {
-            return (Int32)parent.RowValues[i];
+            return (Int32)rowValues[i];
         }
 
         public long GetInt64(int i)
         {
-            return (Int64)parent.RowValues[i];
+            return (Int64)rowValues[i];
         }
 
         public float GetFloat(int i)
         {
-            return (float)parent.RowValues[i];
+            return (float)rowValues[i];
         }
 
         public double GetDouble(int i)
         {
-            return (double)parent.RowValues[i];
+            return (double)rowValues[i];
         }
 
         public decimal GetDecimal(int i)
         {
-            return (decimal)parent.RowValues[i];
+            return (decimal)rowValues[i];
         }
 
         public Guid GetGuid(int i)
         {
-            return (Guid)parent.RowValues[i];
+            return (Guid)rowValues[i];
         }
 
         public DateTime GetDateTime(int i)
         {
-            return (DateTime)parent.RowValues[i];
+            return (DateTime)rowValues[i];
         }
 
         public char GetChar(int i)
         {
-            return (char)parent.RowValues[i];
+            return (char)rowValues[i];
         }
 
         public string GetString(int i)
         {
-            return (string)parent.RowValues[i];
+            return (string)rowValues[i];
         }
 
         #endregion

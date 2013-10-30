@@ -32,14 +32,6 @@ namespace Jhu.Graywulf.Format
                 // TODO: add new file formats here
             };
 
-
-            //var formats = AppSettings.GetFileFormats();
-
-            //foreach (var key in formats.Keys)
-            //{
-            //    res.Add((string)key, GetFileFormatInternal((string)formats[(string)key]));
-            //}
-
             return res;
         }
 

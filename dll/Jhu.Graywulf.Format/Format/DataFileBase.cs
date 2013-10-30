@@ -15,29 +15,72 @@ namespace Jhu.Graywulf.Format
     [Serializable]
     public abstract class DataFileBase : IDisposable
     {
+        #region Private member variables
+
+        /// <summary>
+        /// Base stream to read from/write to
+        /// </summary>
+        /// <remarks>
+        /// Either set by the constructor (in this case the stream is not owned)
+        /// or opened internally (owned)
+        /// </remarks>
         [NonSerialized]
         private Stream baseStream;
+
+        /// <summary>
+        /// If true, baseStream was opened by the object and will need
+        /// to be closed when disposing.
+        /// </summary>
         [NonSerialized]
         private bool ownsBaseStream;
-        [NonSerialized]
-        private Stream compressedStream;
 
+        /// <summary>
+        /// Compression/decompression stream that wraps baseStream if data is
+        /// compressed.
+        /// </summary>
+        [NonSerialized]
+        private Stream uncompressedStream;
+
+        /// <summary>
+        /// Read or write
+        /// </summary>
         private DataFileMode fileMode;
+
+        /// <summary>
+        /// Type of compression
+        /// </summary>
         private CompressionMethod compression;
-        private string path;
 
-        private List<DataFileColumn> columns;
+        /// <summary>
+        /// Uri to the file. If set, the class can open it internally.
+        /// </summary>
+        private Uri uri;
 
-        [NonSerialized]
-        private object[] rowValues;
+        private bool generateIdentityColumn;
 
+        private List<DataFileBlockBase> blocks;
+        private int blockCounter;
+
+
+        #endregion
+        #region Properties
+
+        /// <summary>
+        /// Returns file format description.
+        /// </summary>
         public abstract FileFormatDescription Description { get; }
 
-        protected Stream Stream
+        /// <summary>
+        /// Gets the (uncompressed) stream that can be used to read data
+        /// </summary>
+        protected virtual Stream Stream
         {
-            get { return compressedStream ?? baseStream; }
+            get { return uncompressedStream ?? baseStream; }
         }
 
+        /// <summary>
+        /// Gets or sets file mode (read or write)
+        /// </summary>
         public DataFileMode FileMode
         {
             get { return fileMode; }
@@ -48,6 +91,9 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /// <summary>
+        /// Gets or sets the compression method.
+        /// </summary>
         public CompressionMethod Compression
         {
             get { return compression; }
@@ -58,32 +104,33 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        public string Path
+        public Uri Uri
         {
-            get { return path; }
+            get { return uri; }
             set
             {
                 EnsureNotOpen();
-                path = value;
+                uri = value;
             }
         }
 
-        /// <summary>
-        /// Gets the collection containing columns of the data file
-        /// </summary>
-        public List<DataFileColumn> Columns
+        public bool GenerateIdentityColumn
         {
-            get { return columns; }
+            get { return generateIdentityColumn; }
+            set { generateIdentityColumn = value; }
         }
 
-        /// <summary>
-        /// Gets the field values of the current row
-        /// </summary>
-        internal object[] RowValues
+        protected List<DataFileBlockBase> Blocks
         {
-            get { return rowValues; }
+            get { return blocks; }
         }
 
+        internal DataFileBlockBase CurrentBlock
+        {
+            get { return blocks[blockCounter]; }
+        }
+
+        #endregion
         #region Constructors and initializers
 
         protected DataFileBase()
@@ -91,9 +138,9 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
-        protected DataFileBase(string path, DataFileMode fileMode)
+        protected DataFileBase(Uri uri, DataFileMode fileMode)
         {
-            if (path == null)
+            if (uri == null)
             {
                 throw new ArgumentNullException("path");
             }
@@ -101,22 +148,21 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
 
             this.fileMode = fileMode;
-            this.Path = path;
+            this.uri = uri;
         }
 
         private void InitializeMembers()
         {
             this.baseStream = null;
             this.ownsBaseStream = false;
-            this.compressedStream = null;
+            this.uncompressedStream = null;
 
             this.fileMode = DataFileMode.Unknown;
             this.compression = CompressionMethod.None;
-            this.path = null;
+            this.uri = null;
 
-            this.columns = new List<DataFileColumn>();
-
-            this.rowValues = null;
+            this.blocks = new List<DataFileBlockBase>();
+            this.blockCounter = -1;
         }
 
         public virtual void Dispose()
@@ -127,6 +173,10 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Stream open/close
 
+        /// <summary>
+        /// Makes sure that the base stream is not open, if
+        /// stream is owned by the class.
+        /// </summary>
         protected virtual void EnsureNotOpen()
         {
             if (ownsBaseStream && baseStream != null)
@@ -135,6 +185,9 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /// <summary>
+        /// Opens the base stream for read or write
+        /// </summary>
         public void Open()
         {
             switch (fileMode)
@@ -150,6 +203,13 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /*
+        /// <summary>
+        /// Opens a 
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="mode"></param>
+        /// <param name="compression"></param>
         public virtual void Open(Stream stream, DataFileMode mode, CompressionMethod compression)
         {
             EnsureNotOpen();
@@ -160,6 +220,7 @@ namespace Jhu.Graywulf.Format
             this.FileMode = mode;
             this.compression = compression;
         }
+        */
 
         /// <summary>
         /// When overloaded in derived classes, opens the data file for reading
@@ -176,7 +237,14 @@ namespace Jhu.Graywulf.Format
             if (baseStream == null)
             {
                 // No open stream yet
-                baseStream = new FileStream(Path, System.IO.FileMode.Open, FileAccess.Read, FileShare.Read);
+                if (uri.IsFile)
+                {
+                    baseStream = new FileStream(uri.PathAndQuery, System.IO.FileMode.Open, FileAccess.Read, FileShare.Read);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
                 ownsBaseStream = true;
             }
 
@@ -186,17 +254,19 @@ namespace Jhu.Graywulf.Format
                 case CompressionMethod.None:
                     break;
                 case CompressionMethod.GZip:
-                    compressedStream = new ICSharpCode.SharpZipLib.GZip.GZipInputStream(baseStream);
+                    uncompressedStream = new ICSharpCode.SharpZipLib.GZip.GZipInputStream(baseStream);
                     break;
                 case CompressionMethod.BZip2:
-                    compressedStream = new ICSharpCode.SharpZipLib.BZip2.BZip2InputStream(baseStream);
+                    uncompressedStream = new ICSharpCode.SharpZipLib.BZip2.BZip2InputStream(baseStream);
                     break;
                 case CompressionMethod.Zip:
-                    compressedStream = new ICSharpCode.SharpZipLib.Zip.ZipInputStream(baseStream);
+                    uncompressedStream = new ICSharpCode.SharpZipLib.Zip.ZipInputStream(baseStream);
                     break;
                 default:
                     throw new NotImplementedException();
             }
+
+            OnReadHeader();
         }
 
 
@@ -216,7 +286,14 @@ namespace Jhu.Graywulf.Format
             if (baseStream == null)
             {
                 // No open stream yet
-                baseStream = new FileStream(Path, System.IO.FileMode.Create, FileAccess.Write, FileShare.None);                                
+                if (uri.IsFile)
+                {
+                    baseStream = new FileStream(uri.PathAndQuery, System.IO.FileMode.Create, FileAccess.Write, FileShare.None);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
                 ownsBaseStream = true;
             }
 
@@ -226,13 +303,13 @@ namespace Jhu.Graywulf.Format
                 case CompressionMethod.None:
                     break;
                 case CompressionMethod.GZip:
-                    compressedStream = new ICSharpCode.SharpZipLib.GZip.GZipOutputStream(baseStream);
+                    uncompressedStream = new ICSharpCode.SharpZipLib.GZip.GZipOutputStream(baseStream);
                     break;
                 case CompressionMethod.BZip2:
-                    compressedStream = new ICSharpCode.SharpZipLib.BZip2.BZip2OutputStream(baseStream);
+                    uncompressedStream = new ICSharpCode.SharpZipLib.BZip2.BZip2OutputStream(baseStream);
                     break;
                 case CompressionMethod.Zip:
-                    compressedStream = new ICSharpCode.SharpZipLib.Zip.ZipOutputStream(baseStream);
+                    uncompressedStream = new ICSharpCode.SharpZipLib.Zip.ZipOutputStream(baseStream);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -244,11 +321,11 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         public virtual void Close()
         {
-            if (compressedStream != null)
+            if (uncompressedStream != null)
             {
-                compressedStream.Close();
-                compressedStream.Dispose();
-                compressedStream = null;
+                uncompressedStream.Close();
+                uncompressedStream.Dispose();
+                uncompressedStream = null;
             }
 
             if (ownsBaseStream && baseStream != null)
@@ -263,11 +340,97 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Returns true if the underlying data file is closed
         /// </summary>
-        public abstract bool IsClosed { get; }
+        public virtual bool IsClosed
+        {
+            get { return Stream == null; }
+        }
 
         #endregion
-        #region DataReader functions
 
+        /// <summary>
+        /// When overloaded in a derived class, read the file header.
+        /// </summary>
+        protected internal abstract void OnReadHeader();
+
+        public void AppendBlock(DataFileBlockBase block)
+        {
+            switch (fileMode)
+            {
+                case DataFileMode.Read:
+                    // For read, blocks can be added to predefine columns, but otherwise
+                    // no need to do anything, just write them to the end of the list
+                    blocks.Add(block);
+                    OnBlockAppended(block);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        protected abstract void OnBlockAppended(DataFileBlockBase block);
+
+        /// <summary>
+        /// Advanced the file to the next block.
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// Blocks can be predefined, in case data columns are set externally.
+        /// </remarks>
+        protected internal DataFileBlockBase ReadNextBlock()
+        {
+            if (blockCounter != -1)
+            {
+                blocks[blockCounter].OnReadToFinish();
+                blocks[blockCounter].OnReadFooter();
+            }
+
+            try
+            {
+                blockCounter++;
+
+                DataFileBlockBase nextBlock;
+
+                if (blockCounter < blocks.Count)
+                {
+                    nextBlock = OnReadNextBlock(blocks[blockCounter]);
+                }
+                else
+                {
+                    // Create a new block automatically, if collection is not predefined
+                    nextBlock = OnReadNextBlock(null);
+                    blocks.Add(nextBlock);
+                }
+                
+                if (nextBlock != null)
+                {
+                    nextBlock.OnReadHeader();
+                    return nextBlock;
+                }
+                else
+                {
+                    // If no more blocks, read file footer
+                    OnReadFooter();
+                }
+            }
+            catch (EndOfStreamException)
+            {
+                // Some data formats cannot detect end of blocks and will
+                // throw exception at the end of the file instead
+            }
+
+            blockCounter = -1;
+            return null;
+        }
+
+        /// <summary>
+        /// When overloaded in a derived class, reads the next block.
+        /// </summary>
+        /// <returns></returns>
+        protected abstract DataFileBlockBase OnReadNextBlock(DataFileBlockBase block);
+
+        protected internal abstract void OnReadFooter();
+
+        #region DataReader functions
         /// <summary>
         /// Returns a FileDataReader that can iterate through the rows of
         /// the data file.
@@ -275,16 +438,12 @@ namespace Jhu.Graywulf.Format
         /// <returns></returns>
         public FileDataReader OpenDataReader()
         {
-            if (rowValues == null)
-            {
-                if (!NextResult())
-                {
-                    throw new Exception();  // TODO
-                }
-            }
-
             return new FileDataReader(this);
         }
+
+        #endregion
+
+#if false
 
         /// <summary>
         /// Reads the next row from the data file
@@ -369,7 +528,6 @@ namespace Jhu.Graywulf.Format
             rowValues = null;
         }
 
-        #endregion
         #region DataWriter functions
 
         public void DetectColumns(IDataReader dr)
@@ -450,5 +608,6 @@ namespace Jhu.Graywulf.Format
             rowValues = new object[columns.Count];
         }
         #endregion
+#endif
     }
 }
