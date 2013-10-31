@@ -62,13 +62,25 @@ namespace Jhu.Graywulf.Format
         }
 
         public CsvFile(TextReader input)
-            : this(input, null)
+            : this(input, null, null)
         {
             // overload
         }
 
         public CsvFile(TextReader input, CultureInfo culture)
-            : base(input, culture)
+            : this(input, null, culture)
+        {
+            // overload
+        }
+
+        public CsvFile(TextReader input, Encoding encoding)
+            : this(input, encoding, null)
+        {
+            // overload
+        }
+
+        public CsvFile(TextReader input, Encoding encoding, CultureInfo culture)
+            : base(input, encoding, culture)
         {
             InitializeMembers();
         }
@@ -98,28 +110,11 @@ namespace Jhu.Graywulf.Format
         }
 
         public CsvFile(Uri uri, DataFileMode fileMode)
-            : base(uri, fileMode)
+            : this(uri, fileMode, null, null)
         {
-            InitializeMembers();
+            // oveload
         }
 
-        public CsvFile(Uri uri, bool detectEncoding)
-            : this(uri, detectEncoding, null)
-        {
-            // overload
-        }
-
-        public CsvFile(Uri uri, CultureInfo culture)
-            : this(uri, true, culture)
-        {
-            // overload
-        }
-
-        public CsvFile(Uri uri, bool detectEncoding, CultureInfo culture)
-            : base(uri, detectEncoding, culture)
-        {
-            InitializeMembers();
-        }
 
         public CsvFile(Uri uri, DataFileMode fileMode, Encoding encoding)
             : this(uri, fileMode, encoding, null)

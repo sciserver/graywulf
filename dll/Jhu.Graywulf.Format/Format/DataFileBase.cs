@@ -56,6 +56,9 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         private Uri uri;
 
+        /// <summary>
+        /// Determines if an identity column is automatically generated.
+        /// </summary>
         private bool generateIdentityColumn;
 
         private List<DataFileBlockBase> blocks;

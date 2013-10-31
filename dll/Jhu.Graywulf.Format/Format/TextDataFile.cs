@@ -76,83 +76,24 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
-        protected TextDataFile(TextReader input)
-            : this(input, null)
-        {
-            // overload
-        }
-
-        protected TextDataFile(TextReader input, CultureInfo culture)
-            : base(input,culture)
+        protected TextDataFile(TextReader input, Encoding encoding, CultureInfo culture)
+            : base(null, DataFileMode.Read, encoding, culture)
         {
             InitializeMembers();
 
             Open(input, culture);
         }
 
-        protected TextDataFile(TextWriter output)
-            : this(output, null, null)
-        {
-            // overload
-        }
-
-        protected TextDataFile(TextWriter output, CultureInfo culture)
-            : this(output, null, culture)
-        {
-            // overload
-        }
-
-        protected TextDataFile(TextWriter output, Encoding encoding)
-            : this(output, encoding, null)
-        {
-            // overload
-        }
-
         protected TextDataFile(TextWriter output, Encoding encoding, CultureInfo culture)
-            :base(output,encoding,culture)
+            : base(null, DataFileMode.Write, encoding, culture)
         {
             InitializeMembers();
 
             Open(output, encoding, culture);
         }
 
-        protected TextDataFile(Uri uri, bool detectEncoding)
-            : this(uri, detectEncoding, null)
-        {
-            // overload
-        }
-
-        /// <summary>
-        /// New constructor with formattedData
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="detectEncoding"></param>
-        /// <param name="culture"></param>
-        protected TextDataFile(Uri uri, bool detectEncoding, CultureInfo culture)
-            : base( uri, detectEncoding, culture)
-        {
-            InitializeMembers();           
-        }
-        protected TextDataFile(Uri uri, DataFileMode fileMode)
-            : this(uri, fileMode, null, null)
-        {
-            // overload
-        }
-
-        protected TextDataFile(Uri uri, DataFileMode fileMode, CultureInfo culture)
-            : this(uri, fileMode, null, culture)
-        {
-            // overload
-        }
-
-        protected TextDataFile(Uri uri, DataFileMode fileMode, Encoding encoding)
-            : this(uri, fileMode, encoding, null)
-        {
-            // overload
-        }
-
         protected TextDataFile(Uri uri, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
-            : base(uri, fileMode, encoding,culture)
+            : base(uri, fileMode, encoding, culture)
         {
             InitializeMembers();
         }

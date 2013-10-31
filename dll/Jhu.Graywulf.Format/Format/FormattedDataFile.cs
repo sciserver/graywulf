@@ -42,15 +42,6 @@ namespace Jhu.Graywulf.Format
         {
         }
 
-        protected FormattedDataFile(Uri uri, bool detectEncoding, CultureInfo culture)
-            : base(uri, DataFileMode.Read)
-        {
-            InitializeMembers();
-            this.detectEncoding = detectEncoding;
-            this.encoding = null;
-            this.culture = culture;
-        }
-
         protected FormattedDataFile(Uri uri, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
             : base(uri, fileMode)
         {
@@ -64,52 +55,6 @@ namespace Jhu.Graywulf.Format
             this.detectEncoding = false;
             this.encoding = encoding;
             this.culture = culture;
-        }
-
-        protected FormattedDataFile(Uri uri, CultureInfo culture)
-            : base(uri, DataFileMode.Read)
-        {
-            InitializeMembers();
-
-            this.encoding = null;
-            this.culture = culture;
-        }
-
-        protected FormattedDataFile(TextReader input, CultureInfo culture)
-        {
-
-            InitializeMembers();
-            this.encoding = null;
-            this.culture = culture;
-        }
-
-        protected FormattedDataFile(XmlReader input, CultureInfo culture)
-        {
-            InitializeMembers();
-            this.encoding = null;
-            this.culture = culture;
-        }
-
-        protected FormattedDataFile(TextWriter output, Encoding encoding, CultureInfo culture)
-        {
-            InitializeMembers();
-            this.encoding = encoding;
-            this.culture = culture;
-        }
-
-        protected FormattedDataFile(XmlWriter write, DataFileMode fileMode)
-        {
-            InitializeMembers();
-        }
-
-        protected FormattedDataFile(string path, DataFileMode fileMode)
-        {
-            InitializeMembers();
-        }
-
-        protected FormattedDataFile(XmlTextWriter write, Encoding encoding, CultureInfo culture)
-        {
-            InitializeMembers();
         }
 
         private void InitializeMembers()
