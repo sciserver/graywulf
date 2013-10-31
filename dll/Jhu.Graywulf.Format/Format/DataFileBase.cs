@@ -238,9 +238,9 @@ namespace Jhu.Graywulf.Format
             if (baseStream == null)
             {
                 // No open stream yet
-                if (uri.IsFile)
+                if (!uri.IsAbsoluteUri || uri.IsFile)
                 {
-                    baseStream = new FileStream(uri.PathAndQuery, System.IO.FileMode.Open, FileAccess.Read, FileShare.Read);
+                    baseStream = new FileStream(uri.ToString(), System.IO.FileMode.Open, FileAccess.Read, FileShare.Read);
                 }
                 else
                 {
@@ -266,8 +266,6 @@ namespace Jhu.Graywulf.Format
                 default:
                     throw new NotImplementedException();
             }
-
-            OnReadHeader();
         }
 
 
@@ -379,7 +377,11 @@ namespace Jhu.Graywulf.Format
         /// </remarks>
         internal DataFileBlockBase ReadNextBlock()
         {
-            if (blockCounter != -1)
+            if (blockCounter == -1)
+            {
+                OnReadHeader();
+            }
+            else
             {
                 blocks[blockCounter].OnReadToFinish();
                 blocks[blockCounter].OnReadFooter();
