@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Format
         #region Constructors and initializers
 
         public TextDataFileBlock(TextDataFile file)
-            :base(file)
+            : base(file)
         {
             InitializeMembers();
         }
@@ -72,8 +72,6 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Read functions
 
-        protected abstract bool ReadNextLineParts(out string[] parts, bool skipComments);
-
         protected internal override void OnReadHeader()
         {
             // Make sure it's the first line
@@ -95,7 +93,7 @@ namespace Jhu.Graywulf.Format
                 // If column names are in the first line, use them to generate names
                 if (File.ColumnNamesInFirstLine)
                 {
-                    ReadNextLineParts(out parts, false);
+                    ReadNextRowParts(out parts, false);
                     DetectColumnsFromParts(parts, true, out cols, out colranks);
                 }
 
@@ -104,7 +102,7 @@ namespace Jhu.Graywulf.Format
                 // Try to figure out the type of columns from the first n rows
                 // Try to read some rows to detect
                 int q = 0;
-                while (q < File.AutoDetectColumnsCount && ReadNextLineParts(out parts, true))
+                while (q < File.AutoDetectColumnsCount && ReadNextRowParts(out parts, true))
                 {
                     if (q == 0 && cols == null)
                     {
@@ -131,46 +129,9 @@ namespace Jhu.Graywulf.Format
             {
                 CreateColumns(Columns.ToArray());
             }
-        }
 
-        protected internal override bool OnReadNextRow(object[] values)
-        {
             // Skip the first few lines of the file
-            if (TextBuffer.LineCounter == 0)
-            {
-                TextBuffer.SkipLines(File.SkipLinesCount);
-            }
-
-            string[] parts;
-            var res = ReadNextLineParts(out parts, true);
-
-            if (!res)
-            {
-                return false;
-            }
-
-            // Now parse the parts
-            int pi = 0;
-            for (int i = 0; i < Columns.Count; i++)
-            {
-                if (!Columns[i].IsIdentity)
-                {
-                    if (!ColumnParsers[i](parts[pi], out values[i]))
-                    {
-                        throw new FormatException();    // TODO: add logic to skip exceptions
-                    }
-
-                    pi++;
-                }
-                else
-                {
-                    values[i] = null;   // Identity value will be filled in by the data reader
-                }
-            }
-
-            // TODO: add logic to handle nulls
-
-            return true;
+            TextBuffer.SkipLines(File.SkipLinesCount);
         }
 
         protected internal override void OnReadFooter()

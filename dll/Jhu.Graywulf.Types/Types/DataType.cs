@@ -714,17 +714,6 @@ namespace Jhu.Graywulf.Types
             type.Precision = Convert.ToInt16(dr[SchemaTableColumn.NumericPrecision]);
             type.Scale = Convert.ToInt16(dr[SchemaTableColumn.NumericScale]);
             
-            // TODO: delete ???
-            //type.isMax = (bool)dr[Schema.Constants.SchemaColumnIsLong] || type.size == -1;
-            //type.Name = dr[Schema.Constants.SchemaColumnProviderSpecificDataType];
-            //this.Name = dr[Schema.Constants.SchemaColumnProviderType];
-
-            /* 
-            if (col.Type == typeof(string) && col.Size == 1)
-            {
-                col.Type = typeof(char);
-            }*/
-
             return type;
         }
 

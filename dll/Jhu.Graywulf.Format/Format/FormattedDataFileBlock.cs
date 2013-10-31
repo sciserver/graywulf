@@ -105,5 +105,54 @@ namespace Jhu.Graywulf.Format
         }
 
         #endregion
+        #region Read functions
+
+        protected abstract bool ReadNextRowParts(out string[] parts, bool skipComments);
+
+        protected internal override bool OnReadNextRow(object[] values)
+        {
+            string[] parts;
+
+            if (ReadNextRowParts(out parts, true))
+            {
+
+                // Now parse the parts
+                int pi = 0;
+                for (int i = 0; i < Columns.Count; i++)
+                {
+                    if (!Columns[i].IsIdentity)
+                    {
+                        if (parts[pi] == null && Columns[i].IsNullable)
+                        {
+                            values[i] = null;
+                        }
+                        else if (parts[pi] == null)
+                        {
+                            throw new ArgumentNullException();  // *** TODO
+                        }
+                        else if (!ColumnParsers[i](parts[pi], out values[i]))
+                        {
+                            throw new FormatException();    // TODO: add logic to skip exceptions
+                        }
+
+                        pi++;
+                    }
+                    else
+                    {
+                        values[i] = null;   // Identity value will be filled in by the data reader
+                    }
+                }
+
+                // TODO: add logic to handle nulls
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        #endregion
     }
 }
