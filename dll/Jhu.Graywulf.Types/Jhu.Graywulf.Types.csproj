@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -40,12 +41,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Types\BitConverterBase.cs" />
     <Compile Include="Types\Constants.cs" />
     <Compile Include="Types\DataType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\DoubleComplex.cs" />
     <Compile Include="Types\IColumn.cs" />
     <Compile Include="Types\IVariable.cs" />
     <Compile Include="Types\IVariableMetadata.cs" />
+    <Compile Include="Types\SingleComplex.cs" />
+    <Compile Include="Types\StraightBitConverter.cs" />
+    <Compile Include="Types\SwapBitConverter.cs" />
     <Compile Include="Types\TypeUtil.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
