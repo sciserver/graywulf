@@ -61,7 +61,14 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         private bool generateIdentityColumn;
 
+        /// <summary>
+        /// Stores the block of the file, as they are read from the input
+        /// </summary>
         private List<DataFileBlockBase> blocks;
+
+        /// <summary>
+        /// Points to the current block in the blocks collection
+        /// </summary>
         private int blockCounter;
 
 
@@ -136,14 +143,22 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Constructors and initializers
 
+        /// <summary>
+        /// Constructs a file without opening it
+        /// </summary>
         protected DataFileBase()
         {
             InitializeMembers();
         }
 
-        protected DataFileBase(Uri uri, DataFileMode fileMode)
+        /// <summary>
+        /// Constructs a file and opens a stream automatically
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="fileMode"></param>
+        /// <param name="compression"></param>
+        protected DataFileBase(Uri uri, DataFileMode fileMode, CompressionMethod compression)
         {
-            // TODO: add compression as parameter
             if (uri == null)
             {
                 throw new ArgumentNullException("path");
@@ -151,8 +166,9 @@ namespace Jhu.Graywulf.Format
 
             InitializeMembers();
 
-            this.fileMode = fileMode;
             this.uri = uri;
+            this.fileMode = fileMode;
+            this.compression = compression;
         }
 
         private void InitializeMembers()
@@ -176,6 +192,41 @@ namespace Jhu.Graywulf.Format
 
         #endregion
         #region Stream open/close
+
+        /// <summary>
+        /// If compression is set to automatic, figures out compression
+        /// method from the file extension
+        /// </summary>
+        /// <returns></returns>
+        private CompressionMethod GetCompressionMethod()
+        {
+            // Open compressed stream, if necessary
+            var cm = compression;
+
+            if (cm == CompressionMethod.Automatic)
+            {
+                var path = uri.IsAbsoluteUri ? uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped) : uri.ToString();
+                var extension = Path.GetExtension(path).ToLowerInvariant();
+
+                switch (extension)
+                {
+                    case ".gz":
+                        cm = CompressionMethod.GZip;
+                        break;
+                    case ".bz2":
+                        cm = CompressionMethod.BZip2;
+                        break;
+                    case ".zip":
+                        cm = CompressionMethod.Zip;
+                        break;
+                    default:
+                        cm = CompressionMethod.None;
+                        break;
+                }
+            }
+
+            return cm;
+        }
 
         /// <summary>
         /// Makes sure that the base stream is not open, if
@@ -207,6 +258,7 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+#if false
         /// <summary>
         /// Opens a 
         /// </summary>
@@ -223,6 +275,7 @@ namespace Jhu.Graywulf.Format
             this.FileMode = mode;
             this.compression = compression;
         }
+#endif
 
         /// <summary>
         /// When overloaded in derived classes, opens the data file for reading
@@ -236,22 +289,48 @@ namespace Jhu.Graywulf.Format
 
             EnsureNotOpen();
 
+            // Open stream, if necessary
             if (baseStream == null)
             {
-                // No open stream yet
-                if (!uri.IsAbsoluteUri || uri.IsFile)
-                {
-                    baseStream = new FileStream(uri.ToString(), System.IO.FileMode.Open, FileAccess.Read, FileShare.Read);
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-                ownsBaseStream = true;
+                OpenOwnStreamForRead();
             }
 
-            // Open compressed stream, if necessary
-            switch (compression)
+            // Wrap into an uncompressed stream, if necessary
+            if (uncompressedStream == null)
+            {
+                WrapCompressedStreamForRead();
+            }
+        }
+
+        private void OpenOwnStreamForRead()
+        {
+            if (!uri.IsAbsoluteUri || uri.IsFile)
+            {
+                // Open a file
+                baseStream = new FileStream(uri.ToString(), System.IO.FileMode.Open, FileAccess.Read, FileShare.Read);
+            }
+            else
+            {
+                // Open a stream
+
+                switch (uri.Scheme.ToLowerInvariant())
+                {
+                    case "http":
+                    case "https":
+                    case "ftp":
+                    default:
+                        throw new NotImplementedException();
+
+                    //TODO implement net protocols
+                }
+            }
+
+            ownsBaseStream = true;
+        }
+
+        private void WrapCompressedStreamForRead()
+        {
+            switch (GetCompressionMethod())
             {
                 case CompressionMethod.None:
                     break;
@@ -268,8 +347,6 @@ namespace Jhu.Graywulf.Format
                     throw new NotImplementedException();
             }
         }
-
-
 
         /// <summary>
         /// When overloaded in derived class, opens the data file for writing
@@ -376,7 +453,7 @@ namespace Jhu.Graywulf.Format
         /// <remarks>
         /// Blocks can be predefined, in case data columns are set externally.
         /// </remarks>
-        internal DataFileBlockBase ReadNextBlock()
+        public DataFileBlockBase ReadNextBlock()
         {
             if (blockCounter == -1)
             {

@@ -73,24 +73,8 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
-        protected TextDataFile(TextReader input, Encoding encoding, CultureInfo culture)
-            : base(null, DataFileMode.Read, encoding, culture)
-        {
-            InitializeMembers();
-
-            Open(input, culture);
-        }
-
-        protected TextDataFile(TextWriter output, Encoding encoding, CultureInfo culture)
-            : base(null, DataFileMode.Write, encoding, culture)
-        {
-            InitializeMembers();
-
-            Open(output, encoding, culture);
-        }
-
-        protected TextDataFile(Uri uri, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
-            : base(uri, fileMode, encoding, culture)
+        protected TextDataFile(Uri uri, DataFileMode fileMode, CompressionMethod compression, Encoding encoding, CultureInfo culture)
+            : base(uri, fileMode, compression, encoding, culture)
         {
             InitializeMembers();
         }
@@ -126,6 +110,7 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /*
         public void Open(TextReader input)
         {
             Open(input, null);
@@ -168,6 +153,7 @@ namespace Jhu.Graywulf.Format
             this.Culture = culture;
             this.Encoding = encoding;
         }
+         * */
 
         /// <summary>
         /// 
@@ -178,11 +164,10 @@ namespace Jhu.Graywulf.Format
         /// </remarks>
         protected override void OpenForRead()
         {
+            base.OpenForRead();
+
             if (inputReader == null)
             {
-                // No open text reader yet
-                base.OpenForRead();
-
                 // Open text reader
                 if (base.Encoding == null)
                 {
@@ -199,11 +184,10 @@ namespace Jhu.Graywulf.Format
 
         protected override void OpenForWrite()
         {
+            base.OpenForWrite();
+
             if (outputWriter == null)
             {
-                // No open TextWriter yet
-                base.OpenForWrite();
-
                 // Open TextWriter
                 if (base.Encoding == null)
                 {

@@ -61,6 +61,15 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
+        public CsvFile(Uri uri, DataFileMode fileMode, CompressionMethod compression, Encoding encoding, CultureInfo culture)
+            : base(uri, fileMode, compression, encoding, culture)
+        {
+            InitializeMembers();
+
+            Open();
+        }
+
+        /*
         public CsvFile(TextReader input)
             : this(input, null, null)
         {
@@ -126,7 +135,7 @@ namespace Jhu.Graywulf.Format
             : base(uri, fileMode, encoding, culture)
         {
             InitializeMembers();
-        }
+        }*/
 
         private void InitializeMembers()
         {
@@ -170,23 +179,5 @@ namespace Jhu.Graywulf.Format
         }
 
         #endregion
-
-#if false
-
-        protected override FormatterDelegate GetFormatterDelegate(DataFileColumn column)
-        {
-            if (column.DataType.Type == typeof(string))
-            {
-                return delegate(object o, string f)
-                {
-                    return String.Format(Culture, "{0}{1}{0}", quote, ((string)o).Replace(quote.ToString(), quote.ToString() + quote.ToString()));
-                };
-            }
-            else
-            {
-                return base.GetFormatterDelegate(column);
-            }
-        }
-#endif
     }
 }

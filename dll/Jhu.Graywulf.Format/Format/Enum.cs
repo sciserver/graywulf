@@ -15,6 +15,7 @@ namespace Jhu.Graywulf.Format
     public enum CompressionMethod
     {
         None,
+        Automatic,
         BZip2,
         GZip,
         Zip,

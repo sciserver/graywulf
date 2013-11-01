@@ -40,16 +40,12 @@ namespace Jhu.Graywulf.Format
 
         protected FormattedDataFile()
         {
+            InitializeMembers();
         }
 
-        protected FormattedDataFile(Uri uri, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
-            : base(uri, fileMode)
+        protected FormattedDataFile(Uri uri, DataFileMode fileMode, CompressionMethod compression, Encoding encoding, CultureInfo culture)
+            : base(uri, fileMode, compression)
         {
-            if (uri == null)
-            {
-                throw new ArgumentNullException("uri");
-            }
-
             InitializeMembers();
 
             this.detectEncoding = false;
