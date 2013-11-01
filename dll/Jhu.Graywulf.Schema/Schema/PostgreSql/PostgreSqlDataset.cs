@@ -831,89 +831,89 @@ WHERE   nspname = @schemaName and proname= @objectName;";
             switch (name.ToLowerInvariant().Trim())
             {
                 case Constants.TypeNameSmallInt:
-                    return DataType.SmallInt;
+                    return DataType.SqlSmallInt;
                 case Constants.TypeNameInt:
-                    return DataType.Int;
+                    return DataType.SqlInt;
                 case Constants.TypeNameBigInt:
-                    return DataType.BigInt;
+                    return DataType.SqlBigInt;
                 case Constants.TypeNameNumeric:
-                    return DataType.Numeric;
+                    return DataType.SqlNumeric;
                 case Constants.TypeNameReal:
-                    return DataType.Real;
+                    return DataType.SqlReal;
                 case Constants.TypeNameDoublePrecision:
-                    return DataType.Real;
+                    return DataType.SqlReal;
                 case Constants.TypeNameMoney:
-                    return DataType.Money;
+                    return DataType.SqlMoney;
                 case Constants.TypeNameVarChar:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 case Constants.TypeNameChar:
-                    return DataType.Char;
+                    return DataType.SqlChar;
                 case Constants.TypeNameText:
-                    return DataType.Text;
+                    return DataType.SqlText;
                 case Constants.TypeNameBytea:
-                    return DataType.Binary;
+                    return DataType.SqlBinary;
                 case Constants.TypeNameTimestamp:
-                    return DataType.DateTime;
+                    return DataType.SqlDateTime;
                 case Constants.TypeNameTimestampWithTimeZone:
-                    return DataType.DateTime;
+                    return DataType.SqlDateTime;
                 case Constants.TypeNameDate:
-                    return DataType.Date;
+                    return DataType.SqlDate;
                 case Constants.TypeNameTime:
-                    return DataType.DateTime;
+                    return DataType.SqlDateTime;
                 case Constants.TypeNameTimeWithTimeZone:
-                    return DataType.DateTime;
+                    return DataType.SqlDateTime;
                 case Constants.TypeNameInterval:
-                    return DataType.VarChar;    // *** TODO converting to varchar, need to convert
+                    return DataType.SqlVarChar;    // *** TODO converting to varchar, need to convert
                 case Constants.TypeNameBoolean:
-                    return DataType.Bit;
+                    return DataType.SqlBit;
                 case Constants.TypeNamePoint:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 case Constants.TypeNameLine:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 case Constants.TypeNameLseg:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 case Constants.TypeNameBox:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 case Constants.TypeNamePath:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 case Constants.TypeNamePolygon:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 case Constants.TypeNameCircle:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 case Constants.TypeNameCidr:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 case Constants.TypeNameInet:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 case Constants.TypeNameMacaddr:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 case Constants.TypeNameBit:
-                    return DataType.Bit;
+                    return DataType.SqlBit;
                 case Constants.TypeNameBitVarying:
-                    return DataType.Bit;            // *** TODO check is it works
+                    return DataType.SqlBit;            // *** TODO check is it works
                 case Constants.TypeNameTsvector:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 case Constants.TypeNameUuid:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 case Constants.TypeNameXml:
-                    return DataType.Xml;
+                    return DataType.SqlXml;
                 case Constants.TypeNameJson:
-                    return DataType.Text;
+                    return DataType.SqlText;
                 case Constants.TypeNameArray:
-                    return DataType.VarChar;        // *** TODO need to modify
+                    return DataType.SqlVarChar;        // *** TODO need to modify
                 case Constants.TypeNameInt4Range:
-                    return DataType.Int;
+                    return DataType.SqlInt;
                 case Constants.TypeNameInt8Range:
-                    return DataType.BigInt;
+                    return DataType.SqlBigInt;
                 case Constants.TypeNameNumRange:
-                    return DataType.Numeric;
+                    return DataType.SqlNumeric;
                 case Constants.TypeNameTsRange:
-                    return DataType.DateTime;
+                    return DataType.SqlDateTime;
                 case Constants.TypeNameTstzRange:
-                    return DataType.DateTime;
+                    return DataType.SqlDateTime;
                 case Constants.TypeNameDateRange:
-                    return DataType.Date;       // *** TODO
+                    return DataType.SqlDate;       // *** TODO
                 case Constants.TypeNameOid:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 default:
                     return DataType.Unknown;
             }

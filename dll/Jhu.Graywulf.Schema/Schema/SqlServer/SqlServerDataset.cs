@@ -868,65 +868,65 @@ WHERE s.name = @schemaName AND o.name = @objectName
             switch (name.ToLowerInvariant().Trim())
             {
                 case Constants.TypeNameTinyInt:
-                    return DataType.TinyInt;
+                    return DataType.SqlTinyInt;
                 case Constants.TypeNameSmallInt:
-                    return DataType.SmallInt;
+                    return DataType.SqlSmallInt;
                 case Constants.TypeNameInt:
-                    return DataType.Int;
+                    return DataType.SqlInt;
                 case Constants.TypeNameBigInt:
-                    return DataType.BigInt;
+                    return DataType.SqlBigInt;
                 case Constants.TypeNameBit:
-                    return DataType.Bit;
+                    return DataType.SqlBit;
                 case Constants.TypeNameDecimal:
-                    return DataType.Decimal;
+                    return DataType.SqlDecimal;
                 case Constants.TypeNameSmallMoney:
-                    return DataType.SmallMoney;
+                    return DataType.SqlSmallMoney;
                 case Constants.TypeNameMoney:
-                    return DataType.Money;
+                    return DataType.SqlMoney;
                 case Constants.TypeNameNumeric:
-                    return DataType.Numeric;
+                    return DataType.SqlNumeric;
                 case Constants.TypeNameReal:
-                    return DataType.Real;
+                    return DataType.SqlReal;
                 case Constants.TypeNameFloat:
-                    return DataType.Float;
+                    return DataType.SqlFloat;
                 case Constants.TypeNameDate:
-                    return DataType.Date;
+                    return DataType.SqlDate;
                 case Constants.TypeNameTime:
-                    return DataType.Time;
+                    return DataType.SqlTime;
                 case Constants.TypeNameSmallDateTime:
-                    return DataType.SmallDateTime;
+                    return DataType.SqlSmallDateTime;
                 case Constants.TypeNameDateTime:
-                    return DataType.DateTime;
+                    return DataType.SqlDateTime;
                 case Constants.TypeNameDateTime2:
-                    return DataType.DateTime2;
+                    return DataType.SqlDateTime2;
                 case Constants.TypeNameDateTimeOffset:
-                    return DataType.DateTimeOffset;
+                    return DataType.SqlDateTimeOffset;
                 case Constants.TypeNameChar:
-                    return DataType.Char;
+                    return DataType.SqlChar;
                 case Constants.TypeNameVarChar:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 case Constants.TypeNameText:
-                    return DataType.Text;
+                    return DataType.SqlText;
                 case Constants.TypeNameNChar:
-                    return DataType.NChar;
+                    return DataType.SqlNChar;
                 case Constants.TypeNameNVarChar:
-                    return DataType.NVarChar;
+                    return DataType.SqlNVarChar;
                 case Constants.TypeNameNText:
-                    return DataType.NText;
+                    return DataType.SqlNText;
                 case Constants.TypeNameXml:
-                    return DataType.Xml;
+                    return DataType.SqlXml;
                 case Constants.TypeNameBinary:
-                    return DataType.Binary;
+                    return DataType.SqlBinary;
                 case Constants.TypeNameVarBinary:
-                    return DataType.VarBinary;
+                    return DataType.SqlVarBinary;
                 case Constants.TypeNameImage:
-                    return DataType.Image;
+                    return DataType.SqlImage;
                 case Constants.TypeNameSqlVariant:
                     return DataType.SqlVariant;
                 case Constants.TypeNameTimestamp:
-                    return DataType.Timestamp;
+                    return DataType.SqlTimestamp;
                 case Constants.TypeNameUniqueIdentifier:
-                    return DataType.UniqueIdentifier;
+                    return DataType.SqlUniqueIdentifier;
                 default:
                     throw new ArgumentOutOfRangeException("name");
             }

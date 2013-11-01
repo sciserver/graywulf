@@ -114,7 +114,7 @@ namespace Jhu.Graywulf.Schema
         {
             dr[SchemaTableColumn.ColumnName] = this.Name;
             dr[SchemaTableColumn.ColumnOrdinal] = this.ID;
-            dr[SchemaTableColumn.ColumnSize] = this.DataType.Size;
+            dr[SchemaTableColumn.ColumnSize] = this.DataType.Length;
             dr[SchemaTableColumn.NumericPrecision] = this.DataType.Precision;
             dr[SchemaTableColumn.NumericScale] = this.DataType.Scale;
             dr[SchemaTableColumn.IsUnique] = this.IsIdentity;    //
@@ -128,7 +128,7 @@ namespace Jhu.Graywulf.Schema
             dr[SchemaTableOptionalColumn.IsAutoIncrement] = this.IsIdentity;
             dr[SchemaTableOptionalColumn.IsRowVersion] = false;
             dr[SchemaTableOptionalColumn.IsHidden] = this.IsHidden;
-            dr[SchemaTableColumn.IsLong] = this.DataType.IsMax;
+            dr[SchemaTableColumn.IsLong] = this.DataType.IsMaxLength;
             dr[SchemaTableOptionalColumn.IsReadOnly] = true;
             dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = this.DataType.Name;
 

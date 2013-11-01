@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Format
                     IsNullable = false,
                     IsIdentity = true,
                     IsKey = true,
-                    DataType = DataType.BigInt
+                    DataType = DataType.SqlBigInt
                 };
             }
         }

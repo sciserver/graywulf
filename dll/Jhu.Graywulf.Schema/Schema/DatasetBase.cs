@@ -297,9 +297,9 @@ namespace Jhu.Graywulf.Schema
         {
             var t = GetTypeFromProviderSpecificName(name);
 
-            if (t.HasSize)
+            if (t.HasLength)
             {
-                t.Size = size;
+                t.Length = size;
             }
 
             t.Scale = scale;

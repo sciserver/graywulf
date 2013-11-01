@@ -363,7 +363,7 @@ DROP TABLE ##keys_{4};
                     columnlist += String.Format(
                         "{0} {1} {2} NULL",
                         column.Name,
-                        column.DataType.NameWithSize,
+                        column.DataType.NameWithLength,
                         column.IsNullable ? "" : "NOT");
 
                     cidx++;

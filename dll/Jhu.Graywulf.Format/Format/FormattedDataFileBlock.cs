@@ -97,9 +97,9 @@ namespace Jhu.Graywulf.Format
                 }
 
                 // Make column longer if necessary
-                if (cols[i].DataType.HasSize && cols[i].DataType.Size < size)
+                if (cols[i].DataType.HasLength && cols[i].DataType.Length < size)
                 {
-                    cols[i].DataType.Size = (short)size;
+                    cols[i].DataType.Length = (short)size;
                 }
             }
         }

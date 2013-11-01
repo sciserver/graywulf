@@ -731,65 +731,65 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
             switch (name.ToLowerInvariant().Trim())
             {
                 case Constants.TypeNameTinyInt:
-                    return DataType.TinyInt;
+                    return DataType.SqlTinyInt;
                 case Constants.TypeNameSmallInt:
-                    return DataType.SmallInt;
+                    return DataType.SqlSmallInt;
                 case Constants.TypeNameInt:
-                    return DataType.Int;
+                    return DataType.SqlInt;
                 case Constants.TypeNameMediumInt:
-                    return DataType.BigInt;
+                    return DataType.SqlBigInt;
                 case Constants.TypeNameBigInt:
-                    return DataType.BigInt;
+                    return DataType.SqlBigInt;
                 case Constants.TypeNameFloat:
-                    return DataType.Float;
+                    return DataType.SqlFloat;
                 case Constants.TypeNameDouble:
-                    return DataType.Real;
+                    return DataType.SqlReal;
                 case Constants.TypeNameDecimal:
-                    return DataType.Decimal;
+                    return DataType.SqlDecimal;
                 case Constants.TypeNameDate:
-                    return DataType.Date;
+                    return DataType.SqlDate;
                 case Constants.TypeNameYear:
-                    return DataType.TinyInt;
+                    return DataType.SqlTinyInt;
                 case Constants.TypeNameTime:
-                    return DataType.Time;
+                    return DataType.SqlTime;
                 case Constants.TypeNameDateTime:
-                    return DataType.DateTime;
+                    return DataType.SqlDateTime;
                 case Constants.TypeNameTimestamp:
-                    return DataType.Timestamp;
+                    return DataType.SqlTimestamp;
                 case Constants.TypeNameTinyText:
-                    return DataType.Text;
+                    return DataType.SqlText;
                 case Constants.TypeNameText:
-                    return DataType.Text;
+                    return DataType.SqlText;
                 case Constants.TypeNameMediumText:
-                    return DataType.Text;
+                    return DataType.SqlText;
                 case Constants.TypeNameLongText:
-                    return DataType.Text;
+                    return DataType.SqlText;
                 case Constants.TypeNameTinyBlob:
-                    return DataType.NVarChar;
+                    return DataType.SqlNVarChar;
                 case Constants.TypeNameBlob:
-                    return DataType.NVarChar;
+                    return DataType.SqlNVarChar;
                 case Constants.TypeNameMediumBlob:
-                    return DataType.NVarChar;
+                    return DataType.SqlNVarChar;
                 case Constants.TypeNameLongBlob:
-                    return DataType.NVarChar;
+                    return DataType.SqlNVarChar;
                 case Constants.TypeNameBit:
-                    return DataType.Bit;
+                    return DataType.SqlBit;
                 case Constants.TypeNameSet:
-                    return DataType.NVarChar;
+                    return DataType.SqlNVarChar;
                 case Constants.TypeNameEnum:
-                    return DataType.NVarChar;
+                    return DataType.SqlNVarChar;
                 case Constants.TypeNameBinary:
-                    return DataType.Binary;
+                    return DataType.SqlBinary;
                 case Constants.TypeNameVarBinary:
-                    return DataType.VarBinary;
+                    return DataType.SqlVarBinary;
                 case Constants.TypeNameGeometry:
-                    return DataType.NVarChar;
+                    return DataType.SqlNVarChar;
                 case Constants.TypeNameChar:
-                    return DataType.Char;
+                    return DataType.SqlChar;
                 case Constants.TypeNameVarChar:
-                    return DataType.VarChar;
+                    return DataType.SqlVarChar;
                 case Constants.TypeNameXml:
-                    return DataType.Xml;
+                    return DataType.SqlXml;
 
                 default:
                      return DataType.Unknown;
