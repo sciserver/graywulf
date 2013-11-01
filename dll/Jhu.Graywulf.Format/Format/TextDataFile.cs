@@ -11,9 +11,6 @@ namespace Jhu.Graywulf.Format
     [Serializable]
     public abstract class TextDataFile : FormattedDataFile, IDisposable
     {
-        #region Parser and formatter delegates
-
-        #endregion
         #region Member variables
 
         [NonSerialized]

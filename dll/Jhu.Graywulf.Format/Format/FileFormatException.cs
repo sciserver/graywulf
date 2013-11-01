@@ -12,6 +12,11 @@ namespace Jhu.Graywulf.Format
         {
         }
 
-        // TODO
+        public FileFormatException(string message)
+            : base(message)
+        {
+        }
+
+        // TODO: more constructors
     }
 }

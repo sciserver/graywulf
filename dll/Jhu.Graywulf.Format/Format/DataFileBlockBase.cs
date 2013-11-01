@@ -31,10 +31,21 @@ namespace Jhu.Graywulf.Format
             this.file = file;
         }
 
+        public DataFileBlockBase(DataFileBlockBase old)
+        {
+            CopyMembers(old);
+        }
+
         private void InitializeMembers()
         {
             this.file = null;
             this.columns = new List<DataFileColumn>();
+        }
+
+        private void CopyMembers(DataFileBlockBase old)
+        {
+            this.file = old.file;
+            this.columns = new List<DataFileColumn>(old.columns);
         }
 
         #endregion
@@ -81,7 +92,7 @@ namespace Jhu.Graywulf.Format
 
             if (file.FileMode == DataFileMode.Read && file.GenerateIdentityColumn)
             {
-                var col = new DataFileColumn("__ID", DataType.BigInt);  // *** TODO
+                var col = new DataFileColumn("__ID", DataType.SqlBigInt);  // *** TODO
                 col.IsIdentity = true;
                 this.columns.Add(col);
             }

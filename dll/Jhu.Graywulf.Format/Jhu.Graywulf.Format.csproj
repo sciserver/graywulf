@@ -74,6 +74,7 @@
     <Compile Include="Format\FormattedDataFileBlock.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Format\SeekForwardStream.cs" />
     <Compile Include="Format\TextDataFile.cs">
       <SubType>Code</SubType>
     </Compile>
