@@ -10,5 +10,6 @@ namespace Jhu.Graywulf.Types
         string Summary { get; set; }
         string Unit { get; set; }
         string Content { get; set; }
+        string Format { get; set; }
     }
 }

@@ -11,6 +11,7 @@ namespace Jhu.Graywulf.Schema
         private string summary;
         private string unit;
         private string content;
+        private string format;
 
         public string Summary
         {
@@ -30,6 +31,12 @@ namespace Jhu.Graywulf.Schema
             set { content = value; }
         }
 
+        public string Format
+        {
+            get { return format; }
+            set { format = value; }
+        }
+
         public VariableMetadata()
         {
             InitializeMembers();
@@ -45,6 +52,7 @@ namespace Jhu.Graywulf.Schema
             this.summary = String.Empty;
             this.unit = String.Empty;
             this.content = String.Empty;
+            this.format = "{0}";
         }
 
         private void CopyMembers(VariableMetadata old)
@@ -52,6 +60,7 @@ namespace Jhu.Graywulf.Schema
             this.summary = old.summary;
             this.unit = old.unit;
             this.content = old.content;
+            this.format = old.format;
         }
     }
 }

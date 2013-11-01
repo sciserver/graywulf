@@ -948,7 +948,7 @@ namespace Jhu.Graywulf.Types
         /// <summary>
         /// Is an array, currently no SQL Server support
         /// </summary>
-        private bool isArray;
+        private bool isSqlArray;
 
         /// <summary>
         /// Length of array, (minimum size, if variable length)
@@ -1089,10 +1089,10 @@ namespace Jhu.Graywulf.Types
         /// <summary>
         /// Gets if the type is an array.
         /// </summary>
-        public bool IsArray
+        public bool IsSqlArray
         {
-            get { return isArray; }
-            private set { isArray = value; }
+            get { return isSqlArray; }
+            private set { isSqlArray = value; }
         }
 
         /// <summary>
@@ -1242,7 +1242,7 @@ namespace Jhu.Graywulf.Types
             this.hasLength = false;
             this.maxLength = 0;
             this.isVarLength = false;
-            this.isArray = false;
+            this.isSqlArray = false;
             this.arrayLength = 0;
             this.isVarArrayLength = false;
         }
@@ -1259,7 +1259,7 @@ namespace Jhu.Graywulf.Types
             this.hasLength = old.hasLength;
             this.maxLength = old.maxLength;
             this.isVarLength = old.isVarLength;
-            this.isArray = old.isArray;
+            this.isSqlArray = old.isSqlArray;
             this.arrayLength = old.arrayLength;
             this.isVarArrayLength = old.isVarArrayLength;
         }
@@ -1278,7 +1278,7 @@ namespace Jhu.Graywulf.Types
                 // varchar(max), varbinary(max) - no known size
                 return -1;
             }
-            else if (IsArray)
+            else if (IsSqlArray)
             {
                 return arrayLength * byteSize;
             }

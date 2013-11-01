@@ -151,7 +151,7 @@ namespace Jhu.Graywulf.Format
                     line.Append(File.Separator);
                 }
 
-                line.Append(ColumnFormatters[i](values[i], Columns[i].Format));
+                line.Append(ColumnFormatters[i](values[i], Columns[i].Metadata.Format));
             }
 
             File.TextWriter.WriteLine(line.ToString());

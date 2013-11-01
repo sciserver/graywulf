@@ -32,7 +32,6 @@ namespace Jhu.Graywulf.Format
         private bool isIdentity;
         private bool isKey;
         private bool isHidden;
-        private string format;
 
         /// <summary>
         /// Ordinal ID of the objects (column, parameter, etc).
@@ -91,12 +90,6 @@ namespace Jhu.Graywulf.Format
             set { isHidden = value; }
         }
 
-        public string Format
-        {
-            get { return format; }
-            set { format = value; }
-        }
-
         public DataFileColumn()
         {
             InitializeMembers();
@@ -126,12 +119,26 @@ namespace Jhu.Graywulf.Format
 
         private void InitializeMembers()
         {
-            this.format = "{0}";
+            this.id = 0;
+            this.name = null;
+            this.dataType = null;
+            this.metadata = new DataFileColumnMetadata();
+            this.isNullable = false;
+            this.isIdentity = false;
+            this.isKey = false;
+            this.isHidden = false;
         }
 
         private void CopyMembers(DataFileColumn old)
         {
-            this.format = old.format;
+            this.id = old.id;
+            this.name = old.name;
+            this.dataType = old.dataType;
+            this.metadata = new DataFileColumnMetadata(old.metadata);
+            this.isNullable = old.isNullable;
+            this.isIdentity = old.isIdentity;
+            this.isKey = old.isKey;
+            this.isHidden = old.isHidden;
         }
     }
 }

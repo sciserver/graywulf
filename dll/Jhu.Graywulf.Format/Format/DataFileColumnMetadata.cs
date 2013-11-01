@@ -11,6 +11,9 @@ namespace Jhu.Graywulf.Format
         private string summary;
         private string unit;
         private string content;
+        private string format;
+
+        // TODO: add scale, zero offset and null
 
         public string Summary
         {
@@ -30,6 +33,12 @@ namespace Jhu.Graywulf.Format
             set { content = value; }
         }
 
+        public string Format
+        {
+            get { return format; }
+            set { format = value; }
+        }
+
         public DataFileColumnMetadata()
         {
             InitializeMembers();
@@ -45,6 +54,7 @@ namespace Jhu.Graywulf.Format
             this.summary = String.Empty;
             this.unit = String.Empty;
             this.content = String.Empty;
+            this.format = "{0}";
         }
 
         private void CopyMembers(DataFileColumnMetadata old)
@@ -52,6 +62,7 @@ namespace Jhu.Graywulf.Format
             this.summary = old.summary;
             this.unit = old.unit;
             this.content = old.content;
+            this.format = old.format;
         }
     }
 }
