@@ -46,6 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\StraightBitConverterTest.cs" />
+    <Compile Include="Types\SwapBitConverterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Types\Jhu.Graywulf.Types.csproj">
@@ -53,6 +55,7 @@
       <Name>Jhu.Graywulf.Types</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
