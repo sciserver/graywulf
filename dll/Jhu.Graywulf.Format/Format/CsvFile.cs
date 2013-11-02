@@ -55,8 +55,8 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Constructors and initializers
 
-        public CsvFile()
-            :base()
+        protected CsvFile()
+            : base()
         {
             InitializeMembers();
         }
@@ -69,73 +69,49 @@ namespace Jhu.Graywulf.Format
             Open();
         }
 
-        /*
-        public CsvFile(TextReader input)
-            : this(input, null, null)
-        {
-            // overload
-        }
-
-        public CsvFile(TextReader input, CultureInfo culture)
-            : this(input, null, culture)
-        {
-            // overload
-        }
-
-        public CsvFile(TextReader input, Encoding encoding)
-            : this(input, encoding, null)
-        {
-            // overload
-        }
-
-        public CsvFile(TextReader input, Encoding encoding, CultureInfo culture)
-            : base(input, encoding, culture)
-        {
-            InitializeMembers();
-        }
-
-        public CsvFile(TextWriter output)
-            : this(output, null, null)
-        {
-            // overload
-        }
-
-        public CsvFile(TextWriter output, CultureInfo culture)
-            : this(output, null, culture)
-        {
-            // overload
-        }
-
-        public CsvFile(TextWriter output, Encoding encoding)
-            : this(output, encoding, null)
-        {
-            // overload
-        }
-
-        public CsvFile(TextWriter output, Encoding encoding, CultureInfo culture)
-            : base(output, encoding, culture)
-        {
-            InitializeMembers();
-        }
-
         public CsvFile(Uri uri, DataFileMode fileMode)
-            : this(uri, fileMode, null, null)
+            :this(uri, fileMode, CompressionMethod.Automatic, Encoding.ASCII, CultureInfo.InvariantCulture)
         {
-            // oveload
+            // Overload
         }
 
-
-        public CsvFile(Uri uri, DataFileMode fileMode, Encoding encoding)
-            : this(uri, fileMode, encoding, null)
-        {
-            // overload
-        }
-
-        public CsvFile(Uri uri, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
-            : base(uri, fileMode, encoding, culture)
+        public CsvFile(Stream stream, DataFileMode fileMode, CompressionMethod compression, Encoding encoding, CultureInfo culture)
+            : base(stream, fileMode, compression, encoding, culture)
         {
             InitializeMembers();
-        }*/
+
+            Open();
+        }
+
+        public CsvFile(Stream stream, DataFileMode fileMode)
+            :this(stream, fileMode, CompressionMethod.None, Encoding.ASCII, CultureInfo.InvariantCulture)
+        {
+            // Overload
+        }
+
+        public CsvFile(TextReader inputReader, Encoding encoding, CultureInfo culture)
+            : base(inputReader, encoding, culture)
+        {
+            InitializeMembers();
+        }
+
+        public CsvFile(TextReader inputReader)
+            : this(inputReader, Encoding.ASCII, CultureInfo.InvariantCulture)
+        {
+            // Overload
+        }
+
+        public CsvFile(TextWriter outputWriter, Encoding encoding, CultureInfo culture)
+            : base(outputWriter, encoding, culture)
+        {
+            InitializeMembers();
+        }
+
+        public CsvFile(TextWriter outputWriter)
+            : this(outputWriter, Encoding.ASCII, CultureInfo.InvariantCulture)
+        {
+            // Overload
+        }
 
         private void InitializeMembers()
         {
@@ -144,6 +120,30 @@ namespace Jhu.Graywulf.Format
             this.comment = '#';
             this.quote = '"';
             this.separator = ',';
+        }
+
+        #endregion
+        #region Stream open and close
+
+        public override void Open(Stream stream, DataFileMode fileMode)
+        {
+            base.Open(stream, fileMode);
+
+            Open();
+        }
+
+        public override void Open(TextReader inputReader)
+        {
+            base.Open(inputReader);
+
+            Open();
+        }
+
+        public override void Open(TextWriter outputWriter)
+        {
+            base.Open(outputWriter);
+
+            Open();
         }
 
         #endregion

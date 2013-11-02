@@ -159,14 +159,18 @@ namespace Jhu.Graywulf.Format
         /// <param name="compression"></param>
         protected DataFileBase(Uri uri, DataFileMode fileMode, CompressionMethod compression)
         {
-            if (uri == null)
-            {
-                throw new ArgumentNullException("path");
-            }
-
             InitializeMembers();
 
             this.uri = uri;
+            this.fileMode = fileMode;
+            this.compression = compression;
+        }
+
+        protected DataFileBase(Stream stream, DataFileMode fileMode, CompressionMethod compression)
+        {
+            InitializeMembers();
+
+            this.baseStream = stream;
             this.fileMode = fileMode;
             this.compression = compression;
         }
@@ -258,24 +262,21 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-#if false
         /// <summary>
-        /// Opens a 
+        /// Opens a file by wrapping a stream.
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="mode"></param>
         /// <param name="compression"></param>
-        public virtual void Open(Stream stream, DataFileMode mode, CompressionMethod compression)
+        public virtual void Open(Stream stream, DataFileMode fileMode)
         {
             EnsureNotOpen();
 
             this.baseStream = stream;
             this.ownsBaseStream = false;
 
-            this.FileMode = mode;
-            this.compression = compression;
+            this.fileMode = fileMode;
         }
-#endif
 
         /// <summary>
         /// When overloaded in derived classes, opens the data file for reading

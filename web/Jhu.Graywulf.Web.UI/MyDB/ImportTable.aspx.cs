@@ -74,7 +74,8 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
             var source = FileFormatFactory.CreateFile(format);
 
-            source.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read, compression);
+            source.Compression = compression;
+            source.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read);
 
             var destination = CreateDestination("dbo", filename.Replace(".", "_"));
 
@@ -89,7 +90,8 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             CompressionMethod compression;
             Enum.TryParse<CompressionMethod>(CompressionMethod.SelectedValue, out compression);
 
-            source.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read, compression);
+            source.Compression = compression;
+            source.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read);
 
             var destination = CreateDestination(SchemaName.Text, TableName.Text);
 

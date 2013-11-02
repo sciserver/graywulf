@@ -12,16 +12,9 @@ namespace Jhu.Graywulf.Format
     public abstract class FormattedDataFile : DataFileBase
     {
         private Encoding encoding;
-        private bool detectEncoding;
         private CultureInfo culture;
         private NumberStyles numberStyle;
         private DateTimeStyles dateTimeStyle;
-
-        public bool DetectEncoding
-        {
-            get { return detectEncoding; }
-            set { detectEncoding = value; }
-        }
 
         public Encoding Encoding
         {
@@ -57,14 +50,21 @@ namespace Jhu.Graywulf.Format
         {
             InitializeMembers();
 
-            this.detectEncoding = false;
+            this.encoding = encoding;
+            this.culture = culture;
+        }
+
+        protected FormattedDataFile(Stream stream, DataFileMode fileMode, CompressionMethod compression, Encoding encoding, CultureInfo culture)
+            : base(stream, fileMode, compression)
+        {
+            InitializeMembers();
+
             this.encoding = encoding;
             this.culture = culture;
         }
 
         private void InitializeMembers()
         {
-            this.detectEncoding = true;
             this.encoding = null;
             this.culture = null;
             this.numberStyle = NumberStyles.Float;

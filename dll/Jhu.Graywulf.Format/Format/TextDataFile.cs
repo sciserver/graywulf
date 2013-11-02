@@ -79,6 +79,28 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
+        protected TextDataFile(Stream stream, DataFileMode fileMode, CompressionMethod compression, Encoding encoding, CultureInfo culture)
+            : base(stream, fileMode, compression, encoding, culture)
+        {
+            InitializeMembers();
+        }
+
+        protected TextDataFile(TextReader inputReader, Encoding encoding, CultureInfo culture)
+            : base((Stream)null, DataFileMode.Read, CompressionMethod.None, encoding, culture)
+        {
+            InitializeMembers();
+
+            this.inputReader = inputReader;
+        }
+
+        protected TextDataFile(TextWriter outputWriter, Encoding encoding, CultureInfo culture)
+            : base((Stream)null, DataFileMode.Write, CompressionMethod.None, encoding, culture)
+        {
+            InitializeMembers();
+
+            this.outputWriter = outputWriter;
+        }
+
         private void InitializeMembers()
         {
             this.inputReader = null;
@@ -101,6 +123,20 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Stream open and close
 
+        public virtual void Open(TextReader inputReader)
+        {
+            base.Open(null, DataFileMode.Read);
+
+            this.inputReader = inputReader;
+        }
+
+        public virtual void Open(TextWriter outputWriter)
+        {
+            base.Open(null, DataFileMode.Write);
+
+            this.outputWriter = outputWriter;
+        }
+
         protected override void EnsureNotOpen()
         {
             if (ownsInputReader && inputReader != null ||
@@ -109,51 +145,6 @@ namespace Jhu.Graywulf.Format
                 throw new InvalidOperationException();
             }
         }
-
-        /*
-        public void Open(TextReader input)
-        {
-            Open(input, null);
-        }
-
-        public void Open(TextReader input, CultureInfo culture)
-        {
-            EnsureNotOpen();
-
-            this.FileMode = DataFileMode.Read;
-
-            this.inputReader = input;
-            this.ownsInputReader = false;
-            this.Culture = culture;
-        }
-
-        public void Open(TextWriter output)
-        {
-            Open(output, null, null);
-        }
-
-        public void Open(TextWriter output, Encoding encoding)
-        {
-            Open(output, encoding, null);
-        }
-
-        public void Open(TextWriter output, CultureInfo culture)
-        {
-            Open(output, null, culture);
-        }
-
-        public void Open(TextWriter output, Encoding encoding, CultureInfo culture)
-        {
-            EnsureNotOpen();
-
-            this.FileMode = DataFileMode.Write;
-
-            this.outputWriter = output;
-            this.ownsOutputWriter = false;
-            this.Culture = culture;
-            this.Encoding = encoding;
-        }
-         * */
 
         /// <summary>
         /// 

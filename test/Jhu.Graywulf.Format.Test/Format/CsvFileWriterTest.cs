@@ -14,8 +14,6 @@ namespace Jhu.Graywulf.Format
     [TestClass]
     public class CsvFileWriterTest
     {
-        private System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.InvariantCulture;
-
         [TestMethod]
         public void SimpleWriterTest()
         {
@@ -31,7 +29,7 @@ namespace Jhu.Graywulf.Format
                     using (var dr = cmd.ExecuteReader())
                     {
 
-                        var csv = new CsvFile(w, culture);
+                        var csv = new CsvFile(w);
                         csv.WriteFromDataReader(dr);
                     }
                 }

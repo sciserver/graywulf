@@ -13,8 +13,6 @@ namespace Jhu.Graywulf.Format
     [TestClass]
     public class CsvFileReaderTest
     {
-        private System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.InvariantCulture;
-
         FileDataReader OpenSimpleReader(string csv)
         {
             var f = new CsvFile(new StringReader(csv));
@@ -112,7 +110,7 @@ namespace Jhu.Graywulf.Format
             var csv =
 @"1, 16000, 12345678, 12345678901234, 123.45, 1.1234567e5, 0.123456789012e-12,text";
 
-            var f = new CsvFile(new StringReader(csv), culture);
+            var f = new CsvFile(new StringReader(csv));
             f.ColumnNamesInFirstLine = false;
             f.AutoDetectColumns = true;
             f.AutoDetectColumnsCount = 100;
@@ -212,7 +210,7 @@ namespace Jhu.Graywulf.Format
 testline
 1, 16000, 12345678, 12345678901234, 123.45, 1.1234567e5, 0.123456789012e-12,text";
 
-            var f = new CsvFile(new StringReader(csv), culture);
+            var f = new CsvFile(new StringReader(csv));
             f.SkipLinesCount = 2;
             f.ColumnNamesInFirstLine = false;
             f.AutoDetectColumns = true;
@@ -245,7 +243,7 @@ testline
 @"#first, second, third, fourth
 1,2,3,4";
 
-            var f = new CsvFile(new StringReader(csv), culture);
+            var f = new CsvFile(new StringReader(csv));
             f.ColumnNamesInFirstLine = true;
             f.AutoDetectColumns = true;
             f.AutoDetectColumnsCount = 100;
