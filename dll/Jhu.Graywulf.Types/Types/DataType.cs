@@ -10,7 +10,6 @@ namespace Jhu.Graywulf.Types
     [Serializable]
     public class DataType : ICloneable
     {
-        public delegate int ReadFromBytesDelegate(BitConverterBase converter, byte[] buffer, int startIndex, int count, out object value);
 
         #region Static properties to directly create types
 
@@ -962,11 +961,6 @@ namespace Jhu.Graywulf.Types
         /// </summary>
         private bool isVarArrayLength;
 
-        /// <summary>
-        /// Delegate to read value from a byte buffer
-        /// </summary>
-        private ReadFromBytesDelegate readFromBytes;
-
         #endregion
         #region Properties
 
@@ -1105,7 +1099,7 @@ namespace Jhu.Graywulf.Types
         /// <summary>
         /// Gets or sets the array size.
         /// </summary>
-        public int ArraySize
+        public int ArrayLength
         {
             get { return arrayLength; }
             set { arrayLength = value; }
@@ -1224,19 +1218,6 @@ namespace Jhu.Graywulf.Types
             }
         }
 
-        public ReadFromBytesDelegate ReadFromBytes
-        {
-            get
-            {
-                if (readFromBytes == null)
-                {
-                    readFromBytes = CreateReadFromBytesDelegate();
-                }
-
-                return readFromBytes;
-            }
-        }
-
         #endregion
         #region Constructors and initializers
 
@@ -1265,7 +1246,6 @@ namespace Jhu.Graywulf.Types
             this.isSqlArray = false;
             this.arrayLength = 0;
             this.isVarArrayLength = false;
-            this.readFromBytes = null;
         }
 
         private void CopyMembers(DataType old)
@@ -1283,7 +1263,6 @@ namespace Jhu.Graywulf.Types
             this.isSqlArray = old.isSqlArray;
             this.arrayLength = old.arrayLength;
             this.isVarArrayLength = old.isVarArrayLength;
-            this.readFromBytes = null;
         }
 
         public object Clone()
@@ -1292,327 +1271,6 @@ namespace Jhu.Graywulf.Types
         }
 
         #endregion
-
-        public int GetBinarySize()
-        {
-            if (IsMaxLength)
-            {
-                // varchar(max), varbinary(max) - no known size
-                return -1;
-            }
-            else if (IsSqlArray)
-            {
-                return arrayLength * byteSize;
-            }
-            else
-            {
-                return byteSize;
-            }
-        }
-
-        private ReadFromBytesDelegate CreateReadFromBytesDelegate()
-        {
-            if (!HasLength && !IsSqlArray)
-            {
-                // Scalars
-                if (type == typeof(Boolean))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Boolean val;
-                        var res = converter.ToBoolean(bytes, startIndex, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(SByte))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        SByte val;
-                        var res = converter.ToSByte(bytes, startIndex, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(Byte))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Byte val;
-                        var res = converter.ToByte(bytes, startIndex, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(Char))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Char val;
-                        var res = converter.ToChar(bytes, startIndex, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(Int16))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Int16 val;
-                        var res = converter.ToInt16(bytes, startIndex, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(UInt16))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        UInt16 val;
-                        var res = converter.ToUInt16(bytes, startIndex, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(Int32))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Int32 val;
-                        var res = converter.ToInt32(bytes, startIndex, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(UInt32))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        UInt32 val;
-                        var res = converter.ToUInt32(bytes, startIndex, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(Int64))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Int64 val;
-                        var res = converter.ToInt64(bytes, startIndex, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(UInt64))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        UInt64 val;
-                        var res = converter.ToUInt64(bytes, startIndex, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(Single))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Single val;
-                        var res = converter.ToSingle(bytes, startIndex, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(Double))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Double val;
-                        var res = converter.ToDouble(bytes, startIndex, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(SingleComplex))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        SingleComplex val;
-                        var res = converter.ToSingleComplex(bytes, startIndex, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(DoubleComplex))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        DoubleComplex val;
-                        var res = converter.ToDoubleComplex(bytes, startIndex, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-
-                // TODO: date time etc.
-            }
-            else
-            {
-                // Arrays
-                if (type == typeof(Boolean))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Boolean[] val;
-                        var res = converter.ToBoolean(bytes, startIndex, count, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(SByte))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        SByte[] val;
-                        var res = converter.ToSByte(bytes, startIndex, count, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(Byte))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Byte[] val;
-                        var res = converter.ToByte(bytes, startIndex, count, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(Char))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Char[] val;
-                        var res = converter.ToChar(bytes, startIndex, count, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(Int16))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Int16[] val;
-                        var res = converter.ToInt16(bytes, startIndex, count, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(UInt16))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        UInt16[] val;
-                        var res = converter.ToUInt16(bytes, startIndex, count, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(Int32))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Int32[] val;
-                        var res = converter.ToInt32(bytes, startIndex, count, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(UInt32))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        UInt32[] val;
-                        var res = converter.ToUInt32(bytes, startIndex, count, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(Int64))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Int64[] val;
-                        var res = converter.ToInt64(bytes, startIndex, count, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(UInt64))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        UInt64[] val;
-                        var res = converter.ToUInt64(bytes, startIndex, count, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(Single))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Single[] val;
-                        var res = converter.ToSingle(bytes, startIndex, count, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(Double))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        Double[] val;
-                        var res = converter.ToDouble(bytes, startIndex, count, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(SingleComplex))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        SingleComplex[] val;
-                        var res = converter.ToSingleComplex(bytes, startIndex, count, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else if (type == typeof(DoubleComplex))
-                {
-                    return delegate(BitConverterBase converter, byte[] bytes, int startIndex, int count, out object value)
-                    {
-                        DoubleComplex[] val;
-                        var res = converter.ToDoubleComplex(bytes, startIndex, count, out val);
-                        value = val;
-                        return res;
-                    };
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-
-                // TODO: implement, maybe, string
-            }
-        }
 
         public void CopyToSchemaTableRow(DataRow dr)
         {
