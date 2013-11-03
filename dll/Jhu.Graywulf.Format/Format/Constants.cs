@@ -8,12 +8,12 @@ namespace Jhu.Graywulf.Format
 {
     public static class Constants
     {
-        public static readonly Map<CompressionMethod, string> CompressionExtensions = new Map<CompressionMethod,string>()
+        public static readonly Map<string, CompressionMethod> CompressionExtensions = new Map<string, CompressionMethod>(StringComparer.InvariantCultureIgnoreCase)
         {
-            { CompressionMethod.None, "" },
-            { CompressionMethod.BZip2, ".bz2" },
-            { CompressionMethod.GZip, ".gz" },
-            { CompressionMethod.Zip, ".zip" },
+            { "", CompressionMethod.None  },
+            { ".bz2", CompressionMethod.BZip2 },
+            { ".gz", CompressionMethod.GZip },
+            { ".zip", CompressionMethod.Zip },
         };
     }
 }

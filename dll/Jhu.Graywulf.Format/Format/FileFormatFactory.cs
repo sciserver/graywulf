@@ -8,59 +8,93 @@ using System.IO;
 
 namespace Jhu.Graywulf.Format
 {
+    /// <summary>
+    /// Implements functionality to return a list of supported file formats
+    /// and figure out file format from extensions.
+    /// </summary>
     public class FileFormatFactory
     {
+        #region Static utility functions
+
+        public static string GetPathFromUri(Uri uri)
+        {
+            return uri.IsAbsoluteUri ? uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped) : uri.ToString();
+        }
+
+        /// <summary>
+        /// Returns the file extension by stripping of the extension of the
+        /// compressed file, if any.
+        /// </summary>
+        public static void GetExtensionWithoutCompression(Uri uri, out string path, out string extension, out CompressionMethod compressionMethod)
+        {
+            path = GetPathFromUri(uri);
+            extension = Path.GetExtension(path);
+
+            if (Constants.CompressionExtensions.ContainsKey(extension))
+            {
+                compressionMethod = Constants.CompressionExtensions[extension];
+                path = Path.GetFileNameWithoutExtension(path);
+                extension = Path.GetExtension(path);
+            }
+            else
+            {
+                compressionMethod = CompressionMethod.None;
+            }
+        }
+
+        /// <summary>
+        /// Returns a file object based on the format description.
+        /// </summary>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        public static DataFileBase CreateFile(FileFormatDescription format)
+        {
+            var c = format.Type.GetConstructor(Type.EmptyTypes);
+            var f = (DataFileBase)c.Invoke(null);
+
+            return f;
+        }
+
+        #endregion
+        #region Constructors and initializers
+
         public FileFormatFactory()
         {
         }
 
-        private FileFormatDescription GetFileFormatInternal(Type type)
-        {
-            var f = (DataFileBase)FormatterServices.GetUninitializedObject(type);
-            var fd = f.Description;
+        #endregion
 
+        /// <summary>
+        /// Initializes a file object descriptios based on file type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private FileFormatDescription GetFileFormatDescription(Type type)
+        {
+            var f = (DataFileBase)Activator.CreateInstance(type);
+            
+            var fd = f.Description;
             fd.Type = type;
 
             return fd;
         }
 
-        public Dictionary<string, FileFormatDescription> GetFileFormatDescriptions()
+        /// <summary>
+        /// Returns an initialized file format descriptor.
+        /// </summary>
+        /// <param name="typeName"></param>
+        /// <returns></returns>
+        public FileFormatDescription GetFileFormatDescription(string typeName)
         {
-            var res = new Dictionary<string, FileFormatDescription>()
-            {
-                { typeof(CsvFile).FullName, GetFileFormatInternal(typeof(CsvFile)) }
-                // TODO: add new file formats here
-            };
-
-            return res;
+            var type = Type.GetType(typeName);
+            return GetFileFormatDescription(type);
         }
 
-        public FileFormatDescription GetFileFormatDescription(string key)
+        public FileFormatDescription GetFileFormatDescription(Uri uri, out string path, out string extension, out CompressionMethod compression)
         {
-            var t = Type.GetType(key);
-            return GetFileFormatInternal(t);
-        }
+            GetExtensionWithoutCompression(uri, out path, out extension, out compression);
 
-        public FileFormatDescription GetFormatFromFilename(string path, out string filename, out string extension, out CompressionMethod compression)
-        {
-            compression = CompressionMethod.None;
-
-            extension = Path.GetExtension(path);
-            filename = Path.GetFileNameWithoutExtension(path);
-
-            // Check if extension refers to a compressed file
-            foreach (var e in Jhu.Graywulf.Format.Constants.CompressionExtensions)
-            {
-                if (StringComparer.InvariantCultureIgnoreCase.Compare(extension, e.Value) == 0)
-                {
-                    compression = e.Key;
-
-                    extension = Path.GetExtension(filename);
-                    filename = Path.GetFileNameWithoutExtension(filename);
-                    break;
-                }
-            }
-
+            // FInd file format with the appropriate extensions
             FileFormatDescription format = null;
             foreach (var f in GetFileFormatDescriptions())
             {
@@ -74,12 +108,34 @@ namespace Jhu.Graywulf.Format
             return format;
         }
 
-        public DataFileBase CreateFile(FileFormatDescription format)
+        /// <summary>
+        /// When overriden in derived classes, collects supported file types in
+        /// a collection.
+        /// </summary>
+        /// <param name="fileTypes"></param>
+        protected virtual void OnCreateFileFormatDescriptions(HashSet<Type> fileTypes)
         {
-            var c = format.Type.GetConstructor(Type.EmptyTypes);
-            var f = (DataFileBase)c.Invoke(null);
+            fileTypes.Add(typeof(CsvFile));
+        }
 
-            return f;
+        /// <summary>
+        /// Returns a list of supported file formats.
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, FileFormatDescription> GetFileFormatDescriptions()
+        {
+            // Gather file types
+            var fileTypes = new HashSet<Type>();
+            OnCreateFileFormatDescriptions(fileTypes);
+
+            // Return them as a dictionary keys by typenames.
+            var res = new Dictionary<string, FileFormatDescription>();
+            foreach (var t in fileTypes)
+            {
+                res.Add(t.FullName, GetFileFormatDescription(t));
+            }
+
+            return res;
         }
     }
 }

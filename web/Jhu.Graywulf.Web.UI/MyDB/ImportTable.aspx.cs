@@ -66,8 +66,8 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             CompressionMethod compression;
 
             // Determine file format
-            var format = FileFormatFactory.GetFormatFromFilename(
-                ImportedFile.PostedFile.FileName,
+            var format = FileFormatFactory.GetFileFormatDescription(
+                new Uri(ImportedFile.PostedFile.FileName),
                 out filename,
                 out extension,
                 out compression);

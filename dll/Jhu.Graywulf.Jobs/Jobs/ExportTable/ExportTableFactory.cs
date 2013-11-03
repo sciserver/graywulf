@@ -66,15 +66,11 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             var et = new ExportTable();
 
             et.Source = source;
-            // TODO: delete
-            //et.DatabaseInstanceName = databaseInstanceName;
-            //et.SchemaName = schemaName;
-            //et.TableName = tableName;
 
-            // TODO: change this to support different file formats
+            // TODO: change this to support different compression formats
             path = Path.Combine(path, String.Format("{0}_{1}_{2}{3}.gz", Context.UserName, job.JobID, source.ObjectName, format.DefaultExtension));
 
-            var destination = new FileFormatFactory().CreateFile(format);
+            var destination = FileFormatFactory.CreateFile(format);
             destination.Uri = new Uri(String.Format("file:///{0}", path));
             destination.FileMode = DataFileMode.Write;
             destination.Compression = CompressionMethod.GZip;
