@@ -130,22 +130,22 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::System.Web.UI.WebControls.DropDownList CompressionMethod;
         
         /// <summary>
-        /// ColumnNamesInFirstLineRow control.
+        /// DetectColumnNamesRow control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow ColumnNamesInFirstLineRow;
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow DetectColumnNamesRow;
         
         /// <summary>
-        /// ColumnNamesInFirstLine control.
+        /// DetectColumnNames control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ColumnNamesInFirstLine;
+        protected global::System.Web.UI.WebControls.CheckBox DetectColumnNames;
         
         /// <summary>
         /// GenerateIdentityRow control.

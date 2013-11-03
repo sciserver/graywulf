@@ -7,9 +7,116 @@ namespace Jhu.Graywulf.Format
 {
     public class FileFormatDescription
     {
-        public Type Type { get; set; }
-        public string DisplayName { get; set; }
-        public string DefaultExtension { get; set; }
-        public bool CanCompress { get; set; }
+        /// <summary>
+        /// .Net type implementing the file format
+        /// </summary>
+        private Type type;
+
+        /// <summary>
+        /// Name of file format
+        /// </summary>
+        private string displayName;
+
+        /// <summary>
+        /// Default extension of file format.
+        /// </summary>
+        private string defaultExtension;
+
+        /// <summary>
+        /// File format class can read data.
+        /// </summary>
+        private bool canRead;
+
+        /// <summary>
+        /// File format class can write data.
+        /// </summary>
+        private bool canWrite;
+
+        /// <summary>
+        /// File format class can detect column names (CSV, for instance)
+        /// </summary>
+        private bool canDetectColumnNames;
+
+        /// <summary>
+        /// File format supports multiple tables in a single file.
+        /// </summary>
+        private bool multipleDatasets;
+
+        /// <summary>
+        /// File format is inherently compressed
+        /// </summary>
+        private bool isCompressed;
+
+        public Type Type
+        {
+            get { return type; }
+            set { type = value; }
+        }
+
+        public string DisplayName
+        {
+            get { return displayName; }
+            set { displayName = value; }
+        }
+
+        public string DefaultExtension
+        {
+            get { return defaultExtension; }
+            set { defaultExtension = value; }
+        }
+
+        public bool CanRead
+        {
+            get { return canRead; }
+            set { canRead = value; }
+        }
+
+        public bool CanWrite
+        {
+            get { return canWrite; }
+            set { canWrite = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether file format class can detect column names.
+        /// </summary>
+        /// <remarks>
+        /// This must be set to false for all file formats that contain detailed
+        /// schema description, but true for files that don't, e.g. CSV.
+        /// </remarks>
+        public bool CanDetectColumnNames
+        {
+            get { return canDetectColumnNames; }
+            set { canDetectColumnNames = value; }
+        }
+
+        public bool MultipleDatasets
+        {
+            get { return multipleDatasets; }
+            set { multipleDatasets = value; }
+        }
+
+        public bool IsCompressed
+        {
+            get { return isCompressed; }
+            set { isCompressed = value; }
+        }
+
+        public FileFormatDescription()
+        {
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
+        {
+            this.type = null;
+            this.displayName = null;
+            this.defaultExtension = null;
+            this.canRead = false;
+            this.canWrite = false;
+            this.canDetectColumnNames = false;
+            this.multipleDatasets = false;
+            this.isCompressed = false;
+        }
     }
 }

@@ -28,8 +28,12 @@ namespace Jhu.Graywulf.Format
                 return new FileFormatDescription()
                     {
                         DisplayName = FileFormatNames.Jhu_Graywulf_Format_CsvFile,
-                        DefaultExtension = ".csv",
-                        CanCompress = true,
+                        DefaultExtension = Constants.FileExtensionCsv,
+                        CanRead = true,
+                        CanWrite = true,
+                        CanDetectColumnNames = true,
+                        MultipleDatasets = false,
+                        IsCompressed = false,
                     };
             }
         }

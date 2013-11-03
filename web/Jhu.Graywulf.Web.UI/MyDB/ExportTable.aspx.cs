@@ -40,8 +40,11 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
                 foreach (var df in dfs)
                 {
-                    var li = new ListItem(df.Value.DisplayName, df.Key);
-                    FileFormat.Items.Add(li);
+                    if (df.Value.CanWrite)
+                    {
+                        var li = new ListItem(df.Value.DisplayName, df.Key);
+                        FileFormat.Items.Add(li);
+                    }
                 }
 
                 string objid = Request.QueryString["objid"];
@@ -86,8 +89,6 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
-            // TODO
             Response.Redirect(OriginalReferer);
         }
     }

@@ -331,10 +331,6 @@
     <Content Include="Web.original.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\skyquery\dll\Jhu.SkyQuery\Jhu.SkyQuery.csproj">
-      <Project>{2887F181-7F61-4DF5-BD89-2800503D5F84}</Project>
-      <Name>Jhu.SkyQuery</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
       <Project>{57392DA3-E280-48EE-80C8-64E09FD8AFB5}</Project>
       <Name>Jhu.Graywulf.Activities</Name>

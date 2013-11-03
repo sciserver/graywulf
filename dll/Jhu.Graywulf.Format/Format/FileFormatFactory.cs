@@ -71,7 +71,7 @@ namespace Jhu.Graywulf.Format
         /// <returns></returns>
         private FileFormatDescription GetFileFormatDescription(Type type)
         {
-            var f = (DataFileBase)Activator.CreateInstance(type);
+            var f = (DataFileBase)Activator.CreateInstance(type, true);
             
             var fd = f.Description;
             fd.Type = type;
@@ -86,8 +86,7 @@ namespace Jhu.Graywulf.Format
         /// <returns></returns>
         public FileFormatDescription GetFileFormatDescription(string typeName)
         {
-            var type = Type.GetType(typeName);
-            return GetFileFormatDescription(type);
+            return GetFileFormatDescriptions()[typeName];
         }
 
         public FileFormatDescription GetFileFormatDescription(Uri uri, out string path, out string extension, out CompressionMethod compression)
