@@ -139,8 +139,8 @@ namespace Jhu.Graywulf.Format
 
         protected override void EnsureNotOpen()
         {
-            if (ownsInputReader && inputReader != null ||
-                ownsOutputWriter && outputWriter != null)
+            if ((ownsInputReader && inputReader != null) ||
+                (ownsOutputWriter && outputWriter != null))
             {
                 throw new InvalidOperationException();
             }
@@ -155,10 +155,10 @@ namespace Jhu.Graywulf.Format
         /// </remarks>
         protected override void OpenForRead()
         {
-            base.OpenForRead();
-
             if (inputReader == null)
             {
+                base.OpenForRead();
+
                 // Open text reader
                 if (base.Encoding == null)
                 {
@@ -175,10 +175,10 @@ namespace Jhu.Graywulf.Format
 
         protected override void OpenForWrite()
         {
-            base.OpenForWrite();
-
             if (outputWriter == null)
             {
+                base.OpenForWrite();
+
                 // Open TextWriter
                 if (base.Encoding == null)
                 {

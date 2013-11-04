@@ -244,7 +244,7 @@ namespace Jhu.Graywulf.Format
                     return r;
                 };
             }
-            else if (t == typeof(bool))
+            else if (t == typeof(Boolean))
             {
                 // *** TODO: parse numbers!
                 return delegate(string s, out object p)
@@ -255,7 +255,7 @@ namespace Jhu.Graywulf.Format
                     return r;
                 };
             }
-            else if (t == typeof(float))
+            else if (t == typeof(Single))
             {
                 return delegate(string s, out object p)
                 {
@@ -265,7 +265,7 @@ namespace Jhu.Graywulf.Format
                     return r;
                 };
             }
-            else if (t == typeof(double))
+            else if (t == typeof(Double))
             {
                 return delegate(string s, out object p)
                 {
@@ -275,7 +275,7 @@ namespace Jhu.Graywulf.Format
                     return r;
                 };
             }
-            else if (t == typeof(decimal))
+            else if (t == typeof(Decimal))
             {
                 return delegate(string s, out object p)
                 {
@@ -285,7 +285,7 @@ namespace Jhu.Graywulf.Format
                     return r;
                 };
             }
-            else if (t == typeof(char))
+            else if (t == typeof(Char))
             {
                 return delegate(string s, out object p)
                 {
@@ -301,7 +301,7 @@ namespace Jhu.Graywulf.Format
                     }
                 };
             }
-            else if (t == typeof(string))
+            else if (t == typeof(String))
             {
                 return delegate(string s, out object p)
                 {
@@ -333,7 +333,7 @@ namespace Jhu.Graywulf.Format
             throw new NotImplementedException();
         }
 
-        private FormatterDelegate GetFormatterDelegate(DataFileColumn column)
+        protected virtual FormatterDelegate GetFormatterDelegate(DataFileColumn column)
         {
             var t = column.DataType.Type;
 
@@ -393,7 +393,7 @@ namespace Jhu.Graywulf.Format
                     return String.Format(File.Culture, f, (UInt64)o);
                 };
             }
-            else if (t == typeof(bool))
+            else if (t == typeof(Boolean))
             {
                 // TODO: use numbers?
                 return delegate(object o, string f)
@@ -401,35 +401,35 @@ namespace Jhu.Graywulf.Format
                     return String.Format(File.Culture, f, (bool)o);
                 };
             }
-            else if (t == typeof(float))
+            else if (t == typeof(Single))
             {
                 return delegate(object o, string f)
                 {
                     return String.Format(File.Culture, f, (float)o);
                 };
             }
-            else if (t == typeof(double))
+            else if (t == typeof(Double))
             {
                 return delegate(object o, string f)
                 {
                     return String.Format(File.Culture, f, (double)o);
                 };
             }
-            else if (t == typeof(decimal))
+            else if (t == typeof(Decimal))
             {
                 return delegate(object o, string f)
                 {
                     return String.Format(File.Culture, f, (decimal)o);
                 };
             }
-            else if (t == typeof(char))
+            else if (t == typeof(Char))
             {
                 return delegate(object o, string f)
                 {
                     return String.Format(File.Culture, f, (string)o);
                 };
             }
-            else if (t == typeof(string))
+            else if (t == typeof(String))
             {
                 return delegate(object o, string f)
                 {

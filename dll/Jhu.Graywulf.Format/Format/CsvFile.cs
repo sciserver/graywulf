@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Format
     public class CsvFile : TextDataFile, IDisposable
     {
         [NonSerialized]
-        private bool nextResultsCalled;
+        private bool isFirstBlock;
 
         private char comment;
         private char quote;
@@ -73,8 +73,14 @@ namespace Jhu.Graywulf.Format
             Open();
         }
 
+        public CsvFile(Uri uri, DataFileMode fileMode, CompressionMethod compression)
+            : this(uri, fileMode, compression, Encoding.ASCII, CultureInfo.InvariantCulture)
+        {
+            // Overload
+        }
+
         public CsvFile(Uri uri, DataFileMode fileMode)
-            :this(uri, fileMode, CompressionMethod.Automatic, Encoding.ASCII, CultureInfo.InvariantCulture)
+            : this(uri, fileMode, CompressionMethod.Automatic)
         {
             // Overload
         }
@@ -88,7 +94,7 @@ namespace Jhu.Graywulf.Format
         }
 
         public CsvFile(Stream stream, DataFileMode fileMode)
-            :this(stream, fileMode, CompressionMethod.None, Encoding.ASCII, CultureInfo.InvariantCulture)
+            : this(stream, fileMode, CompressionMethod.None, Encoding.ASCII, CultureInfo.InvariantCulture)
         {
             // Overload
         }
@@ -119,7 +125,7 @@ namespace Jhu.Graywulf.Format
 
         private void InitializeMembers()
         {
-            this.nextResultsCalled = false;
+            this.isFirstBlock = true;
 
             this.comment = '#';
             this.quote = '"';
@@ -161,12 +167,12 @@ namespace Jhu.Graywulf.Format
         protected override DataFileBlockBase OnReadNextBlock(DataFileBlockBase block)
         {
             // Only allow calling this function once
-            if (nextResultsCalled)
+            if (!isFirstBlock)
             {
                 return null;
             }
 
-            nextResultsCalled = true;
+            isFirstBlock = false;
 
             // Create a new block object, if necessary
             return block ?? new CsvFileBlock(this);
@@ -177,9 +183,22 @@ namespace Jhu.Graywulf.Format
             // No footer in csv files
         }
 
+        /// <summary>
+        /// Initializes writing the next block.
+        /// </summary>
+        /// <param name="block"></param>
+        /// <param name="dr"></param>
+        /// <returns></returns>
+        /// If next block
         protected override DataFileBlockBase OnWriteNextBlock(DataFileBlockBase block, IDataReader dr)
         {
-            throw new NotImplementedException();
+            if (!isFirstBlock)
+            {
+                throw new InvalidOperationException();
+                // CSV files can contain a single file block only
+            }
+
+            return block ?? new CsvFileBlock(this);
         }
 
         #endregion
