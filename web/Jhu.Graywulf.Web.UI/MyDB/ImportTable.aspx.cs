@@ -17,13 +17,15 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (!IsPostBack)
             {
-                // TODO: file format factory goes into federation settings
                 var dfs = FileFormatFactory.GetFileFormatDescriptions();
 
                 foreach (var df in dfs)
                 {
-                    var li = new ListItem(df.Value.DisplayName, df.Key);
-                    FileFormat.Items.Add(li);
+                    if (df.Value.CanRead)
+                    {
+                        var li = new ListItem(df.Value.DisplayName, df.Key);
+                        FileFormat.Items.Add(li);
+                    }
                 }
 
                 RefreshForm();
@@ -77,7 +79,8 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             source.Compression = compression;
             source.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read);
 
-            var destination = CreateDestination("dbo", filename.Replace(".", "_"));
+            var destination = CreateDestination("dbo", filename.Replace(".", "_")); // TODO: get 'dbo' from dataset description
+            
 
             return new DataFileImporter(source, destination);
         }
@@ -101,18 +104,9 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         protected void RefreshForm()
         {
             var format = FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
-            if (format.Type.IsSubclassOf(typeof(TextDataFile)))
-            {
-                ColumnNamesInFirstLineRow.Visible = true;
-                GenerateIdentityRow.Visible = true;
-                CompressedRow.Visible = true;
-            }
-            else
-            {
-                ColumnNamesInFirstLineRow.Visible = false;
-                GenerateIdentityRow.Visible = false;
-                CompressedRow.Visible = false;
-            }
+
+            DetectColumnNamesRow.Visible = format.CanDetectColumnNames;
+            CompressedRow.Visible = !format.IsCompressed;
 
             if (DetailsTable.Visible)
             {

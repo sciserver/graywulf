@@ -64,16 +64,16 @@
                         </asp:DropDownList>
                         </td>
                     </tr>
-                    <tr runat="server" id="ColumnNamesInFirstLineRow" visible="false">
+                    <tr runat="server" id="DetectColumnNamesRow" visible="false">
                         <td class="FormLabel">
                             &nbsp;
                         </td>
                         <td class="FormField">
-                            <asp:CheckBox runat="server" ID="ColumnNamesInFirstLine" Text="Get column names from first line"
+                            <asp:CheckBox runat="server" ID="DetectColumnNames" Text="Detect column names automatically"
                                 Checked="true" />
                         </td>
                     </tr>
-                    <tr runat="server" id="GenerateIdentityRow" visible="false">
+                    <tr runat="server" id="GenerateIdentityRow">
                         <td class="FormLabel">
                             &nbsp;
                         </td>

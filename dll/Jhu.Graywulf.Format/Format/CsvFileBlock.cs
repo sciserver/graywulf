@@ -21,7 +21,42 @@ namespace Jhu.Graywulf.Format
         private void InitializeMembers()
         {
         }
+        #region Column functions
 
+        /// <summary>
+        /// Returns a delegate for formatting the column
+        /// </summary>
+        /// <param name="column"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Characters and strings have to be quoted as may contain the separator character
+        /// </remarks>
+        protected override FormattedDataFileBlock.FormatterDelegate GetFormatterDelegate(DataFileColumn column)
+        {
+            var t = column.DataType.Type;
+
+            if (t == typeof(Char))
+            {
+                return delegate(object o, string f)
+                {
+                    return File.Quote + ((string)o).Replace(File.Quote.ToString(), File.Quote.ToString() + File.Quote) + File.Quote;
+                };
+            }
+            else if (t == typeof(String))
+            {
+                return delegate(object o, string f)
+                {
+                    // TODO: maybe do some optimization here
+                    return File.Quote + ((string)o).Replace(File.Quote.ToString(), File.Quote.ToString() + File.Quote) + File.Quote;
+                };
+            }
+            else
+            {
+                return base.GetFormatterDelegate(column);
+            }
+        }
+
+        #endregion
         /// <summary>
         /// Returns the next line in the file broken up into parts
         /// along separators.

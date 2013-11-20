@@ -364,9 +364,9 @@ namespace Jhu.Graywulf.Format
             if (baseStream == null)
             {
                 // No open stream yet
-                if (uri.IsFile)
+                if (!uri.IsAbsoluteUri || uri.IsFile)
                 {
-                    baseStream = new FileStream(uri.PathAndQuery, System.IO.FileMode.Create, FileAccess.Write, FileShare.None);
+                    baseStream = new FileStream(uri.ToString(), System.IO.FileMode.Create, FileAccess.Write, FileShare.None);
                 }
                 else
                 {
@@ -379,6 +379,7 @@ namespace Jhu.Graywulf.Format
             switch (compression)
             {
                 case CompressionMethod.None:
+                case CompressionMethod.Automatic:
                     break;
                 case CompressionMethod.GZip:
                     uncompressedStream = new ICSharpCode.SharpZipLib.GZip.GZipOutputStream(baseStream);
