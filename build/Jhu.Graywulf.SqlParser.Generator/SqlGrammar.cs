@@ -46,6 +46,8 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Symbol> VectorOpen = () => @"{";
         public static Expression<Symbol> VectorClose = () => @"}";
 
+        public static Expression<Symbol> Apostrophe = () => @"'";
+
         #endregion
         #region Terminals (matched by regular expressions)
 
@@ -298,6 +300,8 @@ namespace Jhu.Graywulf.SqlParser.Generator
             Sequence
             (
                 May(CommentOrWhitespace),   // remove this when wrapped in generic statement grammar
+                May(WithClause),
+                May(InsertClause),
                 QueryExpression,
                 May(CommentOrWhitespace),
                 May(OrderByClause),
@@ -307,6 +311,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Rule> QueryExpression = () =>
             Sequence
             (
+                May(WithClause),
                 Must
                 (
                     Sequence(BracketOpen, May(CommentOrWhitespace), QueryExpression, May(CommentOrWhitespace), BracketClose),
@@ -466,7 +471,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
             );
 
         public static Expression<Rule> ColumnAliasList = () =>
-            Sequence(ColumnAlias, May(Sequence(May(CommentOrWhitespace), Comma, ColumnAliasList)));
+            Sequence(May(CommentOrWhitespace),ColumnAlias, May(Sequence(May(CommentOrWhitespace), Comma, ColumnAliasList)));
 
         public static Expression<Rule> TableSampleClause = () =>
             Sequence
@@ -721,7 +726,71 @@ namespace Jhu.Graywulf.SqlParser.Generator
             );
 
         #endregion
+        #region With clause
 
+        public static Expression<Rule> WithClause = () =>
+            Sequence
+            (
+                Keyword("WITH"),
+                CommentOrWhitespace,
+                WithList,
+                May(CommentOrWhitespace)
+            );
+
+        public static Expression<Rule> WithList = () =>
+            Sequence
+            (
+                Must(WithItem),
+                May(Sequence(May(CommentOrWhitespace),Comma,May(CommentOrWhitespace), WithItem))
+                
+            );
+         public static Expression<Rule> WithItem = () =>
+            Sequence
+            (
+                TableAlias,
+                CommentOrWhitespace,
+                Keyword("AS"),
+                May(CommentOrWhitespace),
+                BracketOpen,
+                May(CommentOrWhitespace),
+                QuerySpecification,
+                May(CommentOrWhitespace),
+                BracketClose
+
+            );
+        #endregion
+        #region Insert clause
+
+         public static Expression<Rule> InsertClause = () =>
+             Sequence
+             (
+                 Keyword("INSERT"),
+                 CommentOrWhitespace,
+                 Keyword("INTO"),
+                 CommentOrWhitespace,
+                 TableAlias,
+                 May(CommentOrWhitespace),
+                 BracketOpen,
+                 May(CommentOrWhitespace),
+                 ColumnAliasList,
+                 May(CommentOrWhitespace),
+                 BracketClose,
+                 May(CommentOrWhitespace)
+
+                 /*
+                 Keyword("VALUES"),
+                 May(CommentOrWhitespace),
+                 BracketOpen,
+                 ColumnValueList,
+                 BracketClose*/
+             );
+        public static Expression<Rule> ColumnValueList = () =>
+            Sequence(
+                May(CommentOrWhitespace), 
+                StringConstant, 
+                May(Sequence(May(CommentOrWhitespace), Comma, ColumnValueList))
+            );
+        #endregion
 #if false
 
 
