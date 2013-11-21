@@ -185,30 +185,23 @@ namespace Jhu.Graywulf.Schema.PostgreSql
             { 
                 case DatabaseObjectType.Table:
                     sql = @"
-SELECT TABLE_SCHEMA,TABLE_NAME, TABLE_TYPE
-FROM INFORMATION_SCHEMA.TABLES
-WHERE TABLE_SCHEMA = @schemaName AND TABLE_TYPE IN ({0}) AND TABLE_NAME = @objectName;";
+SELECT table_schema,table_name, table_type
+FROM information_schema.tables
+WHERE table_schema = @schemaName AND table_type IN ({0}) AND table_name = @objectName;";
                     break;
                 case DatabaseObjectType.View:
                     sql = @"
-SELECT TABLE_SCHEMA,TABLE_NAME, TABLE_TYPE
-FROM INFORMATION_SCHEMA.TABLES
-WHERE TABLE_SCHEMA = @schemaName AND TABLE_TYPE IN ({0}) AND TABLE_NAME = @objectName;";
+SELECT table_schema,table_name, table_type
+FROM information_schema.tables
+WHERE table_schema = @schemaName AND table_type IN ({0}) AND table_name = @objectName;";
                     break;
                 case DatabaseObjectType.StoredProcedure:
                     sql = @"
-SELECT ROUTINE_SCHEMA, ROUTINE_NAME, ROUTINE_TYPE
-FROM   INFORMATION_SCHEMA.ROUTINES
-WHERE ROUTINE_SCHEMA = @schemaName AND  ROUTINE_NAME=@objectName AND ROUTINE_TYPE IN ({0})";
-                    break;
-                case DatabaseObjectType.ScalarFunction:
-                    sql = @"
-SELECT  ROUTINE_SCHEMA, ROUTINE_NAME, ROUTINE_TYPE
-FROM   INFORMATION_SCHEMA.ROUTINES
-WHERE ROUTINE_SCHEMA = @schemaName AND ROUTINE_NAME=@objectName AND ROUTINE_TYPE IN ({0})";
+SELECT routine_schema, routine_name, routine_type
+FROM   information_schema.routines
+WHERE routine_schema = @schemaName AND  routine_name=@objectName AND routine_type IN ({0})";
                     break;
             }
-
 
             sql = String.Format(sql, GetObjectTypeIdListString(Schema.Constants.DatabaseObjectTypes[typeof(T)]));
             using (NpgsqlConnection cn = OpenConnection())
@@ -255,21 +248,14 @@ WHERE ROUTINE_SCHEMA = @schemaName AND ROUTINE_NAME=@objectName AND ROUTINE_TYPE
         protected override IEnumerable<KeyValuePair<string, T>> LoadAllObjects<T>(string databaseName)
         {
             string sql = @"
-SELECT 
-    INFORMATION_SCHEMA.ROUTINES.ROUTINE_NAME,
-    INFORMATION_SCHEMA.ROUTINES.ROUTINE_TYPE,
-    INFORMATION_SCHEMA.ROUTINES.ROUTINE_SCHEMA
-FROM   INFORMATION_SCHEMA.ROUTINES
-WHERE INFORMATION_SCHEMA.ROUTINES.SPECIFIC_CATALOG = @database
-AND INFORMATION_SCHEMA.ROUTINES.ROUTINE_TYPE IN({0}) AND INFORMATION_SCHEMA.ROUTINES.SPECIFIC_SCHEMA != 'information_schema' AND INFORMATION_SCHEMA.ROUTINES.SPECIFIC_SCHEMA != 'pg_catalog'
+SELECT routine_name, routine_type, routine_schema
+FROM   information_schema.routines
+WHERE specific_catalog = @database
+AND routine_type IN({0}) AND specific_schema != 'information_schema' AND specific_schema != 'pg_catalog'
 UNION
-SELECT 
-    INFORMATION_SCHEMA.TABLES.TABLE_NAME,
-    INFORMATION_SCHEMA.TABLES.TABLE_TYPE,
-    INFORMATION_SCHEMA.TABLES.TABLE_SCHEMA
-FROM   INFORMATION_SCHEMA.TABLES
-WHERE INFORMATION_SCHEMA.TABLES.TABLE_CATALOG = @database 
-AND INFORMATION_SCHEMA.TABLES.TABLE_TYPE IN ({0})  AND INFORMATION_SCHEMA.TABLES.TABLE_SCHEMA != 'information_schema' AND INFORMATION_SCHEMA.TABLES.TABLE_SCHEMA != 'pg_catalog'";
+SELECT table_name, table_type, table_schema
+FROM   information_schema.tables
+WHERE table_catalog = @database AND table_type IN ({0}) AND table_schema != 'information_schema' AND table_schema != 'pg_catalog'";
 
             sql = String.Format(sql, GetObjectTypeIdListString(Schema.Constants.DatabaseObjectTypes[typeof(T)]));
 
@@ -342,9 +328,9 @@ AND INFORMATION_SCHEMA.TABLES.TABLE_TYPE IN ({0})  AND INFORMATION_SCHEMA.TABLES
             var res = new ConcurrentDictionary<string, Column>();
 
             string sql = @"
-SELECT ordinal_position, column_name, data_type, COALESCE(character_maximum_length, -1) AS ""max_length"", COALESCE(numeric_scale, -1) AS ""scale"", COALESCE(numeric_precision, -1) AS ""precision"", is_nullable
+SELECT ordinal_position, column_name, udt_name, COALESCE(character_maximum_length, -1) AS ""max_length"", COALESCE(numeric_scale, -1) AS ""scale"", COALESCE(numeric_precision, -1) AS ""precision"", is_nullable
 FROM information_schema.columns
-WHERE table_catalog = @databaseName and table_name= @tableName and table_schema=@schemaName;";
+WHERE table_catalog = @databaseName AND table_name= @tableName AND table_schema=@schemaName;";
 
             using (NpgsqlConnection cn = OpenConnection())
             {
@@ -367,9 +353,9 @@ WHERE table_catalog = @databaseName and table_name= @tableName and table_schema=
 
                             cd.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(2),
-                                Convert.ToInt32(dr.GetInt32(3)),
-                                Convert.ToInt16(dr.GetInt32(4)),
-                                Convert.ToInt16(dr.GetInt32(5)));
+                                Convert.ToInt32(dr.GetValue(3)),
+                                Convert.ToInt16(dr.GetValue(4)),
+                                Convert.ToInt16(dr.GetValue(5)));
 
                             res.TryAdd(cd.Name, cd);
                         }
@@ -391,17 +377,10 @@ WHERE table_catalog = @databaseName and table_name= @tableName and table_schema=
 
             var res = new ConcurrentDictionary<string, Index>();
             var sql = @"  
-select  
-        kcu.ordinal_position,
-        kcu.constraint_name,
-	    tc.constraint_type,
-	--c.non_unique,
-        kcu.column_name,
-        kcu.table_name
-from information_schema.table_constraints tc 
-inner join  information_schema.key_column_usage kcu 
-on kcu.constraint_schema = tc.constraint_schema
-where kcu.constraint_schema=@schemaName and kcu.table_name=@objectName GROUP BY 1,2,3,4,5;";
+SELECT kcu.ordinal_position, kcu.constraint_name, tc.constraint_type, /*c.non_unique,*/ kcu.column_name, kcu.table_name
+FROM information_schema.table_constraints tc 
+INNER JOIN  information_schema.key_column_usage kcu ON kcu.constraint_schema = tc.constraint_schema
+WHERE kcu.constraint_schema=@schemaName AND kcu.table_name=@objectName GROUP BY 1,2,3,4,5;";
 
             using (var cn = OpenConnection())
             {
@@ -477,19 +456,17 @@ where kcu.constraint_schema=@schemaName and kcu.table_name=@objectName GROUP BY 
             var res = new ConcurrentDictionary<string, IndexColumn>();
             var sql = @"
 SELECT 
-	kcu.COLUMN_NAME,
-	kcu.ORDINAL_POSITION,
-	c.IS_NULLABLE,
-	c.IS_IDENTITY,
-	c.DATA_TYPE,
-	c.CHARACTER_MAXIMUM_LENGTH,
-	c.NUMERIC_SCALE,
-	c.NUMERIC_PRECISION
-FROM information_schema.KEY_COLUMN_USAGE  kcu 
-INNER JOIN information_schema.COLUMNS c
-ON kcu.TABLE_NAME = c.TABLE_NAME AND kcu.COLUMN_NAME=c.COLUMN_NAME
-
-where kcu.TABLE_NAME=@tableName;";
+	kcu.column_name,
+	kcu.ordinal_position,
+	c.is_nullable,
+	c.is_identity,
+	c.udt_name,
+	COALESCE(c.character_maximum_length, -1),
+	COALESCE(c.numeric_scale, -1),
+	COALESCE(c.numeric_precision, -1)
+FROM information_schema.key_column_usage  kcu 
+INNER JOIN information_schema.columns c ON kcu.table_name = c.table_name AND kcu.column_name=c.column_name
+WHERE kcu.table_name=@tableName;";
             using (var cn = OpenConnection())
             {
                 using (var cmd = new NpgsqlCommand(sql, cn))
@@ -505,15 +482,15 @@ where kcu.TABLE_NAME=@tableName;";
                                 ID = 0,
                                 Name = dr.GetString(0),
                                 KeyOrdinal = dr.GetInt32(1),
-                                IsNullable = dr.GetString(2).ToUpper() == "YES" ? true : false,
-                                IsIdentity = dr.GetString(3).ToUpper() == "YES" ? true : false,
+                                IsNullable = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "yes") == 0),
+                                IsIdentity = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(3), "yes") == 0),
                                 Ordering = IndexColumnOrdering.Ascending
                             };
                             ic.DataType = GetTypeFromProviderSpecificName(
-                                dr.GetString(4)/*,
-                                dr.IsDBNull(5) ? dr.GetInt16(5)  : new short(),
-                                dr.IsDBNull(6) ? dr.GetByte(6) : Byte.MinValue,
-                                dr.IsDBNull(7) ? dr.GetByte(7) : Byte.MinValue*/);
+                                dr.GetString(4),
+                                Convert.ToInt32(dr.GetValue(5)),
+                                Convert.ToInt16(dr.GetValue(6)),
+                                Convert.ToInt16(dr.GetValue(7)));
                             // ic.DataType.Size = dr.GetValue(3).ToString() != "null" ?  : 0;
                             /*ic.DataType.Size = dr.GetValue(5).ToString() != "0" ? (short)dr.GetValue(5) : (short)0;
                             ic.DataType.Scale = dr.GetValue(6).ToString() != "0" ? (short)dr.GetValue(6) : (short)0;
@@ -537,23 +514,12 @@ where kcu.TABLE_NAME=@tableName;";
 
             var res = new ConcurrentDictionary<string, Parameter>();
             var sql = @"
-SELECT  
-
-p.ORDINAL_POSITION/*P.PARAMETER_ID*/,
-p.PARAMETER_NAME,
-p.PARAMETER_MODE,
-p.DATA_TYPE /* sys.types NAME*/,
-p.CHARACTER_MAXIMUM_LENGTH,
-p.NUMERIC_SCALE,
-p.NUMERIC_PRECISION
+SELECT p.ordinal_position/*P.PARAMETER_ID*/, p.parameter_name, p.parameter_mode, p.udt_name /* sys.types NAME*/, COALESCE(p.character_maximum_length, -1), COALESCE(p.numeric_scale, -1), COALESCE(p.numeric_precision, -1)
 /*p.has_default_value*/
 /*p.default_value*/
-FROM
-
-INFORMATION_SCHEMA.PARAMETERS p
-INNER JOIN INFORMATION_SCHEMA.ROUTINES r ON r.SPECIFIC_NAME = p.SPECIFIC_NAME
-
-WHERE r.ROUTINE_NAME = @objectName AND p.SPECIFIC_SCHEMA=@schemaName; ";
+FROM information_schema.parameters p
+INNER JOIN information_schema.routines r ON r.specific_name = p.specific_name
+WHERE r.routine_name = @objectName AND p.specific_schema=@schemaName; ";
 
             //sql = String.Format(sql, DatabaseObjectType.Table);
             using (var cn = OpenConnection())
@@ -575,16 +541,16 @@ WHERE r.ROUTINE_NAME = @objectName AND p.SPECIFIC_SCHEMA=@schemaName; ";
                             };
                             if (!String.IsNullOrEmpty(dr.GetString(2)))
                             {
-                                if (dr.GetString(2) == "IN") { par.Direction = ParameterDirection.Input; }
-                                else if (dr.GetString(2) == "OUT") { par.Direction = ParameterDirection.Output; }
-                                else if (dr.GetString(2) == "INOUT") { par.Direction = ParameterDirection.InputOutput; }
+                                if (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "in") == 0) { par.Direction = ParameterDirection.Input; }
+                                else if (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "out") == 0){ par.Direction = ParameterDirection.Output; }
+                                else if (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "inout") == 0){ par.Direction = ParameterDirection.InputOutput; }
                             }
                             else { par.Direction = ParameterDirection.ReturnValue; }
                             par.DataType = GetTypeFromProviderSpecificName(
-                                dr.GetString(3)/*,
-                                dr.GetInt16(4),
-                                dr.GetByte(5),
-                                dr.GetByte(6)*/);
+                                dr.GetString(3),
+                                Convert.ToInt32(dr.GetValue(4)),
+                                Convert.ToInt16(dr.GetValue(5)),
+                                Convert.ToInt16(dr.GetValue(6)));
 
                             res.TryAdd(par.Name, par);
                         }
@@ -641,20 +607,19 @@ WHERE c.relname = @objectName AND d.nspname= @schemaName
         {
             var sql = @"
 SELECT c.column_name,pgd.description
-FROM pg_catalog.pg_statio_all_tables as st
-  inner join pg_catalog.pg_description pgd on (pgd.objoid=st.relid)
-  inner join information_schema.columns c on (pgd.objsubid=c.ordinal_position
-    and  c.table_schema=@schemaName and c.table_name=@objectName);";
+FROM pg_catalog.pg_statio_all_tables AS st
+  INNER JOIN pg_catalog.pg_description pgd ON (pgd.objoid=st.relid)
+  INNER JOIN information_schema.columns c ON (pgd.objsubid=c.ordinal_position AND  c.table_schema=@schemaName AND c.table_name=@objectName);";
             LoadAllVariableMetadata(sql, databaseObject, ((IColumns)databaseObject).Columns);
         }
 
         protected override void LoadAllParameterMetadata(DatabaseObject databaseObject)
         {
             var sql = @"SELECT  pgd.description,proargnames
-FROM    pg_catalog.pg_namespace n
-inner JOIN    pg_catalog.pg_proc p ON p.pronamespace = n.oid
-inner join pg_catalog.pg_description pgd on (pgd.objoid=p.oid)
-WHERE   nspname = @schemaName and proname= @objectName;";
+FROM pg_catalog.pg_namespace n
+INNER JOIN pg_catalog.pg_proc p ON p.pronamespace = n.oid
+INNER JOIN pg_catalog.pg_description pgd ON (pgd.objoid=p.oid)
+WHERE nspname = @schemaName and proname= @objectName;";
 
             var variables = ((IParameters)databaseObject).Parameters;
 
@@ -680,7 +645,7 @@ WHERE   nspname = @schemaName and proname= @objectName;";
                             var paramname =dr.GetValue(1) as string[];
                             if (paramname.Count()>0) 
                             {
-                                var paramlist = paramname;//.Replace("{", "").Replace("}", "").Split(',');
+                                var paramlist = paramname;
 
                                 foreach (var v in paramlist)
                                 {
@@ -826,94 +791,103 @@ WHERE   nspname = @schemaName and proname= @objectName;";
             return csb.ConnectionString;
         }
 
+
         protected override DataType GetTypeFromProviderSpecificName(string name)
         {
             switch (name.ToLowerInvariant().Trim())
             {
-                case Constants.TypeNameSmallInt:
-                    return DataType.SqlSmallInt;
-                case Constants.TypeNameInt:
-                    return DataType.SqlInt;
-                case Constants.TypeNameBigInt:
-                    return DataType.SqlBigInt;
-                case Constants.TypeNameNumeric:
-                    return DataType.SqlNumeric;
-                case Constants.TypeNameReal:
-                    return DataType.SqlReal;
-                case Constants.TypeNameDoublePrecision:
-                    return DataType.SqlReal;
-                case Constants.TypeNameMoney:
-                    return DataType.SqlMoney;
-                case Constants.TypeNameVarChar:
-                    return DataType.SqlVarChar;
+                case Constants.TypeNameOidVector:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameRefCursor:
+                    return DataType.SqlNVarChar;
                 case Constants.TypeNameChar:
-                    return DataType.SqlChar;
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameBpChar:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameVarChar:
+                    return DataType.SqlNVarChar;
                 case Constants.TypeNameText:
-                    return DataType.SqlText;
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameName:
+                    return DataType.SqlNVarChar;
                 case Constants.TypeNameBytea:
                     return DataType.SqlBinary;
+                case Constants.TypeNameBit:
+                    return DataType.SqlBit;       //  need to check is it correct
+                case Constants.TypeNameVarBit:
+                    return DataType.SqlBit;       //  need to check is it correct, at documentation its an object
+                case Constants.TypeNameBoolean:
+                    return DataType.SqlBit;
+                case Constants.TypeNameInt16:
+                    return DataType.SqlSmallInt;
+                case Constants.TypeNameInt32:
+                    return DataType.SqlInt;
+                case Constants.TypeNameInt64:
+                    return DataType.SqlBigInt;
+                case Constants.TypeNameOid:
+                    return DataType.SqlBigInt;
+                case Constants.TypeNameReal:
+                    return DataType.SqlReal;
+                case Constants.TypeNameDouble:
+                    return DataType.SqlReal;
+                case Constants.TypeNameNumeric:
+                    return DataType.SqlDecimal;
+                case Constants.TypeNameInet:
+                    return DataType.SqlNVarChar;       //  it's an object, need to check
+                case Constants.TypeNameMacaddr:
+                    return DataType.SqlNVarChar;       //  it's an object, need to check
+                case Constants.TypeNameMoney:
+                    return DataType.SqlMoney;
+                case Constants.TypeNamePoint:
+                    return DataType.SqlNVarChar;       //  it's an object, need to check
+                case Constants.TypeNameLine:
+                    return DataType.SqlNVarChar;       //  it's an object, need to check
+                case Constants.TypeNameLseg:
+                    return DataType.SqlNVarChar;       //  it's an object, need to check
+                case Constants.TypeNamePath:
+                    return DataType.SqlNVarChar;       //  it's an object, need to check
+                case Constants.TypeNameBox:
+                    return DataType.SqlNVarChar;       //  it's an object, need to check
+                case Constants.TypeNameCircle:
+                    return DataType.SqlNVarChar;        //  it's an object, need to check
+                case Constants.TypeNamePolygon:
+                    return DataType.SqlNVarChar;        //  it's an object, need to check
+                case Constants.TypeNameUuid:
+                    return DataType.SqlNVarChar;        //  it's an object, need to check
+                case Constants.TypeNameXml:
+                    return DataType.SqlXml;
+                case Constants.TypeNameInterval:
+                    return DataType.SqlNVarChar;        //  it's an object, need to check
+                case Constants.TypeNameDate:
+                    return DataType.SqlDate;
+                case Constants.TypeNameTime:
+                    return DataType.SqlTime;
+                case Constants.TypeNameTimeWithTimeZone:
+                    return DataType.SqlTime;
                 case Constants.TypeNameTimestamp:
                     return DataType.SqlDateTime;
                 case Constants.TypeNameTimestampWithTimeZone:
                     return DataType.SqlDateTime;
-                case Constants.TypeNameDate:
-                    return DataType.SqlDate;
-                case Constants.TypeNameTime:
-                    return DataType.SqlDateTime;
-                case Constants.TypeNameTimeWithTimeZone:
-                    return DataType.SqlDateTime;
-                case Constants.TypeNameInterval:
-                    return DataType.SqlVarChar;    // *** TODO converting to varchar, need to convert
-                case Constants.TypeNameBoolean:
-                    return DataType.SqlBit;
-                case Constants.TypeNamePoint:
-                    return DataType.SqlVarChar;
-                case Constants.TypeNameLine:
-                    return DataType.SqlVarChar;
-                case Constants.TypeNameLseg:
-                    return DataType.SqlVarChar;
-                case Constants.TypeNameBox:
-                    return DataType.SqlVarChar;
-                case Constants.TypeNamePath:
-                    return DataType.SqlVarChar;
-                case Constants.TypeNamePolygon:
-                    return DataType.SqlVarChar;
-                case Constants.TypeNameCircle:
-                    return DataType.SqlVarChar;
-                case Constants.TypeNameCidr:
-                    return DataType.SqlVarChar;
-                case Constants.TypeNameInet:
-                    return DataType.SqlVarChar;
-                case Constants.TypeNameMacaddr:
-                    return DataType.SqlVarChar;
-                case Constants.TypeNameBit:
-                    return DataType.SqlBit;
-                case Constants.TypeNameBitVarying:
-                    return DataType.SqlBit;            // *** TODO check is it works
-                case Constants.TypeNameTsvector:
-                    return DataType.SqlVarChar;
-                case Constants.TypeNameUuid:
-                    return DataType.SqlVarChar;
-                case Constants.TypeNameXml:
-                    return DataType.SqlXml;
-                case Constants.TypeNameJson:
-                    return DataType.SqlText;
-                case Constants.TypeNameArray:
-                    return DataType.SqlVarChar;        // *** TODO need to modify
-                case Constants.TypeNameInt4Range:
-                    return DataType.SqlInt;
-                case Constants.TypeNameInt8Range:
-                    return DataType.SqlBigInt;
-                case Constants.TypeNameNumRange:
-                    return DataType.SqlNumeric;
                 case Constants.TypeNameTsRange:
-                    return DataType.SqlDateTime;
+                    return DataType.SqlDateTime;       //check is it correct
                 case Constants.TypeNameTstzRange:
-                    return DataType.SqlDateTime;
+                    return DataType.SqlDateTime;       //check is it correct
                 case Constants.TypeNameDateRange:
-                    return DataType.SqlDate;       // *** TODO
-                case Constants.TypeNameOid:
-                    return DataType.SqlVarChar;
+                    return DataType.SqlDate;           //check is it correct
+                case Constants.TypeNameNumRange:
+                    return DataType.SqlNumeric;        //check is it correct
+                case Constants.TypeNameInt4Range:
+                    return DataType.SqlInt;            //check is it correct
+                case Constants.TypeNameInt8Range:
+                    return DataType.SqlBigInt;        //check is it correct
+                case Constants.TypeNameJson:
+                    return DataType.SqlNVarChar;       //check is it correct
+                case Constants.TypeNameTsVector:
+                    return DataType.SqlNVarChar;       //check is it correct
+                case Constants.TypeNameCidr:
+                    return DataType.SqlNVarChar;       //check is it correct
+                case Constants.TypeNameCString:
+                    return DataType.SqlNVarChar;       //check is it correct
                 default:
                     return DataType.Unknown;
             }
@@ -921,5 +895,4 @@ WHERE   nspname = @schemaName and proname= @objectName;";
 
     }
 }
-
 

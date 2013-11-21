@@ -163,33 +163,27 @@ namespace Jhu.Graywulf.Schema.MySql
             {
                 case DatabaseObjectType.Table:
                     sql = @"
-SELECT TABLE_NAME, TABLE_TYPE
-FROM INFORMATION_SCHEMA.TABLES
-WHERE TABLE_SCHEMA = @database AND TABLE_TYPE IN ({0}) AND TABLE_NAME = @objectName;";
+SELECT table_name, table_type
+FROM information_schema.tables
+WHERE table_schema = @database AND table_type IN ({0}) AND table_name = @objectName;";
                     break;
                 case DatabaseObjectType.View:
                     sql = @"
-SELECT TABLE_NAME, TABLE_TYPE
-FROM INFORMATION_SCHEMA.TABLES
-WHERE TABLE_SCHEMA = @database AND TABLE_TYPE IN ({0}) AND TABLE_NAME = @objectName;";
+SELECT table_name, table_type
+FROM information_schema.tables
+WHERE table_schema = @database AND table_type IN ({0}) AND table_name = @objectName;";
                     break;
                 case DatabaseObjectType.StoredProcedure:
                     sql = @"
-SELECT 
-INFORMATION_SCHEMA.ROUTINES.ROUTINE_NAME  as `object_name`,
-INFORMATION_SCHEMA.ROUTINES.ROUTINE_TYPE  as `object_type`
-FROM   INFORMATION_SCHEMA.ROUTINES
-WHERE INFORMATION_SCHEMA.ROUTINES.ROUTINE_SCHEMA = @database
-AND INFORMATION_SCHEMA.ROUTINES.ROUTINE_TYPE IN ({0});";
+SELECT routine_name  as `object_name`, routine_type  as `object_type`
+FROM   information_schema.routines
+WHERE routine_schema = @database AND routine_type IN ({0});";
                     break;
                 case DatabaseObjectType.ScalarFunction:
                     sql = @"
-SELECT 
-INFORMATION_SCHEMA.ROUTINES.ROUTINE_NAME,
-INFORMATION_SCHEMA.ROUTINES.ROUTINE_TYPE
-FROM   INFORMATION_SCHEMA.ROUTINES
-WHERE INFORMATION_SCHEMA.ROUTINES.ROUTINE_SCHEMA = @database
-AND INFORMATION_SCHEMA.ROUTINES.ROUTINE_TYPE IN ({0});";
+SELECT routine_name, routine_type
+FROM   information_schema.routines
+WHERE routine_schema = @database AND routine_type IN ({0});";
                     break;
             }
 
@@ -238,19 +232,14 @@ AND INFORMATION_SCHEMA.ROUTINES.ROUTINE_TYPE IN ({0});";
         protected override IEnumerable<KeyValuePair<string, T>> LoadAllObjects<T>(string databaseName)
         {
             var sql = @"
-SELECT 
-    INFORMATION_SCHEMA.ROUTINES.ROUTINE_NAME as `object_name`,
-    INFORMATION_SCHEMA.ROUTINES.ROUTINE_TYPE as `object_type`
-FROM   INFORMATION_SCHEMA.ROUTINES
-WHERE INFORMATION_SCHEMA.ROUTINES.ROUTINE_SCHEMA = @database
-AND INFORMATION_SCHEMA.ROUTINES.ROUTINE_TYPE IN({0})
+SELECT routine_name as `object_name`, routine_type as `object_type`
+FROM information_schema.routines
+WHERE routine_schema = @database AND routine_type IN({0})
 UNION
-SELECT 
-    INFORMATION_SCHEMA.TABLES.TABLE_NAME as `object_name`
-    ,INFORMATION_SCHEMA.TABLES.TABLE_TYPE as `object_type`
-FROM   INFORMATION_SCHEMA.TABLES
-WHERE INFORMATION_SCHEMA.TABLES.TABLE_SCHEMA = @database 
-AND INFORMATION_SCHEMA.TABLES.TABLE_TYPE IN({0})";
+SELECT table_name as `object_name`, table_type as `object_type`
+FROM information_schema.tables
+WHERE table_schema = @database 
+AND table_type IN({0})";
 
             sql = String.Format(sql, GetObjectTypeIdListString(Schema.Constants.DatabaseObjectTypes[typeof(T)]));
 
@@ -340,12 +329,20 @@ WHERE table_schema = @databaseName and table_name= @tableName;";
                                 Name = dr.GetString(1),
                                 IsNullable = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(6), "yes") == 0)
                             };
-
+                            
+                            Int32 charactermaxlength = 0;
+                            try
+                            {
+                                charactermaxlength = Convert.ToInt32(dr.GetValue(3));
+                            }catch (OverflowException) 
+                            {
+                                charactermaxlength = Int32.MaxValue;
+                            }
                             cd.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(2),
-                                Convert.ToInt32(dr.GetInt32(3)),
-                                Convert.ToInt16(dr.GetInt32(4)),
-                                Convert.ToInt16(dr.GetInt32(5)));
+                                charactermaxlength,
+                                Convert.ToInt16(dr.GetValue(4)),
+                                Convert.ToInt16(dr.GetValue(5)));
 
                             res.TryAdd(cd.Name, cd);
                         }
@@ -365,16 +362,10 @@ WHERE table_schema = @databaseName and table_name= @tableName;";
         {
             var res = new ConcurrentDictionary<string, Index>();
             var sql = @"  
-SELECT  c.ordinal_position,
-        s.index_name,
-		s.index_type,
-		s.non_unique,
-        s.column_name,
-        s.table_name
+SELECT  c.ordinal_position,s.index_name,s.index_type,s.non_unique,s.column_name,s.table_name
 FROM information_schema.statistics s
-INNER JOIN information_schema.columns c
-   ON s.TABLE_NAME=c.TABLE_NAME
-WHERE s.table_schema =  @schemaName and s.TABLE_NAME=@objectName
+INNER JOIN information_schema.columns c ON s.table_name=c.table_name
+WHERE s.table_schema =  @schemaName AND s.table_name=@objectName
 GROUP BY 1,2;";
 
             using (var cn = OpenConnection())
@@ -424,22 +415,11 @@ GROUP BY 1,2;";
         {
             var res = new ConcurrentDictionary<string, IndexColumn>();
             var sql = @"
-SELECT 
-	kcu.COLUMN_NAME,
-	kcu.ORDINAL_POSITION,
-	c.IS_NULLABLE,
-	t.AUTO_INCREMENT,
-	c.DATA_TYPE,
-	c.CHARACTER_MAXIMUM_LENGTH,
-	c.NUMERIC_SCALE,
-	c.NUMERIC_PRECISION
-FROM information_schema.KEY_COLUMN_USAGE  kcu 
-INNER JOIN information_schema.COLUMNS c
-ON kcu.TABLE_NAME = c.TABLE_NAME AND kcu.COLUMN_NAME=c.COLUMN_NAME
-INNER JOIN information_schema.TABLES t 
-ON kcu.TABLE_NAME = t.TABLE_NAME
-
-where kcu.TABLE_NAME LIKE @tableName AND kcu.CONSTRAINT_NAME=@indexName;";
+SELECT kcu.column_name, kcu.ordinal_position, c.is_nullable, t.auto_increment, c.data_type, c.character_maximum_length, c.numeric_scale, c.numeric_precision
+FROM information_schema.key_column_usage kcu 
+INNER JOIN information_schema.columns c ON kcu.table_name = c.table_name AND kcu.column_name = c.column_name
+INNER JOIN information_schema.tables t ON kcu.table_name = t.table_name
+where kcu.table_name LIKE @tableName AND kcu.constraint_name=@indexName;";
             using (var cn = OpenConnection())
             {
                 using (var cmd = new MySqlCommand(sql, cn))
@@ -464,10 +444,10 @@ where kcu.TABLE_NAME LIKE @tableName AND kcu.CONSTRAINT_NAME=@indexName;";
                                 ID = 0,
                                 Name = dr.GetString(0),
                                 KeyOrdinal = dr.GetInt32(1),
-                                IsNullable = dr.GetString(2).ToUpper() == "YES" ? true : false,
+                                IsNullable = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "yes") == 0),
                                 Ordering = IndexColumnOrdering.Ascending
                             };
-                            ic.IsIdentity = dr.GetValue(3).ToString() != "0" ? true : false;
+                            ic.IsIdentity = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetValue(3), null) == 0) ;
                             ic.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(4)/*,
                                 dr.IsDBNull(5) ? dr.GetInt16(5)  : new short(),
@@ -499,22 +479,9 @@ where kcu.TABLE_NAME LIKE @tableName AND kcu.CONSTRAINT_NAME=@indexName;";
 
                 var res = new ConcurrentDictionary<string, Parameter>();
                 var sql = @"
-SELECT  
-
-p.ORDINAL_POSITION/*P.PARAMETER_ID*/,
-p.PARAMETER_NAME,
-p.PARAMETER_MODE,
-p.DATA_TYPE /* sys.types NAME*/,
-p.CHARACTER_MAXIMUM_LENGTH,
-p.NUMERIC_SCALE,
-p.NUMERIC_PRECISION
-/*p.has_default_value*/
-/*p.default_value*/
-FROM
-
-INFORMATION_SCHEMA.PARAMETERS p
-
-WHERE p.SPECIFIC_NAME=@objectName AND p.SPECIFIC_SCHEMA=@databaseName; ";
+SELECT p.ordinal_position/*P.PARAMETER_ID*/, p.parameter_name, p.parameter_mode, p.data_type /* sys.types NAME*/, COALESCE(p.character_maximum_length, -1), COALESCE(p.numeric_scale, -1), COALESCE(p.numeric_precision, -1) /*p.has_default_value*/ /*p.default_value*/
+FROM information_schema.parameters p
+WHERE p.specific_name=@objectName AND p.specific_schema=@databaseName; ";
 
                 sql = String.Format(sql, DatabaseObjectType.Table);
                 using (var cn = OpenConnection())
@@ -536,17 +503,17 @@ WHERE p.SPECIFIC_NAME=@objectName AND p.SPECIFIC_SCHEMA=@databaseName; ";
                                 };
                                 if (!String.IsNullOrEmpty(dr.GetString(2)))
                                 {
-                                    if (dr.GetString(2) == "IN") { par.Direction = ParameterDirection.Input; }
-                                    else if (dr.GetString(2) == "OUT") { par.Direction = ParameterDirection.Output; }
-                                    else if (dr.GetString(2) == "INOUT") { par.Direction = ParameterDirection.InputOutput; }
+                                    if (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "in") == 0) { par.Direction = ParameterDirection.Input; }
+                                    else if (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "out") == 0) { par.Direction = ParameterDirection.Output; }
+                                    else if (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "inout") == 0) { par.Direction = ParameterDirection.InputOutput; }
                                 }
                                 else { par.Direction = ParameterDirection.ReturnValue; }
                                 par.DataType = GetTypeFromProviderSpecificName(
-                                    dr.GetString(3)/*,
-                                    dr.GetInt16(4),
-                                    dr.GetByte(5),
-                                    dr.GetByte(6)*/);
-
+                                    dr.GetString(3),
+                                    Convert.ToInt32(dr.GetValue(4)),
+                                    Convert.ToInt16(dr.GetValue(5)),
+                                    Convert.ToInt16(dr.GetValue(6)));
+                                
                                 res.TryAdd(par.Name, par);
                             }
                         }
@@ -563,7 +530,8 @@ WHERE p.SPECIFIC_NAME=@objectName AND p.SPECIFIC_SCHEMA=@databaseName; ";
 
         internal override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
-            var sql = @"SELECT table_comment comment 
+            var sql = @"
+SELECT table_comment comment 
 FROM information_schema.tables t
 WHERE t.table_schema = @schemaName AND t.table_name = @objectName
 UNION
