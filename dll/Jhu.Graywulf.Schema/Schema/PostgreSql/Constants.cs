@@ -11,7 +11,6 @@ namespace Jhu.Graywulf.Schema.PostgreSql
         public const string PostgreSqlProviderName = "Npgsql";
 
         //Type of the table: BASE TABLE for a persistent base table (the normal table type), 
-        //VIEW for a view, FOREIGN TABLE for a foreign table, or LOCAL TEMPORARY for a temporary table
         public static readonly Map<DatabaseObjectType, string> PostgreSqlObjectTypeIds = new Map<DatabaseObjectType, string>()
         {
             { DatabaseObjectType.Table, "BASE TABLE" },
@@ -25,48 +24,53 @@ namespace Jhu.Graywulf.Schema.PostgreSql
             { DatabaseObjectType.StoredProcedure, "FUNCTION" },
         };
 
+        public const string TypeNameOidVector = "oidvector";
         public const string TypeNameUnknown = "unknown";
-        public const string TypeNameSmallInt = "smallint";
-        public const string TypeNameInt = "integer";
-        public const string TypeNameBigInt = "bigint";
-        public const string TypeNameNumeric = "numeric";
-        public const string TypeNameReal = "real";
-        public const string TypeNameDoublePrecision = "double precision";
-        public const string TypeNameMoney = "money";
-        public const string TypeNameVarChar = "character varying";
-        public const string TypeNameChar = "character";
+        public const string TypeNameRefCursor = "refcursor";
+        public const string TypeNameChar = "char";
+        public const string TypeNameBpChar = "bpchar";
+        public const string TypeNameVarChar = "varchar";
         public const string TypeNameText = "text";
+        public const string TypeNameName = "name";
         public const string TypeNameBytea = "bytea";
-        public const string TypeNameTimestamp = "timestamp without time zone";
-        public const string TypeNameTimestampWithTimeZone = "timestamp with time zone";
-        public const string TypeNameDate = "date";
-        public const string TypeNameTime = "time without time zone";
-        public const string TypeNameTimeWithTimeZone = "time with time zone";
-        public const string TypeNameInterval = "interval";
-        public const string TypeNameBoolean = "boolean";
+        public const string TypeNameBit = "bit";
+        public const string TypeNameVarBit = "varbit";
+        public const string TypeNameBoolean = "bool";
+        public const string TypeNameInt16 = "int2";
+        public const string TypeNameInt32 = "int4";
+        public const string TypeNameInt64 = "int8";
+        public const string TypeNameOid = "oid";
+        public const string TypeNameReal = "float4";
+        public const string TypeNameDouble = "float8";
+        public const string TypeNameNumeric = "numeric";
+        public const string TypeNameInet = "inet";
+        public const string TypeNameMacaddr = "macaddr";
+        public const string TypeNameMoney = "money";
         public const string TypeNamePoint = "point";
         public const string TypeNameLine = "line";
         public const string TypeNameLseg = "lseg";
-        public const string TypeNameBox = "box";
         public const string TypeNamePath = "path";
-        public const string TypeNamePolygon = "polygon";
+        public const string TypeNameBox = "box";
         public const string TypeNameCircle = "circle";
-        public const string TypeNameCidr = "cidr";
-        public const string TypeNameInet = "inet";
-        public const string TypeNameMacaddr = "macaddr";
-        public const string TypeNameBit = "bit";
-        public const string TypeNameBitVarying = "bit varying";
-        public const string TypeNameTsvector = "tsvector";
+        public const string TypeNamePolygon = "polygon";
         public const string TypeNameUuid = "uuid";
         public const string TypeNameXml = "xml";
-        public const string TypeNameJson = "json";
-        public const string TypeNameArray = "ARRAY";
-        public const string TypeNameInt4Range = "int4range";
-        public const string TypeNameInt8Range = "int8range";
-        public const string TypeNameNumRange = "numrange";
+        public const string TypeNameInterval = "interval";
+        public const string TypeNameDate = "date";
+        public const string TypeNameTime = "time";
+        public const string TypeNameTimeWithTimeZone = "timetz";
+        public const string TypeNameTimestamp = "timestamp";
+        public const string TypeNameTimestampWithTimeZone = "timestamptz";
+        public const string TypeNameAbsTime = "abstime";
         public const string TypeNameTsRange = "tsrange";
         public const string TypeNameTstzRange = "tstzrange";
         public const string TypeNameDateRange = "daterange";
-        public const string TypeNameOid = "oid";
+        public const string TypeNameNumRange = "numrange";
+        public const string TypeNameInt4Range = "int4range";
+        public const string TypeNameInt8Range = "int8range";
+        public const string TypeNameJson = "json";
+        public const string TypeNameTsVector = "tsvector";
+        public const string TypeNameCidr = "cidr";
+        public const string TypeNameCString = "cstring";
     }
 }
