@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Type of compression
         /// </summary>
-        private CompressionMethod compression;
+        private DataFileCompression compression;
 
         /// <summary>
         /// Uri to the file. If set, the class can open it internally.
@@ -104,7 +104,7 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Gets or sets the compression method.
         /// </summary>
-        public CompressionMethod Compression
+        public DataFileCompression Compression
         {
             get { return compression; }
             set
@@ -157,7 +157,7 @@ namespace Jhu.Graywulf.Format
         /// <param name="uri"></param>
         /// <param name="fileMode"></param>
         /// <param name="compression"></param>
-        protected DataFileBase(Uri uri, DataFileMode fileMode, CompressionMethod compression)
+        protected DataFileBase(Uri uri, DataFileMode fileMode, DataFileCompression compression)
         {
             InitializeMembers();
 
@@ -166,7 +166,7 @@ namespace Jhu.Graywulf.Format
             this.compression = compression;
         }
 
-        protected DataFileBase(Stream stream, DataFileMode fileMode, CompressionMethod compression)
+        protected DataFileBase(Stream stream, DataFileMode fileMode, DataFileCompression compression)
         {
             InitializeMembers();
 
@@ -182,7 +182,7 @@ namespace Jhu.Graywulf.Format
             this.uncompressedStream = null;
 
             this.fileMode = DataFileMode.Unknown;
-            this.compression = CompressionMethod.None;
+            this.compression = DataFileCompression.None;
             this.uri = null;
 
             this.blocks = new List<DataFileBlockBase>();
@@ -202,12 +202,12 @@ namespace Jhu.Graywulf.Format
         /// method from the file extension
         /// </summary>
         /// <returns></returns>
-        private CompressionMethod GetCompressionMethod()
+        private DataFileCompression GetCompressionMethod()
         {
             // Open compressed stream, if necessary
             var cm = compression;
 
-            if (cm == CompressionMethod.Automatic)
+            if (cm == DataFileCompression.Automatic)
             {
                 var path = uri.IsAbsoluteUri ? uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped) : uri.ToString();
                 var extension = Path.GetExtension(path).ToLowerInvariant();
@@ -215,16 +215,16 @@ namespace Jhu.Graywulf.Format
                 switch (extension)
                 {
                     case ".gz":
-                        cm = CompressionMethod.GZip;
+                        cm = DataFileCompression.GZip;
                         break;
                     case ".bz2":
-                        cm = CompressionMethod.BZip2;
+                        cm = DataFileCompression.BZip2;
                         break;
                     case ".zip":
-                        cm = CompressionMethod.Zip;
+                        cm = DataFileCompression.Zip;
                         break;
                     default:
-                        cm = CompressionMethod.None;
+                        cm = DataFileCompression.None;
                         break;
                 }
             }
@@ -333,15 +333,15 @@ namespace Jhu.Graywulf.Format
         {
             switch (GetCompressionMethod())
             {
-                case CompressionMethod.None:
+                case DataFileCompression.None:
                     break;
-                case CompressionMethod.GZip:
+                case DataFileCompression.GZip:
                     uncompressedStream = new ICSharpCode.SharpZipLib.GZip.GZipInputStream(baseStream);
                     break;
-                case CompressionMethod.BZip2:
+                case DataFileCompression.BZip2:
                     uncompressedStream = new ICSharpCode.SharpZipLib.BZip2.BZip2InputStream(baseStream);
                     break;
-                case CompressionMethod.Zip:
+                case DataFileCompression.Zip:
                     uncompressedStream = new ICSharpCode.SharpZipLib.Zip.ZipInputStream(baseStream);
                     break;
                 default:
@@ -378,16 +378,16 @@ namespace Jhu.Graywulf.Format
             // Open compressed stream, if necessary
             switch (compression)
             {
-                case CompressionMethod.None:
-                case CompressionMethod.Automatic:
+                case DataFileCompression.None:
+                case DataFileCompression.Automatic:
                     break;
-                case CompressionMethod.GZip:
+                case DataFileCompression.GZip:
                     uncompressedStream = new ICSharpCode.SharpZipLib.GZip.GZipOutputStream(baseStream);
                     break;
-                case CompressionMethod.BZip2:
+                case DataFileCompression.BZip2:
                     uncompressedStream = new ICSharpCode.SharpZipLib.BZip2.BZip2OutputStream(baseStream);
                     break;
-                case CompressionMethod.Zip:
+                case DataFileCompression.Zip:
                     uncompressedStream = new ICSharpCode.SharpZipLib.Zip.ZipOutputStream(baseStream);
                     break;
                 default:

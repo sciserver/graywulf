@@ -7,8 +7,9 @@ using System.IO;
 namespace Jhu.Graywulf.Format
 {
     /// <summary>
-    /// Implements a wrapper around a stream that follows position inside the
-    /// stream and supports seeking forward.
+    /// Implements a wrapper around a stream that allows positioning inside the
+    /// stream and supports seeking forward, even if the stream is sequential
+    /// read only.
     /// </summary>
     public class SeekForwardStream : Stream
     {

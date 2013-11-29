@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
-        protected FormattedDataFile(Uri uri, DataFileMode fileMode, CompressionMethod compression, Encoding encoding, CultureInfo culture)
+        protected FormattedDataFile(Uri uri, DataFileMode fileMode, DataFileCompression compression, Encoding encoding, CultureInfo culture)
             : base(uri, fileMode, compression)
         {
             InitializeMembers();
@@ -54,7 +54,7 @@ namespace Jhu.Graywulf.Format
             this.culture = culture;
         }
 
-        protected FormattedDataFile(Stream stream, DataFileMode fileMode, CompressionMethod compression, Encoding encoding, CultureInfo culture)
+        protected FormattedDataFile(Stream stream, DataFileMode fileMode, DataFileCompression compression, Encoding encoding, CultureInfo culture)
             : base(stream, fileMode, compression)
         {
             InitializeMembers();

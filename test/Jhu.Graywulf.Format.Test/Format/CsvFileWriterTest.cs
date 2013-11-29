@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.Format
         {
             var uri = new Uri("CsvFileTest_CompressedWriterTest.csv.gz", UriKind.Relative);
 
-            using (var csv = new CsvFile(uri, DataFileMode.Write, CompressionMethod.GZip))
+            using (var csv = new CsvFile(uri, DataFileMode.Write, DataFileCompression.GZip))
             {
                 using (var cn = new SqlConnection(Jhu.Graywulf.Test.Constants.TestConnectionString))
                 {

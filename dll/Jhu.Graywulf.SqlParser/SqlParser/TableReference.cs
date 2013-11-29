@@ -564,12 +564,6 @@ namespace Jhu.Graywulf.SqlParser
         {
             bool res = true;
 
-            // **** verify this or delete
-            //res &= (!this.isUdf && !other.isUdf) ||
-            //       (this.isUdf && StringComparer.CurrentCultureIgnoreCase.Compare(this.alias, other.tableName) == 0) ||
-            //       (other.isUdf && StringComparer.CurrentCultureIgnoreCase.Compare(other.alias, this.tableName) == 0) ||
-            //       (this.isUdf && other.isUdf && StringComparer.CurrentCultureIgnoreCase.Compare(this.alias, other.alias) == 0);
-
             res &= (this.datasetName == null || other.datasetName == null ||
                     SchemaManager.Comparer.Compare(this.datasetName, other.datasetName) == 0);
 

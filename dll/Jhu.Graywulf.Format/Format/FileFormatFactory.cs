@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Format
         /// Returns the file extension by stripping of the extension of the
         /// compressed file, if any.
         /// </summary>
-        public static void GetExtensionWithoutCompression(Uri uri, out string path, out string extension, out CompressionMethod compressionMethod)
+        public static void GetExtensionWithoutCompression(Uri uri, out string path, out string extension, out DataFileCompression compressionMethod)
         {
             path = GetPathFromUri(uri);
             extension = Path.GetExtension(path);
@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Format
             }
             else
             {
-                compressionMethod = CompressionMethod.None;
+                compressionMethod = DataFileCompression.None;
             }
         }
 
@@ -89,7 +89,7 @@ namespace Jhu.Graywulf.Format
             return GetFileFormatDescriptions()[typeName];
         }
 
-        public FileFormatDescription GetFileFormatDescription(Uri uri, out string path, out string extension, out CompressionMethod compression)
+        public FileFormatDescription GetFileFormatDescription(Uri uri, out string path, out string extension, out DataFileCompression compression)
         {
             GetExtensionWithoutCompression(uri, out path, out extension, out compression);
 

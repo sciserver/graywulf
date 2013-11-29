@@ -65,7 +65,7 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
-        public CsvFile(Uri uri, DataFileMode fileMode, CompressionMethod compression, Encoding encoding, CultureInfo culture)
+        public CsvFile(Uri uri, DataFileMode fileMode, DataFileCompression compression, Encoding encoding, CultureInfo culture)
             : base(uri, fileMode, compression, encoding, culture)
         {
             InitializeMembers();
@@ -73,19 +73,19 @@ namespace Jhu.Graywulf.Format
             Open();
         }
 
-        public CsvFile(Uri uri, DataFileMode fileMode, CompressionMethod compression)
+        public CsvFile(Uri uri, DataFileMode fileMode, DataFileCompression compression)
             : this(uri, fileMode, compression, Encoding.ASCII, CultureInfo.InvariantCulture)
         {
             // Overload
         }
 
         public CsvFile(Uri uri, DataFileMode fileMode)
-            : this(uri, fileMode, CompressionMethod.Automatic)
+            : this(uri, fileMode, DataFileCompression.Automatic)
         {
             // Overload
         }
 
-        public CsvFile(Stream stream, DataFileMode fileMode, CompressionMethod compression, Encoding encoding, CultureInfo culture)
+        public CsvFile(Stream stream, DataFileMode fileMode, DataFileCompression compression, Encoding encoding, CultureInfo culture)
             : base(stream, fileMode, compression, encoding, culture)
         {
             InitializeMembers();
@@ -94,7 +94,7 @@ namespace Jhu.Graywulf.Format
         }
 
         public CsvFile(Stream stream, DataFileMode fileMode)
-            : this(stream, fileMode, CompressionMethod.None, Encoding.ASCII, CultureInfo.InvariantCulture)
+            : this(stream, fileMode, DataFileCompression.None, Encoding.ASCII, CultureInfo.InvariantCulture)
         {
             // Overload
         }

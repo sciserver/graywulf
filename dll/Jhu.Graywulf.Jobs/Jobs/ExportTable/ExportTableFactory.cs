@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             var destination = FileFormatFactory.CreateFile(format);
             destination.Uri = new Uri(String.Format("file:///{0}", path));
             destination.FileMode = DataFileMode.Write;
-            destination.Compression = CompressionMethod.GZip;
+            destination.Compression = DataFileCompression.GZip;
 
             // special initialization in case of a text file
             if (destination is TextDataFile)

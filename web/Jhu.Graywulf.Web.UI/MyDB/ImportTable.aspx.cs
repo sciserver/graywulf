@@ -65,7 +65,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         private DataFileImporter CreateImporterSimple()
         {
             string filename, extension;
-            CompressionMethod compression;
+            DataFileCompression compression;
 
             // Determine file format
             var format = FileFormatFactory.GetFileFormatDescription(
@@ -90,8 +90,8 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             var format = FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
             var source = FileFormatFactory.CreateFile(format);
             
-            CompressionMethod compression;
-            Enum.TryParse<CompressionMethod>(CompressionMethod.SelectedValue, out compression);
+            DataFileCompression compression;
+            Enum.TryParse<DataFileCompression>(CompressionMethod.SelectedValue, out compression);
 
             source.Compression = compression;
             source.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read);

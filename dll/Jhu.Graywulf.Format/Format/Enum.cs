@@ -12,12 +12,19 @@ namespace Jhu.Graywulf.Format
         Write
     }
 
-    public enum CompressionMethod
+    public enum DataFileCompression
     {
         None,
         Automatic,
         BZip2,
         GZip,
-        Zip,
+        Zip
+    }
+
+    public enum DataFileArchival
+    {
+        None,
+        Automatic,
+        Tar
     }
 }

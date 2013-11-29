@@ -53,10 +53,7 @@ namespace Jhu.Graywulf.SqlParser
         private SchemaManager schemaManager;
 
         private string defaultTableDatasetName;
-        //private string defaultTableSchemaName;
-
         private string defaultFunctionDatasetName;
-        //private string defaultFunctionSchemaName;
 
         #endregion
         #region Properties
@@ -80,27 +77,11 @@ namespace Jhu.Graywulf.SqlParser
             set { defaultTableDatasetName = value; }
         }
 
-        /// <summary>
-        /// Gets or sets the default schema name to be assumed when no
-        /// schema name is specified
-        /// </summary>
-        /*public string DefaultTableSchemaName
-        {
-            get { return defaultTableSchemaName; }
-            set { defaultTableSchemaName = value; }
-        }*/
-
         public string DefaultFunctionDatasetName
         {
             get { return defaultFunctionDatasetName; }
             set { defaultFunctionDatasetName = value; }
         }
-
-        /*public string DefaultFunctionSchemaName
-        {
-            get { return defaultFunctionSchemaName; }
-            set { defaultFunctionSchemaName = value; }
-        }*/
 
         #endregion
         #region Constructors and initializers
@@ -121,10 +102,7 @@ namespace Jhu.Graywulf.SqlParser
             this.schemaManager = null;
 
             this.defaultTableDatasetName = String.Empty;
-            //this.defaultTableSchemaName = "dbo";
-
             this.defaultFunctionDatasetName = String.Empty;
-            //this.defaultFunctionSchemaName = "dbo";
         }
 
         #endregion
@@ -208,7 +186,7 @@ namespace Jhu.Graywulf.SqlParser
 
             // Substitute default dataset names and schema names
             // This is typically the MYDB and dbo
-            SubstituteDefaults(qs);
+            SubstituteTableAndColumnDefaults(qs);
 
             // Column references will be stored under the query specification
             CollectSourceTableReferences(qs);
@@ -246,7 +224,7 @@ namespace Jhu.Graywulf.SqlParser
         /// Substitutes dataset and schema defaults into table source table references
         /// </summary>
         /// <param name="qs"></param>
-        protected void SubstituteDefaults(QuerySpecification qs)
+        protected void SubstituteTableAndColumnDefaults(QuerySpecification qs)
         {
             foreach (var tr in qs.EnumerateSourceTableReferences(false))
             {

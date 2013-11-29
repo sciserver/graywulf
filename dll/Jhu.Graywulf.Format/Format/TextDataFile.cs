@@ -73,20 +73,20 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
-        protected TextDataFile(Uri uri, DataFileMode fileMode, CompressionMethod compression, Encoding encoding, CultureInfo culture)
+        protected TextDataFile(Uri uri, DataFileMode fileMode, DataFileCompression compression, Encoding encoding, CultureInfo culture)
             : base(uri, fileMode, compression, encoding, culture)
         {
             InitializeMembers();
         }
 
-        protected TextDataFile(Stream stream, DataFileMode fileMode, CompressionMethod compression, Encoding encoding, CultureInfo culture)
+        protected TextDataFile(Stream stream, DataFileMode fileMode, DataFileCompression compression, Encoding encoding, CultureInfo culture)
             : base(stream, fileMode, compression, encoding, culture)
         {
             InitializeMembers();
         }
 
         protected TextDataFile(TextReader inputReader, Encoding encoding, CultureInfo culture)
-            : base((Stream)null, DataFileMode.Read, CompressionMethod.None, encoding, culture)
+            : base((Stream)null, DataFileMode.Read, DataFileCompression.None, encoding, culture)
         {
             InitializeMembers();
 
@@ -94,7 +94,7 @@ namespace Jhu.Graywulf.Format
         }
 
         protected TextDataFile(TextWriter outputWriter, Encoding encoding, CultureInfo culture)
-            : base((Stream)null, DataFileMode.Write, CompressionMethod.None, encoding, culture)
+            : base((Stream)null, DataFileMode.Write, DataFileCompression.None, encoding, culture)
         {
             InitializeMembers();
 
