@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Format\BufferedTextReader.cs" />
     <Compile Include="Format\Constants.cs" />
+    <Compile Include="Format\IArchiveOutputStream.cs" />
     <Compile Include="Format\CsvFile.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -74,7 +75,16 @@
     <Compile Include="Format\FormattedDataFileBlock.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Format\IArchiveEntry.cs" />
+    <Compile Include="Format\IArchiveInputStream.cs" />
     <Compile Include="Format\SeekForwardStream.cs" />
+    <Compile Include="Format\SharpZipLibWrapper\TarOutputStream.cs" />
+    <Compile Include="Format\SharpZipLibWrapper\ZipEntry.cs" />
+    <Compile Include="Format\SharpZipLibWrapper\TarEntry.cs" />
+    <Compile Include="Format\SharpZipLibWrapper\TarInputStream.cs" />
+    <Compile Include="Format\SharpZipLibWrapper\ZipInputStream.cs" />
+    <Compile Include="Format\SharpZipLibWrapper\ZipOutputStream.cs" />
+    <Compile Include="Format\StreamFactory.cs" />
     <Compile Include="Format\TextDataFile.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -99,6 +109,7 @@
       <Name>Jhu.Graywulf.Types</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)
