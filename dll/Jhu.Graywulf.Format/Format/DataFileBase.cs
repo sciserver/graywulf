@@ -227,7 +227,7 @@ namespace Jhu.Graywulf.Format
             {
                 // Use stream factory to open stream
                 // TODO: replace this to use configured stream factory
-                var f = new StreamFactory();
+                var f = StreamFactory.Create();
                 baseStream = f.Open(uri, fileMode);
 
                 ownsBaseStream = true;

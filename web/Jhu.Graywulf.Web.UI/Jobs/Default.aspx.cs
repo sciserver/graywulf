@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Web.Controls;
+using Jhu.Graywulf.Jobs.Query;
 
 namespace Jhu.Graywulf.Web.UI.Jobs
 {
@@ -19,7 +20,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             job.Guid = guid;
             job.Load();
 
-            var wjob = JobDescriptionFactory.GetJob(job, QueryFactory);
+            var wjob = JobDescriptionFactory.GetJob(job, QueryFactory.Create(RegistryContext));
 
             switch (wjob.JobType)
             {
@@ -52,7 +53,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
         protected void jobDataSource_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
         {
             RegistryContext.TransactionMode = Registry.TransactionMode.DirtyRead;
-            var factory = new JobDescriptionFactory(RegistryContext, QueryFactory);
+            var factory = new JobDescriptionFactory(RegistryContext, QueryFactory.Create(RegistryContext));
             e.ObjectInstance = factory;
 
             switch (multiView.ActiveViewIndex)

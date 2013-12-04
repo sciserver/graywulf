@@ -3,6 +3,7 @@ using System.Linq;
 using System.IO;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Jobs.Query;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
@@ -63,7 +64,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                         if (job.JobExecutionStatus == JobExecutionState.Completed)
                         {
                             // Get query details
-                            var ej = JobDescriptionFactory.GetJob(job, QueryFactory);
+                            var ej = JobDescriptionFactory.GetJob(job, QueryFactory.Create(RegistryContext));
 
                             Response.Redirect(GetExportUrl(ej));
                         }

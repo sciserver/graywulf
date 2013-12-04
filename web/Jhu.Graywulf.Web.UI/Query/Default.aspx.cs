@@ -89,7 +89,7 @@ namespace Jhu.Graywulf.Web.UI.Query
                     query = Query.Text;
                 }
 
-                var q = QueryFactory.CreateQuery(query, ExecutionMode.Graywulf, OutputTable.Text);
+                var q = QueryFactory.Create(RegistryContext).CreateQuery(query, ExecutionMode.Graywulf, OutputTable.Text);
                 q.Verify();
 
                 Message.BackColor = Color.Green;
@@ -118,7 +118,7 @@ namespace Jhu.Graywulf.Web.UI.Query
 
         protected JobInstance ScheduleQuery(string queuename, QueryBase q)
         {
-            var job = QueryFactory.ScheduleAsJob(q, queuename, Comments.Text);
+            var job = QueryFactory.Create(RegistryContext).ScheduleAsJob(q, queuename, Comments.Text);
             job.Save();
 
             return job;

@@ -4,6 +4,7 @@ using System.IO;
 using System.Security;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Jobs.Query;
 
 namespace Jhu.Graywulf.Web.UI.Jobs
 {
@@ -31,7 +32,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             }
 
             // Get query details
-            ej = JobDescriptionFactory.GetJob(job, QueryFactory);
+            ej = JobDescriptionFactory.GetJob(job, QueryFactory.Create(RegistryContext));
         }
 
         private void UpdateForm()

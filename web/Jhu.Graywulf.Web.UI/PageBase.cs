@@ -66,24 +66,6 @@ namespace Jhu.Graywulf.Web.UI
             }
         }
 
-        public QueryFactory QueryFactory
-        {
-            get
-            {
-                var ft = Type.GetType(Federation.QueryFactoryTypeName);
-                return (QueryFactory)Activator.CreateInstance(ft, RegistryContext);
-            }
-        }
-
-        public FileFormatFactory FileFormatFactory
-        {
-            get
-            {
-                var ft = Type.GetType(Federation.FileFormatFactoryTypeName);
-                return (FileFormatFactory)Activator.CreateInstance(ft);
-            }
-        }
-
         // ---
 
         protected bool HasQueryInSession()

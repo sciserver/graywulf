@@ -14,32 +14,12 @@ namespace Jhu.Graywulf.Format
     /// </summary>
     public class FileFormatFactory
     {
-        #region Static utility functions
+        #region Static members
 
-        public static string GetPathFromUri(Uri uri)
+        public static FileFormatFactory Create()
         {
-            return uri.IsAbsoluteUri ? uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped) : uri.ToString();
-        }
-
-        /// <summary>
-        /// Returns the file extension by stripping of the extension of the
-        /// compressed file, if any.
-        /// </summary>
-        public static void GetExtensionWithoutCompression(Uri uri, out string path, out string extension, out DataFileCompression compressionMethod)
-        {
-            path = GetPathFromUri(uri);
-            extension = Path.GetExtension(path);
-
-            if (Constants.CompressionExtensions.ContainsKey(extension))
-            {
-                compressionMethod = Constants.CompressionExtensions[extension];
-                path = Path.GetFileNameWithoutExtension(path);
-                extension = Path.GetExtension(path);
-            }
-            else
-            {
-                compressionMethod = DataFileCompression.None;
-            }
+            var type = Type.GetType(AppSettings.FileFormatFactory);
+            return (FileFormatFactory)Activator.CreateInstance(type, true);
         }
 
         /// <summary>
@@ -58,11 +38,37 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Constructors and initializers
 
-        public FileFormatFactory()
+        protected FileFormatFactory()
         {
         }
 
         #endregion
+
+        protected string GetPathFromUri(Uri uri)
+        {
+            return uri.IsAbsoluteUri ? uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped) : uri.ToString();
+        }
+
+        /// <summary>
+        /// Returns the file extension by stripping of the extension of the
+        /// compressed file, if any.
+        /// </summary>
+        protected void GetExtensionWithoutCompression(Uri uri, out string path, out string extension, out DataFileCompression compressionMethod)
+        {
+            path = GetPathFromUri(uri);
+            extension = Path.GetExtension(path);
+
+            if (Constants.CompressionExtensions.ContainsKey(extension))
+            {
+                compressionMethod = Constants.CompressionExtensions[extension];
+                path = Path.GetFileNameWithoutExtension(path);
+                extension = Path.GetExtension(path);
+            }
+            else
+            {
+                compressionMethod = DataFileCompression.None;
+            }
+        }
 
         /// <summary>
         /// Initializes a file object descriptios based on file type.

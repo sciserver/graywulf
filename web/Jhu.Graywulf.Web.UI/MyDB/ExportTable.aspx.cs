@@ -35,17 +35,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (!IsPostBack)
             {
-
-                var dfs = FileFormatFactory.GetFileFormatDescriptions();
-
-                foreach (var df in dfs)
-                {
-                    if (df.Value.CanWrite)
-                    {
-                        var li = new ListItem(df.Value.DisplayName, df.Key);
-                        FileFormat.Items.Add(li);
-                    }
-                }
+                RefreshFileFormatList();
 
                 string objid = Request.QueryString["objid"];
                 if (objid != null)
@@ -57,10 +47,24 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             base.OnLoad(e);
         }
 
-        private void SchduleExportTableJob()
+        private void RefreshFileFormatList()
+        {
+            var dfs = FileFormatFactory.Create().GetFileFormatDescriptions();
+
+            foreach (var df in dfs)
+            {
+                if (df.Value.CanWrite)
+                {
+                    var li = new ListItem(df.Value.DisplayName, df.Key);
+                    FileFormat.Items.Add(li);
+                }
+            }
+        }
+
+        private void ScheduleExportTableJob()
         {
             var table = (Jhu.Graywulf.Schema.Table)SchemaManager.GetDatabaseObjectByKey(TableName.SelectedValue);
-            var format = FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
+            var format = FileFormatFactory.Create().GetFileFormatDescription(FileFormat.SelectedValue);
 
             // Make sure it's in MYDB
             if (StringComparer.InvariantCultureIgnoreCase.Compare(table.DatasetName, MyDBDatabaseDefinition.Name) != 0)
@@ -83,7 +87,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         protected void Ok_Click(object sender, EventArgs e)
         {
-            SchduleExportTableJob();
+            ScheduleExportTableJob();
             Response.Redirect(Jhu.Graywulf.Web.UI.Jobs.Default.GetUrl());
         }
 

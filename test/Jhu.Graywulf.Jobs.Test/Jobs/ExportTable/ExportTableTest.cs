@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Jobs.ExportTable
                 var ef = new EntityFactory(context);
                 var f = ef.LoadEntity<Federation>(Federation.AppSettings.FederationName);
 
-                var format = new FileFormatFactory().GetFileFormatDescription("Jhu.Graywulf.Format.CsvFile");
+                var format = FileFormatFactory.Create().GetFileFormatDescription("Jhu.Graywulf.Format.CsvFile");
 
                 var source = new Jhu.Graywulf.Schema.Table()
                 {

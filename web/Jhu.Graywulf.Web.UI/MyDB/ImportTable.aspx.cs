@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (!IsPostBack)
             {
-                var dfs = FileFormatFactory.GetFileFormatDescriptions();
+                var dfs = FileFormatFactory.Create().GetFileFormatDescriptions();
 
                 foreach (var df in dfs)
                 {
@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             DataFileCompression compression;
 
             // Determine file format
-            var format = FileFormatFactory.GetFileFormatDescription(
+            var format = FileFormatFactory.Create().GetFileFormatDescription(
                 new Uri(ImportedFile.PostedFile.FileName),
                 out filename,
                 out extension,
@@ -87,7 +87,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         private DataFileImporter CreateImporterAdvanced()
         {
-            var format = FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
+            var format = FileFormatFactory.Create().GetFileFormatDescription(FileFormat.SelectedValue);
             var source = FileFormatFactory.CreateFile(format);
             
             DataFileCompression compression;
@@ -103,7 +103,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         protected void RefreshForm()
         {
-            var format = FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
+            var format = FileFormatFactory.Create().GetFileFormatDescription(FileFormat.SelectedValue);
 
             DetectColumnNamesRow.Visible = format.CanDetectColumnNames;
             CompressedRow.Visible = !format.IsCompressed;

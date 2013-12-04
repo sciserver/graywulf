@@ -22,6 +22,16 @@ namespace Jhu.Graywulf.Jobs.Query
     [Serializable]
     public abstract class QueryFactory : JobFactoryBase
     {
+        #region Static members
+
+        public static QueryFactory Create(Context context)
+        {
+            var ft = Type.GetType(Federation.AppSettings.QueryFactory);
+            return (QueryFactory)Activator.CreateInstance(ft, context);
+        }
+
+        #endregion
+
         [NonSerialized]
         private static Type[] queryTypes = null;
 

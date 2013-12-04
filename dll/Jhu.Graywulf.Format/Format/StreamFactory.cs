@@ -16,6 +16,16 @@ namespace Jhu.Graywulf.Format
     /// </remarks>
     public class StreamFactory
     {
+        #region Static members
+
+        public static StreamFactory Create()
+        {
+            var type = Type.GetType(AppSettings.StreamFactory);
+            return (StreamFactory)Activator.CreateInstance(type, true);
+        }
+
+        #endregion
+
         private Uri uri;
         private DataFileMode mode;
         private DataFileCompression compression;
@@ -60,7 +70,7 @@ namespace Jhu.Graywulf.Format
             set { password = value; }
         }
 
-        public StreamFactory()
+        protected StreamFactory()
         {
             InitializeMembers();
         }

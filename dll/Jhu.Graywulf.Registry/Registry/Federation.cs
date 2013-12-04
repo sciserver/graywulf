@@ -27,6 +27,11 @@ namespace Jhu.Graywulf.Registry
             {
                 get { return GetValue("FederationName"); }
             }
+
+            public static string QueryFactory
+            {
+                get { return GetValue("QueryFactory"); }
+            }
         }
 
         enum ReferenceType : int
@@ -71,6 +76,7 @@ namespace Jhu.Graywulf.Registry
             set { email = value; }
         }
 
+        // TODO: remove
         [DBColumn(Size = 1024)]
         public string QueryFactoryTypeName
         {
@@ -78,6 +84,7 @@ namespace Jhu.Graywulf.Registry
             set { queryFactoryTypeName = value; }
         }
 
+        // TODO: remove
         [DBColumn(Size = 1024)]
         public string FileFormatFactoryTypeName
         {

@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Format\AppSettings.cs" />
     <Compile Include="Format\BufferedTextReader.cs" />
     <Compile Include="Format\Constants.cs" />
     <Compile Include="Format\IArchiveOutputStream.cs" />
