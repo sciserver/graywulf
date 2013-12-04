@@ -68,12 +68,13 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             et.Source = source;
 
             // TODO: change this to support different compression formats
+            // tar.gz won't work with streaming data, so use zip instead!
             path = Path.Combine(path, String.Format("{0}_{1}_{2}{3}.gz", Context.UserName, job.JobID, source.ObjectName, format.DefaultExtension));
 
             var destination = FileFormatFactory.CreateFile(format);
             destination.Uri = new Uri(String.Format("file:///{0}", path));
             destination.FileMode = DataFileMode.Write;
-            destination.Compression = DataFileCompression.GZip;
+            // TODO: test this and delete if works destination.Compression = DataFileCompression.GZip;
 
             // special initialization in case of a text file
             if (destination is TextDataFile)

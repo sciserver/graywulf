@@ -162,11 +162,11 @@ namespace Jhu.Graywulf.Format
                 // Open text reader
                 if (base.Encoding == null)
                 {
-                    inputReader = new StreamReader(base.Stream);
+                    inputReader = new StreamReader(base.BaseStream);
                 }
                 else
                 {
-                    inputReader = new StreamReader(base.Stream, base.Encoding);
+                    inputReader = new StreamReader(base.BaseStream, base.Encoding);
                 }
 
                 this.ownsInputReader = true;
@@ -182,11 +182,11 @@ namespace Jhu.Graywulf.Format
                 // Open TextWriter
                 if (base.Encoding == null)
                 {
-                    outputWriter = new StreamWriter(base.Stream);
+                    outputWriter = new StreamWriter(base.BaseStream);
                 }
                 else
                 {
-                    outputWriter = new StreamWriter(base.Stream, base.Encoding);
+                    outputWriter = new StreamWriter(base.BaseStream, base.Encoding);
                 }
 
                 ownsOutputWriter = true;

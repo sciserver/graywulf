@@ -35,21 +35,9 @@ namespace Jhu.Graywulf.Format
         private bool ownsBaseStream;
 
         /// <summary>
-        /// Compression/decompression stream that wraps baseStream if data is
-        /// compressed.
-        /// </summary>
-        [NonSerialized]
-        private Stream uncompressedStream;
-
-        /// <summary>
         /// Read or write
         /// </summary>
         private DataFileMode fileMode;
-
-        /// <summary>
-        /// Type of compression
-        /// </summary>
-        private DataFileCompression compression;
 
         /// <summary>
         /// Uri to the file. If set, the class can open it internally.
@@ -81,11 +69,11 @@ namespace Jhu.Graywulf.Format
         public abstract FileFormatDescription Description { get; }
 
         /// <summary>
-        /// Gets the (uncompressed) stream that can be used to read data
+        /// Gets the stream that can be used to read data
         /// </summary>
-        protected virtual Stream Stream
+        protected virtual Stream BaseStream
         {
-            get { return uncompressedStream ?? baseStream; }
+            get { return baseStream; }
         }
 
         /// <summary>
@@ -98,19 +86,6 @@ namespace Jhu.Graywulf.Format
             {
                 EnsureNotOpen();
                 fileMode = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the compression method.
-        /// </summary>
-        public DataFileCompression Compression
-        {
-            get { return compression; }
-            set
-            {
-                EnsureNotOpen();
-                compression = value;
             }
         }
 
@@ -163,7 +138,6 @@ namespace Jhu.Graywulf.Format
 
             this.uri = uri;
             this.fileMode = fileMode;
-            this.compression = compression;
         }
 
         protected DataFileBase(Stream stream, DataFileMode fileMode, DataFileCompression compression)
@@ -172,17 +146,14 @@ namespace Jhu.Graywulf.Format
 
             this.baseStream = stream;
             this.fileMode = fileMode;
-            this.compression = compression;
         }
 
         private void InitializeMembers()
         {
             this.baseStream = null;
             this.ownsBaseStream = false;
-            this.uncompressedStream = null;
 
             this.fileMode = DataFileMode.Unknown;
-            this.compression = DataFileCompression.None;
             this.uri = null;
 
             this.blocks = new List<DataFileBlockBase>();
@@ -198,44 +169,14 @@ namespace Jhu.Graywulf.Format
         #region Stream open/close
 
         /// <summary>
-        /// If compression is set to automatic, figures out compression
-        /// method from the file extension
-        /// </summary>
-        /// <returns></returns>
-        private DataFileCompression GetCompressionMethod()
-        {
-            // Open compressed stream, if necessary
-            var cm = compression;
-
-            if (cm == DataFileCompression.Automatic)
-            {
-                var path = uri.IsAbsoluteUri ? uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped) : uri.ToString();
-                var extension = Path.GetExtension(path).ToLowerInvariant();
-
-                switch (extension)
-                {
-                    case ".gz":
-                        cm = DataFileCompression.GZip;
-                        break;
-                    case ".bz2":
-                        cm = DataFileCompression.BZip2;
-                        break;
-                    case ".zip":
-                        cm = DataFileCompression.Zip;
-                        break;
-                    default:
-                        cm = DataFileCompression.None;
-                        break;
-                }
-            }
-
-            return cm;
-        }
-
-        /// <summary>
         /// Makes sure that the base stream is not open, if
         /// stream is owned by the class.
         /// </summary>
+        /// <remarks>
+        /// When overriden in derived classes, the function can also
+        /// check other specialized streams wrapping (or substituting)
+        /// base stream.
+        /// </remarks>
         protected virtual void EnsureNotOpen()
         {
             if (ownsBaseStream && baseStream != null)
@@ -249,6 +190,8 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         public void Open()
         {
+            EnsureNotOpen();
+
             switch (fileMode)
             {
                 case DataFileMode.Read:
@@ -278,6 +221,19 @@ namespace Jhu.Graywulf.Format
             this.fileMode = fileMode;
         }
 
+        private void OpenBaseStream()
+        {
+            if (baseStream == null)
+            {
+                // Use stream factory to open stream
+                // TODO: replace this to use configured stream factory
+                var f = new StreamFactory();
+                baseStream = f.Open(uri, fileMode);
+
+                ownsBaseStream = true;
+            }
+        }
+
         /// <summary>
         /// When overloaded in derived classes, opens the data file for reading
         /// </summary>
@@ -288,65 +244,7 @@ namespace Jhu.Graywulf.Format
                 throw new InvalidOperationException();
             }
 
-            EnsureNotOpen();
-
-            // Open stream, if necessary
-            if (baseStream == null)
-            {
-                OpenOwnStreamForRead();
-            }
-
-            // Wrap into an uncompressed stream, if necessary
-            if (uncompressedStream == null)
-            {
-                WrapCompressedStreamForRead();
-            }
-        }
-
-        private void OpenOwnStreamForRead()
-        {
-            if (!uri.IsAbsoluteUri || uri.IsFile)
-            {
-                // Open a file
-                baseStream = new FileStream(uri.ToString(), System.IO.FileMode.Open, FileAccess.Read, FileShare.Read);
-            }
-            else
-            {
-                // Open a stream
-
-                switch (uri.Scheme.ToLowerInvariant())
-                {
-                    case "http":
-                    case "https":
-                    case "ftp":
-                    default:
-                        throw new NotImplementedException();
-
-                    //TODO implement net protocols
-                }
-            }
-
-            ownsBaseStream = true;
-        }
-
-        private void WrapCompressedStreamForRead()
-        {
-            switch (GetCompressionMethod())
-            {
-                case DataFileCompression.None:
-                    break;
-                case DataFileCompression.GZip:
-                    uncompressedStream = new ICSharpCode.SharpZipLib.GZip.GZipInputStream(baseStream);
-                    break;
-                case DataFileCompression.BZip2:
-                    uncompressedStream = new ICSharpCode.SharpZipLib.BZip2.BZip2InputStream(baseStream);
-                    break;
-                case DataFileCompression.Zip:
-                    uncompressedStream = new ICSharpCode.SharpZipLib.Zip.ZipInputStream(baseStream);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
+            OpenBaseStream();
         }
 
         /// <summary>
@@ -359,40 +257,7 @@ namespace Jhu.Graywulf.Format
                 throw new InvalidOperationException();
             }
 
-            EnsureNotOpen();
-
-            if (baseStream == null)
-            {
-                // No open stream yet
-                if (!uri.IsAbsoluteUri || uri.IsFile)
-                {
-                    baseStream = new FileStream(uri.ToString(), System.IO.FileMode.Create, FileAccess.Write, FileShare.None);
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-                ownsBaseStream = true;
-            }
-
-            // Open compressed stream, if necessary
-            switch (compression)
-            {
-                case DataFileCompression.None:
-                case DataFileCompression.Automatic:
-                    break;
-                case DataFileCompression.GZip:
-                    uncompressedStream = new ICSharpCode.SharpZipLib.GZip.GZipOutputStream(baseStream);
-                    break;
-                case DataFileCompression.BZip2:
-                    uncompressedStream = new ICSharpCode.SharpZipLib.BZip2.BZip2OutputStream(baseStream);
-                    break;
-                case DataFileCompression.Zip:
-                    uncompressedStream = new ICSharpCode.SharpZipLib.Zip.ZipOutputStream(baseStream);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
+            OpenBaseStream();
         }
 
         /// <summary>
@@ -400,13 +265,6 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         public virtual void Close()
         {
-            if (uncompressedStream != null)
-            {
-                uncompressedStream.Close();
-                uncompressedStream.Dispose();
-                uncompressedStream = null;
-            }
-
             if (ownsBaseStream && baseStream != null)
             {
                 baseStream.Close();
@@ -421,7 +279,7 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         public virtual bool IsClosed
         {
-            get { return Stream == null; }
+            get { return baseStream == null; }
         }
 
         #endregion
