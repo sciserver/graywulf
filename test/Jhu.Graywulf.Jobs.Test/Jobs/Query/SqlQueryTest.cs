@@ -5,6 +5,9 @@ using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Scheduler;
+using Jhu.Graywulf.RemoteService;
+using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
 
 namespace Jhu.Graywulf.Test.Jobs.Query
@@ -21,25 +24,28 @@ namespace Jhu.Graywulf.Test.Jobs.Query
             Assert.IsTrue(sc.Execute(t));
         }
 
-        /*
         [TestMethod]
         public void SimpleQueryTest()
         {
-            // *** TODO: rewrite this to work with test setup instead of skyquery
+            using (SchedulerTester.Instance.GetToken())
+            {
+                DropMyDBTable("dbo", "SqlQueryTest_SimpleQueryTest");
 
-            var sql = "SELECT TOP 10 specobjid INTO SqlQueryTest_SimpleQueryTest FROM SDSSDR7:SpecObjAll";
+                SchedulerTester.Instance.EnsureRunning();
+                using (RemoteServiceTester.Instance.GetToken())
+                {
+                    RemoteServiceTester.Instance.EnsureRunning();
 
-            ScheduleQueryJob(sql, QueueType.Long);
+                    var sql = "SELECT TOP 10 objid, ra, dec INTO SqlQueryTest_SimpleQueryTest FROM SDSSDR7:PhotoObj";
 
-            StartScheduler();
+                    var guid = ScheduleQueryJob(sql, QueueType.Long);
 
-            // Leave enough time for the scheduler to start
-            Thread.Sleep(TimeSpan.FromSeconds(20));
+                    WaitJobComplete(guid, TimeSpan.FromSeconds(10));
 
-            // Drain-stop
-            StopScheduler();
-
-            // TODO: add drop
-        }*/
+                    var ji = LoadJob(guid);
+                    Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
+                }
+            }
+        }
     }
 }
