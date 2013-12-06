@@ -29,9 +29,19 @@ namespace Jhu.Graywulf.ConfigUtil
                 ArgumentParser.PrintUsage(verbs, Console.Out);
             }
 
-            if (v != null)
+            try
             {
-                v.Run();
+                if (v != null)
+                {
+                    v.Run();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+
+                Environment.Exit(-1);
             }
         }
 
