@@ -8,63 +8,6 @@ namespace Jhu.Graywulf.Schema
 {
     public static class Constants
     {
-        /* TODO: delete
-        public const string TypeNameUnknown = "unknown";
-        public const string TypeNameTinyInt = "tinyint";
-        public const string TypeNameSmallInt = "smallint";
-        public const string TypeNameInt = "int";
-        public const string TypeNameBigInt = "bigint";
-        public const string TypeNameBit = "bit";
-        public const string TypeNameDecimal = "decimal";
-        public const string TypeNameSmallMoney = "smallmoney";
-        public const string TypeNameMoney = "money";
-        public const string TypeNameNumeric = "numeric";
-        public const string TypeNameReal = "real";
-        public const string TypeNameFloat = "float";
-        public const string TypeNameDate = "date";
-        public const string TypeNameTime = "time";
-        public const string TypeNameSmallDateTime = "smalldatetime";
-        public const string TypeNameDateTime = "datetime";
-        public const string TypeNameDateTime2 = "datetime2";
-        public const string TypeNameDateTimeOffset = "datetimeoffset";
-        public const string TypeNameChar = "char";
-        public const string TypeNameVarChar = "varchar";
-        public const string TypeNameText = "text";
-        public const string TypeNameNChar = "nchar";
-        public const string TypeNameNVarChar = "nvarchar";
-        public const string TypeNameNText = "ntext";
-        public const string TypeNameXml = "xml";
-        public const string TypeNameBinary = "binary";
-        public const string TypeNameVarBinary = "varbinary";
-        public const string TypeNameImage = "image";
-        public const string TypeNameSqlVariant = "sql_variant";
-        public const string TypeNameTimestamp = "timestamp";
-        public const string TypeNameUniqueIdentifier = "uniqueidentifier";
-         * */
-
-        /* TODO: delete
-        public const string SchemaColumnColumnName = "ColumnName";
-        public const string SchemaColumnColumnOrdinal = "ColumnOrdinal";
-        public const string SchemaColumnColumnSize = "ColumnSize";
-        public const string SchemaColumnNumericPrecision = "NumericPrecision";
-        public const string SchemaColumnNumericScale = "NumericScale";
-        public const string SchemaColumnIsUnique = "IsUnique";
-        public const string SchemaColumnIsKey = "IsKey";
-        public const string SchemaColumnDataType = "DataType";
-        public const string SchemaColumnAllowDBNull = "AllowDBNull";
-        public const string SchemaColumnProviderType = "ProviderType";
-        public const string SchemaColumnIsAliased = "IsAliased";
-        public const string SchemaColumnIsExpression = "IsExpression";
-        public const string SchemaColumnIsIdentity = "IsIdentity";
-        public const string SchemaColumnIsAutoIncrement = "IsAutoIncrement";
-        public const string SchemaColumnIsRowVersion = "IsRowVersion";
-        public const string SchemaColumnIsHidden = "IsHidden";
-        public const string SchemaColumnIsLong = "IsLong";
-        public const string SchemaColumnIsReadOnly = "IsReadOnly";
-        public const string SchemaColumnProviderSpecificDataType = "ProviderSpecificDataType";
-        public const string SchemaColumnDataTypeName = "DataTypeName";
-         * */
-
         public static readonly Map<Type, DatabaseObjectType> DatabaseObjectTypes = new Map<Type, DatabaseObjectType>()
         {
             { typeof(Table), DatabaseObjectType.Table },
