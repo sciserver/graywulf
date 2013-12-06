@@ -21,6 +21,13 @@ namespace Jhu.Graywulf.Format
         public static StreamFactory Create()
         {
             var type = Type.GetType(AppSettings.StreamFactory);
+
+            // Fall back logic
+            if (type == null)
+            {
+                type = typeof(StreamFactory);
+            }
+
             return (StreamFactory)Activator.CreateInstance(type, true);
         }
 
