@@ -184,7 +184,7 @@ namespace Jhu.Graywulf.Format
             dr[SchemaTableColumn.IsUnique] = col.IsIdentity;
             dr[SchemaTableColumn.IsKey] = col.IsIdentity;
             dr[SchemaTableColumn.DataType] = col.DataType.Type;
-            dr[SchemaTableColumn.AllowDBNull] = col.IsNullable;
+            dr[SchemaTableColumn.AllowDBNull] = col.DataType.IsNullable;
             dr[SchemaTableColumn.ProviderType] = col.DataType.Name;
             dr[SchemaTableColumn.IsAliased] = false;
             dr[SchemaTableColumn.IsExpression] = false;

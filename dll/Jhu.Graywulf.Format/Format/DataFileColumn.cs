@@ -16,7 +16,6 @@ namespace Jhu.Graywulf.Format
                 return new DataFileColumn()
                 {
                     Name = "__ID",
-                    IsNullable = false,
                     IsIdentity = true,
                     IsKey = true,
                     DataType = DataType.SqlBigInt
@@ -28,7 +27,6 @@ namespace Jhu.Graywulf.Format
         private string name;
         private DataType dataType;
         private DataFileColumnMetadata metadata;
-        private bool isNullable;
         private bool isIdentity;
         private bool isKey;
         private bool isHidden;
@@ -64,12 +62,6 @@ namespace Jhu.Graywulf.Format
         {
             get { return metadata; }
             set { metadata = (DataFileColumnMetadata)value; }
-        }
-
-        public bool IsNullable
-        {
-            get { return isNullable; }
-            set { isNullable = value; }
         }
 
         public bool IsIdentity
@@ -123,7 +115,6 @@ namespace Jhu.Graywulf.Format
             this.name = null;
             this.dataType = null;
             this.metadata = new DataFileColumnMetadata();
-            this.isNullable = false;
             this.isIdentity = false;
             this.isKey = false;
             this.isHidden = false;
@@ -135,7 +126,6 @@ namespace Jhu.Graywulf.Format
             this.name = old.name;
             this.dataType = old.dataType;
             this.metadata = new DataFileColumnMetadata(old.metadata);
-            this.isNullable = old.isNullable;
             this.isIdentity = old.isIdentity;
             this.isKey = old.isKey;
             this.isHidden = old.isHidden;
