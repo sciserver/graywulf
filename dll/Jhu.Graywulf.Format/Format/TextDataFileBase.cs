@@ -9,7 +9,7 @@ using Jhu.Graywulf.Types;
 namespace Jhu.Graywulf.Format
 {
     [Serializable]
-    public abstract class TextDataFile : FormattedDataFile, IDisposable
+    public abstract class TextDataFileBase : FormattedDataFileBase, IDisposable
     {
         #region Member variables
 
@@ -68,33 +68,33 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Constructors and initializers
 
-        protected TextDataFile()
+        protected TextDataFileBase()
         {
             InitializeMembers();
         }
 
-        protected TextDataFile(Uri uri, DataFileMode fileMode, DataFileCompression compression, Encoding encoding, CultureInfo culture)
-            : base(uri, fileMode, compression, encoding, culture)
+        protected TextDataFileBase(Uri uri, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
+            : base(uri, fileMode, encoding, culture)
         {
             InitializeMembers();
         }
 
-        protected TextDataFile(Stream stream, DataFileMode fileMode, DataFileCompression compression, Encoding encoding, CultureInfo culture)
-            : base(stream, fileMode, compression, encoding, culture)
+        protected TextDataFileBase(Stream stream, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
+            : base(stream, fileMode, encoding, culture)
         {
             InitializeMembers();
         }
 
-        protected TextDataFile(TextReader inputReader, Encoding encoding, CultureInfo culture)
-            : base((Stream)null, DataFileMode.Read, DataFileCompression.None, encoding, culture)
+        protected TextDataFileBase(TextReader inputReader, Encoding encoding, CultureInfo culture)
+            : base((Stream)null, DataFileMode.Read, encoding, culture)
         {
             InitializeMembers();
 
             this.inputReader = inputReader;
         }
 
-        protected TextDataFile(TextWriter outputWriter, Encoding encoding, CultureInfo culture)
-            : base((Stream)null, DataFileMode.Write, DataFileCompression.None, encoding, culture)
+        protected TextDataFileBase(TextWriter outputWriter, Encoding encoding, CultureInfo culture)
+            : base((Stream)null, DataFileMode.Write, encoding, culture)
         {
             InitializeMembers();
 
@@ -125,14 +125,14 @@ namespace Jhu.Graywulf.Format
 
         public virtual void Open(TextReader inputReader)
         {
-            base.Open(null, DataFileMode.Read);
+            OpenStream(null, DataFileMode.Read);
 
             this.inputReader = inputReader;
         }
 
         public virtual void Open(TextWriter outputWriter)
         {
-            base.Open(null, DataFileMode.Write);
+            OpenStream(null, DataFileMode.Write);
 
             this.outputWriter = outputWriter;
         }
@@ -199,17 +199,20 @@ namespace Jhu.Graywulf.Format
             {
                 inputReader.Close();
                 inputReader.Dispose();
-                inputReader = null;
-                ownsInputReader = false;
             }
+
+            inputReader = null;
+            ownsInputReader = false;
 
             if (ownsOutputWriter && outputWriter != null)
             {
+                outputWriter.Flush();
                 outputWriter.Close();
                 outputWriter.Dispose();
-                outputWriter = null;
-                ownsOutputWriter = false;
             }
+
+            outputWriter = null;
+            ownsOutputWriter = false;
 
             base.Close();
         }

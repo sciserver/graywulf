@@ -7,7 +7,7 @@ using Jhu.Graywulf.Types;
 
 namespace Jhu.Graywulf.Format
 {
-    public abstract class FormattedDataFileBlock : DataFileBlockBase
+    public abstract class FormattedDataFileBlockBase : DataFileBlockBase
     {
         protected delegate bool ParserDelegate(string value, out object result);
         protected delegate string FormatterDelegate(object value, string format);
@@ -28,12 +28,12 @@ namespace Jhu.Graywulf.Format
             get { return columnFormatters; }
         }
 
-        private FormattedDataFile File
+        private FormattedDataFileBase File
         {
-            get { return (FormattedDataFile)file; }
+            get { return (FormattedDataFileBase)file; }
         }
 
-        public FormattedDataFileBlock(FormattedDataFile file)
+        public FormattedDataFileBlockBase(FormattedDataFileBase file)
             : base(file)
         {
             InitializeMembers();
@@ -92,7 +92,7 @@ namespace Jhu.Graywulf.Format
                 int size, rank;
                 if (!GetBestColumnTypeEstimate(parts[i], out type, out size, out rank))
                 {
-                    cols[i].IsNullable = true;
+                    cols[i].DataType.IsNullable = true;
                 }
 
                 if (cols[i].DataType == null || colranks[i] < rank)
@@ -126,7 +126,7 @@ namespace Jhu.Graywulf.Format
                 {
                     if (!Columns[i].IsIdentity)
                     {
-                        if (parts[pi] == null && Columns[i].IsNullable)
+                        if (parts[pi] == null && Columns[i].DataType.IsNullable)
                         {
                             values[i] = null;
                         }

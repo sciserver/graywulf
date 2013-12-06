@@ -10,7 +10,7 @@ using System.Xml;
 namespace Jhu.Graywulf.Format
 {
     [Serializable]
-    public class CsvFile : TextDataFile, IDisposable
+    public class DelimitedTextDataFile : TextDataFileBase, IDisposable
     {
         [NonSerialized]
         private bool isFirstBlock;
@@ -27,12 +27,12 @@ namespace Jhu.Graywulf.Format
             {
                 return new FileFormatDescription()
                     {
-                        DisplayName = FileFormatNames.Jhu_Graywulf_Format_CsvFile,
+                        DisplayName = FileFormatNames.Jhu_Graywulf_Format_DelimitedTextDataFile,
                         DefaultExtension = Constants.FileExtensionCsv,
                         CanRead = true,
                         CanWrite = true,
                         CanDetectColumnNames = true,
-                        MultipleDatasets = false,
+                        CanHoldMultipleDatasets = false,
                         IsCompressed = false,
                     };
             }
@@ -59,65 +59,59 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Constructors and initializers
 
-        protected CsvFile()
+        protected DelimitedTextDataFile()
             : base()
         {
             InitializeMembers();
         }
 
-        public CsvFile(Uri uri, DataFileMode fileMode, DataFileCompression compression, Encoding encoding, CultureInfo culture)
-            : base(uri, fileMode, compression, encoding, culture)
+        public DelimitedTextDataFile(Uri uri, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
+            : base(uri, fileMode, encoding, culture)
         {
             InitializeMembers();
 
             Open();
         }
 
-        public CsvFile(Uri uri, DataFileMode fileMode, DataFileCompression compression)
-            : this(uri, fileMode, compression, Encoding.ASCII, CultureInfo.InvariantCulture)
+        public DelimitedTextDataFile(Uri uri, DataFileMode fileMode)
+            : this(uri, fileMode, Encoding.ASCII, CultureInfo.InvariantCulture)
         {
             // Overload
         }
 
-        public CsvFile(Uri uri, DataFileMode fileMode)
-            : this(uri, fileMode, DataFileCompression.Automatic)
-        {
-            // Overload
-        }
-
-        public CsvFile(Stream stream, DataFileMode fileMode, DataFileCompression compression, Encoding encoding, CultureInfo culture)
-            : base(stream, fileMode, compression, encoding, culture)
+        public DelimitedTextDataFile(Stream stream, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
+            : base(stream, fileMode, encoding, culture)
         {
             InitializeMembers();
 
             Open();
         }
 
-        public CsvFile(Stream stream, DataFileMode fileMode)
-            : this(stream, fileMode, DataFileCompression.None, Encoding.ASCII, CultureInfo.InvariantCulture)
+        public DelimitedTextDataFile(Stream stream, DataFileMode fileMode)
+            : this(stream, fileMode, Encoding.ASCII, CultureInfo.InvariantCulture)
         {
             // Overload
         }
 
-        public CsvFile(TextReader inputReader, Encoding encoding, CultureInfo culture)
+        public DelimitedTextDataFile(TextReader inputReader, Encoding encoding, CultureInfo culture)
             : base(inputReader, encoding, culture)
         {
             InitializeMembers();
         }
 
-        public CsvFile(TextReader inputReader)
+        public DelimitedTextDataFile(TextReader inputReader)
             : this(inputReader, Encoding.ASCII, CultureInfo.InvariantCulture)
         {
             // Overload
         }
 
-        public CsvFile(TextWriter outputWriter, Encoding encoding, CultureInfo culture)
+        public DelimitedTextDataFile(TextWriter outputWriter, Encoding encoding, CultureInfo culture)
             : base(outputWriter, encoding, culture)
         {
             InitializeMembers();
         }
 
-        public CsvFile(TextWriter outputWriter)
+        public DelimitedTextDataFile(TextWriter outputWriter)
             : this(outputWriter, Encoding.ASCII, CultureInfo.InvariantCulture)
         {
             // Overload
@@ -134,13 +128,6 @@ namespace Jhu.Graywulf.Format
 
         #endregion
         #region Stream open and close
-
-        public override void Open(Stream stream, DataFileMode fileMode)
-        {
-            base.Open(stream, fileMode);
-
-            Open();
-        }
 
         public override void Open(TextReader inputReader)
         {
@@ -175,7 +162,7 @@ namespace Jhu.Graywulf.Format
             isFirstBlock = false;
 
             // Create a new block object, if necessary
-            return block ?? new CsvFileBlock(this);
+            return block ?? new DelimitedTextDataFileBlock(this);
         }
 
         protected internal override void OnReadFooter()
@@ -198,7 +185,7 @@ namespace Jhu.Graywulf.Format
                 // CSV files can contain a single file block only
             }
 
-            return block ?? new CsvFileBlock(this);
+            return block ?? new DelimitedTextDataFileBlock(this);
         }
 
         #endregion

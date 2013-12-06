@@ -6,7 +6,7 @@ using Jhu.Graywulf.Types;
 
 namespace Jhu.Graywulf.Format
 {
-    public abstract class TextDataFileBlock : FormattedDataFileBlock
+    public abstract class TextDataFileBlockBase : FormattedDataFileBlockBase
     {
         [NonSerialized]
         private BufferedTextReader textBuffer;
@@ -16,14 +16,14 @@ namespace Jhu.Graywulf.Format
             get { return textBuffer; }
         }
 
-        private TextDataFile File
+        private TextDataFileBase File
         {
-            get { return (TextDataFile)file; }
+            get { return (TextDataFileBase)file; }
         }
 
         #region Constructors and initializers
 
-        public TextDataFileBlock(TextDataFile file)
+        public TextDataFileBlockBase(TextDataFileBase file)
             : base(file)
         {
             InitializeMembers();

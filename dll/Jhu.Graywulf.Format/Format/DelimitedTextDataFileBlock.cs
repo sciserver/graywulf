@@ -5,14 +5,14 @@ using System.Text;
 
 namespace Jhu.Graywulf.Format
 {
-    public class CsvFileBlock : TextDataFileBlock
+    public class DelimitedTextDataFileBlock : TextDataFileBlockBase
     {
-        private CsvFile File
+        private DelimitedTextDataFile File
         {
-            get { return (CsvFile)file; }
+            get { return (DelimitedTextDataFile)file; }
         }
 
-        public CsvFileBlock(CsvFile file)
+        public DelimitedTextDataFileBlock(DelimitedTextDataFile file)
             : base(file)
         {
             InitializeMembers();
@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Format
         /// <remarks>
         /// Characters and strings have to be quoted as may contain the separator character
         /// </remarks>
-        protected override FormattedDataFileBlock.FormatterDelegate GetFormatterDelegate(DataFileColumn column)
+        protected override FormattedDataFileBlockBase.FormatterDelegate GetFormatterDelegate(DataFileColumn column)
         {
             var t = column.DataType.Type;
 

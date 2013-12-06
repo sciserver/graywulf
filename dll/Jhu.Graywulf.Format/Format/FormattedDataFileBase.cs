@@ -9,7 +9,7 @@ using System.Xml;
 
 namespace Jhu.Graywulf.Format
 {
-    public abstract class FormattedDataFile : DataFileBase
+    public abstract class FormattedDataFileBase : DataFileBase
     {
         private Encoding encoding;
         private CultureInfo culture;
@@ -40,13 +40,13 @@ namespace Jhu.Graywulf.Format
             set { dateTimeStyle = value; }
         }
 
-        protected FormattedDataFile()
+        protected FormattedDataFileBase()
         {
             InitializeMembers();
         }
 
-        protected FormattedDataFile(Uri uri, DataFileMode fileMode, DataFileCompression compression, Encoding encoding, CultureInfo culture)
-            : base(uri, fileMode, compression)
+        protected FormattedDataFileBase(Uri uri, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
+            : base(uri, fileMode)
         {
             InitializeMembers();
 
@@ -54,8 +54,8 @@ namespace Jhu.Graywulf.Format
             this.culture = culture;
         }
 
-        protected FormattedDataFile(Stream stream, DataFileMode fileMode, DataFileCompression compression, Encoding encoding, CultureInfo culture)
-            : base(stream, fileMode, compression)
+        protected FormattedDataFileBase(Stream stream, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
+            : base(stream, fileMode)
         {
             InitializeMembers();
 

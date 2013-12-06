@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.IO
 
             var uri = new Uri(String.Format(@"file://{0}/{1}/{2}.txt", Test.Constants.RemoteHost1, Test.Constants.GWCode, name));
 
-            var destination = new CsvFile(uri, DataFileMode.Write);
+            var destination = new DelimitedTextDataFile(uri, DataFileMode.Write);
 
             IDataFileExporter dfe = null;
             if (remote)

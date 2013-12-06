@@ -15,8 +15,8 @@ namespace Jhu.Graywulf.Format
     {
         private FileDataReader OpenSimpleReader(string csv)
         {
-            var f = new CsvFile(new StringReader(csv));
-            var b = new CsvFileBlock(f);
+            var f = new DelimitedTextDataFile(new StringReader(csv));
+            var b = new DelimitedTextDataFileBlock(f);
 
             b.Columns.Add(new DataFileColumn("one", typeof(int), 4));
             b.Columns.Add(new DataFileColumn("two", typeof(int), 4));

@@ -120,7 +120,7 @@ namespace Jhu.Graywulf.Format
         /// <param name="fileTypes"></param>
         protected virtual void OnCreateFileFormatDescriptions(HashSet<Type> fileTypes)
         {
-            fileTypes.Add(typeof(CsvFile));
+            fileTypes.Add(typeof(DelimitedTextDataFile));
         }
 
         /// <summary>

@@ -56,7 +56,7 @@ namespace Jhu.Graywulf.Jobs.ExportTable
         protected virtual Type[] LoadFileFormats()
         {
             // TODO: write this one to use config
-            return new Type[] { typeof(Jhu.Graywulf.Format.CsvFile) };
+            return new Type[] { typeof(Jhu.Graywulf.Format.DelimitedTextDataFile) };
         }
 
         public JobInstance ScheduleAsJob(TableOrView source, string path, FileFormatDescription format, string queueName, string comments)
@@ -77,9 +77,9 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             // TODO: test this and delete if works destination.Compression = DataFileCompression.GZip;
 
             // special initialization in case of a text file
-            if (destination is TextDataFile)
+            if (destination is TextDataFileBase)
             {
-                var tf = (TextDataFile)destination;
+                var tf = (TextDataFileBase)destination;
                 tf.Encoding = Encoding.ASCII;
                 tf.Culture = System.Globalization.CultureInfo.InvariantCulture;
                 tf.GenerateIdentityColumn = false;

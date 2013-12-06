@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Format
                 {
                     using (var dr = cmd.ExecuteReader())
                     {
-                        var csv = new CsvFile(w);
+                        var csv = new DelimitedTextDataFile(w);
                         csv.WriteFromDataReader(dr);
                     }
                 }
@@ -41,12 +41,13 @@ namespace Jhu.Graywulf.Format
 
         }
 
+        /*
         [TestMethod]
         public void CompressedWriterTest()
         {
             var uri = new Uri("CsvFileTest_CompressedWriterTest.csv.gz", UriKind.Relative);
 
-            using (var csv = new CsvFile(uri, DataFileMode.Write, DataFileCompression.GZip))
+            using (var csv = new DelimitedTextDataFile(uri, DataFileMode.Write, DataFileCompression.GZip))
             {
                 using (var cn = new SqlConnection(Jhu.Graywulf.Test.Constants.TestConnectionString))
                 {
@@ -65,5 +66,6 @@ namespace Jhu.Graywulf.Format
             Assert.IsTrue(File.Exists(uri.ToString()));
             File.Delete(uri.ToString());
         }
+         * */
     }
 }

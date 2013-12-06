@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// File format supports multiple tables in a single file.
         /// </summary>
-        private bool multipleDatasets;
+        private bool canHoldMultipleDatasets;
 
         /// <summary>
         /// File format is inherently compressed
@@ -90,10 +90,10 @@ namespace Jhu.Graywulf.Format
             set { canDetectColumnNames = value; }
         }
 
-        public bool MultipleDatasets
+        public bool CanHoldMultipleDatasets
         {
-            get { return multipleDatasets; }
-            set { multipleDatasets = value; }
+            get { return canHoldMultipleDatasets; }
+            set { canHoldMultipleDatasets = value; }
         }
 
         public bool IsCompressed
@@ -115,7 +115,7 @@ namespace Jhu.Graywulf.Format
             this.canRead = false;
             this.canWrite = false;
             this.canDetectColumnNames = false;
-            this.multipleDatasets = false;
+            this.canHoldMultipleDatasets = false;
             this.isCompressed = false;
         }
     }

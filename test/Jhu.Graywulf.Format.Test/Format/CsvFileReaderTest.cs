@@ -15,8 +15,8 @@ namespace Jhu.Graywulf.Format
     {
         FileDataReader OpenSimpleReader(string csv)
         {
-            var f = new CsvFile(new StringReader(csv));
-            var b = new CsvFileBlock(f);
+            var f = new DelimitedTextDataFile(new StringReader(csv));
+            var b = new DelimitedTextDataFileBlock(f);
 
             b.Columns.Add(new DataFileColumn("one", typeof(int), 4));
             b.Columns.Add(new DataFileColumn("two", typeof(int), 4));
@@ -110,7 +110,7 @@ namespace Jhu.Graywulf.Format
             var csv =
 @"1, 16000, 12345678, 12345678901234, 123.45, 1.1234567e5, 0.123456789012e-12,text";
 
-            var f = new CsvFile(new StringReader(csv));
+            var f = new DelimitedTextDataFile(new StringReader(csv));
             f.ColumnNamesInFirstLine = false;
             f.AutoDetectColumns = true;
             f.AutoDetectColumnsCount = 100;
@@ -179,7 +179,7 @@ namespace Jhu.Graywulf.Format
 3832.65740400034,13.3259000778198,4.25758266448975,4.25758266448975,0
 3833.54000759044,6.77347993850708,4.10115146636963,4.10115146636963,0";
 
-            var f = new CsvFile(new StringReader(csv));
+            var f = new DelimitedTextDataFile(new StringReader(csv));
             f.ColumnNamesInFirstLine = true;
             f.Culture = System.Globalization.CultureInfo.InvariantCulture;
             f.AutoDetectColumns = true;
@@ -210,7 +210,7 @@ namespace Jhu.Graywulf.Format
 testline
 1, 16000, 12345678, 12345678901234, 123.45, 1.1234567e5, 0.123456789012e-12,text";
 
-            var f = new CsvFile(new StringReader(csv));
+            var f = new DelimitedTextDataFile(new StringReader(csv));
             f.SkipLinesCount = 2;
             f.ColumnNamesInFirstLine = false;
             f.AutoDetectColumns = true;
@@ -243,7 +243,7 @@ testline
 @"#first, second, third, fourth
 1,2,3,4";
 
-            var f = new CsvFile(new StringReader(csv));
+            var f = new DelimitedTextDataFile(new StringReader(csv));
             f.ColumnNamesInFirstLine = true;
             f.AutoDetectColumns = true;
             f.AutoDetectColumnsCount = 100;

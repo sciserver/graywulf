@@ -47,13 +47,10 @@
     <Compile Include="Format\AppSettings.cs" />
     <Compile Include="Format\BufferedTextReader.cs" />
     <Compile Include="Format\Constants.cs" />
+    <Compile Include="Format\DelimitedTextDataFile.cs" />
+    <Compile Include="Format\DelimitedTextDataFileBlock.cs" />
+    <Compile Include="Format\DetachedStream.cs" />
     <Compile Include="Format\IArchiveOutputStream.cs" />
-    <Compile Include="Format\CsvFile.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Format\CsvFileBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Format\DataFileBase.cs" />
     <Compile Include="Format\DataFileBlockBase.cs" />
     <Compile Include="Format\DataFileColumn.cs" />
@@ -85,6 +82,8 @@
     <Compile Include="Format\SharpZipLibWrapper\TarInputStream.cs" />
     <Compile Include="Format\SharpZipLibWrapper\ZipInputStream.cs" />
     <Compile Include="Format\SharpZipLibWrapper\ZipOutputStream.cs" />
+    <Compile Include="Format\SqlServerNativeDataFile.cs" />
+    <Compile Include="Format\SqlServerNativeDataFileBlock.cs" />
     <Compile Include="Format\StreamFactory.cs" />
     <Compile Include="Format\TextDataFile.cs">
       <SubType>Code</SubType>

@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.IO
     {
         private IDataFileImporter GetDataFileImporter(string name, bool remote)
         {
-            var source = new CsvFile(
+            var source = new DelimitedTextDataFile(
                 new Uri(String.Format(@"file://{0}/{1}/RemoteImportTest.csv", Test.Constants.RemoteHost1, Test.Constants.GWCode)),
                 DataFileMode.Read);
             source.GenerateIdentityColumn = true;
