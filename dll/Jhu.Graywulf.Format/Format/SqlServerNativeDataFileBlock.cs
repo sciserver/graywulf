@@ -71,9 +71,7 @@ namespace Jhu.Graywulf.Format
             WriteBulkInsertScript();
 
             // Create entry for data
-            var arch = (IArchiveOutputStream)File.BaseStream;
-            var entry = arch.CreateFileEntry("table.dat", 0);
-            arch.WriteNextEntry(entry);
+            File.CreateArchiveEntry("table.dat", 0);
         }
 
         protected override void OnWriteNextRow(object[] values)
@@ -93,10 +91,7 @@ namespace Jhu.Graywulf.Format
         {
             var buffer = Encoding.UTF8.GetBytes(text);
 
-            var arch = (IArchiveOutputStream)File.BaseStream;
-            var entry = arch.CreateFileEntry(filename, buffer.Length);
-
-            arch.WriteNextEntry(entry);
+            File.CreateArchiveEntry(filename, buffer.Length);
             File.BaseStream.Write(buffer, 0, buffer.Length);
         }
 
@@ -104,7 +99,22 @@ namespace Jhu.Graywulf.Format
         {
             var sql = new StringBuilder();
 
-            sql.AppendLine("CREATE TABLE tablename");
+            sql.AppendLine(String.Format("CREATE TABLE [{0}] (", "newtable"));
+
+            for (int i = 0; i < Columns.Count; i++)
+            {
+                if (i > 0)
+                {
+                    sql.AppendLine(",");
+                }
+
+                sql.AppendFormat("[{0}] {1} {2}NULL",
+                    Columns[i].Name,
+                    Columns[i].DataType.NameWithLength,
+                    Columns[i].DataType.IsNullable ? "" : "NOT ");
+            }
+
+            sql.AppendLine(")");
 
             WriteTextFileEntry("create.sql", sql.ToString());
         }
@@ -113,7 +123,9 @@ namespace Jhu.Graywulf.Format
         {
             var sql = new StringBuilder();
 
-            sql.AppendLine("BULK INSERT tablename");
+            sql.AppendLine(String.Format("BULK INSERT [{0}]", "newtable"));
+            sql.AppendLine(String.Format("FROM '{0}'", "table.dat"));
+            sql.AppendLine("WITH (DATAFILETYPE = 'native', TABLOCK)");
 
             WriteTextFileEntry("insert.sql", sql.ToString());
         }

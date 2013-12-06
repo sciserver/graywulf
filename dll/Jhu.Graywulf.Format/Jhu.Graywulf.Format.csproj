@@ -50,6 +50,8 @@
     <Compile Include="Format\DelimitedTextDataFile.cs" />
     <Compile Include="Format\DelimitedTextDataFileBlock.cs" />
     <Compile Include="Format\DetachedStream.cs" />
+    <Compile Include="Format\FormattedDataFileBase.cs" />
+    <Compile Include="Format\FormattedDataFileBlockBase.cs" />
     <Compile Include="Format\IArchiveOutputStream.cs" />
     <Compile Include="Format\DataFileBase.cs" />
     <Compile Include="Format\DataFileBlockBase.cs" />
@@ -67,12 +69,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Format\FormattedDataFile.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Format\FormattedDataFileBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Format\IArchiveEntry.cs" />
     <Compile Include="Format\IArchiveInputStream.cs" />
     <Compile Include="Format\SeekForwardStream.cs" />
@@ -85,12 +81,8 @@
     <Compile Include="Format\SqlServerNativeDataFile.cs" />
     <Compile Include="Format\SqlServerNativeDataFileBlock.cs" />
     <Compile Include="Format\StreamFactory.cs" />
-    <Compile Include="Format\TextDataFile.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Format\TextDataFileBlock.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Format\TextDataFileBase.cs" />
+    <Compile Include="Format\TextDataFileBlockBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

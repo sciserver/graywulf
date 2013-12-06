@@ -160,13 +160,14 @@ namespace Jhu.Graywulf.Format
                 base.OpenForRead();
 
                 // Open text reader
+                // Wrap underlying stream, so it doesn't get disposed automatically
                 if (base.Encoding == null)
                 {
-                    inputReader = new StreamReader(base.BaseStream);
+                    inputReader = new StreamReader(new DetachedStream( base.BaseStream));
                 }
                 else
                 {
-                    inputReader = new StreamReader(base.BaseStream, base.Encoding);
+                    inputReader = new StreamReader(new DetachedStream(base.BaseStream), base.Encoding);
                 }
 
                 this.ownsInputReader = true;
@@ -180,13 +181,14 @@ namespace Jhu.Graywulf.Format
                 base.OpenForWrite();
 
                 // Open TextWriter
+                // Wrap underlying stream, so it doesn't get disposed automatically
                 if (base.Encoding == null)
                 {
-                    outputWriter = new StreamWriter(base.BaseStream);
+                    outputWriter = new StreamWriter(new DetachedStream(base.BaseStream));
                 }
                 else
                 {
-                    outputWriter = new StreamWriter(base.BaseStream, base.Encoding);
+                    outputWriter = new StreamWriter(new DetachedStream(base.BaseStream), base.Encoding);
                 }
 
                 ownsOutputWriter = true;
@@ -243,11 +245,12 @@ namespace Jhu.Graywulf.Format
 
         protected override void OnBlockAppended(DataFileBlockBase block)
         {
+            /* TODO: maybe remove
             // Make sure only one block is added
             if (Blocks.Count > 1)
             {
                 throw new InvalidOperationException("Text files must consist of a single block.");
-            }
+            }*/
         }
 
         protected override void OnWriteHeader()

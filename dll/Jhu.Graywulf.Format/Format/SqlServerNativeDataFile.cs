@@ -114,6 +114,7 @@ namespace Jhu.Graywulf.Format
                 throw new Exception("Must be an archive");  // **** TODO
             }
 
+            // Wrap underlying stream, so it doesn't get disposed automatically
             outputWriter = new BinaryWriter(new DetachedStream(base.BaseStream));
             ownsOutputWriter = true;
         }

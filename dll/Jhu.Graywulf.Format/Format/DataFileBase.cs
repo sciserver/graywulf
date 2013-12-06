@@ -253,6 +253,12 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        public void Open(Stream stream, DataFileMode fileMode)
+        {
+            OpenStream(stream, fileMode);
+            Open();
+        }
+
         /// <summary>
         /// Opens a file by wrapping a stream.
         /// </summary>
@@ -326,6 +332,15 @@ namespace Jhu.Graywulf.Format
         }
 
         #endregion
+
+        internal IArchiveEntry CreateArchiveEntry(string filename, long length)
+        {
+            var arch = (IArchiveOutputStream)baseStream;
+            var entry = arch.CreateFileEntry(filename, length);
+            arch.WriteNextEntry(entry);
+
+            return entry;
+        }
 
         /// <summary>
         /// When overloaded in a derived class, reads the file header.

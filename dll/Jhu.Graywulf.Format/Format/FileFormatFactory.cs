@@ -19,6 +19,13 @@ namespace Jhu.Graywulf.Format
         public static FileFormatFactory Create()
         {
             var type = Type.GetType(AppSettings.FileFormatFactory);
+
+            // If config is incorrect, fall back to known types.
+            if (type == null)
+            {
+                type = typeof(FileFormatFactory);
+            }
+
             return (FileFormatFactory)Activator.CreateInstance(type, true);
         }
 

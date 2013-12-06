@@ -179,7 +179,7 @@ namespace Jhu.Graywulf.Format
         /// If next block
         protected override DataFileBlockBase OnWriteNextBlock(DataFileBlockBase block, IDataReader dr)
         {
-            if (!isFirstBlock)
+            if (!IsArchive && !isFirstBlock)
             {
                 throw new InvalidOperationException();
                 // CSV files can contain a single file block only
