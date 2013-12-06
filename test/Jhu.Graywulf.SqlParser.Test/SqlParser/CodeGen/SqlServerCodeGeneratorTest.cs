@@ -3,6 +3,8 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Data;
+using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.SqlParser;
@@ -171,5 +173,48 @@ WHERE ID = 1";
             Assert.AreEqual("SELECT [Graywulf_Test].[dbo].[Book].[ID], [Graywulf_Test].[dbo].[Book].[Title] FROM [Graywulf_Test].[dbo].[Book] WHERE [Graywulf_Test].[dbo].[Book].[ID] = 1", res[1]);
         }
 
+
+        [TestMethod]
+        public void GenerateCreateDestinationTableQueryTest()
+        {
+            DataTable schema;
+
+            using (var cn = new SqlConnection(Jhu.Graywulf.Test.Constants.TestConnectionString))
+            {
+                cn.Open();
+
+                var sql = "SELECT * FROM SampleData";
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    using (var dr = cmd.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo))
+                    {
+                        schema = dr.GetSchemaTable();
+                    }
+                }
+            }
+
+            var dest = new Table()
+            {
+                SchemaName = "dbo",
+                TableName = "destination"
+            };
+
+            var cg = new SqlServerCodeGenerator();
+            var res = cg.GenerateCreateDestinationTableQuery(schema, dest);
+
+            Assert.AreEqual(@"CREATE TABLE [dbo].[destination] ([float] real NOT NULL,
+[double] float NOT NULL,
+[decimal] money NOT NULL,
+[nvarchar(50)] nvarchar(50) NOT NULL,
+[bigint] bigint NOT NULL,
+[int] int NOT NULL,
+[tinyint] tinyint NOT NULL,
+[smallint] smallint NOT NULL,
+[bit] bit NOT NULL,
+[ntext] nvarchar(max) NOT NULL,
+[char] char(1) NOT NULL,
+[datetime] datetime NOT NULL,
+[guid] uniqueidentifier NOT NULL)", res);
+        }
     }
 }

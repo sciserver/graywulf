@@ -343,15 +343,14 @@ DROP TABLE ##keys_{4};
             var sql = "CREATE TABLE [{0}].[{1}] ({2})";
             var columnlist = String.Empty;
             var keylist = String.Empty;
-            var nokey = false;
+            //var nokey = false;
 
             int cidx = 0;
-            int kidx = 0;
+            //int kidx = 0;
 
             for (int i = 0; i < schemaTable.Rows.Count; i++)
             {
-                var column = new Column();
-                TypeUtil.CopyColumnFromSchemaTableRow(column, schemaTable.Rows[i]);
+                var column = Column.Create(schemaTable.Rows[i]);
 
                 if (!column.IsHidden)
                 {
@@ -362,9 +361,9 @@ DROP TABLE ##keys_{4};
 
                     columnlist += String.Format(
                         "{0} {1} {2} NULL",
-                        column.Name,
+                        QuoteIdentifier(column.Name),
                         column.DataType.NameWithLength,
-                        column.IsNullable ? "" : "NOT");
+                        column.DataType.IsNullable ? "" : "NOT");
 
                     cidx++;
                 }

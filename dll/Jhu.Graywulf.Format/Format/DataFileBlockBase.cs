@@ -74,8 +74,7 @@ namespace Jhu.Graywulf.Format
 
                 for (int i = 0; i < dt.Rows.Count; i++)
                 {
-                    cols[i] = new DataFileColumn();
-                    TypeUtil.CopyColumnFromSchemaTableRow(cols[i], dt.Rows[i]);
+                    cols[i] = DataFileColumn.Create(dt.Rows[i]);
                 }
             }
 

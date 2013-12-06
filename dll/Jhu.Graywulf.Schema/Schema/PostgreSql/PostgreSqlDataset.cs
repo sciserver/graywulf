@@ -348,14 +348,14 @@ WHERE table_catalog = @databaseName AND table_name= @tableName AND table_schema=
                             {
                                 ID = dr.GetInt32(0),
                                 Name = dr.GetString(1),
-                                IsNullable = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(6), "yes") == 0)
                             };
 
                             cd.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(2),
                                 Convert.ToInt32(dr.GetValue(3)),
                                 Convert.ToInt16(dr.GetValue(4)),
-                                Convert.ToInt16(dr.GetValue(5)));
+                                Convert.ToInt16(dr.GetValue(5)),
+                                (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(6), "yes") == 0));
 
                             res.TryAdd(cd.Name, cd);
                         }
@@ -482,19 +482,17 @@ WHERE kcu.table_name=@tableName;";
                                 ID = 0,
                                 Name = dr.GetString(0),
                                 KeyOrdinal = dr.GetInt32(1),
-                                IsNullable = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "yes") == 0),
                                 IsIdentity = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(3), "yes") == 0),
                                 Ordering = IndexColumnOrdering.Ascending
                             };
+
                             ic.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(4),
                                 Convert.ToInt32(dr.GetValue(5)),
                                 Convert.ToInt16(dr.GetValue(6)),
-                                Convert.ToInt16(dr.GetValue(7)));
-                            // ic.DataType.Size = dr.GetValue(3).ToString() != "null" ?  : 0;
-                            /*ic.DataType.Size = dr.GetValue(5).ToString() != "0" ? (short)dr.GetValue(5) : (short)0;
-                            ic.DataType.Scale = dr.GetValue(6).ToString() != "0" ? (short)dr.GetValue(6) : (short)0;
-                            ic.DataType.Precision = dr.GetValue(7).ToString() != "0" ? (short)dr.GetValue(7) : (short)0;*/
+                                Convert.ToInt16(dr.GetValue(7)),
+                                (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "yes") == 0));
+
                             res.TryAdd(ic.Name, ic);
                         }
                     }
@@ -539,18 +537,24 @@ WHERE r.routine_name = @objectName AND p.specific_schema=@schemaName; ";
                                 HasDefaultValue = false,
                                 DefaultValue = null,
                             };
+
                             if (!String.IsNullOrEmpty(dr.GetString(2)))
                             {
                                 if (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "in") == 0) { par.Direction = ParameterDirection.Input; }
                                 else if (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "out") == 0){ par.Direction = ParameterDirection.Output; }
                                 else if (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "inout") == 0){ par.Direction = ParameterDirection.InputOutput; }
                             }
-                            else { par.Direction = ParameterDirection.ReturnValue; }
+                            else
+                            {
+                                par.Direction = ParameterDirection.ReturnValue;
+                            }
+
                             par.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(3),
                                 Convert.ToInt32(dr.GetValue(4)),
                                 Convert.ToInt16(dr.GetValue(5)),
-                                Convert.ToInt16(dr.GetValue(6)));
+                                Convert.ToInt16(dr.GetValue(6)),
+                                false); // TODO: add nullable!
 
                             res.TryAdd(par.Name, par);
                         }

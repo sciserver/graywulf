@@ -53,7 +53,9 @@
     <Compile Include="Types\SingleComplex.cs" />
     <Compile Include="Types\StraightBitConverter.cs" />
     <Compile Include="Types\SwapBitConverter.cs" />
-    <Compile Include="Types\TypeUtil.cs" />
+    <Compile Include="Types\TypeUtil.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

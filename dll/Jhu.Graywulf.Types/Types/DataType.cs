@@ -1060,11 +1060,11 @@ namespace Jhu.Graywulf.Types
                 }
                 else if (IsMaxLength)
                 {
-                    return System.String.Format("{0} (max)", name);
+                    return System.String.Format("{0}(max)", name);
                 }
                 else
                 {
-                    return System.String.Format("{0} ({1})", name, length);
+                    return System.String.Format("{0}({1})", name, length);
                 }
             }
         }
@@ -1137,7 +1137,7 @@ namespace Jhu.Graywulf.Types
         /// </summary>
         public bool IsMaxLength
         {
-            get { return length == -1 || length * byteSize > 8000; }
+            get { return length == -1 || (long)length * byteSize > 8000; }
         }
 
         /// <summary>

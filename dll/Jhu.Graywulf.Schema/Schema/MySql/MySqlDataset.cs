@@ -327,7 +327,6 @@ WHERE table_schema = @databaseName and table_name= @tableName;";
                             {
                                 ID = dr.GetInt32(0),
                                 Name = dr.GetString(1),
-                                IsNullable = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(6), "yes") == 0)
                             };
                             
                             Int32 charactermaxlength = 0;
@@ -342,7 +341,8 @@ WHERE table_schema = @databaseName and table_name= @tableName;";
                                 dr.GetString(2),
                                 charactermaxlength,
                                 Convert.ToInt16(dr.GetValue(4)),
-                                Convert.ToInt16(dr.GetValue(5)));
+                                Convert.ToInt16(dr.GetValue(5)),
+                                (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(6), "yes") == 0));
 
                             res.TryAdd(cd.Name, cd);
                         }
@@ -444,15 +444,17 @@ where kcu.table_name LIKE @tableName AND kcu.constraint_name=@indexName;";
                                 ID = 0,
                                 Name = dr.GetString(0),
                                 KeyOrdinal = dr.GetInt32(1),
-                                IsNullable = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "yes") == 0),
-                                Ordering = IndexColumnOrdering.Ascending
+                                Ordering = IndexColumnOrdering.Ascending,
+                                IsIdentity = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetValue(3), null) == 0)
                             };
-                            ic.IsIdentity = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetValue(3), null) == 0) ;
+
+                            // TODO: clean this up here!
                             ic.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(4)/*,
                                 dr.IsDBNull(5) ? dr.GetInt16(5)  : new short(),
                                 dr.IsDBNull(6) ? dr.GetByte(6) : Byte.MinValue,
                                 dr.IsDBNull(7) ? dr.GetByte(7) : Byte.MinValue*/);
+
                             // ic.DataType.Size = dr.GetValue(3).ToString() != "null" ?  : 0;
                             /*ic.DataType.Size = dr.GetValue(5).ToString() != "0" ? (short)dr.GetValue(5) : (short)0;
                             ic.DataType.Scale = dr.GetValue(6).ToString() != "0" ? (short)dr.GetValue(6) : (short)0;
@@ -512,7 +514,8 @@ WHERE p.specific_name=@objectName AND p.specific_schema=@databaseName; ";
                                     dr.GetString(3),
                                     Convert.ToInt32(dr.GetValue(4)),
                                     Convert.ToInt16(dr.GetValue(5)),
-                                    Convert.ToInt16(dr.GetValue(6)));
+                                    Convert.ToInt16(dr.GetValue(6)),
+                                    false);
                                 
                                 res.TryAdd(par.Name, par);
                             }

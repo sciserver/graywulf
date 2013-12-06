@@ -16,7 +16,6 @@ namespace Jhu.Graywulf.Schema
     [DataContract(Namespace = "")]
     public class Column : Variable, IColumn, ICloneable
     {
-        private bool isNullable;
         private bool isIdentity;
         private bool isKey;
         private bool isHidden;
@@ -25,12 +24,6 @@ namespace Jhu.Graywulf.Schema
         {
             get { return Name; }
             set { Name = value; }
-        }
-
-        public bool IsNullable
-        {
-            get { return isNullable; }
-            set { isNullable = value; }
         }
 
         public bool IsIdentity
@@ -78,12 +71,19 @@ namespace Jhu.Graywulf.Schema
             CopyMembers(old);
         }
 
+        public static Column Create(DataRow dr)
+        {
+            var column = new Column();
+            TypeUtil.CopyColumnFromSchemaTableRow(column, dr);
+
+            return column;
+        }
+
         /// <summary>
         /// Initializes member variables
         /// </summary>
         private void InitializeMembers()
         {
-            this.isNullable = false;
             this.isIdentity = false;
             this.isKey = false;
             this.isHidden = false;
@@ -95,7 +95,6 @@ namespace Jhu.Graywulf.Schema
         /// <param name="old"></param>
         private void CopyMembers(Column old)
         {
-            this.isNullable = old.isNullable;
             this.isIdentity = old.isIdentity;
             this.isKey = old.isKey;
             this.isHidden = old.isHidden;
@@ -120,7 +119,7 @@ namespace Jhu.Graywulf.Schema
             dr[SchemaTableColumn.IsUnique] = this.IsIdentity;    //
             dr[SchemaTableColumn.IsKey] = this.isKey;
             dr[SchemaTableColumn.DataType] = this.DataType.Type;
-            dr[SchemaTableColumn.AllowDBNull] = this.IsNullable;
+            dr[SchemaTableColumn.AllowDBNull] = this.DataType.IsNullable;
             dr[SchemaTableColumn.ProviderType] = this.DataType.Name;
             dr[SchemaTableColumn.IsAliased] = false; //
             dr[SchemaTableColumn.IsExpression] = false; //

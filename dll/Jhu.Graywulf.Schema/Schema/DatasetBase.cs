@@ -293,7 +293,7 @@ namespace Jhu.Graywulf.Schema
 
         protected abstract DataType GetTypeFromProviderSpecificName(string name);
 
-        protected DataType GetTypeFromProviderSpecificName(string name, int size, short scale, short precision)
+        protected DataType GetTypeFromProviderSpecificName(string name, int size, short scale, short precision, bool nullable)
         {
             var t = GetTypeFromProviderSpecificName(name);
 
@@ -304,6 +304,7 @@ namespace Jhu.Graywulf.Schema
 
             t.Scale = scale;
             t.Precision = precision;
+            t.IsNullable = nullable;
 
             return t;
         }

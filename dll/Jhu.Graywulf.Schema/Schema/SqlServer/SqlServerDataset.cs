@@ -315,7 +315,6 @@ ORDER BY c.column_id";
                             {
                                 ID = dr.GetInt32(0),
                                 Name = dr.GetString(1),
-                                IsNullable = dr.GetBoolean(6),
                                 IsIdentity = dr.GetBoolean(7)
                             };
 
@@ -323,7 +322,8 @@ ORDER BY c.column_id";
                                 dr.GetString(2),
                                 Convert.ToInt32(dr.GetValue(3)),
                                 Convert.ToInt16(dr.GetValue(4)),
-                                Convert.ToInt16(dr.GetValue(5)));
+                                Convert.ToInt16(dr.GetValue(5)),
+                                dr.GetBoolean(6));
 
                             res.TryAdd(cd.Name, cd);
                         }
@@ -417,14 +417,14 @@ ORDER BY ic.key_ordinal";
                                 Name = dr.GetString(2),
                                 Ordering = dr.GetBoolean(3) ? IndexColumnOrdering.Descending : IndexColumnOrdering.Ascending,
                                 IsIdentity = dr.GetBoolean(8),
-                                IsNullable = dr.GetBoolean(9)
                             };
 
                             ic.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(4),
                                 Convert.ToInt32(dr.GetValue(5)),
                                 Convert.ToInt16(dr.GetValue(6)),
-                                Convert.ToInt16(dr.GetValue(7)));
+                                Convert.ToInt16(dr.GetValue(7)),
+                                dr.GetBoolean(9));
 
                             res.TryAdd(ic.Name, ic);
                         }
@@ -477,7 +477,8 @@ ORDER BY p.parameter_id";
                                 dr.GetString(3),
                                 Convert.ToInt32(dr.GetValue(4)),
                                 Convert.ToInt16(dr.GetValue(5)),
-                                Convert.ToInt16(dr.GetValue(6)));
+                                Convert.ToInt16(dr.GetValue(6)),
+                                false);
 
                             res.TryAdd(par.Name, par);
                         }

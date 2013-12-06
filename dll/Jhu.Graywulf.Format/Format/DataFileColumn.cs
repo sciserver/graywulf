@@ -109,6 +109,14 @@ namespace Jhu.Graywulf.Format
             CopyMembers(old);
         }
 
+        public static DataFileColumn Create(DataRow dr)
+        {
+            var column = new DataFileColumn();
+            TypeUtil.CopyColumnFromSchemaTableRow(column, dr);
+
+            return column;
+        }
+
         private void InitializeMembers()
         {
             this.id = 0;
