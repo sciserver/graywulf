@@ -57,10 +57,14 @@
     <Compile Include="Format\FileFormatFactoryTest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Format\SqlServerNativeDataFileWriterTest.cs" />
     <Compile Include="Format\StreamFactoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="App.original.config" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Format\Jhu.Graywulf.Format.csproj">
       <Project>{AAF4C238-C3A9-422F-BE3F-6FF10D9D0062}</Project>
@@ -76,6 +80,9 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Format.Test</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

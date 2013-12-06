@@ -71,7 +71,7 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Gets the stream that can be used to read data
         /// </summary>
-        protected virtual Stream BaseStream
+        public virtual Stream BaseStream
         {
             get { return baseStream; }
         }
@@ -89,6 +89,12 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /// <summary>
+        /// Gets or sets the location of the file
+        /// </summary>
+        /// <remarks>
+        /// For archives, use relative URI
+        /// </remarks>
         public Uri Uri
         {
             get { return uri; }
@@ -99,20 +105,53 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /// <summary>
+        /// Gets or sets if an identity column is to be generated automatically
+        /// when reading tables from a file.
+        /// </summary>
         public bool GenerateIdentityColumn
         {
             get { return generateIdentityColumn; }
             set { generateIdentityColumn = value; }
         }
 
+        /// <summary>
+        /// Gets a collection of data file blocks.
+        /// </summary>
+        /// <remarks>
+        /// Data file blocks can be created manually, in this case the class
+        /// will reuse them when reading/writing files. This method allows
+        /// defining column mappings. If no blocks are created manually, they
+        /// will be created automatically during read/write with default settings
+        /// and column.
+        /// </remarks>
         protected List<DataFileBlockBase> Blocks
         {
             get { return blocks; }
         }
 
+        /// <summary>
+        /// Gets a reference to the current data file block.
+        /// </summary>
         internal DataFileBlockBase CurrentBlock
         {
             get { return blocks[blockCounter]; }
+        }
+
+        /// <summary>
+        /// Gets if the underlying data file is closed
+        /// </summary>
+        public virtual bool IsClosed
+        {
+            get { return baseStream == null; }
+        }
+
+        /// <summary>
+        /// Gets if the underlying data file is an archive
+        /// </summary>
+        public bool IsArchive
+        {
+            get { return baseStream is IArchiveOutputStream || baseStream is IArchiveInputStream; }
         }
 
         #endregion
@@ -127,12 +166,12 @@ namespace Jhu.Graywulf.Format
         }
 
         /// <summary>
-        /// Constructs a file and opens a stream automatically
+        /// Constructs a file and opens a stream automatically.
         /// </summary>
         /// <param name="uri"></param>
         /// <param name="fileMode"></param>
         /// <param name="compression"></param>
-        protected DataFileBase(Uri uri, DataFileMode fileMode, DataFileCompression compression)
+        protected DataFileBase(Uri uri, DataFileMode fileMode)
         {
             InitializeMembers();
 
@@ -140,7 +179,12 @@ namespace Jhu.Graywulf.Format
             this.fileMode = fileMode;
         }
 
-        protected DataFileBase(Stream stream, DataFileMode fileMode, DataFileCompression compression)
+        /// <summary>
+        /// Constructs a file object around an already open stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="fileMode"></param>
+        protected DataFileBase(Stream stream, DataFileMode fileMode)
         {
             InitializeMembers();
 
@@ -148,6 +192,9 @@ namespace Jhu.Graywulf.Format
             this.fileMode = fileMode;
         }
 
+        /// <summary>
+        /// Initializes private members to their default values
+        /// </summary>
         private void InitializeMembers()
         {
             this.baseStream = null;
@@ -186,7 +233,8 @@ namespace Jhu.Graywulf.Format
         }
 
         /// <summary>
-        /// Opens the base stream for read or write
+        /// Opens the file by opening a stream to the resource
+        /// identified by the Uri property.
         /// </summary>
         public void Open()
         {
@@ -211,16 +259,18 @@ namespace Jhu.Graywulf.Format
         /// <param name="stream"></param>
         /// <param name="mode"></param>
         /// <param name="compression"></param>
-        public virtual void Open(Stream stream, DataFileMode fileMode)
+        protected void OpenStream(Stream stream, DataFileMode fileMode)
         {
-            EnsureNotOpen();
-
             this.baseStream = stream;
             this.ownsBaseStream = false;
 
             this.fileMode = fileMode;
         }
 
+        /// <summary>
+        /// Opens the underlying stream, if it is not set externally via
+        /// a constructor.
+        /// </summary>
         private void OpenBaseStream()
         {
             if (baseStream == null)
@@ -267,6 +317,7 @@ namespace Jhu.Graywulf.Format
         {
             if (ownsBaseStream && baseStream != null)
             {
+                baseStream.Flush();
                 baseStream.Close();
                 baseStream.Dispose();
                 baseStream = null;
@@ -274,21 +325,21 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        /// <summary>
-        /// Returns true if the underlying data file is closed
-        /// </summary>
-        public virtual bool IsClosed
-        {
-            get { return baseStream == null; }
-        }
-
         #endregion
 
         /// <summary>
-        /// When overloaded in a derived class, read the file header.
+        /// When overloaded in a derived class, reads the file header.
         /// </summary>
         protected internal abstract void OnReadHeader();
 
+        /// <summary>
+        /// Appends a new block to a file.
+        /// </summary>
+        /// <param name="block"></param>
+        /// <remarks>
+        /// File block are either created automatically during read, or appended
+        /// manually before reading or when writing.
+        /// </remarks>
         public void AppendBlock(DataFileBlockBase block)
         {
             switch (fileMode)
@@ -304,6 +355,10 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /// <summary>
+        /// Called by the library after a new block has been appended to the file.
+        /// </summary>
+        /// <param name="block"></param>
         protected abstract void OnBlockAppended(DataFileBlockBase block);
 
         /// <summary>
@@ -317,10 +372,14 @@ namespace Jhu.Graywulf.Format
         {
             if (blockCounter == -1)
             {
+                // If this would be the very first block, read the file header first.
                 OnReadHeader();
             }
             else
             {
+                // If we are not at the beginning of the file, read to the end of the
+                // block, read the block footer and position stream on the beginning
+                // of the next file block
                 blocks[blockCounter].OnReadToFinish();
                 blocks[blockCounter].OnReadFooter();
             }
@@ -331,6 +390,9 @@ namespace Jhu.Graywulf.Format
 
                 DataFileBlockBase nextBlock;
 
+                // If blocks are created manually, the blocks collection might already
+                // contain an object for the next file block. In this case, use the
+                // manually created object, otherwise create one automatically.
                 if (blockCounter < blocks.Count)
                 {
                     nextBlock = OnReadNextBlock(blocks[blockCounter]);
@@ -345,6 +407,7 @@ namespace Jhu.Graywulf.Format
                     }
                 }
 
+                // See if there's a new block in the file.
                 if (nextBlock != null)
                 {
                     nextBlock.OnReadHeader();
@@ -360,8 +423,12 @@ namespace Jhu.Graywulf.Format
             {
                 // Some data formats cannot detect end of blocks and will
                 // throw exception at the end of the file instead
+                // Eat this exception now. Note, that this behaviour won't
+                // occur when block contents are read, so the integrity of
+                // reading a block will be kept anyway.
             }
 
+            // No additional blocks found, return with null
             blockCounter = -1;
             return null;
         }
@@ -372,16 +439,29 @@ namespace Jhu.Graywulf.Format
         /// <returns></returns>
         protected abstract DataFileBlockBase OnReadNextBlock(DataFileBlockBase block);
 
+        /// <summary>
+        /// When overloaded in a derived class, reads the file footer.
+        /// </summary>
         protected internal abstract void OnReadFooter();
 
+        /// <summary>
+        /// When overloaded in a derived class, writers the file header.
+        /// </summary>
         protected abstract void OnWriteHeader();
 
+        /// <summary>
+        /// Writes the next block into the file. Data is taken from the current
+        /// results set of a data reader.
+        /// </summary>
+        /// <param name="dr"></param>
         private void WriteNextBlock(IDataReader dr)
         {
             blockCounter++;
 
             DataFileBlockBase nextBlock;
 
+            // See if the file contains manually predefined blocks. If so, use
+            // them, otherwise create a new one automatically.
             if (blockCounter < blocks.Count)
             {
                 nextBlock = OnWriteNextBlock(blocks[blockCounter], dr);
@@ -396,6 +476,8 @@ namespace Jhu.Graywulf.Format
                 }
             }
 
+            // If a new block is found, detect columns from the data reader and
+            // write contents into the file.
             if (nextBlock != null)
             {
                 nextBlock.DetectColumns(dr);
@@ -403,8 +485,17 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /// <summary>
+        /// When overriden in a derived class, writes the file footer.
+        /// </summary>
         protected abstract void OnWriteFooter();
 
+        /// <summary>
+        /// When overriden in a derived class, writes the next file block.
+        /// </summary>
+        /// <param name="block"></param>
+        /// <param name="dr"></param>
+        /// <returns></returns>
         protected abstract DataFileBlockBase OnWriteNextBlock(DataFileBlockBase block, IDataReader dr);
 
         #region DataReader and Writer functions
@@ -420,6 +511,8 @@ namespace Jhu.Graywulf.Format
 
         public void WriteFromDataReader(IDataReader dr)
         {
+            // TODO: this might change
+
             OpenForWrite();
 
             OnWriteHeader();

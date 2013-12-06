@@ -25,6 +25,7 @@ namespace Jhu.Graywulf.Format
     {
         None,
         Automatic,
-        Tar
+        Tar,
+        Zip
     }
 }

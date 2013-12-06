@@ -31,9 +31,9 @@ namespace Jhu.Graywulf.Types
                 return new DataType()
                 {
                     Name = Constants.TypeNameTinyInt,
-                    Type = typeof(SByte),
+                    Type = typeof(Byte),
                     SqlDbType = System.Data.SqlDbType.TinyInt,
-                    ByteSize = sizeof(SByte),
+                    ByteSize = sizeof(Byte),
                     Scale = 0,
                     Precision = 3
                 };
@@ -355,19 +355,6 @@ namespace Jhu.Graywulf.Types
             get
             {
                 return SqlVarCharMax;
-                /*return new DataType()
-                {
-                    Name = Constants.TypeNameText,
-                    Type = typeof(String),
-                    SqlDbType = SqlDbType.Text,
-                    ByteSize = 1,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = -1,
-                    MaxLength = -1,
-                    HasLength = false,
-                    IsVarLength = true
-                };*/
             }
         }
 
@@ -436,20 +423,6 @@ namespace Jhu.Graywulf.Types
             get
             {
                 return SqlNVarCharMax;
-                /*
-                return new DataType()
-                {
-                    Name = Constants.TypeNameNText,
-                    Type = typeof(String),
-                    SqlDbType = SqlDbType.NText,
-                    ByteSize = 2,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = -1,
-                    MaxLength = -1,
-                    HasLength = false,
-                    IsVarLength = true
-                };*/
             }
         }
 
@@ -458,19 +431,6 @@ namespace Jhu.Graywulf.Types
             get
             {
                 throw new NotImplementedException();
-                /*
-                return new DataType()
-                {
-                    Name = Constants.TypeNameXml,
-                    Type = typeof(String),
-                    SqlDbType = SqlDbType.Xml,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = 1,
-                    HasLength = false,
-                    MaxLength = -1,
-                    IsVarLength = true,
-                };*/
             }
         }
 
@@ -539,18 +499,6 @@ namespace Jhu.Graywulf.Types
             get
             {
                 return SqlVarBinaryMax;
-                /*return new DataType()
-                {
-                    Name = Constants.TypeNameImage,
-                    Type = typeof(Byte[]),
-                    SqlDbType = SqlDbType.Image,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = 1,
-                    HasLength = false,
-                    MaxLength = 16,
-                    IsVarLength = true,
-                };*/
             }
         }
 
@@ -559,18 +507,6 @@ namespace Jhu.Graywulf.Types
             get
             {
                 throw new NotImplementedException();
-                /*return new DataType()
-                {
-                    Name = Constants.TypeNameSqlVariant,
-                    Type = typeof(object),
-                    SqlDbType = SqlDbType.Variant,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = 1,
-                    HasLength = false,
-                    MaxLength = 8016,
-                    IsVarLength = true,
-                };*/
             }
         }
 
@@ -622,7 +558,16 @@ namespace Jhu.Graywulf.Types
         {
             get
             {
-                return SqlTinyInt;
+                return new DataType()
+                {
+                    Name = null,
+                    Type = typeof(SByte),
+                    SqlDbType = null,
+                    ByteSize = 1,
+                    Scale = 0,
+                    Precision = 3
+                };
+                
             }
         }
 
@@ -630,15 +575,7 @@ namespace Jhu.Graywulf.Types
         {
             get
             {
-                return new DataType()
-                {
-                    Name = null,
-                    Type = typeof(Byte),
-                    SqlDbType = null,
-                    ByteSize = 1,
-                    Scale = 0,
-                    Precision = 3
-                };
+                return SqlTinyInt;
             }
         }
 
@@ -789,6 +726,121 @@ namespace Jhu.Graywulf.Types
         #endregion
         #region Static functions to create types
 
+        public static DataType Create(SqlDbType type, int length, int numericPrecision, int numericScale)
+        {
+            DataType dt;
+
+            switch (type)
+            {
+                case System.Data.SqlDbType.Bit:
+                    dt = DataType.SqlBit;
+                    break;
+                case System.Data.SqlDbType.TinyInt:
+                    dt = DataType.SqlTinyInt;
+                    break;
+                case System.Data.SqlDbType.SmallInt:
+                    dt = DataType.SqlSmallInt;
+                    break;
+                case System.Data.SqlDbType.Int:
+                    dt = DataType.SqlInt;
+                    break;
+                case System.Data.SqlDbType.BigInt:
+                    dt = DataType.SqlBigInt;
+                    break;
+                case System.Data.SqlDbType.Real:
+                    dt = DataType.SqlReal;
+                    break;
+                case System.Data.SqlDbType.Float:
+                    dt = DataType.SqlFloat;
+                    break;
+                case System.Data.SqlDbType.Image:
+                    dt = DataType.SqlImage;
+                    break;
+                case System.Data.SqlDbType.Binary:
+                    dt = DataType.SqlBinary;
+                    break;
+                case System.Data.SqlDbType.VarBinary:
+                    dt = DataType.SqlVarBinary;
+                    break;
+                case System.Data.SqlDbType.Text:
+                    dt = DataType.SqlText;
+                    break;
+                case System.Data.SqlDbType.Char:
+                    dt = DataType.SqlChar;
+                    break;
+                case System.Data.SqlDbType.VarChar:
+                    dt = DataType.SqlVarChar;
+                    break;
+                case System.Data.SqlDbType.NText:
+                    dt = DataType.SqlNText;
+                    break;
+                case System.Data.SqlDbType.NChar:
+                    dt = DataType.SqlNChar;
+                    break;
+                case System.Data.SqlDbType.NVarChar:
+                    dt = DataType.SqlNVarChar;
+                    break;
+                case System.Data.SqlDbType.Date:
+                    dt = DataType.SqlDate;
+                    break;
+                case System.Data.SqlDbType.DateTime:
+                    dt = DataType.SqlDateTime;
+                    break;
+                case System.Data.SqlDbType.DateTime2:
+                    dt = DataType.SqlDateTime2;
+                    break;
+                case System.Data.SqlDbType.DateTimeOffset:
+                    dt = DataType.SqlDateTimeOffset;
+                    break;
+                case System.Data.SqlDbType.SmallDateTime:
+                    dt = DataType.SqlSmallDateTime;
+                    break;
+                case System.Data.SqlDbType.Time:
+                    dt = DataType.SqlTime;
+                    break;
+                case System.Data.SqlDbType.Timestamp:
+                    dt = DataType.SqlTimestamp;
+                    break;
+                case System.Data.SqlDbType.Decimal:
+                    dt = DataType.SqlDecimal;
+                    dt.Precision = numericPrecision;
+                    dt.Scale = numericScale;
+                    break;
+                case System.Data.SqlDbType.SmallMoney:
+                    dt = DataType.SqlSmallMoney;
+                    break;
+                case System.Data.SqlDbType.Money:
+                    dt = DataType.SqlMoney;
+                    break;
+                case System.Data.SqlDbType.UniqueIdentifier:
+                    dt = DataType.SqlUniqueIdentifier;
+                    break;
+                case System.Data.SqlDbType.Variant:
+                    dt = DataType.SqlVariant;
+                    break;
+                case System.Data.SqlDbType.Xml:
+                    dt = DataType.SqlXml;
+                    break;
+                case System.Data.SqlDbType.Structured:
+                    throw new NotImplementedException();
+                    //dt = DataType.SqlStructured;
+                    //break;
+                case System.Data.SqlDbType.Udt:
+                    throw new NotImplementedException();
+                    //dt = DataType.SqlUdt;
+                    //break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            if (dt.hasLength)
+            {
+                dt.Length = length;
+            }
+
+            return dt;
+        }
+
         /// <summary>
         /// Creates data type descriptor from a .Net type
         /// </summary>
@@ -883,13 +935,27 @@ namespace Jhu.Graywulf.Types
 
         public static DataType Create(DataRow dr)
         {
+            // Get .Net type and other parameters
             var type = (Type)dr[SchemaTableColumn.DataType];
             var length = Convert.ToInt32(dr[SchemaTableColumn.ColumnSize]);
+            var precision = Convert.ToInt32(dr[SchemaTableColumn.NumericPrecision]);
+            var scale = Convert.ToInt32(dr[SchemaTableColumn.NumericScale]);
 
-            var dt = Create(type, length);
-            dt.Precision = Convert.ToInt32(dr[SchemaTableColumn.NumericPrecision]);
-            dt.Scale = Convert.ToInt32(dr[SchemaTableColumn.NumericScale]);
+            DataType dt;
 
+            // Try to interpret provider type as sql server type
+            SqlDbType sqltype;
+            if (Enum.TryParse<SqlDbType>((string)dr["DataTypeName"], true, out sqltype))
+            {
+                // This can be interpreted as a SQL Server type
+                dt = Create(sqltype, length, precision, scale);
+            }
+            else
+            {
+                // This is a .Net type, might not be supported by SqlServer
+                dt = Create(type, length);
+            }
+            
             return dt;
         }
 
@@ -960,6 +1026,11 @@ namespace Jhu.Graywulf.Types
         /// Is variable length array
         /// </summary>
         private bool isVarArrayLength;
+
+        /// <summary>
+        /// Is type nullable
+        /// </summary>
+        private bool isNullable;
 
         #endregion
         #region Properties
@@ -1108,10 +1179,19 @@ namespace Jhu.Graywulf.Types
         /// <summary>
         /// Gets or sets if the array is bounded
         /// </summary>
-        private bool IsArrayBounded
+        private bool IsVarArrayLength
         {
             get { return isVarArrayLength; }
             set { isVarArrayLength = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether the data type is nullable
+        /// </summary>
+        public bool IsNullable
+        {
+            get { return isNullable; }
+            set { isNullable = value; }
         }
 
         /// <summary>
@@ -1246,6 +1326,7 @@ namespace Jhu.Graywulf.Types
             this.isSqlArray = false;
             this.arrayLength = 0;
             this.isVarArrayLength = false;
+            this.isNullable = false;
         }
 
         private void CopyMembers(DataType old)
@@ -1263,6 +1344,7 @@ namespace Jhu.Graywulf.Types
             this.isSqlArray = old.isSqlArray;
             this.arrayLength = old.arrayLength;
             this.isVarArrayLength = old.isVarArrayLength;
+            this.isNullable = old.isNullable;
         }
 
         public object Clone()
@@ -1282,12 +1364,13 @@ namespace Jhu.Graywulf.Types
             {
                 dr[SchemaTableColumn.ColumnSize] = this.byteSize;
             }
-            dr[SchemaTableColumn.NumericPrecision] = this.Precision;
-            dr[SchemaTableColumn.NumericScale] = this.Scale;
-            dr[SchemaTableColumn.DataType] = this.Type;
-            dr[SchemaTableColumn.ProviderType] = this.Name;
+            dr[SchemaTableColumn.NumericPrecision] = this.precision;
+            dr[SchemaTableColumn.NumericScale] = this.scale;
+            dr[SchemaTableColumn.DataType] = this.type;
+            dr[SchemaTableColumn.ProviderType] = this.name;
             dr[SchemaTableColumn.IsLong] = this.IsMaxLength;
-            dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = this.Name;
+            dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = this.name;
+            dr[SchemaTableColumn.AllowDBNull] = this.isNullable;
         }
     }
 }

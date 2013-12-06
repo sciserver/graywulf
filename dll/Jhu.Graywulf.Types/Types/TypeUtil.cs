@@ -15,7 +15,6 @@ namespace Jhu.Graywulf.Types
             column.Name = (string)dr[SchemaTableColumn.ColumnName];
             column.IsIdentity = dr[SchemaTableColumn.IsUnique] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.IsUnique];  //
             column.IsKey = dr[SchemaTableColumn.IsKey] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.IsKey];  //
-            column.IsNullable = dr[SchemaTableColumn.AllowDBNull] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.AllowDBNull];
             column.IsHidden = dr[SchemaTableOptionalColumn.IsHidden] == DBNull.Value ? false : (bool)dr[SchemaTableOptionalColumn.IsHidden];
 
             column.DataType = DataType.Create(dr);
