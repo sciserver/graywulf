@@ -128,6 +128,7 @@ namespace Jhu.Graywulf.Format
         protected virtual void OnCreateFileFormatDescriptions(HashSet<Type> fileTypes)
         {
             fileTypes.Add(typeof(DelimitedTextDataFile));
+            //fileTypes.Add(typeof(SqlServerNativeDataFile));
         }
 
         /// <summary>

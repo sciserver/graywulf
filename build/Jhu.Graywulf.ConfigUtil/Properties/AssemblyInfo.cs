@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Jhu.Graywulf.Configuration")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Graywulf Configuration Utility")]
+[assembly: AssemblyDescription("Compile-time utility")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Jhu.Graywulf.Configuration")]
-[assembly: AssemblyCopyright("Copyright ©  2012")]
+[assembly: AssemblyCompany("JHU IDIES")]
+[assembly: AssemblyProduct("Graywulf")]
+[assembly: AssemblyCopyright("Copyright ©  2008-2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

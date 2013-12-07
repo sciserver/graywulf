@@ -20,56 +20,8 @@ namespace Jhu.Graywulf.Jobs.ExportTable
     [Serializable]
     public class ExportTable
     {
-        /*private string databaseInstanceName;
-        private string connectionString;
-        private string datasetName;
-        private string databaseName;
-        private string schemaName;
-        private string tableName;*/
         private TableOrView source;
         private DataFileBase destination;
-
-        /*[DataMember]
-        public string DatabaseInstanceName
-        {
-            get { return databaseInstanceName; }
-            set { databaseInstanceName = value; }
-        }
-
-        [DataMember]
-        public string ConnectionString
-        {
-            get { return connectionString; }
-            set { connectionString = value; }
-        }
-
-        [DataMember]
-        public string DatasetName
-        {
-            get { return datasetName; }
-            set { datasetName = value; }
-        }
-
-        [DataMember]
-        public string DatabaseName
-        {
-            get { return databaseName; }
-            set { databaseName = value; }
-        }
-
-        [DataMember]
-        public string SchemaName
-        {
-            get { return schemaName; }
-            set { schemaName = value; }
-        }
-
-        [DataMember]
-        public string TableName
-        {
-            get { return tableName; }
-            set { tableName = value; }
-        }*/
 
         [DataMember]
         public TableOrView Source
@@ -93,11 +45,6 @@ namespace Jhu.Graywulf.Jobs.ExportTable
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            //this.databaseInstanceName = String.Empty;
-            //this.schemaName = null;
-            //this.datasetName = null;
-            //this.databaseName = null;
-            //this.tableName = null;
             this.source = null;
             this.destination = null;
         }
@@ -124,8 +71,6 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             // Create bulk operation
             var sq = new SourceQueryParameters();
             sq.Dataset = source.Dataset;
-            //sq.ProviderInvariantName = Jhu.Graywulf.Schema.Constants.SqlServerProviderName;
-            //sq.ConnectionString = connectionString;
             sq.Query = String.Format("SELECT t.* FROM [{0}].[{1}] AS t", source.SchemaName, source.ObjectName);
 
             var dfe = RemoteServiceHelper.CreateObject<IDataFileExporter>(host);
