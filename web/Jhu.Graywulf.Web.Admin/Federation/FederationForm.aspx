@@ -81,21 +81,5 @@
                 </asp:DropDownList>
             </td>
         </tr>
-        <tr runat="server">
-            <td class="FormLabel">
-                <asp:Label ID="QueryFactoryTypeNameLabel" runat="server" Text="Query Factory:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <asp:TextBox ID="QueryFactoryTypeName" runat="server" CssClass="FormField" />
-            </td>
-        </tr>
-        <tr id="Tr1" runat="server">
-            <td class="FormLabel">
-                <asp:Label ID="FileFormatFactoryTypeNameLabel" runat="server" Text="File Format Factory:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <asp:TextBox ID="FileFormatFactoryTypeName" runat="server" CssClass="FormField" />
-            </td>
-        </tr>
     </table>
 </asp:Content>

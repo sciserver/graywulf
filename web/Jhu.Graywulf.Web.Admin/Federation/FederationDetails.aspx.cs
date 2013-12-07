@@ -28,8 +28,6 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             CodeDatabaseVersion.EntityReference.Value = item.CodeDatabaseVersion;
             ControllerMachine.EntityReference.Value = item.ControllerMachine;
             SchemaSourceServerInstance.EntityReference.Value = item.SchemaSourceServerInstance;
-            QueryFactoryTypeName.Text = item.QueryFactoryTypeName;
-            FileFormatFactoryTypeName.Text = item.FileFormatFactoryTypeName;
         }
 
         protected override void InitLists()
@@ -39,26 +37,5 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             DatabaseDefinitionList.ParentEntity = item;
             RemoteDatabaseList.ParentEntity = item;
         }
-
-        /*
-        protected void DatabaseDefinitionList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/federation/DatabaseDefinitionDetails.aspx?Guid=" + e.CommandArgument);
-        }
-
-        protected void AddDatabaseDefinition_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(item.GetNewChildFormUrl(EntityType.DatabaseDefinition));
-        }
-
-        protected void RemoteDatabaseList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/federation/RemoteDatabaseDetails.aspx?Guid=" + e.CommandArgument);
-        }
-
-        protected void AddRemoteDatabase_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(item.GetNewChildFormUrl(EntityType.RemoteDatabase));
-        }*/
     }
 }

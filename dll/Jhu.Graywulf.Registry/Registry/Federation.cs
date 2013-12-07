@@ -49,8 +49,6 @@ namespace Jhu.Graywulf.Registry
         private string shortTitle;
         private string longTitle;
         private string email;
-        private string queryFactoryTypeName;
-        private string fileFormatFactoryTypeName;
 
         #endregion
         #region Member Access Properties
@@ -74,22 +72,6 @@ namespace Jhu.Graywulf.Registry
         {
             get { return email; }
             set { email = value; }
-        }
-
-        // TODO: remove
-        [DBColumn(Size = 1024)]
-        public string QueryFactoryTypeName
-        {
-            get { return queryFactoryTypeName; }
-            set { queryFactoryTypeName = value; }
-        }
-
-        // TODO: remove
-        [DBColumn(Size = 1024)]
-        public string FileFormatFactoryTypeName
-        {
-            get { return fileFormatFactoryTypeName; }
-            set { fileFormatFactoryTypeName = value; }
         }
 
         [XmlIgnore]
@@ -320,7 +302,6 @@ namespace Jhu.Graywulf.Registry
             this.shortTitle = String.Empty;
             this.longTitle = String.Empty;
             this.email = String.Empty;
-            this.queryFactoryTypeName = String.Empty;
         }
 
         /// <summary>
@@ -332,7 +313,6 @@ namespace Jhu.Graywulf.Registry
             this.shortTitle = old.shortTitle;
             this.longTitle = old.longTitle;
             this.email = old.email;
-            this.queryFactoryTypeName = old.queryFactoryTypeName;
         }
 
         public override object Clone()

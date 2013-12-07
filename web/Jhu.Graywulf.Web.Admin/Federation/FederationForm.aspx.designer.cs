@@ -191,50 +191,5 @@ namespace Jhu.Graywulf.Web.Admin.Federation {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList SchemaSourceServerInstance;
-        
-        /// <summary>
-        /// QueryFactoryTypeNameLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label QueryFactoryTypeNameLabel;
-        
-        /// <summary>
-        /// QueryFactoryTypeName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox QueryFactoryTypeName;
-        
-        /// <summary>
-        /// Tr1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow Tr1;
-        
-        /// <summary>
-        /// FileFormatFactoryTypeNameLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label FileFormatFactoryTypeNameLabel;
-        
-        /// <summary>
-        /// FileFormatFactoryTypeName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox FileFormatFactoryTypeName;
     }
 }

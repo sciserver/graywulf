@@ -37,8 +37,6 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             CodeDatabaseVersion.SelectedValue = item.CodeDatabaseVersionReference.Guid.ToString();
             ControllerMachine.SelectedValue = item.ControllerMachineReference.Guid.ToString();
             SchemaSourceServerInstance.SelectedValue = item.SchemaSourceServerInstanceReference.Guid.ToString();
-            QueryFactoryTypeName.Text = item.QueryFactoryTypeName;
-            FileFormatFactoryTypeName.Text = item.FileFormatFactoryTypeName;
 
             if (!item.IsExisting)
             {
@@ -61,8 +59,6 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             item.CodeDatabaseVersionReference.Guid = new Guid(CodeDatabaseVersion.SelectedValue);
             item.ControllerMachineReference.Guid = new Guid(ControllerMachine.SelectedValue);
             item.SchemaSourceServerInstanceReference.Guid = new Guid(SchemaSourceServerInstance.SelectedValue);
-            item.QueryFactoryTypeName = QueryFactoryTypeName.Text;
-            item.FileFormatFactoryTypeName = FileFormatFactoryTypeName.Text;
         }
 
         protected override void OnSaveFormCompleted(bool newentity)

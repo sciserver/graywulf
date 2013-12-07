@@ -69,22 +69,6 @@
                     runat="server" />
             </td>
         </tr>
-        <tr>
-            <td class="FormLabel">
-                <asp:Label ID="QueryFactoryTypeNameLabel" runat="server" Text="Query Factory:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <asp:Label ID="QueryFactoryTypeName" runat="server" Text="Label"></asp:Label>
-            </td>
-        </tr>
-        <tr>
-            <td class="FormLabel">
-                <asp:Label ID="FileFormatFactoryTypeNameLabel" runat="server" Text="File Format Factory:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <asp:Label ID="FileFormatFactoryTypeName" runat="server" Text="Label"></asp:Label>
-            </td>
-        </tr>
     </table>
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="FormButtons">
