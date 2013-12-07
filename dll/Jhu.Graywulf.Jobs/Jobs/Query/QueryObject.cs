@@ -1039,7 +1039,10 @@ END";
                 host = csb.DataSource;
             }
 
-            return System.Net.Dns.GetHostEntry(host).HostName;
+            // The best way to find a served would be to do a reverse lookup but
+            // GW config is always broken, so we use IP address instead
+            //return System.Net.Dns.GetHostEntry(host).HostName;
+            return host;
         }
 
         #endregion
