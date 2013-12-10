@@ -34,9 +34,7 @@ namespace Jhu.Graywulf.SqlCodeGen.Test
 
             SqlNameResolver nr = new SqlNameResolver();
             nr.DefaultTableDatasetName = "Test";
-            //nr.DefaultTableSchemaName = "dbo";    TODO: delete
             nr.DefaultFunctionDatasetName = "Code";
-            //nr.DefaultFunctionSchemaName = "dbo";     TODO: delete
             nr.SchemaManager = CreateSchemaManager();
             nr.Execute(select);
 
