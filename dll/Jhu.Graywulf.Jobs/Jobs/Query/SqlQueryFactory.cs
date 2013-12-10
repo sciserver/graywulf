@@ -144,7 +144,7 @@ namespace Jhu.Graywulf.Jobs.Query
             query.CodeDataset.DefaultSchemaName = "dbo";    // *** TODO
         }
 
-        protected override void GetInitializedQuery_SingleServer(QueryBase query, string queryString, string outputTable, SqlServerDataset mydbds, SqlServerDataset tempds)
+        protected override void GetInitializedQuery_SingleServer(QueryBase query, string queryString, string outputTable, SqlServerDataset mydbds, SqlServerDataset tempds, SqlServerDataset codeds)
         {
             query.ExecutionMode = ExecutionMode.SingleServer;
             query.QueryString = queryString;
@@ -166,8 +166,9 @@ namespace Jhu.Graywulf.Jobs.Query
                 query.Destination.Operation = DestinationTableOperation.Drop | DestinationTableOperation.Create;
             }
 
-            // Set up temporary database
+            // Set up temporary and code database
             query.TemporaryDataset = tempds;
+            query.CodeDataset = codeds;
         }
 
         public override JobInstance ScheduleAsJob(QueryBase query, string queueName, string comments)

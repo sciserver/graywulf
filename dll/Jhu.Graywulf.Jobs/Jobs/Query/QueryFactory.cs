@@ -72,20 +72,20 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public QueryBase CreateQuery(string queryString)
         {
-            return CreateQuery(queryString, ExecutionMode.Graywulf, null, null, null);
+            return CreateQuery(queryString, ExecutionMode.Graywulf, null, null, null, null);
         }
 
         public QueryBase CreateQuery(string queryString, ExecutionMode mode)
         {
-            return CreateQuery(queryString, mode, null, null, null);
+            return CreateQuery(queryString, mode, null, null, null, null);
         }
 
         public QueryBase CreateQuery(string queryString, ExecutionMode mode, string outputTable)
         {
-            return CreateQuery(queryString, mode, outputTable, null, null);
+            return CreateQuery(queryString, mode, outputTable, null, null, null);
         }
 
-        public QueryBase CreateQuery(string queryString, ExecutionMode mode, string outputTable, DatasetBase mydbds, DatasetBase tempds)
+        public QueryBase CreateQuery(string queryString, ExecutionMode mode, string outputTable, DatasetBase mydbds, DatasetBase tempds, DatasetBase codeds)
         {
             var parser = CreateParser();
             var root = parser.Execute(queryString);
@@ -100,7 +100,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     GetInitializedQuery_Graywulf(q, queryString, outputTable);
                     break;
                 case ExecutionMode.SingleServer:
-                    GetInitializedQuery_SingleServer(q, queryString, outputTable, (SqlServerDataset)mydbds, (SqlServerDataset)tempds);
+                    GetInitializedQuery_SingleServer(q, queryString, outputTable, (SqlServerDataset)mydbds, (SqlServerDataset)tempds, (SqlServerDataset)codeds);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -119,7 +119,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected abstract void GetInitializedQuery_Graywulf(QueryBase query, string queryString, string outputTable);
 
-        protected abstract void GetInitializedQuery_SingleServer(QueryBase query, string queryString, string outputTable, SqlServerDataset mydbds, SqlServerDataset tempds);
+        protected abstract void GetInitializedQuery_SingleServer(QueryBase query, string queryString, string outputTable, SqlServerDataset mydbds, SqlServerDataset tempds, SqlServerDataset codeds);
 
         #region Job scheduling functions
 

@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
     /// </remarks>
     public class SqlServerSchemaManager : SchemaManager
     {
-        private const string prefix = "Jhu.SkyServer.Schema.Dataset.";
+        public const string ConnectionStringNamePrefix = "Jhu.Graywulf.Schema.Dataset";
 
         public SqlServerSchemaManager()
             : base()
@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
 
         protected override DatasetBase LoadDataset(string datasetName)
         {
-            string key = String.Format("{0}{1}", prefix, datasetName);
+            string key = String.Format("{0}.{1}", ConnectionStringNamePrefix, datasetName);
 
             SqlServerDataset ds =
                 new SqlServerDataset(
@@ -38,9 +38,9 @@ namespace Jhu.Graywulf.Schema.SqlServer
         {
             foreach (ConnectionStringSettings s in ConfigurationManager.ConnectionStrings)
             {
-                if (s.Name.StartsWith(prefix))
+                if (s.Name.StartsWith(ConnectionStringNamePrefix))
                 {
-                    string name = s.Name.Substring(prefix.Length);
+                    string name = s.Name.Substring(ConnectionStringNamePrefix.Length + 1);
 
                     SqlServerDataset ds =
                     new SqlServerDataset(
