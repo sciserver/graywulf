@@ -20,8 +20,8 @@ namespace Jhu.Graywulf.Web.UI
                 var ef = new EntityFactory(context);
                 var federation = ef.LoadEntity<Federation>(Federation.AppSettings.FederationName);
 
-                Application[Constants.ApplicationShortTitle] = federation.ShortTitle;
-                Application[Constants.ApplicatonLongTitle] = federation.LongTitle;
+                Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle] = federation.ShortTitle;
+                Application[Jhu.Graywulf.Web.Constants.ApplicatonLongTitle] = federation.LongTitle;
             }
         }
     }

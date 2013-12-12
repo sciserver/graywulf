@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
             {
                 DatabaseObject dbobj = null;
 
-                var dbobjid = (string)Request.QueryString["objid"] ?? (string)Session["SchemaSelectedObject"];
+                var dbobjid = (string)Request.QueryString["objid"] ?? SelectedSchemaObject;
                 if (dbobjid != null)
                 {
                     
@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
                     DatasetList.SelectedValue = dbobj.DatasetName;
 
                     RefreshObjectTypeList();
-                    ObjectTypeList.SelectedValue = dbobj.ObjectType.ToString();
+                    ObjectTypeList.SelectedValue = Jhu.Graywulf.Schema.Constants.SimpleDatabaseObjectTypes[dbobj.ObjectType].ToString();
 
                     RefreshObjectList();
                     ObjectList.SelectedValue = dbobj.ObjectKey;
@@ -68,8 +68,14 @@ namespace Jhu.Graywulf.Web.UI.Schema
             // Add MyDB as the first item
 
             var mydbli = new ListItem(MyDBDatabaseDefinition.Name, MyDBDatabaseDefinition.Name);
-            mydbli.Attributes.CssStyle.Add("font-weight", "bold");
+            mydbli.Attributes.Add("class", "ToolbarControlHighlight");
             DatasetList.Items.Add(mydbli);
+
+            // Code is the second
+
+            var codedbli = new ListItem(Registry.Constants.CodeDbName, Registry.Constants.CodeDbName);
+            codedbli.Attributes.Add("class", "ToolbarControlHighlight");
+            DatasetList.Items.Add(codedbli);
 
             // Add other registered catalogs            
 

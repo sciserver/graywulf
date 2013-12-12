@@ -85,14 +85,14 @@ namespace Jhu.Graywulf.Web.UI
 
         protected Guid LastQueryJobGuid
         {
-            get { return (Guid)Session["LastQueryJobGuid"]; }
-            set { Session["LastQueryJobGuid"] = value; }
+            get { return (Guid)Session[Jhu.Graywulf.Web.UI.Constants.SessionLastQueryJobGuid]; }
+            set { Session[Jhu.Graywulf.Web.UI.Constants.SessionLastQueryJobGuid] = value; }
         }
 
-        protected string SelectedSchemaObject
+        public string SelectedSchemaObject
         {
-            get { return (string)Session["SchemaSelectedObject"]; }
-            set { Session["SchemaSelectedObject"] = value; }
+            get { return (string)Session[Jhu.Graywulf.Web.UI.Constants.SessionSelectedSchemaObject]; }
+            set { Session[Jhu.Graywulf.Web.UI.Constants.SessionSelectedSchemaObject] = value; }
         }
 
         // ---

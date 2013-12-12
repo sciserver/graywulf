@@ -17,6 +17,22 @@ namespace Jhu.Graywulf.Schema
             { typeof(StoredProcedure), DatabaseObjectType.StoredProcedure },
         };
 
+        public static readonly Dictionary<DatabaseObjectType, DatabaseObjectType> SimpleDatabaseObjectTypes = new Dictionary<DatabaseObjectType, DatabaseObjectType>()
+        {
+            { DatabaseObjectType.Table, DatabaseObjectType.Table },
+            { DatabaseObjectType.View, DatabaseObjectType.View },
+            { DatabaseObjectType.TableValuedFunction, DatabaseObjectType.TableValuedFunction },
+            { DatabaseObjectType.SqlTableValuedFunction, DatabaseObjectType.TableValuedFunction },
+            { DatabaseObjectType.SqlInlineTableValuedFunction, DatabaseObjectType.TableValuedFunction },
+            { DatabaseObjectType.ClrTableValuedFunction, DatabaseObjectType.TableValuedFunction },
+            { DatabaseObjectType.ScalarFunction,DatabaseObjectType.ScalarFunction},
+            { DatabaseObjectType.SqlScalarFunction, DatabaseObjectType.ScalarFunction },
+            { DatabaseObjectType.ClrScalarFunction, DatabaseObjectType.ScalarFunction },
+            { DatabaseObjectType.StoredProcedure, DatabaseObjectType.StoredProcedure },
+            { DatabaseObjectType.SqlStoredProcedure, DatabaseObjectType.StoredProcedure },
+            { DatabaseObjectType.ClrStoredProcedure, DatabaseObjectType.StoredProcedure },
+        };
+
         /// <summary>
         /// SQL Server object type indentifiers, as used in the sys.objects table
         /// </summary>
