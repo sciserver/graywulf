@@ -621,7 +621,14 @@ namespace Jhu.Graywulf.SqlParser
 
                 var ds = schemaManager.Datasets[node.FunctionReference.DatasetName];
 
-                node.FunctionReference.DatabaseObject = ds.GetObject(node.FunctionReference.DatabaseName, node.FunctionReference.SchemaName, node.FunctionReference.DatabaseObjectName);
+                var dbo = ds.GetObject(node.FunctionReference.DatabaseName, node.FunctionReference.SchemaName, node.FunctionReference.DatabaseObjectName);
+
+                if (dbo == null)
+                {
+                    throw CreateException(ExceptionMessages.UnresolvableTableReference, null, node.FunctionReference.DatabaseObjectName, (Node)node);
+                }
+
+                node.FunctionReference.DatabaseObject = dbo;
             }
         }
 
