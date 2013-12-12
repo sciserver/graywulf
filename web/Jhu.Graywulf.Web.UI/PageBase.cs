@@ -106,9 +106,9 @@ namespace Jhu.Graywulf.Web.UI
 
         // ---
 
-        protected override void OnUserLoggedIn()
+        protected override void OnUserSignedIn()
         {
-            base.OnUserLoggedIn();
+            base.OnUserSignedIn();
 
             if (MyDBDatabaseInstance == null)
             {

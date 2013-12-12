@@ -272,14 +272,34 @@ namespace Jhu.Graywulf.Web
 
         protected virtual void EnsureUserIdentified()
         {
-            if (Request.IsAuthenticated && Session[Constants.SessionUsername] == null)
+            // Check newly signed in user
+            if (Request.IsAuthenticated &&
+                (Session[Constants.SessionUsername] == null ||
+                 Session[Constants.SessionUsername] != RegistryUser.Name))
             {
                 Session[Constants.SessionUsername] = RegistryUser.Name;
-                OnUserLoggedIn();
+                OnUserSignedIn();
+            }
+
+            // Check signed off user
+            if (!Request.IsAuthenticated && Session[Constants.SessionUsername] != null)
+            {
+                OnUserSignedOut();
+                Session.Abandon();
             }
         }
 
-        protected virtual void OnUserLoggedIn()
+        /// <summary>
+        /// Called when a user signs in
+        /// </summary>
+        protected virtual void OnUserSignedIn()
+        {
+        }
+
+        /// <summary>
+        /// Called when a user sings out
+        /// </summary>
+        protected virtual void OnUserSignedOut()
         {
         }
 

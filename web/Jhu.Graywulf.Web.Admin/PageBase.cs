@@ -26,9 +26,9 @@ namespace Jhu.Graywulf.Web.Admin
             }
         }
 
-        protected override void OnUserLoggedIn()
+        protected override void OnUserSignedIn()
         {
-            base.OnUserLoggedIn();
+            base.OnUserSignedIn();
 
             if (Cluster == null)
             {
