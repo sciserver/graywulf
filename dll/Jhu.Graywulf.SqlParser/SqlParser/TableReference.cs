@@ -27,7 +27,6 @@ namespace Jhu.Graywulf.SqlParser
         private bool isComputed;
 
         private List<ColumnReference> columnReferences;
-        //private List<SearchConditionReference> conditionReferences;
 
         private TableStatistics statistics;
 
@@ -226,11 +225,6 @@ namespace Jhu.Graywulf.SqlParser
             get { return columnReferences; }
         }
 
-        //public List<SearchConditionReference> ConditionReferences
-        //{
-        //    get { return conditionReferences; }
-        //}
-
         public TableStatistics Statistics
         {
             get { return statistics; }
@@ -312,7 +306,6 @@ namespace Jhu.Graywulf.SqlParser
             this.isComputed = false;
 
             this.columnReferences = new List<ColumnReference>();
-            //this.conditionReferences = new List<SearchConditionReference>();
 
             this.statistics = null;
         }
@@ -344,7 +337,6 @@ namespace Jhu.Graywulf.SqlParser
                 };
                 this.columnReferences.Add(ncr);
             }
-            //this.conditionReferences = new List<SearchConditionReference>(old.conditionReferences);
 
             this.statistics = old.statistics == null ? null : new TableStatistics(old.statistics);
         }
@@ -542,12 +534,10 @@ namespace Jhu.Graywulf.SqlParser
             TableOrView td;
             if (ds.Tables.ContainsKey(databaseName, schemaName, databaseObjectName))
             {
-                //td = new Table(ds.Tables[databaseName, schemaName, databaseObjectName]);
                 td = ds.Tables[databaseName, schemaName, databaseObjectName];
             }
             else if (ds.Views.ContainsKey(databaseName, schemaName, databaseObjectName))
             {
-                //td = new View(ds.Views[databaseName, schemaName, databaseObjectName]);
                 td = ds.Views[databaseName, schemaName, databaseObjectName];
             }
             else
