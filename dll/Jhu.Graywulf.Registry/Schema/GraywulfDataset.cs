@@ -26,8 +26,6 @@ namespace Jhu.Graywulf.Schema
         [NonSerialized]
         private EntityProperty<DatabaseInstance> databaseInstance;
 
-        private string connectionStringCache;
-
         public Context Context
         {
             get { return context; }
@@ -59,21 +57,21 @@ namespace Jhu.Graywulf.Schema
             set { databaseInstance = value; }
         }
 
-        [IgnoreDataMember]
+        [DataMember]
         public override string ConnectionString
         {
             get
             {
-                if (connectionStringCache == null)
+                if (base.ConnectionString == null)
                 {
                     CacheSchemaConnectionString();
                 }
 
-                return connectionStringCache;
+                return base.ConnectionString;
             }
             set
             {
-                connectionStringCache = value;
+                base.ConnectionString = value;
                 //throw new InvalidOperationException("Connection string of graywulf datasets cannot be set directly."); // TODO
             }
         }
@@ -110,8 +108,6 @@ namespace Jhu.Graywulf.Schema
             this.databaseDefinition = new EntityProperty<DatabaseDefinition>();
             this.databaseVersion = new EntityProperty<DatabaseVersion>();
             this.databaseInstance = new EntityProperty<DatabaseInstance>();
-
-            this.connectionStringCache = null;
         }
 
         private void CopyMembers(GraywulfDataset old)
@@ -121,8 +117,6 @@ namespace Jhu.Graywulf.Schema
             this.databaseDefinition = new EntityProperty<DatabaseDefinition>(old.databaseDefinition);
             this.databaseVersion = new EntityProperty<DatabaseVersion>(old.databaseVersion);
             this.databaseInstance = new EntityProperty<DatabaseInstance>(old.databaseInstance);
-
-            this.connectionStringCache = null;
         }
 
         private void UpdateContext()
@@ -136,15 +130,15 @@ namespace Jhu.Graywulf.Schema
         {
             if (!databaseInstance.IsEmpty)
             {
-                connectionStringCache = databaseInstance.Value.GetConnectionString().ConnectionString;
+                base.ConnectionString = databaseInstance.Value.GetConnectionString().ConnectionString;
             }
             else if (!databaseVersion.IsEmpty)
             {
-                connectionStringCache = databaseVersion.Value.DatabaseDefinition.GetConnectionString().ConnectionString;
+                base.ConnectionString = databaseVersion.Value.DatabaseDefinition.GetConnectionString().ConnectionString;
             }
             else
             {
-                connectionStringCache = databaseDefinition.Value.GetConnectionString().ConnectionString;
+                base.ConnectionString = databaseDefinition.Value.GetConnectionString().ConnectionString;
             }
         }
     }
