@@ -363,7 +363,8 @@ namespace Jhu.Graywulf.Jobs.Query
             bcp.Source = source;
             bcp.Destination = destination;
 
-            bcp.CreateDestinationTable();
+            // TODO: delete if works without this line, table's created on execute three lines below
+            //bcp.CreateDestinationTable();
 
             var guid = Guid.NewGuid();
             RegisterCancelable(guid, bcp);
