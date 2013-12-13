@@ -398,10 +398,8 @@ namespace Jhu.Graywulf.SqlParser
 
                     // if only a table name found and that's not an alias -> must be a table
                     int q = 0;
-                    foreach (var key in qs.SourceTableReferences.Keys)
+                    foreach (var tr in qs.SourceTableReferences.Values)
                     {
-                        var tr = qs.SourceTableReferences[key];
-
                         if (tr.Compare(node.TableReference))
                         {
                             if (q != 0)
