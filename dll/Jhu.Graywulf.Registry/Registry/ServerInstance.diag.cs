@@ -11,11 +11,18 @@ namespace Jhu.Graywulf.Registry
     {
         public override IList<DiagnosticMessage> RunDiagnostics()
         {
-            List<DiagnosticMessage> msg = new List<DiagnosticMessage>();
+            if (Machine.RunningState == Registry.RunningState.Running)
+            {
+                List<DiagnosticMessage> msg = new List<DiagnosticMessage>();
 
-            msg.Add(TestSqlConnection());
+                msg.Add(TestSqlConnection());
 
-            return msg;
+                return msg;
+            }
+            else
+            {
+                return base.RunDiagnostics();
+            }
         }
 
         private DiagnosticMessage TestSqlConnection()

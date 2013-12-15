@@ -34,7 +34,17 @@ namespace Jhu.Graywulf.Web.Admin.Monitor
 
         protected void RunDiagnostics(List<DiagnosticMessage> messages, Entity entity)
         {
-            messages.AddRange(entity.RunDiagnostics());
+            var msgs = entity.RunDiagnostics();
+
+            messages.AddRange(msgs);
+
+            for (int i = 0; i < msgs.Count; i++)
+            {
+                if (msgs[i].Status == DiagnosticMessageStatus.Error)
+                {
+                    return;
+                }
+            }
 
             entity.LoadAllChildren(false);
 

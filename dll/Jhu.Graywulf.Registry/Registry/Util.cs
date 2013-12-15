@@ -165,9 +165,12 @@ namespace Jhu.Graywulf.Registry
 
         public static void RunSqlServerDiagnostics(string connectionString, DiagnosticMessage message)
         {
+            var csb = new SqlConnectionStringBuilder(connectionString);
+            csb.ConnectTimeout = 5;
+
             try
             {
-                using (SqlConnection cn = new SqlConnection(connectionString))
+                using (SqlConnection cn = new SqlConnection(csb.ConnectionString))
                 {
                     cn.Open();
                     cn.Close();
