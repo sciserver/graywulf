@@ -16,11 +16,16 @@ namespace Jhu.Graywulf.Jobs.Query
     [DataContract(Name = "Query", Namespace = "")]
     public class SqlQuery : QueryBase
     {
+        /// <summary>
+        /// Gets whether the query is partitioned
+        /// </summary>
         [IgnoreDataMember]
         public override bool IsPartitioned
         {
             get { return SelectStatement.IsPartitioned; }
         }
+
+        #region Constructors and initializer
 
         protected SqlQuery()
             : base()
@@ -48,6 +53,13 @@ namespace Jhu.Graywulf.Jobs.Query
         private void CopyMembers(SqlQuery old)
         {
         }
+
+        public override object Clone()
+        {
+            return new SqlQuery(this);
+        }
+
+        #endregion
 
         public override void CollectTablesForStatistics()
         {
@@ -80,18 +92,14 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 case ExecutionMode.SingleServer:
                     {
-                        SqlQueryPartition sqp = new SqlQueryPartition(this, null);
-                        sqp.ID = 0;
+                        var sqp = new SqlQueryPartition(this, null);
                         AppendPartition(sqp);
                     }
                     break;
                 case ExecutionMode.Graywulf:
                     if (!SelectStatement.IsPartitioned)
                     {
-                        SqlQueryPartition sqp = new SqlQueryPartition(this, this.Context);
-
-                        sqp.ID = 0;
-
+                        var sqp = new SqlQueryPartition(this, this.Context);
                         AppendPartition(sqp);
                     }
                     else
@@ -103,7 +111,6 @@ namespace Jhu.Graywulf.Jobs.Query
                         }
 
                         var stat = TableStatistics[0].Statistics;
-
                         GeneratePartitions(partitionCount, stat);
                     }
                     break;
@@ -112,35 +119,45 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        /// <summary>
+        /// Generate partitions based on table statistics.
+        /// </summary>
+        /// <param name="partitionCount"></param>
+        /// <param name="stat"></param>
         private void GeneratePartitions(int partitionCount, SqlParser.TableStatistics stat)
         {
             SqlQueryPartition qp = null;
             int s = stat.KeyValue.Count / partitionCount;
-            for (int i = 0; i < partitionCount; i++)
+
+            if (s == 0)
             {
                 qp = new SqlQueryPartition(this, this.Context);
-                qp.ID = Partitions.Count;
-                qp.PartitioningKeyTo = stat.KeyValue[(i + 1) * s];
-
-                if (i == 0)
-                {
-                    qp.PartitioningKeyFrom = double.NegativeInfinity;
-                }
-                else
-                {
-                    qp.PartitioningKeyFrom = Partitions[i - 1].PartitioningKeyTo;
-                }
+                qp.PartitioningKeyFrom = double.NegativeInfinity;
+                qp.PartitioningKeyTo = double.PositiveInfinity;
 
                 AppendPartition(qp);
             }
+            else
+            {
+                for (int i = 0; i < partitionCount; i++)
+                {
+                    qp = new SqlQueryPartition(this, this.Context);
+                    qp.PartitioningKeyTo = stat.KeyValue[Math.Min((i + 1) * s, stat.KeyValue.Count - 1)];
 
-            Partitions[Partitions.Count - 1].PartitioningKeyTo = double.PositiveInfinity;
+                    if (i == 0)
+                    {
+                        qp.PartitioningKeyFrom = double.NegativeInfinity;
+                    }
+                    else
+                    {
+                        qp.PartitioningKeyFrom = Partitions[i - 1].PartitioningKeyTo;
+                    }
+
+                    AppendPartition(qp);
+                }
+
+                Partitions[Partitions.Count - 1].PartitioningKeyTo = double.PositiveInfinity;
+            }
         }
-
-        public override object Clone()
-        {
-            return new SqlQuery(this);
-        }
-
     }
 }

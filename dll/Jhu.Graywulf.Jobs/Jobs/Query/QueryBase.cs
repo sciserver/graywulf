@@ -334,6 +334,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected void AppendPartition(QueryPartitionBase partition)
         {
+            partition.ID = partitions.Count;
             partitions.Add(partition);
         }
 

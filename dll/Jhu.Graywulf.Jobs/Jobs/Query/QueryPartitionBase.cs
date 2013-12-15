@@ -19,7 +19,6 @@ using Jhu.Graywulf.IO;
 namespace Jhu.Graywulf.Jobs.Query
 {
     [Serializable]
-    [DataContract(Namespace = "")]
     public abstract class QueryPartitionBase : QueryObject
     {
         #region Property storage variables
