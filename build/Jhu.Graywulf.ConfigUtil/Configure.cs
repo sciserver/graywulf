@@ -58,12 +58,14 @@ namespace Jhu.Graywulf.ConfigUtil
         {
             ReadProjectSettings();
 
-            XmlDocument orig = ReadOriginalConfig();
+            var orig = ReadOriginalConfig();
 
             foreach (string m in mergeList)
             {
-                XmlDocument merge = ReadMergeConfig(m);
+                var merge = ReadMergeConfig(m);
 
+                //
+                Console.WriteLine("Merging '{0}' into '{1}'.", m, GetOriginalConfigPath());
                 MergeConfigs(orig, merge);
             }
 
@@ -99,10 +101,15 @@ namespace Jhu.Graywulf.ConfigUtil
             }
         }
 
+        private string GetOriginalConfigPath()
+        {
+            return Path.Combine(rootPath, projectPath, Constants.OriginalConfigFileNames[projectType]);
+        }
+
         private XmlDocument ReadOriginalConfig()
         {
             var config = new XmlDocument();
-            config.Load(Path.Combine(rootPath, projectPath, Constants.OriginalConfigFileNames[projectType]));
+            config.Load(GetOriginalConfigPath());
 
             return config;
         }
@@ -164,10 +171,23 @@ namespace Jhu.Graywulf.ConfigUtil
             foreach (XmlNode m in merge.ChildNodes)
             {
                 // Find possible matching nodes in original
-                HashSet<XmlNode> all = new HashSet<XmlNode>();
-                HashSet<XmlNode> matching = new HashSet<XmlNode>();
+                var all = new HashSet<XmlNode>();
+                var matching = new HashSet<XmlNode>();
 
-                all.UnionWith(orig.SelectNodes(String.Format("./{0}", m.Name)).Cast<XmlNode>());
+                var q = String.Format("./{0}", m.Name);
+                IEnumerable<XmlNode> nodes = null;
+
+                // Try merging in nodes
+                try
+                {
+                    nodes = orig.SelectNodes(q).Cast<XmlNode>();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(String.Format("Cannot merge in {0}.", q), e);
+                }
+
+                all.UnionWith(nodes);
 
                 if (all.Count == 0)
                 {
