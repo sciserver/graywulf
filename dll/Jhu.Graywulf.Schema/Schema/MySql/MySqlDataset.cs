@@ -18,19 +18,6 @@ namespace Jhu.Graywulf.Schema.MySql
     [DataContract(Namespace = "")]
     public class MySqlDataset : DatasetBase
     {
-        protected bool isOnLinkedServer;
-        protected bool isRemoteDataset;
-        /// <summary>
-        /// Gets or sets the value determining if the data is available
-        /// via a linked MYSQL.
-        /// </summary>
-        [DataMember]
-        public bool IsOnLinkedServer
-        {
-            get { return isOnLinkedServer; }
-            set { isOnLinkedServer = value; }
-        }
-
         [DataMember]
         public override string ProviderName
         {
@@ -108,8 +95,6 @@ namespace Jhu.Graywulf.Schema.MySql
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.isOnLinkedServer = false;
-            this.isRemoteDataset = false;
         }
 
         /// <summary>
@@ -118,8 +103,6 @@ namespace Jhu.Graywulf.Schema.MySql
         /// <param name="old"></param>
         private void CopyMembers(MySqlDataset old)
         {
-            this.isOnLinkedServer = old.isOnLinkedServer;
-            this.isRemoteDataset = old.isRemoteDataset;
         }
 
         public override object Clone()
@@ -145,9 +128,16 @@ namespace Jhu.Graywulf.Schema.MySql
         /// <returns></returns>
         internal override string GetObjectFullyResolvedName(DatabaseObject databaseObject)
         {
-            string format = "{0}..[{1}]";
+            string format = "{0}.[{1}]";
 
             return String.Format(format, this.GetFullyResolvedName(), databaseObject.ObjectName);
+        }
+
+        public override string GetObjectKeyFromParts(DatabaseObjectType objectType, string datasetName, string databaseName, string schemaName, string objectName)
+        {
+            // MySQL doesn't have the equivalent of schemas of SQL Server.
+            schemaName = String.Empty;
+            return String.Format("{0}|{1}|{2}|{3}|{4}", objectType, datasetName, databaseName, schemaName, objectName);
         }
 
         /// <summary>
@@ -157,34 +147,36 @@ namespace Jhu.Graywulf.Schema.MySql
         /// <param name="obj"></param>
         protected override void LoadObject<T>(T obj)
         {
-            // TODO: rewrite this query to conform with mysql
-            var sql = String.Empty;
+            string sql;
+
             switch (Schema.Constants.DatabaseObjectTypes[typeof(T)])
             {
                 case DatabaseObjectType.Table:
                     sql = @"
 SELECT table_name, table_type
 FROM information_schema.tables
-WHERE table_schema = @database AND table_type IN ({0}) AND table_name = @objectName;";
+WHERE table_schema LIKE @databaseName AND table_name LIKE @objectName AND table_type IN ({0});";
                     break;
                 case DatabaseObjectType.View:
                     sql = @"
 SELECT table_name, table_type
 FROM information_schema.tables
-WHERE table_schema = @database AND table_type IN ({0}) AND table_name = @objectName;";
+WHERE table_schema LIKE @databaseName AND table_name LIKE @objectName AND table_type IN ({0});";
                     break;
                 case DatabaseObjectType.StoredProcedure:
                     sql = @"
 SELECT routine_name  as `object_name`, routine_type  as `object_type`
-FROM   information_schema.routines
-WHERE routine_schema = @database AND routine_type IN ({0});";
+FROM information_schema.routines
+WHERE routine_schema LIKE @databaseName AND routine_name LIKE @objectName AND routine_type IN ({0});";
                     break;
                 case DatabaseObjectType.ScalarFunction:
                     sql = @"
 SELECT routine_name, routine_type
-FROM   information_schema.routines
-WHERE routine_schema = @database AND routine_type IN ({0});";
+FROM information_schema.routines
+WHERE routine_schema LIKE @databaseName AND routine_name LIKE @objectName AND routine_type IN ({0});";
                     break;
+                default:
+                    throw new NotImplementedException();
             }
 
             sql = String.Format(sql, GetObjectTypeIdListString(Schema.Constants.DatabaseObjectTypes[typeof(T)]));
@@ -192,7 +184,7 @@ WHERE routine_schema = @database AND routine_type IN ({0});";
             {
                 using (MySqlCommand cmd = new MySqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@database", MySqlDbType.VarChar, 128).Value = DatabaseName;
+                    cmd.Parameters.Add("@databaseName", MySqlDbType.VarChar, 128).Value = DatabaseName;
                     cmd.Parameters.Add("@objectName", MySqlDbType.VarChar, 128).Value = obj.ObjectName;
 
                     using (MySqlDataReader dr = cmd.ExecuteReader())
@@ -232,14 +224,13 @@ WHERE routine_schema = @database AND routine_type IN ({0});";
         protected override IEnumerable<KeyValuePair<string, T>> LoadAllObjects<T>(string databaseName)
         {
             var sql = @"
-SELECT routine_name as `object_name`, routine_type as `object_type`
+SELECT routine_name AS `object_name`, routine_type AS `object_type`
 FROM information_schema.routines
-WHERE routine_schema = @database AND routine_type IN({0})
+WHERE routine_schema LIKE @databaseName AND routine_type IN({0})
 UNION
 SELECT table_name as `object_name`, table_type as `object_type`
 FROM information_schema.tables
-WHERE table_schema = @database 
-AND table_type IN({0})";
+WHERE table_schema LIKE @databaseName AND table_type IN({0})";
 
             sql = String.Format(sql, GetObjectTypeIdListString(Schema.Constants.DatabaseObjectTypes[typeof(T)]));
 
@@ -247,7 +238,7 @@ AND table_type IN({0})";
             {
                 using (MySqlCommand cmd = new MySqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@database", MySqlDbType.VarChar, 128).Value = DatabaseName;
+                    cmd.Parameters.Add("@databaseName", MySqlDbType.VarChar, 128).Value = DatabaseName;
 
                     using (MySqlDataReader dr = cmd.ExecuteReader())
                     {
@@ -269,20 +260,6 @@ AND table_type IN({0})";
             }
         }
 
-        /// <summary>
-        /// Returns the unique string key of a database object belonging to the dataset.
-        /// </summary>
-        /// <param name="objectType"></param>
-        /// <param name="datasetName"></param>
-        /// <param name="databaseName"></param>
-        /// <param name="schemaName"></param>
-        /// <param name="objectName"></param>
-        /// <returns></returns>
-        public override string GetObjectKeyFromParts(DatabaseObjectType objectType, string datasetName, string databaseName, string schemaName, string objectName)
-        {
-            return String.Format("{0}|{1}|{2}|{3}|{4}", objectType, datasetName, databaseName, schemaName, objectName);
-        }
-
         private string GetObjectTypeIdListString(DatabaseObjectType objectType)
         {
             string res = String.Empty;
@@ -297,20 +274,24 @@ AND table_type IN({0})";
 
             return res.Substring(1);
         }
-        //TODO SIZE
+        
         /// <summary>
         /// Loads columns of a database object.
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        internal override ConcurrentDictionary<string, Column> LoadColumns(DatabaseObject obj)
+        internal override IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject obj)
         {
-            var res = new ConcurrentDictionary<string, Column>();
-
             var sql = @"
-SELECT ordinal_position, column_name, data_type, COALESCE(character_maximum_length, -1) AS `max_length`, COALESCE(numeric_scale, -1) AS `scale`, COALESCE(numeric_precision, -1) AS `precision`, is_nullable
+SELECT ordinal_position,
+       column_name,
+       data_type,
+       COALESCE(character_maximum_length, -1) AS `max_length`,
+       COALESCE(numeric_scale, -1) AS `scale`,
+       COALESCE(numeric_precision, -1) AS `precision`,
+       is_nullable
 FROM information_schema.columns
-WHERE table_schema = @databaseName and table_name= @tableName;";
+WHERE table_schema LIKE @databaseName AND table_name LIKE @tableName;";
 
             using (var cn = OpenConnection())
             {
@@ -328,29 +309,19 @@ WHERE table_schema = @databaseName and table_name= @tableName;";
                                 ID = dr.GetInt32(0),
                                 Name = dr.GetString(1),
                             };
-                            
-                            Int32 charactermaxlength = 0;
-                            try
-                            {
-                                charactermaxlength = Convert.ToInt32(dr.GetValue(3));
-                            }catch (OverflowException) 
-                            {
-                                charactermaxlength = Int32.MaxValue;
-                            }
+
                             cd.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(2),
-                                charactermaxlength,
+                                dr.GetInt64(3) > Int32.MaxValue ? Int32.MaxValue : Convert.ToInt32(dr.GetInt64(3)),
                                 Convert.ToInt16(dr.GetValue(4)),
                                 Convert.ToInt16(dr.GetValue(5)),
                                 (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(6), "yes") == 0));
 
-                            res.TryAdd(cd.Name, cd);
+                            yield return new KeyValuePair<string, Column>(cd.Name, cd);
                         }
                     }
                 }
             }
-
-            return res;
         }
 
         /// <summary>
@@ -358,82 +329,73 @@ WHERE table_schema = @databaseName and table_name= @tableName;";
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override ConcurrentDictionary<string, Index> LoadIndexes(DatabaseObject obj)
+        internal override IEnumerable<KeyValuePair<string, Index>> LoadIndexes(DatabaseObject obj)
         {
-            var res = new ConcurrentDictionary<string, Index>();
             var sql = @"  
-SELECT  c.ordinal_position,s.index_name,s.index_type,s.non_unique,s.column_name,s.table_name
+SELECT s.index_name, s.non_unique
 FROM information_schema.statistics s
-INNER JOIN information_schema.columns c ON s.table_name=c.table_name
-WHERE s.table_schema =  @schemaName AND s.table_name=@objectName
-GROUP BY 1,2;";
+WHERE s.table_schema LIKE @databaseName AND s.table_name LIKE @objectName
+GROUP BY 1;";
 
             using (var cn = OpenConnection())
             {
                 using (var cmd = new MySqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@schemaName", MySqlDbType.VarChar, 128).Value = obj.DatabaseName;
+                    cmd.Parameters.Add("@databaseName", MySqlDbType.VarChar, 128).Value = obj.DatabaseName;
                     cmd.Parameters.Add("@objectName", MySqlDbType.VarChar, 128).Value = obj.ObjectName;
 
                     using (var dr = cmd.ExecuteReader())
                     {
+                        int q = 0;
                         while (dr.Read())
                         {
-                            var idx = new Index((TableOrView)obj);
-                            if (dr.GetString(1).ToUpper() == "PRIMARY")
-                            {
-                                idx.IsPrimaryKey = true;
-                                idx.IndexId = dr.GetInt32(0);
-                                idx.IsClustered = true;       //http://dev.mysql.com/doc/refman/5.0/en/innodb-index-types.html
-                                idx.IsUnique = dr.GetBoolean(3);
-                                idx.IndexName = "PK_" + dr.GetString(5);
-                            }
-                            else
-                            {
-                                idx.IsPrimaryKey = false;
-                                idx.IndexId = dr.GetInt32(0);
-                                idx.IndexName = dr.GetString(1);
-                                idx.IsClustered = false;
-                                idx.IsUnique = dr.GetBoolean(3);
-                            }
+                            // Primary keep is the same as clustered index
+                            // http://dev.mysql.com/doc/refman/5.0/en/innodb-index-types.html
+                            var primary = StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(0), "primary") == 0;
 
-                            res.TryAdd(idx.IndexName, idx);
+                            var idx = new Index((TableOrView)obj)
+                            {
+                                IndexId = q++,
+                                IndexName = dr.GetString(0),
+                                IsUnique = !dr.GetBoolean(1),
+                                IsPrimaryKey = primary,
+                                IsClustered = primary
+                            };
+
+                            yield return new KeyValuePair<string, Index>(idx.IndexName, idx);
                         }
                     }
                 }
             }
-
-            return res;
         }
-        //TODO SIZE
+
         /// <summary>
         /// Loads columns of an index of a database object.
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal override ConcurrentDictionary<string, IndexColumn> LoadIndexColumns(Index index)
+        internal override IEnumerable<KeyValuePair<string, IndexColumn>> LoadIndexColumns(Index index)
         {
-            var res = new ConcurrentDictionary<string, IndexColumn>();
             var sql = @"
-SELECT kcu.column_name, kcu.ordinal_position, c.is_nullable, t.auto_increment, c.data_type, c.character_maximum_length, c.numeric_scale, c.numeric_precision
+SELECT c.column_name,
+       kcu.ordinal_position,
+       t.auto_increment,
+       c.data_type,
+       COALESCE(character_maximum_length, -1) AS `max_length`,
+       COALESCE(numeric_scale, -1) AS `scale`,
+       COALESCE(numeric_precision, -1) AS `precision`,
+       c.is_nullable
 FROM information_schema.key_column_usage kcu 
-INNER JOIN information_schema.columns c ON kcu.table_name = c.table_name AND kcu.column_name = c.column_name
-INNER JOIN information_schema.tables t ON kcu.table_name = t.table_name
-where kcu.table_name LIKE @tableName AND kcu.constraint_name=@indexName;";
+INNER JOIN information_schema.columns c ON kcu.table_schema = c.table_schema AND kcu.table_name = c.table_name AND kcu.column_name = c.column_name
+INNER JOIN information_schema.tables t ON kcu.table_schema = t.table_schema AND kcu.table_name = t.table_name
+WHERE t.table_schema LIKE @databaseName AND kcu.table_name LIKE @tableName AND kcu.constraint_name LIKE @indexName;";
             using (var cn = OpenConnection())
             {
                 using (var cmd = new MySqlCommand(sql, cn))
                 {
-                    if (index.IsPrimaryKey)
-                    {
-                        cmd.Parameters.Add("@tableName", MySqlDbType.VarChar, 128).Value = "%" + index.IndexName.Substring(3) + "%";
-                        cmd.Parameters.Add("@indexName", MySqlDbType.VarChar, 128).Value = "PRIMARY";
-                    }
-                    else
-                    {
-                        cmd.Parameters.Add("@tableName", MySqlDbType.VarChar, 128).Value = "%" + "" + "%";
-                        cmd.Parameters.Add("@indexName", MySqlDbType.VarChar, 128).Value = index.IndexName;
-                    }
+                    cmd.Parameters.Add("@databaseName", MySqlDbType.VarChar, 128).Value = index.DatabaseName;
+                    cmd.Parameters.Add("@tableName", MySqlDbType.VarChar, 128).Value = index.TableOrView.ObjectName;
+                    cmd.Parameters.Add("@indexName", MySqlDbType.VarChar, 128).Value = index.ObjectName;
 
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -445,89 +407,96 @@ where kcu.table_name LIKE @tableName AND kcu.constraint_name=@indexName;";
                                 Name = dr.GetString(0),
                                 KeyOrdinal = dr.GetInt32(1),
                                 Ordering = IndexColumnOrdering.Ascending,
-                                IsIdentity = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetValue(3), null) == 0)
+                                IsIdentity =  dr.IsDBNull(7) ? false : true
                             };
 
-                            // TODO: clean this up here!
                             ic.DataType = GetTypeFromProviderSpecificName(
-                                dr.GetString(4)/*,
-                                dr.IsDBNull(5) ? dr.GetInt16(5)  : new short(),
-                                dr.IsDBNull(6) ? dr.GetByte(6) : Byte.MinValue,
-                                dr.IsDBNull(7) ? dr.GetByte(7) : Byte.MinValue*/);
+                                dr.GetString(3),
+                                dr.GetInt64(4) > Int32.MaxValue ? Int32.MaxValue : Convert.ToInt32(dr.GetInt64(4)),
+                                Convert.ToInt16(dr.GetValue(5)),
+                                Convert.ToInt16(dr.GetValue(6)),
+                                (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(7), "yes") == 0));
 
-                            // ic.DataType.Size = dr.GetValue(3).ToString() != "null" ?  : 0;
-                            /*ic.DataType.Size = dr.GetValue(5).ToString() != "0" ? (short)dr.GetValue(5) : (short)0;
-                            ic.DataType.Scale = dr.GetValue(6).ToString() != "0" ? (short)dr.GetValue(6) : (short)0;
-                            ic.DataType.Precision = dr.GetValue(7).ToString() != "0" ? (short)dr.GetValue(7) : (short)0;*/
-                            res.TryAdd(ic.Name, ic);
+                            yield return new KeyValuePair<string, IndexColumn>(ic.Name, ic);
                         }
                     }
                 }
             }
-
-            return res;
         }
 
-        // it works only from   INFORMATION_SCHEMA -> MySQL 5.5 Manual
         /// <summary>
         /// Loads parameters of a database object.
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        internal override ConcurrentDictionary<string, Parameter> LoadParameters(DatabaseObject obj)
+        internal override IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject obj)
         {
-            try
-            {
-
-                var res = new ConcurrentDictionary<string, Parameter>();
-                var sql = @"
-SELECT p.ordinal_position/*P.PARAMETER_ID*/, p.parameter_name, p.parameter_mode, p.data_type /* sys.types NAME*/, COALESCE(p.character_maximum_length, -1), COALESCE(p.numeric_scale, -1), COALESCE(p.numeric_precision, -1) /*p.has_default_value*/ /*p.default_value*/
+            var sql = @"
+SELECT p.ordinal_position,
+       COALESCE(p.parameter_name, 'RETVAL'),
+	   p.parameter_mode,
+	   p.data_type,
+       COALESCE(p.character_maximum_length, -1),
+       COALESCE(p.numeric_scale, -1),
+       COALESCE(p.numeric_precision, -1)
 FROM information_schema.parameters p
-WHERE p.specific_name=@objectName AND p.specific_schema=@databaseName; ";
+WHERE p.specific_schema LIKE @databaseName AND p.specific_name = @objectName
+ORDER BY 1;";
 
-                sql = String.Format(sql, DatabaseObjectType.Table);
-                using (var cn = OpenConnection())
+            sql = String.Format(sql, DatabaseObjectType.Table);
+            using (var cn = OpenConnection())
+            {
+                using (var cmd = new MySqlCommand(sql, cn))
                 {
-                    using (var cmd = new MySqlCommand(sql, cn))
+                    cmd.Parameters.Add("@databaseName", MySqlDbType.VarChar, 128).Value = obj.DatabaseName;
+                    cmd.Parameters.Add("@objectName", MySqlDbType.VarChar, 128).Value = obj.ObjectName;
+                    using (var dr = cmd.ExecuteReader())
                     {
-                        cmd.Parameters.Add("@databaseName", MySqlDbType.VarChar, 128).Value = obj.DatabaseName;
-                        cmd.Parameters.Add("@objectName", MySqlDbType.VarChar, 128).Value = obj.ObjectName;
-                        using (var dr = cmd.ExecuteReader())
+                        while (dr.Read())
                         {
-                            while (dr.Read())
+                            ParameterDirection dir;
+                            if (dr.IsDBNull(2))
                             {
-                                var par = new Parameter(obj)
-                                {
-                                    ID = dr.GetInt32(0),
-                                    Name = dr.GetString(1),
-                                    HasDefaultValue = false,
-                                    DefaultValue = null,
-                                };
-                                if (!String.IsNullOrEmpty(dr.GetString(2)))
-                                {
-                                    if (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "in") == 0) { par.Direction = ParameterDirection.Input; }
-                                    else if (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "out") == 0) { par.Direction = ParameterDirection.Output; }
-                                    else if (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "inout") == 0) { par.Direction = ParameterDirection.InputOutput; }
-                                }
-                                else { par.Direction = ParameterDirection.ReturnValue; }
-                                par.DataType = GetTypeFromProviderSpecificName(
-                                    dr.GetString(3),
-                                    Convert.ToInt32(dr.GetValue(4)),
-                                    Convert.ToInt16(dr.GetValue(5)),
-                                    Convert.ToInt16(dr.GetValue(6)),
-                                    false);
-                                
-                                res.TryAdd(par.Name, par);
+                                dir = ParameterDirection.ReturnValue;
                             }
+                            else
+                            {
+                                switch (dr.GetString(2).ToLowerInvariant())
+                                {
+                                    case "in":
+                                        dir = ParameterDirection.Input;
+                                        break;
+                                    case "out":
+                                        dir = ParameterDirection.Output;
+                                        break;
+                                    case "inout":
+                                        dir = ParameterDirection.InputOutput;
+                                        break;
+                                    default:
+                                        throw new NotImplementedException();
+                                }
+                            }
+
+                            var par = new Parameter(obj)
+                            {
+                                ID = dr.GetInt32(0),
+                                Name = dr.GetString(1),
+                                Direction = dir,
+                                HasDefaultValue = false,
+                                DefaultValue = null,
+                            };
+                            
+                            par.DataType = GetTypeFromProviderSpecificName(
+                                dr.GetString(3),
+                                Convert.ToInt32(dr.GetValue(4)),
+                                Convert.ToInt16(dr.GetValue(5)),
+                                Convert.ToInt16(dr.GetValue(6)),
+                                false);
+
+                            yield return new KeyValuePair<string, Parameter>(par.Name, par);
                         }
                     }
                 }
-
-                return res;
-            }
-            catch
-            {
-                return new ConcurrentDictionary<string, Parameter>();
             }
         }
 
@@ -536,17 +505,17 @@ WHERE p.specific_name=@objectName AND p.specific_schema=@databaseName; ";
             var sql = @"
 SELECT table_comment comment 
 FROM information_schema.tables t
-WHERE t.table_schema = @schemaName AND t.table_name = @objectName
+WHERE t.table_schema LIKE @databaseName AND t.table_name LIKE @objectName
 UNION
 SELECT routine_comment comment
 FROM information_schema.routines r
-WHERE r.routine_schema = @schemaName AND r.routine_name = @objectName ;" ;
-           
+WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;";
+
             using (var cn = OpenConnection())
             {
                 using (var cmd = new MySqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@schemaName", MySqlDbType.VarChar).Value = databaseObject.DatabaseName;
+                    cmd.Parameters.Add("@databaseName", MySqlDbType.VarChar).Value = databaseObject.DatabaseName;
                     cmd.Parameters.Add("@objectName", MySqlDbType.VarChar).Value = databaseObject.ObjectName;
 
                     using (var dr = cmd.ExecuteReader())
@@ -575,11 +544,12 @@ WHERE r.routine_schema = @schemaName AND r.routine_name = @objectName ;" ;
         }
 
         protected override void LoadAllColumnMetadata(DatabaseObject databaseObject)
-        {         
+        {
             var sql = @"
 SELECT column_name, column_comment
 FROM information_schema.columns 
-WHERE table_schema= @schemaName and table_name=@objectName ;" ;
+WHERE table_schema LIKE @databaseName AND table_name LIKE @objectName ;";
+
             LoadAllVariableMetadata(sql, databaseObject, ((IColumns)databaseObject).Columns);
         }
 
@@ -589,7 +559,7 @@ WHERE table_schema= @schemaName and table_name=@objectName ;" ;
 SELECT p.parameter_name, r.routine_comment
 FROM information_schema.routines r
 INNER JOIN information_schema.parameters p ON p.specific_name = r.routine_name
-WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
+WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;";
 
             LoadAllVariableMetadata(sql, databaseObject, ((IParameters)databaseObject).Parameters);
         }
@@ -605,7 +575,7 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
             {
                 using (var cmd = new MySqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@schemaName", MySqlDbType.VarChar).Value = databaseObject.DatabaseName;
+                    cmd.Parameters.Add("@databaseName", MySqlDbType.VarChar).Value = databaseObject.DatabaseName;
                     cmd.Parameters.Add("@objectName", MySqlDbType.VarChar).Value = databaseObject.ObjectName;
 
                     using (var dr = cmd.ExecuteReader())
@@ -646,6 +616,9 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
 
         internal override void RenameObject(DatabaseObject obj, string objectName)
         {
+            throw new NotImplementedException();
+
+            /*
             if (!IsMutable)
             {
                 throw new InvalidOperationException();
@@ -668,11 +641,14 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
                     cmd.ExecuteNonQuery();
                 }
             }
-
+            */
         }
 
         internal override void DropObject(DatabaseObject obj)
         {
+            throw new NotImplementedException();
+
+            /*
             if (!IsMutable)
             {
                 throw new InvalidOperationException();
@@ -689,7 +665,7 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
                 {
                     cmd.ExecuteNonQuery();
                 }
-            }
+            }*/
         }
 
         protected override DatasetStatistics LoadDatasetStatistics()
@@ -763,7 +739,7 @@ WHERE r.routine_schema = @schemaName and r.routine_name = @objectName ;";
                     return DataType.SqlXml;
 
                 default:
-                     return DataType.Unknown;
+                    return DataType.Unknown;
             }
         }
 

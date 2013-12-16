@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Schema.Test.Schema
         private PostgreSqlDataset CreateTarget()
         {
 
-            return new PostgreSqlDataset("test", Jhu.Graywulf.Test.Constants.TestConnectionStringPostgreSql);
+            return new PostgreSqlDataset("test", Jhu.Graywulf.Test.AppSettings.PostgreSqlConnectionString);
         }
 
         [TestMethod]

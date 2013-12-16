@@ -287,10 +287,8 @@ WHERE o.type IN ({0})
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        internal override ConcurrentDictionary<string, Column> LoadColumns(DatabaseObject obj)
+        internal override IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject obj)
         {
-            var res = new ConcurrentDictionary<string, Column>();
-
             var sql = @"
 SELECT c.column_id, c.name, t.name, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
 FROM sys.columns c
@@ -325,13 +323,11 @@ ORDER BY c.column_id";
                                 Convert.ToInt16(dr.GetValue(5)),
                                 dr.GetBoolean(6));
 
-                            res.TryAdd(cd.Name, cd);
+                            yield return new KeyValuePair<string, Column>(cd.Name, cd);
                         }
                     }
                 }
             }
-
-            return res;
         }
 
         /// <summary>
@@ -339,10 +335,8 @@ ORDER BY c.column_id";
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override ConcurrentDictionary<string, Index> LoadIndexes(DatabaseObject databaseObject)
+        internal override IEnumerable<KeyValuePair<string, Index>> LoadIndexes(DatabaseObject databaseObject)
         {
-            var res = new ConcurrentDictionary<string, Index>();
-
             var sql = @"
 SELECT i.index_id, i.name, i.type, i.is_unique, i.is_primary_key
 FROM sys.indexes i
@@ -371,13 +365,11 @@ s.name = @schemaName AND o.name = @objectName";
                                 IsPrimaryKey = dr.GetBoolean(4),
                             };
 
-                            res.TryAdd(idx.IndexName, idx);
+                            yield return new KeyValuePair<string, Index>(idx.IndexName, idx);
                         }
                     }
                 }
             }
-
-            return res;
         }
 
         /// <summary>
@@ -385,10 +377,8 @@ s.name = @schemaName AND o.name = @objectName";
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal override ConcurrentDictionary<string, IndexColumn> LoadIndexColumns(Index index)
+        internal override IEnumerable<KeyValuePair<string, IndexColumn>> LoadIndexColumns(Index index)
         {
-            var res = new ConcurrentDictionary<string, IndexColumn>();
-
             var sql = @"
 SELECT ic.column_id, ic.key_ordinal, c.name, ic.is_descending_key, t.name, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
 FROM sys.indexes AS i
@@ -426,13 +416,11 @@ ORDER BY ic.key_ordinal";
                                 Convert.ToInt16(dr.GetValue(7)),
                                 dr.GetBoolean(9));
 
-                            res.TryAdd(ic.Name, ic);
+                            yield return new KeyValuePair<string, IndexColumn>(ic.Name, ic);
                         }
                     }
                 }
             }
-
-            return res;
         }
 
         /// <summary>
@@ -440,10 +428,8 @@ ORDER BY ic.key_ordinal";
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        internal override ConcurrentDictionary<string, Parameter> LoadParameters(DatabaseObject obj)
+        internal override IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject obj)
         {
-            var res = new ConcurrentDictionary<string, Parameter>();
-
             var sql = @"
 SELECT p.parameter_id, p.name, p.is_output, t.name, p.max_length, p.scale, p.precision , p.has_default_value, p.default_value
 FROM sys.parameters p
@@ -464,11 +450,14 @@ ORDER BY p.parameter_id";
                     {
                         while (dr.Read())
                         {
+                            // TODO: check this for input only parameters!
+                            var dir = String.IsNullOrEmpty(dr.GetString(1)) ? ParameterDirection.ReturnValue : ParameterDirection.InputOutput;
+
                             var par = new Parameter()
                             {
                                 ID = dr.GetInt32(0),
                                 Name = dr.GetString(1),
-                                Direction = String.IsNullOrEmpty(dr.GetString(1)) ? ParameterDirection.ReturnValue : ParameterDirection.InputOutput,
+                                Direction = dir,
                                 HasDefaultValue = dr.GetBoolean(7),
                                 DefaultValue = dr.IsDBNull(8) ? null : dr.GetValue(8),
                             };
@@ -480,13 +469,11 @@ ORDER BY p.parameter_id";
                                 Convert.ToInt16(dr.GetValue(6)),
                                 false);
 
-                            res.TryAdd(par.Name, par);
+                            yield return new KeyValuePair<string, Parameter>(par.Name, par);
                         }
                     }
                 }
             }
-
-            return res;
         }
 
         #region Metadata

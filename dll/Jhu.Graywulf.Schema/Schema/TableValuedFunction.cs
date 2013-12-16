@@ -57,6 +57,7 @@ namespace Jhu.Graywulf.Schema
                 {
                     LoadParameters();
                 }
+
                 return parameters;
             }
         }
@@ -140,7 +141,7 @@ namespace Jhu.Graywulf.Schema
         {
             if (Dataset != null)
             {
-                this.columns = Dataset.LoadColumns(this);
+                this.columns = new ConcurrentDictionary<string, Column>(Dataset.LoadColumns(this), SchemaManager.Comparer);
             }
             else
             {
@@ -158,13 +159,13 @@ namespace Jhu.Graywulf.Schema
         {
             if (Dataset != null)
             {
-                this.parameters = Dataset.LoadParameters(this);
+                this.parameters = new ConcurrentDictionary<string, Parameter>(Dataset.LoadParameters(this), SchemaManager.Comparer);
             }
             else
             {
                 this.parameters = new ConcurrentDictionary<string, Parameter>(SchemaManager.Comparer);
             }
-
+            
             this.isParametersLoaded = true;
         }
     }

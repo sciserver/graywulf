@@ -30,6 +30,11 @@ namespace Jhu.Graywulf.Schema
             set { ObjectName = value; }
         }
 
+        public TableOrView TableOrView
+        {
+            get { return tableOrView; }
+        }
+
         /// <summary>
         /// Gets or sets the unique ID of the index
         /// </summary>
@@ -119,6 +124,9 @@ namespace Jhu.Graywulf.Schema
             InitializeMembers();
 
             this.tableOrView = tableOrView;
+
+            this.SchemaName = tableOrView.SchemaName;
+            this.DatabaseName = tableOrView.DatabaseName;
         }
 
         public Index(Index old)
@@ -162,7 +170,14 @@ namespace Jhu.Graywulf.Schema
         /// <returns></returns>
         protected ConcurrentDictionary<string, IndexColumn> LoadIndexColumns()
         {
-            return Dataset.LoadIndexColumns(this);
+            if (Dataset != null)
+            {
+                return new ConcurrentDictionary<string, IndexColumn>(Dataset.LoadIndexColumns(this), SchemaManager.Comparer);
+            }
+            else
+            {
+                return new ConcurrentDictionary<string, IndexColumn>(SchemaManager.Comparer);
+            }
         }
 
         #region ICloneable Members

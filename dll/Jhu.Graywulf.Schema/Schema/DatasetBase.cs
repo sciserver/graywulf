@@ -432,28 +432,28 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal abstract ConcurrentDictionary<string, Column> LoadColumns(DatabaseObject databaseObject);
+        internal abstract IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject databaseObject);
 
         /// <summary>
         /// When overloaded in derived classes, loads all indexes belonging to a table or view
         /// </summary>
         /// <param name="tableOrView"></param>
         /// <returns></returns>
-        internal abstract ConcurrentDictionary<string, Index> LoadIndexes(DatabaseObject databaseObject);
+        internal abstract IEnumerable<KeyValuePair<string, Index>> LoadIndexes(DatabaseObject databaseObject);
 
         /// <summary>
         /// When overloaded in derived classes, loads all columns covered by and index
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal abstract ConcurrentDictionary<string, IndexColumn> LoadIndexColumns(Index index);
+        internal abstract IEnumerable<KeyValuePair<string, IndexColumn>> LoadIndexColumns(Index index);
 
         /// <summary>
         /// When overloaded in derived classes, loads parameters of a function or stored procedure
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal abstract ConcurrentDictionary<string, Parameter> LoadParameters(DatabaseObject databaseObject);
+        internal abstract IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject databaseObject);
 
         #endregion
 

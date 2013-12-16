@@ -17,40 +17,12 @@ namespace Jhu.Graywulf.Schema.PostgreSql
     [DataContract(Namespace = "")]
     public class PostgreSqlDataset : DatasetBase
     {
-        protected string defaultSchemaName;
-        protected bool isOnLinkedServer;
-        protected bool isRemoteDataset;
-        /// <summary>
-        /// Gets or sets the value determining if the data is available
-        /// via a linked Npgsql.
-        /// </summary>
-        [DataMember]
-        public bool IsOnLinkedServer
-        {
-            get { return isOnLinkedServer; }
-            set { isOnLinkedServer = value; }
-        }
-
         [DataMember]
         public override string ProviderName
         {
             get { return Constants.PostgreSqlProviderName; }
         }
 
-        /// <summary>
-        /// Gets or sets the default schema name.
-        /// </summary>
-        /// <remarks>
-        /// In case of no schema name is specified in queries referencing
-        /// this data set, the default schema name will be used.
-        /// The default value is 'dbo'.
-        /// </remarks>
-        [DataMember]
-        public string DefaultSchemaName
-        {
-            get { return defaultSchemaName; }
-            set { defaultSchemaName = value; }
-        }
         /// <summary>
         /// Gets or sets the database name associated with this dataset.
         /// </summary>
@@ -122,9 +94,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.defaultSchemaName = "public";
-            this.isOnLinkedServer = false;
-            this.isRemoteDataset = false;
+            this.DefaultSchemaName = "public";
         }
 
         /// <summary>
@@ -133,9 +103,6 @@ namespace Jhu.Graywulf.Schema.PostgreSql
         /// <param name="old"></param>
         private void CopyMembers(PostgreSqlDataset old)
         {
-            this.defaultSchemaName = old.defaultSchemaName;
-            this.isOnLinkedServer = old.isOnLinkedServer;
-            this.isRemoteDataset = old.isRemoteDataset;
         }
 
         public override object Clone()
@@ -169,7 +136,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql
             }
             else
             {
-                return String.Format(format, this.GetFullyResolvedName(), this.defaultSchemaName, databaseObject.ObjectName);
+                return String.Format(format, this.GetFullyResolvedName(), this.DefaultSchemaName, databaseObject.ObjectName);
             }
         }
 
@@ -298,7 +265,7 @@ WHERE table_catalog = @database AND table_type IN ({0}) AND table_schema != 'inf
         {
             if (String.IsNullOrWhiteSpace(schemaName))
             {
-                schemaName = defaultSchemaName;
+                schemaName = DefaultSchemaName;
             }
             return String.Format("{0}|{1}|{2}|{3}|{4}", objectType, datasetName, databaseName, schemaName, objectName);
         }
@@ -323,28 +290,26 @@ WHERE table_catalog = @database AND table_type IN ({0}) AND table_schema != 'inf
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        internal override ConcurrentDictionary<string, Column> LoadColumns(DatabaseObject obj)
+        internal override IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject obj)
         {
-            var res = new ConcurrentDictionary<string, Column>();
-
             string sql = @"
 SELECT ordinal_position, column_name, udt_name, COALESCE(character_maximum_length, -1) AS ""max_length"", COALESCE(numeric_scale, -1) AS ""scale"", COALESCE(numeric_precision, -1) AS ""precision"", is_nullable
 FROM information_schema.columns
 WHERE table_catalog = @databaseName AND table_name= @tableName AND table_schema=@schemaName;";
 
-            using (NpgsqlConnection cn = OpenConnection())
+            using (var cn = OpenConnection())
             {
-                using (NpgsqlCommand cmd = new NpgsqlCommand(sql, cn))
+                using (var cmd = new NpgsqlCommand(sql, cn))
                 {
                     cmd.Parameters.Add("@databaseName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = obj.DatabaseName;
                     cmd.Parameters.Add("@tableName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = obj.ObjectName;
                     cmd.Parameters.Add("@schemaName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = obj.SchemaName;
 
-                    using (NpgsqlDataReader dr = cmd.ExecuteReader())
+                    using (var dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
-                            Column cd = new Column(obj)
+                            var cd = new Column(obj)
                             {
                                 ID = dr.GetInt32(0),
                                 Name = dr.GetString(1),
@@ -357,13 +322,11 @@ WHERE table_catalog = @databaseName AND table_name= @tableName AND table_schema=
                                 Convert.ToInt16(dr.GetValue(5)),
                                 (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(6), "yes") == 0));
 
-                            res.TryAdd(cd.Name, cd);
+                            yield return new KeyValuePair<string, Column>(cd.Name, cd);
                         }
                     }
                 }
             }
-
-            return res;
         }
 
         /// <summary>
@@ -371,11 +334,8 @@ WHERE table_catalog = @databaseName AND table_name= @tableName AND table_schema=
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override ConcurrentDictionary<string, Index> LoadIndexes(DatabaseObject obj)
+        internal override IEnumerable<KeyValuePair<string, Index>> LoadIndexes(DatabaseObject obj)
         {
-
-
-            var res = new ConcurrentDictionary<string, Index>();
             var sql = @"  
 SELECT kcu.ordinal_position, kcu.constraint_name, tc.constraint_type, /*c.non_unique,*/ kcu.column_name, kcu.table_name
 FROM information_schema.table_constraints tc 
@@ -413,27 +373,22 @@ WHERE kcu.constraint_schema=@schemaName AND kcu.table_name=@objectName GROUP BY 
                                 //idx.IsUnique = dr.GetBoolean(3);
                             }
 
-                            res.TryAdd(idx.IndexName, idx);
+                            yield return new KeyValuePair<string, Index>(idx.IndexName, idx);
                         }
                     }
                 }
             }
-
-            return res;
         }
+
         //TODO SIZE
         /// <summary>
         /// Loads columns of an index of a database object.
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal override ConcurrentDictionary<string, IndexColumn> LoadIndexColumns(Index index)
+        internal override IEnumerable<KeyValuePair<string, IndexColumn>> LoadIndexColumns(Index index)
         {
-#if false
-            ConcurrentDictionary<string, IndexColumn> cols = new ConcurrentDictionary<string, IndexColumn>(SchemaManager.Comparer);
-
-            using (NpgsqlConnection cn = OpenConnection())
-            {
+            /*
                 //show columns from test100 from openlab;
                 //+------------+----------+------+-----+---------+----------------+
                 //| Field      | Type     | Null | Key | Default | Extra          |
@@ -444,16 +399,8 @@ WHERE kcu.constraint_schema=@schemaName AND kcu.table_name=@objectName GROUP BY 
                 //| District   | char(20) | YES  | MUL |         |                |
                 //| Population | int(11)  | NO   |     | 0       |                |
                 //+------------+----------+------+-----+---------+----------------+
-                foreach (IndexColumn ic in LoadIndexColumns(cn, index))
-                {
-                    cols.TryAdd(ic.ColumnName, ic);
-                }
-            }
+            */
 
-            return cols;
-#endif
-
-            var res = new ConcurrentDictionary<string, IndexColumn>();
             var sql = @"
 SELECT 
 	kcu.column_name,
@@ -493,13 +440,11 @@ WHERE kcu.table_name=@tableName;";
                                 Convert.ToInt16(dr.GetValue(7)),
                                 (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "yes") == 0));
 
-                            res.TryAdd(ic.Name, ic);
+                            yield return new KeyValuePair<string, IndexColumn>(ic.Name, ic);
                         }
                     }
                 }
             }
-
-            return res;
         }
 
         /// <summary>
@@ -507,10 +452,8 @@ WHERE kcu.table_name=@tableName;";
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        internal override ConcurrentDictionary<string, Parameter> LoadParameters(DatabaseObject obj)
+        internal override IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject obj)
         {
-
-            var res = new ConcurrentDictionary<string, Parameter>();
             var sql = @"
 SELECT p.ordinal_position/*P.PARAMETER_ID*/, p.parameter_name, p.parameter_mode, p.udt_name /* sys.types NAME*/, COALESCE(p.character_maximum_length, -1), COALESCE(p.numeric_scale, -1), COALESCE(p.numeric_precision, -1)
 /*p.has_default_value*/
@@ -556,13 +499,11 @@ WHERE r.routine_name = @objectName AND p.specific_schema=@schemaName; ";
                                 Convert.ToInt16(dr.GetValue(6)),
                                 false); // TODO: add nullable!
 
-                            res.TryAdd(par.Name, par);
+                            yield return new KeyValuePair<string, Parameter>(par.Name, par);
                         }
                     }
                 }
             }
-
-            return res;
         }
 
         internal override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
