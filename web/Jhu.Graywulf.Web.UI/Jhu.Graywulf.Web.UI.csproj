@@ -65,6 +65,7 @@
     <Compile Include="Check.aspx.designer.cs">
       <DependentUpon>Check.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Constants.cs" />
     <Compile Include="Controls\Query.cs" />
     <Compile Include="UI.master.cs">
       <DependentUpon>UI.master</DependentUpon>

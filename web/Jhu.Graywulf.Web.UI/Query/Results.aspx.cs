@@ -125,8 +125,8 @@ namespace Jhu.Graywulf.Web.UI.Query
             var error = LogError(ex);
 
             // Save exception to session for future use
-            Session[Constants.SessionException] = ex;
-            Session[Constants.SessionExceptionEventID] = error.EventId;
+            Session[Jhu.Graywulf.Web.Constants.SessionException] = ex;
+            Session[Jhu.Graywulf.Web.Constants.SessionExceptionEventID] = error.EventId;
 
             Server.ClearError();
 

@@ -18,9 +18,11 @@ namespace Jhu.Graywulf.Schema
     /// </remarks>
     public class GraywulfSchemaManager : SchemaManager
     {
+        /// <summary>
+        /// List of datasets that are handled separately
+        /// </summary>
         private static HashSet<string> ReservedDatabaseDefinitions = new HashSet<string>(SchemaManager.Comparer)
         {
-            // *** TODO: Add these to the config file instead
             Registry.Constants.MyDbName,
             Registry.Constants.CodeDbName,
             Registry.Constants.TempDbName,

@@ -22,33 +22,6 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            var tableOrView = (schema::TableOrView)SchemaManager.GetDatabaseObjectByKey(Request.QueryString["objid"]);
-
-            var codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(tableOrView.Dataset);
-
-            var sql = codegen.GenerateSelectStarQuery(tableOrView, 100);
-
-            DbProviderFactory dbf;
-            string cstr;
-
-            GetServerSettings(tableOrView.Dataset, out cstr, out dbf);
-
-            using (var cn = dbf.CreateConnection())
-            {
-                cn.ConnectionString = tableOrView.Dataset.ConnectionString;
-                cn.Open();
-
-                using (var cmd = cn.CreateCommand())
-                {
-                    cmd.CommandText = sql;
-                    cmd.CommandType = CommandType.Text;
-
-                    using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
-                    {
-                        RenderTable(dr);
-                    }
-                }
-            }
         }
 
         private void GetServerSettings(schema::DatasetBase ds, out string connectionString, out DbProviderFactory dbf)
@@ -94,44 +67,71 @@ namespace Jhu.Graywulf.Web.UI.Schema
             }
         }
 
-        private void RenderTable(IDataReader dr)
+        protected void RenderTable()
+        {
+            var tableOrView = (schema::TableOrView)SchemaManager.GetDatabaseObjectByKey(Request.QueryString["objid"]);
+
+            var codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(tableOrView.Dataset);
+
+            var sql = codegen.GenerateSelectStarQuery(tableOrView, 100);
+
+            DbProviderFactory dbf;
+            string cstr;
+
+            GetServerSettings(tableOrView.Dataset, out cstr, out dbf);
+
+            using (var cn = dbf.CreateConnection())
+            {
+                cn.ConnectionString = tableOrView.Dataset.ConnectionString;
+                cn.Open();
+
+                using (var cmd = cn.CreateCommand())
+                {
+                    cmd.CommandText = sql;
+                    cmd.CommandType = CommandType.Text;
+
+                    using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
+                    {
+                        RenderTable(Response.Output, dr);
+                    }
+                }
+            }
+        }
+
+        private void RenderTable(TextWriter writer, IDataReader dr)
         {
             var schemaTable = dr.GetSchemaTable();
 
-            StringWriter output = new StringWriter();
-
-            output.WriteLine("<table border=\"1\" cellspacing=\"0\" style=\"border-collapse:collapse\">");
+            writer.WriteLine("<table border=\"1\" cellspacing=\"0\" style=\"border-collapse:collapse\">");
 
             // header
-            output.WriteLine("<tr>");
+            writer.WriteLine("<tr>");
 
             for (int i = 0; i < dr.FieldCount; i++)
             {
                 var column = new Column();
                 TypeUtil.CopyColumnFromSchemaTableRow(column, schemaTable.Rows[i]);
 
-                output.WriteLine("<td class=\"header\" nowrap>{0}<br />{1}</td>", column.Name, column.DataType.NameWithLength);
+                writer.WriteLine("<td class=\"header\" nowrap>{0}<br />{1}</td>", column.Name, column.DataType.NameWithLength);
             }
 
-            output.WriteLine("</tr>");
+            writer.WriteLine("</tr>");
 
             // Rows
             while (dr.Read())
             {
-                output.WriteLine("<tr>");
+                writer.WriteLine("<tr>");
 
                 for (int i = 0; i < dr.FieldCount; i++)
                 {
-                    output.WriteLine("<td nowrap>{0}</td>", dr.GetValue(i).ToString());
+                    writer.WriteLine("<td nowrap>{0}</td>", dr.GetValue(i).ToString());
                 }
 
-                output.WriteLine("</tr>");
+                writer.WriteLine("</tr>");
             }
 
             // Footer
-            output.WriteLine("</table>");
-
-            dataTable.Text = output.ToString();
+            writer.WriteLine("</table>");
         }
     }
 }

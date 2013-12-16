@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Web.Auth
                 try
                 {
                     var uu = new UserFactory(RegistryContext);
-                    uu.FindUserByActivationCode(Domain, Request.QueryString["code"]);
+                    user = uu.FindUserByActivationCode(Domain, Request.QueryString["code"]);
                 }
                 catch (EntityNotFoundException)
                 {

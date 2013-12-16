@@ -492,7 +492,6 @@ namespace Jhu.Graywulf.SqlParser.Generator
             (
                 Keyword("WITH"),
                 May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace),
-                May(Sequence(Keyword("NOEXPAND"), CommentOrWhitespace)),
                 TableHintList,
                 May(CommentOrWhitespace), BracketClose
             );
@@ -506,7 +505,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
 
         public static Expression<Rule> TableHint = () =>
             Must(
-                Sequence(Keyword("INDEX"), May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace), IndexValueList, May(CommentOrWhitespace), BracketClose),
+                Sequence(May(Sequence(Keyword("NOEXPAND"), CommentOrWhitespace)), Keyword("INDEX"), May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace), IndexValueList, May(CommentOrWhitespace), BracketClose),
                 Keyword("FASTFIRSTROW"),
                 Keyword("HOLDLOCK"),
                 Keyword("NOLOCK"),

@@ -9,17 +9,24 @@ namespace Jhu.Graywulf.Registry
     {
         public override IList<DiagnosticMessage> RunDiagnostics()
         {
-            List<DiagnosticMessage> msg = new List<DiagnosticMessage>();
-
-            // Get schema source server
-            // Only for federations, cluster level DBs don't have schemas (TEMP)
-
-            if (DeploymentState == Registry.DeploymentState.Deployed)
+            if (ServerInstance.Machine.RunningState == Registry.RunningState.Running)
             {
-                msg.Add(TestSqlConnection());
-            }
+                List<DiagnosticMessage> msg = new List<DiagnosticMessage>();
 
-            return msg;
+                // Get schema source server
+                // Only for federations, cluster level DBs don't have schemas (TEMP)
+
+                if (DeploymentState == Registry.DeploymentState.Deployed)
+                {
+                    msg.Add(TestSqlConnection());
+                }
+
+                return msg;
+            }
+            else
+            {
+                return base.RunDiagnostics();
+            }
         }
 
         private DiagnosticMessage TestSqlConnection()

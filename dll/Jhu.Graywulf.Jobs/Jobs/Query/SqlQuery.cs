@@ -16,11 +16,16 @@ namespace Jhu.Graywulf.Jobs.Query
     [DataContract(Name = "Query", Namespace = "")]
     public class SqlQuery : QueryBase
     {
+        /// <summary>
+        /// Gets whether the query is partitioned
+        /// </summary>
         [IgnoreDataMember]
         public override bool IsPartitioned
         {
             get { return SelectStatement.IsPartitioned; }
         }
+
+        #region Constructors and initializer
 
         protected SqlQuery()
             : base()
@@ -48,6 +53,13 @@ namespace Jhu.Graywulf.Jobs.Query
         private void CopyMembers(SqlQuery old)
         {
         }
+
+        public override object Clone()
+        {
+            return new SqlQuery(this);
+        }
+
+        #endregion
 
         public override void CollectTablesForStatistics()
         {
@@ -80,18 +92,14 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 case ExecutionMode.SingleServer:
                     {
-                        SqlQueryPartition sqp = new SqlQueryPartition(this, null);
-                        sqp.ID = 0;
+                        var sqp = new SqlQueryPartition(this, null);
                         AppendPartition(sqp);
                     }
                     break;
                 case ExecutionMode.Graywulf:
                     if (!SelectStatement.IsPartitioned)
                     {
-                        SqlQueryPartition sqp = new SqlQueryPartition(this, this.Context);
-
-                        sqp.ID = 0;
-
+                        var sqp = new SqlQueryPartition(this, this.Context);
                         AppendPartition(sqp);
                     }
                     else
@@ -103,7 +111,6 @@ namespace Jhu.Graywulf.Jobs.Query
                         }
 
                         var stat = TableStatistics[0].Statistics;
-
                         GeneratePartitions(partitionCount, stat);
                     }
                     break;
@@ -112,119 +119,45 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        /// <summary>
+        /// Generate partitions based on table statistics.
+        /// </summary>
+        /// <param name="partitionCount"></param>
+        /// <param name="stat"></param>
         private void GeneratePartitions(int partitionCount, SqlParser.TableStatistics stat)
         {
             SqlQueryPartition qp = null;
             int s = stat.KeyValue.Count / partitionCount;
-            for (int i = 0; i < partitionCount; i++)
+
+            if (s == 0)
             {
                 qp = new SqlQueryPartition(this, this.Context);
-                qp.ID = Partitions.Count;
-                qp.PartitioningKeyTo = stat.KeyValue[(i + 1) * s];
-
-                if (i == 0)
-                {
-                    qp.PartitioningKeyFrom = double.NegativeInfinity;
-                }
-                else
-                {
-                    qp.PartitioningKeyFrom = Partitions[i - 1].PartitioningKeyTo;
-                }
+                qp.PartitioningKeyFrom = double.NegativeInfinity;
+                qp.PartitioningKeyTo = double.PositiveInfinity;
 
                 AppendPartition(qp);
             }
-
-            Partitions[Partitions.Count - 1].PartitioningKeyTo = double.PositiveInfinity;
-        }
-
-#if false
-        public override void GeneratePartitions(int partitionCount)
-        {
-            // Partitioning is only supperted using Graywulf mode, single server mode always
-            // falls back to a single partition
-
-            switch (ExecutionMode)
+            else
             {
-                case ExecutionMode.SingleServer:
-                    {
-                        SqlQueryPartition sqp = new SqlQueryPartition(this, null);
-                        sqp.ID = 0;
-                        AppendPartition(sqp);
-                    }
-                    break;
-                case ExecutionMode.Graywulf:
-                    if (!SelectStatement.IsPartitioned)
-                    {
-                        SqlQueryPartition sqp = new SqlQueryPartition(this, this.Context);
+                for (int i = 0; i < partitionCount; i++)
+                {
+                    qp = new SqlQueryPartition(this, this.Context);
+                    qp.PartitioningKeyTo = stat.KeyValue[Math.Min((i + 1) * s, stat.KeyValue.Count - 1)];
 
-                        sqp.ID = 0;
-
-                        AppendPartition(sqp);
+                    if (i == 0)
+                    {
+                        qp.PartitioningKeyFrom = double.NegativeInfinity;
                     }
                     else
                     {
-                        // --- compute table statistics
-                        decimal binsize = 1.0m;   // histogram bin size in Dec
-                        TableStatistics stat;
-
-                        // Partitioning is always done on the table specified right after the FROM keyword
-                        // TODO: what if more than one SQ?
-                        var qs = SelectStatement.EnumerateQuerySpecifications().FirstOrDefault();
-                        // *** TODO: test this here, will not work with functions etc!
-                        var ats = qs.EnumerateTableSources(false).First();
-                        var ts = ats.FindDescendant<TableSource>();
-
-                        // **** tweak this to get appropriate histogram resolution and be compatible with small search areas with few object
-                        /*do
-                        {
-                            stat = ComputeTableStatistics(qs, ts, binsize);
-
-                            if (stat.BinCount.Count == 0) break;
-
-                            binsize /= 10.0m;
-                        }
-                        while (stat.BinCount.Count / partitionCount < 10 && binsize > 0);*/
-
-                        stat = ComputeTableStatistics(qs, ts, binsize);
-
-                        // --- determine partition limits based on the first table's statistics
-                        SqlQueryPartition qp = null;
-                        int cnt = 0;
-                        int bin = 0;
-                        while (bin < stat.BinCount.Count)
-                        {
-                            if (qp == null)
-                            {
-                                cnt = 0;
-                                qp = new SqlQueryPartition(this, this.Context);
-                                qp.ID = Partitions.Count;
-                                qp.PartitioningKeyFrom = (double)stat.BinMin[bin];
-                            }
-
-                            cnt += stat.BinCount[bin];
-
-                            if (cnt >= (int)(stat.RowCount / (double)partitionCount) || (bin == stat.BinCount.Count - 1))
-                            {
-                                qp.PartitioningKeyTo = (double)stat.BinMax[bin];
-                                AppendPartition(qp);
-                                qp = null;
-                            }
-
-                            bin++;
-                        }
+                        qp.PartitioningKeyFrom = Partitions[i - 1].PartitioningKeyTo;
                     }
-                    break;
-                default:
-                    throw new NotImplementedException();
+
+                    AppendPartition(qp);
+                }
+
+                Partitions[Partitions.Count - 1].PartitioningKeyTo = double.PositiveInfinity;
             }
-
         }
-#endif
-
-        public override object Clone()
-        {
-            return new SqlQuery(this);
-        }
-
     }
 }
