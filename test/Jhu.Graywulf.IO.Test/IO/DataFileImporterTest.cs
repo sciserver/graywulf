@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.IO
             var destination = new DestinationTableParameters();
             destination.Table = new Schema.Table()
                 {
-                    Dataset = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset("", Test.Constants.TestConnectionString),
+                    Dataset = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset("", Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString),
                     SchemaName = "dbo",
                     TableName = name
                 };

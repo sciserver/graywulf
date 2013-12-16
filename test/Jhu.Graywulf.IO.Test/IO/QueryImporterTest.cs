@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.IO
             var d = new DestinationTableParameters();
             d.Table = new Jhu.Graywulf.Schema.Table()
             {
-                Dataset = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset("", Test.Constants.TestConnectionString),
+                Dataset = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset("", Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString),
                 SchemaName = "dbo",
                 TableName = tableName
             };
@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.IO
             
 
             var s = new SourceQueryParameters();
-            s.Dataset = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset("TEST", Test.Constants.TestConnectionString);
+            s.Dataset = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset("TEST", Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString);
             s.Query = "SELECT 1 AS one, 2 AS two, 3 AS three";
 
             IQueryImporter q = null;
@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.IO
 
             q.CreateDestinationTable();
 
-            DropTable(Test.Constants.TestConnectionString, q.Destination.Table.SchemaName, q.Destination.Table.TableName);
+            DropTable(Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString, q.Destination.Table.SchemaName, q.Destination.Table.TableName);
         }
 
         [TestMethod]
@@ -62,7 +62,7 @@ namespace Jhu.Graywulf.IO
 
             q.Execute();
 
-            DropTable(Test.Constants.TestConnectionString, q.Destination.Table.SchemaName, q.Destination.Table.TableName);
+            DropTable(Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString, q.Destination.Table.SchemaName, q.Destination.Table.TableName);
         }
 
         [TestMethod]
@@ -76,7 +76,7 @@ namespace Jhu.Graywulf.IO
 
                 q.CreateDestinationTable();
 
-                DropTable(Test.Constants.TestConnectionString, q.Destination.Table.SchemaName, q.Destination.Table.TableName);
+                DropTable(Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString, q.Destination.Table.SchemaName, q.Destination.Table.TableName);
             }
         }
 
@@ -91,7 +91,7 @@ namespace Jhu.Graywulf.IO
 
                 q.Execute();
 
-                DropTable(Test.Constants.TestConnectionString, q.Destination.Table.SchemaName, q.Destination.Table.TableName);
+                DropTable(Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString, q.Destination.Table.SchemaName, q.Destination.Table.TableName);
             }
         }
     }

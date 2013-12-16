@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Format
 
         private void ExecuteBulkInsert(FileDataReader dr)
         {
-            var cstr = Test.Constants.TestConnectionString;
+            var cstr = Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString;
             var dropsql = "IF OBJECT_ID('testtable','U') IS NOT NULL DROP TABLE testtable";
             var createsql = "CREATE TABLE testtable (one int, two int, three int)";
 

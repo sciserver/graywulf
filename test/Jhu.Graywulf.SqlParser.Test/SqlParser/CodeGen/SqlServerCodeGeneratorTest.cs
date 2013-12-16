@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.SqlCodeGen.Test
         private SchemaManager CreateSchemaManager()
         {
             var sm = new SqlServerSchemaManager();
-            var ds = new SqlServerDataset("Test", Jhu.Graywulf.Test.Constants.TestConnectionString);
+            var ds = new SqlServerDataset("Test", Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString);
 
             sm.Datasets[ds.Name] = ds;
 
@@ -177,7 +177,7 @@ WHERE ID = 1";
         {
             DataTable schema;
 
-            using (var cn = new SqlConnection(Jhu.Graywulf.Test.Constants.TestConnectionString))
+            using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString))
             {
                 cn.Open();
 

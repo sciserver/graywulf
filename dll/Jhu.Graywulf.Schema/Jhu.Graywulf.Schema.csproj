@@ -55,7 +55,6 @@
     <Compile Include="Schema\AllObjectsLoadingEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\AppSettings.cs" />
     <Compile Include="Schema\Constants.cs">
       <SubType>Code</SubType>
     </Compile>

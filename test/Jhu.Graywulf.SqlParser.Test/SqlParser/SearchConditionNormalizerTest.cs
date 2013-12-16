@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.SqlParser.Test
         private SchemaManager CreateSchemaManager()
         {
             var sm = new SqlServerSchemaManager();
-            var ds = new SqlServerDataset("Test", Jhu.Graywulf.Test.Constants.TestConnectionString);
+            var ds = new SqlServerDataset("Test", Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString);
 
             sm.Datasets[ds.Name] = ds;
 
