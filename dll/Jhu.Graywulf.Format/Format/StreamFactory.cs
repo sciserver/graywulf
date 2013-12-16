@@ -18,11 +18,16 @@ namespace Jhu.Graywulf.Format
     {
         #region Static members
 
+        /// <summary>
+        /// Creates a new factory class derived from StreamFactory
+        /// but using the actual class listed in the config files.
+        /// </summary>
+        /// <returns></returns>
         public static StreamFactory Create()
         {
             var type = Type.GetType(AppSettings.StreamFactory);
 
-            // Fall back logic
+            // Fall back logic if config is invalid
             if (type == null)
             {
                 type = typeof(StreamFactory);
@@ -41,47 +46,71 @@ namespace Jhu.Graywulf.Format
         private string userName;
         private string password;
 
+        /// <summary>
+        /// Gets or sets the URI to open
+        /// </summary>
         public Uri Uri
         {
             get { return uri; }
             set { uri = value; }
         }
 
+        /// <summary>
+        /// Gets or sets read/write mode.
+        /// </summary>
         public DataFileMode Mode
         {
             get { return mode; }
             set { mode = value; }
         }
 
+        /// <summary>
+        /// Gets or sets whether the file should be compressed/decompressed
+        /// </summary>
         public DataFileCompression Compression
         {
             get { return compression; }
             set { compression = value; }
         }
 
+        /// <summary>
+        /// Gets or sets whether the file in an archive (tar, zip, directory)
+        /// </summary>
         public DataFileArchival Archival
         {
             get { return archival; }
             set { archival = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the username to access the URI
+        /// </summary>
         public string UserName
         {
             get { return userName; }
             set { userName = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the password to access the URI
+        /// </summary>
         public string Password
         {
             get { return password; }
             set { password = value; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the class
+        /// </summary>
         protected StreamFactory()
         {
             InitializeMembers();
         }
 
+        /// <summary>
+        /// Initializes private member variables.
+        /// </summary>
         private void InitializeMembers()
         {
             this.uri = null;
@@ -95,6 +124,16 @@ namespace Jhu.Graywulf.Format
 
         #region Public methods to open a stream
 
+        /// <summary>
+        /// Opens a file identified by a URI for read or write.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="mode"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// If not set explicitly through properties, compression and archival settings
+        /// are figured out automatically from the file extension.
+        /// </remarks>
         public Stream Open(Uri uri, DataFileMode mode)
         {
             this.uri = uri;
@@ -103,6 +142,14 @@ namespace Jhu.Graywulf.Format
             return Open();
         }
 
+        /// <summary>
+        /// Opens a file identified by a URI for read or write.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="mode"></param>
+        /// <param name="compression"></param>
+        /// <param name="archival"></param>
+        /// <returns></returns>
         public Stream Open(Uri uri, DataFileMode mode, DataFileCompression compression, DataFileArchival archival)
         {
             this.uri = uri;
@@ -113,6 +160,10 @@ namespace Jhu.Graywulf.Format
             return Open();
         }
 
+        /// <summary>
+        /// Opens a file with parameters determined by the factory class properties.
+        /// </summary>
+        /// <returns></returns>
         public Stream Open()
         {
             switch (mode)
@@ -129,9 +180,19 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Stream handlers
 
+        /// <summary>
+        /// Opens a stream for reading a file. Stream is automatically wrapped into
+        /// a decompressor and archive reader, if necessary.
+        /// </summary>
+        /// <returns></returns>
         private Stream OpenForRead()
         {
             var stream = OpenBaseStreamForRead();
+
+            if (stream == null)
+            {
+                throw new FileFormatException("Unknown protocol.");      // TODO
+            }
             
             // Check if compressed and wrap in compressed stream reader
             stream = WrapCompressedStreamForRead(stream);
@@ -142,9 +203,19 @@ namespace Jhu.Graywulf.Format
             return stream;
         }
 
+        /// <summary>
+        /// Opens a stream for writing a file. Stream is automatically wrapped into
+        /// an archive writer and compressior, if necessary.
+        /// </summary>
+        /// <returns></returns>
         private Stream OpenForWrite()
         {
             var stream = OpenBaseStreamForWrite();
+
+            if (stream == null)
+            {
+                throw new FileFormatException("Unknown protocol.");      // TODO
+            }
 
             // Check if compressed and wrap in compressed stream reader
             stream = WrapCompressedStreamForWrite(stream);
@@ -156,7 +227,7 @@ namespace Jhu.Graywulf.Format
         }
 
         /// <summary>
-        /// 
+        /// Opens the base stream for reading a file using the protocol specified by the URI.
         /// </summary>
         /// <param name="uri"></param>
         /// <param name="mode"></param>
@@ -190,6 +261,10 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /// <summary>
+        /// Opens the base stream for writing a file using a protocol specified by the URI.
+        /// </summary>
+        /// <returns></returns>
         protected virtual Stream OpenBaseStreamForWrite()
         {
             if (!uri.IsAbsoluteUri || uri.IsFile)
@@ -208,6 +283,11 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /// <summary>
+        /// Wraps a stream into a decompressor.
+        /// </summary>
+        /// <param name="baseStream"></param>
+        /// <returns></returns>
         private Stream WrapCompressedStreamForRead(Stream baseStream)
         {
             var cm = GetCompressionMethod(GetPathFromUri());
@@ -236,6 +316,11 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /// <summary>
+        /// Wraps a stream into a compressor.
+        /// </summary>
+        /// <param name="baseStream"></param>
+        /// <returns></returns>
         private Stream WrapCompressedStreamForWrite(Stream baseStream)
         {
             var cm = GetCompressionMethod(GetPathFromUri());
@@ -265,6 +350,11 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /// <summary>
+        /// Wraps a stream into an archive reader.
+        /// </summary>
+        /// <param name="baseStream"></param>
+        /// <returns></returns>
         private Stream WrapArchiveStreamForRead(Stream baseStream)
         {
             var am = GetArchivalMethod(GetPathFromUri());
@@ -283,6 +373,11 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /// <summary>
+        /// Wraps a stream into an archive writer.
+        /// </summary>
+        /// <param name="baseStream"></param>
+        /// <returns></returns>
         private Stream WrapArchiveStreamForWrite(Stream baseStream)
         {
             var am = GetArchivalMethod(GetPathFromUri());
@@ -305,6 +400,10 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Specialized stream open functions
 
+        /// <summary>
+        /// Opens a local or UNC file for read or write.
+        /// </summary>
+        /// <returns></returns>
         protected Stream OpenFileStream()
         {
             var path = GetPathFromUri();
@@ -320,6 +419,10 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /// <summary>
+        /// Opens a HTTP stream for read.
+        /// </summary>
+        /// <returns></returns>
         protected Stream OpenHttpStream()
         {
             // TODO: add authentication
@@ -331,9 +434,14 @@ namespace Jhu.Graywulf.Format
             return res.GetResponseStream();
         }
 
+        /// <summary>
+        /// Opens an ftp stream for read.
+        /// </summary>
+        /// <returns></returns>
         protected Stream OpenFtpStream()
         {
             // TODO: add authentication
+            // TODO: add write logic: how to write FTP
 
             var req = FtpWebRequest.Create(uri);
             req.Credentials = GetCredentials();
@@ -345,11 +453,19 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Utility functions
 
+        /// <summary>
+        /// Gets file path from a URI.
+        /// </summary>
+        /// <returns></returns>
         private string GetPathFromUri()
         {
             return uri.IsAbsoluteUri ? uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped) : uri.ToString();
         }
 
+        /// <summary>
+        /// Gets username and password as network credentials for HTTP, FTP etc.
+        /// </summary>
+        /// <returns></returns>
         private ICredentials GetCredentials()
         {
             // TODO: Hopefully credentials from URIs are read automatically, test
@@ -411,8 +527,10 @@ namespace Jhu.Graywulf.Format
             if (am == DataFileArchival.Automatic)
             {
                 // Look for second extension
-                // TODO: this doesn't work with non-zipped tar files but
+                // TODO: this doesn't work with non-gzipped tar files but
                 // whoever would use that?
+
+                // Zip files
                 var extension = Path.GetExtension(Path.GetFileNameWithoutExtension(path)).ToLowerInvariant();
 
                 switch (extension)
