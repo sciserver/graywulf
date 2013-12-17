@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.PostgreSql;
 
-namespace Jhu.Graywulf.Schema.Test.Schema
+namespace Jhu.Graywulf.Schema.PostgreSql.Test
 {
 
     [TestClass]

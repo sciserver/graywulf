@@ -9,7 +9,7 @@
     <ProjectGuid>{C006350E-76D3-4584-8162-646566B6133C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Jhu.Graywulf.Schema.Test</RootNamespace>
+    <RootNamespace>Jhu.Graywulf</RootNamespace>
     <AssemblyName>Jhu.Graywulf.Schema.Test</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -54,7 +54,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Schema\AppSettings.cs" />
     <Compile Include="Schema\MySql\MySqlDatasetTest.cs" />
+    <Compile Include="Schema\MySql\MySqlMetadataTest.cs" />
     <Compile Include="Schema\PostgreSql\PostgreSqlDatasetTest.cs" />
+    <Compile Include="Schema\PostgreSql\PostgreSqlMetadataTest.cs" />
     <Compile Include="Schema\SqlServer\SqlServerDatasetTest.cs" />
   </ItemGroup>
   <ItemGroup>

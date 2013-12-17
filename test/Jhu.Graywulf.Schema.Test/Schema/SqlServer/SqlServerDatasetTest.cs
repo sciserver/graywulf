@@ -9,7 +9,7 @@ using Jhu.Graywulf.Types;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 
-namespace Jhu.Graywulf.Schema.Test
+namespace Jhu.Graywulf.Schema.SqlServer.Test
 {
     [TestClass]
     public class SqlServerDatasetTest

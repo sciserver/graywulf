@@ -300,7 +300,7 @@ namespace Jhu.Graywulf.Schema.MySql.Test
         }
 
         #endregion
-        
+       
 
 #if false
         [TestMethod]
