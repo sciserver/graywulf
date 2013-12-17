@@ -151,23 +151,26 @@ namespace Jhu.Graywulf.Schema.PostgreSql
             switch (Schema.Constants.DatabaseObjectTypes[typeof(T)])
             { 
                 case DatabaseObjectType.Table:
-                    sql = @"
-SELECT table_schema,table_name, table_type
-FROM information_schema.tables
-WHERE table_schema = @schemaName AND table_type IN ({0}) AND table_name = @objectName;";
-                    break;
                 case DatabaseObjectType.View:
                     sql = @"
 SELECT table_schema,table_name, table_type
 FROM information_schema.tables
-WHERE table_schema = @schemaName AND table_type IN ({0}) AND table_name = @objectName;";
+WHERE table_type IN ({0}) AND
+      table_catalog ILIKE @databaseName AND table_schema ILIKE @schemaName AND table_name ILIKE @objectName;";
                     break;
                 case DatabaseObjectType.StoredProcedure:
                     sql = @"
 SELECT routine_schema, routine_name, routine_type
-FROM   information_schema.routines
-WHERE routine_schema = @schemaName AND  routine_name=@objectName AND routine_type IN ({0})";
+FROM information_schema.routines
+WHERE routine_type IN ({0}) AND
+      routine_catalog ILIKE @databaseName AND routine_schema ILIKE @schemaName AND routine_name ILIKE @objectName;";
                     break;
+                case DatabaseObjectType.ScalarFunction:
+                case DatabaseObjectType.TableValuedFunction:
+                    throw new SchemaException("PostgreSQL supports stored procedures only.");
+                default:
+                    // TODO: add scalar and table-valued functions
+                    throw new NotImplementedException();
             }
 
             sql = String.Format(sql, GetObjectTypeIdListString(Schema.Constants.DatabaseObjectTypes[typeof(T)]));
@@ -175,6 +178,7 @@ WHERE routine_schema = @schemaName AND  routine_name=@objectName AND routine_typ
             {
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, cn))
                 {
+                    cmd.Parameters.Add("@databaseName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = obj.DatabaseName;
                     cmd.Parameters.Add("@schemaName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = obj.SchemaName;
                     cmd.Parameters.Add("@objectName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = obj.ObjectName;
 
@@ -216,13 +220,16 @@ WHERE routine_schema = @schemaName AND  routine_name=@objectName AND routine_typ
         {
             string sql = @"
 SELECT routine_name, routine_type, routine_schema
-FROM   information_schema.routines
-WHERE specific_catalog = @database
-AND routine_type IN({0}) AND specific_schema != 'information_schema' AND specific_schema != 'pg_catalog'
+FROM information_schema.routines
+WHERE routine_type IN({0}) AND specific_schema NOT IN ('information_schema', 'pg_catalog') AND
+      specific_catalog = @databaseName
+
 UNION
+
 SELECT table_name, table_type, table_schema
-FROM   information_schema.tables
-WHERE table_catalog = @database AND table_type IN ({0}) AND table_schema != 'information_schema' AND table_schema != 'pg_catalog'";
+FROM information_schema.tables
+WHERE table_type IN ({0}) AND table_schema NOT IN ('information_schema', 'pg_catalog') AND
+      table_catalog = @databaseName;";
 
             sql = String.Format(sql, GetObjectTypeIdListString(Schema.Constants.DatabaseObjectTypes[typeof(T)]));
 
@@ -230,7 +237,7 @@ WHERE table_catalog = @database AND table_type IN ({0}) AND table_schema != 'inf
             {
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@database", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = DatabaseName;
+                    cmd.Parameters.Add("@databaseName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = DatabaseName;
 
                     using (NpgsqlDataReader dr = cmd.ExecuteReader())
                     {
@@ -295,7 +302,7 @@ WHERE table_catalog = @database AND table_type IN ({0}) AND table_schema != 'inf
             string sql = @"
 SELECT ordinal_position, column_name, udt_name, COALESCE(character_maximum_length, -1) AS ""max_length"", COALESCE(numeric_scale, -1) AS ""scale"", COALESCE(numeric_precision, -1) AS ""precision"", is_nullable
 FROM information_schema.columns
-WHERE table_catalog = @databaseName AND table_name= @tableName AND table_schema=@schemaName;";
+WHERE table_catalog ILIKE @databaseName AND table_name ILIKE @tableName AND table_schema ILIKE @schemaName;";
 
             using (var cn = OpenConnection())
             {
@@ -336,42 +343,39 @@ WHERE table_catalog = @databaseName AND table_name= @tableName AND table_schema=
         /// <returns></returns>
         internal override IEnumerable<KeyValuePair<string, Index>> LoadIndexes(DatabaseObject obj)
         {
+            // TODO: this is not perfect here, it returns all indices (including primary keys, but
+            // not constraints), there is, however, no way to tell the type of the index
+            // Also, querying index columns in only possible for keys and not for ordinary indices.
+
             var sql = @"  
-SELECT kcu.ordinal_position, kcu.constraint_name, tc.constraint_type, /*c.non_unique,*/ kcu.column_name, kcu.table_name
-FROM information_schema.table_constraints tc 
-INNER JOIN  information_schema.key_column_usage kcu ON kcu.constraint_schema = tc.constraint_schema
-WHERE kcu.constraint_schema=@schemaName AND kcu.table_name=@objectName GROUP BY 1,2,3,4,5;";
+SELECT indexname, indexdef
+FROM pg_catalog.pg_indexes 
+WHERE schemaname ILIKE @schemaName AND tablename ILIKE @objectName;";
 
             using (var cn = OpenConnection())
             {
                 using (var cmd = new NpgsqlCommand(sql, cn))
                 {
+                    cmd.Parameters.Add("@databaseName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = obj.DatabaseName;
                     cmd.Parameters.Add("@schemaName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = obj.SchemaName;
                     cmd.Parameters.Add("@objectName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = obj.ObjectName;
 
                     using (var dr = cmd.ExecuteReader())
                     {
+                        int q = 0;
                         while (dr.Read())
                         {
+                            var primary = false;    // No way to tell from this query
+                            var unique = dr.GetString(1).StartsWith("CREATE UNIQUE");
 
-                            var idx = new Index((TableOrView)obj);
-                            if (dr.GetString(2).ToUpper() == "PRIMARY KEY")
+                            var idx = new Index((TableOrView)obj)
                             {
-                                idx.IsPrimaryKey = true;
-                                idx.IndexId = dr.GetInt32(0);
-                                idx.IsClustered = true;
-                                //idx.IsUnique = dr.GetBoolean(3);
-                                idx.IndexName = dr.GetString(1);
-
-                            }
-                            else
-                            {
-                                idx.IsPrimaryKey = false;
-                                idx.IndexId = dr.GetInt32(0);
-                                idx.IndexName = dr.GetString(2);
-                                idx.IsClustered = true;
-                                //idx.IsUnique = dr.GetBoolean(3);
-                            }
+                                IndexId = q++,
+                                IndexName = dr.GetString(0),
+                                IsUnique = primary | unique,
+                                IsPrimaryKey = primary,
+                                IsClustered = primary
+                            };
 
                             yield return new KeyValuePair<string, Index>(idx.IndexName, idx);
                         }
@@ -388,19 +392,6 @@ WHERE kcu.constraint_schema=@schemaName AND kcu.table_name=@objectName GROUP BY 
         /// <returns></returns>
         internal override IEnumerable<KeyValuePair<string, IndexColumn>> LoadIndexColumns(Index index)
         {
-            /*
-                //show columns from test100 from openlab;
-                //+------------+----------+------+-----+---------+----------------+
-                //| Field      | Type     | Null | Key | Default | Extra          |
-                //+------------+----------+------+-----+---------+----------------+
-                //| Id         | int(11)  | NO   | PRI | NULL    | auto_increment |
-                //| Name       | char(35) | NO   |     |         |                |
-                //| Country    | char(3)  | NO   | UNI |         |                |
-                //| District   | char(20) | YES  | MUL |         |                |
-                //| Population | int(11)  | NO   |     | 0       |                |
-                //+------------+----------+------+-----+---------+----------------+
-            */
-
             var sql = @"
 SELECT 
 	kcu.column_name,
@@ -413,23 +404,29 @@ SELECT
 	COALESCE(c.numeric_precision, -1)
 FROM information_schema.key_column_usage  kcu 
 INNER JOIN information_schema.columns c ON kcu.table_name = c.table_name AND kcu.column_name=c.column_name
-WHERE kcu.table_name=@tableName;";
+WHERE constraint_catalog ILIKE @databaseName AND constraint_schema ILIKE @schemaName AND kcu.table_name ILIKE @objectName AND constraint_name ILIKE @indexName;";
             using (var cn = OpenConnection())
             {
                 using (var cmd = new NpgsqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@tableName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = index.IndexName.Substring(3);
+                    cmd.Parameters.Add("@databaseName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = index.TableOrView.DatabaseName;
+                    cmd.Parameters.Add("@schemaName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = index.TableOrView.SchemaName;
+                    cmd.Parameters.Add("@objectName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = index.TableOrView.ObjectName;
+                    cmd.Parameters.Add("@indexName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = index.IndexName;
 
                     using (var dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
+                            var nullable = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "yes") == 0);
+                            var identity = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(3), "yes") == 0);
+
                             var ic = new IndexColumn()
                             {
                                 ID = 0,
                                 Name = dr.GetString(0),
                                 KeyOrdinal = dr.GetInt32(1),
-                                IsIdentity = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(3), "yes") == 0),
+                                IsIdentity = identity,
                                 Ordering = IndexColumnOrdering.Ascending
                             };
 
@@ -438,7 +435,7 @@ WHERE kcu.table_name=@tableName;";
                                 Convert.ToInt32(dr.GetValue(5)),
                                 Convert.ToInt16(dr.GetValue(6)),
                                 Convert.ToInt16(dr.GetValue(7)),
-                                (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "yes") == 0));
+                                nullable);
 
                             yield return new KeyValuePair<string, IndexColumn>(ic.Name, ic);
                         }
@@ -455,24 +452,51 @@ WHERE kcu.table_name=@tableName;";
         internal override IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject obj)
         {
             var sql = @"
-SELECT p.ordinal_position/*P.PARAMETER_ID*/, p.parameter_name, p.parameter_mode, p.udt_name /* sys.types NAME*/, COALESCE(p.character_maximum_length, -1), COALESCE(p.numeric_scale, -1), COALESCE(p.numeric_precision, -1)
-/*p.has_default_value*/
-/*p.default_value*/
+SELECT p.ordinal_position,
+       p.parameter_name,
+       p.parameter_mode,
+       p.udt_name,
+       COALESCE(p.character_maximum_length, -1),
+       COALESCE(p.numeric_scale, -1),
+       COALESCE(p.numeric_precision, -1)
 FROM information_schema.parameters p
-INNER JOIN information_schema.routines r ON r.specific_name = p.specific_name
-WHERE r.routine_name = @objectName AND p.specific_schema=@schemaName; ";
+INNER JOIN information_schema.routines r ON r.specific_catalog = p.specific_catalog AND r.specific_schema = p.specific_schema AND r.specific_name = p.specific_name
+WHERE p.specific_catalog ILIKE @databaseName AND p.specific_schema ILIKE @schemaName AND r.routine_name = @objectName";
 
-            //sql = String.Format(sql, DatabaseObjectType.Table);
             using (var cn = OpenConnection())
             {
                 using (var cmd = new NpgsqlCommand(sql, cn))
                 {
+                    cmd.Parameters.Add("@databaseName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = obj.DatabaseName;
                     cmd.Parameters.Add("@schemaName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = obj.SchemaName;
                     cmd.Parameters.Add("@objectName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = obj.ObjectName;
                     using (var dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
+                            ParameterDirection dir;
+                            if (dr.IsDBNull(2))
+                            {
+                                dir = ParameterDirection.ReturnValue;
+                            }
+                            else
+                            {
+                                switch (dr.GetString(2).ToLowerInvariant())
+                                {
+                                    case "in":
+                                        dir = ParameterDirection.Input;
+                                        break;
+                                    case "out":
+                                        dir = ParameterDirection.Output;
+                                        break;
+                                    case "inout":
+                                        dir = ParameterDirection.InputOutput;
+                                        break;
+                                    default:
+                                        throw new NotImplementedException();
+                                }
+                            }
+
                             var par = new Parameter(obj)
                             {
                                 ID = dr.GetInt32(0),
@@ -481,23 +505,12 @@ WHERE r.routine_name = @objectName AND p.specific_schema=@schemaName; ";
                                 DefaultValue = null,
                             };
 
-                            if (!String.IsNullOrEmpty(dr.GetString(2)))
-                            {
-                                if (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "in") == 0) { par.Direction = ParameterDirection.Input; }
-                                else if (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "out") == 0){ par.Direction = ParameterDirection.Output; }
-                                else if (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(2), "inout") == 0){ par.Direction = ParameterDirection.InputOutput; }
-                            }
-                            else
-                            {
-                                par.Direction = ParameterDirection.ReturnValue;
-                            }
-
                             par.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(3),
                                 Convert.ToInt32(dr.GetValue(4)),
                                 Convert.ToInt16(dr.GetValue(5)),
                                 Convert.ToInt16(dr.GetValue(6)),
-                                false); // TODO: add nullable!
+                                false); // nullable is not supported by postgres functions
 
                             yield return new KeyValuePair<string, Parameter>(par.Name, par);
                         }
@@ -659,6 +672,9 @@ WHERE nspname = @schemaName and proname= @objectName;";
 
         internal override void RenameObject(DatabaseObject obj, string objectName)
         {
+            throw new NotImplementedException();
+
+            /*
             if (!IsMutable)
             {
                 throw new InvalidOperationException();
@@ -681,11 +697,14 @@ WHERE nspname = @schemaName and proname= @objectName;";
                     cmd.ExecuteNonQuery();
                 }
             }
-
+            */
         }
 
         internal override void DropObject(DatabaseObject obj)
         {
+            throw new NotImplementedException();
+
+            /*
             if (!IsMutable)
             {
                 throw new InvalidOperationException();
@@ -703,6 +722,7 @@ WHERE nspname = @schemaName and proname= @objectName;";
                     cmd.ExecuteNonQuery();
                 }
             }
+             * */
         }
 
         protected override DatasetStatistics LoadDatasetStatistics()

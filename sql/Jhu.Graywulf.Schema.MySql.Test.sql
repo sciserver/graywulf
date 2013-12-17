@@ -1,9 +1,100 @@
-create database Graywulf_Test;
-use Graywulf_Test
+CREATE DATABASE graywulf_schema_test;
+USE graywulf_schema_test;
 
-CREATE USER graywulf identified by '*********';
-GRANT ALL on Graywulf_Test.* to graywulf;
+CREATE USER graywulf IDENTIFIED BY 'password';
+GRANT ALL on graywulf_schema_test.* to graywulf;
 
+-- CREATE TABLES --
+
+CREATE TABLE `author` (
+  `ID` bigint(20) NOT NULL,
+  `Name` varchar(50) NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `book` (
+  `ID` bigint(20) NOT NULL,
+  `Title` varchar(50) DEFAULT NULL,
+  `Year` int(11) DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `bookauthor` (
+  `BookID` bigint(20) NOT NULL,
+  `AuthorID` bigint(20) NOT NULL,
+  PRIMARY KEY (`BookID`,`AuthorID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `tablewithindexes` (
+  `ID` int(11) NOT NULL,
+  `Data1` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `Data1_UNIQUE` (`Data1`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `tablewithprimarykey` (
+  `ID` int(11) NOT NULL,
+  `Data1` char(10) DEFAULT NULL,
+  `Data2` char(10) DEFAULT NULL,
+  `Flag` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- CREATE VIEWS --
+
+CREATE VIEW `viewcomputedcolumn`
+AS
+SELECT (`a`.`ID` + `b`.`ID`) AS `id`
+FROM (tablewithprimarykey` `a`
+JOIN `tablewithprimarykey` `b`);
+
+CREATE VIEW `viewcrossjoinonetable`
+AS
+SELECT `a`.`ID` AS `a_id`,`b`.`ID` AS `b_id`
+FROM (`tablewithprimarykey` `a`
+JOIN `tablewithprimarykey` `b`);
+
+CREATE VIEW `viewoverprimarykey`
+AS
+SELECT `t`.`ID` AS `ID`,`t`.`Flag` AS `Flag`,`t`.`Data1` AS `Data1`,`t`.`Data2` AS `Data2`
+FROM `tablewithprimarykey` `t`
+WHERE (`t`.`Flag` = 1);
+
+CREATE VIEW `viewoversametable`
+AS
+SELECT `a`.`ID` AS `a_id`,`b`.`ID` AS `b_id`
+FROM (`tablewithprimarykey` `a`
+JOIN `tablewithprimarykey` `b` ON ((`a`.`ID` = `b`.`ID`)));
+
+CREATE VIEW `viewwithstar`
+AS
+SELECT `tablewithprimarykey`.`ID` AS `ID`, `tablewithprimarykey`.`Data1` AS `Data1`, `tablewithprimarykey`.`Data2` AS `Data2`, `tablewithprimarykey`.`Flag` AS `Flag`
+FROM `tablewithprimarykey`;
+
+-- CREATE STORED PROCEDURES --
+
+DELIMITER $$
+CREATE PROCEDURE `StoredProcedure`
+(
+	param1 int,
+	param2 nvarchar(50)
+)
+SELECT 1$$
+DELIMITER ;
+
+-- CREATE FUNCTIONS --
+
+DELIMITER $$
+CREATE FUNCTION `ScalarFunction`
+(
+	param1 varchar(50),
+	param2 real
+) RETURNS double
+RETURN 0$$
+DELIMITER ;
+
+
+/*
 delimiter //
 
 CREATE TABLE TableWithPrimaryKey ( 
@@ -116,3 +207,4 @@ AS
 	FROM TableWithPrimaryKey a
 	CROSS JOIN TableWithPrimaryKey b
 //
+*/

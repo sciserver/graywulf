@@ -17,10 +17,13 @@ namespace Jhu.Graywulf.Schema.PostgreSql
             { DatabaseObjectType.View, "VIEW" },
             { DatabaseObjectType.StoredProcedure, "FUNCTION" },
         };
+        
         public static readonly Dictionary<DatabaseObjectType, string> PostgreSqlObjectTypeNames = new Dictionary<DatabaseObjectType, string>()
         {
             { DatabaseObjectType.Table, "BASE TABLE" },
             { DatabaseObjectType.View, "VIEW" },
+            { DatabaseObjectType.ScalarFunction, "FUNCTION" },
+            { DatabaseObjectType.TableValuedFunction, "FUNCTION" },
             { DatabaseObjectType.StoredProcedure, "FUNCTION" },
         };
 

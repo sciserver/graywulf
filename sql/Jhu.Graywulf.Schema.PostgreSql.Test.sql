@@ -1,16 +1,112 @@
-create database Graywulf_Test;
+create database graywulf_schema_test;
 
 CREATE USER graywulf WITH PASSWORD 'password';
-GRANT ALL PRIVILEGES ON DATABASE Graywulf_Test to graywulf;
+GRANT ALL PRIVILEGES ON DATABASE graywulf_schema_test TO graywulf;
 GRANT ALL ON SCHEMA public TO graywulf;
  
-CREATE TABLE TableWithPrimaryKey ( 
-	ID INT NOT NULL, 
-	Data1 NCHAR(10) NULL, 
-	Data2 NCHAR(10) NULL, 
-	Flag BIT NULL, 
-	CONSTRAINT PK_TableWithPrimaryKey PRIMARY KEY ( ID)  
+-- CREATE TABLES --
+
+CREATE TABLE "Author"
+(
+  "ID" bigint NOT NULL,
+  "Name" character varying(50),
+  CONSTRAINT "PK_Author" PRIMARY KEY ("ID")
 );
+
+CREATE TABLE "Book"
+(
+  "ID" bigint NOT NULL,
+  "Title" character varying(50),
+  "Year" integer,
+  CONSTRAINT "PK_Book" PRIMARY KEY ("ID")
+);
+
+CREATE TABLE "BookAuthor"
+(
+  "BookID" bigint NOT NULL,
+  "AuthorID" bigint NOT NULL,
+  CONSTRAINT "PK_BookAuthor" PRIMARY KEY ("BookID", "AuthorID")
+);
+
+CREATE TABLE "TableWithIndexes"
+(
+  "ID" integer NOT NULL,
+  "Data1" bigint,
+  CONSTRAINT "PK_TableWithIndexes" PRIMARY KEY ("ID")
+);
+
+CREATE INDEX "IX_TableWithIndexes"
+  ON "TableWithIndexes"
+  USING btree
+  ("Data1");
+
+CREATE TABLE "TableWithPrimaryKey"
+(
+  id integer NOT NULL,
+  data1 character(10),
+  data2 character(10),
+  flag bit(1),
+  CONSTRAINT "PK_TableWithPrimaryKey" PRIMARY KEY (id)
+);
+
+-- CREATE VIEWS --
+
+CREATE OR REPLACE VIEW "ViewComputedColumn" AS 
+ SELECT a.id + b.id AS id
+   FROM "TableWithPrimaryKey" a
+  CROSS JOIN "TableWithPrimaryKey" b;
+
+CREATE OR REPLACE VIEW "ViewCrossJoinOneTable" AS 
+ SELECT a.id AS a_id, 
+    b.id AS b_id
+   FROM "TableWithPrimaryKey" a
+  CROSS JOIN "TableWithPrimaryKey" b;
+
+CREATE OR REPLACE VIEW "ViewOverPrimaryKey" AS 
+ SELECT t.id, 
+    t.flag, 
+    t.data1, 
+    t.data2
+   FROM "TableWithPrimaryKey" t
+  WHERE t.flag = B'1'::"bit";
+
+CREATE OR REPLACE VIEW "ViewOverSameTable" AS 
+ SELECT a.id AS a_id, 
+    b.id AS b_id
+   FROM "TableWithPrimaryKey" a
+   JOIN "TableWithPrimaryKey" b ON a.id = b.id;
+
+CREATE OR REPLACE VIEW "ViewWithStar" AS 
+ SELECT "TableWithPrimaryKey".id, 
+    "TableWithPrimaryKey".data1, 
+    "TableWithPrimaryKey".data2, 
+    "TableWithPrimaryKey".flag
+   FROM "TableWithPrimaryKey";
+
+-- CREATE FUNCTIONS --
+
+CREATE OR REPLACE FUNCTION "InlineTableValuedFunction"(IN param1 integer, IN param2 integer)
+  RETURNS TABLE(column1 integer, column2 integer) AS
+$BODY$
+	SELECT $1 column1, $2 column2
+$BODY$
+  LANGUAGE sql VOLATILE
+  COST 100
+  ROWS 1000;
+
+CREATE OR REPLACE FUNCTION "ScalarFunction"(param1 character varying, param2 real)
+  RETURNS real AS
+$BODY$
+BEGIN
+	RETURN param2;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+
+
+
+/*
 
 CREATE TABLE SampleData(
 	"column_smallint"			SMALLINT,
@@ -64,61 +160,7 @@ CREATE TABLE SampleData(
       "column_oid"				OID
 );        
 
-CREATE TABLE BookAuthor (
-	BookID bigint NOT NULL,
-	AuthorID bigint NOT NULL,
-	CONSTRAINT PK_BookAuthor PRIMARY KEY ( BookID , AuthorID  )
-);
-
-CREATE TABLE Book (
-	ID bigint NOT NULL,
-	Title varchar(50) NULL,
-	Year int NULL,
-	CONSTRAINT PK_Book PRIMARY KEY ( ID  )
-);
-
-CREATE TABLE Author (
-	ID bigint NOT NULL,
-	Name varchar(50) NOT NULL,
-	CONSTRAINT PK_Author PRIMARY KEY ( ID  )
-);
-
-CREATE VIEW ViewWithStar
-AS
-	SELECT * FROM TableWithPrimaryKey
-;
-
-CREATE VIEW ViewOverSameTable
-AS
-	SELECT a.ID a_id, b.ID b_id
-	FROM TableWithPrimaryKey a
-	INNER JOIN TableWithPrimaryKey b ON a.id = b.id
-;
-
-
-CREATE VIEW ViewCrossJoinOneTable
-AS
-	SELECT a.ID a_id, b.ID b_id
-	FROM TableWithPrimaryKey a
-	CROSS JOIN TableWithPrimaryKey b
-;
-
-CREATE VIEW ViewComputedColumn
-AS
-	SELECT a.ID + b.ID id
-	FROM TableWithPrimaryKey a
-	CROSS JOIN TableWithPrimaryKey b
-;
-
-CREATE OR REPLACE FUNCTION  spTest(IN hello VARCHAR(50))
-  RETURNS void AS
-  $BODY$
-  BEGIN
-	SELECT version();
- end
- $BODY$
- LANGUAGE 'plpgsql';
- 
  comment on function spTest(IN hello VARCHAR(50))  is 'spTestComment';
  comment on COLUMN Book.ID is 'id of user';
  comment on table Author  is 'this is my own table comment';
+/

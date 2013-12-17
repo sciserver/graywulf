@@ -2,6 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using Npgsql;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.PostgreSql;
@@ -12,132 +13,253 @@ namespace Jhu.Graywulf.Schema.PostgreSql.Test
     [TestClass]
     public class PostgreSqlDatasetTest
     {
-        private PostgreSqlDataset CreateTarget()
-        {
 
-            return new PostgreSqlDataset("test", Jhu.Graywulf.Test.AppSettings.PostgreSqlConnectionString);
+        private PostgreSqlDataset CreateTestDataset()
+        {
+            var csb = new NpgsqlConnectionStringBuilder(Jhu.Graywulf.Schema.Test.AppSettings.PostgreSqlConnectionString);
+
+            var ds = new PostgreSqlDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, csb.ConnectionString)
+            {
+                DatabaseName = csb.Database
+            };
+
+            return ds;
+        }
+
+        #region Dataset tests
+
+        [TestMethod]
+        public void GetAnyObjectTest()
+        {
+            var ds = CreateTestDataset();
+
+            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, "", "TableWithPrimaryKey"), typeof(Table));
+            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, "", "ViewWithStar"), typeof(View));
+
+            // Postgres unifies all types of functions under stored procedures
+            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, "", "ScalarFunction"), typeof(StoredProcedure));
+        }
+
+        /*
+         * TODO: statistics are not implemented on non-SQL Server platforms
+        [TestMethod]
+        public void GetStatistics()
+        {
+            var ds = CreateTestDataset();
+
+            Assert.IsTrue(ds.Statistics.DataSpace > 0);
+        }
+        */
+
+        #endregion
+        #region Table tests
+
+        [TestMethod]
+        public void GetSingleTableTest()
+        {
+            var ds = CreateTestDataset();
+
+            var t = ds.Tables[ds.DatabaseName, "public", "Author"];
+
+            Assert.IsTrue(ds.Tables.Count == 1);
         }
 
         [TestMethod]
-        public void TableLoadTest()
+        public void GetSingleTableWithoutSchemaNameTest()
         {
-            PostgreSqlDataset target = CreateTarget();
+            var ds = CreateTestDataset();
 
-            // Get a single table
-            Table t1 = target.Tables["GraywulfSchemaTest", "public", "author"];
-            Assert.IsTrue(target.Tables.Count == 1);
+            var t1 = ds.Tables[ds.DatabaseName, "public", "Author"];
+            var t2 = ds.Tables[ds.DatabaseName, "", "Author"];
 
-            // Get another with missing schema name
-            Table t2 = target.Tables["GraywulfSchemaTest", "", "author"];
-            Assert.IsTrue(target.Tables.Count == 1);
+            Assert.IsTrue(ds.Tables.Count == 1);
+
             Assert.AreEqual(t1, t2);
+        }
 
-            // Read from DB with missing schema name
-            Table t3 = target.Tables["GraywulfSchemaTest", "", "book"];
-            Assert.IsTrue(target.Tables.Count == 2);
+
+        [TestMethod]
+        public void GetMultipleTableTest()
+        {
+            var ds = CreateTestDataset();
+
+            var t1 = ds.Tables[ds.DatabaseName, "public", "Author"];
+            var t2 = ds.Tables[ds.DatabaseName, "", "Author"];
+            Table t3 = ds.Tables[ds.DatabaseName, "", "Book"];
+
+            Assert.IsTrue(ds.Tables.Count == 2);
             Assert.AreNotEqual(t1, t3);
-            Assert.AreEqual(t3.SchemaName, "public");
+            Assert.AreEqual("public", t3.SchemaName);
+        }
 
-            // Try to load a non-existent table
+        [TestMethod]
+        public void GetNonexistentTableTest()
+        {
+            var ds = CreateTestDataset();
+
             try
             {
-                Table t4 = target.Tables["GraywulfSchemaTest", "public", "NonExistentTable"];
+                var t = ds.Tables[ds.DatabaseName, "", "NonExistentTable"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)
             {
             }
-
-            // Try to load object that's not a table
-
-            // Use wrong database name
         }
 
         [TestMethod]
-        public void TableLoadAllTest()
+        public void LoadAllTablesTest()
         {
-            PostgreSqlDataset target = CreateTarget();
-            target.Tables.LoadAll();
-            Assert.IsTrue(target.Tables.Count == 5);
-            Assert.IsTrue(target.Tables.IsAllLoaded);
-        }
-        [TestMethod]
-        public void ViewLoadAllTest()
-        {
-            PostgreSqlDataset target = CreateTarget();
-            target.Views.LoadAll();
-            Assert.IsTrue(target.Views.Count == 4);
-            Assert.IsTrue(target.Views.IsAllLoaded);
+            var ds = CreateTestDataset();
+            ds.Tables.LoadAll();
+
+            Assert.AreEqual(5, ds.Tables.Count);    // Update this if test database schema changes
+            Assert.IsTrue(ds.Tables.IsAllLoaded);
         }
 
         [TestMethod]
-        public void TableColumnsTest()
+        public void GetTableColumnsTest()
         {
-            PostgreSqlDataset target = CreateTarget();
+            var ds = CreateTestDataset();
 
             // Get a single table
-            Table t1 = target.Tables["GraywulfSchemaTest", "public", "author"];
+            var t1 = ds.Tables[ds.DatabaseName, "", "Author"];
 
             Assert.IsTrue(t1.Columns.Count == 2);
-            Assert.IsTrue(t1.Columns["id"].DataType.Name == "bigint");
+            Assert.IsTrue(t1.Columns["ID"].DataType.Name == "bigint");
 
             // Test cache
-            Assert.AreEqual(t1.Columns, target.Tables["GraywulfSchemaTest", "public", "author"].Columns);
-            Assert.AreEqual(t1.Columns["id"], target.Tables["GraywulfSchemaTest", "public", "author"].Columns["id"]);
+            Assert.AreEqual(t1.Columns, ds.Tables[ds.DatabaseName, "", "Author"].Columns);
+            Assert.AreEqual(t1.Columns["ID"], ds.Tables[ds.DatabaseName, "", "Author"].Columns["ID"]);
         }
 
         [TestMethod]
-        public void TableIndexesTest()
+        public void GetTableIndexesTest()
         {
-            PostgreSqlDataset target = CreateTarget();
+            var ds = CreateTestDataset();
 
             // Get a single table
-            Table t1 = target.Tables["GraywulfSchemaTest", "public", "author"];
+            var t1 = ds.Tables[ds.DatabaseName, "", "Author"];
 
-            Assert.IsTrue(t1.Indexes.Count == 2);
-            Assert.IsTrue(t1.Indexes["pk_author"].IsPrimaryKey);
+            Assert.IsTrue(t1.Indexes.Count == 1);
+            //Assert.IsTrue(t1.Indexes["PK_Author"].IsPrimaryKey);  // Can't tell for PG
 
             // Test cache
-            Assert.AreEqual(t1.Indexes, target.Tables["GraywulfSchemaTest", "public", "author"].Indexes);
-            Assert.AreEqual(t1.Indexes["pk_author"], target.Tables["GraywulfSchemaTest", "public", "author"].Indexes["pk_author"]);
+            Assert.AreEqual(t1.Indexes, ds.Tables[ds.DatabaseName, "", "Author"].Indexes);
+            Assert.AreEqual(t1.Indexes["PK_Author"], ds.Tables[ds.DatabaseName, "", "Author"].Indexes["PK_Author"]);
+
+            // Table with two indices
+            var t2 = ds.Tables[ds.DatabaseName, "", "TableWithIndexes"];
+            Assert.AreEqual(2, t2.Indexes.Count);
         }
 
         [TestMethod]
-        public void TableIndexeSColumnsTest()
+        public void GetTableIndexColumnsTest()
         {
-            PostgreSqlDataset target = CreateTarget();
+            var ds = CreateTestDataset();
 
             // Get a single table
-            IndexColumn ic = target.Tables["GraywulfSchemaTest", "public", "author"].Indexes["pk_author"].Columns["id"];
+            var ic = ds.Tables[ds.DatabaseName, "", "Author"].Indexes["PK_Author"].Columns["ID"];
             Assert.IsTrue(ic.Ordering == IndexColumnOrdering.Ascending);
 
             // Test cache
-            Assert.AreEqual(ic, target.Tables["GraywulfSchemaTest", "public", "author"].Indexes["pk_author"].Columns["id"]);
+            Assert.AreEqual(ic, ds.Tables[ds.DatabaseName, "", "Author"].Indexes["PK_Author"].Columns["ID"]);
+
+            // Non-primary key
+            // TODO: postgre doesn't offer a way to query (non-PK) index columns
+            //var ic2 = ds.Tables[ds.DatabaseName, "", "TableWithIndexes"].Indexes["IX_TableWithIndexes"].Columns["Data1"];
         }
 
+        /* Statistics not implemented for MySQL
+        [TestMethod]
+        public void TableStatisticsTest()
+        {
+            
+        }
+         * */
+
+        #endregion
+        #region View tests
 
         [TestMethod]
-        public void StoredProcedureTest()
+        public void GetViewTest()
         {
-            PostgreSqlDataset target = CreateTarget();
+            var ds = CreateTestDataset();
 
-            target.StoredProcedures.LoadAll();
-            Assert.IsTrue(target.StoredProcedures.Count == 1);
+            var v = ds.Views[ds.DatabaseName, "public", "ViewWithStar"];
 
-            // TODO: test CLR and SQL functions separately
+            Assert.AreEqual(1, ds.Views.Count);
+
+            Assert.AreEqual(4, v.Columns.Count);
+            Assert.AreEqual("int", v.Columns["ID"].DataType.Name);
         }
 
         [TestMethod]
-        public void StoredProcedureParametersTest()
+        public void LoadAllViewsTest()
         {
-            PostgreSqlDataset target = CreateTarget();
+            var ds = CreateTestDataset();
+            ds.Views.LoadAll();
 
-            StoredProcedure sp = target.StoredProcedures["GraywulfSchemaTest", "public", "sptest"];
-            Assert.IsTrue(target.StoredProcedures.Count == 1);
-
-            Assert.IsTrue(sp.Parameters.Count == 1);
-            Assert.IsTrue(sp.Parameters["hello"].DataType.Name == "varchar");
+            Assert.AreEqual(5, ds.Views.Count);    // Update this if test database schema changes
+            Assert.IsTrue(ds.Views.IsAllLoaded);
         }
+
+        [TestMethod]
+        public void GetNonexistentViewTest()
+        {
+            var ds = CreateTestDataset();
+
+            try
+            {
+                var t = ds.Views[ds.DatabaseName, "public", "NonExistentView"];
+                Assert.Fail();
+            }
+            catch (KeyNotFoundException)
+            {
+            }
+        }
+
+        #endregion
+        #region Scalar function tests
+
+        [TestMethod]
+        public void GetStoredProcedureTest()
+        {
+            var ds = CreateTestDataset();
+
+            var f = ds.StoredProcedures[ds.DatabaseName, "", "ScalarFunction"];
+
+            Assert.AreEqual(2, f.Parameters.Count);
+        }
+
+        [TestMethod]
+        public void LoadAllStoredProceduresTest()
+        {
+            var ds = CreateTestDataset();
+
+            ds.StoredProcedures.LoadAll();
+            Assert.AreEqual(2, ds.StoredProcedures.Count);    // Update this if test database schema changes
+        }
+
+        [TestMethod]
+        public void GetNonexistentStoredProcedureTest()
+        {
+            var ds = CreateTestDataset();
+
+            try
+            {
+                var t = ds.StoredProcedures[ds.DatabaseName, "", "NonExistentFunction"];
+                Assert.Fail();
+            }
+            catch (KeyNotFoundException)
+            {
+            }
+        }
+
+        #endregion
+
+#if false
+       
 
         [TestMethod]
         public void MetaObjectsTest()
@@ -234,5 +356,6 @@ namespace Jhu.Graywulf.Schema.PostgreSql.Test
             Assert.AreEqual(t1.Columns, target.Tables["GraywulfSchemaTest", "", "sampledata"].Columns);
             Assert.AreEqual(t1.Columns["column_smallint"], target.Tables["GraywulfSchemaTest", "", "sampledata"].Columns["column_smallint"]);
         }
+#endif
     }
 }

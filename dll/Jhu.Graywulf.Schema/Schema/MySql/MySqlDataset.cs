@@ -152,11 +152,6 @@ namespace Jhu.Graywulf.Schema.MySql
             switch (Schema.Constants.DatabaseObjectTypes[typeof(T)])
             {
                 case DatabaseObjectType.Table:
-                    sql = @"
-SELECT table_name, table_type
-FROM information_schema.tables
-WHERE table_schema LIKE @databaseName AND table_name LIKE @objectName AND table_type IN ({0});";
-                    break;
                 case DatabaseObjectType.View:
                     sql = @"
 SELECT table_name, table_type
@@ -164,17 +159,13 @@ FROM information_schema.tables
 WHERE table_schema LIKE @databaseName AND table_name LIKE @objectName AND table_type IN ({0});";
                     break;
                 case DatabaseObjectType.StoredProcedure:
+                case DatabaseObjectType.ScalarFunction:
                     sql = @"
 SELECT routine_name  as `object_name`, routine_type  as `object_type`
 FROM information_schema.routines
 WHERE routine_schema LIKE @databaseName AND routine_name LIKE @objectName AND routine_type IN ({0});";
                     break;
-                case DatabaseObjectType.ScalarFunction:
-                    sql = @"
-SELECT routine_name, routine_type
-FROM information_schema.routines
-WHERE routine_schema LIKE @databaseName AND routine_name LIKE @objectName AND routine_type IN ({0});";
-                    break;
+                    // TODO: add table-valued function
                 default:
                     throw new NotImplementedException();
             }
@@ -401,6 +392,8 @@ WHERE t.table_schema LIKE @databaseName AND kcu.table_name LIKE @tableName AND k
                     {
                         while (dr.Read())
                         {
+                            var nullable = (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(7), "yes") == 0);
+
                             var ic = new IndexColumn()
                             {
                                 ID = 0,
@@ -415,7 +408,7 @@ WHERE t.table_schema LIKE @databaseName AND kcu.table_name LIKE @tableName AND k
                                 dr.GetInt64(4) > Int32.MaxValue ? Int32.MaxValue : Convert.ToInt32(dr.GetInt64(4)),
                                 Convert.ToInt16(dr.GetValue(5)),
                                 Convert.ToInt16(dr.GetValue(6)),
-                                (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(7), "yes") == 0));
+                                nullable);
 
                             yield return new KeyValuePair<string, IndexColumn>(ic.Name, ic);
                         }

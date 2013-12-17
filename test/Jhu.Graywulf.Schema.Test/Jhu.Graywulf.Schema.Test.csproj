@@ -38,6 +38,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="Npgsql, Version=2.0.12.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Npgsql.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -58,6 +62,7 @@
     <Compile Include="Schema\PostgreSql\PostgreSqlDatasetTest.cs" />
     <Compile Include="Schema\PostgreSql\PostgreSqlMetadataTest.cs" />
     <Compile Include="Schema\SqlServer\SqlServerDatasetTest.cs" />
+    <Compile Include="Schema\SqlServer\SqlServerMetadataTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
