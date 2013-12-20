@@ -7,7 +7,7 @@ using Jhu.Graywulf.ParserLib;
 namespace Jhu.Graywulf.SqlParser.Generator
 {
     [Grammar(Namespace = "Jhu.Graywulf.SqlParser", ParserName = "SqlParser",
-        Comparer="StringComparer.InvariantCultureIgnoreCase", RootToken = "SelectStatement")]
+        Comparer = "StringComparer.InvariantCultureIgnoreCase", RootToken = "SelectStatement")]
     public class SqlGrammar : Grammar
     {
 
@@ -46,6 +46,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Symbol> VectorOpen = () => @"{";
         public static Expression<Symbol> VectorClose = () => @"}";
 
+
         #endregion
         #region Terminals (matched by regular expressions)
 
@@ -71,7 +72,6 @@ namespace Jhu.Graywulf.SqlParser.Generator
             Must(Equals2, Equals, LessOrGreaterThan, NotEquals,
             NotLessThan, NotGreaterThan, LessOrEqualThan, GreaterOrEqualThan,
             LessThan, GreaterThan);
-
         #endregion
         #region Logical operators used in search conditions
 
@@ -248,13 +248,13 @@ namespace Jhu.Graywulf.SqlParser.Generator
                     Sequence(SchemaName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), FunctionName)
                 )
             );
-
+        //CHANGED, ADDED ::
         public static Expression<Rule> UdtFunctionIdentifier = () =>
             Sequence
             (
                 Variable,
                 May(CommentOrWhitespace),
-                Dot,        // Need to add :: ?
+                Must(Dot, DoubleColon),        // Need to add :: ?
                 May(CommentOrWhitespace),
                 FunctionName
             );
@@ -295,6 +295,11 @@ namespace Jhu.Graywulf.SqlParser.Generator
         #region Select statement and query expressions (combinations of selects)
 
         public static Expression<Rule> SelectStatement = () =>
+            Sequence
+            (
+                DeclareStatement
+            );
+        public static Expression<Rule> SelectStatement2 = () =>
             Sequence
             (
                 May(CommentOrWhitespace),   // remove this when wrapped in generic statement grammar
@@ -466,7 +471,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
             );
 
         public static Expression<Rule> ColumnAliasList = () =>
-            Sequence(ColumnAlias, May(Sequence(May(CommentOrWhitespace), Comma, ColumnAliasList)));
+            Sequence(May(CommentOrWhitespace), ColumnAlias, May(Sequence(May(CommentOrWhitespace), Comma, ColumnAliasList)));
 
         public static Expression<Rule> TableSampleClause = () =>
             Sequence
@@ -492,6 +497,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
             (
                 Keyword("WITH"),
                 May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace),
+                May(Sequence(Keyword("NOEXPAND"), CommentOrWhitespace)),
                 TableHintList,
                 May(CommentOrWhitespace), BracketClose
             );
@@ -505,7 +511,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
 
         public static Expression<Rule> TableHint = () =>
             Must(
-                Sequence(May(Sequence(Keyword("NOEXPAND"), CommentOrWhitespace)), Keyword("INDEX"), May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace), IndexValueList, May(CommentOrWhitespace), BracketClose),
+                Sequence(Keyword("INDEX"), May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace), IndexValueList, May(CommentOrWhitespace), BracketClose),
                 Keyword("FASTFIRSTROW"),
                 Keyword("HOLDLOCK"),
                 Keyword("NOLOCK"),
@@ -657,6 +663,26 @@ namespace Jhu.Graywulf.SqlParser.Generator
                     Keyword("EXISTS"),
                     May(CommentOrWhitespace),
                     Subquery
+                ),
+                Sequence
+                (
+                    Keyword("FREETEXT"),
+                    May(CommentOrWhitespace),
+                    BracketOpen,
+                    May(CommentOrWhitespace),
+                    Must
+                    (
+                        ColumnName,
+                        Sequence(May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace), ColumnNameList, May(CommentOrWhitespace), BracketClose),
+                        Mul
+                    ),
+                    May(CommentOrWhitespace),
+                    Comma,
+                    May(CommentOrWhitespace),
+                    Must(StringConstant, Variable),
+                    May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), Keyword("LANGUAGE"), CommentOrWhitespace, Must(Number, StringConstant))),
+                    May(CommentOrWhitespace),
+                    BracketClose
                 )
                 // *** TODO: add string constructs (contains, freetext etc.)
             );
@@ -721,6 +747,635 @@ namespace Jhu.Graywulf.SqlParser.Generator
 
         #endregion
 
+
+        #region Set statement
+
+        public static Expression<Symbol> AddAssignment = () => @"+=";
+        public static Expression<Symbol> SubAssignment = () => @"-=";
+        public static Expression<Symbol> MulAssignment = () => @"*=";
+        public static Expression<Symbol> DivAssignment = () => @"/=";
+        public static Expression<Symbol> ModAssignment = () => @"%=";
+        public static Expression<Symbol> AndAssignment = () => @"&=";
+        public static Expression<Symbol> OrAssignment = () => @"|=";
+        public static Expression<Symbol> XorAssignment = () => @"^=";
+
+        public static Expression<Rule> CompoundOperator = () =>
+            Must(AddAssignment, SubAssignment, MulAssignment, DivAssignment,
+                 ModAssignment, AndAssignment, OrAssignment, OrAssignment);
+
+        public static Expression<Rule> SetStatement = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace),
+                Keyword("SET"),
+                CommentOrWhitespace,
+                Must
+                (
+                    Sequence(Variable, May(VariableProperty), May(CommentOrWhitespace), Equals, May(CommentOrWhitespace), Must(UdtFunctionIdentifier, Expression, QueryExpression)),
+                    Sequence(Variable, May(CommentOrWhitespace), CompoundOperator, May(CommentOrWhitespace), Expression),
+                    Sequence(Must(Variable, UdtFunctionIdentifier), May(CommentOrWhitespace))
+                // @SQLCLR_local_variable.mutator_method        
+                )
+            );
+        public static Expression<Rule> VariableProperty = () =>
+            Must(
+                Sequence(May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Identifier)                           // nem tokeletes mivel ha a jobb oldalon is @p.X van akkor nem ismeri fel expressionkent
+            );
+        #endregion
+        #region Delete statement
+        public static Expression<Rule> DeleteStatement = () =>
+            Sequence
+            (
+                May(Sequence(May(CommentOrWhitespace), WithStatement)),
+                May(CommentOrWhitespace),
+                Keyword("DELETE"),
+                May(Sequence(CommentOrWhitespace, TopExpression)),
+                May(Sequence(CommentOrWhitespace, Keyword("FROM"))),
+                Must(Sequence(CommentOrWhitespace, Must(TableOrViewName, TableAlias))),             //object or rowset_function_limited  [ WITH ( table_hint_limited [ ...n ] ) ]
+                May(Sequence(CommentOrWhitespace, FromClause)),
+                May(Sequence(CommentOrWhitespace, WhereClause)),
+                May(Sequence(CommentOrWhitespace, TableHint))
+            );
+        #endregion
+        #region Update statement
+        public static Expression<Rule> UpdateStatement = () =>
+            Sequence
+            (
+                May(Sequence(May(CommentOrWhitespace), WithStatement)),
+                May(CommentOrWhitespace),
+                Keyword("UPDATE"),
+                May(Sequence(CommentOrWhitespace, TopExpression)),
+                Must(Sequence(CommentOrWhitespace, Must(TableOrViewName, TableAlias), May(Sequence(May(CommentOrWhitespace), WithStatement)))),    // or rowset function limited or table_variable
+                CommentOrWhitespace, Keyword("SET"),
+                SetExpression,
+                May(Sequence(CommentOrWhitespace, FromClause)),
+                May(Sequence(CommentOrWhitespace, WhereClause))
+            );
+        public static Expression<Rule> SetExpression = () =>
+            Sequence(
+                 Must(
+                    SetExpression1,
+                    SetExpression2,
+                    SetExpression3,
+                    SetExpression4,
+                    SetExpression5,
+                    SetExpression6
+                ),
+                May(
+                    Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), SetExpression)
+                )
+            );
+        public static Expression<Rule> SetExpression1 = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace), ColumnIdentifier, May(CommentOrWhitespace), Equals, May(CommentOrWhitespace), Must(Expression, Keyword("DEFAULT"), Keyword("NULL"))
+            );
+        public static Expression<Rule> SetExpression2 = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace),
+                UdtColumnNameArgument,
+                Must
+                (
+                    Sequence(May(CommentOrWhitespace), Equals, Expression),
+                    Sequence(May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace), ArgumentList, May(CommentOrWhitespace), BracketClose)
+                )
+            );
+        public static Expression<Rule> UdtColumnNameArgument = () =>
+            Sequence(UdtColumnName, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Identifier);
+
+        public static Expression<Rule> SetExpression3 = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace), ColumnIdentifier, May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), Keyword("WRITE"), May(CommentOrWhitespace),
+                BracketOpen, May(CommentOrWhitespace), WriteArgumentList, May(CommentOrWhitespace), BracketClose
+            );
+        public static Expression<Rule> WriteArgumentList = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace), Argument, May(CommentOrWhitespace), Comma,
+                May(CommentOrWhitespace), Argument, May(CommentOrWhitespace), Comma,
+                May(CommentOrWhitespace), Argument
+            );
+
+        public static Expression<Rule> SetExpression4 = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace), Variable, May(CommentOrWhitespace), Equals, May(CommentOrWhitespace), Expression
+            );
+        public static Expression<Rule> SetExpression5 = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace), Variable, May(CommentOrWhitespace), Equals,
+                May(CommentOrWhitespace), ColumnIdentifier, May(CommentOrWhitespace), Must(Equals, CompoundOperator), May(CommentOrWhitespace), Expression
+            );
+        public static Expression<Rule> SetExpression6 = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace), Must(Variable, ColumnIdentifier), May(CommentOrWhitespace), CompoundOperator, May(CommentOrWhitespace), Expression
+            );
+
+        #endregion
+        #region With statement
+
+        public static Expression<Rule> WithStatement = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace),
+                Keyword("WITH"),
+                CommentOrWhitespace,
+                CommonTableExpression
+            );
+
+        public static Expression<Rule> CommonTableExpression = () =>
+            Sequence
+            (
+                CommonTableExpressionName,
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), CommonTableExpression))
+
+            );
+        public static Expression<Rule> CommonTableExpressionName = () =>                                                                //maybe need to rename this rule because its not concrete
+           Sequence
+           (
+               TableAlias,//expression_name
+               May(Sequence(May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace), ColumnAliasList, May(CommentOrWhitespace), BracketClose)),
+               CommentOrWhitespace,
+               Keyword("AS"),
+               May(CommentOrWhitespace),
+               BracketOpen,
+               May(CommentOrWhitespace),
+               SelectStatement2,
+               //Sequence(QuerySpecification,May(Sequence(May(CommentOrWhitespace), QueryOperator, May(CommentOrWhitespace), QueryExpression))),
+               May(CommentOrWhitespace),
+               BracketClose
+           );
+        #endregion
+        #region Insert statement
+
+        public static Expression<Rule> InsertStatement = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace),
+                May(Sequence((WithStatement), CommentOrWhitespace)),
+                Keyword("INSERT"),
+                CommentOrWhitespace,
+                May(TopExpression),
+                May(Sequence(Keyword("INTO"), CommentOrWhitespace)),
+
+                Sequence(TableOrViewName, May(CommentOrWhitespace), May(WithStatement)),
+
+                May
+                (
+                    Sequence
+                    (
+                        May(CommentOrWhitespace),
+                        BracketOpen,
+                        May(CommentOrWhitespace),
+                        ColumnAliasList,
+                        May(CommentOrWhitespace),
+                        BracketClose
+                    )
+                ),
+
+
+                May(CommentOrWhitespace),
+                Must(
+                    Sequence(Keyword("DEFAULT"), CommentOrWhitespace, Keyword("VALUES")),
+                    Sequence(Keyword("VALUES"), ListColumnValueList),
+                    SelectStatement2                                                            //NEED TO MODIFY TO SELECTSTATMENT FROM SELECTSTATEMENT2
+                )
+            );
+
+        public static Expression<Rule> ColumnValueList = () =>
+            Sequence(
+                May(CommentOrWhitespace),
+                Must(Expression, Keyword("NULL"), Keyword("DEFAULT")),
+                May(Sequence(May(CommentOrWhitespace), Comma, ColumnValueList))
+            );
+        public static Expression<Rule> ListColumnValueList = () =>
+            Sequence(
+                Sequence(May(CommentOrWhitespace), BracketOpen, ColumnValueList, May(CommentOrWhitespace), BracketClose),
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), ListColumnValueList))
+            );
+
+        #endregion
+        #region Declare statement
+
+
+
+        public static Expression<Rule> DataTypeIdentifier = () => Identifier;
+        public static Expression<Rule> ScalarDataTypeIdentifier = () => Identifier;
+        public static Expression<Rule> VariableAlias = () => Identifier;
+        public static Expression<Rule> VariableValue = () => Identifier;
+
+        public static Expression<Rule> DeclareStatement = () =>
+            Sequence
+            (
+                Keyword("DECLARE"),
+                CommentOrWhitespace,
+                Must
+                (
+                    LocalVariableSource,
+                    Sequence(VariableTableSource, CommentOrWhitespace, TableTypeDefinition)
+                )
+            );
+
+        public static Expression<Rule> LocalVariableSource = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace),
+                Variable,
+                May(Sequence(May(CommentOrWhitespace), Keyword("AS"), CommentOrWhitespace, VariableAlias)),
+                CommentOrWhitespace,
+                DataTypeIdentifier,
+                May(Sequence(May(CommentOrWhitespace), Equals, May(CommentOrWhitespace), VariableValue)),
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), LocalVariableSource))
+            );
+        public static Expression<Rule> TableTypeDefinition = () =>
+            Sequence
+            (
+                Keyword("TABLE"),
+                May(CommentOrWhitespace),
+                BracketOpen,
+                May(CommentOrWhitespace),
+                TableTypeDefinitionType,
+                May(CommentOrWhitespace),
+                BracketClose
+            );
+
+        public static Expression<Rule> TableTypeDefinitionType = () =>
+            Sequence
+            (
+                Must
+                (
+                    ColumnDefinition,
+                    TableConstraint
+                ),
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), TableTypeDefinitionType))
+            );
+        public static Expression<Rule> TableConstraint = () =>
+            Sequence
+            (
+                Must
+                (
+                    Sequence
+                    (
+                        Must
+                        (
+                            Sequence(May(CommentOrWhitespace), Keyword("PRIMARY"), CommentOrWhitespace, Keyword("KEY")),
+                            Sequence(May(CommentOrWhitespace), Keyword("UNIQUE"))
+                        ),
+                        May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace), ColumnAliasList, May(CommentOrWhitespace), BracketClose
+                    ),
+                    Sequence(May(CommentOrWhitespace), Keyword("CHECK"), May(CommentOrWhitespace), SearchConditionBrackets)                                 //logical expression not implemented yet
+                )
+            );
+        public static Expression<Rule> ColumnDefinition = () =>
+            Sequence
+            (
+                ColumnName,
+                CommentOrWhitespace,
+                ScalarDataTypeIdentifier,                                                                                                           //may AS computed column expression
+                //May(Sequence(Keyword("COLLATE"),CommentOrWhitespace,CollationDefinition))                                                         //  is this important????
+                May
+                (
+                    Must
+                    (
+                        Sequence(May(CommentOrWhitespace), Keyword("DEFAULT"), CommentOrWhitespace, ConstantExpression),
+                        Sequence
+                        (
+                            May(CommentOrWhitespace),
+                            Keyword("IDENTITY"),
+                            May(Sequence(May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace), Number, May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), Number, May(CommentOrWhitespace), BracketClose))
+                        )
+                    )
+                ),
+                May(Sequence(May(CommentOrWhitespace), Keyword("ROWGUIDCOL"))),
+                May(Sequence(May(CommentOrWhitespace), ColumnConstraint))
+            );
+
+        public static Expression<Rule> ConstantExpression = () =>
+            Sequence
+            (
+                Must
+                (
+                    Number,
+                    StringConstant
+                )
+            );
+        public static Expression<Rule> ColumnConstraint = () =>
+            Sequence
+            (
+                Must
+                (
+                    Sequence(May(CommentOrWhitespace), May(Sequence(Keyword("NOT"), CommentOrWhitespace)), Keyword("NULL")),
+                    Must
+                    (
+                        Sequence(May(CommentOrWhitespace), Keyword("PRIMARY"), CommentOrWhitespace, Keyword("KEY")),
+                        Sequence(May(CommentOrWhitespace), Keyword("UNIQUE"))
+                    ),
+                    Sequence(May(CommentOrWhitespace), Keyword("CHECK"), May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace), LogicalExpression, May(CommentOrWhitespace), BracketClose),
+                    May(Sequence(CommentOrWhitespace, ColumnConstraint))
+                )
+            );
+        public static Expression<Rule> LogicalExpression = () =>                                                                                //  add rule
+            Sequence
+            (
+                May(CommentOrWhitespace),
+                Keyword("MEGKELLCSINAL")
+            );
+        /*
+ <syntax>         ::= <rule> | <rule> <syntax>
+ <rule>           ::= <opt-whitespace> "<" <rule-name> ">" <opt-whitespace> "::=" <opt-whitespace> <expression> <line-end>
+ <opt-whitespace> ::= " " <opt-whitespace> | ""
+ <expression>     ::= <list> | <list> "|" <expression>
+ <line-end>       ::= <opt-whitespace> <EOL> | <line-end> <line-end>
+ <list>           ::= <term> | <term> <opt-whitespace> <list>
+ <term>           ::= <literal> | "<" <rule-name> ">"
+ <literal>        ::= '"' <text> '"' | "'" <text> "'"
+         */
+        #endregion
+
+        #region Over Clause
+        //perfect
+        public static Expression<Rule> OverClause = () =>
+            Sequence
+            (
+                Keyword("OVER"),
+                May(CommentOrWhitespace),
+                BracketOpen,
+                May(Sequence(May(CommentOrWhitespace), PartitionByClause)),
+                May(Sequence(May(CommentOrWhitespace), OrderByClause)),
+                May(Sequence(May(CommentOrWhitespace), RowOrRangeClause)),
+                May(CommentOrWhitespace),
+                BracketClose
+            );
+
+
+        #endregion
+        #region Partition By Clause
+        //perfect
+        public static Expression<Rule> PartitionByClause = () =>
+            Sequence
+            (
+                Keyword("PARTITION"),
+                CommentOrWhitespace,
+                Keyword("BY"),
+                CommentOrWhitespace,
+                ValueExpression
+            );
+        public static Expression<Rule> ValueExpression = () =>                  //need to be scalar function,scalar subquery, user-defined variable,column expression
+            Sequence
+            (
+                Must(ColumnName, Number, StringConstant, Subquery, Variable, FunctionCall),
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), ValueExpression))
+            );
+
+        #endregion
+        #region Row Or Range Clause
+        //works
+        public static Expression<Rule> RowOrRangeClause = () =>
+            Sequence
+            (
+                Must(Keyword("ROWS"), Keyword("RANGE")),
+                CommentOrWhitespace,
+                WindowFrameExtent
+            );
+        public static Expression<Rule> WindowFrameExtent = () =>
+            Must
+            (
+                WindowFramePreceding,
+                WindowFrameBetween
+            );
+        public static Expression<Rule> WindowFrameBetween = () =>
+            Sequence
+            (
+                Keyword("BETWEEN"),
+                CommentOrWhitespace,
+                WindowFrameBound,
+                CommentOrWhitespace,
+                Keyword("AND"),
+                CommentOrWhitespace,
+                WindowFrameBound
+
+            );
+        public static Expression<Rule> WindowFrameBound = () =>
+            Must(WindowFramePreceding, WindowFrameFollowing);
+
+        public static Expression<Rule> WindowFramePreceding = () =>
+            Must(
+                Sequence(Keyword("UNBOUNDED"), CommentOrWhitespace, Keyword("PRECEDING")),
+                Sequence(Number, CommentOrWhitespace, Keyword("PRECEDING")),
+                Sequence(Keyword("CURRENT"), May(CommentOrWhitespace), Keyword("ROW"))
+            );
+        public static Expression<Rule> WindowFrameFollowing = () =>
+            Must
+            (
+                Sequence(Keyword("UNBOUNDED"), CommentOrWhitespace, Keyword("FOLLOWING")),
+                Sequence(Number, CommentOrWhitespace, Keyword("FOLLOWING")),
+                Sequence(Keyword("CURRENT"), CommentOrWhitespace, Keyword("ROW"))
+            );
+        #endregion
+        #region Create View statement
+        //works
+        public static Expression<Rule> CreateViewStatement = () =>
+            Sequence
+            (
+                Keyword("CREATE"),
+                CommentOrWhitespace,
+                Keyword("VIEW"),
+                CommentOrWhitespace,
+                TableOrViewName,
+                May(Sequence(May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace), ColumnNameList, May(CommentOrWhitespace), BracketClose)),
+                May(Sequence(May(CommentOrWhitespace), Keyword("WITH"), ViewAttribute)),
+                CommentOrWhitespace,
+                Keyword("AS"),
+                CommentOrWhitespace,
+                SelectStatement2,                                                                                                                               //  need to change to SelectStatement from SelectStatement2 
+                May(Sequence(May(CommentOrWhitespace), Keyword("WITH"), CommentOrWhitespace, Keyword("CHECK"), CommentOrWhitespace, Keyword("OPTION")))
+            );
+        public static Expression<Rule> ViewAttribute = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace),
+                Must(Keyword("ENCRYPTION"), Keyword("SCHEMABINDING"), Keyword("VIEW_METADATA")),
+                May(Sequence(May(CommentOrWhitespace), Comma, ViewAttribute))
+            );
+        public static Expression<Rule> ColumnNameList = () =>
+            Sequence(May(CommentOrWhitespace), ColumnName, May(Sequence(May(CommentOrWhitespace), Comma, ColumnNameList)));
+        #endregion
+        #region Drop View statement
+
+        public static Expression<Rule> DropViewStatement = () =>
+        Sequence
+        (
+            Keyword("DROP"),
+            CommentOrWhitespace,
+            Keyword("VIEW"),
+            CommentOrWhitespace,
+            ViewNameList
+        );
+
+        public static Expression<Rule> ViewNameList = () =>
+            Sequence(
+                May(CommentOrWhitespace),
+                TableOrViewName,
+                May(Sequence(May(CommentOrWhitespace), Comma, ViewNameList))
+            );
+        #endregion
+        #region Drop Table statement
+
+        public static Expression<Rule> DropTableStatement = () =>
+        Sequence
+        (
+            Keyword("DROP"),
+            CommentOrWhitespace,
+            Keyword("TABLE"),
+            CommentOrWhitespace,
+            TableNameList
+        );
+
+        public static Expression<Rule> TableNameList = () =>
+            Sequence(
+                May(CommentOrWhitespace),
+                TableOrViewName,
+                May(Sequence(May(CommentOrWhitespace), Comma, TableNameList))
+            );
+        #endregion
+        #region Truncate table
+
+        public static Expression<Rule> TruncateTableStatement = () =>
+        Sequence
+        (
+            Keyword("TRUNCATE"),
+            CommentOrWhitespace,
+            Keyword("TABLE"),
+            CommentOrWhitespace,
+            TableOrViewName
+        );
+        #endregion
+        #region +predicates
+        public static Expression<Rule> ContainsFreetext = () =>
+        Sequence
+        (
+            Sequence
+            (
+                Keyword("CONTAINS"),
+                May(CommentOrWhitespace),
+                BracketOpen,
+                May(CommentOrWhitespace),
+                May
+                (
+                    Must
+                    (
+                        ColumnName,
+                        Sequence(May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace), ColumnNameList, May(CommentOrWhitespace), BracketClose)
+                    )
+                ),
+                May(CommentOrWhitespace),
+                Comma,
+                May(CommentOrWhitespace),
+                ContainsSearchConditionList,
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), Keyword("LANGUAGE"), CommentOrWhitespace, Must(Number, StringConstant))),
+                May(CommentOrWhitespace),
+                BracketClose
+            )
+        );
+        public static Expression<Rule> ContainsSearchConditionList = () =>
+        Sequence(
+            ContainsSearchCondition,
+            May(Sequence(CommentOrWhitespace, Must(LogicalOperator, Sequence(Keyword("AND"), CommentOrWhitespace, Keyword("NOT"))), CommentOrWhitespace, ContainsSearchConditionList))
+        );
+
+        public static Expression<Rule> ContainsSearchCondition = () =>
+        Sequence(
+            Must
+            (
+                Variable,
+                SimpleTerm,
+                PrefixTerm,
+                GenerationTerm,
+                GenericProximityTerm,
+                CustonProximityTerm,
+                WeightedTerm
+            )
+        );
+        public static Expression<Rule> SimpleTerm = () =>
+        Sequence
+        (
+
+        );
+        public static Expression<Rule> PrefixTerm = () =>
+        Sequence
+        (
+
+        );
+        public static Expression<Rule> GenerationTerm = () =>
+        Sequence
+        (
+
+        );
+        public static Expression<Rule> GenericProximityTerm = () =>
+        Sequence
+        (
+
+        );
+        public static Expression<Rule> CustonProximityTerm = () =>
+        Sequence
+        (
+
+        );
+        public static Expression<Rule> WeightedTerm = () =>
+        Sequence
+        (
+
+        );
+
+        #endregion
+        /*
+        #region Delete statement
+        public static Expression<Rule> DeleteStatement = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace),
+                May(WithClause),
+                Keyword("DELETE"),
+                May(TopExpression),
+                Keyword("FROM"),
+                CommentOrWhitespace,
+                TableAlias,
+                May(CommentOrWhitespace),
+                BracketOpen,
+                May(CommentOrWhitespace),
+                ColumnAliasList,
+                May(CommentOrWhitespace),
+                BracketClose,
+                May(CommentOrWhitespace),
+                Keyword("VALUES"),
+                May(CommentOrWhitespace),
+                BracketOpen,
+                ColumnValueList,
+                BracketClose
+            );
+        #endregion
+        #region Update statement
+        
+        public static Expression<Rule> UpdateClause = () =>
+            Sequence
+            (
+                May(WithClause),
+                Keyword("UPDATE"),
+                May(Sequence(CommentOrWhitespace, TopExpression)),
+                CommentOrWhitespace,
+                TableOrViewName,// or object or rowset_function_limited 
+                May(CommentOrWhitespace),
+                Keyword("SET"),
+            );
+
+        public static Expression<Rule> ColumnAliasExpressionList = () =>
+            Sequence(May(CommentOrWhitespace), ColumnAlias, May(Sequence(May(CommentOrWhitespace), Comma, ColumnAliasList)));
+        #endregion
+         */
 #if false
 
 
@@ -883,3 +1538,4 @@ namespace Jhu.Graywulf.SqlParser.Generator
 #endif
     }
 }
+
