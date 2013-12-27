@@ -184,11 +184,6 @@ namespace Jhu.Graywulf.Format
         /// <param name="fileMode"></param>
         protected DataFileBase(Stream stream, DataFileMode fileMode)
         {
-            if (stream == null)
-            {
-                throw new ArgumentNullException("stream");
-            }
-
             InitializeMembers();
 
             OpenExternalStream(stream, fileMode);

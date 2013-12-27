@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Format
         {
             var w = new StringWriter();
 
-            using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString))
+            using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.IOTestConnectionString))
             {
                 cn.Open();
 

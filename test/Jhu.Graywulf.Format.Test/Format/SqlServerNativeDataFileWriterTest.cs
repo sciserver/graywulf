@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Format
 
             using (var nat = new SqlServerNativeDataFile(uri, DataFileMode.Write))
             {
-                using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString))
+                using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.IOTestConnectionString))
                 {
                     cn.Open();
 

@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.SqlCodeGen.Test
         private SchemaManager CreateSchemaManager()
         {
             var sm = new SqlServerSchemaManager();
-            var ds = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.MySqlConnectionString);
+            var ds = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.MySqlSchemaTestConnectionString);
 
             sm.Datasets[ds.Name] = ds;
 

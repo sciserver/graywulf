@@ -8,7 +8,16 @@ namespace Jhu.Graywulf.Test
 {
     public static class AppSettings
     {
-        public static string SqlServerConnectionString
+        public static string IOTestConnectionString
+        {
+            get
+            {
+                var cs = ConfigurationManager.ConnectionStrings["Jhu.Graywulf.IO.Test"];
+                return cs != null ? cs.ConnectionString : null;
+            }
+        }
+
+        public static string SqlServerSchemaTestConnectionString
         {
             get
             {
@@ -17,7 +26,7 @@ namespace Jhu.Graywulf.Test
             }
         }
 
-        public static string MySqlConnectionString
+        public static string MySqlSchemaTestConnectionString
         {
             get
             {
@@ -26,7 +35,7 @@ namespace Jhu.Graywulf.Test
             }
         }
 
-        public static string PostgreSqlConnectionString
+        public static string PostgreSqlSchemaTestConnectionString
         {
             get
             {
