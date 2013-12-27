@@ -157,14 +157,7 @@ namespace Jhu.Graywulf.Format
         }
 
         protected override void OnWriteHeader()
-        {
-            if (File.IsArchive)
-            {
-                // In archive mode, create a new entry
-                // TODO
-                File.CreateArchiveEntry("newfile.csv", 0);
-            }
-            
+        {            
             var line = new StringBuilder();
 
             line.Append(File.Comment);

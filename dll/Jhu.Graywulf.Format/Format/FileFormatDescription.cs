@@ -43,6 +43,11 @@ namespace Jhu.Graywulf.Format
         private bool canHoldMultipleDatasets;
 
         /// <summary>
+        /// File format requires an archive stream to read and write
+        /// </summary>
+        private bool requiresArchive;
+
+        /// <summary>
         /// File format is inherently compressed
         /// </summary>
         private bool isCompressed;
@@ -96,6 +101,12 @@ namespace Jhu.Graywulf.Format
             set { canHoldMultipleDatasets = value; }
         }
 
+        public bool RequiresArchive
+        {
+            get { return requiresArchive; }
+            set { requiresArchive = value; }
+        }
+
         public bool IsCompressed
         {
             get { return isCompressed; }
@@ -116,6 +127,7 @@ namespace Jhu.Graywulf.Format
             this.canWrite = false;
             this.canDetectColumnNames = false;
             this.canHoldMultipleDatasets = false;
+            this.requiresArchive = false;
             this.isCompressed = false;
         }
     }

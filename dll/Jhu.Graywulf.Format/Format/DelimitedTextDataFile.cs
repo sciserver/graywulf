@@ -34,6 +34,7 @@ namespace Jhu.Graywulf.Format
                         CanWrite = true,
                         CanDetectColumnNames = true,
                         CanHoldMultipleDatasets = false,
+                        RequiresArchive = false,
                         IsCompressed = false,
                     };
             }
@@ -180,7 +181,7 @@ namespace Jhu.Graywulf.Format
         /// If next block
         protected override DataFileBlockBase OnWriteNextBlock(DataFileBlockBase block, IDataReader dr)
         {
-            if (!IsArchive && !isFirstBlock)
+            if (!isFirstBlock)
             {
                 throw new InvalidOperationException();
                 // CSV files can contain a single file block only

@@ -152,14 +152,6 @@ namespace Jhu.Graywulf.Format
             get { return baseStream == null; }
         }
 
-        /// <summary>
-        /// Gets if the underlying data file is an archive
-        /// </summary>
-        public bool IsArchive
-        {
-            get { return baseStream is IArchiveOutputStream || baseStream is IArchiveInputStream; }
-        }
-
         #endregion
         #region Constructors and initializers
 
@@ -351,24 +343,7 @@ namespace Jhu.Graywulf.Format
         }
 
         #endregion
-        #region Archive handler functions
-
-        internal IArchiveEntry ReadArchiveEntry()
-        {
-            var arch = (IArchiveInputStream)baseStream;
-            return arch.ReadNextFileEntry();
-        }
-
-        internal IArchiveEntry CreateArchiveEntry(string filename, long length)
-        {
-            var arch = (IArchiveOutputStream)baseStream;
-            var entry = arch.CreateFileEntry(filename, length);
-            arch.WriteNextEntry(entry);
-
-            return entry;
-        }
-
-        #endregion
+        #region Block-based read and write functions
 
         /// <summary>
         /// When overloaded in a derived class, reads the file header.
@@ -541,7 +516,9 @@ namespace Jhu.Graywulf.Format
         /// <returns></returns>
         protected abstract DataFileBlockBase OnWriteNextBlock(DataFileBlockBase block, IDataReader dr);
 
+        #endregion
         #region DataReader and Writer functions
+
         /// <summary>
         /// Returns a FileDataReader that can iterate through the rows of
         /// the data file.

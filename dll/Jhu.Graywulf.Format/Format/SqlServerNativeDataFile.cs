@@ -41,7 +41,8 @@ namespace Jhu.Graywulf.Format
                     CanRead = true,
                     CanWrite = true,
                     CanDetectColumnNames = true,
-                    CanHoldMultipleDatasets = true,
+                    CanHoldMultipleDatasets = false,
+                    RequiresArchive = true,
                     IsCompressed = false,
                 };
             }
@@ -55,6 +56,14 @@ namespace Jhu.Graywulf.Format
         internal BinaryWriter OutputWriter
         {
             get { return outputWriter; }
+        }
+
+        /// <summary>
+        /// Gets if the underlying data file is an archive
+        /// </summary>
+        public bool IsArchive
+        {
+            get { return BaseStream is IArchiveOutputStream || BaseStream is IArchiveInputStream; }
         }
 
         #endregion
@@ -145,7 +154,25 @@ namespace Jhu.Graywulf.Format
         }
 
         #endregion
-        #region Read and write
+        #region Archive handler functions
+
+        internal IArchiveEntry ReadArchiveEntry()
+        {
+            var arch = (IArchiveInputStream)BaseStream;
+            return arch.ReadNextFileEntry();
+        }
+
+        internal IArchiveEntry CreateArchiveEntry(string filename, long length)
+        {
+            var arch = (IArchiveOutputStream)BaseStream;
+            var entry = arch.CreateFileEntry(filename, length);
+            arch.WriteNextEntry(entry);
+
+            return entry;
+        }
+
+        #endregion
+        #region Read and write function
 
         protected internal override void OnReadHeader()
         {
