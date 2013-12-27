@@ -58,7 +58,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Format\SqlServerNativeDataFileWriterTest.cs" />
-    <Compile Include="Format\StreamFactoryTest.cs" />
+    <Compile Include="IO\StreamFactoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

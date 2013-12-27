@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Net;
+using Jhu.Graywulf.Format;
 
-namespace Jhu.Graywulf.Format
+namespace Jhu.Graywulf.IO
 {
     /// <summary>
     /// Implements logic to open streams to read and write URIs.

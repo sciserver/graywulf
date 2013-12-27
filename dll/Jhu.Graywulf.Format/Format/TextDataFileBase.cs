@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Globalization;
 using Jhu.Graywulf.Types;
+using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
@@ -125,14 +126,14 @@ namespace Jhu.Graywulf.Format
 
         public virtual void Open(TextReader inputReader)
         {
-            OpenStream(null, DataFileMode.Read);
+            OpenExternalStream(null, DataFileMode.Read);
 
             this.inputReader = inputReader;
         }
 
         public virtual void Open(TextWriter outputWriter)
         {
-            OpenStream(null, DataFileMode.Write);
+            OpenExternalStream(null, DataFileMode.Write);
 
             this.outputWriter = outputWriter;
         }

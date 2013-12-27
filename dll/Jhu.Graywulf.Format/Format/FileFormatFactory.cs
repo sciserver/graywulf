@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.IO;
+using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
@@ -65,9 +66,9 @@ namespace Jhu.Graywulf.Format
             path = GetPathFromUri(uri);
             extension = Path.GetExtension(path);
 
-            if (Constants.CompressionExtensions.ContainsKey(extension))
+            if (Jhu.Graywulf.IO.Constants.CompressionExtensions.ContainsKey(extension))
             {
-                compressionMethod = Constants.CompressionExtensions[extension];
+                compressionMethod = Jhu.Graywulf.IO.Constants.CompressionExtensions[extension];
                 path = Path.GetFileNameWithoutExtension(path);
                 extension = Path.GetExtension(path);
             }

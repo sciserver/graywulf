@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Globalization;
 using Jhu.Graywulf.Types;
+using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {

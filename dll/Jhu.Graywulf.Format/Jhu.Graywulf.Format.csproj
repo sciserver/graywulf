@@ -45,19 +45,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Format\AppSettings.cs" />
-    <Compile Include="Format\BufferedTextReader.cs" />
     <Compile Include="Format\Constants.cs" />
     <Compile Include="Format\DelimitedTextDataFile.cs" />
     <Compile Include="Format\DelimitedTextDataFileBlock.cs" />
-    <Compile Include="Format\DetachedStream.cs" />
     <Compile Include="Format\FormattedDataFileBase.cs" />
     <Compile Include="Format\FormattedDataFileBlockBase.cs" />
-    <Compile Include="Format\IArchiveOutputStream.cs" />
     <Compile Include="Format\DataFileBase.cs" />
     <Compile Include="Format\DataFileBlockBase.cs" />
     <Compile Include="Format\DataFileColumn.cs" />
     <Compile Include="Format\DataFileColumnMetadata.cs" />
-    <Compile Include="Format\Enum.cs" />
     <Compile Include="Format\FileDataReader.cs" />
     <Compile Include="Format\FileFormatDescription.cs" />
     <Compile Include="Format\FileFormatException.cs">
@@ -69,20 +65,26 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Format\IArchiveEntry.cs" />
-    <Compile Include="Format\IArchiveInputStream.cs" />
-    <Compile Include="Format\SeekForwardStream.cs" />
-    <Compile Include="Format\SharpZipLibWrapper\TarOutputStream.cs" />
-    <Compile Include="Format\SharpZipLibWrapper\ZipEntry.cs" />
-    <Compile Include="Format\SharpZipLibWrapper\TarEntry.cs" />
-    <Compile Include="Format\SharpZipLibWrapper\TarInputStream.cs" />
-    <Compile Include="Format\SharpZipLibWrapper\ZipInputStream.cs" />
-    <Compile Include="Format\SharpZipLibWrapper\ZipOutputStream.cs" />
     <Compile Include="Format\SqlServerNativeDataFile.cs" />
     <Compile Include="Format\SqlServerNativeDataFileBlock.cs" />
-    <Compile Include="Format\StreamFactory.cs" />
     <Compile Include="Format\TextDataFileBase.cs" />
     <Compile Include="Format\TextDataFileBlockBase.cs" />
+    <Compile Include="IO\AppSettings.cs" />
+    <Compile Include="IO\BufferedTextReader.cs" />
+    <Compile Include="IO\Constants.cs" />
+    <Compile Include="IO\DetachedStream.cs" />
+    <Compile Include="IO\Enum.cs" />
+    <Compile Include="IO\IArchiveEntry.cs" />
+    <Compile Include="IO\IArchiveInputStream.cs" />
+    <Compile Include="IO\IArchiveOutputStream.cs" />
+    <Compile Include="IO\SeekForwardStream.cs" />
+    <Compile Include="IO\SharpZipLibWrapper\TarEntry.cs" />
+    <Compile Include="IO\SharpZipLibWrapper\TarInputStream.cs" />
+    <Compile Include="IO\SharpZipLibWrapper\TarOutputStream.cs" />
+    <Compile Include="IO\SharpZipLibWrapper\ZipEntry.cs" />
+    <Compile Include="IO\SharpZipLibWrapper\ZipInputStream.cs" />
+    <Compile Include="IO\SharpZipLibWrapper\ZipOutputStream.cs" />
+    <Compile Include="IO\StreamFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
 using Jhu.Graywulf.Types;
+using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {

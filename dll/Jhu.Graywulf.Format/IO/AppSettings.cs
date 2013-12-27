@@ -5,18 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Configuration;
 
-namespace Jhu.Graywulf.Format
+namespace Jhu.Graywulf.IO
 {
     public static class AppSettings
     {
         private static string GetValue(string key)
         {
-            return (string)((NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf/Format"))[key];
+            return (string)((NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf/IO"))[key];
         }
 
-        public static string FileFormatFactory
+        public static string StreamFactory
         {
-            get { return GetValue("FileFormatFactory"); }
+            get { return GetValue("StreamFactory"); }
         }
     }
 }

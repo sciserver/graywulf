@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jhu.Graywulf.Format
+namespace Jhu.Graywulf.IO
 {
     /// <summary>
     /// Exposes members of a generic archive file or directory entry.

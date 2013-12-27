@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace Jhu.Graywulf.Format
+namespace Jhu.Graywulf.IO
 {
     /// <summary>
     /// Implements a wrapper around a stream that allows positioning inside the

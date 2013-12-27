@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jhu.Graywulf.Format.SharpZipLibWrapper
+namespace Jhu.Graywulf.IO.SharpZipLibWrapper
 {
     /// <summary>
     /// Wraps a tar file output stream and exposes an interface to handle it

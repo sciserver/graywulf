@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Globalization;
 using ICSharpCode.SharpZipLib.Zip;
+using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
@@ -36,7 +37,7 @@ namespace Jhu.Graywulf.Format
                 return new FileFormatDescription()
                 {
                     DisplayName = FileFormatNames.Jhu_Graywulf_Format_SqlServerNativeDataFile,
-                    DefaultExtension = Constants.FileExtensionZip,
+                    DefaultExtension = Jhu.Graywulf.IO.Constants.FileExtensionZip,
                     CanRead = true,
                     CanWrite = true,
                     CanDetectColumnNames = true,

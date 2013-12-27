@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jhu.Graywulf.Format
+namespace Jhu.Graywulf.IO
 {
     /// <summary>
     /// Exposes members to handle a generic output archive stream.

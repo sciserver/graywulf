@@ -5,7 +5,7 @@ using System.Text;
 using System.Globalization;
 using System.IO;
 using System.Xml;
-
+using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {

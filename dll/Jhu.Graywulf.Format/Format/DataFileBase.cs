@@ -6,6 +6,7 @@ using System.Data;
 using System.IO;
 using System.Xml;
 using Jhu.Graywulf.Types;
+using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
@@ -57,6 +58,11 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Points to the current block in the blocks collection
         /// </summary>
+        /// <remarks>
+        /// This can be different from blocks.Count as blocks can be
+        /// predefined by the user or automatically generated as new
+        /// blocks are discovered while reading the file.
+        /// </remarks>
         private int blockCounter;
 
 
@@ -186,10 +192,14 @@ namespace Jhu.Graywulf.Format
         /// <param name="fileMode"></param>
         protected DataFileBase(Stream stream, DataFileMode fileMode)
         {
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
+
             InitializeMembers();
 
-            this.baseStream = stream;
-            this.fileMode = fileMode;
+            OpenExternalStream(stream, fileMode);
         }
 
         /// <summary>
@@ -253,9 +263,19 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        /// <summary>
+        /// Opens a file by wrapping an external file stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="fileMode"></param>
         public void Open(Stream stream, DataFileMode fileMode)
         {
-            OpenStream(stream, fileMode);
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
+
+            OpenExternalStream(stream, fileMode);
             Open();
         }
 
@@ -265,7 +285,7 @@ namespace Jhu.Graywulf.Format
         /// <param name="stream"></param>
         /// <param name="mode"></param>
         /// <param name="compression"></param>
-        protected void OpenStream(Stream stream, DataFileMode fileMode)
+        protected void OpenExternalStream(Stream stream, DataFileMode fileMode)
         {
             this.baseStream = stream;
             this.ownsBaseStream = false;
@@ -275,14 +295,13 @@ namespace Jhu.Graywulf.Format
 
         /// <summary>
         /// Opens the underlying stream, if it is not set externally via
-        /// a constructor.
+        /// a constructor or the OpenStream method.
         /// </summary>
-        private void OpenBaseStream()
+        private void OpenOwnStream()
         {
             if (baseStream == null)
             {
                 // Use stream factory to open stream
-                // TODO: replace this to use configured stream factory
                 var f = StreamFactory.Create();
                 baseStream = f.Open(uri, fileMode);
 
@@ -300,7 +319,7 @@ namespace Jhu.Graywulf.Format
                 throw new InvalidOperationException();
             }
 
-            OpenBaseStream();
+            OpenOwnStream();
         }
 
         /// <summary>
@@ -313,7 +332,7 @@ namespace Jhu.Graywulf.Format
                 throw new InvalidOperationException();
             }
 
-            OpenBaseStream();
+            OpenOwnStream();
         }
 
         /// <summary>
@@ -332,6 +351,13 @@ namespace Jhu.Graywulf.Format
         }
 
         #endregion
+        #region Archive handler functions
+
+        internal IArchiveEntry ReadArchiveEntry()
+        {
+            var arch = (IArchiveInputStream)baseStream;
+            return arch.ReadNextFileEntry();
+        }
 
         internal IArchiveEntry CreateArchiveEntry(string filename, long length)
         {
@@ -341,6 +367,8 @@ namespace Jhu.Graywulf.Format
 
             return entry;
         }
+
+        #endregion
 
         /// <summary>
         /// When overloaded in a derived class, reads the file header.
