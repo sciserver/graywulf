@@ -101,8 +101,10 @@ namespace Jhu.Graywulf.RemoteService.Server
 
                 Assert.AreEqual(
                     new Uri(String.Format(
-                        "net.tcp://{0}:5055/{1}",
-                        RemoteServiceHelper.GetFullyQualifiedDnsName(Jhu.Graywulf.Test.Constants.Localhost), typeof(CancelableDelay).FullName)),
+                        "net.tcp://{0}:{1}/{2}",
+                        RemoteServiceHelper.GetFullyQualifiedDnsName(Jhu.Graywulf.Test.Constants.Localhost),
+                        AppSettings.TcpPort,
+                        typeof(CancelableDelay).FullName)),
                     uri);
 
             }

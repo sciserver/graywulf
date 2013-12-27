@@ -98,11 +98,11 @@ INNER JOIN Author ON Author.ID = BookAuthor.AuthorID
 WHERE Author.ID = 3";
 
             Assert.AreEqual(
-@"SELECT [Graywulf_Test].[dbo].[Book].[Title] AS [Title], [Graywulf_Test].[dbo].[Author].[Name] AS [Name]
-FROM [Graywulf_Test].[dbo].[Book]
-INNER JOIN [Graywulf_Test].[dbo].[BookAuthor] ON [Graywulf_Test].[dbo].[BookAuthor].[BookID] = [Graywulf_Test].[dbo].[Book].[ID] AND [Graywulf_Test].[dbo].[Book].[ID] = 6
-INNER JOIN [Graywulf_Test].[dbo].[Author] ON [Graywulf_Test].[dbo].[Author].[ID] = [Graywulf_Test].[dbo].[BookAuthor].[AuthorID]
-WHERE [Graywulf_Test].[dbo].[Author].[ID] = 3",
+@"SELECT [Graywulf_Schema_Test].[dbo].[Book].[Title] AS [Title], [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name]
+FROM [Graywulf_Schema_Test].[dbo].[Book]
+INNER JOIN [Graywulf_Schema_Test].[dbo].[BookAuthor] ON [Graywulf_Schema_Test].[dbo].[BookAuthor].[BookID] = [Graywulf_Schema_Test].[dbo].[Book].[ID] AND [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6
+INNER JOIN [Graywulf_Schema_Test].[dbo].[Author] ON [Graywulf_Schema_Test].[dbo].[Author].[ID] = [Graywulf_Schema_Test].[dbo].[BookAuthor].[AuthorID]
+WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = 3",
                 GenerateCode(sql, false, true, false));
         }
 
@@ -118,7 +118,7 @@ WHERE b1.ID = 1 AND b2.ID = 2";
 
             Assert.AreEqual(
 @"SELECT [b1].[Title] AS [b1_Title], [b2].[Title] AS [b2_Title]
-FROM [Graywulf_Test].[dbo].[Book] [b1], [Graywulf_Test].[dbo].[Book] [b2]
+FROM [Graywulf_Schema_Test].[dbo].[Book] [b1], [Graywulf_Schema_Test].[dbo].[Book] [b2]
 WHERE [b1].[ID] = 1 AND [b2].[ID] = 2", res);
 
         }
@@ -134,7 +134,7 @@ WHERE b.ID = 1";
             var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
 
             Assert.AreEqual(1, res.Length);
-            Assert.AreEqual("SELECT [b].[ID], [b].[Title] FROM [Graywulf_Test].[dbo].[Book] AS [b] WHERE [b].[ID] = 1", res[0]);
+            Assert.AreEqual("SELECT [b].[ID], [b].[Title] FROM [Graywulf_Schema_Test].[dbo].[Book] AS [b] WHERE [b].[ID] = 1", res[0]);
         }
 
         [TestMethod]
@@ -148,8 +148,8 @@ WHERE b.ID = 1 AND a.ID IN (3, 4)";
             var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
 
             Assert.AreEqual(2, res.Length);
-            Assert.AreEqual("SELECT [a].[ID], [a].[Title] FROM [Graywulf_Test].[dbo].[Book] AS [a] WHERE [a].[ID] IN (3, 4)", res[0]);
-            Assert.AreEqual("SELECT [b].[ID] FROM [Graywulf_Test].[dbo].[Book] AS [b] WHERE [b].[ID] = 1", res[1]);
+            Assert.AreEqual("SELECT [a].[ID], [a].[Title] FROM [Graywulf_Schema_Test].[dbo].[Book] AS [a] WHERE [a].[ID] IN (3, 4)", res[0]);
+            Assert.AreEqual("SELECT [b].[ID] FROM [Graywulf_Schema_Test].[dbo].[Book] AS [b] WHERE [b].[ID] = 1", res[1]);
         }
 
         [TestMethod]
@@ -167,8 +167,8 @@ WHERE ID = 1";
             var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
 
             Assert.AreEqual(2, res.Length);
-            Assert.AreEqual("SELECT [Graywulf_Test].[dbo].[Book].[ID], [Graywulf_Test].[dbo].[Book].[Title] FROM [Graywulf_Test].[dbo].[Book] WHERE [Graywulf_Test].[dbo].[Book].[ID] IN (2, 3)", res[0]);
-            Assert.AreEqual("SELECT [Graywulf_Test].[dbo].[Book].[ID], [Graywulf_Test].[dbo].[Book].[Title] FROM [Graywulf_Test].[dbo].[Book] WHERE [Graywulf_Test].[dbo].[Book].[ID] = 1", res[1]);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Book].[ID], [Graywulf_Schema_Test].[dbo].[Book].[Title] FROM [Graywulf_Schema_Test].[dbo].[Book] WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] IN (2, 3)", res[0]);
+            Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Book].[ID], [Graywulf_Schema_Test].[dbo].[Book].[Title] FROM [Graywulf_Schema_Test].[dbo].[Book] WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 1", res[1]);
         }
 
 

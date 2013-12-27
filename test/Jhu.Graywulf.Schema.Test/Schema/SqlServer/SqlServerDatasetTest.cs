@@ -251,7 +251,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
 
             ds.TableValuedFunctions.LoadAll();
-            Assert.IsTrue(ds.TableValuedFunctions.Count == 2);    // Update this if test database schema changes
+            Assert.AreEqual(3, ds.TableValuedFunctions.Count);    // Update this if test database schema changes
         }
 
         [TestMethod]
@@ -310,7 +310,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
 
             ds.ScalarFunctions.LoadAll();
-            Assert.IsTrue(ds.ScalarFunctions.Count == 1);    // Update this if test database schema changes
+            Assert.AreEqual(2, ds.ScalarFunctions.Count);    // Update this if test database schema changes
         }
 
         [TestMethod]

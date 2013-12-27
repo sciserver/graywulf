@@ -112,6 +112,20 @@ GO
 
 -- CREATE FUNCTIONS --
 
+CREATE FUNCTION [dbo].[TestTableValuedFunction]
+(	
+	@param1 int
+)
+RETURNS TABLE 
+AS
+RETURN 
+(
+	SELECT CAST(0 AS int) a, CAST(1 AS int) b
+)
+
+GO
+
+
 CREATE FUNCTION [dbo].[InlineTableValuedFunction]
 (	
 	@param1 int,
@@ -148,6 +162,20 @@ BEGIN
 END
 
 GO
+
+CREATE FUNCTION [dbo].[TestScalarFunction]
+(
+	@param1 int
+)
+RETURNS int
+AS
+BEGIN
+	RETURN @param1
+END
+
+GO
+
+
 
 CREATE FUNCTION [dbo].[ScalarFunction]
 (
