@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.SqlCodeGen.Test
         private SchemaManager CreateSchemaManager()
         {
             var sm = new SqlServerSchemaManager();
-            var ds = new SqlServerDataset("Test", Jhu.Graywulf.Test.AppSettings.MySqlConnectionString);
+            var ds = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.MySqlConnectionString);
 
             sm.Datasets[ds.Name] = ds;
 
@@ -31,8 +31,8 @@ namespace Jhu.Graywulf.SqlCodeGen.Test
             var select = (SelectStatement)p.Execute(new SelectStatement(), query);
 
             SqlNameResolver nr = new SqlNameResolver();
-            nr.DefaultTableDatasetName = "Test";
-            nr.DefaultFunctionDatasetName = "Code";
+            nr.DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
+            nr.DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName;
             nr.SchemaManager = CreateSchemaManager();
             nr.Execute(select);
 

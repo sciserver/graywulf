@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.SqlParser.Test
         private SchemaManager CreateSchemaManager()
         {
             var sm = new SqlServerSchemaManager();
-            var ds = new SqlServerDataset("Test", "Data Source=localhost;Initial Catalog=Graywulf_Test;Integrated Security=true");
+            var ds = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString);
 
             sm.Datasets[ds.Name] = ds;
 
@@ -28,10 +28,8 @@ namespace Jhu.Graywulf.SqlParser.Test
 
             var nr = new SqlNameResolver();
             nr.SchemaManager = CreateSchemaManager();
-            nr.DefaultTableDatasetName = "Test";
-            //nr.DefaultTableSchemaName = "dbo"; TODO: delete
-            nr.DefaultFunctionDatasetName = "Test";
-            //nr.DefaultFunctionSchemaName = "dbo"; TODO: delete
+            nr.DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
+            nr.DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
             nr.Execute(ss);
         }
 

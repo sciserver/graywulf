@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.IO
         private IDataFileExporter GetDataFileExporter(string name, bool remote)
         {
             var source = new SourceQueryParameters();
-            source.Dataset = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset("TEST", Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString);
+            source.Dataset = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString);
             source.Query = "SELECT * FROM SampleData";
 
             var uri = new Uri(String.Format(@"file://{0}/{1}/{2}.txt", Test.Constants.RemoteHost1, Test.Constants.GWCode, name));

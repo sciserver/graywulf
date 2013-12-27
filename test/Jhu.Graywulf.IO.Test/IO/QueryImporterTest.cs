@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.IO
             
 
             var s = new SourceQueryParameters();
-            s.Dataset = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset("TEST", Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString);
+            s.Dataset = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerConnectionString);
             s.Query = "SELECT 1 AS one, 2 AS two, 3 AS three";
 
             IQueryImporter q = null;
