@@ -12,6 +12,10 @@ using System.Security.Principal;
 
 namespace Jhu.Graywulf.RemoteService
 {
+    /// <summary>
+    /// Implements method to establish channels with remote services to
+    /// execute delegated tasks.
+    /// </summary>
     public static class RemoteServiceHelper
     {
         public const ImpersonationOption DefaultImpersonation = ImpersonationOption.Allowed;
@@ -19,7 +23,7 @@ namespace Jhu.Graywulf.RemoteService
         #region Remote object creation functions
 
         /// <summary>
-        /// Returns a proxy to the remote service control object
+        /// Returns a proxy to the remote service control object.
         /// </summary>
         /// <param name="host"></param>
         /// <returns></returns>
@@ -50,6 +54,13 @@ namespace Jhu.Graywulf.RemoteService
             return CreateChannel<T>(CreateNetTcpBinding(), CreateEndpointAddress(uri));
         }
 
+        /// <summary>
+        /// Creates a channel of type T to the given endpoint via the given binding.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="tcp"></param>
+        /// <param name="endpoint"></param>
+        /// <returns></returns>
         private static T CreateChannel<T>(NetTcpBinding tcp, EndpointAddress endpoint)
         {
             var cf = new ChannelFactory<T>(tcp, endpoint);
@@ -60,9 +71,8 @@ namespace Jhu.Graywulf.RemoteService
 
             return cf.CreateChannel();
         }
-        
 
-#endregion
+        #endregion
 
         /// <summary>
         /// Returns a NetTcpBinding object initialized to support Kerberos authentication over TCP
@@ -78,6 +88,7 @@ namespace Jhu.Graywulf.RemoteService
             tcp.SendTimeout = TimeSpan.FromHours(2);
             tcp.OpenTimeout = TimeSpan.FromHours(2);
 
+            // Large XML messages require these quotas set to large values
             tcp.ReaderQuotas.MaxArrayLength = 0x7FFFFFFF;
             tcp.ReaderQuotas.MaxDepth = 0x7FFFFFFF;
             tcp.ReaderQuotas.MaxStringContentLength = 0x7FFFFFFF;
@@ -129,10 +140,17 @@ namespace Jhu.Graywulf.RemoteService
             return new Uri(String.Format("net.tcp://{0}:{1}/{2}", host, AppSettings.TcpPort, service));
         }
 
+        /// <summary>
+        /// Authorizes the user only if they belong to a specified user group.
+        /// </summary>
         public static void EnsureRoleAccess()
         {
-            if (OperationContext.Current != null &&
-                (StringComparer.InvariantCultureIgnoreCase.Compare(Thread.CurrentPrincipal.Identity.Name,AppSettings.UserGroup) == 0 &&
+            // Check if the user is authenticated and the identity is equal to the specified
+            // user (group) name or member of the given group (role).
+
+            // TODO: this is messy here, test and double check.
+            if (OperationContext.Current == null ||
+                (StringComparer.InvariantCultureIgnoreCase.Compare(Thread.CurrentPrincipal.Identity.Name, AppSettings.UserGroup) != 0 &&
                 !Thread.CurrentPrincipal.IsInRole(AppSettings.UserGroup)))
             {
                 throw new SecurityException("Access denied.");
@@ -153,22 +171,23 @@ namespace Jhu.Graywulf.RemoteService
         public static string GetFullyQualifiedDnsName()
         {
             var ipprop = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties();
-            /*var name = string.Format("{0}.{1}", ipprop.HostName, ipprop.DomainName);
 
+            // TODO: reverse lookup to get FQDN, it fails on current GW config at JHU!
+            /*var name = string.Format("{0}.{1}", ipprop.HostName, ipprop.DomainName);
             return name;*/
 
             return ipprop.HostName;
         }
 
         /// <summary>
-        /// Returns the DNS name of any host
+        /// Returns the DNS name of any host identified by its host name.
         /// </summary>
         /// <param name="host"></param>
         /// <returns></returns>
         public static string GetFullyQualifiedDnsName(string host)
         {
+            // TODO: reverse lookup to get FQDN, it fails on current GW config at JHU!
             /*var name = System.Net.Dns.GetHostEntry(host).HostName;
-
             return name;*/
 
             return host;
