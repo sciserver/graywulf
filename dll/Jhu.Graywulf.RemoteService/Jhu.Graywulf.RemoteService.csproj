@@ -57,6 +57,7 @@
     <Compile Include="Tasks\CancelableDbCommand.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Tasks\CancelableDelay.cs" />
     <Compile Include="Tasks\CancelableProcess.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -7,8 +7,28 @@ using System.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Tasks;
 
-namespace Jhu.Graywulf.Jobs.Test
+namespace Jhu.Graywulf.Tasks
 {
+    [ServiceContract(SessionMode = SessionMode.Required)]
+    [RemoteServiceClass(typeof(CancelableDelay))]
+    public interface ICancelableDelay : IRemoteService
+    {
+        int Period
+        {
+            [OperationContract]
+            get;
+
+            [OperationContract]
+            set;
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// This class is used for testing purposes.
+    /// </remarks>
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession)]
     public class CancelableDelay : RemoteServiceBase, ICancelableDelay
