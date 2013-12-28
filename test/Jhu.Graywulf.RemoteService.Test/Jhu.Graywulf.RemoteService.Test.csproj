@@ -57,10 +57,6 @@
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Jobs\Jhu.Graywulf.Jobs.csproj">
-      <Project>{2BD2D467-D003-468D-9B97-83DDC6F2ED78}</Project>
-      <Name>Jhu.Graywulf.Jobs</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\exe\Jhu.Graywulf.RemoteService.Server\Jhu.Graywulf.RemoteService.Server.csproj">
       <Project>{3AC81304-44BA-4D55-A872-469BC11C9CBC}</Project>
       <Name>Jhu.Graywulf.RemoteService.Server</Name>
@@ -68,10 +64,6 @@
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
       <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
       <Name>Jhu.Graywulf.RemoteService</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.Jobs.Test\Jhu.Graywulf.Jobs.Test.csproj">
-      <Project>{ECC46A31-4D61-4C1E-B9F6-6F1B97809FB1}</Project>
-      <Name>Jhu.Graywulf.Jobs.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Test\Jhu.Graywulf.Test.csproj">
       <Project>{EA6164BA-B283-46C2-874B-348D6BAD41AD}</Project>

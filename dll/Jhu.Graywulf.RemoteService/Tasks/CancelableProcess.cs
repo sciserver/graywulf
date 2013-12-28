@@ -60,8 +60,6 @@ namespace Jhu.Graywulf.Tasks
         /// </remarks>
         protected override void OnExecute()
         {
-            //info.CreateNoWindow = false;
-
             process = Process.Start(info);
             process.WaitForExit();
 
