@@ -8,12 +8,21 @@ using System.IO;
 
 namespace Jhu.Graywulf.Tasks
 {
+    /// <summary>
+    /// Implements a wrapper around a process to
+    /// provide async execution and cancelation logic.
+    /// </summary>
     public class CancelableProcess : CancelableTask
     {
+        #region Private members
+
         private ProcessStartInfo info;
         private int exitCode;
 
         private Process process;
+
+        #endregion
+        #region Properties
 
         public ProcessStartInfo ProcessStartInfo
         {
@@ -25,6 +34,9 @@ namespace Jhu.Graywulf.Tasks
         {
             get { return exitCode; }
         }
+
+        #endregion
+        #region Constructors and initializers
 
         public CancelableProcess(ProcessStartInfo info)
         {
@@ -38,9 +50,17 @@ namespace Jhu.Graywulf.Tasks
             this.info = null;
         }
 
+        #endregion
+
+        /// <summary>
+        /// Executes the process.
+        /// </summary>
+        /// <remarks>
+        /// This method is called by the infrastructure.
+        /// </remarks>
         protected override void OnExecute()
         {
-            info.CreateNoWindow = false;
+            //info.CreateNoWindow = false;
 
             process = Process.Start(info);
             process.WaitForExit();
@@ -50,14 +70,17 @@ namespace Jhu.Graywulf.Tasks
             process = null;
         }
 
+        /// <summary>
+        /// Cancels the operation by killing the process
+        /// </summary>
         public override void Cancel()
         {
-            base.Cancel();
-
             if (process != null)
             {
                 process.Kill();
             }
+
+            base.Cancel();
         }
     }
 }

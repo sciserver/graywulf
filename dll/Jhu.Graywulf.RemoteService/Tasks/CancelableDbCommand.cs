@@ -8,10 +8,22 @@ using System.Data.SqlClient;
 
 namespace Jhu.Graywulf.Tasks
 {
+    /// <summary>
+    /// Implements a wrapper around a DbCommand to support
+    /// cancelling of long-running queries.
+    /// </summary>
     public class CancelableDbCommand : CancelableTask
     {
+        #region Private members
+
+        /// <summary>
+        /// Holds a reference to the executing command.
+        /// </summary>
         [NonSerialized]
         private IDbCommand command;
+
+        #endregion
+        #region Constructors and initializers
 
         public CancelableDbCommand(IDbCommand command)
         {
@@ -25,6 +37,13 @@ namespace Jhu.Graywulf.Tasks
             this.command = null;
         }
 
+        #endregion
+
+        /// <summary>
+        /// Executes the command synchronously by returning the number of affected
+        /// rows only.
+        /// </summary>
+        /// <returns></returns>
         public int ExecuteNonQuery()
         {
             try
@@ -37,6 +56,10 @@ namespace Jhu.Graywulf.Tasks
             }
         }
 
+        /// <summary>
+        /// Executes the command synchronously by returning a scalar only.
+        /// </summary>
+        /// <returns></returns>
         public object ExecuteScalar()
         {
             try
@@ -49,6 +72,11 @@ namespace Jhu.Graywulf.Tasks
             }
         }
 
+        /// <summary>
+        /// Executes the query synchronously by passing the resulting
+        /// data reader to a delegate.
+        /// </summary>
+        /// <param name="action"></param>
         public void ExecuteReader(Action<IDataReader> action)
         {
             try
@@ -64,6 +92,13 @@ namespace Jhu.Graywulf.Tasks
             }
         }
 
+        /// <summary>
+        /// Executes the command.
+        /// </summary>
+        /// <remarks>
+        /// This function is called by the infrastructure when executing
+        /// the task asynchronously.
+        /// </remarks>
         protected override void OnExecute()
         {
             try
@@ -76,6 +111,9 @@ namespace Jhu.Graywulf.Tasks
             }
         }
 
+        /// <summary>
+        /// Waits for the asynchronous task to complete.
+        /// </summary>
         public override void EndExecute()
         {
             try
@@ -88,6 +126,9 @@ namespace Jhu.Graywulf.Tasks
             }
         }
 
+        /// <summary>
+        /// Cancels the command.
+        /// </summary>
         public override void Cancel()
         {
             base.Cancel();
@@ -95,8 +136,16 @@ namespace Jhu.Graywulf.Tasks
             command.Cancel();
         }
 
+        /// <summary>
+        /// Processes exceptions
+        /// </summary>
+        /// <param name="exception"></param>
+        /// <returns></returns>
         private Exception ProcessException(Exception exception)
         {
+            // When a command is canceled, a SqlException is thrown by the
+            // client. Handle this and throw an OperationCanceledException instead.
+
             if (exception is SqlException)
             {
                 var ex = (SqlException)exception;
