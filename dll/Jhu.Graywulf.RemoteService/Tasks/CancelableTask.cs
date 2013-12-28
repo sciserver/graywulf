@@ -14,7 +14,6 @@ namespace Jhu.Graywulf.Tasks
     [NetDataContract]
     public interface ICancelableTask
     {
-
         bool IsCanceled
         {
             [OperationContract]

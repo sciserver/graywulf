@@ -6,6 +6,9 @@ using System.ServiceModel;
 
 namespace Jhu.Graywulf.RemoteService
 {
+    /// <summary>
+    /// Data contract interface for delegated tasks.
+    /// </summary>
     [ServiceContract(SessionMode = SessionMode.Required)]
     [NetDataContract]
     public interface IRemoteService : Jhu.Graywulf.Tasks.ICancelableTask

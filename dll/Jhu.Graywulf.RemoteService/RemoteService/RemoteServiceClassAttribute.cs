@@ -6,7 +6,7 @@ using System.Text;
 namespace Jhu.Graywulf.RemoteService
 {
     /// <summary>
-    /// This attribut is used to define the default service class
+    /// This attribute is used to define the default service class
     /// to service contracts
     /// </summary>
     [AttributeUsage(AttributeTargets.Interface)]

@@ -9,6 +9,9 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.RemoteService
 {
+    /// <summary>
+    /// Implements methods to execute and cancel delegated long-running tasks.
+    /// </summary>
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
