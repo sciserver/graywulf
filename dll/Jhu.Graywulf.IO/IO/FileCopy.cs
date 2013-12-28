@@ -11,15 +11,58 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.IO
 {
+    [ServiceContract(SessionMode = SessionMode.Required)]
+    [RemoteServiceClass(typeof(FileCopy))]
+    public interface IFileCopy : IRemoteService
+    {
+        string Source
+        {
+            [OperationContract]
+            get;
+
+            [OperationContract]
+            set;
+        }
+
+        string Destination
+        {
+            [OperationContract]
+            get;
+
+            [OperationContract]
+            set;
+        }
+
+        bool Overwrite
+        {
+            [OperationContract]
+            get;
+
+            [OperationContract]
+            set;
+        }
+    }
+
+    /// <summary>
+    /// Implements a delegated, robust file copy by wrapping eseutil.exe
+    /// </summary>
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults=true)]
     public class FileCopy : RemoteServiceBase, IFileCopy
     {
+        #region Private members for property storage
+
         private string source;
         private string destination;
         private bool overwrite;
 
+        #endregion
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the source file path.
+        /// </summary>
         public string Source
         {
             [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
@@ -29,6 +72,9 @@ namespace Jhu.Graywulf.IO
             set { source = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the destination file path.
+        /// </summary>
         public string Destination
         {
             [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
@@ -38,6 +84,9 @@ namespace Jhu.Graywulf.IO
             set { destination = value; }
         }
 
+        /// <summary>
+        /// Gets or sets whether the destination file should be overwritten.
+        /// </summary>
         public bool Overwrite
         {
             [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
@@ -47,6 +96,7 @@ namespace Jhu.Graywulf.IO
             set { overwrite = value; }
         }
 
+        #endregion
         #region Constructors and initializers
 
         public FileCopy()

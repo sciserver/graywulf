@@ -42,8 +42,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IO\BulkInsertImporter.cs" />
-    <Compile Include="IO\BulkInsertParameters.cs" />
     <Compile Include="IO\DataFileExporter.cs" />
     <Compile Include="IO\DataFileImporter.cs" />
     <Compile Include="IO\DestinationTableParameters.cs" />
@@ -54,10 +52,8 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="IO\FileCopy.cs" />
-    <Compile Include="IO\IBulkInsertImporter.cs" />
     <Compile Include="IO\IDataFileExporter.cs" />
     <Compile Include="IO\IDataFileImporter.cs" />
-    <Compile Include="IO\IFileCopy.cs" />
     <Compile Include="IO\IQueryImporter.cs" />
     <Compile Include="IO\ITableImporter.cs" />
     <Compile Include="IO\QueryImporter.cs" />
