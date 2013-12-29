@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Types;
 using Jhu.Graywulf.IO;
 
@@ -61,14 +62,14 @@ namespace Jhu.Graywulf.Format
         /// otherwise parts are only counted, columns are created for each and automatically generated
         /// names are used.
         /// </remarks>
-        protected void DetectColumnsFromParts(string[] parts, bool useNames, out DataFileColumn[] cols, out int[] colRanks)
+        protected void DetectColumnsFromParts(string[] parts, bool useNames, out Column[] cols, out int[] colRanks)
         {
-            cols = new DataFileColumn[parts.Length];
+            cols = new Column[parts.Length];
             colRanks = new int[parts.Length];
 
             for (int i = 0; i < cols.Length; i++)
             {
-                cols[i] = new DataFileColumn();
+                cols[i] = new Column();
 
                 if (useNames)
                 {
@@ -99,7 +100,7 @@ namespace Jhu.Graywulf.Format
 
                 string[] parts;
 
-                DataFileColumn[] cols = null;      // detected columns
+                Column[] cols = null;      // detected columns
                 int[] colranks = null;
 
                 // If column names are in the first line, use them to generate names

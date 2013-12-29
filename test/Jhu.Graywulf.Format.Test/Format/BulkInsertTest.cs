@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Data.SqlClient;
-using Jhu.Graywulf.Format;
+using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Test;
 
 namespace Jhu.Graywulf.Format
@@ -18,9 +18,9 @@ namespace Jhu.Graywulf.Format
             var f = new DelimitedTextDataFile(new StringReader(csv));
             var b = new DelimitedTextDataFileBlock(f);
 
-            b.Columns.Add(new DataFileColumn("one", typeof(int), 4));
-            b.Columns.Add(new DataFileColumn("two", typeof(int), 4));
-            b.Columns.Add(new DataFileColumn("three", typeof(int), 4));
+            b.Columns.Add(new Column("one", typeof(int), 4));
+            b.Columns.Add(new Column("two", typeof(int), 4));
+            b.Columns.Add(new Column("three", typeof(int), 4));
 
             f.AppendBlock(b);
 

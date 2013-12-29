@@ -109,6 +109,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Schema\SchemaException.cs" />
     <Compile Include="Schema\Table.cs" />
+    <Compile Include="Types\Constants.cs" />
+    <Compile Include="Types\DataType.cs" />
+    <Compile Include="Types\DoubleComplex.cs" />
+    <Compile Include="Types\Enum.cs" />
+    <Compile Include="Types\SingleComplex.cs" />
+    <Compile Include="Types\TypeUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Schema\DatabaseObjectNames.resx">
@@ -124,10 +130,6 @@
     <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.Types\Jhu.Graywulf.Types.csproj">
-      <Project>{72607E61-5546-453A-8CFB-DD2A061B5C34}</Project>
-      <Name>Jhu.Graywulf.Types</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
+using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Types;
 using Jhu.Graywulf.IO;
 
@@ -14,12 +15,12 @@ namespace Jhu.Graywulf.Format
         [NonSerialized]
         protected DataFileBase file;
         
-        private List<DataFileColumn> columns;
+        private List<Column> columns;
 
         /// <summary>
         /// Gets the collection containing columns of the data file
         /// </summary>
-        public List<DataFileColumn> Columns
+        public List<Column> Columns
         {
             get { return columns; }
         }
@@ -41,7 +42,7 @@ namespace Jhu.Graywulf.Format
         private void InitializeMembers()
         {
             this.file = null;
-            this.columns = new List<DataFileColumn>();
+            this.columns = new List<Column>();
         }
 
         private void CopyMembers(DataFileBlockBase old)
@@ -49,10 +50,10 @@ namespace Jhu.Graywulf.Format
             this.file = old.file;
 
             // Deep copy columns
-            this.columns = new List<DataFileColumn>();
+            this.columns = new List<Column>();
             foreach (var c in old.columns)
             {
-                this.columns.Add((DataFileColumn)c.Clone());
+                this.columns.Add((Column)c.Clone());
             }
         }
 
@@ -69,7 +70,7 @@ namespace Jhu.Graywulf.Format
         internal void DetectColumns(IDataReader dr)
         {
             var dt = dr.GetSchemaTable();
-            DataFileColumn[] cols;
+            Column[] cols;
 
             if (this.Columns.Count == dt.Rows.Count)
             {
@@ -80,11 +81,11 @@ namespace Jhu.Graywulf.Format
             }
             else
             {
-                cols = new DataFileColumn[dt.Rows.Count];
+                cols = new Column[dt.Rows.Count];
 
                 for (int i = 0; i < dt.Rows.Count; i++)
                 {
-                    cols[i] = DataFileColumn.Create(dt.Rows[i]);
+                    cols[i] = Column.Create(dt.Rows[i]);
                 }
             }
 
@@ -95,13 +96,13 @@ namespace Jhu.Graywulf.Format
         /// Call this function to set column list from derived classes
         /// </summary>
         /// <param name="columns"></param>
-        protected void CreateColumns(DataFileColumn[] columns)
+        protected void CreateColumns(Column[] columns)
         {
             this.columns.Clear();
 
             if (file.FileMode == DataFileMode.Read && file.GenerateIdentityColumn)
             {
-                var col = new DataFileColumn("__ID", DataType.SqlBigInt);  // *** TODO
+                var col = new Column("__ID", DataType.SqlBigInt);  // *** TODO
                 col.IsIdentity = true;
                 this.columns.Add(col);
             }

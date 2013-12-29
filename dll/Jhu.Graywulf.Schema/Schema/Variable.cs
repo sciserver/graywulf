@@ -8,7 +8,7 @@ using Jhu.Graywulf.Types;
 namespace Jhu.Graywulf.Schema
 {
     [Serializable]
-    public abstract class Variable : IVariable
+    public abstract class Variable
     {
         private DatabaseObject parent;
         private int id;
@@ -48,10 +48,10 @@ namespace Jhu.Graywulf.Schema
             set { dataType = value; }
         }
 
-        public IVariableMetadata Metadata
+        public VariableMetadata Metadata
         {
             get { return metadata.Value; }
-            set { metadata.Value = (VariableMetadata)value; }
+            set { metadata.Value = value; }
         }
 
         public Variable()

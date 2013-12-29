@@ -6,7 +6,7 @@ using Jhu.Graywulf.Types;
 
 namespace Jhu.Graywulf.Schema
 {
-    public class VariableMetadata : IVariableMetadata
+    public class VariableMetadata
     {
         private string summary;
         private string unit;

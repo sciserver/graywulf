@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jhu.Graywulf.Types;
 
-namespace Jhu.Graywulf.Types
+namespace Jhu.Graywulf.Format
 {
     public abstract class BitConverterBase
     {

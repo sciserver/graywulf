@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Types;
 
-namespace Jhu.Graywulf.Types.Text
+namespace Jhu.Graywulf.Format
 {
     [TestClass]
     public class StraightBitConverterTest

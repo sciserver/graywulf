@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Schema
     /// </summary>
     [Serializable]
     [DataContract(Namespace = "")]
-    public class Column : Variable, IColumn, ICloneable
+    public class Column : Variable, ICloneable
     {
         private bool isIdentity;
         private bool isKey;
@@ -52,12 +52,28 @@ namespace Jhu.Graywulf.Schema
             InitializeMembers();
         }
 
+        public Column(string name, DataType type)
+        {
+            InitializeMembers();
+
+            this.Name = name;
+            this.DataType = type;
+        }
+
+        public Column(string name, Type type, short size)
+        {
+            InitializeMembers();
+
+            this.Name = name;
+            this.DataType = DataType.Create(type, size);
+        }
+
         /// <summary>
         /// Constructor that initializes the parent table or view
         /// </summary>
         /// <param name="parent"></param>
         public Column(DatabaseObject parent)
-            :base(parent)
+            : base(parent)
         {
             InitializeMembers();
         }
@@ -74,7 +90,7 @@ namespace Jhu.Graywulf.Schema
         public static Column Create(DataRow dr)
         {
             var column = new Column();
-            TypeUtil.CopyColumnFromSchemaTableRow(column, dr);
+            column.CopyFromSchemaTableRow(dr);
 
             return column;
         }
@@ -130,8 +146,17 @@ namespace Jhu.Graywulf.Schema
             dr[SchemaTableColumn.IsLong] = this.DataType.IsMaxLength;
             dr[SchemaTableOptionalColumn.IsReadOnly] = true;
             dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = this.DataType.Name;
+        }
 
-            
+        public void CopyFromSchemaTableRow(DataRow dr)
+        {
+            this.ID = (int)dr[SchemaTableColumn.ColumnOrdinal];
+            this.Name = (string)dr[SchemaTableColumn.ColumnName];
+            this.IsIdentity = dr[SchemaTableColumn.IsUnique] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.IsUnique];  //
+            this.IsKey = dr[SchemaTableColumn.IsKey] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.IsKey];  //
+            this.IsHidden = dr[SchemaTableOptionalColumn.IsHidden] == DBNull.Value ? false : (bool)dr[SchemaTableOptionalColumn.IsHidden];
+
+            this.DataType = DataType.Create(dr);
         }
     }
 }

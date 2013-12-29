@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Format
 {
@@ -47,7 +48,7 @@ namespace Jhu.Graywulf.Format
         /// <remarks>
         /// Characters and strings have to be quoted as may contain the separator character
         /// </remarks>
-        protected override FormattedDataFileBlockBase.FormatterDelegate GetFormatterDelegate(DataFileColumn column)
+        protected override FormattedDataFileBlockBase.FormatterDelegate GetFormatterDelegate(Column column)
         {
             var t = column.DataType.Type;
 

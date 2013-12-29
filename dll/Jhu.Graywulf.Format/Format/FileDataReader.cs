@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.Common;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Format
 {
@@ -172,7 +173,7 @@ namespace Jhu.Graywulf.Format
             return dt;
         }
 
-        private void AddSchemaTableColumn(DataTable dt, DataFileColumn col, int ordinal)
+        private void AddSchemaTableColumn(DataTable dt, Column col, int ordinal)
         {
             var dr = dt.NewRow();
 

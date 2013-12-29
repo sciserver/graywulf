@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Globalization;
+using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Types;
 using Jhu.Graywulf.IO;
 
@@ -95,7 +96,7 @@ namespace Jhu.Graywulf.Format
         /// <param name="parts"></param>
         /// <param name="cols"></param>
         /// <param name="colranks"></param>
-        protected void DetectColumnTypes(string[] parts, DataFileColumn[] cols, int[] colranks)
+        protected void DetectColumnTypes(string[] parts, Column[] cols, int[] colranks)
         {
             for (int i = 0; i < cols.Length; i++)
             {
@@ -171,7 +172,7 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Parsers, formatter and column recognition
 
-        private ParserDelegate GetParserDelegate(DataFileColumn column)
+        private ParserDelegate GetParserDelegate(Column column)
         {
             var t = column.DataType.Type;
 
@@ -344,7 +345,7 @@ namespace Jhu.Graywulf.Format
             throw new NotImplementedException();
         }
 
-        protected virtual FormatterDelegate GetFormatterDelegate(DataFileColumn column)
+        protected virtual FormatterDelegate GetFormatterDelegate(Column column)
         {
             var t = column.DataType.Type;
 
