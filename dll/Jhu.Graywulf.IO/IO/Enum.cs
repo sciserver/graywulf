@@ -5,12 +5,27 @@ using System.Text;
 
 namespace Jhu.Graywulf.IO
 {
-    [Flags]
-    public enum DestinationTableOperation
+    public enum DataFileMode
     {
-        Drop = 1,
-        Create = 2,
-        Clear = 4,
-        Append = 8
+        Unknown,
+        Read,
+        Write
+    }
+
+    public enum DataFileCompression
+    {
+        None,
+        Automatic,
+        BZip2,
+        GZip,
+        Zip
+    }
+
+    public enum DataFileArchival
+    {
+        None,
+        Automatic,
+        Tar,
+        Zip
     }
 }
