@@ -24,7 +24,9 @@ namespace Jhu.Graywulf.Format
 
             f.AppendBlock(b);
 
-            return f.OpenDataReader();
+            var cmd = new FileCommand(f);
+
+            return cmd.ExecuteReader();
         }
 
         [TestMethod]
@@ -116,7 +118,8 @@ namespace Jhu.Graywulf.Format
             f.AutoDetectColumnsCount = 100;
             f.GenerateIdentityColumn = true;
 
-            var dr = f.OpenDataReader();
+            var cmd = new FileCommand(f);
+            var dr = cmd.ExecuteReader();
 
             dr.Read();
             
@@ -184,9 +187,10 @@ namespace Jhu.Graywulf.Format
             f.Culture = System.Globalization.CultureInfo.InvariantCulture;
             f.AutoDetectColumns = true;
             f.AutoDetectColumnsCount = 100;
-            f.GenerateIdentityColumn = true;          
+            f.GenerateIdentityColumn = true;
 
-            var dr = f.OpenDataReader();
+            var cmd = new FileCommand(f);
+            var dr = cmd.ExecuteReader();
 
             dr.Read();
 
@@ -217,7 +221,8 @@ testline
             f.AutoDetectColumnsCount = 100;
             f.GenerateIdentityColumn = true;
 
-            var dr = f.OpenDataReader();
+            var cmd = new FileCommand(f);
+            var dr = cmd.ExecuteReader();
 
             dr.Read();
 
@@ -249,7 +254,8 @@ testline
             f.AutoDetectColumnsCount = 100;
             f.GenerateIdentityColumn = true;
 
-            var dr = f.OpenDataReader();
+            var cmd = new FileCommand(f);
+            var dr = cmd.ExecuteReader();
 
             Assert.AreEqual("__ID", dr.GetName(0));
             Assert.AreEqual("first", dr.GetName(1));

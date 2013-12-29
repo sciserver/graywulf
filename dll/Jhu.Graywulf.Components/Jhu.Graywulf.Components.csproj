@@ -45,6 +45,7 @@
     <Compile Include="Components\AssemblyNameComparer.cs" />
     <Compile Include="Components\Cache.cs" />
     <Compile Include="Components\CachedLazyDictionary.cs" />
+    <Compile Include="Components\DeepCopyUtil.cs" />
     <Compile Include="Components\ICacheable.cs" />
     <Compile Include="Components\LazyDictionary.cs" />
     <Compile Include="Components\LazyItemAddedEventArgs.cs" />

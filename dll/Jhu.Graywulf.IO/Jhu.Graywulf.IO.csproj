@@ -55,6 +55,7 @@
     <Compile Include="Format\DataFileBlockBase.cs" />
     <Compile Include="Format\DelimitedTextDataFile.cs" />
     <Compile Include="Format\DelimitedTextDataFileBlock.cs" />
+    <Compile Include="Format\FileCommand.cs" />
     <Compile Include="Format\FileDataReader.cs" />
     <Compile Include="Format\FileFormatDescription.cs" />
     <Compile Include="Format\FileFormatException.cs" />
@@ -84,6 +85,8 @@
     <Compile Include="IO\SharpZipLibWrapper\ZipInputStream.cs" />
     <Compile Include="IO\SharpZipLibWrapper\ZipOutputStream.cs" />
     <Compile Include="IO\StreamFactory.cs" />
+    <Compile Include="IO\Tasks\TableCopy.cs" />
+    <Compile Include="IO\Tasks\TableExport.cs" />
     <Compile Include="IO\Tasks\Enum.cs" />
     <Compile Include="IO\Tasks\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -91,6 +94,11 @@
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="IO\Tasks\FileCopy.cs" />
+    <Compile Include="IO\Tasks\TableImportBase.cs" />
+    <Compile Include="IO\Tasks\TableSourceTable.cs" />
+    <Compile Include="IO\Tasks\TableImport.cs" />
+    <Compile Include="IO\Tasks\TableSourceQuery.cs" />
+    <Compile Include="IO\Tasks\TableSourceBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

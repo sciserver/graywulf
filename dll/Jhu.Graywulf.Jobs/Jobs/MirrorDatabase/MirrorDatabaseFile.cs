@@ -8,7 +8,7 @@ using System.IO;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.RemoteService;
-using Jhu.Graywulf.IO;
+using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.MirrorDatabase
 {

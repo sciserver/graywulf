@@ -24,7 +24,9 @@ namespace Jhu.Graywulf.Format
 
             f.AppendBlock(b);
 
-            return f.OpenDataReader();
+            var cmd = new FileCommand(f);
+
+            return cmd.ExecuteReader();
         }
 
         private void ExecuteBulkInsert(FileDataReader dr)

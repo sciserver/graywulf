@@ -53,11 +53,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
-    <Compile Include="Jobs\ExportTable\ExportMaintenanceJob.cs" />
-    <Compile Include="Jobs\ExportTable\ExportTable.cs" />
-    <Compile Include="Jobs\ExportTable\ExportTableFactory.cs" />
-    <Compile Include="Jobs\ExportTable\ExportTableJob.cs" />
-    <Compile Include="Jobs\ExportTable\IExportJob.cs" />
     <Compile Include="Jobs\JobFactoryBase.cs" />
     <Compile Include="Jobs\MirrorDatabase\AttachDatabase.cs" />
     <Compile Include="Jobs\MirrorDatabase\DetachDatabase.cs" />
@@ -69,28 +64,7 @@
     <Compile Include="Jobs\MirrorDatabase\FindDatabaseInstanceFiles.cs" />
     <Compile Include="Jobs\MirrorDatabase\FindSourcesAndDestinations.cs" />
     <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseFile.cs" />
-    <Compile Include="Jobs\Query\ComputeTableStatistics.cs" />
-    <Compile Include="Jobs\Query\GeneratePartitions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Jobs\Query\AssignPartitionServerInstance.cs" />
-    <Compile Include="Jobs\Query\CheckDestinationTable.cs" />
-    <Compile Include="Jobs\Query\CopyRemoteTable.cs" />
-    <Compile Include="Jobs\Query\CopyResultset.cs" />
-    <Compile Include="Jobs\Query\DropTemporaryTables.cs" />
-    <Compile Include="Jobs\Query\Enum.cs" />
-    <Compile Include="Jobs\Query\ExecuteQuery.cs" />
-    <Compile Include="Jobs\Query\FindRemoteTables.cs" />
-    <Compile Include="Jobs\Query\InitializeQuery.cs" />
-    <Compile Include="Jobs\Query\IQueryJob.cs" />
-    <Compile Include="Jobs\Query\PrepareDestinationTable.cs" />
-    <Compile Include="Jobs\Query\QueryBase.cs" />
-    <Compile Include="Jobs\Query\QueryFactory.cs" />
-    <Compile Include="Jobs\Query\QueryObject.cs" />
-    <Compile Include="Jobs\Query\QueryPartitionBase.cs" />
-    <Compile Include="Jobs\Query\SqlQuery.cs" />
-    <Compile Include="Jobs\Query\SqlQueryFactory.cs" />
-    <Compile Include="Jobs\Query\SqlQueryJob.cs" />
-    <Compile Include="Jobs\Query\SqlQueryPartition.cs" />
     <Compile Include="Jobs\Test\TestDelay.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -105,12 +79,6 @@
   </ItemGroup>
   <ItemGroup>
     <XamlAppdef Include="Jobs\MirrorDatabase\MirrorDatabaseJob.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </XamlAppdef>
-  </ItemGroup>
-  <ItemGroup>
-    <XamlAppdef Include="Jobs\Query\SqlQueryJob.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </XamlAppdef>

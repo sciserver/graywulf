@@ -542,16 +542,6 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region DataReader and Writer functions
 
-        /// <summary>
-        /// Returns a FileDataReader that can iterate through the rows of
-        /// the data file.
-        /// </summary>
-        /// <returns></returns>
-        public FileDataReader OpenDataReader()
-        {
-            return new FileDataReader(this);
-        }
-
         public void WriteFromDataReader(IDataReader dr)
         {
             // TODO: this might change
