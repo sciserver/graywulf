@@ -9,7 +9,7 @@ using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
-    public abstract class FormattedDataFileBase : DataFileBase
+    public abstract class FormattedDataFileBase : DataFileBase, IDisposable, ICloneable
     {
         private Encoding encoding;
         private CultureInfo culture;
@@ -45,6 +45,12 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
+        protected FormattedDataFileBase(FormattedDataFileBase old)
+            : base(old)
+        {
+            CopyMembers(old);
+        }
+
         protected FormattedDataFileBase(Uri uri, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
             : base(uri, fileMode)
         {
@@ -69,6 +75,14 @@ namespace Jhu.Graywulf.Format
             this.culture = null;
             this.numberStyle = NumberStyles.Float;
             this.dateTimeStyle = DateTimeStyles.None;
+        }
+
+        private void CopyMembers(FormattedDataFileBase old)
+        {
+            this.encoding = (Encoding)old.encoding.Clone();
+            this.culture = (CultureInfo)old.culture.Clone();
+            this.numberStyle = old.numberStyle;
+            this.dateTimeStyle = old.dateTimeStyle;
         }
     }
 }

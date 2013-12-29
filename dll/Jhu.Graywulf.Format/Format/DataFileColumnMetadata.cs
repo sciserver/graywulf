@@ -6,7 +6,8 @@ using Jhu.Graywulf.Types;
 
 namespace Jhu.Graywulf.Format
 {
-    public class DataFileColumnMetadata : IVariableMetadata
+    [Serializable]
+    public class DataFileColumnMetadata : IVariableMetadata, ICloneable
     {
         private string summary;
         private string unit;
@@ -63,6 +64,11 @@ namespace Jhu.Graywulf.Format
             this.unit = old.unit;
             this.content = old.content;
             this.format = old.format;
+        }
+
+        public object Clone()
+        {
+            return new DataFileColumnMetadata(this);
         }
     }
 }

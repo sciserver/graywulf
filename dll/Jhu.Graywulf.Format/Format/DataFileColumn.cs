@@ -7,7 +7,8 @@ using Jhu.Graywulf.Types;
 
 namespace Jhu.Graywulf.Format
 {
-    public class DataFileColumn : IColumn
+    [Serializable]
+    public class DataFileColumn : IColumn, ICloneable
     {
         public static DataFileColumn Identity
         {
@@ -87,6 +88,11 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
+        public DataFileColumn(DataFileColumn old)
+        {
+            CopyMembers(old);
+        }
+
         public DataFileColumn(string name, DataType type)
         {
             InitializeMembers();
@@ -101,12 +107,6 @@ namespace Jhu.Graywulf.Format
 
             this.Name = name;
             this.DataType = DataType.Create(type, size);
-        }
-
-
-        public DataFileColumn(DataFileColumn old)
-        {
-            CopyMembers(old);
         }
 
         public static DataFileColumn Create(DataRow dr)
@@ -137,6 +137,11 @@ namespace Jhu.Graywulf.Format
             this.isIdentity = old.isIdentity;
             this.isKey = old.isKey;
             this.isHidden = old.isHidden;
+        }
+
+        public object Clone()
+        {
+            return new DataFileColumn(this);
         }
     }
 }

@@ -8,7 +8,8 @@ using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
-    public abstract class DataFileBlockBase
+    [Serializable]
+    public abstract class DataFileBlockBase : ICloneable
     {
         [NonSerialized]
         protected DataFileBase file;
@@ -46,8 +47,16 @@ namespace Jhu.Graywulf.Format
         private void CopyMembers(DataFileBlockBase old)
         {
             this.file = old.file;
-            this.columns = new List<DataFileColumn>(old.columns);
+
+            // Deep copy columns
+            this.columns = new List<DataFileColumn>();
+            foreach (var c in old.columns)
+            {
+                this.columns.Add((DataFileColumn)c.Clone());
+            }
         }
+
+        public abstract object Clone();
 
         #endregion
 

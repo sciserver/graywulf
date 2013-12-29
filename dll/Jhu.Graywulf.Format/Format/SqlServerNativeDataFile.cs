@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Format
     /// Reads and writes recordsets in SQL Server native format
     /// </summary>
     [Serializable]
-    public class SqlServerNativeDataFile : DataFileBase
+    public class SqlServerNativeDataFile : DataFileBase, ICloneable
     {
         #region Member variables
 
@@ -69,10 +69,16 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Constructors and initializers
 
-        protected SqlServerNativeDataFile()
+        public SqlServerNativeDataFile()
             : base()
         {
             InitializeMembers();
+        }
+
+        public SqlServerNativeDataFile(SqlServerNativeDataFile old)
+            : base(old)
+        {
+            CopyMembers(old);
         }
 
         public SqlServerNativeDataFile(Uri uri, DataFileMode fileMode)
@@ -97,6 +103,19 @@ namespace Jhu.Graywulf.Format
             this.ownsInputReader = false;
             this.outputWriter = null;
             this.ownsOutputWriter = false;
+        }
+
+        private void CopyMembers(SqlServerNativeDataFile old)
+        {
+            this.inputReader = null;
+            this.ownsInputReader = false;
+            this.outputWriter = null;
+            this.ownsOutputWriter = false;
+        }
+
+        public override object Clone()
+        {
+            return new SqlServerNativeDataFile(this);
         }
 
         #endregion

@@ -7,7 +7,7 @@ using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
-    public abstract class TextDataFileBlockBase : FormattedDataFileBlockBase
+    public abstract class TextDataFileBlockBase : FormattedDataFileBlockBase, ICloneable
     {
         [NonSerialized]
         private BufferedTextReader textBuffer;
@@ -30,7 +30,18 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
+        public TextDataFileBlockBase(TextDataFileBlockBase old)
+            : base(old)
+        {
+            CopyMembers(old);
+        }
+
         private void InitializeMembers()
+        {
+            this.textBuffer = new BufferedTextReader(File.TextReader);
+        }
+
+        private void CopyMembers(TextDataFileBlockBase old)
         {
             this.textBuffer = new BufferedTextReader(File.TextReader);
         }

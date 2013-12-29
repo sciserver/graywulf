@@ -97,6 +97,24 @@ namespace Jhu.Graywulf.RemoteService
             }
         }
 
-        //string[] QueryRegisteredServices();
+        [TestMethod]
+        public void QueryRegisteredServicesTest()
+        {
+            using (RemoteServiceTester.Instance.GetExclusiveToken())
+            {
+                // Make sure it's restarted
+                RemoteServiceTester.Instance.EnsureRunning();
+                RemoteServiceTester.Instance.Stop();
+
+                RemoteServiceTester.Instance.EnsureRunning();
+
+                var delay = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost);
+
+                var sc = RemoteServiceHelper.GetControlObject(Jhu.Graywulf.Test.Constants.Localhost);
+                var ss = sc.QueryRegisteredServices();
+
+                Assert.AreEqual(1, ss.Length);
+            }
+        }
     }
 }

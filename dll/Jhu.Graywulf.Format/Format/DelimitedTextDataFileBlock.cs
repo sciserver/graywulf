@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Format
 {
-    public class DelimitedTextDataFileBlock : TextDataFileBlockBase
+    public class DelimitedTextDataFileBlock : TextDataFileBlockBase, ICloneable
     {
         private DelimitedTextDataFile File
         {
@@ -18,9 +18,25 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
+        public DelimitedTextDataFileBlock(DelimitedTextDataFileBlock old)
+            : base(old)
+        {
+            CopyMembers(old);
+        }
+
         private void InitializeMembers()
         {
         }
+
+        private void CopyMembers(DelimitedTextDataFileBlock old)
+        {
+        }
+
+        public override object Clone()
+        {
+            return new DelimitedTextDataFileBlock(this);
+        }
+
         #region Column functions
 
         /// <summary>

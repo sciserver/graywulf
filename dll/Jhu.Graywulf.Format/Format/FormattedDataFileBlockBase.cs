@@ -8,7 +8,7 @@ using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
-    public abstract class FormattedDataFileBlockBase : DataFileBlockBase
+    public abstract class FormattedDataFileBlockBase : DataFileBlockBase, ICloneable
     {
         protected delegate bool ParserDelegate(string value, out object result);
         protected delegate string FormatterDelegate(object value, string format);
@@ -40,7 +40,17 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
+        public FormattedDataFileBlockBase(FormattedDataFileBlockBase old)
+            : base(old)
+        {
+            CopyMembers(old);
+        }
+
         private void InitializeMembers()
+        {
+        }
+
+        private void CopyMembers(FormattedDataFileBlockBase old)
         {
         }
 

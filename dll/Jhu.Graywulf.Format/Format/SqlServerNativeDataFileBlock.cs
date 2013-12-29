@@ -9,7 +9,7 @@ using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
-    public class SqlServerNativeDataFileBlock : DataFileBlockBase
+    public class SqlServerNativeDataFileBlock : DataFileBlockBase, ICloneable
     {
         private delegate void BinaryColumnWriterDelegate(BinaryWriter w, object value, DataType type);
 
@@ -26,8 +26,23 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
+        public SqlServerNativeDataFileBlock(SqlServerNativeDataFileBlock old)
+            : base(old)
+        {
+            CopyMembers(old);
+        }
+
         private void InitializeMembers()
         {
+        }
+
+        private void CopyMembers(SqlServerNativeDataFileBlock old)
+        {
+        }
+
+        public override object Clone()
+        {
+            return new SqlServerNativeDataFileBlock(this);
         }
 
         protected override void OnColumnsCreated()

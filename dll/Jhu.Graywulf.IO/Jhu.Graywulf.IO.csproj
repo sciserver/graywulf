@@ -42,30 +42,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IO\DataFileExporter.cs" />
-    <Compile Include="IO\DataFileImporter.cs" />
-    <Compile Include="IO\DestinationTableParameters.cs" />
-    <Compile Include="IO\Enum.cs" />
     <Compile Include="IO\ExceptionMessages.Designer.cs">
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="IO\FileCopy.cs" />
-    <Compile Include="IO\IDataFileExporter.cs" />
-    <Compile Include="IO\IDataFileImporter.cs" />
-    <Compile Include="IO\IQueryImporter.cs" />
-    <Compile Include="IO\ITableImporter.cs" />
-    <Compile Include="IO\QueryImporter.cs" />
-    <Compile Include="IO\SourceQueryParameters.cs" />
-    <Compile Include="IO\TableImporterBase.cs" />
+    <Compile Include="IO\TableSourceBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="IO\ExceptionMessages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
@@ -92,6 +76,12 @@
       <Project>{4DFC8F4C-C2FB-4AFB-B838-45A56F19FEAF}</Project>
       <Name>Jhu.Graywulf.SqlParser</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="IO\ExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Format
 {
+    [Serializable]
     public class FileFormatDescription
     {
         /// <summary>

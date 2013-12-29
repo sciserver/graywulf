@@ -11,7 +11,7 @@ using Jhu.Graywulf.IO;
 namespace Jhu.Graywulf.Format
 {
     [Serializable]
-    public class DelimitedTextDataFile : TextDataFileBase, IDisposable
+    public class DelimitedTextDataFile : TextDataFileBase, IDisposable, ICloneable
     {
         [NonSerialized]
         private bool isFirstBlock;
@@ -65,6 +65,12 @@ namespace Jhu.Graywulf.Format
             : base()
         {
             InitializeMembers();
+        }
+
+        protected DelimitedTextDataFile(DelimitedTextDataFile old)
+            : base(old)
+        {
+            CopyMembers(old);
         }
 
         public DelimitedTextDataFile(Uri uri, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
@@ -126,6 +132,20 @@ namespace Jhu.Graywulf.Format
             this.comment = '#';
             this.quote = '"';
             this.separator = ',';
+        }
+
+        private void CopyMembers(DelimitedTextDataFile old)
+        {
+            this.isFirstBlock = true;
+
+            this.comment = old.comment;
+            this.quote = old.quote;
+            this.separator = old.separator;
+        }
+
+        public override object Clone()
+        {
+            return new DelimitedTextDataFile(this);
         }
 
         #endregion

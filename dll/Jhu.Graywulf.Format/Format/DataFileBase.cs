@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Format
     /// Provides basic support for file-based DataReader implementations.
     /// </summary>
     [Serializable]
-    public abstract class DataFileBase : IDisposable
+    public abstract class DataFileBase : IDisposable, ICloneable
     {
         #region Private member variables
 
@@ -163,6 +163,11 @@ namespace Jhu.Graywulf.Format
             InitializeMembers();
         }
 
+        protected DataFileBase(DataFileBase old)
+        {
+            CopyMembers(old);
+        }
+
         /// <summary>
         /// Constructs a file and opens a stream automatically.
         /// </summary>
@@ -199,8 +204,29 @@ namespace Jhu.Graywulf.Format
 
             this.fileMode = DataFileMode.Unknown;
             this.uri = null;
+            this.generateIdentityColumn = false;
 
             this.blocks = new List<DataFileBlockBase>();
+            this.blockCounter = -1;
+        }
+
+        private void CopyMembers(DataFileBase old)
+        {
+            this.baseStream = null;
+            this.ownsBaseStream = false;
+
+            this.fileMode = old.fileMode;
+            this.uri = old.uri;
+            this.generateIdentityColumn = old.generateIdentityColumn;
+
+            // Deep copy of blocks
+            this.blocks = new List<DataFileBlockBase>();
+            foreach (var b in old.blocks)
+            {
+                var nb = (DataFileBlockBase)b.Clone();
+                this.blocks.Add((DataFileBlockBase)b.Clone());
+            }
+
             this.blockCounter = -1;
         }
 
@@ -208,6 +234,8 @@ namespace Jhu.Graywulf.Format
         {
             Close();
         }
+
+        public abstract object Clone();
 
         #endregion
         #region Stream open/close

@@ -10,7 +10,7 @@ using Jhu.Graywulf.IO;
 namespace Jhu.Graywulf.Format
 {
     [Serializable]
-    public abstract class TextDataFileBase : FormattedDataFileBase, IDisposable
+    public abstract class TextDataFileBase : FormattedDataFileBase, IDisposable, ICloneable
     {
         #region Member variables
 
@@ -25,8 +25,8 @@ namespace Jhu.Graywulf.Format
         private bool ownsOutputWriter;
 
         private int skipLinesCount;
-        private bool autoDetectColumns;
         private bool columnNamesInFirstLine;
+        private bool autoDetectColumns;
         private int autoDetectColumnsCount;
 
         #endregion
@@ -38,16 +38,16 @@ namespace Jhu.Graywulf.Format
             set { skipLinesCount = value; }
         }
 
-        public bool AutoDetectColumns
-        {
-            get { return autoDetectColumns; }
-            set { autoDetectColumns = value; }
-        }
-
         public bool ColumnNamesInFirstLine
         {
             get { return columnNamesInFirstLine; }
             set { columnNamesInFirstLine = value; }
+        }
+
+        public bool AutoDetectColumns
+        {
+            get { return autoDetectColumns; }
+            set { autoDetectColumns = value; }
         }
 
         public int AutoDetectColumnsCount
@@ -72,6 +72,12 @@ namespace Jhu.Graywulf.Format
         protected TextDataFileBase()
         {
             InitializeMembers();
+        }
+
+        protected TextDataFileBase(TextDataFileBase old)
+            : base(old)
+        {
+            CopyMembers(old);
         }
 
         protected TextDataFileBase(Uri uri, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
@@ -112,7 +118,22 @@ namespace Jhu.Graywulf.Format
 
             this.skipLinesCount = 0;
             this.columnNamesInFirstLine = true;
+            this.autoDetectColumns = true;
             this.autoDetectColumnsCount = 1000;
+        }
+
+        private void CopyMembers(TextDataFileBase old)
+        {
+            this.inputReader = null;
+            this.ownsInputReader = false;
+
+            this.outputWriter = null;
+            this.ownsOutputWriter = false;
+
+            this.skipLinesCount = old.skipLinesCount;
+            this.columnNamesInFirstLine = old.columnNamesInFirstLine;
+            this.autoDetectColumns = old.autoDetectColumns;
+            this.autoDetectColumnsCount = old.autoDetectColumnsCount;
         }
 
         public override void Dispose()
@@ -164,7 +185,7 @@ namespace Jhu.Graywulf.Format
                 // Wrap underlying stream, so it doesn't get disposed automatically
                 if (base.Encoding == null)
                 {
-                    inputReader = new StreamReader(new DetachedStream( base.BaseStream));
+                    inputReader = new StreamReader(new DetachedStream(base.BaseStream));
                 }
                 else
                 {
