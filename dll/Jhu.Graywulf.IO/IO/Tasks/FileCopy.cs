@@ -9,7 +9,7 @@ using System.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Tasks;
 
-namespace Jhu.Graywulf.IO
+namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
     [RemoteServiceClass(typeof(FileCopy))]

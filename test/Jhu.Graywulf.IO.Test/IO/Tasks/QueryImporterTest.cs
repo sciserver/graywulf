@@ -8,7 +8,7 @@ using Jhu.Graywulf.Test;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.RemoteService;
 
-namespace Jhu.Graywulf.IO
+namespace Jhu.Graywulf.IO.Tasks
 {
     [TestClass]
     public class QueryImporterTest : TestClassBase

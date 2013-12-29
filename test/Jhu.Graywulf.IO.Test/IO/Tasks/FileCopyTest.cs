@@ -8,7 +8,7 @@ using Jhu.Graywulf.IO;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Test;
 
-namespace Jhu.Graywulf.IO
+namespace Jhu.Graywulf.IO.Tasks
 {
     [TestClass]
     [DeploymentItem("ese.dll")]

@@ -40,6 +40,7 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
@@ -47,20 +48,20 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IO\DataFileExporterTest.cs" />
-    <Compile Include="IO\DataFileImporterTest.cs" />
-    <Compile Include="IO\FileCopyTest.cs" />
-    <Compile Include="IO\QueryImporterTest.cs" />
+    <Compile Include="Format\BulkInsertTest.cs" />
+    <Compile Include="Format\CsvFileReaderTest.cs" />
+    <Compile Include="Format\CsvFileWriterTest.cs" />
+    <Compile Include="Format\FileFormatFactoryTest.cs" />
+    <Compile Include="Format\SqlServerNativeDataFileWriterTest.cs" />
+    <Compile Include="Format\StraightBitConverterTest.cs" />
+    <Compile Include="Format\SwapBitConverterTest.cs" />
+    <Compile Include="IO\StreamFactoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Format\Jhu.Graywulf.Format.csproj">
-      <Project>{AAF4C238-C3A9-422F-BE3F-6FF10D9D0062}</Project>
-      <Name>Jhu.Graywulf.Format</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.IO\Jhu.Graywulf.IO.csproj">
       <Project>{6797ED88-1D8C-491B-A036-4C42C4BF2EAF}</Project>
@@ -86,6 +87,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="App.original.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="IO\Tasks\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

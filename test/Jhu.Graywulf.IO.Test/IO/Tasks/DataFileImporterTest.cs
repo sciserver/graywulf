@@ -9,7 +9,7 @@ using Jhu.Graywulf.Format;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Test;
 
-namespace Jhu.Graywulf.IO
+namespace Jhu.Graywulf.IO.Tasks
 {
     [TestClass]
     public class DataFileImporterTest : TestClassBase
