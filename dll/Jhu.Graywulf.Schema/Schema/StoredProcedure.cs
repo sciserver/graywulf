@@ -13,7 +13,6 @@ namespace Jhu.Graywulf.Schema
     /// Reflects a stored procedure
     /// </summary>
     [Serializable]
-    [DataContract(Namespace = "")]
     public class StoredProcedure : DatabaseObject, IParameters, ICloneable
     {
         private LazyProperty<ConcurrentDictionary<string, Parameter>> parameters;
@@ -41,7 +40,7 @@ namespace Jhu.Graywulf.Schema
         public StoredProcedure()
             : base()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -51,7 +50,7 @@ namespace Jhu.Graywulf.Schema
         public StoredProcedure(DatasetBase dataset)
             : base(dataset)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -67,7 +66,8 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Initializes member variables to their default values
         /// </summary>
-        private void InitializeMembers()
+        [OnSerializing]
+        private void InitializeMembers(StreamingContext context)
         {
             this.ObjectType = DatabaseObjectType.StoredProcedure;
             this.parameters = new LazyProperty<ConcurrentDictionary<string, Parameter>>(LoadParameters);

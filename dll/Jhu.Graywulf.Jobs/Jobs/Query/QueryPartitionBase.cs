@@ -15,6 +15,7 @@ using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.SqlParser.SqlCodeGen;
 using Jhu.Graywulf.IO;
+using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -37,6 +38,7 @@ namespace Jhu.Graywulf.Jobs.Query
         private Dictionary<string, TableReference> remoteTableReferences;
 
         #endregion
+        #region Properties
 
         public int ID
         {
@@ -71,6 +73,7 @@ namespace Jhu.Graywulf.Jobs.Query
             get { return remoteTableReferences; }
         }
 
+        #endregion
         #region Constructors and initializer functions
 
         public QueryPartitionBase()
@@ -123,6 +126,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         #endregion
 
+        /* TODO: delete
         protected void LoadTemporaryDatabaseInstance(bool forceReinitialize)
         {
             if (!AssignedServerInstanceReference.IsEmpty && (TemporaryDatabaseInstanceReference.IsEmpty || forceReinitialize))
@@ -152,6 +156,37 @@ namespace Jhu.Graywulf.Jobs.Query
             else if (AssignedServerInstanceReference.IsEmpty)
             {
                 TemporaryDatabaseInstanceReference.Value = null;
+            }
+        }*/
+
+        protected void LoadSystemDatabaseInstance(EntityProperty<DatabaseInstance> databaseInstance, GraywulfDataset dataset, bool forceReinitialize)
+        {
+            if (!AssignedServerInstanceReference.IsEmpty && (databaseInstance.IsEmpty || forceReinitialize))
+            {
+                dataset.Context = Context;
+                var dd = dataset.DatabaseVersion.Value.DatabaseDefinition;
+
+                dd.LoadDatabaseInstances(false);
+                foreach (var di in dd.DatabaseInstances.Values)
+                {
+                    di.Context = Context;
+                }
+
+                // Find database instance that is on the same machine
+                try
+                {
+                    // TODO: only server instance and database definition is checked here, maybe database version would be better
+                    databaseInstance.Value = dd.DatabaseInstances.Values.FirstOrDefault(ddi => ddi.ServerInstanceReference.Guid == AssignedServerInstance.Guid);
+                    databaseInstance.Value.GetConnectionString();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Cannot determine system database", ex); // TODO ***
+                }
+            }
+            else if (AssignedServerInstanceReference.IsEmpty)
+            {
+                databaseInstance.Value = null;
             }
         }
 
@@ -209,10 +244,10 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public Table GetOutputTable()
         {
-            return GetTemporaryTable("output");
+            return GetTemporaryTable("output"); // *** TODO
         }
 
-        protected void LoadCodeDatabaseInstance(bool forceReinitialize)
+        /*protected void LoadCodeDatabaseInstance(bool forceReinitialize)
         {
             // *** TODO: merge with LoadTemporaryDatabaseInstance
 
@@ -244,7 +279,7 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 CodeDatabaseInstanceReference.Value = null;
             }
-        }
+        }*/
 
         /// <summary>
         /// Interprets the parsed query
@@ -252,7 +287,7 @@ namespace Jhu.Graywulf.Jobs.Query
         protected override void FinishInterpret(bool forceReinitialize)
         {
             // --- Retrieve target table information
-            IntoClause into = SelectStatement.FindDescendantRecursive<IntoClause>();
+            var into = SelectStatement.FindDescendantRecursive<IntoClause>();
             if (into != null)
             {
                 // remove into clause from query
@@ -261,7 +296,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             // Cache table source references
             tableSourceReferences = new Dictionary<string, TableReference>();
-            foreach (TableReference tr in SelectStatement.EnumerateSourceTableReferences(true))
+            foreach (var tr in SelectStatement.EnumerateSourceTableReferences(true))
             {
                 tableSourceReferences.Add(tr.UniqueName, tr);
             }
@@ -282,8 +317,10 @@ namespace Jhu.Graywulf.Jobs.Query
                 case ExecutionMode.SingleServer:
                     break;
                 case ExecutionMode.Graywulf:
-                    LoadTemporaryDatabaseInstance(forceReinitialize);
-                    LoadCodeDatabaseInstance(forceReinitialize);
+                    LoadSystemDatabaseInstance(TemporaryDatabaseInstanceReference, (GraywulfDataset)query.TemporaryDataset, forceReinitialize);
+                    LoadSystemDatabaseInstance(CodeDatabaseInstanceReference, (GraywulfDataset)query.CodeDataset, forceReinitialize);
+                    // TODO: delete LoadTemporaryDatabaseInstance(forceReinitialize);
+                    // TODO: delete LoadCodeDatabaseInstance(forceReinitialize);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -292,8 +329,11 @@ namespace Jhu.Graywulf.Jobs.Query
             base.InitializeQueryObject(context, scheduler, forceReinitialize);
         }
 
+        #region Remote table caching functions
+
         /// <summary>
-        /// Finds those tables that are required to copy from a remote source
+        /// Finds those tables that are required to execute the query but had to be
+        /// copied from a remote source
         /// </summary>
         /// <returns></returns>
         public void FindRemoteTableReferences()
@@ -317,58 +357,61 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        public SourceQueryParameters PrepareCopyRemoteTable(TableReference table)
+        /// <summary>
+        /// Composes a source query for a remote table
+        /// </summary>
+        /// <param name="table"></param>
+        /// <returns></returns>
+        public TableSourceQuery PrepareCopyRemoteTable(TableReference table)
         {
-            // Load schema
+            // -- Load schema
             var sm = this.GetSchemaManager(false);
             var ds = sm.Datasets[table.DatasetName];
 
-            // Graywulf dataset is to be converted to prevent registry access
+            // Graywulf dataset has to be converted to prevent registry access
             if (ds is GraywulfDataset)
             {
                 ds = new SqlServerDataset(ds);
             }
 
-            var source = new SourceQueryParameters();
-
-            source.Dataset = ds;
+            // --- Generate most restrictive query
 
             // Find the query specification this table belongs to
             var qs = ((TableSource)table.Node).QuerySpecification;
 
-            // Run the normalizer
+            // Run the normalizer to convert where clause to a normal form
             var cnr = new SearchConditionNormalizer();
             cnr.NormalizeQuerySpecification(qs);
 
             var cg = SqlCodeGeneratorFactory.CreateCodeGenerator(ds);
-            source.Query = cg.GenerateMostRestrictiveTableQuery(table, true, 0);
+            var sql = cg.GenerateMostRestrictiveTableQuery(table, true, 0);
 
-            return source;
+            return new TableSourceQuery()
+            {
+                Dataset = ds,
+                Query = sql
+            };
         }
 
-        public void CopyRemoteTable(TableReference table, SourceQueryParameters source)
+        /// <summary>
+        /// Copies a table from a remote data source by creating and
+        /// executing a table copy task.
+        /// </summary>
+        /// <param name="table"></param>
+        /// <param name="source"></param>
+        public void CopyRemoteTable(TableReference table, TableSourceQuery source)
         {
-            // Temp table name
+            // Create a target table name
             var temptable = GetTemporaryTable(table.EscapedUniqueName);
             TemporaryTables.TryAdd(table.UniqueName, temptable);
 
-            var destination = new DestinationTableParameters()
-            {
-                Table = temptable,
-                Operation = DestinationTableOperation.Drop | DestinationTableOperation.Create,
-            };
-
-            var bcp = CreateQueryImporter(source, destination, false);
-            bcp.Source = source;
-            bcp.Destination = destination;
-
-            // TODO: delete if works without this line, table's created on execute three lines below
-            //bcp.CreateDestinationTable();
+            var tc = CreateTableCopyTask(source, temptable, false);
+            tc.Options = TableInitializationOptions.Drop | TableInitializationOptions.Create;
 
             var guid = Guid.NewGuid();
-            RegisterCancelable(guid, bcp);
+            RegisterCancelable(guid, tc);
 
-            bcp.Execute();
+            tc.Execute();
 
             UnregisterCancelable(guid);
         }
@@ -383,11 +426,6 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             if (RemoteTableReferences.ContainsKey(tr.UniqueName))
             {
-                /*return String.Format("[{0}].[{1}].[{2}]",
-                    GetTemporaryDatabaseConnectionString().InitialCatalog,
-                    Query.TemporarySchemaName,
-                    TemporaryTables[table.UniqueName]);*/
-
                 var table = TemporaryTables[tr.UniqueName];
 
                 return String.Format("[{0}].[{1}].[{2}]",
@@ -401,6 +439,30 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        #endregion
+        #region Destination table functions and final query execution
+
+        /// <summary>
+        /// Generates the query that can be used in the final execution step
+        /// </summary>
+        /// <returns></returns>
+        protected abstract string GetOutputQueryText();
+
+        /// <summary>
+        /// Gets a query that can be used to figure out the schema of
+        /// the destination table.
+        /// </summary>
+        /// <returns></returns>
+        public virtual TableSourceQuery GetOutputSourceQuery()
+        {
+            return new TableSourceQuery()
+            {
+                Dataset = GetTemporaryDatabaseDataset(),
+                Query = GetOutputQueryText()
+            };
+        }
+
+        /*
         public virtual DatasetBase GetDestinationTableSchemaSourceDataset()
         {
             return new SqlServerDataset()
@@ -446,51 +508,7 @@ namespace Jhu.Graywulf.Jobs.Query
             cg.Execute(sw, SelectStatement);
             return sw.ToString();
         }
-
-        public virtual void PrepareExecuteQuery(Context context, IScheduler scheduler)
-        {
-            InitializeQueryObject(context, scheduler);
-        }
-
-        protected abstract string GetOutputSelectQuery();
-
-        public void ExecuteQuery()
-        {
-            DestinationTableParameters destination;
-
-            SourceQueryParameters source = new SourceQueryParameters()
-            {
-                Query = GetOutputSelectQuery(),
-                Timeout = Query.QueryTimeout,
-            };
-
-            switch (Query.ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    // In single-server mode results are directly written into destination table
-                    source.Dataset = Query.Destination.Table.Dataset;
-                    destination = Query.Destination;
-                    break;
-                case ExecutionMode.Graywulf:
-                    // In graywulf mode results are written into a temporary table first
-                    var temptable = GetOutputTable();
-                    TemporaryTables.TryAdd(temptable.TableName, temptable);
-                    DropTableOrView(temptable);     // TODO: not needed
-
-                    source.Dataset = AssignedServerInstance.GetDataset();
-
-                    destination = new DestinationTableParameters()
-                    {
-                        Operation = DestinationTableOperation.Append,       // TODO: change to drop
-                        Table = temptable
-                    };
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            ExecuteSelectInto(source, destination);
-        }
+         * */
 
         /// <summary>
         /// Creates or truncates destination table in the output database (usually MYDB)
@@ -505,7 +523,7 @@ namespace Jhu.Graywulf.Jobs.Query
             switch (query.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
-                    // Output is already written to target table
+                    // Output is already written to the target table
                     break;
                 case Jobs.Query.ExecutionMode.Graywulf:
                     {
@@ -516,16 +534,14 @@ namespace Jhu.Graywulf.Jobs.Query
                             // Only initialize target table if it's still uninitialzed
                             if (!query.IsDestinationTableInitialized)
                             {
-                                var source = new SourceQueryParameters()
-                                {
-                                    Query = GetDestinationTableSchemaSourceQuery(),
-                                    Dataset = GetDestinationTableSchemaSourceDataset(),
-                                    Timeout = Query.QueryTimeout
-                                };
+                                var source = GetOutputSourceQuery();
 
+                                query.Destination.Initialize(source.GetSchemaTable(), query.DestinationInitializationOptions);
+
+                                // TODO: delete all this crap
                                 // TODO: this is screwed up here
                                 // drop table in every partition... call it only once
-
+                                /*
                                 if ((query.Destination.Operation & DestinationTableOperation.Drop) != 0)
                                 {
                                     DropTableOrView(query.Destination.Table);
@@ -551,6 +567,7 @@ namespace Jhu.Graywulf.Jobs.Query
                                 {
                                     throw new NotImplementedException();
                                 }
+                                */
                             }
 
                             query.IsDestinationTableInitialized = true;
@@ -562,10 +579,44 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        public virtual void PrepareExecuteQuery(Context context, IScheduler scheduler)
+        {
+            InitializeQueryObject(context, scheduler);
+        }
+
+        public void ExecuteQuery()
+        {
+            var source = GetOutputSourceQuery();
+            Table destination;
+
+            switch (Query.ExecutionMode)
+            {
+                case ExecutionMode.SingleServer:
+                    // In single-server mode results are directly written into destination table
+                    // TODO: delete source = Query.Destination.Table.Dataset;
+                    destination = Query.Destination;
+                    break;
+                case ExecutionMode.Graywulf:
+                    // TODO: delete source = AssignedServerInstance.GetDataset();    
+                
+                    // In graywulf mode results are written into a temporary table first
+                    destination = GetOutputTable();
+                    TemporaryTables.TryAdd(destination.TableName, destination);
+
+                    // Drop destination table, in case it already exists for some reason
+                    destination.Drop();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            ExecuteSelectInto(source, destination, Query.QueryTimeout);
+        }
+
         public virtual void PrepareCopyResultset(Context context)
         {
             query.InitializeQueryObject(context);
-            InitializeQueryObject(context);
+            this.InitializeQueryObject(context);
         }
 
         /// <summary>
@@ -584,20 +635,37 @@ namespace Jhu.Graywulf.Jobs.Query
                         var temptable = GetOutputTable();
 
                         sql = String.Format(sql, temptable.DatabaseName, temptable.SchemaName, temptable.TableName);
+                        DumpSqlCommand(sql);
 
-                        var source = new SourceQueryParameters()
+                        var source = new TableSourceQuery()
                         {
                             Dataset = temptable.Dataset,
-                            Query = sql,
-                            Timeout = Query.QueryTimeout,
+                            Query = sql
                         };
 
+                        // Create bulk copy task and execute it
+
+                        var tc = CreateTableCopyTask(source, Query.Destination, false);
+
+                        // Change destination to Append, output table has already been created,
+                        // partitions only append to it
+                        tc.Options = TableInitializationOptions.Append;
+
+                        var guid = Guid.NewGuid();
+                        RegisterCancelable(guid, tc);
+
+                        tc.Execute();
+
+                        UnregisterCancelable(guid);
+
+                        /* TODO: delete
                         // Change destination to Append, output table has already been created,
                         // partitions only append to it
                         var destination = new DestinationTableParameters(Query.Destination);
                         destination.Operation = DestinationTableOperation.Append;
 
                         ExecuteBulkCopy(source, destination, false, Query.QueryTimeout);
+                         * */
                     }
                     break;
                 default:
@@ -605,11 +673,14 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        #endregion
+        #region Clean-up functions
+
         public void DropTemporaryTables()
         {
             foreach (var table in TemporaryTables.Values)
             {
-                DropTableOrView(table);
+                table.Drop();
             }
 
             TemporaryTables.Clear();
@@ -619,11 +690,14 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             foreach (var view in TemporaryViews.Values)
             {
-                DropTableOrView(view);
+                view.Drop();
             }
 
             TemporaryViews.Clear();
         }
+
+        #endregion
+        #region Query dump functions
 
         private string GetDumpFileName()
         {
@@ -666,41 +740,15 @@ namespace Jhu.Graywulf.Jobs.Query
 #endif
         }
 
-#if false
-        protected void DropTemporaryTable(string temptable)
-        {
-            DropTable(GetTemporaryDatabaseConnectionString().ConnectionString,
-                      GetTemporaryDatabaseConnectionString().InitialCatalog,
-                      query.TemporarySchemaName,
-                      temptable);
-        }
-#endif
+        #endregion
+        #region Actual query execution functions
 
         protected void ExecuteSqlCommandOnTemporaryDatabase(string sql)
         {
-            DumpSqlCommand(sql);
-
-            SqlConnectionStringBuilder cs = GetTemporaryDatabaseConnectionString();
-
-            using (SqlConnection cn = new SqlConnection(cs.ConnectionString))
+            using (var cmd = new SqlCommand())
             {
-                cn.Open();
-
-                using (SqlCommand cmd = new SqlCommand(sql, cn))
-                {
-                    cmd.CommandTimeout = query.QueryTimeout;
-                    // Tamas [2009-05-15]: for joining self
-                    // TODO: it's fixed, must work, remove try catch
-                    try
-                    {
-                        ExecuteLongCommandNonQuery(cmd);
-                    }
-                    catch (SqlException ex)
-                    {
-                        if (!ex.Message.StartsWith(@"There is already an object named 'user_"))
-                            throw ex;
-                    }
-                }
+                cmd.CommandText = sql;
+                ExecuteSqlCommandOnTemporaryDatabase(cmd);
             }
         }
 
@@ -708,9 +756,9 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             DumpSqlCommand(cmd);
 
-            SqlConnectionStringBuilder cs = GetTemporaryDatabaseConnectionString();
+            var csb = GetTemporaryDatabaseConnectionString();
 
-            using (SqlConnection cn = new SqlConnection(cs.ConnectionString))
+            using (SqlConnection cn = new SqlConnection(csb.ConnectionString))
             {
                 cn.Open();
 
@@ -725,29 +773,19 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             DumpSqlCommand(cmd);
 
-            SqlConnectionStringBuilder cs;
-            switch (query.ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    cs = GetTemporaryDatabaseConnectionString();
-                    break;
-                case ExecutionMode.Graywulf:
-                    cs = TemporaryDatabaseInstanceReference.Value.GetConnectionString();
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
+            var csb = GetTemporaryDatabaseConnectionString();
 
-            using (SqlConnection cn = new SqlConnection(cs.ConnectionString))
+            using (var cn = new SqlConnection(csb.ConnectionString))
             {
                 cn.Open();
 
                 cmd.Connection = cn;
-
                 cmd.CommandTimeout = query.QueryTimeout;
 
                 return ExecuteLongCommandScalar(cmd);
             }
         }
+
+        #endregion
     }
 }

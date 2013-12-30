@@ -59,6 +59,17 @@ namespace Jhu.Graywulf.IO.Tasks
         }
     }
 
+    /// <summary>
+    /// Implements functions to export tables into data files in a batch.
+    /// </summary>
+    /// <remarks>
+    /// TableExporter can export multiple files in a batch into a directory
+    /// or an archive. Source queries and file formats have to be specified
+    /// in the Sources and Destinations properties, respectively. The file
+    /// format class will determine the format of the output and the name
+    /// of the file. To export into an archive the value of the Archival
+    /// property has to be set to Zip, and to None to export into a directory.
+    /// </remarks>
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
@@ -153,7 +164,7 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 if (archival == DataFileArchival.None)
                 {
-                    // No stream opened
+                    // No stream to open
                     // Path will be treated as directory path
                     output = null;
                 }
@@ -188,12 +199,12 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void ExportTable(TableSourceQuery source, DataFileBase destination, Stream output)
         {
+            // Individual files have to opened differently when writing into
+            // an archive and when not. For archives, create a new entry for the
+            // file based on it's own filename.
+
             try
             {
-                // Individual files have to openned differently when writing into
-                // an archive and when not. For archives, create a new entry for the
-                // file based on it's own filename.
-
                 if (output is IArchiveOutputStream)
                 {
                     // Files are saved into an archive

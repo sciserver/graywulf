@@ -15,8 +15,40 @@ using System.Threading;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
+    [NetDataContract]
     public interface ITableImportBase : IRemoteService
     {
+        Table[] Destinations
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
+
+        TableInitializationOptions Options
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
+
+        int BatchSize
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
+
+        int Timeout
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
     }
 
     [ServiceBehavior(
@@ -25,7 +57,7 @@ namespace Jhu.Graywulf.IO.Tasks
     public abstract class TableImportBase : RemoteServiceBase, ITableImportBase, ICloneable
     {
         private Table[] destinations;
-        private DestinationTableOperation operation;
+        private TableInitializationOptions options;
         private int batchSize;
         private int timeout;
 
@@ -40,10 +72,10 @@ namespace Jhu.Graywulf.IO.Tasks
             set { destinations = value; }
         }
 
-        public DestinationTableOperation Operation
+        public TableInitializationOptions Options
         {
-            get { return operation; }
-            set { operation = value; }
+            get { return options; }
+            set { options = value; }
         }
 
         public int BatchSize
@@ -71,7 +103,7 @@ namespace Jhu.Graywulf.IO.Tasks
         private void InitializeMembers()
         {
             this.destinations = null;
-            this.operation = DestinationTableOperation.Append;
+            this.options = TableInitializationOptions.Append;
             this.batchSize = 10000;
             this.timeout = 1000;    // *** TODO: use constant or setting
         }
@@ -79,7 +111,7 @@ namespace Jhu.Graywulf.IO.Tasks
         private void CopyMembers(TableImportBase old)
         {
             this.destinations = Util.DeepCopy.CopyArray(old.destinations);
-            this.operation = old.operation;
+            this.options = old.options;
             this.batchSize = old.batchSize;
             this.timeout = old.timeout;
         }
@@ -94,55 +126,11 @@ namespace Jhu.Graywulf.IO.Tasks
 
             ccmd.ExecuteReader(dr =>
             {
-                PrepareDestinationTable(dr, destination);
+                destination.Initialize(dr.GetSchemaTable(), options);
                 ExecuteBulkCopy(dr, destination);
             });
 
             UnregisterCancelable(guid);
-        }
-
-        private void PrepareDestinationTable(IDataReader dr, Table destination)
-        {
-            if ((Operation & DestinationTableOperation.Drop) != 0)
-            {
-                destination.Drop();
-            }
-
-            // *** TODO: implement other options
-            if ((Operation & DestinationTableOperation.Append) != 0)
-            {
-                // TODO: compare schema
-            }
-            else if ((Operation & DestinationTableOperation.Create) != 0)
-            {
-                CreateDestinationTable(dr.GetSchemaTable(), destination);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        /// <summary>
-        /// Creates the destination table
-        /// </summary>
-        /// <param name="schemaTable"></param>
-        private void CreateDestinationTable(DataTable schemaTable, Table destination)
-        {
-            // Generate create table SQL
-            var cg = new SqlServerCodeGenerator();
-            var sql = cg.GenerateCreateDestinationTableQuery(schemaTable, destination);
-
-            // Execute CREATE TABLE query on destination
-            using (var cn = new SqlConnection(destination.Dataset.ConnectionString))
-            {
-                cn.Open();
-
-                using (var cmd = new SqlCommand(sql, cn))
-                {
-                    cmd.ExecuteNonQuery();
-                }
-            }
         }
 
         /// <summary>
@@ -151,6 +139,8 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <param name="dr"></param>
         protected void ExecuteBulkCopy(IDataReader dr, Table destination)
         {
+            // TODO: it can only import the first resultset from dr
+
             isBulkCopyCanceled = false;
             bulkCopyFinishedEvent = new AutoResetEvent(false);
 
@@ -191,5 +181,36 @@ namespace Jhu.Graywulf.IO.Tasks
 
             base.Cancel();
         }
+
+        /*
+        /// <summary>
+        /// Creates the destination table
+        /// </summary>
+        /// <param name="schemaTable"></param>
+        public static void CreateDestinationTable(DataTable schemaTable, Table destination)
+        {
+            // Generate create table SQL
+            var cg = new SqlServerCodeGenerator();
+            var sql = cg.GenerateCreateDestinationTableQuery(schemaTable, destination);
+
+            // Execute CREATE TABLE query on destination
+            using (var cn = new SqlConnection(destination.Dataset.ConnectionString))
+            {
+                cn.Open();
+
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        protected void TruncateTable(Table table)
+        {
+            // TODO: move this to schema eventually
+            string sql = String.Format("TRUNCATE TABLE [{0}].[{1}]", table.SchemaName, table.TableName);
+
+            ExecuteCommandNonQuery(sql, table.Dataset.ConnectionString);
+        }*/
     }
 }

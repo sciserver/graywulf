@@ -13,7 +13,6 @@ namespace Jhu.Graywulf.Schema
     /// Reflects a table or view column
     /// </summary>
     [Serializable]
-    [DataContract(Namespace = "")]
     public class Column : Variable, ICloneable
     {
         private bool isIdentity;

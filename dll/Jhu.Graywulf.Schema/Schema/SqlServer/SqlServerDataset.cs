@@ -240,6 +240,21 @@ WHERE o.type IN ({0}) AND
             }
         }
 
+        internal override bool IsObjectExisting(DatabaseObject databaseObject)
+        {
+            var sql = @"SELECT OBJECT_ID('{0}')";
+
+            sql = String.Format(sql, databaseObject.GetFullyResolvedName());
+
+            using (var cn = OpenConnection())
+            {
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    return cmd.ExecuteScalar() != null;
+                }
+            }
+        }
+
         /// <summary>
         /// Loads all database objects of type T belonging to the dataset.
         /// </summary>
@@ -867,6 +882,11 @@ CREATE TABLE {0}
 
         internal override void TruncateTable(Table table)
         {
+            if (!IsMutable)
+            {
+                throw new InvalidOperationException();
+            }
+
             var sql = String.Format("TRUNCATE TABLE {0}", table.GetFullyResolvedName());
 
             using (var cn = OpenConnection())

@@ -89,17 +89,21 @@ namespace Jhu.Graywulf.Schema
             return new Table(this);
         }
 
-        public void Initialize(TableInitializationOptions options)
+        public void Initialize(DataTable schemaTable, TableInitializationOptions options)
         {
             if ((options & TableInitializationOptions.Drop) != 0)
             {
                 Drop();
             }
 
-            // *** TODO: implement other options
+            LoadColumnsFromSchemaTable(schemaTable);
+
             if ((options & TableInitializationOptions.Append) != 0)
             {
-                // TODO: compare schema
+                if (!VerifyColumns())
+                {
+                    throw new Exception();  // *** TODO
+                }
             }
             else if ((options & TableInitializationOptions.Create) != 0)
             {
@@ -107,7 +111,13 @@ namespace Jhu.Graywulf.Schema
             }
             else
             {
+                // *** TODO: implement other options
                 throw new NotImplementedException();
+            }
+
+            if ((options & TableInitializationOptions.Clear) != 0)
+            {
+                Truncate();
             }
         }
 
@@ -150,6 +160,18 @@ namespace Jhu.Graywulf.Schema
             }
 
             return true;
+        }
+
+        public void LoadColumnsFromSchemaTable(DataTable schemaTable)
+        {
+            Columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
+
+            foreach (DataRow dr in schemaTable.Rows)
+            {
+                var c = Column.Create(dr);
+
+                Columns.TryAdd(c.Name, c);
+            }
         }
     }
 }

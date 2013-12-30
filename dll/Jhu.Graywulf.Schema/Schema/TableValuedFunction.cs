@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Schema
 {
@@ -15,11 +16,8 @@ namespace Jhu.Graywulf.Schema
     [DataContract(Namespace = "")]
     public class TableValuedFunction : DatabaseObject, IColumns, IParameters, ICloneable
     {
-        private bool isColumnsLoaded;
-        private ConcurrentDictionary<string, Column> columns;
-
-        private bool isParametersLoaded;
-        private ConcurrentDictionary<string, Parameter> parameters;
+        private LazyProperty<ConcurrentDictionary<string, Column>> columns;
+        private LazyProperty<ConcurrentDictionary<string, Parameter>> parameters;
 
         /// <summary>
         /// Gets or sets the name of the table-valued function
@@ -35,15 +33,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         public ConcurrentDictionary<string, Column> Columns
         {
-            get
-            {
-                if (!isColumnsLoaded)
-                {
-                    LoadColumns();
-                }
-
-                return columns;
-            }
+            get { return columns.Value; }
         }
 
         /// <summary>
@@ -51,15 +41,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         public ConcurrentDictionary<string, Parameter> Parameters
         {
-            get
-            {
-                if (!isParametersLoaded)
-                {
-                    LoadParameters();
-                }
-
-                return parameters;
-            }
+            get { return parameters.Value; }
         }
 
         #region Constructors and initializers
@@ -70,7 +52,7 @@ namespace Jhu.Graywulf.Schema
         public TableValuedFunction()
             : base()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -80,7 +62,7 @@ namespace Jhu.Graywulf.Schema
         public TableValuedFunction(DatasetBase dataset)
             : base(dataset)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -96,15 +78,13 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Initializes member variables to their default values
         /// </summary>
-        private void InitializeMembers()
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
         {
             this.ObjectType = DatabaseObjectType.TableValuedFunction;
 
-            this.isColumnsLoaded = false;
-            this.columns = null;
-
-            this.isParametersLoaded = false;
-            this.parameters = null;
+            this.columns = new LazyProperty<ConcurrentDictionary<string, Column>>(LoadColumns);
+            this.parameters = new LazyProperty<ConcurrentDictionary<string, Parameter>>(LoadParameters);
         }
 
         /// <summary>
@@ -115,11 +95,8 @@ namespace Jhu.Graywulf.Schema
         {
             this.ObjectType = old.ObjectType;
 
-            this.isColumnsLoaded = false;
-            this.columns = null;
-
-            this.isParametersLoaded = false;
-            this.parameters = null;
+            this.columns = new LazyProperty<ConcurrentDictionary<string, Column>>(LoadColumns);
+            this.parameters = new LazyProperty<ConcurrentDictionary<string, Parameter>>(LoadParameters);
         }
 
         /// <summary>
@@ -137,36 +114,32 @@ namespace Jhu.Graywulf.Schema
         /// Loads all columns belonging to a table or view
         /// </summary>
         /// <returns></returns>
-        private void LoadColumns()
+        private ConcurrentDictionary<string, Column> LoadColumns()
         {
             if (Dataset != null)
             {
-                this.columns = new ConcurrentDictionary<string, Column>(Dataset.LoadColumns(this), SchemaManager.Comparer);
+                return new ConcurrentDictionary<string, Column>(Dataset.LoadColumns(this), SchemaManager.Comparer);
             }
             else
             {
-                this.columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
+                return new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
             }
-
-            this.isColumnsLoaded = true;
         }
 
         /// <summary>
         /// Loads all parameters belonging to a function or stored procedure
         /// </summary>
         /// <returns></returns>
-        private void LoadParameters()
+        private ConcurrentDictionary<string, Parameter> LoadParameters()
         {
             if (Dataset != null)
             {
-                this.parameters = new ConcurrentDictionary<string, Parameter>(Dataset.LoadParameters(this), SchemaManager.Comparer);
+                return new ConcurrentDictionary<string, Parameter>(Dataset.LoadParameters(this), SchemaManager.Comparer);
             }
             else
             {
-                this.parameters = new ConcurrentDictionary<string, Parameter>(SchemaManager.Comparer);
+                return new ConcurrentDictionary<string, Parameter>(SchemaManager.Comparer);
             }
-            
-            this.isParametersLoaded = true;
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
-using Jhu.Graywulf.Types;
+using Jhu.Graywulf.Schema;
 using schema = Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;

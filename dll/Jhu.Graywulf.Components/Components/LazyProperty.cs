@@ -5,9 +5,12 @@ using System.Text;
 
 namespace Jhu.Graywulf.Components
 {
+    [Serializable]
     public class LazyProperty<T>
     {
+        [NonSerialized]
         private Func<T> initializer;
+
         private bool isValueLoaded;
         private T value;
 

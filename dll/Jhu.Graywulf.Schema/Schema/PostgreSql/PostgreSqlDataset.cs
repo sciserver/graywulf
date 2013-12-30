@@ -211,6 +211,10 @@ WHERE routine_type IN ({0}) AND
             }
         }
 
+        internal override bool IsObjectExisting(DatabaseObject databaseObject)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Loads all objects of a certain kind

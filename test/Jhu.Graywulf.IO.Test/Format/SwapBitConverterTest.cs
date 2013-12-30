@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.Types;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Format
 {

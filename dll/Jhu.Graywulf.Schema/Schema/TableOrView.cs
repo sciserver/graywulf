@@ -13,7 +13,6 @@ namespace Jhu.Graywulf.Schema
     /// Contains information about a database table
     /// </summary>
     [Serializable]
-    [DataContract(Namespace = "")]
     public abstract class TableOrView : DatabaseObject, IColumns, IIndexes, ICloneable
     {
         #region Property storage members and private variables
@@ -21,7 +20,6 @@ namespace Jhu.Graywulf.Schema
         private LazyProperty<ConcurrentDictionary<string, Column>> columns;
         private LazyProperty<ConcurrentDictionary<string, Index>> indexes;
         private LazyProperty<TableStatistics> statistics;
-
 
         #endregion
         #region Properties
@@ -33,6 +31,7 @@ namespace Jhu.Graywulf.Schema
         public ConcurrentDictionary<string, Column> Columns
         {
             get { return columns.Value; }
+            protected set { columns.Value = value; }
         }
 
         /// <summary>
@@ -58,7 +57,7 @@ namespace Jhu.Graywulf.Schema
         public TableOrView()
             : base()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -68,7 +67,7 @@ namespace Jhu.Graywulf.Schema
         public TableOrView(DatasetBase dataset)
             : base(dataset)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -84,7 +83,8 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Initializes member variables to their default values
         /// </summary>
-        private void InitializeMembers()
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
         {
             this.ObjectType = DatabaseObjectType.Unknown;
 

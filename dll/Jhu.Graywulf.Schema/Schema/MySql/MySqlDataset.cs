@@ -207,6 +207,10 @@ WHERE routine_schema LIKE @databaseName AND routine_name LIKE @objectName AND ro
             }
         }
 
+        internal override bool IsObjectExisting(DatabaseObject databaseObject)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Loads all objects of a certain kind

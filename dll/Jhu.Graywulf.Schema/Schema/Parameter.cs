@@ -10,7 +10,6 @@ namespace Jhu.Graywulf.Schema
     /// Reflects a function or stored procedure parameter
     /// </summary>
     [Serializable]
-    [DataContract(Namespace = "")]
     public class Parameter : Variable, ICloneable
     {
         private ParameterDirection direction;

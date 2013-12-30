@@ -20,7 +20,6 @@ namespace Jhu.Graywulf.Schema
     /// server product specific reflection logic
     /// </remarks>
     [Serializable]
-    [DataContract(Namespace = "")]
     public abstract partial class DatasetBase : ICloneable, ICacheable, IDatasetName
     {
         #region Property storage member variables
@@ -417,6 +416,8 @@ namespace Jhu.Graywulf.Schema
         /// <param name="databaseObject"></param>
         protected abstract void LoadObject<T>(T databaseObject)
             where T : DatabaseObject, new();
+
+        internal abstract bool IsObjectExisting(DatabaseObject databaseObject);
 
         /// <summary>
         /// When overloaded in derived classes, loads all objects of a certain kind

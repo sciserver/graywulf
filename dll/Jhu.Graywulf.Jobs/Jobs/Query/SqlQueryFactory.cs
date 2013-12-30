@@ -120,13 +120,13 @@ namespace Jhu.Graywulf.Jobs.Query
 
             // Set up MYDB for destination
             // ****** TODO add output table name to settings */
-            query.Destination.Table = new Table()
+            query.Destination = new Table()
             {
                 Dataset = mydbds,
                 SchemaName = settings[Settings.DefaultSchemaName],
                 TableName = String.IsNullOrWhiteSpace(outputTable) ? "outputtable" : outputTable
             };
-            query.Destination.Operation = DestinationTableOperation.Drop | DestinationTableOperation.Create;
+            query.DestinationInitializationOptions = TableInitializationOptions.Drop | TableInitializationOptions.Create;
 
             // Set up temporary database
             var tempds = new GraywulfDataset();
@@ -159,11 +159,13 @@ namespace Jhu.Graywulf.Jobs.Query
                 query.CustomDatasets.Add(mydbds);
 
                 // Set up MYDB for destination
-                query.Destination.Table = new Table();
-                query.Destination.Table.Dataset = mydbds;
-                query.Destination.Table.DatabaseName = mydbds.DatabaseName;
-                query.Destination.Table.SchemaName = mydbds.DefaultSchemaName;
-                query.Destination.Operation = DestinationTableOperation.Drop | DestinationTableOperation.Create;
+                query.Destination = new Table()
+                {
+                    Dataset = mydbds,
+                    DatabaseName = mydbds.DatabaseName,
+                    SchemaName = mydbds.DefaultSchemaName,
+                };
+                query.DestinationInitializationOptions = TableInitializationOptions.Drop | TableInitializationOptions.Create;
             }
 
             // Set up temporary and code database

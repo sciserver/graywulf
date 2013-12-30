@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Schema
         /// Implements a synchronized collection to cache database objects
         /// of a dataset.
         /// </summary>
-        [DataContract(Namespace="")]
+        [Serializable]
         public class DatabaseObjectCollection<T> : LazyDictionary<string, T>
             where T : DatabaseObject, ICacheable, new()
         {

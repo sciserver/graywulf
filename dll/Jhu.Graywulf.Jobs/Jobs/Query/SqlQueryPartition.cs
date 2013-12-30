@@ -122,12 +122,42 @@ namespace Jhu.Graywulf.Jobs.Query
             ts.Stack.Remove(ts.FindDescendant<TablePartitionClause>());
         }
 
-        protected override string GetOutputSelectQuery()
+        protected override string GetOutputQueryText()
         {
+            // strip off order by
+            var orderby = SelectStatement.FindDescendant<OrderByClause>();
+            if (orderby != null)
+            {
+                SelectStatement.Stack.Remove(orderby);
+            }
+
+            // strip off partition on
+            foreach (var qs in SelectStatement.EnumerateQuerySpecifications())
+            {
+                // strip off select into
+                var into = qs.FindDescendant<IntoClause>();
+                if (into != null)
+                {
+                    qs.Stack.Remove(into);
+                }
+
+                foreach (var ts in qs.EnumerateDescendantsRecursive<SimpleTableSource>())
+                {
+                    var pc = ts.FindDescendant<TablePartitionClause>();
+
+                    if (pc != null)
+                    {
+                        pc.Parent.Stack.Remove(pc);
+                    }
+                }
+            }
+
             // Generate code
             var sw = new StringWriter();
-            var cg = new SqlServerCodeGenerator();
-            cg.ResolveNames = true;
+            var cg = new SqlServerCodeGenerator()
+            {
+                ResolveNames = true
+            };
 
             cg.Execute(sw, SelectStatement);
 

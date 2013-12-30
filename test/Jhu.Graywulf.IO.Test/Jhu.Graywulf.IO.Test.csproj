@@ -57,7 +57,9 @@
     <Compile Include="Format\SwapBitConverterTest.cs" />
     <Compile Include="IO\StreamFactoryTest.cs" />
     <Compile Include="IO\Tasks\FileCopyTest.cs" />
+    <Compile Include="IO\Tasks\TableCopyTest.cs" />
     <Compile Include="IO\Tasks\TableExportTest.cs" />
+    <Compile Include="IO\Tasks\TableImportTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

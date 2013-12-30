@@ -10,6 +10,7 @@ using System.Runtime.Serialization;
 using System.IO;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.IO;
+using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Schema;
@@ -654,7 +655,6 @@ namespace Jhu.Graywulf.Jobs.Query
                         di.Load();
                     }
 
-                    //tr.DatabaseObject.Dataset = di.GetDataset();
                     tr.DatabaseName = di.DatabaseName;
                 }
             }
@@ -696,9 +696,11 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private void SubstituteRemoteTableName(SchemaManager sm, TableReference tr, DatasetBase temporaryDataset, string temporarySchemaName)
         {
+            // Save unique name because it will change as names are substituted
             var un = tr.UniqueName;
 
             // TODO: write function to determine if a table is to be copied
+            // ie. the condition in the if clause
             if (tr.IsCachable && TemporaryTables.ContainsKey(tr.UniqueName) &&
                 IsRemoteDataset(sm.Datasets[tr.DatasetName]))
             {
@@ -784,8 +786,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         #endregion
         #region Generic SQL functions with cancel support
-        // *** TODO: move all these to a util class
-
+        /*
         protected void ExecuteCommandNonQuery(string sql, string connectionString)
         {
             using (var cn = new SqlConnection(connectionString))
@@ -800,7 +801,9 @@ namespace Jhu.Graywulf.Jobs.Query
                 }
             }
         }
+         * */
 
+        /*
         protected object ExecuteCommandScalar(string sql, string connectionString)
         {
             using (SqlConnection cn = new SqlConnection(connectionString))
@@ -812,7 +815,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     return cmd.ExecuteScalar();
                 }
             }
-        }
+        }*/
 
         protected void ExecuteLongCommandNonQuery(string sql, string connectionString, int timeout)
         {
@@ -888,6 +891,7 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Specialized SQL manipulation function
 
+        /* TODO: moved to schema, delete
         protected bool IsTableExisting(Table table)
         {
             // TODO: rewrite this and move function to schema
@@ -898,8 +902,9 @@ namespace Jhu.Graywulf.Jobs.Query
                 table.TableName);
 
             return (int)ExecuteCommandScalar(sql, table.Dataset.ConnectionString) == 1;
-        }
+        }*/
 
+        /* TODO: delete, not used ?
         protected void CreateTable(TableReference table)
         {
             string sql = "CREATE TABLE [{0}].[{1}] ({2})";
@@ -921,20 +926,24 @@ namespace Jhu.Graywulf.Jobs.Query
 
             ExecuteCommandNonQuery(sql, table.DatabaseObject.Dataset.ConnectionString);
         }
+         * */
 
+        /*
         protected void CreateTableForBulkCopy(SourceQueryParameters source, DestinationTableParameters destination, bool local)
         {
 #if !SKIPQUERIES
 
-            var bcp = CreateQueryImporter(source, destination, local);
+            var bcp = CreateTableCopyTask(source, destination, local);
             bcp.CreateDestinationTable();
 
 #endif
         }
+         * */
 
+        /*
         protected void ExecuteBulkCopy(SourceQueryParameters source, DestinationTableParameters destination, bool local, int timeout)
         {
-            var bcp = CreateQueryImporter(source, destination, local);
+            var bcp = CreateTableCopyTask(source, destination, local);
             bcp.Destination.BulkInsertTimeout = timeout;
 
             var guid = Guid.NewGuid();
@@ -946,15 +955,9 @@ namespace Jhu.Graywulf.Jobs.Query
 
             UnregisterCancelable(guid);
         }
+         * */
 
-        protected void TruncateTable(Table table)
-        {
-            // TODO: move this to schema eventually
-            string sql = String.Format("TRUNCATE TABLE [{0}].[{1}]", table.SchemaName, table.TableName);
-
-            ExecuteCommandNonQuery(sql, table.Dataset.ConnectionString);
-        }
-
+        /*
         protected void DropTableOrView(TableOrView tableOrView)
         {
             // TODO: move this to schema eventually
@@ -972,50 +975,56 @@ END";
                 tableOrView.GetType().Name);
 
             ExecuteCommandNonQuery(sql, tableOrView.Dataset.ConnectionString);
-        }
+        }*/
 
-        protected void ExecuteSelectInto(SourceQueryParameters source, DestinationTableParameters destination)
+        protected void ExecuteSelectInto(TableSourceQuery source, Table destination, int timeout)
         {
-
             string sql = String.Format(
                 "SELECT __tablealias.* INTO [{0}].[{1}].[{2}] FROM ({3}) AS __tablealias",
-                !String.IsNullOrWhiteSpace(destination.Table.DatabaseName) ? destination.Table.DatabaseName : destination.Table.Dataset.DatabaseName,
-                destination.Table.SchemaName,
-                destination.Table.TableName,
+                !String.IsNullOrWhiteSpace(destination.DatabaseName) ? destination.DatabaseName : destination.Dataset.DatabaseName,
+                destination.SchemaName,
+                destination.TableName,
                 source.Query);
 
-            ExecuteLongCommandNonQuery(sql, source.Dataset.ConnectionString, source.Timeout);
+            ExecuteLongCommandNonQuery(sql, source.Dataset.ConnectionString, timeout);
         }
 
-        protected void ExecuteInsertInto(SourceQueryParameters source, DestinationTableParameters destination)
+        protected void ExecuteInsertInto(TableSourceQuery source, Table destination, int timeout)
         {
             string sql = String.Format(
                 "INSERT [{0}].[{1}].[{2}] WITH (TABLOCKX) SELECT __tablealias.* FROM ({3}) AS __tablealias",
-                !String.IsNullOrWhiteSpace(destination.Table.DatabaseName) ? destination.Table.DatabaseName : destination.Table.Dataset.DatabaseName,
-                destination.Table.SchemaName,
-                destination.Table.TableName,
+                !String.IsNullOrWhiteSpace(destination.DatabaseName) ? destination.DatabaseName : destination.Dataset.DatabaseName,
+                destination.SchemaName,
+                destination.TableName,
                 source.Query);
 
-            ExecuteLongCommandNonQuery(sql, source.Dataset.ConnectionString, source.Timeout);
+            ExecuteLongCommandNonQuery(sql, source.Dataset.ConnectionString, timeout);
         }
 
-        protected IQueryImporter CreateQueryImporter(SourceQueryParameters source, DestinationTableParameters destination, bool local)
+        /// <summary>
+        /// Creates and initializes a remote or local table copy task
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        /// <param name="local"></param>
+        /// <returns></returns>
+        protected ITableCopy CreateTableCopyTask(TableSourceQuery source, Table destination, bool local)
         {
-            var desthost = GetHostnameFromSqlConnectionString(destination.Table.Dataset.ConnectionString);
+            var desthost = GetHostnameFromSqlConnectionString(destination.Dataset.ConnectionString);
 
-            IQueryImporter qi;
+            ITableCopy qi;
 
             if (local)
             {
-                qi = new QueryImporter();
+                qi = new TableCopy();
             }
             else
             {
-                qi = RemoteServiceHelper.CreateObject<IQueryImporter>(desthost);
+                qi = RemoteServiceHelper.CreateObject<ITableCopy>(desthost);
             }
 
-            qi.Source = source;
-            qi.Destination = destination;
+            qi.Sources = new TableSourceQuery[] { source };
+            qi.Destinations = new Table[] { destination };
 
             return qi;
         }

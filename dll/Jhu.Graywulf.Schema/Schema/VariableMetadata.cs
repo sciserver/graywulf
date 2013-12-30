@@ -6,6 +6,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Schema
 {
+    [Serializable]
     public class VariableMetadata
     {
         private string summary;

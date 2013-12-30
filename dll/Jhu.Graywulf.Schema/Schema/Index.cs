@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Schema
 {
@@ -111,7 +112,7 @@ namespace Jhu.Graywulf.Schema
         public Index()
             : base()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -121,7 +122,7 @@ namespace Jhu.Graywulf.Schema
         public Index(TableOrView tableOrView)
             : base(tableOrView.Dataset)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
 
             this.tableOrView = tableOrView;
 
@@ -138,7 +139,8 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Initializes member variables to their default values
         /// </summary>
-        private void InitializeMembers()
+        [OnSerializing]
+        private void InitializeMembers(StreamingContext context)
         {
             this.ObjectType = DatabaseObjectType.Index;
 

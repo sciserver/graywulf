@@ -9,6 +9,7 @@ using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.IO;
+using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -29,7 +30,7 @@ namespace Jhu.Graywulf.Jobs.Query
             QueryPartitionBase querypartition = (QueryPartitionBase)QueryPartition.Get(activityContext);
             
             TableReference remotetable = null;
-            SourceQueryParameters source;
+            TableSourceQuery source;
 
             using (Context context = querypartition.Query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {       
@@ -42,7 +43,7 @@ namespace Jhu.Graywulf.Jobs.Query
             return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, querypartition, remotetable, source), callback, state);
         }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, QueryPartitionBase querypartition, TableReference remotetable, SourceQueryParameters source)
+        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, QueryPartitionBase querypartition, TableReference remotetable, TableSourceQuery source)
         {
             RegisterCancelable(workflowInstanceGuid, activityInstanceId, querypartition);
             querypartition.CopyRemoteTable(remotetable, source);

@@ -5,7 +5,7 @@ using System.Text;
 using System.Data;
 using System.IO;
 using System.Xml;
-using Jhu.Graywulf.Types;
+using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format

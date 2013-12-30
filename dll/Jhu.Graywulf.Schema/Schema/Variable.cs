@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Schema;
 
@@ -56,12 +57,12 @@ namespace Jhu.Graywulf.Schema
 
         public Variable()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         public Variable(DatabaseObject parent)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
 
             this.parent = parent;
         }
@@ -71,7 +72,8 @@ namespace Jhu.Graywulf.Schema
             CopyMembers(old);
         }
 
-        private void InitializeMembers()
+        [OnSerializing]
+        private void InitializeMembers(StreamingContext context)
         {
             this.parent = null;
             this.id = -1;

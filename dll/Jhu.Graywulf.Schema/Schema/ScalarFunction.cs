@@ -14,7 +14,6 @@ namespace Jhu.Graywulf.Schema
     /// Reflects a scalar function
     /// </summary>
     [Serializable]
-    [DataContract(Namespace = "")]
     public class ScalarFunction : DatabaseObject, IParameters, ICloneable
     {
         private LazyProperty<ConcurrentDictionary<string, Parameter>> parameters;
@@ -58,7 +57,7 @@ namespace Jhu.Graywulf.Schema
         public ScalarFunction()
             : base()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -69,7 +68,7 @@ namespace Jhu.Graywulf.Schema
         public ScalarFunction(DatasetBase dataset)
             : base(dataset)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -85,7 +84,8 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Initializes member variables
         /// </summary>
-        private void InitializeMembers()
+        [OnSerializing]
+        private void InitializeMembers(StreamingContext context)
         {
             this.ObjectType = DatabaseObjectType.ScalarFunction;
             this.parameters = new LazyProperty<ConcurrentDictionary<string, Parameter>>(LoadParameters);

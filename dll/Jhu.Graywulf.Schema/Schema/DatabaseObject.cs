@@ -13,7 +13,6 @@ namespace Jhu.Graywulf.Schema
     /// Contains information about a generic database object
     /// </summary>
     [Serializable]
-    [DataContract(Namespace = "")]
     public class DatabaseObject : ICacheable, ICloneable, IDatabaseObjectName
     {
         private long cachedVersion;
@@ -156,6 +155,12 @@ namespace Jhu.Graywulf.Schema
         {
             get { return dataset.GetObjectKeyFromParts(this); }
             set { dataset.GetPartsFromObjectKey(this, value); }
+        }
+
+        [IgnoreDataMember]
+        public bool IsExisting
+        {
+            get { return dataset.IsObjectExisting(this); }
         }
 
         /// <summary>
@@ -322,5 +327,7 @@ namespace Jhu.Graywulf.Schema
                 return new ConcurrentDictionary<string, Parameter>(SchemaManager.Comparer);
             }
         }
+
+
     }
 }

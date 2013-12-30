@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.IO.Tasks
     public class TableImport : TableImportBase, ITableImport, ICloneable
     {
         private DataFileBase[] sources;
-        private Uri path;
+        private Uri uri;
         private DataFileArchival archival;
 
         public DataFileBase[] Sources
@@ -35,8 +35,8 @@ namespace Jhu.Graywulf.IO.Tasks
 
         public Uri Path
         {
-            get { return path; }
-            set { path = value; }
+            get { return uri; }
+            set { uri = value; }
         }
 
         public DataFileArchival Archival
@@ -58,14 +58,14 @@ namespace Jhu.Graywulf.IO.Tasks
         private void InitializeMembers()
         {
             this.sources = null;
-            this.path = null;
+            this.uri = null;
             this.archival = DataFileArchival.Automatic;
         }
 
         private void CopyMembers(TableImport old)
         {
             this.sources = Util.DeepCopy.CopyArray(old.sources);
-            this.path = old.path;
+            this.uri = old.uri;
             this.archival = old.archival;
         }
 
@@ -91,30 +91,62 @@ namespace Jhu.Graywulf.IO.Tasks
                 throw new InvalidOperationException();  // *** TODO
             }
 
-            // Open input stream
-            var sf = StreamFactory.Create();
-            sf.Mode = DataFileMode.Read;
-            sf.Archival = archival;
-            sf.Uri = path;
-            // TODO: add authentication options here
+            // Check if the archival option is turned on and open archive
+            // file if necessary by opening an IArchiveInputStream
+            Stream input = null;
 
-            using (var input = sf.Open())
+            try
             {
+                if (archival == DataFileArchival.None)
+                {
+                    // No stream to open
+                    // Path will be treated as directory path
+                    input = null;
+                }
+                else
+                {
+                    // Open input stream
+                    var sf = StreamFactory.Create();
+                    sf.Mode = DataFileMode.Read;
+                    sf.Archival = archival;
+                    sf.Uri = uri;
+                    // TODO: add authentication options here
+
+                    input = sf.Open();
+                }
+
                 for (int i = 0; i < sources.Length; i++)
                 {
                     ImportTable(sources[i], Destinations[i], input);
                 }
-
-                input.Close();
+            }
+            finally
+            {
+                if (input != null)
+                {
+                    input.Close();
+                    input.Dispose();
+                }
             }
         }
 
         private void ImportTable(DataFileBase source, Table destination, Stream input)
         {
+            // Individual files have to opened differently when reading from
+            // an archive and when not.
+
             try
             {
-                // Open file
-                source.Open(input, DataFileMode.Read);
+                if (input is IArchiveInputStream)
+                {
+                    var ais = (IArchiveInputStream)input;
+                    ais.ReadNextFileEntry();
+                }
+                else
+                {
+                    // Open file
+                    source.Open(input, DataFileMode.Read);
+                }
 
                 // Create a command that reads the file
                 using (var cmd = new FileCommand(source))

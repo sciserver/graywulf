@@ -5,7 +5,7 @@ using System.Linq;
 using System.Data;
 using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jhu.Graywulf.Types;
+using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 

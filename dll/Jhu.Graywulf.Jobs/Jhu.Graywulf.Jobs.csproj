@@ -64,6 +64,69 @@
     <Compile Include="Jobs\MirrorDatabase\FindDatabaseInstanceFiles.cs" />
     <Compile Include="Jobs\MirrorDatabase\FindSourcesAndDestinations.cs" />
     <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseFile.cs" />
+    <Compile Include="Jobs\Query\AssignPartitionServerInstance.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\CheckDestinationTable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\ComputeTableStatistics.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\CopyRemoteTable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\CopyResultset.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\DropTemporaryTables.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\Enum.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\ExecuteQuery.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\FindRemoteTables.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\GeneratePartitions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\InitializeQuery.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\IQueryJob.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\PrepareDestinationTable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\QueryBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\QueryFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\QueryObject.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\QueryPartitionBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\SqlQuery.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\SqlQueryFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\SqlQueryJob.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Jobs\Query\SqlQueryPartition.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Jobs\Test\TestDelay.cs" />
   </ItemGroup>
@@ -84,6 +147,10 @@
     </XamlAppdef>
   </ItemGroup>
   <ItemGroup>
+    <XamlAppdef Include="Jobs\Query\SqlQueryJob.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </XamlAppdef>
     <XamlAppdef Include="Jobs\Test\TestJob.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

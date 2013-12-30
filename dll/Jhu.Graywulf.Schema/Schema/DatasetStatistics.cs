@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Schema
 {
+    [Serializable]
     public class DatasetStatistics
     {
         private long dataSpace;

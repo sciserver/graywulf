@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Schema
 {
+    [Serializable]
     public class DatabaseObjectMetadata
     {
         private string summary;

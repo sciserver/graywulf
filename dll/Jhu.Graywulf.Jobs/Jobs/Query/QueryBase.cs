@@ -25,7 +25,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private int queryTimeout;
 
-        private DestinationTableParameters destination;
+        private Table destination;
+        private TableInitializationOptions detinationInitializationOptions;
         private bool isDestinationTableInitialized;
 
         private string sourceDatabaseVersionName;
@@ -65,10 +66,17 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Gets or sets the destination table of the query
         /// </summary>
         [DataMember]
-        public DestinationTableParameters Destination
+        public Table Destination
         {
             get { return destination; }
             set { destination = value; }
+        }
+
+        [DataMember]
+        public TableInitializationOptions DestinationInitializationOptions
+        {
+            get { return DestinationInitializationOptions; }
+            set { DestinationInitializationOptions = value; }
         }
 
         /// <summary>
@@ -114,7 +122,7 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
-        #region Constructors
+        #region Constructors and initializers
 
         protected QueryBase()
         {
@@ -134,15 +142,14 @@ namespace Jhu.Graywulf.Jobs.Query
             this.Context = context;
         }
 
-        #endregion
-        #region Initializer functions
 
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
             this.queryTimeout = 60; // TODO ***
 
-            this.destination = new DestinationTableParameters();
+            this.destination = null;
+            this.DestinationInitializationOptions = TableInitializationOptions.Create;
             this.isDestinationTableInitialized = false;
 
             this.sourceDatabaseVersionName = String.Empty;
@@ -205,12 +212,12 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 if (into.TableReference.SchemaName != null)
                 {
-                    this.destination.Table.SchemaName = into.TableReference.SchemaName;
+                    this.destination.SchemaName = into.TableReference.SchemaName;
                 }
 
                 if (into.TableReference.DatabaseObjectName != null)
                 {
-                    this.destination.Table.TableName = into.TableReference.DatabaseObjectName;
+                    this.destination.TableName = into.TableReference.DatabaseObjectName;
                 }
 
                 // remove into clause from query
@@ -345,7 +352,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             if (destinationDatabaseInstance.IsEmpty || forceReinitialize)
             {
-                var dd = (GraywulfDataset)destination.Table.Dataset;
+                var dd = (GraywulfDataset)destination.Dataset;
                 if (destinationDatabaseInstance.IsEmpty && !dd.DatabaseInstance.IsEmpty)
                 {
                     dd.Context = Context;
@@ -361,7 +368,7 @@ namespace Jhu.Graywulf.Jobs.Query
             switch (ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
-                    return new SqlConnectionStringBuilder(((Schema.SqlServer.SqlServerDataset)destination.Table.Dataset).ConnectionString);
+                    return new SqlConnectionStringBuilder(((Schema.SqlServer.SqlServerDataset)destination.Dataset).ConnectionString);
                 case ExecutionMode.Graywulf:
                     return destinationDatabaseInstance.Value.GetConnectionString();
                 default:
@@ -373,11 +380,11 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             AssertValidContext();
 
-            bool exists = IsTableExisting(destination.Table);
+            bool exists = destination.IsExisting;
 
-            if (exists && (destination.Operation & DestinationTableOperation.Drop) == 0)
+            if (exists && (DestinationInitializationOptions & TableInitializationOptions.Drop) == 0)
             {
-                if ((destination.Operation & DestinationTableOperation.Create) == 0)
+                if ((DestinationInitializationOptions & TableInitializationOptions.Create) == 0)
                 {
                     throw new Exception("Output table already exists.");    // *** TODO
                 }

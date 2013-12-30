@@ -75,5 +75,22 @@ namespace Jhu.Graywulf.IO.Tasks
 
             return cmd;
         }
+
+        public DataTable GetSchemaTable()
+        {
+            using (var cn = OpenConnection())
+            {
+                using (var cmd = cn.CreateCommand())
+                {
+                    cmd.Connection = cn;
+                    cmd.CommandText = query;
+
+                    using (var dr = cmd.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo))
+                    {
+                        return dr.GetSchemaTable();
+                    }
+                }
+            }
+        }
     }
 }

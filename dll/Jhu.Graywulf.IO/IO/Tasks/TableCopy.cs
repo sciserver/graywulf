@@ -15,8 +15,16 @@ namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
     [RemoteServiceClass(typeof(TableCopy))]
+    [NetDataContract]
     public interface ITableCopy : ITableImportBase
     {
+        TableSourceQuery[] Sources
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
     }
 
     [ServiceBehavior(
