@@ -6,8 +6,8 @@ using System.Activities;
 
 namespace Jhu.Graywulf.Jobs.ExportTable
 {
-    public interface IExportJob
+    public interface IExportTablesJob
     {
-        InArgument<ExportTable> Parameters { get; set; }
+        InArgument<ExportTables> Parameters { get; set; }
     }
 }

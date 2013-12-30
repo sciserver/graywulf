@@ -11,11 +11,12 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.ExportTable;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Test;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Jobs.ExportTable
 {
     [TestClass]
-    public class ExportTableTest : TestClassBase
+    public class ExportTablesTest : TestClassBase
     {
         protected Guid ScheduleExportTableJob(string schemaName, string tableName, string path, QueueType queueType)
         {
@@ -37,9 +38,9 @@ namespace Jhu.Graywulf.Jobs.ExportTable
                     TableName = tableName
                 };
 
-                var etf = new ExportTableFactory(context);
+                var etf = new ExportTablesFactory(context);
                 var ji = etf.ScheduleAsJob(
-                    source,
+                    new TableOrView[] {source },
                     path,
                     format,
                     queue,
@@ -54,7 +55,7 @@ namespace Jhu.Graywulf.Jobs.ExportTable
         [TestMethod]
         public void ExportTableSerializableTest()
         {
-            var t = typeof(Jhu.Graywulf.Jobs.ExportTable.ExportTable);
+            var t = typeof(Jhu.Graywulf.Jobs.ExportTable.ExportTables);
 
             var sc = new Jhu.Graywulf.Activities.SerializableChecker();
             Assert.IsTrue(sc.Execute(t));
@@ -83,11 +84,12 @@ namespace Jhu.Graywulf.Jobs.ExportTable
                     var ji = LoadJob(guid);
                     Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
 
-                    var uri = ((ExportTable)ji.Parameters["Parameters"].GetValue()).Destination.Uri;
+                    var uri = ((ExportTables)ji.Parameters["Parameters"].GetValue()).Uri;
 
-                    Assert.IsTrue(File.Exists(uri.PathAndQuery));
+                    path = Util.UriConverter.ToFilePath(uri);
 
-                    File.Delete(uri.PathAndQuery);
+                    Assert.IsTrue(File.Exists(path));
+                    File.Delete(path);
                 }
             }
         }

@@ -61,6 +61,24 @@ namespace Jhu.Graywulf.Schema.SqlServer
             }
         }
 
+        [IgnoreDataMember]
+        public string Host
+        {
+            get
+            {
+                var csb = new SqlConnectionStringBuilder(ConnectionString);
+                int i = csb.DataSource.IndexOf('\\');
+                if (i > -1)
+                {
+                    return csb.DataSource.Substring(i);
+                }
+                else
+                {
+                    return csb.DataSource;
+                }
+            }
+        }
+
         #region Constructors and initializers
 
         /// <summary>

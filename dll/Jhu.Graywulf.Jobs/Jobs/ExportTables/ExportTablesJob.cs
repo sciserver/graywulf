@@ -12,7 +12,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Jobs.ExportTable
 {
-    public class ExportTableJob : GraywulfAsyncCodeActivity, IGraywulfActivity, IExportJob
+    public class ExportTablesJob : GraywulfAsyncCodeActivity, IGraywulfActivity, IExportTablesJob
     {
         [RequiredArgument]
         public InArgument<Guid> JobGuid { get; set; }
@@ -20,34 +20,37 @@ namespace Jhu.Graywulf.Jobs.ExportTable
         public InArgument<Guid> UserGuid { get; set; }
 
         [RequiredArgument]
-        public InArgument<ExportTable> Parameters { get; set; }
+        public InArgument<ExportTables> Parameters { get; set; }
 
         protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
         {
-            var export = Parameters.Get(activityContext);
+            var parameters = Parameters.Get(activityContext);
 
             // TODO: try to generalize connection string loading logic and move this from here
             // Use connection string of the database instance, if only database instance name is supplied
-            if (export.Source.Dataset is GraywulfDataset)
+            for (int i = 0; i < parameters.Sources.Length; i++)
             {
-                // Load database instace and get connection string to make it cached
-                using (var context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                if (parameters.Sources[i].Dataset is GraywulfDataset)
                 {
-                    var gwds = (GraywulfDataset)export.Source.Dataset;
-                    gwds.Context = context;
-                    gwds.DatabaseInstance.Value.GetConnectionString();
+                    // Load database instace and get connection string to make it cached
+                    using (var context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                    {
+                        var gwds = (GraywulfDataset)parameters.Sources[i].Dataset;
+                        gwds.Context = context;
+                        gwds.DatabaseInstance.Value.GetConnectionString();
+                    }
                 }
             }
 
             Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
             string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, export), callback, state);
+            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, parameters), callback, state);
         }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, ExportTable exportTable)
+        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, ExportTables exportTable)
         {
             // Create table exporter
-            var exporter = exportTable.GetInitializedExporter();
+            var exporter = exportTable.GetInitializedTableExportTask();
 
             RegisterCancelable(workflowInstanceGuid, activityInstanceId, exporter);
             exporter.Execute();

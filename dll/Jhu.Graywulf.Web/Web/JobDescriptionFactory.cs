@@ -118,7 +118,7 @@ namespace Jhu.Graywulf.Web
                         {
                             queryJobDefinitions.Add(jd.Guid, jd.WorkflowTypeName);
                         }
-                        else if (rh.HasInterface(typeof(Jhu.Graywulf.Jobs.ExportTable.IExportJob).ToString()))
+                        else if (rh.HasInterface(typeof(Jhu.Graywulf.Jobs.ExportTable.IExportTablesJob).ToString()))
                         {
                             exportJobDefinitions.Add(jd.Guid, jd.WorkflowTypeName);
                         }

@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             }
 
             var queue = String.Format("{0}.{1}", Federation.ControllerMachine.GetFullyQualifiedName(), Jhu.Graywulf.Registry.Constants.LongQueueName);
-            var f = new Jhu.Graywulf.Jobs.ExportTable.ExportTableFactory(RegistryContext);
+            var f = new Jhu.Graywulf.Jobs.ExportTable.ExportTablesFactory(RegistryContext);
             
             var job = f.ScheduleAsJob(
                 table,

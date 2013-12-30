@@ -41,9 +41,9 @@ namespace Jhu.Graywulf.Install
             // Job definitions
             var jd = new JobDefinition(federation)
             {
-                Name = typeof(Jobs.ExportTable.ExportTableJob).Name,
+                Name = typeof(Jobs.ExportTable.ExportTablesJob).Name,
                 System = federation.System,
-                WorkflowTypeName = typeof(Jobs.ExportTable.ExportTableJob).AssemblyQualifiedName,
+                WorkflowTypeName = typeof(Jobs.ExportTable.ExportTablesJob).AssemblyQualifiedName,
             };
             jd.Save();
 
