@@ -145,13 +145,14 @@ namespace Jhu.Graywulf.RemoteService
         /// </summary>
         public static void EnsureRoleAccess()
         {
-            // Check if the user is authenticated and the identity is equal to the specified
+            // Access automatically granted for non-remoting scenarios.
+            // OperationContext.Current is null if the object is created locally.
+            // Otherwise check if the user is authenticated and the identity is equal to the specified
             // user (group) name or member of the given group (role).
 
-            // TODO: this is messy here, test and double check.
-            if (OperationContext.Current == null ||
-                (StringComparer.InvariantCultureIgnoreCase.Compare(Thread.CurrentPrincipal.Identity.Name, AppSettings.UserGroup) != 0 &&
-                !Thread.CurrentPrincipal.IsInRole(AppSettings.UserGroup)))
+            if (OperationContext.Current != null &&
+                StringComparer.InvariantCultureIgnoreCase.Compare(Thread.CurrentPrincipal.Identity.Name, AppSettings.UserGroup) != 0 &&
+                !Thread.CurrentPrincipal.IsInRole(AppSettings.UserGroup))
             {
                 throw new SecurityException("Access denied.");
             }

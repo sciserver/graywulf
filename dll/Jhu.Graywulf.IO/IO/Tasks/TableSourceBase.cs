@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.Common;
+using System.ServiceModel;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Format;

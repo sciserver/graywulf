@@ -136,6 +136,17 @@ namespace Jhu.Graywulf.RemoteService.Server
                 }
                 sdb.IncludeExceptionDetailInFaults = true;
 
+                // Turn on impersonation
+                /*
+                var sab = host.Description.Behaviors.Find<ServiceAuthorizationBehavior>();
+                if (sab == null)
+                {
+                    sab = new ServiceAuthorizationBehavior();
+                    host.Description.Behaviors.Add(sab);
+                }
+                sab.ImpersonateCallerForAllOperations = true;
+                */
+
                 // Unthrottle service to increase throughput
                 // Service is behind a firewall, no DOS attacks will happen
                 // TODO: copy these settings to the control endpoint

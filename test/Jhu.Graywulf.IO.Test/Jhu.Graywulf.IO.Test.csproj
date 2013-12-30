@@ -56,6 +56,8 @@
     <Compile Include="Format\StraightBitConverterTest.cs" />
     <Compile Include="Format\SwapBitConverterTest.cs" />
     <Compile Include="IO\StreamFactoryTest.cs" />
+    <Compile Include="IO\Tasks\FileCopyTest.cs" />
+    <Compile Include="IO\Tasks\TableExportTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -88,9 +90,7 @@
     <None Include="App.config" />
     <None Include="App.original.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="IO\Tasks\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.IO.Test</PreBuildEvent>

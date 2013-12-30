@@ -15,8 +15,48 @@ namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
     [RemoteServiceClass(typeof(TableExport))]
+    [NetDataContract]
     public interface ITableExport : IRemoteService
     {
+        TableSourceBase[] Sources
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
+
+        DataFileBase[] Destinations
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
+
+        Uri Uri
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
+
+        DataFileArchival Archival
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
+
+        int Timeout
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
     }
 
     [ServiceBehavior(
@@ -26,7 +66,7 @@ namespace Jhu.Graywulf.IO.Tasks
     {
         private TableSourceBase[] sources;
         private DataFileBase[] destinations;
-        private Uri path;
+        private Uri uri;
         private DataFileArchival archival;
         private int timeout;
 
@@ -42,9 +82,9 @@ namespace Jhu.Graywulf.IO.Tasks
             set { destinations = value; }
         }
 
-        public Uri Path {
-            get { return path; }
-            set { path = value; }
+        public Uri Uri {
+            get { return uri; }
+            set { uri = value; }
         }
 
         public DataFileArchival Archival
@@ -73,16 +113,16 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             this.sources = null;
             this.destinations = null;
-            this.path = null;
+            this.uri = null;
             this.archival = DataFileArchival.Automatic;
             this.timeout = 1000;    // *** TODO: use constant or setting
         }
 
         private void CopyMembers(TableExport old)
         {
-            this.sources = DeepCopyUtil.CopyArray(old.sources);
-            this.destinations = DeepCopyUtil.CopyArray(old.destinations);
-            this.path = old.path;
+            this.sources = Util.DeepCopy.CopyArray(old.sources);
+            this.destinations = Util.DeepCopy.CopyArray(old.destinations);
+            this.uri = old.uri;
             this.archival = old.archival;
             this.timeout = old.timeout;
         }
@@ -104,22 +144,45 @@ namespace Jhu.Graywulf.IO.Tasks
                 throw new InvalidOperationException();  // *** TODO
             }
 
-            // Open output stream
-            var sf = StreamFactory.Create();
-            sf.Mode = DataFileMode.Write;
-            sf.Archival = archival;
-            sf.Uri = path;
-            // TODO: add authentication options here
+            // Check if the archival option is turned on and create archive
+            // file if necessary by opening an IArchiveOutputStream
+            Stream output = null;
 
-            using (var output = sf.Open())
+            try
             {
+            if (archival == DataFileArchival.None)
+            {
+                // No stream opened
+                // Path will be treated as directory path
+                output = null;
+            }
+            else
+            {
+                // Open output stream using a stream factory
+                var sf = StreamFactory.Create();
+                sf.Mode = DataFileMode.Write;
+                sf.Archival = archival;
+                sf.Uri = uri;
+                // TODO: add authentication options here
+
+                output = sf.Open();
+            }
+
+                // Export tables one by one
                 for (int i = 0; i < sources.Length; i++)
                 {
                     ExportTable(sources[i], destinations[i], output);
                 }
 
                 output.Flush();
-                output.Close();
+            }
+            finally
+            {
+                if (output != null)
+                {
+                    output.Close();
+                    output.Dispose();
+                }
             }
         }
 
@@ -127,8 +190,38 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             try
             {
-                // Open file
-                destination.Open(output, DataFileMode.Write);
+                // Individual files have to openned differently when writing into
+                // an archive and when not. For archives, create a new entry for the
+                // file based on it's own filename.
+
+                if (output is IArchiveOutputStream)
+                {
+                    // Files are saved into an archive
+                    var aos = (IArchiveOutputStream)output;
+                    var entry = aos.CreateFileEntry(destination.Uri.ToString(), 0);
+                    aos.WriteNextEntry(entry);
+
+                    destination.Open(output, DataFileMode.Write);
+                }
+                else
+                {
+                    // Files saved individually
+
+                    // If file name is relative, it should be combined with the
+                    // path set for the table exporter
+                    Uri fileuri;
+
+                    if (!destination.Uri.IsAbsoluteUri)
+                    {
+                        fileuri = new Uri(uri, destination.Uri);
+                    }
+                    else
+                    {
+                        fileuri = destination.Uri;
+                    }
+
+                    destination.Open(fileuri, DataFileMode.Write);
+                }
 
                 // Create command that reads the table
                 using (var cmd = source.CreateCommand())

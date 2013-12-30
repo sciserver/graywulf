@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
+using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Test
@@ -147,9 +148,9 @@ namespace Jhu.Graywulf.Test
 
         #endregion
 
-        protected bool IsTableExisting(Jhu.Graywulf.IO.DestinationTableParameters destination)
+        protected bool IsTableExisting(Table table)
         {
-            return IsTableExisting(destination.Table.Dataset.ConnectionString, destination.Table.SchemaName, destination.Table.TableName);
+            return IsTableExisting(table.Dataset.ConnectionString, table.SchemaName, table.TableName);
         }
 
         protected bool IsTableExisting(string connectionString, string schemaName, string tableName)
@@ -180,9 +181,9 @@ namespace Jhu.Graywulf.Test
             }
         }
 
-        protected void DropTable(Jhu.Graywulf.IO.DestinationTableParameters destination)
+        protected void DropTable(Table table)
         {
-            DropTable(destination.Table.Dataset.ConnectionString, destination.Table.SchemaName, destination.Table.TableName);
+            DropTable(table.Dataset.ConnectionString, table.SchemaName, table.TableName);
         }
 
         protected void DropTable(string connectionString, string schemaName, string tableName)

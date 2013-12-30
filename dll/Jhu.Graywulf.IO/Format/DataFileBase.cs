@@ -287,10 +287,28 @@ namespace Jhu.Graywulf.Format
         {
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException("stream");  // TODO
             }
 
             OpenExternalStream(stream, fileMode);
+            Open();
+        }
+
+        /// <summary>
+        /// Opens a file by opening a new stream.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="fileMode"></param>
+        public void Open(Uri uri, DataFileMode fileMode)
+        {
+            if (uri == null)
+            {
+                throw new ArgumentNullException("uri"); // TODO
+            }
+
+            this.uri = uri;
+            this.fileMode = fileMode;
+
             Open();
         }
 

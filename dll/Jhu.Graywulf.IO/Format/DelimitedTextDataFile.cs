@@ -61,13 +61,13 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Constructors and initializers
 
-        protected DelimitedTextDataFile()
+        public DelimitedTextDataFile()
             : base()
         {
             InitializeMembers();
         }
 
-        protected DelimitedTextDataFile(DelimitedTextDataFile old)
+        public DelimitedTextDataFile(DelimitedTextDataFile old)
             : base(old)
         {
             CopyMembers(old);
