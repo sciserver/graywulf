@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void CopyMembers(TableCopy old)
         {
-            this.sources = DeepCopyUtil.CopyArray(old.sources);
+            this.sources = Util.DeepCopy.CopyArray(old.sources);
         }
 
         public override object Clone()

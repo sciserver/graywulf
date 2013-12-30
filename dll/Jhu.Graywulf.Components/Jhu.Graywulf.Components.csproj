@@ -45,7 +45,6 @@
     <Compile Include="Components\AssemblyNameComparer.cs" />
     <Compile Include="Components\Cache.cs" />
     <Compile Include="Components\CachedLazyDictionary.cs" />
-    <Compile Include="Components\DeepCopyUtil.cs" />
     <Compile Include="Components\ICacheable.cs" />
     <Compile Include="Components\LazyDictionary.cs" />
     <Compile Include="Components\LazyItemAddedEventArgs.cs" />
@@ -55,6 +54,8 @@
     <Compile Include="Components\LazyProperty.cs" />
     <Compile Include="Components\Map.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\DeepCopyUtil.cs" />
+    <Compile Include="Util\UriConverter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

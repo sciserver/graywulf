@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void CopyMembers(TableSourceQuery old)
         {
-            this.dataset = DeepCopyUtil.CopyObject(old.dataset);
+            this.dataset = Util.DeepCopy.CopyObject(old.dataset);
             this.query = old.query;
         }
 

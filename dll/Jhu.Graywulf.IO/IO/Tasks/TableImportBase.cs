@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void CopyMembers(TableImportBase old)
         {
-            this.destinations = DeepCopyUtil.CopyArray(old.destinations);
+            this.destinations = Util.DeepCopy.CopyArray(old.destinations);
             this.operation = old.operation;
             this.batchSize = old.batchSize;
             this.timeout = old.timeout;

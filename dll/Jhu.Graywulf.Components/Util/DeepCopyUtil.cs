@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jhu.Graywulf.Components
+namespace Jhu.Graywulf.Util
 {
-    public static class DeepCopyUtil
+    public static class DeepCopy
     {
         public static T CopyObject<T>(T source)
             where T : ICloneable

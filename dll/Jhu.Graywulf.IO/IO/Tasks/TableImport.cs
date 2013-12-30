@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void CopyMembers(TableImport old)
         {
-            this.sources = DeepCopyUtil.CopyArray(old.sources);
+            this.sources = Util.DeepCopy.CopyArray(old.sources);
             this.path = old.path;
             this.archival = old.archival;
         }

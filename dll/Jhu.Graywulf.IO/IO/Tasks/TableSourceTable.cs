@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void CopyMembers(TableSourceTable old)
         {
-            this.table = DeepCopyUtil.CopyObject(old.table);
+            this.table = Util.DeepCopy.CopyObject(old.table);
         }
 
         public override object Clone()

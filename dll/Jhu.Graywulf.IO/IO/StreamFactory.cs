@@ -291,7 +291,7 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapCompressedStreamForRead(Stream baseStream)
         {
-            var cm = GetCompressionMethod(GetPathFromUri());
+            var cm = GetCompressionMethod(Util.UriConverter.ToFilePath(uri));
 
             switch (cm)
             {
@@ -324,7 +324,7 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapCompressedStreamForWrite(Stream baseStream)
         {
-            var cm = GetCompressionMethod(GetPathFromUri());
+            var cm = GetCompressionMethod(Util.UriConverter.ToFilePath(uri));
 
             switch (cm)
             {
@@ -358,7 +358,7 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapArchiveStreamForRead(Stream baseStream)
         {
-            var am = GetArchivalMethod(GetPathFromUri());
+            var am = GetArchivalMethod(Util.UriConverter.ToFilePath(uri));
 
             switch (am)
             {
@@ -381,7 +381,7 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapArchiveStreamForWrite(Stream baseStream)
         {
-            var am = GetArchivalMethod(GetPathFromUri());
+            var am = GetArchivalMethod(Util.UriConverter.ToFilePath(uri));
 
             switch (am)
             {
@@ -407,13 +407,19 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         protected Stream OpenFileStream()
         {
-            var path = GetPathFromUri();
+            var path = Util.UriConverter.ToFilePath(uri);
 
             switch (mode)
             {
                 case DataFileMode.Read:
                     return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
                 case DataFileMode.Write:
+                    // Create directory first
+                    var dir = Path.GetDirectoryName(path);
+                    if (!String.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(path));
+                    }
                     return new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
                 default:
                     throw new NotImplementedException();
@@ -453,15 +459,6 @@ namespace Jhu.Graywulf.IO
 
         #endregion
         #region Utility functions
-
-        /// <summary>
-        /// Gets file path from a URI.
-        /// </summary>
-        /// <returns></returns>
-        private string GetPathFromUri()
-        {
-            return uri.IsAbsoluteUri ? uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped) : uri.ToString();
-        }
 
         /// <summary>
         /// Gets username and password as network credentials for HTTP, FTP etc.
