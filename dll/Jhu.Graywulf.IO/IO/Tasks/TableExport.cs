@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [NetDataContract]
     public interface ITableExport : IRemoteService
     {
-        TableSourceBase[] Sources
+        TableSourceQuery[] Sources
         {
             [OperationContract]
             get;
@@ -64,13 +64,13 @@ namespace Jhu.Graywulf.IO.Tasks
         IncludeExceptionDetailInFaults = true)]
     public class TableExport : RemoteServiceBase, ITableExport
     {
-        private TableSourceBase[] sources;
+        private TableSourceQuery[] sources;
         private DataFileBase[] destinations;
         private Uri uri;
         private DataFileArchival archival;
         private int timeout;
 
-        public TableSourceBase[] Sources
+        public TableSourceQuery[] Sources
         {
             get { return sources; }
             set { sources = value; }
@@ -186,7 +186,7 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
-        private void ExportTable(TableSourceBase source, DataFileBase destination, Stream output)
+        private void ExportTable(TableSourceQuery source, DataFileBase destination, Stream output)
         {
             try
             {
