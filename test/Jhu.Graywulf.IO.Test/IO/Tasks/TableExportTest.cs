@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 te = new TableExport();
             }
 
-            te.Sources = new TableSourceBase[] { source };
+            te.Sources = new TableSourceQuery[] { source };
             te.Destinations = new DataFileBase[] { destination };
             te.Uri = path;
 
@@ -57,15 +57,16 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         [TestMethod]
-        public void ExportDirectoryTest()
+        public void ExportToDirectoryTest()
         {
-            var path = "DataFileExporterTest_ExportZipTest.zip";
+            var path = "DataFileExporterTest_ExportToDirectoryTest";
             var dfe = GetTableExportTask(Util.UriConverter.FromFilePath(path), false);
+            dfe.Archival = DataFileArchival.None;
 
             dfe.Execute();
 
-            Assert.IsTrue(File.Exists(path));
-            File.Delete(path);
+            Assert.IsTrue(Directory.Exists(path));
+            Directory.Delete(path, true);
         }
 
         [TestMethod]

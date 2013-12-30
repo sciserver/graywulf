@@ -82,7 +82,8 @@ namespace Jhu.Graywulf.IO.Tasks
             set { destinations = value; }
         }
 
-        public Uri Uri {
+        public Uri Uri
+        {
             get { return uri; }
             set { uri = value; }
         }
@@ -150,36 +151,35 @@ namespace Jhu.Graywulf.IO.Tasks
 
             try
             {
-            if (archival == DataFileArchival.None)
-            {
-                // No stream opened
-                // Path will be treated as directory path
-                output = null;
-            }
-            else
-            {
-                // Open output stream using a stream factory
-                var sf = StreamFactory.Create();
-                sf.Mode = DataFileMode.Write;
-                sf.Archival = archival;
-                sf.Uri = uri;
-                // TODO: add authentication options here
+                if (archival == DataFileArchival.None)
+                {
+                    // No stream opened
+                    // Path will be treated as directory path
+                    output = null;
+                }
+                else
+                {
+                    // Open output stream using a stream factory
+                    var sf = StreamFactory.Create();
+                    sf.Mode = DataFileMode.Write;
+                    sf.Archival = archival;
+                    sf.Uri = uri;
+                    // TODO: add authentication options here
 
-                output = sf.Open();
-            }
+                    output = sf.Open();
+                }
 
                 // Export tables one by one
                 for (int i = 0; i < sources.Length; i++)
                 {
                     ExportTable(sources[i], destinations[i], output);
                 }
-
-                output.Flush();
             }
             finally
             {
                 if (output != null)
                 {
+                    output.Flush();
                     output.Close();
                     output.Dispose();
                 }
@@ -209,16 +209,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
                     // If file name is relative, it should be combined with the
                     // path set for the table exporter
-                    Uri fileuri;
-
-                    if (!destination.Uri.IsAbsoluteUri)
-                    {
-                        fileuri = new Uri(uri, destination.Uri);
-                    }
-                    else
-                    {
-                        fileuri = destination.Uri;
-                    }
+                    var fileuri = Util.UriConverter.Combine(uri, destination.Uri);
 
                     destination.Open(fileuri, DataFileMode.Write);
                 }

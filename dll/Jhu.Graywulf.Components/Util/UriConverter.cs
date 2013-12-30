@@ -43,5 +43,23 @@ namespace Jhu.Graywulf.Util
                 return uri.GetComponents(UriComponents.Path, UriFormat.Unescaped);
             }
         }
+
+        public static Uri Combine(Uri baseUri, Uri relativeUri)
+        {
+            if (relativeUri.IsAbsoluteUri)
+            {
+                return relativeUri;
+            }
+            else if (baseUri.IsAbsoluteUri)
+            {
+                return new Uri(baseUri, relativeUri);
+            }
+            else
+            {
+                var basestr = baseUri.ToString().TrimEnd('/', '\\');
+                var relstr = relativeUri.ToString().TrimStart('/', '\\');
+                return new Uri(basestr + "/" + relstr, UriKind.Relative);
+            }
+        }
     }
 }

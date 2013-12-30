@@ -418,7 +418,7 @@ namespace Jhu.Graywulf.IO
                     var dir = Path.GetDirectoryName(path);
                     if (!String.IsNullOrEmpty(dir) && !Directory.Exists(dir))
                     {
-                        Directory.CreateDirectory(Path.GetDirectoryName(path));
+                        Directory.CreateDirectory(dir);
                     }
                     return new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
                 default:
