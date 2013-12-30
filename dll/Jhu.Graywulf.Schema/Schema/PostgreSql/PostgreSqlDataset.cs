@@ -7,7 +7,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using System.Data;
 using Npgsql;
-using Jhu.Graywulf.Types;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Schema.PostgreSql
 { /// <summary>
@@ -723,6 +723,16 @@ WHERE nspname = @schemaName and proname= @objectName;";
                 }
             }
              * */
+        }
+
+        internal override void CreateTable(Table table)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal override void TruncateTable(Table table)
+        {
+            throw new NotImplementedException();
         }
 
         protected override DatasetStatistics LoadDatasetStatistics()

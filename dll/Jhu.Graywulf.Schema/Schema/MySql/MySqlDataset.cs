@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 using System.Data;
 using MySql.Data.MySqlClient;
 using System.Collections;
-using Jhu.Graywulf.Types;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Schema.MySql
 {
@@ -659,6 +659,16 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
                     cmd.ExecuteNonQuery();
                 }
             }*/
+        }
+
+        internal override void CreateTable(Table table)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal override void TruncateTable(Table table)
+        {
+            throw new NotImplementedException();
         }
 
         protected override DatasetStatistics LoadDatasetStatistics()

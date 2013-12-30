@@ -7,7 +7,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using System.Data;
 using System.Data.SqlClient;
-using Jhu.Graywulf.Types;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Schema.SqlServer
 {
@@ -801,10 +801,73 @@ WHERE s.name = @schemaName AND o.name = @objectName
                 throw new InvalidOperationException();
             }
 
-            var sql = String.Format(
-                "DROP {0} {1}",
+            var sql = String.Format(@"
+IF (OBJECT_ID('{1}') IS NOT NULL)
+BEGIN
+DROP {0} {1}",
                 Constants.SqlServerObjectTypeNames[obj.ObjectType],
                 obj.GetFullyResolvedName());
+
+            using (var cn = OpenConnection())
+            {
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        internal override void CreateTable(Table table)
+        {
+            if (!IsMutable)
+            {
+                throw new InvalidOperationException();
+            }
+
+            if (table.Columns.Count == 0)
+            {
+                throw new InvalidOperationException();
+            }
+
+            // Build column list
+            var cols = new StringBuilder();
+
+            int q = 0;
+            foreach (var c in table.Columns.Values)
+            {
+                if (q > 0)
+                {
+                    cols.AppendLine(",");
+                }
+
+                cols.AppendFormat("[{0}] {1} {2}NULL",
+                    c.Name,
+                    c.DataType.NameWithLength,
+                    c.DataType.IsNullable ? "" : "NOT ");
+
+                q++;
+            }
+
+            var sql = @"
+CREATE TABLE {0}
+(
+    {1}
+)";
+
+            sql = String.Format(sql, table.GetFullyResolvedName(), cols.ToString());
+
+            using (var cn = OpenConnection())
+            {
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        internal override void TruncateTable(Table table)
+        {
+            var sql = String.Format("TRUNCATE TABLE {0}", table.GetFullyResolvedName());
 
             using (var cn = OpenConnection())
             {

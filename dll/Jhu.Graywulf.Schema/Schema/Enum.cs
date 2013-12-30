@@ -5,6 +5,12 @@ using System.Text;
 
 namespace Jhu.Graywulf.Schema
 {
+    public enum Endianness
+    {
+        LittleEndian,
+        BigEndian,
+    }
+
     /// <summary>
     /// Represents different types of database objects
     /// </summary>
@@ -51,4 +57,12 @@ namespace Jhu.Graywulf.Schema
         Descending
     }
 
+    [Flags]
+    public enum TableInitializationOptions
+    {
+        Drop = 1,
+        Create = 2,
+        Clear = 4,
+        Append = 8
+    }
 }

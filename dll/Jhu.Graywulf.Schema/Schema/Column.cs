@@ -5,7 +5,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using System.Data;
 using System.Data.Common;
-using Jhu.Graywulf.Types;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Schema
 {
@@ -123,6 +123,17 @@ namespace Jhu.Graywulf.Schema
         public virtual object Clone()
         {
             return new Column(this);
+        }
+
+        public bool Compare(Column other)
+        {
+            var res = true;
+
+            res &= this.ID == other.ID;
+            res &= SchemaManager.Comparer.Compare(this.Name, other.Name) == 0;
+            res &= this.DataType.Compare(other.DataType);
+
+            return res;
         }
 
         public void CopyToSchemaTableRow(DataRow dr)

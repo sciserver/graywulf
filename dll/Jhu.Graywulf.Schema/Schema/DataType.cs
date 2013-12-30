@@ -5,7 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.Common;
 
-namespace Jhu.Graywulf.Types
+namespace Jhu.Graywulf.Schema
 {
     [Serializable]
     public class DataType : ICloneable
@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameUnknown
+                    Name = SqlServer.Constants.TypeNameUnknown
                 };
             }
         }
@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameTinyInt,
+                    Name = SqlServer.Constants.TypeNameTinyInt,
                     Type = typeof(Byte),
                     SqlDbType = System.Data.SqlDbType.TinyInt,
                     ByteSize = sizeof(Byte),
@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameSmallInt,
+                    Name = SqlServer.Constants.TypeNameSmallInt,
                     Type = typeof(Int16),
                     SqlDbType = System.Data.SqlDbType.SmallInt,
                     ByteSize = sizeof(Int16),
@@ -62,7 +62,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameInt,
+                    Name = SqlServer.Constants.TypeNameInt,
                     Type = typeof(Int32),
                     SqlDbType = System.Data.SqlDbType.Int,
                     ByteSize = sizeof(Int32),
@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameBigInt,
+                    Name = SqlServer.Constants.TypeNameBigInt,
                     Type = typeof(Int64),
                     SqlDbType = System.Data.SqlDbType.BigInt,
                     ByteSize = sizeof(Int64),
@@ -94,7 +94,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameBit,
+                    Name = SqlServer.Constants.TypeNameBit,
                     Type = typeof(Boolean),
                     SqlDbType = System.Data.SqlDbType.Bit,
                     ByteSize = 1,   // well, sort of...
@@ -110,7 +110,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameDecimal,
+                    Name = SqlServer.Constants.TypeNameDecimal,
                     Type = typeof(Decimal),
                     SqlDbType = System.Data.SqlDbType.Decimal,
                     ByteSize = sizeof(Decimal),
@@ -126,7 +126,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameSmallMoney,
+                    Name = SqlServer.Constants.TypeNameSmallMoney,
                     Type = typeof(Decimal),
                     SqlDbType = System.Data.SqlDbType.SmallMoney,
                     ByteSize = sizeof(Decimal),
@@ -142,7 +142,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameMoney,
+                    Name = SqlServer.Constants.TypeNameMoney,
                     Type = typeof(Decimal),
                     SqlDbType = System.Data.SqlDbType.Money,
                     ByteSize = sizeof(Decimal),
@@ -172,7 +172,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameReal,
+                    Name = SqlServer.Constants.TypeNameReal,
                     Type = typeof(Single),
                     SqlDbType = System.Data.SqlDbType.Real,
                     ByteSize = sizeof(Single),
@@ -188,7 +188,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameFloat,
+                    Name = SqlServer.Constants.TypeNameFloat,
                     Type = typeof(Double),
                     SqlDbType = System.Data.SqlDbType.Float,
                     ByteSize = sizeof(Double),
@@ -204,7 +204,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameDate,
+                    Name = SqlServer.Constants.TypeNameDate,
                     Type = typeof(DateTime),
                     SqlDbType = System.Data.SqlDbType.Date,
                     ByteSize = 8,
@@ -220,7 +220,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameTime,
+                    Name = SqlServer.Constants.TypeNameTime,
                     Type = typeof(DateTime),
                     SqlDbType = System.Data.SqlDbType.Time,
                     ByteSize = 8,
@@ -236,7 +236,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameSmallDateTime,
+                    Name = SqlServer.Constants.TypeNameSmallDateTime,
                     Type = typeof(DateTime),
                     SqlDbType = System.Data.SqlDbType.SmallDateTime,
                     ByteSize = 8
@@ -250,7 +250,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameDateTime,
+                    Name = SqlServer.Constants.TypeNameDateTime,
                     Type = typeof(DateTime),
                     SqlDbType = System.Data.SqlDbType.DateTime,
                     ByteSize = 8,
@@ -266,7 +266,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameDateTime2,
+                    Name = SqlServer.Constants.TypeNameDateTime2,
                     Type = typeof(DateTime),
                     SqlDbType = System.Data.SqlDbType.DateTime2,
                     ByteSize = 8
@@ -280,7 +280,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameDateTimeOffset,
+                    Name = SqlServer.Constants.TypeNameDateTimeOffset,
                     Type = typeof(TimeSpan),
                     SqlDbType = System.Data.SqlDbType.DateTimeOffset,
                     ByteSize = 8,
@@ -296,7 +296,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameChar,
+                    Name = SqlServer.Constants.TypeNameChar,
                     Type = typeof(String),
                     SqlDbType = System.Data.SqlDbType.Char,
                     ByteSize = 1,
@@ -316,7 +316,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameVarChar,
+                    Name = SqlServer.Constants.TypeNameVarChar,
                     Type = typeof(String),
                     SqlDbType = System.Data.SqlDbType.VarChar,
                     ByteSize = 1,
@@ -336,7 +336,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameVarChar,
+                    Name = SqlServer.Constants.TypeNameVarChar,
                     Type = typeof(String),
                     SqlDbType = System.Data.SqlDbType.VarChar,
                     ByteSize = 1,
@@ -364,7 +364,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameNChar,
+                    Name = SqlServer.Constants.TypeNameNChar,
                     Type = typeof(String),
                     SqlDbType = System.Data.SqlDbType.NChar,
                     ByteSize = 2,
@@ -384,7 +384,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameNVarChar,
+                    Name = SqlServer.Constants.TypeNameNVarChar,
                     Type = typeof(String),
                     SqlDbType = System.Data.SqlDbType.NVarChar,
                     ByteSize = 2,
@@ -404,7 +404,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameNVarChar,
+                    Name = SqlServer.Constants.TypeNameNVarChar,
                     Type = typeof(String),
                     SqlDbType = System.Data.SqlDbType.NVarChar,
                     ByteSize = 2,
@@ -440,7 +440,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameBinary,
+                    Name = SqlServer.Constants.TypeNameBinary,
                     Type = typeof(Byte[]),
                     SqlDbType = System.Data.SqlDbType.Binary,
                     ByteSize = 1,
@@ -460,7 +460,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameVarBinary,
+                    Name = SqlServer.Constants.TypeNameVarBinary,
                     Type = typeof(Byte[]),
                     SqlDbType = System.Data.SqlDbType.VarBinary,
                     ByteSize = 1,
@@ -480,7 +480,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameVarBinary,
+                    Name = SqlServer.Constants.TypeNameVarBinary,
                     Type = typeof(Byte[]),
                     SqlDbType = System.Data.SqlDbType.VarBinary,
                     ByteSize = 1,
@@ -516,7 +516,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameTimestamp,
+                    Name = SqlServer.Constants.TypeNameTimestamp,
                     Type = typeof(Int64),
                     SqlDbType = System.Data.SqlDbType.Timestamp,
                     ByteSize = 8,
@@ -532,7 +532,7 @@ namespace Jhu.Graywulf.Types
             {
                 return new DataType()
                 {
-                    Name = Constants.TypeNameUniqueIdentifier,
+                    Name = SqlServer.Constants.TypeNameUniqueIdentifier,
                     Type = typeof(Guid),
                     SqlDbType = System.Data.SqlDbType.UniqueIdentifier,
                     ByteSize = 16,
@@ -960,7 +960,7 @@ namespace Jhu.Graywulf.Types
         }
 
         #endregion
-        #region Private variable for property storage
+        #region Private variables for property storage
 
         /// <summary>
         /// Type name
@@ -1353,6 +1353,20 @@ namespace Jhu.Graywulf.Types
         }
 
         #endregion
+
+        public bool Compare(DataType other)
+        {
+            var res = true;
+
+            res &= SchemaManager.Comparer.Compare(this.Name, other.name) == 0;
+            res &= this.type == other.type;
+            res &= this.scale == other.scale;
+            res &= this.precision == other.precision;
+            res &= !this.hasLength || (this.length == other.length);
+            res &= this.isNullable == other.isNullable;
+
+            return res;
+        }
 
         public void CopyToSchemaTableRow(DataRow dr)
         {

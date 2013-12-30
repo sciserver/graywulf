@@ -88,5 +88,68 @@ namespace Jhu.Graywulf.Schema
         {
             return new Table(this);
         }
+
+        public void Initialize(TableInitializationOptions options)
+        {
+            if ((options & TableInitializationOptions.Drop) != 0)
+            {
+                Drop();
+            }
+
+            // *** TODO: implement other options
+            if ((options & TableInitializationOptions.Append) != 0)
+            {
+                // TODO: compare schema
+            }
+            else if ((options & TableInitializationOptions.Create) != 0)
+            {
+                Create();
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Creates the table
+        /// </summary>
+        public void Create()
+        {
+            Dataset.CreateTable(this);
+        }
+
+        /// <summary>
+        /// Truncates the table
+        /// </summary>
+        public void Truncate()
+        {
+            Dataset.TruncateTable(this);
+        }
+
+        /// <summary>
+        /// Verify the table schema by comparing columns to those are
+        /// actually present in the database.
+        /// </summary>
+        /// <returns></returns>
+        public bool VerifyColumns()
+        {
+            var tempcols = LoadColumns();
+
+            foreach (var key in tempcols.Keys)
+            {
+                if (!this.Columns.ContainsKey(key))
+                {
+                    return false;
+                }
+
+                if (!this.Columns[key].Compare(tempcols[key]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

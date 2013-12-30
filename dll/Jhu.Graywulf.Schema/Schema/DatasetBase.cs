@@ -7,7 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Components;
-using Jhu.Graywulf.Types;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Schema
 {
@@ -514,6 +514,10 @@ namespace Jhu.Graywulf.Schema
         /// Only works with mutable datasets, ie. myDBs
         /// </remarks>
         internal abstract void DropObject(DatabaseObject obj);
+
+        internal abstract void CreateTable(Table table);
+
+        internal abstract void TruncateTable(Table table);
 
         protected void ThrowInvalidObjectNameException(DatabaseObject databaseObject)
         {
