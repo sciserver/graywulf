@@ -94,6 +94,7 @@
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="IO\Tasks\FileCopy.cs" />
+    <Compile Include="IO\Tasks\TableImportArchive.cs" />
     <Compile Include="IO\Tasks\TableImportBase.cs" />
     <Compile Include="IO\Tasks\TableImport.cs" />
     <Compile Include="IO\Tasks\TableSourceQuery.cs" />

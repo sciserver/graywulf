@@ -16,16 +16,30 @@ namespace Jhu.Graywulf.IO.Tasks
     [RemoteServiceClass(typeof(TableImport))]
     public interface ITableImport : ITableImportBase
     {
+        DataFileBase[] Sources
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
+
+        Table[] Destinations
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
     }
 
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
-    public class TableImport : TableImportBase, ITableImport, ICloneable
+    public class TableImport : TableImportBase, ITableImport, ICloneable, IDisposable
     {
         private DataFileBase[] sources;
-        private Uri uri;
-        private DataFileArchival archival;
+        private Table[] destinations;
 
         public DataFileBase[] Sources
         {
@@ -33,16 +47,10 @@ namespace Jhu.Graywulf.IO.Tasks
             set { sources = value; }
         }
 
-        public Uri Path
+        public Table[] Destinations
         {
-            get { return uri; }
-            set { uri = value; }
-        }
-
-        public DataFileArchival Archival
-        {
-            get { return archival; }
-            set { archival = value; }
+            get { return destinations; }
+            set { destinations = value; }
         }
 
         public TableImport()
@@ -58,21 +66,24 @@ namespace Jhu.Graywulf.IO.Tasks
         private void InitializeMembers()
         {
             this.sources = null;
-            this.uri = null;
-            this.archival = DataFileArchival.Automatic;
+            this.destinations = null;
         }
 
         private void CopyMembers(TableImport old)
         {
             this.sources = Util.DeepCopy.CopyArray(old.sources);
-            this.uri = old.uri;
-            this.archival = old.archival;
+            this.destinations = Util.DeepCopy.CopyArray(old.destinations);
         }
 
         public override object Clone()
         {
             return new TableImport(this);
         }
+
+        public void Dispose()
+        {
+        }
+
 
         protected override void OnExecute()
         {
@@ -91,72 +102,21 @@ namespace Jhu.Graywulf.IO.Tasks
                 throw new InvalidOperationException();  // *** TODO
             }
 
-            // Check if the archival option is turned on and open archive
-            // file if necessary by opening an IArchiveInputStream
-            Stream input = null;
+            // This is the tricky part here...
 
-            try
+            // Import each file
+            for (int i = 0; i < sources.Length; i++)
             {
-                if (archival == DataFileArchival.None)
-                {
-                    // No stream to open
-                    // Path will be treated as directory path
-                    input = null;
-                }
-                else
-                {
-                    // Open input stream
-                    var sf = StreamFactory.Create();
-                    sf.Mode = DataFileMode.Read;
-                    sf.Archival = archival;
-                    sf.Uri = uri;
-                    // TODO: add authentication options here
-
-                    input = sf.Open();
-                }
-
-                for (int i = 0; i < sources.Length; i++)
-                {
-                    ImportTable(sources[i], Destinations[i], input);
-                }
-            }
-            finally
-            {
-                if (input != null)
-                {
-                    input.Close();
-                    input.Dispose();
-                }
+                ImportTable(sources[i], destinations[i]);
             }
         }
 
-        private void ImportTable(DataFileBase source, Table destination, Stream input)
+        private void ImportTable(DataFileBase source, Table destination)
         {
-            // Individual files have to opened differently when reading from
-            // an archive and when not.
-
-            try
+            // Create a command that reads the file
+            using (var cmd = new FileCommand(source))
             {
-                if (input is IArchiveInputStream)
-                {
-                    var ais = (IArchiveInputStream)input;
-                    ais.ReadNextFileEntry();
-                }
-                else
-                {
-                    // Open file
-                    source.Open(input, DataFileMode.Read);
-                }
-
-                // Create a command that reads the file
-                using (var cmd = new FileCommand(source))
-                {
-                    ImportTable(cmd, destination);
-                }
-            }
-            finally
-            {
-                source.Close();
+                ImportTable(cmd, destination);
             }
         }
     }

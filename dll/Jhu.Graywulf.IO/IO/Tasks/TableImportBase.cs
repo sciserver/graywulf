@@ -18,14 +18,6 @@ namespace Jhu.Graywulf.IO.Tasks
     [NetDataContract]
     public interface ITableImportBase : IRemoteService
     {
-        Table[] Destinations
-        {
-            [OperationContract]
-            get;
-            [OperationContract]
-            set;
-        }
-
         TableInitializationOptions Options
         {
             [OperationContract]
@@ -56,7 +48,6 @@ namespace Jhu.Graywulf.IO.Tasks
         IncludeExceptionDetailInFaults = true)]
     public abstract class TableImportBase : RemoteServiceBase, ITableImportBase, ICloneable
     {
-        private Table[] destinations;
         private TableInitializationOptions options;
         private int batchSize;
         private int timeout;
@@ -65,12 +56,6 @@ namespace Jhu.Graywulf.IO.Tasks
         private bool isBulkCopyCanceled;
         [NonSerialized]
         EventWaitHandle bulkCopyFinishedEvent;
-
-        public Table[] Destinations
-        {
-            get { return destinations; }
-            set { destinations = value; }
-        }
 
         public TableInitializationOptions Options
         {
@@ -102,7 +87,6 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void InitializeMembers()
         {
-            this.destinations = null;
             this.options = TableInitializationOptions.Append;
             this.batchSize = 10000;
             this.timeout = 1000;    // *** TODO: use constant or setting
@@ -110,7 +94,6 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void CopyMembers(TableImportBase old)
         {
-            this.destinations = Util.DeepCopy.CopyArray(old.destinations);
             this.options = old.options;
             this.batchSize = old.batchSize;
             this.timeout = old.timeout;
@@ -181,36 +164,5 @@ namespace Jhu.Graywulf.IO.Tasks
 
             base.Cancel();
         }
-
-        /*
-        /// <summary>
-        /// Creates the destination table
-        /// </summary>
-        /// <param name="schemaTable"></param>
-        public static void CreateDestinationTable(DataTable schemaTable, Table destination)
-        {
-            // Generate create table SQL
-            var cg = new SqlServerCodeGenerator();
-            var sql = cg.GenerateCreateDestinationTableQuery(schemaTable, destination);
-
-            // Execute CREATE TABLE query on destination
-            using (var cn = new SqlConnection(destination.Dataset.ConnectionString))
-            {
-                cn.Open();
-
-                using (var cmd = new SqlCommand(sql, cn))
-                {
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-
-        protected void TruncateTable(Table table)
-        {
-            // TODO: move this to schema eventually
-            string sql = String.Format("TRUNCATE TABLE [{0}].[{1}]", table.SchemaName, table.TableName);
-
-            ExecuteCommandNonQuery(sql, table.Dataset.ConnectionString);
-        }*/
     }
 }

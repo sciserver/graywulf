@@ -30,19 +30,6 @@ namespace Jhu.Graywulf.Format
             return (FileFormatFactory)Activator.CreateInstance(type, true);
         }
 
-        /// <summary>
-        /// Returns a file object based on the format description.
-        /// </summary>
-        /// <param name="format"></param>
-        /// <returns></returns>
-        public static DataFileBase CreateFile(FileFormatDescription format)
-        {
-            var c = format.Type.GetConstructor(Type.EmptyTypes);
-            var f = (DataFileBase)c.Invoke(null);
-
-            return f;
-        }
-
         #endregion
         #region Constructors and initializers
 
@@ -52,28 +39,25 @@ namespace Jhu.Graywulf.Format
 
         #endregion
 
-        protected string GetPathFromUri(Uri uri)
-        {
-            return uri.IsAbsoluteUri ? uri.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped) : uri.ToString();
-        }
-
         /// <summary>
         /// Returns the file extension by stripping of the extension of the
         /// compressed file, if any.
         /// </summary>
-        protected void GetExtensionWithoutCompression(Uri uri, out string path, out string extension, out DataFileCompression compressionMethod)
+        protected void GetExtensionWithoutCompression(Uri uri, out string filename, out string extension, out DataFileCompression compressionMethod)
         {
-            path = GetPathFromUri(uri);
+            var path = uri.PathAndQuery;    // This isn't always a file path, so it's the safest to do now
             extension = Path.GetExtension(path);
 
             if (Jhu.Graywulf.IO.Constants.CompressionExtensions.ContainsKey(extension))
             {
-                compressionMethod = Jhu.Graywulf.IO.Constants.CompressionExtensions[extension];
-                path = Path.GetFileNameWithoutExtension(path);
+                filename = Path.GetFileNameWithoutExtension(path);
                 extension = Path.GetExtension(path);
+                compressionMethod = Jhu.Graywulf.IO.Constants.CompressionExtensions[extension];
             }
             else
             {
+                filename = Path.GetFileName(path);
+                extension = Path.GetExtension(path);
                 compressionMethod = DataFileCompression.None;
             }
         }
@@ -103,9 +87,9 @@ namespace Jhu.Graywulf.Format
             return GetFileFormatDescriptions()[typeName];
         }
 
-        public FileFormatDescription GetFileFormatDescription(Uri uri, out string path, out string extension, out DataFileCompression compression)
+        public FileFormatDescription GetFileFormatDescription(Uri uri, out string filename, out string extension, out DataFileCompression compression)
         {
-            GetExtensionWithoutCompression(uri, out path, out extension, out compression);
+            GetExtensionWithoutCompression(uri, out filename, out extension, out compression);
 
             // FInd file format with the appropriate extensions
             FileFormatDescription format = null;
@@ -150,6 +134,37 @@ namespace Jhu.Graywulf.Format
             }
 
             return res;
+        }
+
+        /// <summary>
+        /// Returns a file object based on the format description.
+        /// </summary>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        public DataFileBase CreateFile(FileFormatDescription format)
+        {
+            var c = format.Type.GetConstructor(Type.EmptyTypes);
+            var f = (DataFileBase)c.Invoke(null);
+
+            return f;
+        }
+
+        public DataFileBase CreateFile(Uri uri)
+        {
+            string filename, extension;
+            DataFileCompression compression;
+
+            var ffd = GetFileFormatDescription(uri, out filename, out extension, out compression);
+            var format = CreateFile(ffd);
+
+            format.Uri = uri;
+
+            return format;
+        }
+
+        public DataFileBase CreateFile(string filename)
+        {
+            return CreateFile(Util.UriConverter.FromFilePath(filename));
         }
     }
 }

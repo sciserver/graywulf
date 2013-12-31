@@ -25,6 +25,14 @@ namespace Jhu.Graywulf.IO.Tasks
             [OperationContract]
             set;
         }
+
+        Table[] Destinations
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
     }
 
     [ServiceBehavior(
@@ -33,11 +41,18 @@ namespace Jhu.Graywulf.IO.Tasks
     public class TableCopy : TableImportBase, ITableCopy, ICloneable
     {
         private TableSourceQuery[] sources;
+        private Table[] destinations;
 
         public TableSourceQuery[] Sources
         {
             get { return sources; }
             set { sources = value; }
+        }
+
+        public Table[] Destinations
+        {
+            get { return destinations; }
+            set { destinations = value; }
         }
 
         public TableCopy()
@@ -53,11 +68,13 @@ namespace Jhu.Graywulf.IO.Tasks
         private void InitializeMembers()
         {
             this.sources = null;
+            this.destinations = null;
         }
 
         private void CopyMembers(TableCopy old)
         {
             this.sources = Util.DeepCopy.CopyArray(old.sources);
+            this.destinations = Util.DeepCopy.CopyArray(old.destinations);
         }
 
         public override object Clone()
