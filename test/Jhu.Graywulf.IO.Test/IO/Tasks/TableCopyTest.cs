@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 Query = "SELECT 1 AS one, 2 AS two, 3 AS three"
             };
 
-            q.Sources = new SourceTableQuery[] { source };
+            q.Source = new SourceTableQuery[] { source };
 
           
             var destination = new Jhu.Graywulf.Schema.Table()
@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 TableName = tableName
             };
 
-            q.Destinations = new Schema.Table[] { destination };
+            q.Destination = new Schema.Table[] { destination };
 
             q.Options = TableInitializationOptions.Create;
 
@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
             q.Execute();
 
-            DropTable(q.Destinations[0]);
+            DropTable(q.Destination[0]);
         }
 
         [TestMethod]
@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 q.Execute();
 
-                DropTable(q.Destinations[0]);
+                DropTable(q.Destination[0]);
             }
         }
     }

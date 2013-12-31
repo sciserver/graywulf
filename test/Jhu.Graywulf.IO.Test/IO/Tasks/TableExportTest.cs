@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [TestClass]
     public class TableExportTest : TestClassBase
     {
-        private IExportTable GetTableExportTask(Uri path, bool remote)
+        private IExportTable GetTableExportTask(string path, bool remote)
         {
             var source = new SourceTableQuery()
             {
@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.IO.Tasks
             
             var destination = new DelimitedTextDataFile()
             {
-                Uri = new Uri("test.txt", UriKind.Relative)
+                Uri = Util.UriConverter.FromFilePath(path)
             };
 
             IExportTable te = null;
@@ -37,55 +37,17 @@ namespace Jhu.Graywulf.IO.Tasks
                 te = new ExportTable();
             }
 
-            te.Sources = new SourceTableQuery[] { source };
-            te.Destinations = new DataFileBase[] { destination };
-            te.Uri = path;
+            te.Source = source;
+            te.Destination = destination;
 
             return te;
         }
 
         [TestMethod]
-        public void ExportZipTest()
+        public void ExportTest()
         {
-            var path = "DataFileExporterTest_ExportZipTest.zip";
-            var dfe = GetTableExportTask(Util.UriConverter.FromFilePath(path), false);
-
-            dfe.Execute();
-
-            Assert.IsTrue(File.Exists(path));
-            File.Delete(path);
-        }
-
-        [TestMethod]
-        public void ExportToDirectoryTest()
-        {
-            var path = "DataFileExporterTest_ExportToDirectoryTest";
-            var dfe = GetTableExportTask(Util.UriConverter.FromFilePath(path), false);
-            dfe.Archival = DataFileArchival.None;
-
-            dfe.Execute();
-
-            Assert.IsTrue(Directory.Exists(path));
-            Directory.Delete(path, true);
-        }
-
-        [TestMethod]
-        public void ExportToRelativeTest()
-        {
-            var path = "DataFileExporterTest_ExportToRelativeTest.zip";
-            var dfe = GetTableExportTask(Util.UriConverter.FromFilePath(path), false);
-
-            dfe.Execute();
-
-            Assert.IsTrue(File.Exists(path));
-            File.Delete(path);
-        }
-
-        [TestMethod]
-        public void ExportToAbsoluteTest()
-        {
-            var path = @"C:\DataFileExporterTest_ExportToAbsoluteTest.zip";
-            var dfe = GetTableExportTask(Util.UriConverter.FromFilePath(path), false);
+            var path = "TableExportTest_ExportTest.csv";
+            var dfe = GetTableExportTask(path, false);
 
             dfe.Execute();
 
@@ -96,8 +58,8 @@ namespace Jhu.Graywulf.IO.Tasks
         [TestMethod]
         public void ExportToUncTest()
         {
-            var path = String.Format(@"\\{0}\{1}\{2}.zip", Test.Constants.RemoteHost1, Test.Constants.GWCode, "DataFileExporterTest_ExportToUncTest");
-            var dfe = GetTableExportTask(Util.UriConverter.FromFilePath(path), false);
+            var path = String.Format(@"\\{0}\{1}\{2}.csv", Test.Constants.RemoteHost1, Test.Constants.GWCode, "TableExportTest_ExportToUncTest");
+            var dfe = GetTableExportTask(path, false);
 
             dfe.Execute();
 
@@ -112,13 +74,10 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var path = String.Format(@"\\{0}\{1}\{2}.zip", Test.Constants.RemoteHost1, Test.Constants.GWCode, "DataFileExporterTest_RemoteExportTest");
-                var dfe = GetTableExportTask(Util.UriConverter.FromFilePath(path), false);
+                var path = String.Format(@"\\{0}\{1}\{2}.csv", Test.Constants.RemoteHost1, Test.Constants.GWCode, "TableExportTest_RemoteExportTest");
+                var dfe = GetTableExportTask(path, false);
 
                 dfe.Execute();
-
-                var d = dfe.Destinations[0];
-                var p = dfe.Destinations[0].Uri;
 
                 Assert.IsTrue(File.Exists(path));
                 File.Delete(path);
