@@ -14,11 +14,11 @@ using Jhu.Graywulf.Format;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
-    [RemoteServiceClass(typeof(TableExport))]
+    [RemoteServiceClass(typeof(ExportTable))]
     [NetDataContract]
-    public interface ITableExport : IRemoteService
+    public interface IExportTable : IRemoteService
     {
-        TableSourceQuery[] Sources
+        SourceTableQuery[] Sources
         {
             [OperationContract]
             get;
@@ -73,15 +73,15 @@ namespace Jhu.Graywulf.IO.Tasks
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
-    public class TableExport : RemoteServiceBase, ITableExport
+    public class ExportTable : RemoteServiceBase, IExportTable
     {
-        private TableSourceQuery[] sources;
+        private SourceTableQuery[] sources;
         private DataFileBase[] destinations;
         private Uri uri;
         private DataFileArchival archival;
         private int timeout;
 
-        public TableSourceQuery[] Sources
+        public SourceTableQuery[] Sources
         {
             get { return sources; }
             set { sources = value; }
@@ -111,12 +111,12 @@ namespace Jhu.Graywulf.IO.Tasks
             set { timeout = value; }
         }
 
-        public TableExport()
+        public ExportTable()
         {
             InitializeMembers();
         }
 
-        public TableExport(TableExport old)
+        public ExportTable(ExportTable old)
         {
             CopyMembers(old);
         }
@@ -130,7 +130,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.timeout = 1000;    // *** TODO: use constant or setting
         }
 
-        private void CopyMembers(TableExport old)
+        private void CopyMembers(ExportTable old)
         {
             this.sources = Util.DeepCopy.CopyArray(old.sources);
             this.destinations = Util.DeepCopy.CopyArray(old.destinations);
@@ -197,7 +197,7 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
-        private void ExportTable(TableSourceQuery source, DataFileBase destination, Stream output)
+        private void ExportTable(SourceTableQuery source, DataFileBase destination, Stream output)
         {
             // Individual files have to opened differently when writing into
             // an archive and when not. For archives, create a new entry for the

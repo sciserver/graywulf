@@ -977,7 +977,7 @@ END";
             ExecuteCommandNonQuery(sql, tableOrView.Dataset.ConnectionString);
         }*/
 
-        protected void ExecuteSelectInto(TableSourceQuery source, Table destination, int timeout)
+        protected void ExecuteSelectInto(SourceTableQuery source, Table destination, int timeout)
         {
             string sql = String.Format(
                 "SELECT __tablealias.* INTO [{0}].[{1}].[{2}] FROM ({3}) AS __tablealias",
@@ -989,7 +989,7 @@ END";
             ExecuteLongCommandNonQuery(sql, source.Dataset.ConnectionString, timeout);
         }
 
-        protected void ExecuteInsertInto(TableSourceQuery source, Table destination, int timeout)
+        protected void ExecuteInsertInto(SourceTableQuery source, Table destination, int timeout)
         {
             string sql = String.Format(
                 "INSERT [{0}].[{1}].[{2}] WITH (TABLOCKX) SELECT __tablealias.* FROM ({3}) AS __tablealias",
@@ -1008,22 +1008,22 @@ END";
         /// <param name="destination"></param>
         /// <param name="local"></param>
         /// <returns></returns>
-        protected ITableCopy CreateTableCopyTask(TableSourceQuery source, Table destination, bool local)
+        protected ICopyTable CreateTableCopyTask(SourceTableQuery source, Table destination, bool local)
         {
             var desthost = GetHostnameFromSqlConnectionString(destination.Dataset.ConnectionString);
 
-            ITableCopy qi;
+            ICopyTable qi;
 
             if (local)
             {
-                qi = new TableCopy();
+                qi = new CopyTable();
             }
             else
             {
-                qi = RemoteServiceHelper.CreateObject<ITableCopy>(desthost);
+                qi = RemoteServiceHelper.CreateObject<ICopyTable>(desthost);
             }
 
-            qi.Sources = new TableSourceQuery[] { source };
+            qi.Sources = new SourceTableQuery[] { source };
             qi.Destinations = new Table[] { destination };
 
             return qi;

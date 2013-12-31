@@ -14,16 +14,16 @@ namespace Jhu.Graywulf.IO.Tasks
     [TestClass]
     public class TableCopyTest : TestClassBase
     {
-        private ITableCopy GetTableCopy(string tableName, bool remote)
+        private ICopyTable GetTableCopy(string tableName, bool remote)
         {
-            ITableCopy q = null;
+            ICopyTable q = null;
             if (remote)
             {
-                q = RemoteServiceHelper.CreateObject<ITableCopy>(Test.Constants.Localhost);
+                q = RemoteServiceHelper.CreateObject<ICopyTable>(Test.Constants.Localhost);
             }
             else
             {
-                q = new TableCopy();
+                q = new CopyTable();
             }
 
             var ds = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString)
@@ -31,13 +31,13 @@ namespace Jhu.Graywulf.IO.Tasks
                 IsMutable = true
             };
 
-            var source = new TableSourceQuery()
+            var source = new SourceTableQuery()
             {
                 Dataset = ds,
                 Query = "SELECT 1 AS one, 2 AS two, 3 AS three"
             };
 
-            q.Sources = new TableSourceQuery[] { source };
+            q.Sources = new SourceTableQuery[] { source };
 
           
             var destination = new Jhu.Graywulf.Schema.Table()

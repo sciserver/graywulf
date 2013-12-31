@@ -15,16 +15,16 @@ namespace Jhu.Graywulf.IO.Tasks
     [DeploymentItem("eseutil.exe")]
     public class FileCopyTest : TestClassBase
     {
-        private IFileCopy GetFileCopy(string name, bool remote)
+        private ICopyFile GetFileCopy(string name, bool remote)
         {
-            IFileCopy fc;
+            ICopyFile fc;
             if (remote)
             {
-                fc = RemoteServiceHelper.CreateObject<IFileCopy>(Test.Constants.Localhost);
+                fc = RemoteServiceHelper.CreateObject<ICopyFile>(Test.Constants.Localhost);
             }
             else
             {
-                fc = new FileCopy();
+                fc = new CopyFile();
             }
 
             fc.Source = String.Format(@"\\{0}\{1}\{2}.txt", Test.Constants.RemoteHost1, Test.Constants.GWCode, name);

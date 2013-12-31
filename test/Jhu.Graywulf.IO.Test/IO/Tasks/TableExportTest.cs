@@ -14,9 +14,9 @@ namespace Jhu.Graywulf.IO.Tasks
     [TestClass]
     public class TableExportTest : TestClassBase
     {
-        private ITableExport GetTableExportTask(Uri path, bool remote)
+        private IExportTable GetTableExportTask(Uri path, bool remote)
         {
-            var source = new TableSourceQuery()
+            var source = new SourceTableQuery()
             {
                 Dataset = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString),
                 Query = "SELECT * FROM SampleData"
@@ -27,17 +27,17 @@ namespace Jhu.Graywulf.IO.Tasks
                 Uri = new Uri("test.txt", UriKind.Relative)
             };
 
-            ITableExport te = null;
+            IExportTable te = null;
             if (remote)
             {
-                te = RemoteServiceHelper.CreateObject<ITableExport>(Test.Constants.Localhost);
+                te = RemoteServiceHelper.CreateObject<IExportTable>(Test.Constants.Localhost);
             }
             else
             {
-                te = new TableExport();
+                te = new ExportTable();
             }
 
-            te.Sources = new TableSourceQuery[] { source };
+            te.Sources = new SourceTableQuery[] { source };
             te.Destinations = new DataFileBase[] { destination };
             te.Uri = path;
 

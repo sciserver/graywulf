@@ -14,8 +14,8 @@ using Jhu.Graywulf.Schema.SqlServer;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
-    [RemoteServiceClass(typeof(TableImportArchive))]
-    public interface ITableImportArchive : ITableImportBase
+    [RemoteServiceClass(typeof(ImportTableArchive))]
+    public interface IImportTableArchive : IImportTableBase
     {
         Uri Uri
         {
@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
-    public class TableImportArchive : TableImportBase, ITableImportArchive, ICloneable, IDisposable
+    public class ImportTableArchive : ImportTableBase, IImportTableArchive, ICloneable, IDisposable
     {
         private Uri uri;
         private SqlServerDataset destination;
@@ -64,12 +64,12 @@ namespace Jhu.Graywulf.IO.Tasks
             set { destination = value; }
         }
 
-        public TableImportArchive()
+        public ImportTableArchive()
         {
             InitializeMembers();
         }
 
-        public TableImportArchive(TableImportArchive old)
+        public ImportTableArchive(ImportTableArchive old)
         {
             CopyMembers(old);
         }
@@ -81,7 +81,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.ownsBaseStream = false;
         }
 
-        private void CopyMembers(TableImportArchive old)
+        private void CopyMembers(ImportTableArchive old)
         {
             this.uri = old.uri;
             this.baseStream = null;
@@ -90,7 +90,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         public override object Clone()
         {
-            return new TableImportArchive(this);
+            return new ImportTableArchive(this);
         }
 
         public void Dispose()

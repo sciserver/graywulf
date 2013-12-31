@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             this.timeout = 1200;    // *** TODO: get from settings
         }
 
-        public ITableExport GetInitializedTableExportTask()
+        public IExportTable GetInitializedTableExportTask()
         {
             // Determine server name from connection string
             // This is required, because bulk copy can go into databases that are only known
@@ -83,10 +83,10 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             // Get server name from data source name (requires trimming the sql server instance name)
             string host = ((Jhu.Graywulf.Schema.SqlServer.SqlServerDataset)sources[0].Dataset).Host;
 
-            var ss = new TableSourceQuery[sources.Length];
+            var ss = new SourceTableQuery[sources.Length];
             for (int i = 0; i < sources.Length; i++)
             {
-                ss[i] = new TableSourceQuery()
+                ss[i] = new SourceTableQuery()
                 {
                     Dataset = sources[i].Dataset,
                     Query = String.Format("SELECT t.* FROM [{0}].[{1}] AS t", sources[i].SchemaName, sources[i].ObjectName)
@@ -94,7 +94,7 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             }
 
             // Create bulk operation
-            var te = RemoteServiceHelper.CreateObject<ITableExport>(host);
+            var te = RemoteServiceHelper.CreateObject<IExportTable>(host);
 
             te.Sources = ss;
             te.Destinations = destinations;

@@ -362,7 +362,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="table"></param>
         /// <returns></returns>
-        public TableSourceQuery PrepareCopyRemoteTable(TableReference table)
+        public SourceTableQuery PrepareCopyRemoteTable(TableReference table)
         {
             // -- Load schema
             var sm = this.GetSchemaManager(false);
@@ -386,7 +386,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var cg = SqlCodeGeneratorFactory.CreateCodeGenerator(ds);
             var sql = cg.GenerateMostRestrictiveTableQuery(table, true, 0);
 
-            return new TableSourceQuery()
+            return new SourceTableQuery()
             {
                 Dataset = ds,
                 Query = sql
@@ -399,7 +399,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="table"></param>
         /// <param name="source"></param>
-        public void CopyRemoteTable(TableReference table, TableSourceQuery source)
+        public void CopyRemoteTable(TableReference table, SourceTableQuery source)
         {
             // Create a target table name
             var temptable = GetTemporaryTable(table.EscapedUniqueName);
@@ -453,9 +453,9 @@ namespace Jhu.Graywulf.Jobs.Query
         /// the destination table.
         /// </summary>
         /// <returns></returns>
-        public virtual TableSourceQuery GetOutputSourceQuery()
+        public virtual SourceTableQuery GetOutputSourceQuery()
         {
-            return new TableSourceQuery()
+            return new SourceTableQuery()
             {
                 Dataset = GetTemporaryDatabaseDataset(),
                 Query = GetOutputQueryText()
@@ -637,7 +637,7 @@ namespace Jhu.Graywulf.Jobs.Query
                         sql = String.Format(sql, temptable.DatabaseName, temptable.SchemaName, temptable.TableName);
                         DumpSqlCommand(sql);
 
-                        var source = new TableSourceQuery()
+                        var source = new SourceTableQuery()
                         {
                             Dataset = temptable.Dataset,
                             Query = sql

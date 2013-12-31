@@ -85,7 +85,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                 new FileInfo(sourceFilename).Length != new FileInfo(destinationFilename).Length)
             {
 
-                var fc = RemoteServiceHelper.CreateObject<IFileCopy>(hostName);
+                var fc = RemoteServiceHelper.CreateObject<ICopyFile>(hostName);
 
                 fc.Source = sourceFilename;
                 fc.Destination = destinationFilename;

@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Jobs.Query
             QueryPartitionBase querypartition = (QueryPartitionBase)QueryPartition.Get(activityContext);
             
             TableReference remotetable = null;
-            TableSourceQuery source;
+            SourceTableQuery source;
 
             using (Context context = querypartition.Query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {       
@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.Jobs.Query
             return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, querypartition, remotetable, source), callback, state);
         }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, QueryPartitionBase querypartition, TableReference remotetable, TableSourceQuery source)
+        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, QueryPartitionBase querypartition, TableReference remotetable, SourceTableQuery source)
         {
             RegisterCancelable(workflowInstanceGuid, activityInstanceId, querypartition);
             querypartition.CopyRemoteTable(remotetable, source);

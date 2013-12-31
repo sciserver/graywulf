@@ -14,11 +14,11 @@ using Jhu.Graywulf.Schema;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
-    [RemoteServiceClass(typeof(TableCopy))]
+    [RemoteServiceClass(typeof(CopyTable))]
     [NetDataContract]
-    public interface ITableCopy : ITableImportBase
+    public interface ICopyTable : IImportTableBase
     {
-        TableSourceQuery[] Sources
+        SourceTableQuery[] Sources
         {
             [OperationContract]
             get;
@@ -38,12 +38,12 @@ namespace Jhu.Graywulf.IO.Tasks
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
-    public class TableCopy : TableImportBase, ITableCopy, ICloneable
+    public class CopyTable : ImportTableBase, ICopyTable, ICloneable
     {
-        private TableSourceQuery[] sources;
+        private SourceTableQuery[] sources;
         private Table[] destinations;
 
-        public TableSourceQuery[] Sources
+        public SourceTableQuery[] Sources
         {
             get { return sources; }
             set { sources = value; }
@@ -55,12 +55,12 @@ namespace Jhu.Graywulf.IO.Tasks
             set { destinations = value; }
         }
 
-        public TableCopy()
+        public CopyTable()
         {
             InitializeMembers();
         }
 
-        public TableCopy(TableCopy old)
+        public CopyTable(CopyTable old)
         {
             CopyMembers(old);
         }
@@ -71,7 +71,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.destinations = null;
         }
 
-        private void CopyMembers(TableCopy old)
+        private void CopyMembers(CopyTable old)
         {
             this.sources = Util.DeepCopy.CopyArray(old.sources);
             this.destinations = Util.DeepCopy.CopyArray(old.destinations);
@@ -79,7 +79,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         public override object Clone()
         {
-            return new TableCopy(this);
+            return new CopyTable(this);
         }
 
         protected override void OnExecute()
@@ -105,7 +105,7 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
-        private void CopyTable(TableSourceQuery source, Table destination)
+        private void CopyTable(SourceTableQuery source, Table destination)
         {
             // Create command that reads the table
             using (var cmd = source.CreateCommand())

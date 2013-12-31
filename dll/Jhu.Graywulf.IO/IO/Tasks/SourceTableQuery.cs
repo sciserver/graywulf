@@ -10,7 +10,7 @@ using Jhu.Graywulf.Schema;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [Serializable]
-    public class TableSourceQuery : ICloneable
+    public class SourceTableQuery : ICloneable
     {
         private DatasetBase dataset;
         private string query;
@@ -27,12 +27,12 @@ namespace Jhu.Graywulf.IO.Tasks
             set { query = value; }
         }
 
-        public TableSourceQuery()
+        public SourceTableQuery()
         {
             InitializeMembers();
         }
 
-        public TableSourceQuery(TableSourceQuery old)
+        public SourceTableQuery(SourceTableQuery old)
         {
             CopyMembers(old);
         }
@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.query = null;
         }
 
-        private void CopyMembers(TableSourceQuery old)
+        private void CopyMembers(SourceTableQuery old)
         {
             this.dataset = Util.DeepCopy.CopyObject(old.dataset);
             this.query = old.query;
@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         public object Clone()
         {
-            return new TableSourceQuery(this);
+            return new SourceTableQuery(this);
         }
 
         internal IDbConnection OpenConnection()

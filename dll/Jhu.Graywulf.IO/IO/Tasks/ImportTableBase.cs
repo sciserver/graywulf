@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
     [NetDataContract]
-    public interface ITableImportBase : IRemoteService
+    public interface IImportTableBase : IRemoteService
     {
         TableInitializationOptions Options
         {
@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
-    public abstract class TableImportBase : RemoteServiceBase, ITableImportBase, ICloneable
+    public abstract class ImportTableBase : RemoteServiceBase, IImportTableBase, ICloneable
     {
         private TableInitializationOptions options;
         private int batchSize;
@@ -75,12 +75,12 @@ namespace Jhu.Graywulf.IO.Tasks
             set { timeout = value; }
         }
 
-        protected TableImportBase()
+        protected ImportTableBase()
         {
             InitializeMembers();
         }
 
-        protected TableImportBase(TableImportBase old)
+        protected ImportTableBase(ImportTableBase old)
         {
             CopyMembers(old);
         }
@@ -92,7 +92,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.timeout = 1000;    // *** TODO: use constant or setting
         }
 
-        private void CopyMembers(TableImportBase old)
+        private void CopyMembers(ImportTableBase old)
         {
             this.options = old.options;
             this.batchSize = old.batchSize;

@@ -12,8 +12,8 @@ using Jhu.Graywulf.Tasks;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
-    [RemoteServiceClass(typeof(FileCopy))]
-    public interface IFileCopy : IRemoteService
+    [RemoteServiceClass(typeof(CopyFile))]
+    public interface ICopyFile : IRemoteService
     {
         string Source
         {
@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults=true)]
-    public class FileCopy : RemoteServiceBase, IFileCopy
+    public class CopyFile : RemoteServiceBase, ICopyFile
     {
         #region Private members for property storage
 
@@ -99,12 +99,12 @@ namespace Jhu.Graywulf.IO.Tasks
         #endregion
         #region Constructors and initializers
 
-        public FileCopy()
+        public CopyFile()
         {
             InitializeMembers();
         }
 
-        public FileCopy(string source, string destination, bool overwrite)
+        public CopyFile(string source, string destination, bool overwrite)
         {
             InitializeMembers();
 

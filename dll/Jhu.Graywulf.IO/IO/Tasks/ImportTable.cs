@@ -13,8 +13,8 @@ using Jhu.Graywulf.Schema;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
-    [RemoteServiceClass(typeof(TableImport))]
-    public interface ITableImport : ITableImportBase
+    [RemoteServiceClass(typeof(ImportTable))]
+    public interface IImportTable : IImportTableBase
     {
         DataFileBase[] Sources
         {
@@ -36,7 +36,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
-    public class TableImport : TableImportBase, ITableImport, ICloneable, IDisposable
+    public class ImportTable : ImportTableBase, IImportTable, ICloneable, IDisposable
     {
         private DataFileBase[] sources;
         private Table[] destinations;
@@ -53,12 +53,12 @@ namespace Jhu.Graywulf.IO.Tasks
             set { destinations = value; }
         }
 
-        public TableImport()
+        public ImportTable()
         {
             InitializeMembers();
         }
 
-        public TableImport(TableImport old)
+        public ImportTable(ImportTable old)
         {
             CopyMembers(old);
         }
@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.destinations = null;
         }
 
-        private void CopyMembers(TableImport old)
+        private void CopyMembers(ImportTable old)
         {
             this.sources = Util.DeepCopy.CopyArray(old.sources);
             this.destinations = Util.DeepCopy.CopyArray(old.destinations);
@@ -77,7 +77,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         public override object Clone()
         {
-            return new TableImport(this);
+            return new ImportTable(this);
         }
 
         public void Dispose()
