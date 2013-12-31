@@ -14,9 +14,10 @@ namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
     [RemoteServiceClass(typeof(ImportTable))]
+    [NetDataContract]
     public interface IImportTable : IImportTableBase
     {
-        DataFileBase[] Sources
+        DataFileBase Source
         {
             [OperationContract]
             get;
@@ -24,7 +25,7 @@ namespace Jhu.Graywulf.IO.Tasks
             set;
         }
 
-        Table[] Destinations
+        DestinationTable Destination
         {
             [OperationContract]
             get;
@@ -38,19 +39,19 @@ namespace Jhu.Graywulf.IO.Tasks
         IncludeExceptionDetailInFaults = true)]
     public class ImportTable : ImportTableBase, IImportTable, ICloneable, IDisposable
     {
-        private DataFileBase[] sources;
-        private Table[] destinations;
+        private DataFileBase source;
+        private DestinationTable destination;
 
-        public DataFileBase[] Sources
+        public DataFileBase Source
         {
-            get { return sources; }
-            set { sources = value; }
+            get { return source; }
+            set { source = value; }
         }
 
-        public Table[] Destinations
+        public DestinationTable Destination
         {
-            get { return destinations; }
-            set { destinations = value; }
+            get { return destination; }
+            set { destination = value; }
         }
 
         public ImportTable()
@@ -65,14 +66,14 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void InitializeMembers()
         {
-            this.sources = null;
-            this.destinations = null;
+            this.source = null;
+            this.destination = null;
         }
 
         private void CopyMembers(ImportTable old)
         {
-            this.sources = Util.DeepCopy.CopyArray(old.sources);
-            this.destinations = Util.DeepCopy.CopyArray(old.destinations);
+            this.source = old.source;
+            this.destination = old.destination;
         }
 
         public override object Clone()
@@ -84,39 +85,32 @@ namespace Jhu.Graywulf.IO.Tasks
         {
         }
 
-
         protected override void OnExecute()
         {
-            if (sources == null)
+            if (source == null)
             {
                 throw new InvalidOperationException();  // *** TODO
             }
 
-            if (Destinations == null)
+            if (destination == null)
             {
                 throw new InvalidOperationException();  // *** TODO
             }
 
-            if (sources.Length != Destinations.Length)
+            try
             {
-                throw new InvalidOperationException();  // *** TODO
+                source.FileMode = DataFileMode.Read;
+                source.Open();
+
+                // Import the file by wrapping it into a dummy command
+                using (var cmd = new FileCommand(source))
+                {
+                    ImportTable(cmd, destination);
+                }
             }
-
-            // This is the tricky part here...
-
-            // Import each file
-            for (int i = 0; i < sources.Length; i++)
+            finally
             {
-                ImportTable(sources[i], destinations[i]);
-            }
-        }
-
-        private void ImportTable(DataFileBase source, Table destination)
-        {
-            // Create a command that reads the file
-            using (var cmd = new FileCommand(source))
-            {
-                ImportTable(cmd, destination);
+                source.Close();
             }
         }
     }

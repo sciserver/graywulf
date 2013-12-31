@@ -85,19 +85,24 @@
     <Compile Include="IO\SharpZipLibWrapper\ZipInputStream.cs" />
     <Compile Include="IO\SharpZipLibWrapper\ZipOutputStream.cs" />
     <Compile Include="IO\StreamFactory.cs" />
-    <Compile Include="IO\Tasks\TableCopy.cs" />
-    <Compile Include="IO\Tasks\TableExport.cs" />
+    <Compile Include="IO\Tasks\CopyFile.cs" />
+    <Compile Include="IO\Tasks\CopyTable.cs" />
+    <Compile Include="IO\Tasks\DestinationTable.cs" />
+    <Compile Include="IO\Tasks\ExportTable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\Tasks\ExportTableArchive.cs" />
+    <Compile Include="IO\Tasks\ExportTableBase.cs" />
+    <Compile Include="IO\Tasks\ImportTable.cs" />
+    <Compile Include="IO\Tasks\ImportTableArchive.cs" />
+    <Compile Include="IO\Tasks\ImportTableBase.cs" />
+    <Compile Include="IO\Tasks\SourceTableQuery.cs" />
     <Compile Include="IO\Tasks\Enum.cs" />
     <Compile Include="IO\Tasks\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
-    <Compile Include="IO\Tasks\FileCopy.cs" />
-    <Compile Include="IO\Tasks\TableImportArchive.cs" />
-    <Compile Include="IO\Tasks\TableImportBase.cs" />
-    <Compile Include="IO\Tasks\TableImport.cs" />
-    <Compile Include="IO\Tasks\TableSourceQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

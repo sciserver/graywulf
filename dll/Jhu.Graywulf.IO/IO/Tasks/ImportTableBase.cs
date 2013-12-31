@@ -18,14 +18,6 @@ namespace Jhu.Graywulf.IO.Tasks
     [NetDataContract]
     public interface IImportTableBase : IRemoteService
     {
-        TableInitializationOptions Options
-        {
-            [OperationContract]
-            get;
-            [OperationContract]
-            set;
-        }
-
         int BatchSize
         {
             [OperationContract]
@@ -48,7 +40,6 @@ namespace Jhu.Graywulf.IO.Tasks
         IncludeExceptionDetailInFaults = true)]
     public abstract class ImportTableBase : RemoteServiceBase, IImportTableBase, ICloneable
     {
-        private TableInitializationOptions options;
         private int batchSize;
         private int timeout;
 
@@ -56,12 +47,6 @@ namespace Jhu.Graywulf.IO.Tasks
         private bool isBulkCopyCanceled;
         [NonSerialized]
         EventWaitHandle bulkCopyFinishedEvent;
-
-        public TableInitializationOptions Options
-        {
-            get { return options; }
-            set { options = value; }
-        }
 
         public int BatchSize
         {
@@ -87,21 +72,19 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void InitializeMembers()
         {
-            this.options = TableInitializationOptions.Append;
             this.batchSize = 10000;
             this.timeout = 1000;    // *** TODO: use constant or setting
         }
 
         private void CopyMembers(ImportTableBase old)
         {
-            this.options = old.options;
             this.batchSize = old.batchSize;
             this.timeout = old.timeout;
         }
 
         public abstract object Clone();
 
-        protected void ImportTable(IDbCommand cmd, Table destination)
+        protected void ImportTable(IDbCommand cmd, DestinationTable destination)
         {
             var guid = Guid.NewGuid();
             var ccmd = new CancelableDbCommand(cmd);
@@ -109,8 +92,13 @@ namespace Jhu.Graywulf.IO.Tasks
 
             ccmd.ExecuteReader(dr =>
             {
-                destination.Initialize(dr.GetSchemaTable(), options);
-                ExecuteBulkCopy(dr, destination);
+                // TODO: Add multiple results logic
+
+                // TODO: Add table naming logic here, maybe...
+                var table = destination.GetTable();
+
+                table.Initialize(dr.GetSchemaTable(), destination.Options);
+                ExecuteBulkCopy(dr, table);
             });
 
             UnregisterCancelable(guid);

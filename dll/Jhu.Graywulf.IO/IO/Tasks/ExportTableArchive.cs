@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Data;
+using System.Data.Common;
 using System.ServiceModel;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.Format;
-using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.Schema.SqlServer;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
-    [RemoteServiceClass(typeof(ImportTableArchive))]
-    public interface IImportTableArchive : IImportTableBase
+    [RemoteServiceClass(typeof(ExportTableArchive))]
+    [NetDataContract]
+    public interface IExportTableArchive : IExportTableBase
     {
         Uri Uri
         {
@@ -25,7 +26,15 @@ namespace Jhu.Graywulf.IO.Tasks
             set;
         }
 
-        DestinationTable Destination
+        SourceTableQuery[] Sources
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
+
+        DataFileBase[] Destinations
         {
             [OperationContract]
             get;
@@ -36,15 +45,18 @@ namespace Jhu.Graywulf.IO.Tasks
         void Open();
 
         void Open(Uri uri);
+
+        void Close();
     }
 
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
-    public class ImportTableArchive : ImportTableBase, IImportTableArchive, ICloneable, IDisposable
+    public class ExportTableArchive : ExportTableBase, IExportTableArchive, ICloneable, IDisposable
     {
         private Uri uri;
-        private DestinationTable destination;
+        private SourceTableQuery[] sources;
+        private DataFileBase[] destinations;
 
         [NonSerialized]
         private Stream baseStream;
@@ -58,18 +70,24 @@ namespace Jhu.Graywulf.IO.Tasks
             set { uri = value; }
         }
 
-        public DestinationTable Destination
+        public SourceTableQuery[] Sources
         {
-            get { return destination; }
-            set { destination = value; }
+            get { return sources; }
+            set { sources = value; }
         }
 
-        public ImportTableArchive()
+        public DataFileBase[] Destinations
+        {
+            get { return destinations; }
+            set { destinations = value; }
+        }
+
+        public ExportTableArchive()
         {
             InitializeMembers();
         }
 
-        public ImportTableArchive(ImportTableArchive old)
+        public ExportTableArchive(ExportTableArchive old)
         {
             CopyMembers(old);
         }
@@ -77,20 +95,24 @@ namespace Jhu.Graywulf.IO.Tasks
         private void InitializeMembers()
         {
             this.uri = null;
+            this.sources = null;
+            this.destinations = null;
             this.baseStream = null;
             this.ownsBaseStream = false;
         }
 
-        private void CopyMembers(ImportTableArchive old)
+        private void CopyMembers(ExportTableArchive old)
         {
             this.uri = old.uri;
+            this.sources = Util.DeepCopy.CopyArray(old.sources);
+            this.destinations = Util.DeepCopy.CopyArray(old.destinations);
             this.baseStream = null;
             this.ownsBaseStream = false;
         }
 
         public override object Clone()
         {
-            return new ImportTableArchive(this);
+            return new ExportTableArchive(this);
         }
 
         public void Dispose()
@@ -117,7 +139,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 // file if necessary by opening an IArchiveInputStream
 
                 var sf = StreamFactory.Create();
-                sf.Mode = DataFileMode.Read;
+                sf.Mode = DataFileMode.Write;
                 sf.Uri = uri;
                 sf.Archival = DataFileArchival.Automatic;
                 // TODO: add authentication options here
@@ -177,31 +199,44 @@ namespace Jhu.Graywulf.IO.Tasks
             }
 
             // Make sure it's an archive stream
-            if (!(baseStream is IArchiveInputStream))
+            if (!(baseStream is IArchiveOutputStream))
             {
                 throw new InvalidOperationException();
             }
 
-            // Read the archive file by file and import tables
-            var ff = FileFormatFactory.Create();
-            var ais = (IArchiveInputStream)baseStream;
-            IArchiveEntry entry;
-
-            while ((entry = ais.ReadNextFileEntry()) != null)
+            if (sources == null)
             {
-                if (!entry.IsDirectory)
-                {
-                    // Create source file
-                    using (var format = ff.CreateFile(entry.Filename))
-                    {
-                        format.Open(baseStream, DataFileMode.Read);
+                throw new InvalidOperationException();  // *** TODO
+            }
 
-                        using (var cmd = new FileCommand(format))
-                        {
-                            // TODO: Pass table name here
-                            ImportTable(cmd, destination);
-                        }
-                    }
+            if (destinations == null)
+            {
+                throw new InvalidOperationException();  // *** TODO
+            }
+
+            if (sources.Length != destinations.Length)
+            {
+                throw new InvalidOperationException();  // *** TODO
+            }
+
+            // Write individual tables into the archive
+
+
+            for (int i = 0; i < sources.Length; i++)
+            {
+                var aos = (IArchiveOutputStream)baseStream;
+
+                var entry = aos.CreateFileEntry(destinations[i].Uri.ToString(), 0);
+                aos.WriteNextEntry(entry);
+
+                try
+                {
+                    destinations[i].Open(baseStream, DataFileMode.Write);
+                    WriteTable(sources[i], destinations[i]);
+                }
+                finally
+                {
+                    destinations[i].Close();
                 }
             }
         }

@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [NetDataContract]
     public interface ICopyTable : IImportTableBase
     {
-        SourceTableQuery[] Sources
+        SourceTableQuery Source
         {
             [OperationContract]
             get;
@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.IO.Tasks
             set;
         }
 
-        Table[] Destinations
+        DestinationTable Destination
         {
             [OperationContract]
             get;
@@ -40,19 +40,19 @@ namespace Jhu.Graywulf.IO.Tasks
         IncludeExceptionDetailInFaults = true)]
     public class CopyTable : ImportTableBase, ICopyTable, ICloneable
     {
-        private SourceTableQuery[] sources;
-        private Table[] destinations;
+        private SourceTableQuery source;
+        private DestinationTable destination;
 
-        public SourceTableQuery[] Sources
+        public SourceTableQuery Source
         {
-            get { return sources; }
-            set { sources = value; }
+            get { return source; }
+            set { source = value; }
         }
 
-        public Table[] Destinations
+        public DestinationTable Destination
         {
-            get { return destinations; }
-            set { destinations = value; }
+            get { return destination; }
+            set { destination = value; }
         }
 
         public CopyTable()
@@ -67,14 +67,14 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void InitializeMembers()
         {
-            this.sources = null;
-            this.destinations = null;
+            this.source = null;
+            this.destination = null;
         }
 
         private void CopyMembers(CopyTable old)
         {
-            this.sources = Util.DeepCopy.CopyArray(old.sources);
-            this.destinations = Util.DeepCopy.CopyArray(old.destinations);
+            this.source = old.source;
+            this.destination = old.destination;
         }
 
         public override object Clone()
@@ -84,29 +84,16 @@ namespace Jhu.Graywulf.IO.Tasks
 
         protected override void OnExecute()
         {
-            if (sources == null)
+            if (source == null)
             {
                 throw new InvalidOperationException();  // *** TODO
             }
 
-            if (Destinations == null)
+            if (destination == null)
             {
                 throw new InvalidOperationException();  // *** TODO
             }
 
-            if (sources.Length != Destinations.Length)
-            {
-                throw new InvalidOperationException();  // *** TODO
-            }
-
-            for (int i = 0; i < sources.Length; i++)
-            {
-                CopyTable(sources[i], Destinations[i]);
-            }
-        }
-
-        private void CopyTable(SourceTableQuery source, Table destination)
-        {
             // Create command that reads the table
             using (var cmd = source.CreateCommand())
             {

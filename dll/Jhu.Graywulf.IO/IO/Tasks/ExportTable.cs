@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [NetDataContract]
     public interface IExportTable : IRemoteService
     {
-        SourceTableQuery[] Sources
+        SourceTableQuery Source
         {
             [OperationContract]
             get;
@@ -26,31 +26,7 @@ namespace Jhu.Graywulf.IO.Tasks
             set;
         }
 
-        DataFileBase[] Destinations
-        {
-            [OperationContract]
-            get;
-            [OperationContract]
-            set;
-        }
-
-        Uri Uri
-        {
-            [OperationContract]
-            get;
-            [OperationContract]
-            set;
-        }
-
-        DataFileArchival Archival
-        {
-            [OperationContract]
-            get;
-            [OperationContract]
-            set;
-        }
-
-        int Timeout
+        DataFileBase Destination
         {
             [OperationContract]
             get;
@@ -60,55 +36,26 @@ namespace Jhu.Graywulf.IO.Tasks
     }
 
     /// <summary>
-    /// Implements functions to export tables into data files in a batch.
+    /// Implements functions to export tables into data files.
     /// </summary>
-    /// <remarks>
-    /// TableExporter can export multiple files in a batch into a directory
-    /// or an archive. Source queries and file formats have to be specified
-    /// in the Sources and Destinations properties, respectively. The file
-    /// format class will determine the format of the output and the name
-    /// of the file. To export into an archive the value of the Archival
-    /// property has to be set to Zip, and to None to export into a directory.
-    /// </remarks>
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
-    public class ExportTable : RemoteServiceBase, IExportTable
+    public class ExportTable : ExportTableBase, IExportTable, ICloneable, IDisposable
     {
-        private SourceTableQuery[] sources;
-        private DataFileBase[] destinations;
-        private Uri uri;
-        private DataFileArchival archival;
-        private int timeout;
+        private SourceTableQuery source;
+        private DataFileBase destination;
 
-        public SourceTableQuery[] Sources
+        public SourceTableQuery Source
         {
-            get { return sources; }
-            set { sources = value; }
+            get { return source; }
+            set { source = value; }
         }
 
-        public DataFileBase[] Destinations
+        public DataFileBase Destination
         {
-            get { return destinations; }
-            set { destinations = value; }
-        }
-
-        public Uri Uri
-        {
-            get { return uri; }
-            set { uri = value; }
-        }
-
-        public DataFileArchival Archival
-        {
-            get { return archival; }
-            set { archival = value; }
-        }
-
-        public int Timeout
-        {
-            get { return timeout; }
-            set { timeout = value; }
+            get { return destination; }
+            set { destination = value; }
         }
 
         public ExportTable()
@@ -123,144 +70,48 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void InitializeMembers()
         {
-            this.sources = null;
-            this.destinations = null;
-            this.uri = null;
-            this.archival = DataFileArchival.Automatic;
-            this.timeout = 1000;    // *** TODO: use constant or setting
+            this.source = null;
+            this.destination = null;
         }
 
         private void CopyMembers(ExportTable old)
         {
-            this.sources = Util.DeepCopy.CopyArray(old.sources);
-            this.destinations = Util.DeepCopy.CopyArray(old.destinations);
-            this.uri = old.uri;
-            this.archival = old.archival;
-            this.timeout = old.timeout;
+            this.source = old.source;
+            this.destination = old.destination;
+        }
+
+        public override object Clone()
+        {
+            return new ExportTable(this);
+        }
+
+        public void Dispose()
+        {
         }
 
         protected override void OnExecute()
         {
-            if (sources == null)
+            if (source == null)
             {
                 throw new InvalidOperationException();  // *** TODO
             }
 
-            if (destinations == null)
+            if (destination == null)
             {
                 throw new InvalidOperationException();  // *** TODO
             }
-
-            if (sources.Length != destinations.Length)
-            {
-                throw new InvalidOperationException();  // *** TODO
-            }
-
-            // Check if the archival option is turned on and create archive
-            // file if necessary by opening an IArchiveOutputStream
-            Stream output = null;
 
             try
             {
-                if (archival == DataFileArchival.None)
-                {
-                    // No stream to open
-                    // Path will be treated as directory path
-                    output = null;
-                }
-                else
-                {
-                    // Open output stream using a stream factory
-                    var sf = StreamFactory.Create();
-                    sf.Mode = DataFileMode.Write;
-                    sf.Archival = archival;
-                    sf.Uri = uri;
-                    // TODO: add authentication options here
-
-                    output = sf.Open();
-                }
-
-                // Export tables one by one
-                for (int i = 0; i < sources.Length; i++)
-                {
-                    ExportTable(sources[i], destinations[i], output);
-                }
-            }
-            finally
-            {
-                if (output != null)
-                {
-                    output.Flush();
-                    output.Close();
-                    output.Dispose();
-                }
-            }
-        }
-
-        private void ExportTable(SourceTableQuery source, DataFileBase destination, Stream output)
-        {
-            // Individual files have to opened differently when writing into
-            // an archive and when not. For archives, create a new entry for the
-            // file based on it's own filename.
-
-            try
-            {
-                if (output is IArchiveOutputStream)
-                {
-                    // Files are saved into an archive
-                    var aos = (IArchiveOutputStream)output;
-                    var entry = aos.CreateFileEntry(destination.Uri.ToString(), 0);
-                    aos.WriteNextEntry(entry);
-
-                    destination.Open(output, DataFileMode.Write);
-                }
-                else
-                {
-                    // Files saved individually
-
-                    // If file name is relative, it should be combined with the
-                    // path set for the table exporter
-                    var fileuri = Util.UriConverter.Combine(uri, destination.Uri);
-
-                    destination.Open(fileuri, DataFileMode.Write);
-                }
-
-                // Create command that reads the table
-                using (var cmd = source.CreateCommand())
-                {
-                    using (var cn = source.OpenConnection())
-                    {
-                        using (var tn = cn.BeginTransaction(IsolationLevel.ReadUncommitted))
-                        {
-                            cmd.Connection = cn;
-                            cmd.Transaction = tn;
-                            cmd.CommandTimeout = timeout;
-
-                            ExportTable(cmd, destination);
-                        }
-                    }
-                }
+                destination.FileMode = DataFileMode.Write;
+                destination.Open();
+                WriteTable(source, destination);
             }
             finally
             {
                 destination.Close();
             }
-        }
 
-        private void ExportTable(IDbCommand cmd, DataFileBase destination)
-        {
-            // Wrap command into a cancellable task
-            var guid = Guid.NewGuid();
-            var ccmd = new CancelableDbCommand(cmd);
-            RegisterCancelable(guid, ccmd);
-
-            // Pass data reader to the file formatter
-            ccmd.ExecuteReader(dr =>
-            {
-                destination.WriteFromDataReader(dr);
-            });
-
-            UnregisterCancelable(guid);
         }
     }
 }
