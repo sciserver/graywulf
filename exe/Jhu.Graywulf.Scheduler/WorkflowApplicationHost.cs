@@ -492,6 +492,7 @@ namespace Jhu.Graywulf.Scheduler
 
         private Guid PersistWorkflow(Guid instanceId)
         {
+            // *** TODO: this might sometime throw a KeyNotFoundException (after persist and cancel?)
             // *** TODO: handle timeout exception here
             workflows[instanceId].Job.Status = JobStatus.Persisted;
             workflows[instanceId].WorkflowApplication.Unload(AppSettings.PersistTimeout);

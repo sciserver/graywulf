@@ -15,6 +15,9 @@ namespace Jhu.Graywulf.SqlCodeGen.Test
     [TestClass]
     public class MySqlCodeGeneratorTest
     {
+        // TODO: rewrite these to use SQL Server for name resolution but generate
+        // SQL for MySQL
+
         private SchemaManager CreateSchemaManager()
         {
             var sm = new SqlServerSchemaManager();
