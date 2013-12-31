@@ -68,7 +68,9 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             var destinations = new DataFileBase[sources.Length];
             for (int i = 0; i < sources.Length; i++)
             {
-                var dest = FileFormatFactory.CreateFile(format);
+                var ff = FileFormatFactory.Create();
+
+                var dest = ff.CreateFile(format);
                 dest.Uri = Util.UriConverter.FromFilePath(String.Format("{0}{1}", sources[i].ObjectName, format.DefaultExtension));
 
                 // special initialization in case of a text file

@@ -3,6 +3,7 @@ using System.IO;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
+using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
@@ -36,7 +37,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             string newname = tableName;
             int q = 1;
-            
+
             while (MyDBDataset.GetObject(MyDBDataset.DatabaseName, schemaName, newname) != null)
             {
                 newname = String.Format("{0}_{1}", tableName, q);
@@ -46,50 +47,53 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             tableName = newname;
         }
 
-        private DestinationTableParameters CreateDestination(string schemaName, string tableName)
+        private DestinationTable CreateDestination(string schemaName, string tableName)
         {
             GetUniqueTableName(schemaName, ref tableName);
 
-            var destination = new DestinationTableParameters();
-            destination.Table = new Graywulf.Schema.Table()
-            {
-                Dataset = MyDBDatabaseInstance.GetDataset(),
-                SchemaName = schemaName,
-                TableName = tableName
-            };
-            destination.Operation = DestinationTableOperation.Create;
+            var destination = new DestinationTable(
+                MyDBDatabaseInstance.GetDataset(),
+                MyDBDatabaseInstance.DatabaseName,
+                schemaName,
+                tableName,
+                Graywulf.Schema.TableInitializationOptions.Create);
 
             return destination;
         }
 
-        private DataFileImporter CreateImporterSimple()
+        private IO.Tasks.ImportTable CreateImporterSimple()
         {
             string filename, extension;
             DataFileCompression compression;
 
             // Determine file format
-            var format = FileFormatFactory.Create().GetFileFormatDescription(
+            var ff = FileFormatFactory.Create();
+            var format = ff.GetFileFormatDescription(
                 new Uri(ImportedFile.PostedFile.FileName),
                 out filename,
                 out extension,
                 out compression);
 
-            var source = FileFormatFactory.CreateFile(format);
+            var source = ff.CreateFile(format);
 
             // TODO: check and delete if works source.Compression = compression;
             source.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read);
 
             var destination = CreateDestination("dbo", filename.Replace(".", "_")); // TODO: get 'dbo' from dataset description
-            
 
-            return new DataFileImporter(source, destination);
+            return new IO.Tasks.ImportTable()
+            {
+                Source = source,
+                Destination = destination
+            };
         }
 
-        private DataFileImporter CreateImporterAdvanced()
+        private IO.Tasks.ImportTable CreateImporterAdvanced()
         {
-            var format = FileFormatFactory.Create().GetFileFormatDescription(FileFormat.SelectedValue);
-            var source = FileFormatFactory.CreateFile(format);
-            
+            var ff = FileFormatFactory.Create();
+            var format = ff.GetFileFormatDescription(FileFormat.SelectedValue);
+            var source = ff.CreateFile(format);
+
             DataFileCompression compression;
             Enum.TryParse<DataFileCompression>(CompressionMethod.SelectedValue, out compression);
 
@@ -98,7 +102,11 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
             var destination = CreateDestination(SchemaName.Text, TableName.Text);
 
-            return new DataFileImporter(source, destination);
+            return new IO.Tasks.ImportTable()
+            {
+                Source = source,
+                Destination = destination
+            };
         }
 
         protected void RefreshForm()
@@ -133,7 +141,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (IsValid)
             {
-                DataFileImporter importer = null;
+                IO.Tasks.ImportTable importer = null;
 
                 if (DetailsTable.Visible)
                 {

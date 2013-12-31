@@ -405,8 +405,12 @@ namespace Jhu.Graywulf.Jobs.Query
             var temptable = GetTemporaryTable(table.EscapedUniqueName);
             TemporaryTables.TryAdd(table.UniqueName, temptable);
 
-            var tc = CreateTableCopyTask(source, temptable, false);
-            tc.Options = TableInitializationOptions.Drop | TableInitializationOptions.Create;
+            var dest = new DestinationTable(temptable)
+            {
+                Options = TableInitializationOptions.Drop | TableInitializationOptions.Create
+            };
+            
+            var tc = CreateTableCopyTask(source, dest, false);
 
             var guid = Guid.NewGuid();
             RegisterCancelable(guid, tc);
@@ -462,7 +466,7 @@ namespace Jhu.Graywulf.Jobs.Query
             };
         }
 
-        /*
+        /* TODO: delete if works
         public virtual DatasetBase GetDestinationTableSchemaSourceDataset()
         {
             return new SqlServerDataset()
@@ -536,7 +540,8 @@ namespace Jhu.Graywulf.Jobs.Query
                             {
                                 var source = GetOutputSourceQuery();
 
-                                query.Destination.Initialize(source.GetSchemaTable(), query.DestinationInitializationOptions);
+                                var table = query.Destination.GetTable();
+                                table.Initialize(source.GetSchemaTable(), query.Destination.Options);
 
                                 // TODO: delete all this crap
                                 // TODO: this is screwed up here
@@ -594,7 +599,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 case ExecutionMode.SingleServer:
                     // In single-server mode results are directly written into destination table
                     // TODO: delete source = Query.Destination.Table.Dataset;
-                    destination = Query.Destination;
+                    destination = Query.Destination.GetTable();
                     break;
                 case ExecutionMode.Graywulf:
                     // TODO: delete source = AssignedServerInstance.GetDataset();    
@@ -643,13 +648,15 @@ namespace Jhu.Graywulf.Jobs.Query
                             Query = sql
                         };
 
+                        var dest = new DestinationTable(Query.Destination)
+                        {
+                            // Change destination to Append, output table has already been created,
+                            // partitions only append to it
+                            Options = TableInitializationOptions.Append
+                        };
+
                         // Create bulk copy task and execute it
-
-                        var tc = CreateTableCopyTask(source, Query.Destination, false);
-
-                        // Change destination to Append, output table has already been created,
-                        // partitions only append to it
-                        tc.Options = TableInitializationOptions.Append;
+                        var tc = CreateTableCopyTask(source, dest, false);
 
                         var guid = Guid.NewGuid();
                         RegisterCancelable(guid, tc);

@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             this.timeout = 1200;    // *** TODO: get from settings
         }
 
-        public IExportTable GetInitializedTableExportTask()
+        public IExportTableArchive GetInitializedTableExportTask()
         {
             // Determine server name from connection string
             // This is required, because bulk copy can go into databases that are only known
@@ -94,12 +94,11 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             }
 
             // Create bulk operation
-            var te = RemoteServiceHelper.CreateObject<IExportTable>(host);
+            var te = RemoteServiceHelper.CreateObject<IExportTableArchive>(host);
 
             te.Sources = ss;
             te.Destinations = destinations;
             te.Uri = uri;
-            te.Archival = archival;
             te.Timeout = timeout;
 
             return te;

@@ -1008,7 +1008,7 @@ END";
         /// <param name="destination"></param>
         /// <param name="local"></param>
         /// <returns></returns>
-        protected ICopyTable CreateTableCopyTask(SourceTableQuery source, Table destination, bool local)
+        protected ICopyTable CreateTableCopyTask(SourceTableQuery source, DestinationTable destination, bool local)
         {
             var desthost = GetHostnameFromSqlConnectionString(destination.Dataset.ConnectionString);
 
@@ -1023,8 +1023,8 @@ END";
                 qi = RemoteServiceHelper.CreateObject<ICopyTable>(desthost);
             }
 
-            qi.Sources = new SourceTableQuery[] { source };
-            qi.Destinations = new Table[] { destination };
+            qi.Source = source;
+            qi.Destination = destination;
 
             return qi;
         }

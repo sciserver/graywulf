@@ -63,11 +63,11 @@ namespace Jhu.Graywulf.Web.UI.Query
 
             var codegen = new SqlServerCodeGenerator();
 
-            string sql = codegen.GenerateSelectStarQuery(q.Destination.Table, 100);
+            string sql = codegen.GenerateSelectStarQuery(q.Destination.GetTable(), 100);
 
             using (var cn = new SqlConnection())
             {
-                cn.ConnectionString = SchemaManager.Datasets["MYDB"].ConnectionString;
+                cn.ConnectionString = MyDBDataset.ConnectionString;
                 cn.Open();
 
                 using (var cmd = cn.CreateCommand())

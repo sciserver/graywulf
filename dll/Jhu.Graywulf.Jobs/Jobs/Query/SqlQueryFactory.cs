@@ -12,6 +12,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.IO;
+using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -120,13 +121,12 @@ namespace Jhu.Graywulf.Jobs.Query
 
             // Set up MYDB for destination
             // ****** TODO add output table name to settings */
-            query.Destination = new Table()
-            {
-                Dataset = mydbds,
-                SchemaName = settings[Settings.DefaultSchemaName],
-                TableName = String.IsNullOrWhiteSpace(outputTable) ? "outputtable" : outputTable
-            };
-            query.DestinationInitializationOptions = TableInitializationOptions.Drop | TableInitializationOptions.Create;
+            query.Destination = new DestinationTable(
+                mydbds,
+                mydbds.DatabaseName,
+                settings[Settings.DefaultSchemaName],
+                String.IsNullOrWhiteSpace(outputTable) ? "outputtable" : outputTable,
+                TableInitializationOptions.Drop | TableInitializationOptions.Create);
 
             // Set up temporary database
             var tempds = new GraywulfDataset();
@@ -159,13 +159,12 @@ namespace Jhu.Graywulf.Jobs.Query
                 query.CustomDatasets.Add(mydbds);
 
                 // Set up MYDB for destination
-                query.Destination = new Table()
-                {
-                    Dataset = mydbds,
-                    DatabaseName = mydbds.DatabaseName,
-                    SchemaName = mydbds.DefaultSchemaName,
-                };
-                query.DestinationInitializationOptions = TableInitializationOptions.Drop | TableInitializationOptions.Create;
+                query.Destination = new DestinationTable(
+                    mydbds,
+                    mydbds.DatabaseName,
+                    mydbds.DefaultSchemaName,
+                    "",  // *** TODO ?
+                    TableInitializationOptions.Drop | TableInitializationOptions.Create);
             }
 
             // Set up temporary and code database

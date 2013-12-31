@@ -14,6 +14,7 @@ using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.SqlParser.SqlCodeGen;
 using Jhu.Graywulf.IO;
+using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -25,8 +26,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private int queryTimeout;
 
-        private Table destination;
-        private TableInitializationOptions detinationInitializationOptions;
+        private DestinationTable destination;
         private bool isDestinationTableInitialized;
 
         private string sourceDatabaseVersionName;
@@ -66,17 +66,10 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Gets or sets the destination table of the query
         /// </summary>
         [DataMember]
-        public Table Destination
+        public DestinationTable Destination
         {
             get { return destination; }
             set { destination = value; }
-        }
-
-        [DataMember]
-        public TableInitializationOptions DestinationInitializationOptions
-        {
-            get { return DestinationInitializationOptions; }
-            set { DestinationInitializationOptions = value; }
         }
 
         /// <summary>
@@ -149,7 +142,6 @@ namespace Jhu.Graywulf.Jobs.Query
             this.queryTimeout = 60; // TODO ***
 
             this.destination = null;
-            this.DestinationInitializationOptions = TableInitializationOptions.Create;
             this.isDestinationTableInitialized = false;
 
             this.sourceDatabaseVersionName = String.Empty;
@@ -380,11 +372,14 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             AssertValidContext();
 
-            bool exists = destination.IsExisting;
+            // TODO: This might be wrong here... We don't know database name!
+            var table = destination.Dataset.Tables[null, destination.SchemaName, destination.TableName];
 
-            if (exists && (DestinationInitializationOptions & TableInitializationOptions.Drop) == 0)
+            bool exists = table.IsExisting;
+
+            if (exists && (destination.Options & TableInitializationOptions.Drop) == 0)
             {
-                if ((DestinationInitializationOptions & TableInitializationOptions.Create) == 0)
+                if ((destination.Options & TableInitializationOptions.Create) == 0)
                 {
                     throw new Exception("Output table already exists.");    // *** TODO
                 }

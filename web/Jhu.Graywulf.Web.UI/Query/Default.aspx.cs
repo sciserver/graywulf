@@ -5,6 +5,8 @@ using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.IO;
+using Jhu.Graywulf.IO.Tasks;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Query
 {
@@ -50,9 +52,12 @@ namespace Jhu.Graywulf.Web.UI.Query
             var q = CreateQuery();
             if (q != null)
             {
-                q.Destination.Table.SchemaName = "dbo";
-                q.Destination.Table.TableName = "quickResults";
-                q.Destination.Operation = DestinationTableOperation.Drop | DestinationTableOperation.Create;
+                q.Destination = new IO.Tasks.DestinationTable(
+                    MyDBDataset,
+                    MyDBDataset.DatabaseName,
+                    MyDBDataset.DefaultSchemaName,
+                    "quickResults",
+                    TableInitializationOptions.Drop | TableInitializationOptions.Create);
 
                 var ji = ScheduleQuery(queuename, q);
 
