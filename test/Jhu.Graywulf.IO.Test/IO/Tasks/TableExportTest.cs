@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.IO.Tasks
         [TestMethod]
         public void ExportToUncTest()
         {
-            var path = String.Format(@"\\{0}\{1}\{2}.csv", Test.Constants.RemoteHost1, Test.Constants.GWCode, "TableExportTest_ExportToUncTest");
+            var path = String.Format(@"\\{0}\{1}\{2}.csv", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, "TableExportTest_ExportToUncTest");
             var dfe = GetTableExportTask(path, false);
 
             dfe.Execute();
@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var path = String.Format(@"\\{0}\{1}\{2}.csv", Test.Constants.RemoteHost1, Test.Constants.GWCode, "TableExportTest_RemoteExportTest");
+                var path = String.Format(@"\\{0}\{1}\{2}.csv", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, "TableExportTest_RemoteExportTest");
                 var dfe = GetTableExportTask(path, false);
 
                 dfe.Execute();

@@ -33,9 +33,14 @@ namespace Jhu.Graywulf.IO.Tasks
             set;
         }
 
+        [OperationContract]
         void Open();
 
+        [OperationContract(Name="Open_Uri")]
         void Open(Uri uri);
+
+        [OperationContract]
+        void Close();
     }
 
     [ServiceBehavior(
@@ -163,9 +168,9 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             if (ownsBaseStream && baseStream != null)
             {
-                baseStream.Flush();
-                baseStream.Close();
                 baseStream.Dispose();
+                baseStream = null;
+                ownsBaseStream = false;
             }
         }
 

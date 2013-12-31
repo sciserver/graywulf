@@ -9,6 +9,7 @@ using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
+    [Serializable]
     public abstract class FormattedDataFileBase : DataFileBase, IDisposable, ICloneable
     {
         private Encoding encoding;

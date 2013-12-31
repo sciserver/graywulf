@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Jobs.ExportTable
                 var ef = new EntityFactory(context);
                 var f = ef.LoadEntity<Federation>(Federation.AppSettings.FederationName);
 
-                var format = FileFormatFactory.Create().GetFileFormatDescription("Jhu.Graywulf.Format.CsvFile");
+                var format = FileFormatFactory.Create().GetFileFormatDescription(typeof(Jhu.Graywulf.Format.DelimitedTextDataFile).FullName);
 
                 var source = new Jhu.Graywulf.Schema.Table()
                 {
@@ -76,7 +76,7 @@ namespace Jhu.Graywulf.Jobs.ExportTable
                 {
                     RemoteServiceTester.Instance.EnsureRunning();
 
-                    var path = String.Format(@"\\{0}\{1}", Jhu.Graywulf.Test.Constants.Localhost, Jhu.Graywulf.Test.Constants.GWCode);
+                    var path = String.Format(@"\\{0}\{1}", Jhu.Graywulf.Test.Constants.Localhost, Jhu.Graywulf.Test.Constants.TestDirectory);
                     var guid = ScheduleExportTableJob("dbo", "testtable", path, QueueType.Long);
 
                     WaitJobComplete(guid, TimeSpan.FromSeconds(10));

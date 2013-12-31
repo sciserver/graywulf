@@ -837,7 +837,8 @@ WHERE s.name = @schemaName AND o.name = @objectName
             var sql = String.Format(@"
 IF (OBJECT_ID('{1}') IS NOT NULL)
 BEGIN
-DROP {0} {1}",
+DROP {0} {1}
+END",
                 Constants.SqlServerObjectTypeNames[obj.ObjectType],
                 obj.GetFullyResolvedName());
 

@@ -115,6 +115,7 @@ namespace Jhu.Graywulf.Jobs.Query
             mydbds.DefaultSchemaName = settings[Settings.DefaultSchemaName];
             mydbds.DatabaseInstance.Value = user.GetUserDatabaseInstance(federation.MyDBDatabaseVersion);
             mydbds.CacheSchemaConnectionString();
+            mydbds.IsMutable = true;
             query.CustomDatasets.Add(mydbds);
 
             query.DefaultDataset = mydbds;

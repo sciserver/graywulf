@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Net;
 using Jhu.Graywulf.Format;
+using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.IO
 {
@@ -291,7 +292,7 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapCompressedStreamForRead(Stream baseStream)
         {
-            var cm = GetCompressionMethod(Util.UriConverter.ToFilePath(uri));
+            var cm = GetCompressionMethod(Util.UriConverter.ToFileName(uri));
 
             switch (cm)
             {
@@ -324,7 +325,7 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapCompressedStreamForWrite(Stream baseStream)
         {
-            var cm = GetCompressionMethod(Util.UriConverter.ToFilePath(uri));
+            var cm = GetCompressionMethod(Util.UriConverter.ToFileName(uri));
 
             switch (cm)
             {
@@ -358,7 +359,7 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapArchiveStreamForRead(Stream baseStream)
         {
-            var am = GetArchivalMethod(Util.UriConverter.ToFilePath(uri));
+            var am = GetArchivalMethod(Util.UriConverter.ToFileName(uri));
 
             switch (am)
             {
@@ -381,7 +382,7 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapArchiveStreamForWrite(Stream baseStream)
         {
-            var am = GetArchivalMethod(Util.UriConverter.ToFilePath(uri));
+            var am = GetArchivalMethod(Util.UriConverter.ToFileName(uri));
 
             switch (am)
             {
@@ -473,7 +474,7 @@ namespace Jhu.Graywulf.IO
             }
             else
             {
-                return new NetworkCredential();
+                return new NetworkCredential("anonymous", "anonymous@");
             }
         }
 

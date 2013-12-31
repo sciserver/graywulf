@@ -205,15 +205,22 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public SqlServerDataset GetTemporaryDatabaseDataset()
         {
+            SqlServerDataset tempds;
+
             switch (ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
-                    return query.TemporaryDataset;
+                    tempds = query.TemporaryDataset;
+                    break;
                 case ExecutionMode.Graywulf:
-                    return TemporaryDatabaseInstanceReference.Value.GetDataset();
+                    tempds = TemporaryDatabaseInstanceReference.Value.GetDataset();
+                    break;
                 default:
                     throw new NotImplementedException();
             }
+
+            tempds.IsMutable = true;
+            return tempds;
         }
 
         public Table GetTemporaryTable(string tableName)

@@ -177,7 +177,7 @@ WHERE ID = 1";
         {
             DataTable schema;
 
-            using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.SqlServerSchemaTestConnectionString))
+            using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.IOTestConnectionString))
             {
                 cn.Open();
 

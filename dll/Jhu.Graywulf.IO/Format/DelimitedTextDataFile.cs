@@ -6,6 +6,7 @@ using System.Data;
 using System.IO;
 using System.Globalization;
 using System.Xml;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
@@ -64,7 +65,7 @@ namespace Jhu.Graywulf.Format
         public DelimitedTextDataFile()
             : base()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         public DelimitedTextDataFile(DelimitedTextDataFile old)
@@ -76,7 +77,7 @@ namespace Jhu.Graywulf.Format
         public DelimitedTextDataFile(Uri uri, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
             : base(uri, fileMode, encoding, culture)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
 
             Open();
         }
@@ -90,7 +91,7 @@ namespace Jhu.Graywulf.Format
         public DelimitedTextDataFile(Stream stream, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
             : base(stream, fileMode, encoding, culture)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
 
             Open();
         }
@@ -104,7 +105,7 @@ namespace Jhu.Graywulf.Format
         public DelimitedTextDataFile(TextReader inputReader, Encoding encoding, CultureInfo culture)
             : base(inputReader, encoding, culture)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         public DelimitedTextDataFile(TextReader inputReader)
@@ -116,7 +117,7 @@ namespace Jhu.Graywulf.Format
         public DelimitedTextDataFile(TextWriter outputWriter, Encoding encoding, CultureInfo culture)
             : base(outputWriter, encoding, culture)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         public DelimitedTextDataFile(TextWriter outputWriter)
@@ -125,7 +126,8 @@ namespace Jhu.Graywulf.Format
             // Overload
         }
 
-        private void InitializeMembers()
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
         {
             this.isFirstBlock = true;
 

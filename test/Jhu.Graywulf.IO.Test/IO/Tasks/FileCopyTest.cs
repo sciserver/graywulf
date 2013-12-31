@@ -27,8 +27,8 @@ namespace Jhu.Graywulf.IO.Tasks
                 fc = new CopyFile();
             }
 
-            fc.Source = String.Format(@"\\{0}\{1}\{2}.txt", Test.Constants.RemoteHost1, Test.Constants.GWCode, name);
-            fc.Destination = String.Format(@"\\{0}\{1}\{2}_2.txt", Test.Constants.RemoteHost1, Test.Constants.GWCode, name);
+            fc.Source = String.Format(@"\\{0}\{1}\{2}.txt", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, name);
+            fc.Destination = String.Format(@"\\{0}\{1}\{2}_2.txt", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, name);
 
             return fc;
         }

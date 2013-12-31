@@ -44,6 +44,18 @@ namespace Jhu.Graywulf.Util
             }
         }
 
+        public static string ToFileName(Uri uri)
+        {
+            if (!uri.IsAbsoluteUri)
+            {
+                return uri.ToString();
+            }
+            else
+            {
+                return uri.PathAndQuery;
+            }
+        }
+
         public static Uri Combine(Uri baseUri, Uri relativeUri)
         {
             if (relativeUri.IsAbsoluteUri)

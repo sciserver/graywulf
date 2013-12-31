@@ -64,7 +64,9 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             using (RemoteServiceTester.Instance.GetToken())
             {
-                var zippath = String.Format(@"\\{0}\{1}\{2}.csv", Test.Constants.RemoteHost1, Test.Constants.GWCode, "TableExportArchiveTest_RemoteExportZipTest.zip");
+                RemoteServiceTester.Instance.EnsureRunning();
+
+                var zippath = String.Format(@"\\{0}\{1}\{2}.zip", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, "TableExportArchiveTest_RemoteExportZipTest");
                 var path = "test.csv";
                 var te = GetTableExportTask(Util.UriConverter.FromFilePath(zippath), path, true);
 
