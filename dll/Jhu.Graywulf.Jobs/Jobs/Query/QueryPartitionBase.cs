@@ -454,17 +454,39 @@ namespace Jhu.Graywulf.Jobs.Query
         #region Destination table functions and final query execution
 
         /// <summary>
-        /// Generates the query that can be used in the final execution step
+        /// Generates the query that can be used to perform the final execution
+        /// step.
         /// </summary>
         /// <returns></returns>
-        protected abstract string GetOutputQueryText();
+        protected abstract string GetExecuteQueryText();
+
+        private SourceTableQuery GetExecuteSourceQuery()
+        {
+            return new SourceTableQuery()
+            {
+                Dataset = GetTemporaryDatabaseDataset(),
+                Query = GetExecuteQueryText()
+            };
+        }
+
+        /// <summary>
+        /// Generates the query that can be used to copy the results to the final
+        /// destination table (usually in mydb)
+        /// </summary>
+        /// <returns></returns>
+        protected virtual string GetOutputQueryText()
+        {
+            return String.Format(
+                "SELECT __tablealias.* FROM {0} AS __tablealias",
+                GetOutputTable().GetFullyResolvedName());
+        }
 
         /// <summary>
         /// Gets a query that can be used to figure out the schema of
         /// the destination table.
         /// </summary>
         /// <returns></returns>
-        public virtual SourceTableQuery GetOutputSourceQuery()
+        private SourceTableQuery GetOutputSourceQuery()
         {
             return new SourceTableQuery()
             {
@@ -598,7 +620,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public void ExecuteQuery()
         {
-            var source = GetOutputSourceQuery();
+            var source = GetExecuteSourceQuery();
             Table destination;
 
             switch (Query.ExecutionMode)
@@ -643,27 +665,19 @@ namespace Jhu.Graywulf.Jobs.Query
                     break;
                 case ExecutionMode.Graywulf:
                     {
-                        var sql = "SELECT tablealias.* FROM [{0}].[{1}].[{2}] AS tablealias";
-                        var temptable = GetOutputTable();
+                        var source = GetOutputSourceQuery();
 
-                        sql = String.Format(sql, temptable.DatabaseName, temptable.SchemaName, temptable.TableName);
-                        DumpSqlCommand(sql);
-
-                        var source = new SourceTableQuery()
-                        {
-                            Dataset = temptable.Dataset,
-                            Query = sql
-                        };
-
-                        var dest = new DestinationTable(Query.Destination)
+                        var destination = new DestinationTable(Query.Destination)
                         {
                             // Change destination to Append, output table has already been created,
                             // partitions only append to it
                             Options = TableInitializationOptions.Append
                         };
 
+                        DumpSqlCommand(source.Query);
+
                         // Create bulk copy task and execute it
-                        var tc = CreateTableCopyTask(source, dest, false);
+                        var tc = CreateTableCopyTask(source, destination, false);
 
                         var guid = Guid.NewGuid();
                         RegisterCancelable(guid, tc);

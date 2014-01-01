@@ -372,10 +372,8 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             AssertValidContext();
 
-            // TODO: This might be wrong here... We don't know database name!
-            var table = destination.Dataset.Tables[null, destination.SchemaName, destination.TableName];
-
-            bool exists = table.IsExisting;
+            var table = destination.GetTable();
+            var exists = table.IsExisting;
 
             if (exists && (destination.Options & TableInitializationOptions.Drop) == 0)
             {

@@ -867,7 +867,7 @@ END",
             var cols = new StringBuilder();
 
             int q = 0;
-            foreach (var c in table.Columns.Values)
+            foreach (var c in table.Columns.Values.OrderBy(ci => ci.ID))
             {
                 if (q > 0)
                 {

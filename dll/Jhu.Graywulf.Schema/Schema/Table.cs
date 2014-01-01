@@ -100,9 +100,9 @@ namespace Jhu.Graywulf.Schema
 
             if ((options & TableInitializationOptions.Append) != 0)
             {
-                if (!VerifyColumns())
+                if (!VerifyColumns(true))
                 {
-                    throw new Exception();  // *** TODO
+                    throw new SchemaException("Table is to be appended but schemas do not match.");  // *** TODO
                 }
             }
             else if ((options & TableInitializationOptions.Create) != 0)
@@ -142,7 +142,7 @@ namespace Jhu.Graywulf.Schema
         /// actually present in the database.
         /// </summary>
         /// <returns></returns>
-        public bool VerifyColumns()
+        public bool VerifyColumns(bool observeColumnOrder)
         {
             var tempcols = LoadColumns();
 
@@ -153,7 +153,7 @@ namespace Jhu.Graywulf.Schema
                     return false;
                 }
 
-                if (!this.Columns[key].Compare(tempcols[key]))
+                if (!this.Columns[key].Compare(tempcols[key], observeColumnOrder))
                 {
                     return false;
                 }

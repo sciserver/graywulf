@@ -124,11 +124,11 @@ namespace Jhu.Graywulf.Schema
             return new Column(this);
         }
 
-        public bool Compare(Column other)
+        public bool Compare(Column other, bool observeColumnOrder)
         {
             var res = true;
 
-            res &= this.ID == other.ID;
+            res &= observeColumnOrder || (this.ID == other.ID);
             res &= SchemaManager.Comparer.Compare(this.Name, other.Name) == 0;
             res &= this.DataType.Compare(other.DataType);
 

@@ -122,7 +122,7 @@ namespace Jhu.Graywulf.Jobs.Query
             ts.Stack.Remove(ts.FindDescendant<TablePartitionClause>());
         }
 
-        protected override string GetOutputQueryText()
+        protected override string GetExecuteQueryText()
         {
             // strip off order by
             var orderby = SelectStatement.FindDescendant<OrderByClause>();
@@ -164,16 +164,17 @@ namespace Jhu.Graywulf.Jobs.Query
             return sw.ToString();
         }
 
+        /* todo: delete if works
         public override void PrepareCopyResultset(Context context)
         {
             base.PrepareCopyResultset(context);
 
             // --- strip off orderBy clause
-            OrderByClause orderby = SelectStatement.FindDescendant<OrderByClause>();
+            /*OrderByClause orderby = SelectStatement.FindDescendant<OrderByClause>();
             if (orderby != null)
             {
                 SelectStatement.Stack.Remove(orderby);
             }
-        }
+        }*/
     }
 }
