@@ -132,22 +132,10 @@ namespace Jhu.Graywulf.IO.Tasks
 
         protected void ReadTable(DataFileBase source, DestinationTable destination)
         {
-            try
+            // Import the file by wrapping it into a dummy command
+            using (var cmd = new FileCommand(source))
             {
-                source.FileMode = DataFileMode.Read;
-                source.StreamFactoryType = streamFactoryType;
-                source.Open();
-
-                // Import the file by wrapping it into a dummy command
-
-                using (var cmd = new FileCommand(source))
-                {
-                    ImportTable(cmd, destination);
-                }
-            }
-            finally
-            {
-                source.Close();
+                ImportTable(cmd, destination);
             }
         }
 
@@ -173,31 +161,20 @@ namespace Jhu.Graywulf.IO.Tasks
 
         protected void WriteTable(SourceTableQuery source, DataFileBase destination)
         {
-            try
+            // Create command that reads the table
+            using (var cmd = source.CreateCommand())
             {
-                destination.FileMode = DataFileMode.Write;
-                destination.StreamFactoryType = streamFactoryType;
-                destination.Open();
-
-                // Create command that reads the table
-                using (var cmd = source.CreateCommand())
+                using (var cn = source.OpenConnection())
                 {
-                    using (var cn = source.OpenConnection())
+                    using (var tn = cn.BeginTransaction(IsolationLevel.ReadUncommitted))
                     {
-                        using (var tn = cn.BeginTransaction(IsolationLevel.ReadUncommitted))
-                        {
-                            cmd.Connection = cn;
-                            cmd.Transaction = tn;
-                            cmd.CommandTimeout = Timeout;
+                        cmd.Connection = cn;
+                        cmd.Transaction = tn;
+                        cmd.CommandTimeout = Timeout;
 
-                            WriteTable(cmd, destination);
-                        }
+                        WriteTable(cmd, destination);
                     }
                 }
-            }
-            finally
-            {
-                destination.Close();
             }
         }
 

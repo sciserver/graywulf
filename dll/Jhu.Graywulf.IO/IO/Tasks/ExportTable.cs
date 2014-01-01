@@ -101,7 +101,17 @@ namespace Jhu.Graywulf.IO.Tasks
                 throw new InvalidOperationException();  // *** TODO
             }
 
-            WriteTable(source, destination);
+            try
+            {
+                destination.FileMode = DataFileMode.Write;
+                destination.StreamFactoryType = StreamFactoryType;
+                destination.Open();
+                WriteTable(source, destination);
+            }
+            finally
+            {
+                destination.Close();
+            }
         }
     }
 }

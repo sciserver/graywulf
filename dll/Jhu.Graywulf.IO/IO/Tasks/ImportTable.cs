@@ -93,7 +93,17 @@ namespace Jhu.Graywulf.IO.Tasks
                 throw new InvalidOperationException();  // *** TODO
             }
 
-            ReadTable(source, destination);
+            try
+            {
+                source.FileMode = DataFileMode.Read;
+                source.StreamFactoryType = StreamFactoryType;
+                source.Open();
+                ReadTable(source, destination);
+            }
+            finally
+            {
+                source.Close();
+            }
         }
     }
 }
