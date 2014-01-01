@@ -10,7 +10,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.MirrorDatabase;
 using Jhu.Graywulf.Test;
 
-namespace Jhu.Graywulf.Jobs.ExportTable
+namespace Jhu.Graywulf.Jobs.ExportTables
 {
     [TestClass]
     public class MirrorDatabaseTest : TestClassBase

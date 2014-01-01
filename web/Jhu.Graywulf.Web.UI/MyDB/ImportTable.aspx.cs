@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (!IsPostBack)
             {
-                var dfs = FileFormatFactory.Create().GetFileFormatDescriptions();
+                var dfs = FileFormatFactory.GetFileFormatDescriptions();
 
                 foreach (var df in dfs)
                 {
@@ -67,14 +67,13 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             DataFileCompression compression;
 
             // Determine file format
-            var ff = FileFormatFactory.Create();
-            var format = ff.GetFileFormatDescription(
+            var format = FileFormatFactory.GetFileFormatDescription(
                 new Uri(ImportedFile.PostedFile.FileName),
                 out filename,
                 out extension,
                 out compression);
 
-            var source = ff.CreateFile(format);
+            var source = FileFormatFactory.CreateFile(format);
 
             // TODO: check and delete if works source.Compression = compression;
             source.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read);
@@ -90,9 +89,8 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         private IO.Tasks.ImportTable CreateImporterAdvanced()
         {
-            var ff = FileFormatFactory.Create();
-            var format = ff.GetFileFormatDescription(FileFormat.SelectedValue);
-            var source = ff.CreateFile(format);
+            var format = FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
+            var source = FileFormatFactory.CreateFile(format);
 
             DataFileCompression compression;
             Enum.TryParse<DataFileCompression>(CompressionMethod.SelectedValue, out compression);
@@ -111,7 +109,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         protected void RefreshForm()
         {
-            var format = FileFormatFactory.Create().GetFileFormatDescription(FileFormat.SelectedValue);
+            var format = FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
 
             DetectColumnNamesRow.Visible = format.CanDetectColumnNames;
             CompressedRow.Visible = !format.IsCompressed;

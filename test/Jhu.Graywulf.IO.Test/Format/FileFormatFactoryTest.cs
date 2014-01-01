@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Format
         [TestMethod]
         public void EnumerateFormatsTest()
         {
-            var df = FileFormatFactory.Create().GetFileFormatDescriptions();
+            var df = FileFormatFactory.Create(null).GetFileFormatDescriptions();
         }
     }
 }

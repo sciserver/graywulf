@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [ServiceContract(SessionMode = SessionMode.Required)]
     [RemoteServiceClass(typeof(ImportTable))]
     [NetDataContract]
-    public interface IImportTable : IImportTableBase
+    public interface IImportTable : ICopyTableBase
     {
         DataFileBase Source
         {
@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
-    public class ImportTable : ImportTableBase, IImportTable, ICloneable, IDisposable
+    public class ImportTable : CopyTableBase, IImportTable, ICloneable, IDisposable
     {
         private DataFileBase source;
         private DestinationTable destination;
@@ -81,10 +81,6 @@ namespace Jhu.Graywulf.IO.Tasks
             return new ImportTable(this);
         }
 
-        public void Dispose()
-        {
-        }
-
         protected override void OnExecute()
         {
             if (source == null)
@@ -97,21 +93,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 throw new InvalidOperationException();  // *** TODO
             }
 
-            try
-            {
-                source.FileMode = DataFileMode.Read;
-                source.Open();
-
-                // Import the file by wrapping it into a dummy command
-                using (var cmd = new FileCommand(source))
-                {
-                    ImportTable(cmd, destination);
-                }
-            }
-            finally
-            {
-                source.Close();
-            }
+            ReadTable(source, destination);
         }
     }
 }

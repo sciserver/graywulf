@@ -9,7 +9,7 @@ using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.Schema;
 
-namespace Jhu.Graywulf.Jobs.ExportTable
+namespace Jhu.Graywulf.Jobs.ExportTables
 {
     [Serializable]
     public class ExportTablesFactory : JobFactoryBase
@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             var destinations = new DataFileBase[sources.Length];
             for (int i = 0; i < sources.Length; i++)
             {
-                var ff = FileFormatFactory.Create();
+                var ff = FileFormatFactory.Create(Federation.AppSettings.FileFormatFactory);
 
                 var dest = ff.CreateFile(format);
                 dest.Uri = Util.UriConverter.FromFilePath(String.Format("{0}{1}", sources[i].ObjectName, format.DefaultExtension));
@@ -93,6 +93,8 @@ namespace Jhu.Graywulf.Jobs.ExportTable
                 Destinations = destinations,
                 Archival = DataFileArchival.Zip,
                 Uri = Util.UriConverter.FromFilePath(path),
+                FileFormatFactoryType = Federation.AppSettings.FileFormatFactory,
+                StreamFactoryType = Federation.AppSettings.StreamFactory,
             };
 
             job.Parameters["Parameters"].SetValue(et);

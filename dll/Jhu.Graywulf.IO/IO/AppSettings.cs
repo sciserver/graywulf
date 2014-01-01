@@ -9,14 +9,5 @@ namespace Jhu.Graywulf.IO
 {
     public static class AppSettings
     {
-        private static string GetValue(string key)
-        {
-            return (string)((NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf/IO"))[key];
-        }
-
-        public static string StreamFactory
-        {
-            get { return GetValue("StreamFactory"); }
-        }
     }
 }

@@ -10,7 +10,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Schema;
 
-namespace Jhu.Graywulf.Jobs.ExportTable
+namespace Jhu.Graywulf.Jobs.ExportTables
 {
     public class ExportTablesJob : GraywulfAsyncCodeActivity, IGraywulfActivity, IExportTablesJob
     {
@@ -53,7 +53,17 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             var exporter = exportTable.GetInitializedTableExportTask();
 
             RegisterCancelable(workflowInstanceGuid, activityInstanceId, exporter);
-            exporter.Execute();
+
+            try
+            {
+                exporter.Open();
+                exporter.Execute();
+            }
+            finally
+            {
+                exporter.Close();
+            }
+            
             UnregisterCancelable(workflowInstanceGuid, activityInstanceId, exporter);
         }
 

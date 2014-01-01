@@ -15,7 +15,7 @@ using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.Schema;
 
-namespace Jhu.Graywulf.Jobs.ExportTable
+namespace Jhu.Graywulf.Jobs.ExportTables
 {
     [DataContract]
     [Serializable]
@@ -24,6 +24,8 @@ namespace Jhu.Graywulf.Jobs.ExportTable
         private TableOrView[] sources;
         private DataFileBase[] destinations;
         private Uri uri;
+        private string fileFormatFactoryType;
+        private string streamFactoryType;
         private DataFileArchival archival;
         private int timeout;
 
@@ -46,6 +48,19 @@ namespace Jhu.Graywulf.Jobs.ExportTable
         {
             get { return uri; }
             set { uri = value; }
+        }
+
+        [DataMember]
+        public string FileFormatFactoryType
+        {
+            get { return fileFormatFactoryType; }
+            set { fileFormatFactoryType = value; }
+        }
+
+        public string StreamFactoryType
+        {
+            get { return streamFactoryType; }
+            set { streamFactoryType = value; }
         }
 
         public DataFileArchival Archival
@@ -71,6 +86,8 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             this.sources = null;
             this.destinations = null;
             this.uri = null;
+            this.fileFormatFactoryType = null;
+            this.streamFactoryType = null;
             this.archival = DataFileArchival.Zip;
             this.timeout = 1200;    // *** TODO: get from settings
         }
@@ -99,6 +116,8 @@ namespace Jhu.Graywulf.Jobs.ExportTable
             te.Sources = ss;
             te.Destinations = destinations;
             te.Uri = uri;
+            te.FileFormatFactoryType = fileFormatFactoryType;
+            te.StreamFactoryType = streamFactoryType;
             te.Timeout = timeout;
 
             return te;

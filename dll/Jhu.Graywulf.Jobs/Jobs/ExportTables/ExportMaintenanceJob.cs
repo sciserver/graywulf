@@ -11,7 +11,7 @@ using System.IO;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 
-namespace Jhu.Graywulf.Jobs.ExportTable
+namespace Jhu.Graywulf.Jobs.ExportTables
 {
     public class ExportMaintenanceJob : CodeActivity, IGraywulfActivity
     {

@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [ServiceContract(SessionMode = SessionMode.Required)]
     [RemoteServiceClass(typeof(CopyTable))]
     [NetDataContract]
-    public interface ICopyTable : IImportTableBase
+    public interface ICopyTable : ICopyTableBase
     {
         SourceTableQuery Source
         {
@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
-    public class CopyTable : ImportTableBase, ICopyTable, ICloneable
+    public class CopyTable : CopyTableBase, ICopyTable, ICloneable
     {
         private SourceTableQuery source;
         private DestinationTable destination;

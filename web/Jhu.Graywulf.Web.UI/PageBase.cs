@@ -8,6 +8,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Install;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Format;
+using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Web.UI
 {
@@ -15,6 +16,16 @@ namespace Jhu.Graywulf.Web.UI
     {
         private GraywulfSchemaManager schemaManager;
         private DatasetBase myDBDataset;
+
+        public FileFormatFactory FileFormatFactory
+        {
+            get { return FileFormatFactory.Create(Federation.AppSettings.FileFormatFactory); }
+        }
+
+        public StreamFactory StreamFactory
+        {
+            get { return StreamFactory.Create(Federation.AppSettings.StreamFactory); }
+        }
 
         /// <summary>
         /// Get a schema manager that provides access to the databases

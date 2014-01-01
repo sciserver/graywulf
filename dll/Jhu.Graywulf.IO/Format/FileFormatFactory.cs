@@ -17,9 +17,14 @@ namespace Jhu.Graywulf.Format
     {
         #region Static members
 
-        public static FileFormatFactory Create()
+        public static FileFormatFactory Create(string typename)
         {
-            var type = Type.GetType(AppSettings.FileFormatFactory);
+            Type type = null;
+
+            if (typename != null)
+            {
+                type = Type.GetType(typename);
+            }
 
             // If config is incorrect, fall back to known types.
             if (type == null)

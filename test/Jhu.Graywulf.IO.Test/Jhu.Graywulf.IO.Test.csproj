@@ -52,6 +52,7 @@
     <Compile Include="Format\CsvFileReaderTest.cs" />
     <Compile Include="Format\CsvFileWriterTest.cs" />
     <Compile Include="Format\FileFormatFactoryTest.cs" />
+    <Compile Include="Format\SerializationTest.cs" />
     <Compile Include="Format\SqlServerNativeDataFileWriterTest.cs" />
     <Compile Include="Format\StraightBitConverterTest.cs" />
     <Compile Include="Format\SwapBitConverterTest.cs" />

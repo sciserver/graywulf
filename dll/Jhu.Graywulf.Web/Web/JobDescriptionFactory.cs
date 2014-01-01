@@ -9,7 +9,7 @@ using System.Text;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Jobs.Query;
-using Jhu.Graywulf.Jobs.ExportTable;
+using Jhu.Graywulf.Jobs.ExportTables;
 
 namespace Jhu.Graywulf.Web
 {
@@ -118,7 +118,7 @@ namespace Jhu.Graywulf.Web
                         {
                             queryJobDefinitions.Add(jd.Guid, jd.WorkflowTypeName);
                         }
-                        else if (rh.HasInterface(typeof(Jhu.Graywulf.Jobs.ExportTable.IExportTablesJob).ToString()))
+                        else if (rh.HasInterface(typeof(Jhu.Graywulf.Jobs.ExportTables.IExportTablesJob).ToString()))
                         {
                             exportJobDefinitions.Add(jd.Guid, jd.WorkflowTypeName);
                         }

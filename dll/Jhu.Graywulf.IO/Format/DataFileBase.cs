@@ -36,6 +36,11 @@ namespace Jhu.Graywulf.Format
         private bool ownsBaseStream;
 
         /// <summary>
+        /// Type name of the stream factory to use when opening the stream automatically.
+        /// </summary>
+        private string streamFactoryType;
+
+        /// <summary>
         /// Read or write
         /// </summary>
         private DataFileMode fileMode;
@@ -80,6 +85,16 @@ namespace Jhu.Graywulf.Format
         public virtual Stream BaseStream
         {
             get { return baseStream; }
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the stream factory type to
+        /// use when opening the base stream automatically.
+        /// </summary>
+        public string StreamFactoryType
+        {
+            get { return streamFactoryType; }
+            set { streamFactoryType = value; }
         }
 
         /// <summary>
@@ -201,6 +216,7 @@ namespace Jhu.Graywulf.Format
         {
             this.baseStream = null;
             this.ownsBaseStream = false;
+            this.streamFactoryType = null;
 
             this.fileMode = DataFileMode.Unknown;
             this.uri = null;
@@ -335,7 +351,7 @@ namespace Jhu.Graywulf.Format
             if (baseStream == null)
             {
                 // Use stream factory to open stream
-                var f = StreamFactory.Create();
+                var f = StreamFactory.Create(streamFactoryType);
                 baseStream = f.Open(uri, fileMode);
 
                 ownsBaseStream = true;

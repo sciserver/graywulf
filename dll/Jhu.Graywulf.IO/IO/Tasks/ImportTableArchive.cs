@@ -15,16 +15,8 @@ namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
     [RemoteServiceClass(typeof(ImportTableArchive))]
-    public interface IImportTableArchive : IImportTableBase
+    public interface IImportTableArchive : ICopyTableArchiveBase
     {
-        Uri Uri
-        {
-            [OperationContract]
-            get;
-            [OperationContract]
-            set;
-        }
-
         DestinationTable Destination
         {
             [OperationContract]
@@ -32,36 +24,14 @@ namespace Jhu.Graywulf.IO.Tasks
             [OperationContract]
             set;
         }
-
-        [OperationContract]
-        void Open();
-
-        [OperationContract(Name="Open_Uri")]
-        void Open(Uri uri);
-
-        [OperationContract]
-        void Close();
     }
 
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
-    public class ImportTableArchive : ImportTableBase, IImportTableArchive, ICloneable, IDisposable
+    public class ImportTableArchive : CopyTableArchiveBase, IImportTableArchive, ICloneable, IDisposable
     {
-        private Uri uri;
         private DestinationTable destination;
-
-        [NonSerialized]
-        private Stream baseStream;
-
-        [NonSerialized]
-        private bool ownsBaseStream;
-
-        public Uri Uri
-        {
-            get { return uri; }
-            set { uri = value; }
-        }
 
         public DestinationTable Destination
         {
@@ -81,16 +51,12 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void InitializeMembers()
         {
-            this.uri = null;
-            this.baseStream = null;
-            this.ownsBaseStream = false;
+            this.destination = null;
         }
 
         private void CopyMembers(ImportTableArchive old)
         {
-            this.uri = old.uri;
-            this.baseStream = null;
-            this.ownsBaseStream = false;
+            this.destination = old.destination;
         }
 
         public override object Clone()
@@ -98,98 +64,30 @@ namespace Jhu.Graywulf.IO.Tasks
             return new ImportTableArchive(this);
         }
 
-        public void Dispose()
+        public override void Open()
         {
-            Close();
-        }
-
-        protected virtual void EnsureNotOpen()
-        {
-            if (ownsBaseStream && baseStream != null)
-            {
-                throw new InvalidOperationException();
-            }
-        }
-
-        public void Open()
-        {
-            EnsureNotOpen();
-
-            if (baseStream == null)
-            {
-                // Open input stream
-                // Check if the archival option is turned on and open archive
-                // file if necessary by opening an IArchiveInputStream
-
-                var sf = StreamFactory.Create();
-                sf.Mode = DataFileMode.Read;
-                sf.Uri = uri;
-                sf.Archival = DataFileArchival.Automatic;
-                // TODO: add authentication options here
-
-                baseStream = sf.Open();
-                ownsBaseStream = true;
-            }
-            else
-            {
-                // Do nothing
-            }
-        }
-
-        public void Open(Stream stream)
-        {
-            if (stream == null)
-            {
-                throw new ArgumentNullException("stream");  // TODO
-            }
-
-            this.baseStream = stream;
-            this.ownsBaseStream = false;
-            this.uri = null;
-
-            Open();
-        }
-
-        public void Open(Uri uri)
-        {
-            if (uri == null)
-            {
-                throw new ArgumentNullException("uri"); // TODO
-            }
-
-            this.baseStream = null;
-            this.ownsBaseStream = false;
-            this.uri = uri;
-
-            Open();
-        }
-
-        public void Close()
-        {
-            if (ownsBaseStream && baseStream != null)
-            {
-                baseStream.Dispose();
-                baseStream = null;
-                ownsBaseStream = false;
-            }
+            Open(DataFileMode.Read, DataFileArchival.Automatic);
         }
 
         protected override void OnExecute()
         {
-            if (baseStream == null)
+            // Make sure stream is open
+            if (BaseStream == null)
             {
                 throw new InvalidOperationException();
             }
 
             // Make sure it's an archive stream
-            if (!(baseStream is IArchiveInputStream))
+            if (!(BaseStream is IArchiveInputStream))
             {
                 throw new InvalidOperationException();
             }
 
+            // Create the file format factory
+            var ff = GetFileFormatFactory();
+
             // Read the archive file by file and import tables
-            var ff = FileFormatFactory.Create();
-            var ais = (IArchiveInputStream)baseStream;
+            var ais = (IArchiveInputStream)BaseStream;
             IArchiveEntry entry;
 
             while ((entry = ais.ReadNextFileEntry()) != null)
@@ -199,7 +97,7 @@ namespace Jhu.Graywulf.IO.Tasks
                     // Create source file
                     using (var format = ff.CreateFile(entry.Filename))
                     {
-                        format.Open(baseStream, DataFileMode.Read);
+                        format.Open(BaseStream, DataFileMode.Read);
 
                         using (var cmd = new FileCommand(format))
                         {

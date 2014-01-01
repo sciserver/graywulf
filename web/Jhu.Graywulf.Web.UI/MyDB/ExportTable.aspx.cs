@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Web.UI.WebControls;
-using Jhu.Graywulf.Jobs.ExportTable;
+using Jhu.Graywulf.Jobs.ExportTables;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Format;
@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         private void RefreshFileFormatList()
         {
-            var dfs = FileFormatFactory.Create().GetFileFormatDescriptions();
+            var dfs = FileFormatFactory.GetFileFormatDescriptions();
 
             foreach (var df in dfs)
             {
@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         private void ScheduleExportTableJob()
         {
             var table = (Jhu.Graywulf.Schema.Table)SchemaManager.GetDatabaseObjectByKey(TableName.SelectedValue);
-            var format = FileFormatFactory.Create().GetFileFormatDescription(FileFormat.SelectedValue);
+            var format = FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
 
             // Make sure it's in MYDB
             if (StringComparer.InvariantCultureIgnoreCase.Compare(table.DatasetName, MyDBDatabaseDefinition.Name) != 0)
@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             }
 
             var queue = String.Format("{0}.{1}", Federation.ControllerMachine.GetFullyQualifiedName(), Jhu.Graywulf.Registry.Constants.LongQueueName);
-            var f = new Jhu.Graywulf.Jobs.ExportTable.ExportTablesFactory(RegistryContext);
+            var f = new Jhu.Graywulf.Jobs.ExportTables.ExportTablesFactory(RegistryContext);
             
             var job = f.ScheduleAsJob(
                 new [] { table },

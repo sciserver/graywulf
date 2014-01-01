@@ -8,12 +8,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Jobs.ExportTable;
+using Jhu.Graywulf.Jobs.ExportTables;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Test;
 using Jhu.Graywulf.Schema;
 
-namespace Jhu.Graywulf.Jobs.ExportTable
+namespace Jhu.Graywulf.Jobs.ExportTables
 {
     [TestClass]
     public class ExportTablesTest : TestClassBase
@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Jobs.ExportTable
                 var ef = new EntityFactory(context);
                 var f = ef.LoadEntity<Federation>(Federation.AppSettings.FederationName);
 
-                var format = FileFormatFactory.Create().GetFileFormatDescription(typeof(Jhu.Graywulf.Format.DelimitedTextDataFile).FullName);
+                var format = FileFormatFactory.Create(null).GetFileFormatDescription(typeof(Jhu.Graywulf.Format.DelimitedTextDataFile).FullName);
 
                 var source = new Jhu.Graywulf.Schema.Table()
                 {
@@ -55,7 +55,7 @@ namespace Jhu.Graywulf.Jobs.ExportTable
         [TestMethod]
         public void ExportTableSerializableTest()
         {
-            var t = typeof(Jhu.Graywulf.Jobs.ExportTable.ExportTables);
+            var t = typeof(Jhu.Graywulf.Jobs.ExportTables.ExportTables);
 
             var sc = new Jhu.Graywulf.Activities.SerializableChecker();
             Assert.IsTrue(sc.Execute(t));

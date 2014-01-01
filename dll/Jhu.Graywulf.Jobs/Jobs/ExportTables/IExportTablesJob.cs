@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Activities;
 
-namespace Jhu.Graywulf.Jobs.ExportTable
+namespace Jhu.Graywulf.Jobs.ExportTables
 {
     public interface IExportTablesJob
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Jobs.ExportTable;
+using Jhu.Graywulf.Jobs.ExportTables;
 using Jhu.Graywulf.Jobs.Query;
 
 namespace Jhu.Graywulf.Web

@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [ServiceContract(SessionMode = SessionMode.Required)]
     [RemoteServiceClass(typeof(ExportTable))]
     [NetDataContract]
-    public interface IExportTable : IRemoteService
+    public interface IExportTable : ICopyTableBase
     {
         SourceTableQuery Source
         {
@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
-    public class ExportTable : ExportTableBase, IExportTable, ICloneable, IDisposable
+    public class ExportTable : CopyTableBase, IExportTable, ICloneable, IDisposable
     {
         private SourceTableQuery source;
         private DataFileBase destination;
@@ -101,17 +101,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 throw new InvalidOperationException();  // *** TODO
             }
 
-            try
-            {
-                destination.FileMode = DataFileMode.Write;
-                destination.Open();
-                WriteTable(source, destination);
-            }
-            finally
-            {
-                destination.Close();
-            }
-
+            WriteTable(source, destination);
         }
     }
 }

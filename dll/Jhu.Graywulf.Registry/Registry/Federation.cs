@@ -32,6 +32,16 @@ namespace Jhu.Graywulf.Registry
             {
                 get { return GetValue("QueryFactory"); }
             }
+
+            public static string FileFormatFactory
+            {
+                get { return GetValue("FileFormatFactory"); }
+            }
+
+            public static string StreamFactory
+            {
+                get { return GetValue("StreamFactory"); }
+            }
         }
 
         enum ReferenceType : int

@@ -25,9 +25,14 @@ namespace Jhu.Graywulf.IO
         /// but using the actual class listed in the config files.
         /// </summary>
         /// <returns></returns>
-        public static StreamFactory Create()
+        public static StreamFactory Create(string typename)
         {
-            var type = Type.GetType(AppSettings.StreamFactory);
+            Type type = null;
+
+            if (typename != null)
+            {
+                type = Type.GetType(typename);
+            }
 
             // Fall back logic if config is invalid
             if (type == null)

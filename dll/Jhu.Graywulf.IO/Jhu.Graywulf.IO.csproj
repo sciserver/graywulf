@@ -85,17 +85,17 @@
     <Compile Include="IO\SharpZipLibWrapper\ZipInputStream.cs" />
     <Compile Include="IO\SharpZipLibWrapper\ZipOutputStream.cs" />
     <Compile Include="IO\StreamFactory.cs" />
+    <Compile Include="IO\Tasks\CopyTableArchiveBase.cs" />
     <Compile Include="IO\Tasks\CopyFile.cs" />
     <Compile Include="IO\Tasks\CopyTable.cs" />
+    <Compile Include="IO\Tasks\CopyTableBase.cs" />
     <Compile Include="IO\Tasks\DestinationTable.cs" />
     <Compile Include="IO\Tasks\ExportTable.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IO\Tasks\ExportTableArchive.cs" />
-    <Compile Include="IO\Tasks\ExportTableBase.cs" />
     <Compile Include="IO\Tasks\ImportTable.cs" />
     <Compile Include="IO\Tasks\ImportTableArchive.cs" />
-    <Compile Include="IO\Tasks\ImportTableBase.cs" />
     <Compile Include="IO\Tasks\SourceTableQuery.cs" />
     <Compile Include="IO\Tasks\Enum.cs" />
     <Compile Include="IO\Tasks\ExceptionMessages.Designer.cs">
