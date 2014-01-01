@@ -163,18 +163,5 @@ namespace Jhu.Graywulf.Jobs.Query
 
             return sw.ToString();
         }
-
-        /* todo: delete if works
-        public override void PrepareCopyResultset(Context context)
-        {
-            base.PrepareCopyResultset(context);
-
-            // --- strip off orderBy clause
-            /*OrderByClause orderby = SelectStatement.FindDescendant<OrderByClause>();
-            if (orderby != null)
-            {
-                SelectStatement.Stack.Remove(orderby);
-            }
-        }*/
     }
 }

@@ -329,6 +329,62 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Query partitioning functions
 
+        public void DeterminePartitionCount(Context context, IScheduler scheduler, out int partitionCount, out Guid assignedServerInstanceGuid)
+        {
+            partitionCount = 1;
+            assignedServerInstanceGuid = Guid.Empty;
+
+            // Single server mode will run on one partition by definition,
+            // Graywulf mode has to look at the registry for available machines
+            switch (ExecutionMode)
+            {
+                case ExecutionMode.SingleServer:
+                    InitializeQueryObject(null);
+                    break;
+                case ExecutionMode.Graywulf:
+                    InitializeQueryObject(context, scheduler);
+
+                    // If query is partitioned, statistics must be gathered
+                    if (IsPartitioned)
+                    {
+                        // Assign a server that will run the statistics queries
+                        // Try to find a server that contains all required datasets. This is true right now for
+                        // SkyQuery where all databases are mirrored but will have to be updated later
+
+                        // Collect all datasets that are required to answer the query
+                        var dss = FindRequiredDatasets();
+
+                        // Datasets that are mirrored and can be on any server
+                        var reqds = (from ds in dss.Values
+                                     where !ds.IsSpecificInstanceRequired
+                                     select ds.DatabaseDefinition.Guid).ToArray();
+
+                        // Datasets that are only available at a specific server instance
+                        var spds = (from ds in dss.Values
+                                    where ds.IsSpecificInstanceRequired && !ds.DatabaseInstance.IsEmpty
+                                    select ds.DatabaseInstance.Guid).ToArray();
+
+
+                        var si = new ServerInstance(context);
+                        si.Guid = scheduler.GetNextServerInstance(reqds, StatDatabaseVersionName, spds);
+                        si.Load();
+
+                        AssignedServerInstance = si;
+                        assignedServerInstanceGuid = si.Guid;
+
+                        // *** TODO: find optimal number of partitions
+                        // TODO: replace "2" with a value from settings
+                        partitionCount = 2 * scheduler.GetServerInstances(reqds, SourceDatabaseVersionName, spds).Length;
+
+                        // Now have to reinitialize to load the assigned server instances
+                        InitializeQueryObject(context, scheduler, true);
+                    }
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
         public abstract void GeneratePartitions(int availableServerCount);
 
         protected void AppendPartition(QueryPartitionBase partition)
@@ -352,19 +408,6 @@ namespace Jhu.Graywulf.Jobs.Query
                 }
 
                 destinationDatabaseInstance.Value.GetConnectionString();
-            }
-        }
-
-        public SqlConnectionStringBuilder GetDestinationDatabaseConnectionString()
-        {
-            switch (ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    return new SqlConnectionStringBuilder(((Schema.SqlServer.SqlServerDataset)destination.Dataset).ConnectionString);
-                case ExecutionMode.Graywulf:
-                    return destinationDatabaseInstance.Value.GetConnectionString();
-                default:
-                    throw new NotImplementedException();
             }
         }
 

@@ -126,39 +126,6 @@ namespace Jhu.Graywulf.Jobs.Query
 
         #endregion
 
-        /* TODO: delete
-        protected void LoadTemporaryDatabaseInstance(bool forceReinitialize)
-        {
-            if (!AssignedServerInstanceReference.IsEmpty && (TemporaryDatabaseInstanceReference.IsEmpty || forceReinitialize))
-            {
-                var gwds = (GraywulfDataset)query.TemporaryDataset;
-                gwds.Context = Context;
-                var dd = gwds.DatabaseVersion.Value.DatabaseDefinition;
-
-                dd.LoadDatabaseInstances(false);
-                foreach (var di in dd.DatabaseInstances.Values)
-                {
-                    di.Context = Context;
-                }
-
-                // Find database instance that is on the same machine
-                try
-                {
-                    // TODO: only server instance and database definition is checked here, maybe database version would be better
-                    TemporaryDatabaseInstanceReference.Value = dd.DatabaseInstances.Values.FirstOrDefault(ddi => ddi.ServerInstanceReference.Guid == AssignedServerInstance.Guid);
-                    TemporaryDatabaseInstanceReference.Value.GetConnectionString();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Cannot determine temp database", ex); // TODO ***
-                }
-            }
-            else if (AssignedServerInstanceReference.IsEmpty)
-            {
-                TemporaryDatabaseInstanceReference.Value = null;
-            }
-        }*/
-
         protected void LoadSystemDatabaseInstance(EntityProperty<DatabaseInstance> databaseInstance, GraywulfDataset dataset, bool forceReinitialize)
         {
             if (!AssignedServerInstanceReference.IsEmpty && (databaseInstance.IsEmpty || forceReinitialize))
@@ -254,40 +221,6 @@ namespace Jhu.Graywulf.Jobs.Query
             return GetTemporaryTable("output"); // *** TODO
         }
 
-        /*protected void LoadCodeDatabaseInstance(bool forceReinitialize)
-        {
-            // *** TODO: merge with LoadTemporaryDatabaseInstance
-
-            if (!AssignedServerInstanceReference.IsEmpty && (CodeDatabaseInstanceReference.IsEmpty || forceReinitialize))
-            {
-                var gwds = (GraywulfDataset)query.CodeDataset;
-                gwds.Context = Context;
-                var dd = gwds.DatabaseVersion.Value.DatabaseDefinition;
-
-                dd.LoadDatabaseInstances(false);
-                foreach (var di in dd.DatabaseInstances.Values)
-                {
-                    di.Context = Context;
-                }
-
-                // Find database instance that is on the same machine
-                try
-                {
-                    // TODO: only server instance and database definition is checked here, maybe database version would be better
-                    CodeDatabaseInstanceReference.Value = dd.DatabaseInstances.Values.FirstOrDefault(ddi => ddi.ServerInstanceReference.Guid == AssignedServerInstance.Guid);
-                    CodeDatabaseInstanceReference.Value.GetConnectionString();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Cannot determine code database", ex); // TODO ***
-                }
-            }
-            else if (AssignedServerInstanceReference.IsEmpty)
-            {
-                CodeDatabaseInstanceReference.Value = null;
-            }
-        }*/
-
         /// <summary>
         /// Interprets the parsed query
         /// </summary>
@@ -326,8 +259,6 @@ namespace Jhu.Graywulf.Jobs.Query
                 case ExecutionMode.Graywulf:
                     LoadSystemDatabaseInstance(TemporaryDatabaseInstanceReference, (GraywulfDataset)query.TemporaryDataset, forceReinitialize);
                     LoadSystemDatabaseInstance(CodeDatabaseInstanceReference, (GraywulfDataset)query.CodeDataset, forceReinitialize);
-                    // TODO: delete LoadTemporaryDatabaseInstance(forceReinitialize);
-                    // TODO: delete LoadCodeDatabaseInstance(forceReinitialize);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -495,54 +426,6 @@ namespace Jhu.Graywulf.Jobs.Query
             };
         }
 
-        /* TODO: delete if works
-        public virtual DatasetBase GetDestinationTableSchemaSourceDataset()
-        {
-            return new SqlServerDataset()
-            {
-                ConnectionString = AssignedServerInstance.GetConnectionString().ConnectionString
-            };
-        }
-
-        public virtual string GetDestinationTableSchemaSourceQuery()
-        {
-            // strip off order by
-            OrderByClause orderby = SelectStatement.FindDescendant<OrderByClause>();
-            if (orderby != null)
-            {
-                SelectStatement.Stack.Remove(orderby);
-            }
-
-            // strip off partition on
-            foreach (QuerySpecification qs in SelectStatement.EnumerateQuerySpecifications())
-            {
-                // strip off select into
-                IntoClause into = qs.FindDescendant<IntoClause>();
-                if (into != null)
-                {
-                    qs.Stack.Remove(into);
-                }
-
-                foreach (var ts in qs.EnumerateDescendantsRecursive<SimpleTableSource>())
-                {
-                    var pc = ts.FindDescendant<TablePartitionClause>();
-
-                    if (pc != null)
-                    {
-                        pc.Parent.Stack.Remove(pc);
-                    }
-                }
-            }
-
-            var cg = new Jhu.Graywulf.SqlParser.SqlCodeGen.SqlServerCodeGenerator();
-            cg.ResolveNames = true;
-
-            var sw = new StringWriter();
-            cg.Execute(sw, SelectStatement);
-            return sw.ToString();
-        }
-         * */
-
         /// <summary>
         /// Creates or truncates destination table in the output database (usually MYDB)
         /// </summary>
@@ -571,37 +454,6 @@ namespace Jhu.Graywulf.Jobs.Query
 
                                 var table = query.Destination.GetTable();
                                 table.Initialize(source.GetSchemaTable(), query.Destination.Options);
-
-                                // TODO: delete all this crap
-                                // TODO: this is screwed up here
-                                // drop table in every partition... call it only once
-                                /*
-                                if ((query.Destination.Operation & DestinationTableOperation.Drop) != 0)
-                                {
-                                    DropTableOrView(query.Destination.Table);
-                                }
-
-                                if ((query.Destination.Operation & DestinationTableOperation.Create) != 0)
-                                {
-                                    CreateTableForBulkCopy(source, query.Destination, false);
-                                }
-                                else if ((query.Destination.Operation & DestinationTableOperation.Clear) != 0)
-                                {
-                                    // TODO: This might need some revision here
-                                    // what if schema differs?
-                                    TruncateTable(query.Destination.Table);
-                                }
-                                else if ((query.Destination.Operation & DestinationTableOperation.Append) != 0)
-                                {
-                                    // TODO: This might need some revision here
-                                    // what if schema differs?
-                                    throw new NotImplementedException();
-                                }
-                                else
-                                {
-                                    throw new NotImplementedException();
-                                }
-                                */
                             }
 
                             query.IsDestinationTableInitialized = true;
@@ -627,12 +479,9 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 case ExecutionMode.SingleServer:
                     // In single-server mode results are directly written into destination table
-                    // TODO: delete source = Query.Destination.Table.Dataset;
                     destination = Query.Destination.GetTable();
                     break;
                 case ExecutionMode.Graywulf:
-                    // TODO: delete source = AssignedServerInstance.GetDataset();    
-                
                     // In graywulf mode results are written into a temporary table first
                     destination = GetOutputTable();
                     TemporaryTables.TryAdd(destination.TableName, destination);
@@ -685,15 +534,6 @@ namespace Jhu.Graywulf.Jobs.Query
                         tc.Execute();
 
                         UnregisterCancelable(guid);
-
-                        /* TODO: delete
-                        // Change destination to Append, output table has already been created,
-                        // partitions only append to it
-                        var destination = new DestinationTableParameters(Query.Destination);
-                        destination.Operation = DestinationTableOperation.Append;
-
-                        ExecuteBulkCopy(source, destination, false, Query.QueryTimeout);
-                         * */
                     }
                     break;
                 default:
