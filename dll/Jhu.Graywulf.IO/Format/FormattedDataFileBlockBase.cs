@@ -331,6 +331,26 @@ namespace Jhu.Graywulf.Format
                     return r;
                 };
             }
+            else if (t == typeof(DateTimeOffset))
+            {
+                return delegate(string s, out object p)
+                {
+                    DateTimeOffset v;
+                    var r = DateTimeOffset.TryParse(s, File.Culture, File.DateTimeStyle, out v);
+                    p = v;
+                    return r;
+                };
+            }
+            else if (t == typeof(TimeSpan))
+            {
+                return delegate(string s, out object p)
+                {
+                    TimeSpan v;
+                    var r = TimeSpan.TryParse(s, File.Culture, out v);
+                    p = v;
+                    return r;
+                };
+            }
             else if (t == typeof(Guid))
             {
                 return delegate(string s, out object p)
@@ -339,6 +359,49 @@ namespace Jhu.Graywulf.Format
                     var r = Guid.TryParse(s, out v);
                     p = v;
                     return r;
+                };
+            }
+            else if (t == typeof(Byte[]))
+            {
+                // Assume hex representation
+                return delegate(string s, out object p)
+                {
+                    int start;
+                    s = s.Trim();
+
+                    if (s.StartsWith("0x"))
+                    {
+                        if (s.Length < 4 || s.Length % 2 != 0)
+                        {
+                            p = null;
+                            return false;
+                        }
+
+                        start = 2;
+                    }
+                    else
+                    {
+                        if (s.Length < 2 || s.Length % 2 != 0)
+                        {
+                            p = null;
+                            return false;
+                        }
+
+                        start = 0;
+                    }
+
+                    var count = (s.Length - start) / 2;
+                    var buffer = new Byte[count];
+
+                    // TODO: This could be further optimized by parsing ulong values instead of bytes...
+                    for (int i = 0; i < buffer.Length; i++)
+                    {
+                        // TODO: This one here can also be optimized, for example, not to call substring
+                        buffer[i] = byte.Parse(s.Substring(i * 2, 2), NumberStyles.HexNumber);
+                    }
+
+                    p = buffer;
+                    return true;
                 };
             }
 
@@ -455,11 +518,49 @@ namespace Jhu.Graywulf.Format
                     return String.Format(File.Culture, f, (DateTime)o);
                 };
             }
+            else if (t == typeof(DateTimeOffset))
+            {
+                return delegate(object o, string f)
+                {
+                    return String.Format(File.Culture, f, (DateTimeOffset)o);
+                };
+            }
+            else if (t == typeof(TimeSpan))
+            {
+                return delegate(object o, string f)
+                {
+                    return String.Format(File.Culture, f, (TimeSpan)o);
+                };
+            }
             else if (t == typeof(Guid))
             {
                 return delegate(object o, string f)
                 {
                     return String.Format(File.Culture, f, (Guid)o);
+                };
+            }
+            else if (t == typeof(byte[]))
+            {
+                return delegate(object o, string f)
+                {
+                    var buffer = (byte[])o;
+
+                    if (buffer.Length == 0)
+                    {
+                        return null;    // *** TODO: test if returning null's OK, otherwise return ""
+                    }
+                    else
+                    {
+                        var sb = new StringBuilder();
+                        sb.Append("0x");
+
+                        for (int i = 0; i < buffer.Length; i++)
+                        {
+                            sb.AppendFormat("{0:X}", buffer[i]);
+                        }
+
+                        return sb.ToString();
+                    }
                 };
             }
 
@@ -548,6 +649,8 @@ namespace Jhu.Graywulf.Format
                 return true;
             }
             rank++;
+
+            // TODO: check if it's a hex literal that can be parsed into byte[]
 
             // Last case: it's a string
             type = typeof(string);

@@ -49,8 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Format\BulkInsertTest.cs" />
-    <Compile Include="Format\CsvFileReaderTest.cs" />
-    <Compile Include="Format\CsvFileWriterTest.cs" />
+    <Compile Include="Format\DelimitedTextDataFileTest.cs" />
     <Compile Include="Format\FileFormatFactoryTest.cs" />
     <Compile Include="Format\SerializationTest.cs" />
     <Compile Include="Format\SqlServerNativeDataFileWriterTest.cs" />

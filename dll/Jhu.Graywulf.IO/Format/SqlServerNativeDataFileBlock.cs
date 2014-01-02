@@ -80,14 +80,7 @@ namespace Jhu.Graywulf.Format
 
         protected override void OnWriteHeader()
         {
-            // Native files are always stored in an archive as they consist of
-            // multiple files
-
-            WriteCreateScript();
-            WriteBulkInsertScript();
-
-            // Create entry for data
-            File.CreateArchiveEntry("table.dat", 0);
+            // Nothing to do here
         }
 
         protected override void OnWriteNextRow(object[] values)
@@ -100,7 +93,11 @@ namespace Jhu.Graywulf.Format
 
         protected override void OnWriteFooter()
         {
-            // Nothing to do here
+            // Native files are always stored in an archive as they consist of
+            // multiple files
+
+            WriteCreateScript();
+            WriteBulkInsertScript();
         }
 
         private void WriteTextFileEntry(string filename, string text)
@@ -115,7 +112,7 @@ namespace Jhu.Graywulf.Format
         {
             var sql = new StringBuilder();
 
-            sql.AppendLine(String.Format("CREATE TABLE [{0}] (", "newtable"));
+            sql.AppendLine(String.Format("CREATE TABLE [{0}] (", "$tablename"));
 
             for (int i = 0; i < Columns.Count; i++)
             {
@@ -139,7 +136,7 @@ namespace Jhu.Graywulf.Format
         {
             var sql = new StringBuilder();
 
-            sql.AppendLine(String.Format("BULK INSERT [{0}]", "newtable"));
+            sql.AppendLine(String.Format("BULK INSERT [{0}]", "$tablename"));
             sql.AppendLine(String.Format("FROM '{0}'", "table.dat"));
             sql.AppendLine("WITH (DATAFILETYPE = 'native', TABLOCK)");
 
@@ -162,25 +159,25 @@ namespace Jhu.Graywulf.Format
                     switch (Columns[i].DataType.SqlDbType.Value)
                     {
                         case System.Data.SqlDbType.Bit:
-                            columnWriters[i] = WriteBit;
+                            columnWriters[i] = WriteSqlBit;
                             break;
                         case System.Data.SqlDbType.TinyInt:
-                            columnWriters[i] = WriteTinyInt;
+                            columnWriters[i] = WriteSqlTinyInt;
                             break;
                         case System.Data.SqlDbType.SmallInt:
-                            columnWriters[i] = WriteSmallInt;
+                            columnWriters[i] = WriteSqlSmallInt;
                             break;
                         case System.Data.SqlDbType.Int:
-                            columnWriters[i] = WriteInt;
+                            columnWriters[i] = WriteSqlInt;
                             break;
                         case System.Data.SqlDbType.BigInt:
-                            columnWriters[i] = WriteBigInt;
+                            columnWriters[i] = WriteSqlBigInt;
                             break;
                         case System.Data.SqlDbType.Real:
-                            columnWriters[i] = WriteReal;
+                            columnWriters[i] = WriteSqlReal;
                             break;
                         case System.Data.SqlDbType.Float:
-                            columnWriters[i] = WriteFloat;
+                            columnWriters[i] = WriteSqlFloat;
                             break;
 
                         case System.Data.SqlDbType.Image:
@@ -207,11 +204,11 @@ namespace Jhu.Graywulf.Format
                         case System.Data.SqlDbType.SmallMoney:
                             throw new NotImplementedException();
                         case System.Data.SqlDbType.Money:
-                            columnWriters[i] = WriteMoney;
+                            columnWriters[i] = WriteSqlMoney;
                             break;
 
                         case System.Data.SqlDbType.UniqueIdentifier:
-                            columnWriters[i] = WriteUniqueIdentifier;
+                            columnWriters[i] = WriteSqlUniqueIdentifier;
                             break;
 
                         case System.Data.SqlDbType.Variant:
@@ -228,25 +225,25 @@ namespace Jhu.Graywulf.Format
                     switch (Columns[i].DataType.SqlDbType.Value)
                     {
                         case System.Data.SqlDbType.Bit:
-                            columnWriters[i] = WriteNullableBit;
+                            columnWriters[i] = WriteNullableSqlBit;
                             break;
                         case System.Data.SqlDbType.TinyInt:
-                            columnWriters[i] = WriteNullableTinyInt;
+                            columnWriters[i] = WriteNullableSqlTinyInt;
                             break;
                         case System.Data.SqlDbType.SmallInt:
-                            columnWriters[i] = WriteNullableSmallInt;
+                            columnWriters[i] = WriteNullableSqlSmallInt;
                             break;
                         case System.Data.SqlDbType.Int:
-                            columnWriters[i] = WriteNullableInt;
+                            columnWriters[i] = WriteNullableSqlInt;
                             break;
                         case System.Data.SqlDbType.BigInt:
-                            columnWriters[i] = WriteNullableBigInt;
+                            columnWriters[i] = WriteNullableSqlBigInt;
                             break;
                         case System.Data.SqlDbType.Real:
-                            columnWriters[i] = WriteNullableReal;
+                            columnWriters[i] = WriteNullableSqlReal;
                             break;
                         case System.Data.SqlDbType.Float:
-                            columnWriters[i] = WriteNullableFloat;
+                            columnWriters[i] = WriteNullableSqlFloat;
                             break;
 
                         case System.Data.SqlDbType.Image:
@@ -274,11 +271,11 @@ namespace Jhu.Graywulf.Format
                             throw new NotImplementedException();
 
                         case System.Data.SqlDbType.Money:
-                            columnWriters[i] = WriteNullableMoney;
+                            columnWriters[i] = WriteNullableSqlMoney;
                             break;
 
                         case System.Data.SqlDbType.UniqueIdentifier:
-                            columnWriters[i] = WriteNullableUniqueIdentifier;
+                            columnWriters[i] = WriteNullableSqlUniqueIdentifier;
                             break;
 
                         case System.Data.SqlDbType.Variant:
@@ -293,7 +290,7 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        private void WriteBit(BinaryWriter w, object value, DataType type)
+        private void WriteSqlBit(BinaryWriter w, object value, DataType type)
         {
             // TODO: verify if works with multiple bits unioned together
 
@@ -301,7 +298,7 @@ namespace Jhu.Graywulf.Format
             w.Write((bool)value ? (byte)1 : (byte)0);
         }
 
-        private void WriteNullableBit(BinaryWriter w, object value, DataType type)
+        private void WriteNullableSqlBit(BinaryWriter w, object value, DataType type)
         {
             // TODO: verify if works with multiple bits unioned together
 
@@ -316,12 +313,12 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        private void WriteTinyInt(BinaryWriter w, object value, DataType type)
+        private void WriteSqlTinyInt(BinaryWriter w, object value, DataType type)
         {
             w.Write((byte)value);
         }
 
-        private void WriteNullableTinyInt(BinaryWriter w, object value, DataType type)
+        private void WriteNullableSqlTinyInt(BinaryWriter w, object value, DataType type)
         {
             if (value == DBNull.Value)
             {
@@ -334,12 +331,12 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        private void WriteSmallInt(BinaryWriter w, object value, DataType type)
+        private void WriteSqlSmallInt(BinaryWriter w, object value, DataType type)
         {
             w.Write((short)value);
         }
 
-        private void WriteNullableSmallInt(BinaryWriter w, object value, DataType type)
+        private void WriteNullableSqlSmallInt(BinaryWriter w, object value, DataType type)
         {
             if (value == DBNull.Value)
             {
@@ -352,12 +349,12 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        private void WriteInt(BinaryWriter w, object value, DataType type)
+        private void WriteSqlInt(BinaryWriter w, object value, DataType type)
         {
             w.Write((int)value);
         }
 
-        private void WriteNullableInt(BinaryWriter w, object value, DataType type)
+        private void WriteNullableSqlInt(BinaryWriter w, object value, DataType type)
         {
             if (value == DBNull.Value)
             {
@@ -370,12 +367,12 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        private void WriteBigInt(BinaryWriter w, object value, DataType type)
+        private void WriteSqlBigInt(BinaryWriter w, object value, DataType type)
         {
             w.Write((long)value);
         }
 
-        private void WriteNullableBigInt(BinaryWriter w, object value, DataType type)
+        private void WriteNullableSqlBigInt(BinaryWriter w, object value, DataType type)
         {
             if (value == DBNull.Value)
             {
@@ -388,12 +385,12 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        private void WriteReal(BinaryWriter w, object value, DataType type)
+        private void WriteSqlReal(BinaryWriter w, object value, DataType type)
         {
             w.Write((float)value);
         }
 
-        private void WriteNullableReal(BinaryWriter w, object value, DataType type)
+        private void WriteNullableSqlReal(BinaryWriter w, object value, DataType type)
         {
             if (value == DBNull.Value)
             {
@@ -406,12 +403,12 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        private void WriteFloat(BinaryWriter w, object value, DataType type)
+        private void WriteSqlFloat(BinaryWriter w, object value, DataType type)
         {
             w.Write((double)value);
         }
 
-        private void WriteNullableFloat(BinaryWriter w, object value, DataType type)
+        private void WriteNullableSqlFloat(BinaryWriter w, object value, DataType type)
         {
             if (value == DBNull.Value)
             {
@@ -419,18 +416,18 @@ namespace Jhu.Graywulf.Format
             }
             else
             {
-                w.Write((byte)4);
-                w.Write((float)value);
+                w.Write((byte)8);
+                w.Write((double)value);
             }
         }
 
-        private void WriteMoney(BinaryWriter w, object value, DataType type)
+        private void WriteSqlMoney(BinaryWriter w, object value, DataType type)
         {
             // TODO: how to store money in native binary???
             w.Write((double)(decimal)value);
         }
 
-        private void WriteNullableMoney(BinaryWriter w, object value, DataType type)
+        private void WriteNullableSqlMoney(BinaryWriter w, object value, DataType type)
         {
             if (value == DBNull.Value)
             {
@@ -444,13 +441,13 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        private void WriteUniqueIdentifier(BinaryWriter w, object value, DataType type)
+        private void WriteSqlUniqueIdentifier(BinaryWriter w, object value, DataType type)
         {
             w.Write((byte)16);       // TODO: Test valid value
             w.Write(((Guid)value).ToByteArray(), 0, 16);
         }
 
-        private void WriteNullableUniqueIdentifier(BinaryWriter w, object value, DataType type)
+        private void WriteNullableSqlUniqueIdentifier(BinaryWriter w, object value, DataType type)
         {
             if (value == DBNull.Value)
             {

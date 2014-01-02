@@ -58,14 +58,6 @@ namespace Jhu.Graywulf.Format
             get { return outputWriter; }
         }
 
-        /// <summary>
-        /// Gets if the underlying data file is an archive
-        /// </summary>
-        public bool IsArchive
-        {
-            get { return BaseStream is IArchiveOutputStream || BaseStream is IArchiveInputStream; }
-        }
-
         #endregion
         #region Constructors and initializers
 

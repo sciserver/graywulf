@@ -167,6 +167,14 @@ namespace Jhu.Graywulf.Format
             get { return baseStream == null; }
         }
 
+        /// <summary>
+        /// Gets if the underlying data file is an archive
+        /// </summary>
+        public bool IsArchive
+        {
+            get { return BaseStream is IArchiveOutputStream || BaseStream is IArchiveInputStream; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -348,14 +356,11 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         private void OpenOwnStream()
         {
-            if (baseStream == null)
-            {
-                // Use stream factory to open stream
-                var f = StreamFactory.Create(streamFactoryType);
-                baseStream = f.Open(uri, fileMode);
+            // Use stream factory to open stream
+            var f = StreamFactory.Create(streamFactoryType);
+            baseStream = f.Open(uri, fileMode);
 
-                ownsBaseStream = true;
-            }
+            ownsBaseStream = true;
         }
 
         /// <summary>
@@ -368,7 +373,10 @@ namespace Jhu.Graywulf.Format
                 throw new InvalidOperationException();
             }
 
-            OpenOwnStream();
+            if (baseStream == null)
+            {
+                OpenOwnStream();
+            }
         }
 
         /// <summary>
@@ -381,7 +389,17 @@ namespace Jhu.Graywulf.Format
                 throw new InvalidOperationException();
             }
 
-            OpenOwnStream();
+            if (baseStream == null)
+            {
+                OpenOwnStream();
+            }
+
+            // When writing into an archive, two possibilities exist:
+            // either the entry is created
+            if (IsArchive)
+            {
+
+            }
         }
 
         /// <summary>

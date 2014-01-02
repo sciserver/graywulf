@@ -216,12 +216,13 @@ namespace Jhu.Graywulf.Schema
 
         public static DataType SqlTime
         {
+            // The equivalent of SqlTime is TimeSpan
             get
             {
                 return new DataType()
                 {
                     Name = SqlServer.Constants.TypeNameTime,
-                    Type = typeof(DateTime),
+                    Type = typeof(TimeSpan),
                     SqlDbType = System.Data.SqlDbType.Time,
                     ByteSize = 8,
                     Scale = 7,
@@ -276,12 +277,13 @@ namespace Jhu.Graywulf.Schema
 
         public static DataType SqlDateTimeOffset
         {
+            // This is not a TimeSpan but a time with a time zone offset!
             get
             {
                 return new DataType()
                 {
                     Name = SqlServer.Constants.TypeNameDateTimeOffset,
-                    Type = typeof(TimeSpan),
+                    Type = typeof(DateTimeOffset),
                     SqlDbType = System.Data.SqlDbType.DateTimeOffset,
                     ByteSize = 8,
                     Scale = 7,
@@ -512,12 +514,13 @@ namespace Jhu.Graywulf.Schema
 
         public static DataType SqlTimestamp
         {
+            // SQL timestamp columns is byte[8]
             get
             {
                 return new DataType()
                 {
                     Name = SqlServer.Constants.TypeNameTimestamp,
-                    Type = typeof(Int64),
+                    Type = typeof(Byte[]),
                     SqlDbType = System.Data.SqlDbType.Timestamp,
                     ByteSize = 8,
                     Scale = 0,
@@ -671,7 +674,7 @@ namespace Jhu.Graywulf.Schema
             get { return SqlDateTime2; }
         }
 
-        public static DataType TimeSpan
+        public static DataType DateTimeOffset
         {
             get { return SqlDateTimeOffset; }
         }
@@ -726,7 +729,7 @@ namespace Jhu.Graywulf.Schema
         #endregion
         #region Static functions to create types
 
-        public static DataType Create(SqlDbType type, int length, int numericPrecision, int numericScale)
+        public static DataType Create(SqlDbType type, int length, int numericPrecision, int numericScale, bool isNullable)
         {
             DataType dt;
 
@@ -838,6 +841,8 @@ namespace Jhu.Graywulf.Schema
                 dt.Length = length;
             }
 
+            dt.IsNullable = isNullable;
+
             return dt;
         }
 
@@ -940,6 +945,7 @@ namespace Jhu.Graywulf.Schema
             var length = Convert.ToInt32(dr[SchemaTableColumn.ColumnSize]);
             var precision = Convert.ToInt32(dr[SchemaTableColumn.NumericPrecision]);
             var scale = Convert.ToInt32(dr[SchemaTableColumn.NumericScale]);
+            var isnullable = Convert.ToBoolean(dr[SchemaTableColumn.AllowDBNull]);
 
             DataType dt;
 
@@ -948,7 +954,7 @@ namespace Jhu.Graywulf.Schema
             if (Enum.TryParse<SqlDbType>((string)dr["DataTypeName"], true, out sqltype))
             {
                 // This can be interpreted as a SQL Server type
-                dt = Create(sqltype, length, precision, scale);
+                dt = Create(sqltype, length, precision, scale, isnullable);
             }
             else
             {

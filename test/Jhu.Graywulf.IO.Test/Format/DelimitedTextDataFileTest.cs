@@ -7,12 +7,15 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
     [TestClass]
-    public class CsvFileReaderTest
+    public class DelimitedTextDataFileTest
     {
+        #region Reader tests
+
         FileDataReader OpenSimpleReader(string csv)
         {
             var f = new DelimitedTextDataFile(new StringReader(csv));
@@ -122,9 +125,9 @@ namespace Jhu.Graywulf.Format
             var dr = cmd.ExecuteReader();
 
             dr.Read();
-            
+
             int o = 0;
-            
+
             Assert.AreEqual(1, dr.GetInt64(o++));
             Assert.AreEqual(1, dr.GetInt32(o++));
             Assert.AreEqual(16000, dr.GetInt32(o++));
@@ -268,9 +271,115 @@ testline
             Assert.AreEqual(1, dr["first"]);
         }
 
+        [TestMethod] 
+        public void DetectAllTypesTest()
+        {
+            var csv =
+@"#BigIntColumn,NumericColumn,BitColumn,SmallIntColumn,DecimalColumn,SmallMoneyColumn,IntColumn,TinyIntColumn,MoneyColumn,FloatColumn,RealColumn,DateColumn,DateTimeOffsetColumn,DateTime2Column,SmallDateTimeColumn,DateTimeColumn,TimeColumn,CharColumn,VarCharColumn,VarCharMaxColumn,TextColumn,NCharColumn,NVarCharColumn,NVarCharMaxColumn,NTextColumn,BinaryColumn,VarBinaryColumn,VarBinaryMaxColumn,ImageColumn,TimeStampColumn,UniqueIdentifierColumn
+1234567890123,123,True,12345,1235,123456.8900,123456789,123,1234567.8900,123.456789,1.234568,01/01/2014 00:00:00,01/01/2014 11:59:59 +01:00,01/01/2014 11:59:59,01/01/2014 12:00:00,01/01/2014 11:59:59,11:59:59.1230000,""0123456789"",""012345"",""1234567890"",""1234567890"",""áíűőüöúóé "",""áíűőüöúóé"",""áíűőüöúóé"",""áíűőüöúóé"",0x1234567890,0x12345,0x1234567890,0x1234567890,0x0000007D2,a4466a24-5140-4efb-bb7d-0e4b4f34a75e
+";
+
+            var f = new DelimitedTextDataFile(new StringReader(csv));
+            f.ColumnNamesInFirstLine = true;
+            f.AutoDetectColumns = true;
+            f.AutoDetectColumnsCount = 100;
+            f.GenerateIdentityColumn = false;
+
+            var cmd = new FileCommand(f);
+            var dr = cmd.ExecuteReader();
+
+            Assert.AreEqual(typeof(Int64), dr.GetFieldType(0));
+
+            dr.Read();
+        }
+
 
         // TODO: test nulls, string nulls, empty strings
         // multi-line strings
         // test with actual files
+
+        #endregion
+        #region Writer tests
+
+        [TestMethod]
+        public void SimpleWriterTest()
+        {
+            var w = new StringWriter();
+
+            using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.IOTestConnectionString))
+            {
+                cn.Open();
+
+                using (var cmd = new SqlCommand("SELECT SampleData.* FROM SampleData", cn))
+                {
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        var csv = new DelimitedTextDataFile(w);
+                        csv.WriteFromDataReader(dr);
+                    }
+                }
+            }
+
+            Assert.AreEqual(
+@"#float,double,decimal,nvarchar(50),bigint,int,tinyint,smallint,bit,ntext,char,datetime,guid
+1.234568,1.23456789,1.2346,""this is text"",123456789,123456,123,12345,True,""this is unicode text ő"",""A"",08/17/2012 00:00:00,68652251-c9e4-4630-80be-88b96d3258ce
+",
+                w.ToString());
+
+        }
+
+        [TestMethod]
+        public void SimpleWriterAllTypesTest()
+        {
+            var w = new StringWriter();
+
+            using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.IOTestConnectionString))
+            {
+                cn.Open();
+
+                using (var cmd = new SqlCommand("SELECT * FROM SampleData_AllTypes", cn))
+                {
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        var csv = new DelimitedTextDataFile(w);
+                        csv.WriteFromDataReader(dr);
+                    }
+                }
+            }
+
+            Assert.AreEqual(
+@"#BigIntColumn,NumericColumn,BitColumn,SmallIntColumn,DecimalColumn,SmallMoneyColumn,IntColumn,TinyIntColumn,MoneyColumn,FloatColumn,RealColumn,DateColumn,DateTimeOffsetColumn,DateTime2Column,SmallDateTimeColumn,DateTimeColumn,TimeColumn,CharColumn,VarCharColumn,VarCharMaxColumn,TextColumn,NCharColumn,NVarCharColumn,NVarCharMaxColumn,NTextColumn,BinaryColumn,VarBinaryColumn,VarBinaryMaxColumn,ImageColumn,TimeStampColumn,UniqueIdentifierColumn
+1234567890,123,True,12345,1235,123456.8900,123456789,123,1234567.8900,123.456789,1.234568,01/01/2014 00:00:00,01/01/2014 11:59:59 +01:00,01/01/2014 11:59:59,01/01/2014 12:00:00,01/01/2014 11:59:59,11:59:59.1230000,""0123456789"",""012345"",""1234567890"",""1234567890"",""áíűőüöúóé "",""áíűőüöúóé"",""áíűőüöúóé"",""áíűőüöúóé"",0x1234567890,0x12345,0x1234567890,0x1234567890,0x0000007D2,a4466a24-5140-4efb-bb7d-0e4b4f34a75e
+",
+                w.ToString());
+
+        }
+
+        [TestMethod]
+        public void CompressedWriterTest()
+        {
+            var uri = new Uri("DelimitedTextDataFileTest_CompressedWriterTest.csv.gz", UriKind.Relative);
+
+            using (var csv = new DelimitedTextDataFile(uri, DataFileMode.Write))
+            {
+                using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.IOTestConnectionString))
+                {
+                    cn.Open();
+
+                    using (var cmd = new SqlCommand("SELECT SampleData.* FROM SampleData", cn))
+                    {
+                        using (var dr = cmd.ExecuteReader())
+                        {
+                            csv.WriteFromDataReader(dr);
+                        }
+                    }
+                }
+            }
+
+            Assert.IsTrue(File.Exists(uri.ToString()));
+            File.Delete(uri.ToString());
+        }
+
+        #endregion
     }
 }

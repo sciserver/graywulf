@@ -35,5 +35,27 @@ namespace Jhu.Graywulf.Format
                 }
             }
         }
+
+        [TestMethod]
+        public void SimpleWriterNullsTest()
+        {
+            var uri = new Uri("SqlServerNativeDataFileWriterTest_SimpleWriterNullsTest.zip", UriKind.Relative);
+
+            using (var nat = new SqlServerNativeDataFile(uri, DataFileMode.Write))
+            {
+                using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.IOTestConnectionString))
+                {
+                    cn.Open();
+
+                    using (var cmd = new SqlCommand("SELECT * FROM SampleData_NumericTypes_Null", cn))
+                    {
+                        using (var dr = cmd.ExecuteReader())
+                        {
+                            nat.WriteFromDataReader(dr);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
