@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.Util
             }
             else
             {
-                return uri.PathAndQuery;
+                return uri.AbsolutePath;
             }
         }
 

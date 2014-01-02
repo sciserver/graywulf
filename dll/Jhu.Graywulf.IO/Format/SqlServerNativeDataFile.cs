@@ -165,24 +165,6 @@ namespace Jhu.Graywulf.Format
         }
 
         #endregion
-        #region Archive handler functions
-
-        internal IArchiveEntry ReadArchiveEntry()
-        {
-            var arch = (IArchiveInputStream)BaseStream;
-            return arch.ReadNextFileEntry();
-        }
-
-        internal IArchiveEntry CreateArchiveEntry(string filename, long length)
-        {
-            var arch = (IArchiveOutputStream)BaseStream;
-            var entry = arch.CreateFileEntry(filename, length);
-            arch.WriteNextEntry(entry);
-
-            return entry;
-        }
-
-        #endregion
         #region Read and write function
 
         protected internal override void OnReadHeader()

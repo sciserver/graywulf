@@ -120,11 +120,6 @@ namespace Jhu.Graywulf.IO.Tasks
 
             for (int i = 0; i < sources.Length; i++)
             {
-                var aos = (IArchiveOutputStream)BaseStream;
-
-                var entry = aos.CreateFileEntry(destinations[i].Uri.ToString(), 0);
-                aos.WriteNextEntry(entry);
-
                 try
                 {
                     destinations[i].Open(BaseStream, DataFileMode.Write);

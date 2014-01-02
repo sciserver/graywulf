@@ -394,11 +394,16 @@ namespace Jhu.Graywulf.Format
                 OpenOwnStream();
             }
 
-            // When writing into an archive, two possibilities exist:
-            // either the entry is created
+            // When writing into an archive a new entry for the file is to be created
             if (IsArchive)
             {
+                // Determine file name form the archive's name
+                var filename = Util.UriConverter.ToFileName(uri);
+                
+                // Strip the extension of the archive
+                filename = Path.GetFileNameWithoutExtension(filename);
 
+                var entry = CreateArchiveEntry(filename, 0);
             }
         }
 
@@ -415,6 +420,24 @@ namespace Jhu.Graywulf.Format
                 baseStream = null;
                 ownsBaseStream = false;
             }
+        }
+
+        #endregion
+        #region Archive handler functions
+
+        internal IArchiveEntry ReadArchiveEntry()
+        {
+            var arch = (IArchiveInputStream)BaseStream;
+            return arch.ReadNextFileEntry();
+        }
+
+        internal IArchiveEntry CreateArchiveEntry(string filename, long length)
+        {
+            var arch = (IArchiveOutputStream)BaseStream;
+            var entry = arch.CreateFileEntry(filename, length);
+            arch.WriteNextEntry(entry);
+
+            return entry;
         }
 
         #endregion
@@ -596,10 +619,6 @@ namespace Jhu.Graywulf.Format
 
         public void WriteFromDataReader(IDataReader dr)
         {
-            // TODO: this might change
-
-            OpenForWrite();
-
             OnWriteHeader();
 
             do
@@ -609,8 +628,6 @@ namespace Jhu.Graywulf.Format
             while (dr.NextResult());
 
             OnWriteFooter();
-
-            Close();
         }
 
         #endregion

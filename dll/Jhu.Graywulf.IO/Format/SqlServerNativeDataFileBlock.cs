@@ -100,8 +100,18 @@ namespace Jhu.Graywulf.Format
             WriteBulkInsertScript();
         }
 
-        private void WriteTextFileEntry(string filename, string text)
+        private void WriteTextFileEntry(string extension, string text)
         {
+            var filename = Util.UriConverter.ToFileName(File.Uri);
+            var dir = Path.GetDirectoryName(filename);
+
+            // Strip the extension of the archive
+            filename = Path.GetFileNameWithoutExtension(filename);
+            // Strip the extension of the file format
+            filename = Path.GetFileNameWithoutExtension(filename);
+            // Append to directory and add custom extension
+            filename = Path.Combine(dir, filename += extension);
+            
             var buffer = Encoding.UTF8.GetBytes(text);
 
             File.CreateArchiveEntry(filename, buffer.Length);
@@ -112,7 +122,8 @@ namespace Jhu.Graywulf.Format
         {
             var sql = new StringBuilder();
 
-            sql.AppendLine(String.Format("CREATE TABLE [{0}] (", "$tablename"));
+            sql.AppendLine(String.Format("CREATE TABLE [{0}]", "$tablename"));
+            sql.AppendLine("(");
 
             for (int i = 0; i < Columns.Count; i++)
             {
@@ -121,15 +132,16 @@ namespace Jhu.Graywulf.Format
                     sql.AppendLine(",");
                 }
 
-                sql.AppendFormat("[{0}] {1} {2}NULL",
+                sql.AppendFormat("\t[{0}] {1} {2}NULL",
                     Columns[i].Name,
                     Columns[i].DataType.NameWithLength,
                     Columns[i].DataType.IsNullable ? "" : "NOT ");
             }
 
+            sql.AppendLine();
             sql.AppendLine(")");
 
-            WriteTextFileEntry("create.sql", sql.ToString());
+            WriteTextFileEntry("_create.sql", sql.ToString());
         }
 
         private void WriteBulkInsertScript()
@@ -140,7 +152,7 @@ namespace Jhu.Graywulf.Format
             sql.AppendLine(String.Format("FROM '{0}'", "table.dat"));
             sql.AppendLine("WITH (DATAFILETYPE = 'native', TABLOCK)");
 
-            WriteTextFileEntry("insert.sql", sql.ToString());
+            WriteTextFileEntry("_insert.sql", sql.ToString());
         }
 
         #region Value writer functions

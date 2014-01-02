@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Format
         [TestMethod]
         public void SimpleWriterTest()
         {
-            var uri = new Uri("SqlServerNativeDataFileWriterTest_SimpleWriterTest.zip", UriKind.Relative);
+            var uri = new Uri("SqlServerNativeDataFileWriterTest_SimpleWriterTest.dat.zip", UriKind.Relative);
 
             using (var nat = new SqlServerNativeDataFile(uri, DataFileMode.Write))
             {
@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Format
         [TestMethod]
         public void SimpleWriterNullsTest()
         {
-            var uri = new Uri("SqlServerNativeDataFileWriterTest_SimpleWriterNullsTest.zip", UriKind.Relative);
+            var uri = new Uri("SqlServerNativeDataFileWriterTest_SimpleWriterNullsTest.dat.zip", UriKind.Relative);
 
             using (var nat = new SqlServerNativeDataFile(uri, DataFileMode.Write))
             {
