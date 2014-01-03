@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                         if (job.JobExecutionStatus == JobExecutionState.Completed)
                         {
                             // Get query details
-                            var ej = JobDescriptionFactory.GetJob(job, QueryFactory.Create(RegistryContext));
+                            var ej = JobDescriptionFactory.GetJobDescription(job);
 
                             Response.Redirect(GetExportUrl(ej));
                         }

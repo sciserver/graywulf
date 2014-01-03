@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             job.Guid = guid;
             job.Load();
 
-            var wjob = JobDescriptionFactory.GetJob(job, QueryFactory.Create(RegistryContext));
+            var wjob = JobDescriptionFactory.GetJobDescription(job);
 
             switch (wjob.JobType)
             {

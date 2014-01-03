@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.Web
         }
 
         public JobDescriptionFactory(Context context, QueryFactory queryFactory)
-            :base(context)
+            : base(context)
         {
             InitializeMembers();
 
@@ -108,8 +108,6 @@ namespace Jhu.Graywulf.Web
 
                     f.LoadJobDefinitions(true);
 
-                    
-
                     // TODO rewrite this?
                     foreach (var jd in f.JobDefinitions.Values)
                     {
@@ -137,58 +135,75 @@ namespace Jhu.Graywulf.Web
             foreach (JobInstance job in jobFactory.SelectChildren(from, max))
             {
                 job.LoadParameters();
-                yield return GetJob(job, queryFactory);
+                yield return GetJobDescription(job);
             }
         }
 
-        public static JobDescription GetJob(JobInstance job, QueryFactory queryFactory)
+        public static JobDescription GetJobDescription(JobInstance job)
         {
             // In this function, we don't directly deserialize query parameters because
             // that could break old job definitions once the job format changes. It's
             // save to read parameters from the xml representation directly.
 
-            var res = new JobDescription();
-            res.Job = job;
+            var jobDescription = new JobDescription();
+            jobDescription.Job = job;
 
-            if (queryJobDefinitions.ContainsKey(job.JobDefinitionReference.Guid))
+            try
             {
-                res.JobType = JobType.Query;
-
-                // debug code
-                if (job.Parameters.ContainsKey("Query"))
+                if (queryJobDefinitions.ContainsKey(job.JobDefinitionReference.Guid))
                 {
-                    var xml = new XmlDocument();
-                    xml.LoadXml(job.Parameters["Query"].XmlValue);
-
-                    res.Query = GetXmlInnerText(xml, "Query/QueryString");
-                    res.SchemaName = GetXmlInnerText(xml, "Query/Destination/Table/SchemaName");
-                    res.ObjectName = GetXmlInnerText(xml, "Query/Destination/Table/ObjectName");
+                    GetQueryJobDescription(job, jobDescription);
+                }
+                else if (exportJobDefinitions.ContainsKey(job.JobDefinitionReference.Guid))
+                {
+                    GetExportJobDescription(job, jobDescription);
                 }
                 else
                 {
-                    // This is probably a wrong job in the database
+                    jobDescription.JobType = JobType.Unknown;
                 }
             }
-            else if (exportJobDefinitions.ContainsKey(job.JobDefinitionReference.Guid))
+            catch (Exception)
             {
-                res.JobType = JobType.ExportTable;
+                jobDescription.JobType = JobType.Unknown;
+            }
 
-                if (job.Parameters.ContainsKey("Parameters"))
-                {
-                    var xml = new XmlDocument();
-                    xml.LoadXml(job.Parameters["Parameters"].XmlValue);
+            return jobDescription;
+        }
 
-                    res.SchemaName = GetXmlInnerText(xml, "ExportTable/Source/SchemaName");
-                    res.ObjectName = GetXmlInnerText(xml, "ExportTable/Source/ObjectName");
-                    res.Path = GetXmlInnerText(xml, "ExportTable/Destination/Path");
-                }
+        private static void GetQueryJobDescription(JobInstance job, JobDescription jobDescription)
+        {
+            jobDescription.JobType = JobType.Query;
+
+            // debug code
+            if (job.Parameters.ContainsKey("Query"))
+            {
+                var xml = new XmlDocument();
+                xml.LoadXml(job.Parameters["Query"].XmlValue);
+
+                jobDescription.Query = GetXmlInnerText(xml, "Query/QueryString");
+                jobDescription.SchemaName = GetXmlInnerText(xml, "Query/Destination/Table/SchemaName");
+                jobDescription.ObjectName = GetXmlInnerText(xml, "Query/Destination/Table/ObjectName");
             }
             else
             {
-                res.JobType = JobType.Unknown;
+                // This is probably a wrong job in the database
             }
+        }
 
-            return res;
+        private static void GetExportJobDescription(JobInstance job, JobDescription jobDescription)
+        {
+            jobDescription.JobType = JobType.ExportTable;
+
+            if (job.Parameters.ContainsKey("Parameters"))
+            {
+                var xml = new XmlDocument();
+                xml.LoadXml(job.Parameters["Parameters"].XmlValue);
+
+                jobDescription.SchemaName = GetXmlInnerText(xml, "ExportTables/Sources/TableOrView/SchemaName");
+                jobDescription.ObjectName = GetXmlInnerText(xml, "ExportTables/Sources/TableOrView/ObjectName");
+                jobDescription.Path = GetXmlInnerText(xml, "ExportTables/Destinations/DataFileBase/Uri");
+            }
         }
 
         private static string GetXmlInnerText(XmlDocument xml, string path)

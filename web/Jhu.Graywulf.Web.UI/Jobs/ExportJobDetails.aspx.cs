@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             }
 
             // Get query details
-            ej = JobDescriptionFactory.GetJob(job, QueryFactory.Create(RegistryContext));
+            ej = JobDescriptionFactory.GetJobDescription(job);
         }
 
         private void UpdateForm()

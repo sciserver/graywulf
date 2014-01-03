@@ -763,9 +763,9 @@ namespace Jhu.Graywulf.Scheduler
                 // New app domain, create host
                 var adh = new AppDomainHost(ad, contextGuid);
                 adh.WorkflowEvent += new EventHandler<HostEventArgs>(adh_WorkflowEvent);
-                
+
                 appDomains.Add(ad.Id, adh);
-                
+
                 adh.Start(Scheduler, interactive);
 
                 return adh;
@@ -834,7 +834,7 @@ namespace Jhu.Graywulf.Scheduler
         }
 
         #endregion
-       
+
 
         #region Logging functions
 

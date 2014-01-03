@@ -58,6 +58,15 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::System.Web.UI.WebControls.DropDownList FileFormat;
         
         /// <summary>
+        /// DownloadLink control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink DownloadLink;
+        
+        /// <summary>
         /// Ok control.
         /// </summary>
         /// <remarks>

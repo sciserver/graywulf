@@ -31,8 +31,8 @@
                     </tr>
                 </table>
                 <ul>
-                    <li>All exported files are automatically compressed with gzip compression.</li>
-                    <li>Exported tables are available for <a href="../output/">download here</a>.</li>
+                    <li>All exported files are automatically compressed with zip compression.</li>
+                    <li>Exported tables are available for <asp:HyperLink runat="server" ID="DownloadLink">download here</asp:Hyperlink>.</li>
                 </ul>
             </FormTemplate>
             <ButtonsTemplate>
