@@ -352,8 +352,8 @@ ORDER BY c.column_id";
                             cd.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(2),
                                 Convert.ToInt32(dr.GetValue(3)),
-                                Convert.ToInt16(dr.GetValue(4)),
-                                Convert.ToInt16(dr.GetValue(5)),
+                                Convert.ToByte(dr.GetValue(4)),
+                                Convert.ToByte(dr.GetValue(5)),
                                 dr.GetBoolean(6));
 
                             yield return new KeyValuePair<string, Column>(cd.Name, cd);
@@ -445,8 +445,8 @@ ORDER BY ic.key_ordinal";
                             ic.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(4),
                                 Convert.ToInt32(dr.GetValue(5)),
-                                Convert.ToInt16(dr.GetValue(6)),
-                                Convert.ToInt16(dr.GetValue(7)),
+                                Convert.ToByte(dr.GetValue(6)),
+                                Convert.ToByte(dr.GetValue(7)),
                                 dr.GetBoolean(9));
 
                             yield return new KeyValuePair<string, IndexColumn>(ic.Name, ic);
@@ -498,8 +498,8 @@ ORDER BY p.parameter_id";
                             par.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(3),
                                 Convert.ToInt32(dr.GetValue(4)),
-                                Convert.ToInt16(dr.GetValue(5)),
-                                Convert.ToInt16(dr.GetValue(6)),
+                                Convert.ToByte(dr.GetValue(5)),
+                                Convert.ToByte(dr.GetValue(6)),
                                 false);
 
                             yield return new KeyValuePair<string, Parameter>(par.Name, par);

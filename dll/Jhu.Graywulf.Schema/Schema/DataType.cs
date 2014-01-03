@@ -354,9 +354,24 @@ namespace Jhu.Graywulf.Schema
 
         public static DataType SqlText
         {
+            // This differs from varchar(max) in internal representations
+            // and must be serialized differently into the native format
+
             get
             {
-                return SqlVarCharMax;
+                return new DataType()
+                {
+                    Name = SqlServer.Constants.TypeNameText,
+                    Type = typeof(String),
+                    SqlDbType = System.Data.SqlDbType.Text,
+                    ByteSize = 1,
+                    Scale = 0,
+                    Precision = 0,
+                    Length = -1,
+                    MaxLength = -1,
+                    HasLength = false,
+                    IsVarLength = true
+                };
             }
         }
 
@@ -422,9 +437,24 @@ namespace Jhu.Graywulf.Schema
 
         public static DataType SqlNText
         {
+            // This is stored differently than nvarchar(max) and prefix is
+            // different for native serialization
+
             get
             {
-                return SqlNVarCharMax;
+                return new DataType()
+                {
+                    Name = SqlServer.Constants.TypeNameNText,
+                    Type = typeof(String),
+                    SqlDbType = System.Data.SqlDbType.NText,
+                    ByteSize = 2,
+                    Scale = 0,
+                    Precision = 0,
+                    Length = -1,
+                    MaxLength = -1,
+                    HasLength = false,
+                    IsVarLength = true
+                };
             }
         }
 
@@ -498,9 +528,24 @@ namespace Jhu.Graywulf.Schema
 
         public static DataType SqlImage
         {
+            // This is different internally from varbinary(max)
+            // It has a shorter prefix in native format.
+
             get
             {
-                return SqlVarBinaryMax;
+                return new DataType()
+                {
+                    Name = SqlServer.Constants.TypeNameImage,
+                    Type = typeof(Byte[]),
+                    SqlDbType = System.Data.SqlDbType.Image,
+                    ByteSize = 1,
+                    Scale = 0,
+                    Precision = 0,
+                    Length = -1,
+                    MaxLength = -1,
+                    HasLength = false,
+                    IsVarLength = true
+                };
             }
         }
 
@@ -729,7 +774,7 @@ namespace Jhu.Graywulf.Schema
         #endregion
         #region Static functions to create types
 
-        public static DataType Create(SqlDbType type, int length, int numericPrecision, int numericScale, bool isNullable)
+        public static DataType Create(SqlDbType type, int length, byte precision, byte scale, bool isNullable)
         {
             DataType dt;
 
@@ -806,8 +851,8 @@ namespace Jhu.Graywulf.Schema
                     break;
                 case System.Data.SqlDbType.Decimal:
                     dt = DataType.SqlDecimal;
-                    dt.Precision = numericPrecision;
-                    dt.Scale = numericScale;
+                    dt.Precision = precision;
+                    dt.Scale = scale;
                     break;
                 case System.Data.SqlDbType.SmallMoney:
                     dt = DataType.SqlSmallMoney;
@@ -943,8 +988,8 @@ namespace Jhu.Graywulf.Schema
             // Get .Net type and other parameters
             var type = (Type)dr[SchemaTableColumn.DataType];
             var length = Convert.ToInt32(dr[SchemaTableColumn.ColumnSize]);
-            var precision = Convert.ToInt32(dr[SchemaTableColumn.NumericPrecision]);
-            var scale = Convert.ToInt32(dr[SchemaTableColumn.NumericScale]);
+            var precision = Convert.ToByte(dr[SchemaTableColumn.NumericPrecision]);
+            var scale = Convert.ToByte(dr[SchemaTableColumn.NumericScale]);
             var isnullable = Convert.ToBoolean(dr[SchemaTableColumn.AllowDBNull]);
 
             DataType dt;
@@ -991,12 +1036,12 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Scale (for decimal)
         /// </summary>
-        private int scale;
+        private byte scale;
 
         /// <summary>
         /// Precision (for decimal)
         /// </summary>
-        private int precision;
+        private byte precision;
 
         /// <summary>
         /// Size in bytes (for char and binary)
@@ -1105,7 +1150,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets or sets the scale (for decimal values)
         /// </summary>
-        public int Scale
+        public byte Scale
         {
             get { return scale; }
             set { scale = value; }
@@ -1114,7 +1159,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets or sets the precision (for decimal values)
         /// </summary>
-        public int Precision
+        public byte Precision
         {
             get { return precision; }
             set { precision = value; }

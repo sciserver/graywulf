@@ -18,14 +18,7 @@ namespace Jhu.Graywulf.Format
         #region Member variables
 
         [NonSerialized]
-        private BinaryReader inputReader;
-        [NonSerialized]
-        private bool ownsInputReader;
-
-        [NonSerialized]
-        private BinaryWriter outputWriter;
-        [NonSerialized]
-        private bool ownsOutputWriter;
+        private SqlServerNativeBinaryWriter nativeWriter;
 
         #endregion
         #region Properties
@@ -48,14 +41,9 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        internal BinaryReader InputReader
+        internal SqlServerNativeBinaryWriter NativeWriter
         {
-            get { return inputReader; }
-        }
-
-        internal BinaryWriter OutputWriter
-        {
-            get { return outputWriter; }
+            get { return nativeWriter; }
         }
 
         #endregion
@@ -91,18 +79,12 @@ namespace Jhu.Graywulf.Format
 
         private void InitializeMembers()
         {
-            this.inputReader = null;
-            this.ownsInputReader = false;
-            this.outputWriter = null;
-            this.ownsOutputWriter = false;
+            this.nativeWriter = null;
         }
 
         private void CopyMembers(SqlServerNativeDataFile old)
         {
-            this.inputReader = null;
-            this.ownsInputReader = false;
-            this.outputWriter = null;
-            this.ownsOutputWriter = false;
+            this.nativeWriter = null;
         }
 
         public override object Clone()
@@ -121,9 +103,6 @@ namespace Jhu.Graywulf.Format
             {
                 throw new Exception("Must be an archive");  // **** TODO
             }
-
-            inputReader = new BinaryReader(new DetachedStream(base.BaseStream));
-            ownsInputReader = true;
         }
 
         protected override void OpenForWrite()
@@ -136,31 +115,11 @@ namespace Jhu.Graywulf.Format
             }
 
             // Wrap underlying stream, so it doesn't get disposed automatically
-            outputWriter = new BinaryWriter(new DetachedStream(base.BaseStream));
-            ownsOutputWriter = true;
+            nativeWriter = new SqlServerNativeBinaryWriter(BaseStream);
         }
 
         public override void Close()
         {
-            if (ownsInputReader && inputReader != null)
-            {
-                inputReader.Close();
-                inputReader.Dispose();
-            }
-
-            inputReader = null;
-            ownsInputReader = false;
-
-            if (ownsOutputWriter && outputWriter != null)
-            {
-                outputWriter.Flush();
-                outputWriter.Close();
-                outputWriter.Dispose();
-            }
-
-            outputWriter = null;
-            ownsOutputWriter = false;
-
             base.Close();
         }
 

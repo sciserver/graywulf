@@ -329,8 +329,8 @@ WHERE table_catalog ILIKE @databaseName AND table_name ILIKE @tableName AND tabl
                             cd.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(2),
                                 Convert.ToInt32(dr.GetValue(3)),
-                                Convert.ToInt16(dr.GetValue(4)),
-                                Convert.ToInt16(dr.GetValue(5)),
+                                Convert.ToByte(dr.GetValue(4)),
+                                Convert.ToByte(dr.GetValue(5)),
                                 (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(6), "yes") == 0));
 
                             yield return new KeyValuePair<string, Column>(cd.Name, cd);
@@ -437,8 +437,8 @@ WHERE constraint_catalog ILIKE @databaseName AND constraint_schema ILIKE @schema
                             ic.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(4),
                                 Convert.ToInt32(dr.GetValue(5)),
-                                Convert.ToInt16(dr.GetValue(6)),
-                                Convert.ToInt16(dr.GetValue(7)),
+                                Convert.ToByte(dr.GetValue(6)),
+                                Convert.ToByte(dr.GetValue(7)),
                                 nullable);
 
                             yield return new KeyValuePair<string, IndexColumn>(ic.Name, ic);
@@ -512,8 +512,8 @@ WHERE p.specific_catalog ILIKE @databaseName AND p.specific_schema ILIKE @schema
                             par.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(3),
                                 Convert.ToInt32(dr.GetValue(4)),
-                                Convert.ToInt16(dr.GetValue(5)),
-                                Convert.ToInt16(dr.GetValue(6)),
+                                Convert.ToByte(dr.GetValue(5)),
+                                Convert.ToByte(dr.GetValue(6)),
                                 false); // nullable is not supported by postgres functions
 
                             yield return new KeyValuePair<string, Parameter>(par.Name, par);

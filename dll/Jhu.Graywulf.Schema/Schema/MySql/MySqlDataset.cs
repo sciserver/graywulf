@@ -308,8 +308,8 @@ WHERE table_schema LIKE @databaseName AND table_name LIKE @tableName;";
                             cd.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(2),
                                 dr.GetInt64(3) > Int32.MaxValue ? Int32.MaxValue : Convert.ToInt32(dr.GetInt64(3)),
-                                Convert.ToInt16(dr.GetValue(4)),
-                                Convert.ToInt16(dr.GetValue(5)),
+                                Convert.ToByte(dr.GetValue(4)),
+                                Convert.ToByte(dr.GetValue(5)),
                                 (StringComparer.InvariantCultureIgnoreCase.Compare(dr.GetString(6), "yes") == 0));
 
                             yield return new KeyValuePair<string, Column>(cd.Name, cd);
@@ -410,8 +410,8 @@ WHERE t.table_schema LIKE @databaseName AND kcu.table_name LIKE @tableName AND k
                             ic.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(3),
                                 dr.GetInt64(4) > Int32.MaxValue ? Int32.MaxValue : Convert.ToInt32(dr.GetInt64(4)),
-                                Convert.ToInt16(dr.GetValue(5)),
-                                Convert.ToInt16(dr.GetValue(6)),
+                                Convert.ToByte(dr.GetValue(5)),
+                                Convert.ToByte(dr.GetValue(6)),
                                 nullable);
 
                             yield return new KeyValuePair<string, IndexColumn>(ic.Name, ic);
@@ -486,8 +486,8 @@ ORDER BY 1;";
                             par.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(3),
                                 Convert.ToInt32(dr.GetValue(4)),
-                                Convert.ToInt16(dr.GetValue(5)),
-                                Convert.ToInt16(dr.GetValue(6)),
+                                Convert.ToByte(dr.GetValue(5)),
+                                Convert.ToByte(dr.GetValue(6)),
                                 false);
 
                             yield return new KeyValuePair<string, Parameter>(par.Name, par);

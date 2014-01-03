@@ -9,9 +9,14 @@ using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// </remarks>
     public class SqlServerNativeDataFileBlock : DataFileBlockBase, ICloneable
     {
-        private delegate void BinaryColumnWriterDelegate(BinaryWriter w, object value, DataType type);
+        private delegate void BinaryColumnWriterDelegate(SqlServerNativeBinaryWriter w, object value, DataType type);
 
         private BinaryColumnWriterDelegate[] columnWriters;
 
@@ -87,7 +92,7 @@ namespace Jhu.Graywulf.Format
         {
             for (int i = 0; i < values.Length; i++)
             {
-                columnWriters[i](File.OutputWriter, values[i], Columns[i].DataType);
+                columnWriters[i](File.NativeWriter, values[i], Columns[i].DataType);
             }
         }
 
@@ -111,7 +116,7 @@ namespace Jhu.Graywulf.Format
             filename = Path.GetFileNameWithoutExtension(filename);
             // Append to directory and add custom extension
             filename = Path.Combine(dir, filename += extension);
-            
+
             var buffer = Encoding.UTF8.GetBytes(text);
 
             File.CreateArchiveEntry(filename, buffer.Length);
@@ -171,61 +176,199 @@ namespace Jhu.Graywulf.Format
                     switch (Columns[i].DataType.SqlDbType.Value)
                     {
                         case System.Data.SqlDbType.Bit:
-                            columnWriters[i] = WriteSqlBit;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlBit(v);
+                            };
                             break;
                         case System.Data.SqlDbType.TinyInt:
-                            columnWriters[i] = WriteSqlTinyInt;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlTinyInt(v);
+                            };
                             break;
                         case System.Data.SqlDbType.SmallInt:
-                            columnWriters[i] = WriteSqlSmallInt;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlSmallInt(v);
+                            };
                             break;
                         case System.Data.SqlDbType.Int:
-                            columnWriters[i] = WriteSqlInt;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlInt(v);
+                            };
                             break;
                         case System.Data.SqlDbType.BigInt:
-                            columnWriters[i] = WriteSqlBigInt;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlBigInt(v);
+                            };
                             break;
                         case System.Data.SqlDbType.Real:
-                            columnWriters[i] = WriteSqlReal;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlReal(v);
+                            };
                             break;
                         case System.Data.SqlDbType.Float:
-                            columnWriters[i] = WriteSqlFloat;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlFloat(v);
+                            };
                             break;
-
-                        case System.Data.SqlDbType.Image:
                         case System.Data.SqlDbType.Binary:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlBinary(v);
+                            };
+                            break;
                         case System.Data.SqlDbType.VarBinary:
-                        case System.Data.SqlDbType.Text:
+                            if (!Columns[i].DataType.IsMaxLength)
+                            {
+                                columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlBinary(v);
+                            };
+                            }
+                            else
+                            {
+                                columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlVarBinaryMax(v);
+                            };
+                            }
+                            break;
+                        case System.Data.SqlDbType.Image:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlImage(v);
+                            };
+                            break;
                         case System.Data.SqlDbType.Char:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlChar(v);
+                            };
+                            break;
                         case System.Data.SqlDbType.VarChar:
-                        case System.Data.SqlDbType.NText:
+                            if (!Columns[i].DataType.IsMaxLength)
+                            {
+                                columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlVarChar(v);
+                            };
+                            }
+                            else
+                            {
+                                columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlVarCharMax(v);
+                            };
+                            }
+                            break;
+                        case System.Data.SqlDbType.Text:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlText(v);
+                            };
+                            break;
                         case System.Data.SqlDbType.NChar:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlNChar(v);
+                            };
+                            break;
                         case System.Data.SqlDbType.NVarChar:
-
+                            if (!Columns[i].DataType.IsMaxLength)
+                            {
+                                columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlNChar(v);
+                            };
+                            }
+                            else
+                            {
+                                columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlNVarCharMax(v);
+                            };
+                            }
+                            break;
+                        case System.Data.SqlDbType.NText:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlNText(v);
+                            };
+                            break;
                         case System.Data.SqlDbType.Date:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlDate(v);
+                            };
+                            break;
                         case System.Data.SqlDbType.DateTime:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlDateTime(v);
+                            };
+                            break;
                         case System.Data.SqlDbType.DateTime2:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlDateTime2(v);
+                            };
+                            break;
                         case System.Data.SqlDbType.DateTimeOffset:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlDateTimeOffset(v);
+                            };
+                            break;
                         case System.Data.SqlDbType.SmallDateTime:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlSmallDateTime(v);
+                            };
+                            break;
                         case System.Data.SqlDbType.Time:
-
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlTime(v);
+                            };
+                            break;
                         case System.Data.SqlDbType.Timestamp:
-
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlTimestamp(v);
+                            };
+                            break;
                         case System.Data.SqlDbType.Decimal:
-
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlDecimal(v, t.Precision, t.Scale);
+                            };
+                            break;
                         case System.Data.SqlDbType.SmallMoney:
-                            throw new NotImplementedException();
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlSmallMoney(v);
+                            };
+                            break;
                         case System.Data.SqlDbType.Money:
-                            columnWriters[i] = WriteSqlMoney;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlMoney(v);
+                            };
                             break;
-
                         case System.Data.SqlDbType.UniqueIdentifier:
-                            columnWriters[i] = WriteSqlUniqueIdentifier;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteSqlUniqueIdentifier(v);
+                            };
                             break;
-
                         case System.Data.SqlDbType.Variant:
                         case System.Data.SqlDbType.Xml:
-
                         case System.Data.SqlDbType.Structured:
                         case System.Data.SqlDbType.Udt:
                         default:
@@ -237,62 +380,200 @@ namespace Jhu.Graywulf.Format
                     switch (Columns[i].DataType.SqlDbType.Value)
                     {
                         case System.Data.SqlDbType.Bit:
-                            columnWriters[i] = WriteNullableSqlBit;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlBit(v);
+                            };
                             break;
                         case System.Data.SqlDbType.TinyInt:
-                            columnWriters[i] = WriteNullableSqlTinyInt;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlTinyInt(v);
+                            };
                             break;
                         case System.Data.SqlDbType.SmallInt:
-                            columnWriters[i] = WriteNullableSqlSmallInt;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlSmallInt(v);
+                            };
                             break;
                         case System.Data.SqlDbType.Int:
-                            columnWriters[i] = WriteNullableSqlInt;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlInt(v);
+                            };
                             break;
                         case System.Data.SqlDbType.BigInt:
-                            columnWriters[i] = WriteNullableSqlBigInt;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlBigInt(v);
+                            };
                             break;
                         case System.Data.SqlDbType.Real:
-                            columnWriters[i] = WriteNullableSqlReal;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlReal(v);
+                            };
                             break;
                         case System.Data.SqlDbType.Float:
-                            columnWriters[i] = WriteNullableSqlFloat;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlFloat(v);
+                            };
                             break;
-
-                        case System.Data.SqlDbType.Image:
                         case System.Data.SqlDbType.Binary:
-                        case System.Data.SqlDbType.VarBinary:
-                        case System.Data.SqlDbType.Text:
-                        case System.Data.SqlDbType.Char:
-                        case System.Data.SqlDbType.VarChar:
-                        case System.Data.SqlDbType.NText:
-                        case System.Data.SqlDbType.NChar:
-                        case System.Data.SqlDbType.NVarChar:
-
-                        case System.Data.SqlDbType.Date:
-                        case System.Data.SqlDbType.DateTime:
-                        case System.Data.SqlDbType.DateTime2:
-                        case System.Data.SqlDbType.DateTimeOffset:
-                        case System.Data.SqlDbType.SmallDateTime:
-                        case System.Data.SqlDbType.Time:
-
-                        case System.Data.SqlDbType.Timestamp:
-
-                        case System.Data.SqlDbType.Decimal:
-
-                        case System.Data.SqlDbType.SmallMoney:
-                            throw new NotImplementedException();
-
-                        case System.Data.SqlDbType.Money:
-                            columnWriters[i] = WriteNullableSqlMoney;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlBinary(v);
+                            };
                             break;
-
+                        case System.Data.SqlDbType.VarBinary:
+                            if (!Columns[i].DataType.IsMaxLength)
+                            {
+                                columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlBinary(v);
+                            };
+                            }
+                            else
+                            {
+                                columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlVarBinaryMax(v);
+                            };
+                            }
+                            break;
+                        case System.Data.SqlDbType.Image:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlImage(v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Char:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlChar(v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.VarChar:
+                            if (!Columns[i].DataType.IsMaxLength)
+                            {
+                                columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlVarChar(v);
+                            };
+                            }
+                            else
+                            {
+                                columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlVarCharMax(v);
+                            };
+                            }
+                            break;
+                        case System.Data.SqlDbType.Text:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlText(v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.NChar:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlNChar(v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.NVarChar:
+                            if (!Columns[i].DataType.IsMaxLength)
+                            {
+                                columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlNChar(v);
+                            };
+                            }
+                            else
+                            {
+                                columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlNVarCharMax(v);
+                            };
+                            }
+                            break;
+                        case System.Data.SqlDbType.NText:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlNText(v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Date:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlDate(v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.DateTime:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlDateTime(v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.DateTime2:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlDateTime2(v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.DateTimeOffset:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlDateTimeOffset(v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.SmallDateTime:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlSmallDateTime(v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Time:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlTime(v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Timestamp:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlTimestamp(v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Decimal:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlDecimal(v, t.Precision, t.Scale);
+                            };
+                            break;
+                        case System.Data.SqlDbType.SmallMoney:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlSmallMoney(v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Money:
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlMoney(v);
+                            };
+                            break;
                         case System.Data.SqlDbType.UniqueIdentifier:
-                            columnWriters[i] = WriteNullableSqlUniqueIdentifier;
+                            columnWriters[i] = delegate(SqlServerNativeBinaryWriter w, object v, DataType t)
+                            {
+                                w.WriteNullableSqlUniqueIdentifier(v);
+                            };
                             break;
 
                         case System.Data.SqlDbType.Variant:
                         case System.Data.SqlDbType.Xml:
-
                         case System.Data.SqlDbType.Structured:
                         case System.Data.SqlDbType.Udt:
                         default:
@@ -301,293 +582,6 @@ namespace Jhu.Graywulf.Format
                 }
             }
         }
-
-        private void WriteSqlBit(BinaryWriter w, object value, DataType type)
-        {
-            // TODO: verify if works with multiple bits unioned together
-
-            w.Write((byte)1);
-            w.Write((bool)value ? (byte)1 : (byte)0);
-        }
-
-        private void WriteNullableSqlBit(BinaryWriter w, object value, DataType type)
-        {
-            // TODO: verify if works with multiple bits unioned together
-
-            if (value == DBNull.Value)
-            {
-                w.Write((byte)0xFF);
-            }
-            else
-            {
-                w.Write((byte)1);
-                w.Write((bool)value ? (byte)1 : (byte)0);
-            }
-        }
-
-        private void WriteSqlTinyInt(BinaryWriter w, object value, DataType type)
-        {
-            w.Write((byte)value);
-        }
-
-        private void WriteNullableSqlTinyInt(BinaryWriter w, object value, DataType type)
-        {
-            if (value == DBNull.Value)
-            {
-                w.Write((byte)0xFF);
-            }
-            else
-            {
-                w.Write((byte)1);
-                w.Write((byte)value);
-            }
-        }
-
-        private void WriteSqlSmallInt(BinaryWriter w, object value, DataType type)
-        {
-            w.Write((short)value);
-        }
-
-        private void WriteNullableSqlSmallInt(BinaryWriter w, object value, DataType type)
-        {
-            if (value == DBNull.Value)
-            {
-                w.Write((byte)0xFF);
-            }
-            else
-            {
-                w.Write((byte)2);
-                w.Write((short)value);
-            }
-        }
-
-        private void WriteSqlInt(BinaryWriter w, object value, DataType type)
-        {
-            w.Write((int)value);
-        }
-
-        private void WriteNullableSqlInt(BinaryWriter w, object value, DataType type)
-        {
-            if (value == DBNull.Value)
-            {
-                w.Write((byte)0xFF);
-            }
-            else
-            {
-                w.Write((byte)4);
-                w.Write((int)value);
-            }
-        }
-
-        private void WriteSqlBigInt(BinaryWriter w, object value, DataType type)
-        {
-            w.Write((long)value);
-        }
-
-        private void WriteNullableSqlBigInt(BinaryWriter w, object value, DataType type)
-        {
-            if (value == DBNull.Value)
-            {
-                w.Write((byte)0xFF);
-            }
-            else
-            {
-                w.Write((byte)8);
-                w.Write((long)value);
-            }
-        }
-
-        private void WriteSqlReal(BinaryWriter w, object value, DataType type)
-        {
-            w.Write((float)value);
-        }
-
-        private void WriteNullableSqlReal(BinaryWriter w, object value, DataType type)
-        {
-            if (value == DBNull.Value)
-            {
-                w.Write((byte)0xFF);
-            }
-            else
-            {
-                w.Write((byte)4);
-                w.Write((float)value);
-            }
-        }
-
-        private void WriteSqlFloat(BinaryWriter w, object value, DataType type)
-        {
-            w.Write((double)value);
-        }
-
-        private void WriteNullableSqlFloat(BinaryWriter w, object value, DataType type)
-        {
-            if (value == DBNull.Value)
-            {
-                w.Write((byte)0xFF);
-            }
-            else
-            {
-                w.Write((byte)8);
-                w.Write((double)value);
-            }
-        }
-
-        private void WriteSqlMoney(BinaryWriter w, object value, DataType type)
-        {
-            // TODO: how to store money in native binary???
-            w.Write((double)(decimal)value);
-        }
-
-        private void WriteNullableSqlMoney(BinaryWriter w, object value, DataType type)
-        {
-            if (value == DBNull.Value)
-            {
-                w.Write((byte)0xFF);
-            }
-            else
-            {
-                // TODO: how to store money in native binary???
-                w.Write((byte)1);
-                w.Write((double)(decimal)value);
-            }
-        }
-
-        private void WriteSqlUniqueIdentifier(BinaryWriter w, object value, DataType type)
-        {
-            w.Write((byte)16);       // TODO: Test valid value
-            w.Write(((Guid)value).ToByteArray(), 0, 16);
-        }
-
-        private void WriteNullableSqlUniqueIdentifier(BinaryWriter w, object value, DataType type)
-        {
-            if (value == DBNull.Value)
-            {
-                w.Write((byte)0xFF);
-            }
-            else
-            {
-                w.Write((byte)16);       // TODO: Test valid value
-                w.Write(((Guid)value).ToByteArray(), 0, 16);
-            }
-        }
-
-#if false
-        public void WriteDateTime(DateTime dateTime)
-        {
-            if (binary)
-            {
-                int date = (dateTime - new DateTime(1900, 1, 1)).Days;
-                int time = (int)((dateTime.TimeOfDay).TotalSeconds * 300);
-                outputBinary.Write(date);
-                outputBinary.Write(time);
-            }
-            else
-            {
-                WriteFieldEnd();
-                row.AppendFormat("{0:yyyy-MM-dd HH:mm:ss}", dateTime);
-            }
-        }
-
-        /*
-        public void WriteNullableDateTime(DateTime dateTime)
-        {
-            if (binary)
-            {
-                outputBinary.Write((byte)8);
-            }
-            WriteDateTime(dateTime);
-        }*/
-
-        public void WriteVarChar(string value, int maxlength)
-        {
-            if (binary)
-            {
-                if (value != null)
-                {
-                    int len = Math.Min(value.Length, maxlength);
-                    byte[] bytes = Encoding.Unicode.GetBytes(value.Substring(0, len));
-
-                    outputBinary.Write((ushort)bytes.Length);
-                    outputBinary.Write(bytes);
-                }
-                else
-                {
-                    outputBinary.Write((ushort)0xFFFF);
-                }
-            }
-            else
-            {
-                if (value != null)
-                {
-                    WriteFieldEnd();
-                    row.Append(value.Substring(0, Math.Min(value.Length, maxlength)));
-                }
-                else
-                {
-                    WriteFieldEnd();
-                }
-            }
-        }
-
-        public void WriteChar(string value, int length)
-        {
-            if (binary)
-            {
-                if (value != null)
-                {
-                    byte[] bytes = Encoding.Unicode.GetBytes(value.PadRight(length));
-                    outputBinary.Write(bytes, 0, 2 * length);
-                }
-                else
-                {
-                    outputBinary.Write((ushort)0xFFFF);
-                }
-            }
-            else
-            {
-                if (value != null)
-                {
-                    WriteFieldEnd();
-                    row.Append(value.Substring(0, Math.Min(value.Length, length)));
-                }
-                else
-                {
-                    WriteFieldEnd();
-                }
-            }
-        }
-
-        public void WriteNullableChar(string value, int length)
-        {
-            if (binary)
-            {
-                if (value == null)
-                {
-                    outputBinary.Write((ushort)0xFFFF);
-                }
-                else
-                {
-                    byte[] bytes = Encoding.Unicode.GetBytes(value.PadRight(length));
-                    outputBinary.Write((ushort)bytes.Length);
-                    outputBinary.Write(bytes);
-                }
-            }
-            else
-            {
-                if (value != null)
-                {
-                    WriteFieldEnd();
-                    row.Append(value.Substring(0, Math.Min(value.Length, length)));
-                }
-                else
-                {
-                    WriteFieldEnd();
-                }
-            }
-        }
-
-#endif
 
         #endregion
     }
