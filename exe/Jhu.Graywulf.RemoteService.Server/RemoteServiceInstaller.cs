@@ -15,5 +15,17 @@ namespace Jhu.Graywulf.RemoteService.Server
         {
             InitializeComponent();
         }
+
+        protected override void OnBeforeInstall(IDictionary savedState)
+        {
+            base.OnBeforeInstall(savedState);
+
+            if (Context.Parameters.ContainsKey("svcname"))
+            {
+                Console.WriteLine("Service name is overriden.");
+                this.serviceInstaller.ServiceName += "_" + Context.Parameters["svcname"];
+                this.serviceInstaller.DisplayName += " (" + Context.Parameters["svcname"] + ")";
+            }
+        }
     }
 }
