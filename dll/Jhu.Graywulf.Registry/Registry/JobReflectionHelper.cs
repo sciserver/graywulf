@@ -150,8 +150,16 @@ namespace Jhu.Graywulf.Registry
         /// <returns></returns>
         public bool HasInterface(string interfaceName)
         {
-            Type t = Type.GetType(workflowTypeName);
-            return t.GetInterface(interfaceName) != null;
+            var t = Type.GetType(workflowTypeName);
+
+            if (t == null)
+            {
+                return false;
+            }
+            else
+            {
+                return t.GetInterface(interfaceName) != null;
+            }
         }
     }
 }

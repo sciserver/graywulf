@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Globalization;
-using ICSharpCode.SharpZipLib.Zip;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
@@ -13,6 +13,7 @@ namespace Jhu.Graywulf.Format
     /// Reads and writes recordsets in SQL Server native format
     /// </summary>
     [Serializable]
+    [DataContract(Namespace="")]
     public class SqlServerNativeDataFile : DataFileBase, ICloneable
     {
         #region Member variables
@@ -41,6 +42,7 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        [IgnoreDataMember]
         internal SqlServerNativeBinaryWriter NativeWriter
         {
             get { return nativeWriter; }

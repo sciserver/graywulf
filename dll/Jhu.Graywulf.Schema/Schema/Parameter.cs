@@ -10,12 +10,19 @@ namespace Jhu.Graywulf.Schema
     /// Reflects a function or stored procedure parameter
     /// </summary>
     [Serializable]
+    [DataContract(Namespace = "")]
     public class Parameter : Variable, ICloneable
     {
+        [NonSerialized]
         private ParameterDirection direction;
+
+        [NonSerialized]
         private bool hasDefaultValue;
+
+        [NonSerialized]
         private object defaultValue;
 
+        [IgnoreDataMember]
         public string ParameterName
         {
             get { return Name; }
@@ -25,18 +32,21 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets or sets the direction of the parameter.
         /// </summary>
+        [DataMember]
         public ParameterDirection Direction
         {
             get { return direction; }
             set { direction = value; }
         }
 
+        [DataMember]
         public bool HasDefaultValue
         {
             get { return hasDefaultValue; }
             set { hasDefaultValue = value; }
         }
 
+        [DataMember]
         public object DefaultValue
         {
             get { return defaultValue; }
@@ -53,7 +63,9 @@ namespace Jhu.Graywulf.Schema
 
         public Parameter(DatabaseObject parent)
             : base(parent)
-        { InitializeMembers(); }
+        {
+            InitializeMembers(); 
+        }
 
 
         /// <summary>

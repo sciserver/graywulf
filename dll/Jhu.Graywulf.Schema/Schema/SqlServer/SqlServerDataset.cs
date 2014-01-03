@@ -18,7 +18,10 @@ namespace Jhu.Graywulf.Schema.SqlServer
     [DataContract(Namespace = "")]
     public class SqlServerDataset : DatasetBase
     {
+        [NonSerialized]
         protected bool isOnLinkedServer;
+
+        [NonSerialized]
         protected bool isRemoteDataset;
 
         /// <summary>
@@ -32,7 +35,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
             set { isOnLinkedServer = value; }
         }
 
-        [DataMember]
+        [IgnoreDataMember]
         public override string ProviderName
         {
             get { return Constants.SqlServerProviderName; }

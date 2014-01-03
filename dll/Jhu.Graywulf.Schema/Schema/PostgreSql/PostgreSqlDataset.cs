@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql
     [DataContract(Namespace = "")]
     public class PostgreSqlDataset : DatasetBase
     {
-        [DataMember]
+        [IgnoreDataMember]
         public override string ProviderName
         {
             get { return Constants.PostgreSqlProviderName; }

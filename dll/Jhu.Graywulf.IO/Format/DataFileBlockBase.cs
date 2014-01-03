@@ -3,29 +3,46 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
-using Jhu.Graywulf.Schema;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
     [Serializable]
+    [DataContract(Namespace="")]
     public abstract class DataFileBlockBase : ICloneable
     {
         [NonSerialized]
         protected DataFileBase file;
-        
+
+        [NonSerialized]
         private List<Column> columns;
 
         /// <summary>
         /// Gets the collection containing columns of the data file
         /// </summary>
+        [IgnoreDataMember]
         public List<Column> Columns
         {
             get { return columns; }
         }
 
+        [DataMember(Name="Columns")]
+        [XmlArray]
+        private Column[] Columns_ForXml
+        {
+            get { return columns.ToArray(); }
+            set { columns = new List<Schema.Column>(value); }
+        }
+
         #region Constructors and initializer
+
+        protected DataFileBlockBase()
+        {
+            InitializeMembers();
+        }
 
         public DataFileBlockBase(DataFileBase file)
         {
@@ -60,8 +77,7 @@ namespace Jhu.Graywulf.Format
         public abstract object Clone();
 
         #endregion
-
-        #region Columns functions
+        #region Column functions
 
         /// <summary>
         /// Generates a column list from a data reader.

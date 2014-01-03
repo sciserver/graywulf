@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Schema
 {
@@ -9,14 +10,19 @@ namespace Jhu.Graywulf.Schema
     /// Reflects an index column
     /// </summary>
     [Serializable]
+    [DataContract(Namespace="")]
     public class IndexColumn : Column, ICloneable
     {
+        [NonSerialized]
         private int keyOrdinal;
+
+        [NonSerialized]
         private IndexColumnOrdering ordering;
 
         /// <summary>
         /// Gets or sets the ordinal position of the column within the index key
         /// </summary>
+        [DataMember]
         public int KeyOrdinal
         {
             get { return keyOrdinal; }
@@ -26,6 +32,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets or sets the ordering of the index column-
         /// </summary>
+        [DataMember]
         public IndexColumnOrdering Ordering
         {
             get { return ordering; }

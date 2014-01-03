@@ -61,6 +61,7 @@
     <Compile Include="Schema\MySql\MySqlMetadataTest.cs" />
     <Compile Include="Schema\PostgreSql\PostgreSqlDatasetTest.cs" />
     <Compile Include="Schema\PostgreSql\PostgreSqlMetadataTest.cs" />
+    <Compile Include="Schema\SerializationTest.cs" />
     <Compile Include="Schema\SqlServer\SqlServerDatasetTest.cs" />
     <Compile Include="Schema\SqlServer\SqlServerMetadataTest.cs" />
   </ItemGroup>

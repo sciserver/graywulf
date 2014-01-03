@@ -12,13 +12,6 @@ namespace Jhu.Graywulf.Registry
     [Serializable]
     public class JobParameter
     {
-        /*private static ConcurrentDictionary<Type, DataContractSerializer> serializerCache;
-
-        static JobParameter()
-        {
-            serializerCache = new ConcurrentDictionary<Type, DataContractSerializer>();
-        }*/
-
         private string name;
         private string typeName;
         private JobParameterDirection direction;
@@ -126,7 +119,13 @@ namespace Jhu.Graywulf.Registry
 
         private XmlObjectSerializer GetSerializer()
         {
-            var res = new NetDataContractSerializer(new StreamingContext(), int.MaxValue, false, System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple, null);
+            var res = new NetDataContractSerializer(
+                new StreamingContext(),
+                int.MaxValue,
+                false,
+                System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple,
+                null);
+
             return res;
         }
     }

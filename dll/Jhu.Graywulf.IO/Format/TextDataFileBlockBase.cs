@@ -2,28 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jhu.Graywulf.Schema;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
+    [Serializable]
+    [DataContract(Namespace="")]
     public abstract class TextDataFileBlockBase : FormattedDataFileBlockBase, ICloneable
     {
-        [NonSerialized]
-        private BufferedTextReader textBuffer;
-
-        protected BufferedTextReader TextBuffer
-        {
-            get { return textBuffer; }
-        }
-
+        [IgnoreDataMember]
         private TextDataFileBase File
         {
             get { return (TextDataFileBase)file; }
         }
 
         #region Constructors and initializers
+
+        protected TextDataFileBlockBase()
+        {
+            InitializeMembers();
+        }
 
         public TextDataFileBlockBase(TextDataFileBase file)
             : base(file)
@@ -39,12 +39,10 @@ namespace Jhu.Graywulf.Format
 
         private void InitializeMembers()
         {
-            this.textBuffer = new BufferedTextReader(File.TextReader);
         }
 
         private void CopyMembers(TextDataFileBlockBase old)
         {
-            this.textBuffer = new BufferedTextReader(File.TextReader);
         }
 
         #endregion
@@ -88,7 +86,7 @@ namespace Jhu.Graywulf.Format
         protected internal override void OnReadHeader()
         {
             // Make sure it's the first line
-            if (TextBuffer.LineCounter > 0)
+            if (File.BufferedReader.LineCounter > 0)
             {
                 throw new InvalidOperationException();  // *** TODO
             }
@@ -96,7 +94,7 @@ namespace Jhu.Graywulf.Format
             if (File.AutoDetectColumns)
             {
                 // Buffering is needed to detect columns automatically
-                TextBuffer.StartLineBuffer();
+                File.BufferedReader.StartLineBuffer();
 
                 string[] parts;
 
@@ -110,7 +108,7 @@ namespace Jhu.Graywulf.Format
                     DetectColumnsFromParts(parts, true, out cols, out colranks);
                 }
 
-                TextBuffer.SkipLines(File.SkipLinesCount);
+                File.BufferedReader.SkipLines(File.SkipLinesCount);
 
                 // Try to figure out the type of columns from the first n rows
                 // Try to read some rows to detect
@@ -133,8 +131,8 @@ namespace Jhu.Graywulf.Format
                 }
 
                 // Rewind stream
-                TextBuffer.RewindLineBuffer();
-                TextBuffer.StopLineBuffer();
+                File.BufferedReader.RewindLineBuffer();
+                File.BufferedReader.StopLineBuffer();
 
                 CreateColumns(cols);
             }
@@ -144,7 +142,7 @@ namespace Jhu.Graywulf.Format
             }
 
             // Skip the first few lines of the file
-            TextBuffer.SkipLines(File.SkipLinesCount);
+            File.BufferedReader.SkipLines(File.SkipLinesCount);
         }
 
         protected internal override void OnReadFooter()

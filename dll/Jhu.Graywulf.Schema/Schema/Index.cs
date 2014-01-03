@@ -12,25 +12,38 @@ namespace Jhu.Graywulf.Schema
     /// Reflects a database table or view index
     /// </summary>
     [Serializable]
+    [DataContract(Namespace="")]
     public class Index : DatabaseObject, ICloneable
     {
+        [NonSerialized]
         private TableOrView tableOrView;
+
+        [NonSerialized]
         private int indexId;
+
+        [NonSerialized]
         private bool isPrimaryKey;
+
+        [NonSerialized]
         private bool isClustered;
+
+        [NonSerialized]
         private bool isUnique;
 
+        [NonSerialized]
         private Lazy<ConcurrentDictionary<string, IndexColumn>> columns;
 
         /// <summary>
         /// Gets or sets the name of the index.
         /// </summary>
+        [IgnoreDataMember]
         public string IndexName
         {
             get { return ObjectName; }
             set { ObjectName = value; }
         }
 
+        [IgnoreDataMember]
         public TableOrView TableOrView
         {
             get { return tableOrView; }
@@ -39,6 +52,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets or sets the unique ID of the index
         /// </summary>
+        [DataMember]
         public int IndexId
         {
             get { return indexId; }
@@ -48,6 +62,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets or sets the value indication whether the index is the primary key of a table
         /// </summary>
+        [DataMember]
         public bool IsPrimaryKey
         {
             get { return isPrimaryKey; }
@@ -57,6 +72,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets or sets the value indicating whether the index is clustered.
         /// </summary>
+        [DataMember]
         public bool IsClustered
         {
             get { return isClustered; }
@@ -66,6 +82,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets or sets the value indicating whether key of the index are unique.
         /// </summary>
+        [DataMember]
         public bool IsUnique
         {
             get { return isUnique; }
@@ -75,11 +92,13 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets the collection of columns.
         /// </summary>
+        [IgnoreDataMember]
         public ConcurrentDictionary<string, IndexColumn> Columns
         {
             get { return columns.Value; }
         }
 
+        [IgnoreDataMember]
         public string ColumnListDisplayString
         {
             get

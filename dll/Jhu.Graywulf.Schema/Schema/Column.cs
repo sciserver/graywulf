@@ -13,30 +13,40 @@ namespace Jhu.Graywulf.Schema
     /// Reflects a table or view column
     /// </summary>
     [Serializable]
+    [DataContract(Namespace="")]
     public class Column : Variable, ICloneable
     {
+        [NonSerialized]
         private bool isIdentity;
+
+        [NonSerialized]
         private bool isKey;
+
+        [NonSerialized]
         private bool isHidden;
 
+        [DataMember]
         public string ColumnName
         {
             get { return Name; }
             set { Name = value; }
         }
 
+        [DataMember]
         public bool IsIdentity
         {
             get { return isIdentity; }
             set { isIdentity = value; }
         }
 
+        [DataMember]
         public bool IsKey
         {
             get { return isKey; }
             set { isKey = value; }
         }
 
+        [DataMember]
         public bool IsHidden
         {
             get { return isHidden; }

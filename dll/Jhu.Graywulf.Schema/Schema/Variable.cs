@@ -9,14 +9,25 @@ using Jhu.Graywulf.Schema;
 namespace Jhu.Graywulf.Schema
 {
     [Serializable]
+    [DataContract(Namespace="")]
     public abstract class Variable
     {
+        [NonSerialized]
         private DatabaseObject parent;
+
+        [NonSerialized]
         private int id;
+
+        [NonSerialized]
         private string name;
+
+        [NonSerialized]
         private DataType dataType;
+
+        [NonSerialized]
         private LazyProperty<VariableMetadata> metadata;
 
+        [IgnoreDataMember]
         public DatabaseObject Parent
         {
             get { return parent; }
@@ -25,6 +36,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Ordinal ID of the objects (column, parameter, etc).
         /// </summary>
+        [DataMember]
         public int ID
         {
             get { return id; }
@@ -34,6 +46,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Name of the variable
         /// </summary>
+        [DataMember]
         public string Name
         {
             get { return name; }
@@ -43,12 +56,14 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Data type
         /// </summary>
+        [DataMember]
         public DataType DataType
         {
             get { return dataType; }
             set { dataType = value; }
         }
 
+        [IgnoreDataMember]
         public VariableMetadata Metadata
         {
             get { return metadata.Value; }

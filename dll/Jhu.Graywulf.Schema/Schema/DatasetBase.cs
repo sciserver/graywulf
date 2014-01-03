@@ -11,7 +11,6 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Schema
 {
-
     /// <summary>
     /// Implements basic functionality to reflect datasets
     /// </summary>
@@ -20,16 +19,27 @@ namespace Jhu.Graywulf.Schema
     /// server product specific reflection logic
     /// </remarks>
     [Serializable]
+    [DataContract(Namespace="")]
     public abstract partial class DatasetBase : ICloneable, ICacheable, IDatasetName
     {
         #region Property storage member variables
 
+        [NonSerialized]
         private long cachedVersion;
 
+        [NonSerialized]
         private bool isCacheable;
+
+        [NonSerialized]
         private bool isMutable;
+
+        [NonSerialized]
         private string name;
+
+        [NonSerialized]
         private string defaultSchemaName;
+
+        [NonSerialized]
         private string connectionString;
 
         [NonSerialized]
@@ -47,6 +57,7 @@ namespace Jhu.Graywulf.Schema
         [NonSerialized]
         private DatabaseObjectCollection<StoredProcedure> storedProcedures;
 
+        [NonSerialized]
         private LazyProperty<DatasetStatistics> statistics;
 
         #endregion
@@ -177,6 +188,7 @@ namespace Jhu.Graywulf.Schema
             get { return storedProcedures; }
         }
 
+        [IgnoreDataMember]
         public DatasetStatistics Statistics
         {
             get { return statistics.Value; }

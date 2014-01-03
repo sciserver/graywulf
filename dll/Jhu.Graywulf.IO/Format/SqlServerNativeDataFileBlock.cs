@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.IO;
 
@@ -14,15 +14,24 @@ namespace Jhu.Graywulf.Format
     /// </summary>
     /// <remarks>
     /// </remarks>
+    [Serializable]
+    [DataContract(Namespace="")]
     public class SqlServerNativeDataFileBlock : DataFileBlockBase, ICloneable
     {
         private delegate void BinaryColumnWriterDelegate(SqlServerNativeBinaryWriter w, object value, DataType type);
 
+        [NonSerialized]
         private BinaryColumnWriterDelegate[] columnWriters;
 
+        [IgnoreDataMember]
         private SqlServerNativeDataFile File
         {
             get { return (SqlServerNativeDataFile)file; }
+        }
+
+        protected SqlServerNativeDataFileBlock()
+        {
+            InitializeMembers();
         }
 
         public SqlServerNativeDataFileBlock(SqlServerNativeDataFile file)

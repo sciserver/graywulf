@@ -4,63 +4,89 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Globalization;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
     [Serializable]
+    [DataContract(Namespace = "")]
     public abstract class TextDataFileBase : FormattedDataFileBase, IDisposable, ICloneable
     {
         #region Member variables
 
         [NonSerialized]
         private TextReader inputReader;
+
         [NonSerialized]
         private bool ownsInputReader;
 
         [NonSerialized]
+        private BufferedTextReader bufferedReader;
+
+        [NonSerialized]
         private TextWriter outputWriter;
+
         [NonSerialized]
         private bool ownsOutputWriter;
 
+        [NonSerialized]
         private int skipLinesCount;
+
+        [NonSerialized]
         private bool columnNamesInFirstLine;
+
+        [NonSerialized]
         private bool autoDetectColumns;
+
+        [NonSerialized]
         private int autoDetectColumnsCount;
 
         #endregion
         #region Properties
 
+        [DataMember]
         public int SkipLinesCount
         {
             get { return skipLinesCount; }
             set { skipLinesCount = value; }
         }
 
+        [DataMember]
         public bool ColumnNamesInFirstLine
         {
             get { return columnNamesInFirstLine; }
             set { columnNamesInFirstLine = value; }
         }
 
+        [DataMember]
         public bool AutoDetectColumns
         {
             get { return autoDetectColumns; }
             set { autoDetectColumns = value; }
         }
 
+        [DataMember]
         public int AutoDetectColumnsCount
         {
             get { return autoDetectColumnsCount; }
             set { autoDetectColumnsCount = value; }
         }
 
+        [IgnoreDataMember]
         protected internal TextReader TextReader
         {
             get { return inputReader; }
         }
 
+        [IgnoreDataMember]
+        protected internal BufferedTextReader BufferedReader
+        {
+            get { return bufferedReader; }
+        }
+
+        [IgnoreDataMember]
         protected internal TextWriter TextWriter
         {
             get { return outputWriter; }
@@ -194,6 +220,8 @@ namespace Jhu.Graywulf.Format
 
                 this.ownsInputReader = true;
             }
+
+            this.bufferedReader = new BufferedTextReader(inputReader);
         }
 
         protected override void OpenForWrite()
@@ -227,6 +255,8 @@ namespace Jhu.Graywulf.Format
 
             inputReader = null;
             ownsInputReader = false;
+
+            bufferedReader = null;
 
             if (ownsOutputWriter && outputWriter != null)
             {

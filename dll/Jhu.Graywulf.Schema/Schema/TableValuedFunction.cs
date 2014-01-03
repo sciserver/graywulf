@@ -16,12 +16,16 @@ namespace Jhu.Graywulf.Schema
     [DataContract(Namespace = "")]
     public class TableValuedFunction : DatabaseObject, IColumns, IParameters, ICloneable
     {
+        [NonSerialized]
         private LazyProperty<ConcurrentDictionary<string, Column>> columns;
+
+        [NonSerialized]
         private LazyProperty<ConcurrentDictionary<string, Parameter>> parameters;
 
         /// <summary>
         /// Gets or sets the name of the table-valued function
         /// </summary>
+        [IgnoreDataMember]
         public string FunctionName
         {
             get { return ObjectName; }
@@ -31,6 +35,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets the column collection
         /// </summary>
+        [IgnoreDataMember]
         public ConcurrentDictionary<string, Column> Columns
         {
             get { return columns.Value; }
@@ -39,6 +44,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets the parameter collection
         /// </summary>
+        [IgnoreDataMember]
         public ConcurrentDictionary<string, Parameter> Parameters
         {
             get { return parameters.Value; }

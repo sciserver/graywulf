@@ -2,15 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Format
 {
+    [Serializable]
+    [DataContract(Namespace="")]
     public class DelimitedTextDataFileBlock : TextDataFileBlockBase, ICloneable
     {
+        [IgnoreDataMember]
         private DelimitedTextDataFile File
         {
             get { return (DelimitedTextDataFile)file; }
+        }
+
+        #region Constructors and initializers
+
+        protected DelimitedTextDataFileBlock()
+        {
+            InitializeMembers();
         }
 
         public DelimitedTextDataFileBlock(DelimitedTextDataFile file)
@@ -38,6 +49,7 @@ namespace Jhu.Graywulf.Format
             return new DelimitedTextDataFileBlock(this);
         }
 
+        #endregion
         #region Column functions
 
         /// <summary>
@@ -95,7 +107,7 @@ namespace Jhu.Graywulf.Format
 
             while (true)
             {
-                line = TextBuffer.ReadLine();
+                line = File.BufferedReader.ReadLine();
 
                 if (line == null)
                 {
@@ -125,7 +137,7 @@ namespace Jhu.Graywulf.Format
                 {
                     if (inquote && ci == line.Length)   // Inside a quote and end of line reached
                     {
-                        line = TextBuffer.ReadLine();
+                        line = File.BufferedReader.ReadLine();
 
                         if (line == null)
                         {

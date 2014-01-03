@@ -5,6 +5,8 @@ using System.Text;
 using System.Data;
 using System.IO;
 using System.Xml;
+using System.Xml.Serialization;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.IO;
 
@@ -14,6 +16,7 @@ namespace Jhu.Graywulf.Format
     /// Provides basic support for file-based DataReader implementations.
     /// </summary>
     [Serializable]
+    [DataContract(Namespace="")]
     public abstract class DataFileBase : IDisposable, ICloneable
     {
         #region Private member variables
@@ -38,26 +41,31 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Type name of the stream factory to use when opening the stream automatically.
         /// </summary>
+        [NonSerialized]
         private string streamFactoryType;
 
         /// <summary>
         /// Read or write
         /// </summary>
+        [NonSerialized]
         private DataFileMode fileMode;
 
         /// <summary>
         /// Uri to the file. If set, the class can open it internally.
         /// </summary>
+        [NonSerialized]
         private Uri uri;
 
         /// <summary>
         /// Determines if an identity column is automatically generated.
         /// </summary>
+        [NonSerialized]
         private bool generateIdentityColumn;
 
         /// <summary>
         /// Stores the block of the file, as they are read from the input
         /// </summary>
+        [NonSerialized]
         private List<DataFileBlockBase> blocks;
 
         /// <summary>
@@ -68,6 +76,7 @@ namespace Jhu.Graywulf.Format
         /// predefined by the user or automatically generated as new
         /// blocks are discovered while reading the file.
         /// </remarks>
+        [NonSerialized]
         private int blockCounter;
 
 
@@ -91,6 +100,7 @@ namespace Jhu.Graywulf.Format
         /// Gets or sets the name of the stream factory type to
         /// use when opening the base stream automatically.
         /// </summary>
+        [DataMember]
         public string StreamFactoryType
         {
             get { return streamFactoryType; }
@@ -116,6 +126,7 @@ namespace Jhu.Graywulf.Format
         /// <remarks>
         /// For archives, use relative URI
         /// </remarks>
+        [DataMember]
         public Uri Uri
         {
             get { return uri; }
@@ -130,6 +141,7 @@ namespace Jhu.Graywulf.Format
         /// Gets or sets if an identity column is to be generated automatically
         /// when reading tables from a file.
         /// </summary>
+        [DataMember]
         public bool GenerateIdentityColumn
         {
             get { return generateIdentityColumn; }
@@ -149,6 +161,13 @@ namespace Jhu.Graywulf.Format
         protected List<DataFileBlockBase> Blocks
         {
             get { return blocks; }
+        }
+
+        [DataMember(Name="Blocks")]
+        private DataFileBlockBase[] Blocks_ForXml
+        {
+            get { return blocks.ToArray(); }
+            set { blocks = new List<DataFileBlockBase>(value); }
         }
 
         /// <summary>
@@ -183,7 +202,7 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         protected DataFileBase()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         protected DataFileBase(DataFileBase old)
@@ -199,7 +218,7 @@ namespace Jhu.Graywulf.Format
         /// <param name="compression"></param>
         protected DataFileBase(Uri uri, DataFileMode fileMode)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
 
             this.uri = uri;
             this.fileMode = fileMode;
@@ -212,7 +231,7 @@ namespace Jhu.Graywulf.Format
         /// <param name="fileMode"></param>
         protected DataFileBase(Stream stream, DataFileMode fileMode)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
 
             OpenExternalStream(stream, fileMode);
         }
@@ -220,7 +239,8 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Initializes private members to their default values
         /// </summary>
-        private void InitializeMembers()
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
         {
             this.baseStream = null;
             this.ownsBaseStream = false;

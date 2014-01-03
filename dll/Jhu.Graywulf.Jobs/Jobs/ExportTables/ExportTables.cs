@@ -17,8 +17,8 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Jobs.ExportTables
 {
-    [DataContract]
     [Serializable]
+    [DataContract(Name = "ExportTables", Namespace = "")]
     public class ExportTables
     {
         private TableOrView[] sources;

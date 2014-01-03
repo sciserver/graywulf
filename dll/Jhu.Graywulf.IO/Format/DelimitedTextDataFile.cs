@@ -12,13 +12,19 @@ using Jhu.Graywulf.IO;
 namespace Jhu.Graywulf.Format
 {
     [Serializable]
+    [DataContract(Namespace="")]
     public class DelimitedTextDataFile : TextDataFileBase, IDisposable, ICloneable
     {
         [NonSerialized]
         private bool isFirstBlock;
 
+        [NonSerialized]
         private char comment;
+
+        [NonSerialized]
         private char quote;
+
+        [NonSerialized]
         private char separator;
 
         #region Properties
@@ -41,18 +47,21 @@ namespace Jhu.Graywulf.Format
             }
         }
 
+        [DataMember]
         public char Comment
         {
             get { return comment; }
             set { comment = value; }
         }
 
+        [DataMember]
         public char Quote
         {
             get { return quote; }
             set { quote = value; }
         }
 
+        [DataMember]
         public char Separator
         {
             get { return separator; }

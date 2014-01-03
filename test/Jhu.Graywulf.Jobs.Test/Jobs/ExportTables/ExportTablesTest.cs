@@ -31,9 +31,12 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
                 var format = FileFormatFactory.Create(null).GetFileFormatDescription(typeof(Jhu.Graywulf.Format.DelimitedTextDataFile).FullName);
 
+                var mydbds = user.GetUserDatabaseInstance(f.MyDBDatabaseVersion).GetDataset();
+
                 var source = new Jhu.Graywulf.Schema.Table()
                 {
-                    Dataset = user.GetUserDatabaseInstance(f.MyDBDatabaseVersion).GetDataset(),  // TODO: fix this
+                    Dataset = mydbds,  // TODO: fix this
+                    DatabaseName = mydbds.DatabaseName,
                     SchemaName = schemaName,
                     TableName = tableName
                 };
@@ -59,6 +62,20 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
             var sc = new Jhu.Graywulf.Activities.SerializableChecker();
             Assert.IsTrue(sc.Execute(t));
+        }
+
+        [TestMethod]
+        public void ExportTablesXmlTest()
+        {
+            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            {
+                var path = String.Format(@"\\{0}\{1}.csv.zip", Jhu.Graywulf.Test.Constants.Localhost, Jhu.Graywulf.Test.Constants.TestDirectory);
+                var guid = ScheduleExportTableJob("dbo", "testtable", path, QueueType.Long);
+
+                var ji = LoadJob(guid);
+
+                var xml = ji.Parameters["Parameters"].XmlValue;
+            }
         }
 
         /// <summary>

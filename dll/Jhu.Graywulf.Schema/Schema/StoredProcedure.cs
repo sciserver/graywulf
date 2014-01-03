@@ -13,13 +13,16 @@ namespace Jhu.Graywulf.Schema
     /// Reflects a stored procedure
     /// </summary>
     [Serializable]
+    [DataContract(Namespace="")]
     public class StoredProcedure : DatabaseObject, IParameters, ICloneable
     {
+        [NonSerialized]
         private LazyProperty<ConcurrentDictionary<string, Parameter>> parameters;
 
         /// <summary>
         /// Gets or sets the name of the stored procedure
         /// </summary>
+        [IgnoreDataMember]
         public string ProcedureName
         {
             get { return ObjectName; }
@@ -29,6 +32,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets the parameter collection
         /// </summary>
+        [IgnoreDataMember]
         public ConcurrentDictionary<string, Parameter> Parameters
         {
             get { return parameters.Value; }

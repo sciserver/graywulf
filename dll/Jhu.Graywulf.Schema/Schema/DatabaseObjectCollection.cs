@@ -10,7 +10,6 @@ namespace Jhu.Graywulf.Schema
 {
     public abstract partial class DatasetBase
     {
-
         /// <summary>
         /// Implements a synchronized collection to cache database objects
         /// of a dataset.

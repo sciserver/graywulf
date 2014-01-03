@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Schema.MySql
     [DataContract(Namespace = "")]
     public class MySqlDataset : DatasetBase
     {
-        [DataMember]
+        [IgnoreDataMember]
         public override string ProviderName
         {
             get { return Constants.MySqlProviderName; }

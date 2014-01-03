@@ -2,28 +2,38 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Schema
 {
     [Serializable]
+    [DataContract(Namespace="")]
     public class TableStatistics
     {
+        [NonSerialized]
         private long rowCount;
+
+        [NonSerialized]
         private long dataSpace;
+
+        [NonSerialized]
         private long indexSpace;
 
+        [DataMember]
         public long RowCount
         {
             get { return rowCount; }
             internal set { rowCount = value; }
         }
 
+        [DataMember]
         public long DataSpace
         {
             get { return dataSpace; }
             internal set { dataSpace = value; }
         }
 
+        [DataMember]
         public long IndexSpace
         {
             get { return indexSpace; }

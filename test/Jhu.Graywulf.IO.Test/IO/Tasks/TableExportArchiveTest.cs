@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.IO.Tasks
             Assert.IsTrue(File.Exists(zippath));
             File.Delete(zippath);
         }
-
+        
         [TestMethod]
         public void RemoteExportZipTest()
         {

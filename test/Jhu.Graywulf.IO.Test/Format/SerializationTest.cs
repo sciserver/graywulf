@@ -10,40 +10,25 @@ namespace Jhu.Graywulf.Format
     [TestClass]
     public class SerializationTest
     {
-        [TestMethod]
-        public void DelimitedTextDataFileSerializableTest()
-        {
-            var t = typeof(Jhu.Graywulf.Format.DelimitedTextDataFile);
 
+        private bool TestType(Type type)
+        {
             var sc = new Jhu.Graywulf.Activities.SerializableChecker();
-            Assert.IsTrue(sc.Execute(t));
+            return sc.Execute(type);
         }
 
         [TestMethod]
-        public void DelimitedTextDataFileBlockSerializableTest()
+        public void DelimitedTextDataFileSerializableTest()
         {
-            var t = typeof(Jhu.Graywulf.Format.DelimitedTextDataFileBlock);
-
-            var sc = new Jhu.Graywulf.Activities.SerializableChecker();
-            Assert.IsTrue(sc.Execute(t));
+            Assert.IsTrue(TestType(typeof(DelimitedTextDataFile)));
+            Assert.IsTrue(TestType(typeof(DelimitedTextDataFileBlock)));
         }
 
         [TestMethod]
         public void SqlServerNativeDataFileSerializableTest()
         {
-            var t = typeof(Jhu.Graywulf.Format.SqlServerNativeDataFile);
-
-            var sc = new Jhu.Graywulf.Activities.SerializableChecker();
-            Assert.IsTrue(sc.Execute(t));
-        }
-
-        [TestMethod]
-        public void SqlServerNativeDataFileBlockSerializableTest()
-        {
-            var t = typeof(Jhu.Graywulf.Format.SqlServerNativeDataFileBlock);
-
-            var sc = new Jhu.Graywulf.Activities.SerializableChecker();
-            Assert.IsTrue(sc.Execute(t));
+            Assert.IsTrue(TestType(typeof(SqlServerNativeDataFile)));
+            Assert.IsTrue(TestType(typeof(SqlServerNativeDataFileBlock)));
         }
     }
 }

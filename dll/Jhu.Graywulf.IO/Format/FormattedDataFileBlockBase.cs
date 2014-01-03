@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Globalization;
-using Jhu.Graywulf.Schema;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
+    [Serializable]
+    [DataContract(Namespace="")]
     public abstract class FormattedDataFileBlockBase : DataFileBlockBase, ICloneable
     {
         protected delegate bool ParserDelegate(string value, out object result);
@@ -20,19 +22,27 @@ namespace Jhu.Graywulf.Format
         [NonSerialized]
         private FormatterDelegate[] columnFormatters;
 
+        [IgnoreDataMember]
         protected ParserDelegate[] ColumnParsers
         {
             get { return columnParsers; }
         }
 
+        [IgnoreDataMember]
         protected FormatterDelegate[] ColumnFormatters
         {
             get { return columnFormatters; }
         }
 
+        [IgnoreDataMember]
         private FormattedDataFileBase File
         {
             get { return (FormattedDataFileBase)file; }
+        }
+
+        protected FormattedDataFileBlockBase()
+        {
+            InitializeMembers();
         }
 
         public FormattedDataFileBlockBase(FormattedDataFileBase file)

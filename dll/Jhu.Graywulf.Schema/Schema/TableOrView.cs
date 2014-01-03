@@ -13,12 +13,18 @@ namespace Jhu.Graywulf.Schema
     /// Contains information about a database table
     /// </summary>
     [Serializable]
+    [DataContract(Namespace="")]
     public abstract class TableOrView : DatabaseObject, IColumns, IIndexes, ICloneable
     {
         #region Property storage members and private variables
 
+        [NonSerialized]
         private LazyProperty<ConcurrentDictionary<string, Column>> columns;
+
+        [NonSerialized]
         private LazyProperty<ConcurrentDictionary<string, Index>> indexes;
+
+        [NonSerialized]
         private LazyProperty<TableStatistics> statistics;
 
         #endregion
@@ -105,8 +111,6 @@ namespace Jhu.Graywulf.Schema
             this.indexes = new LazyProperty<ConcurrentDictionary<string, Index>>(LoadIndexes);
             this.statistics = new LazyProperty<TableStatistics>(LoadStatistics);
         }
-
-        public abstract object Clone();
 
         private TableStatistics LoadStatistics()
         {

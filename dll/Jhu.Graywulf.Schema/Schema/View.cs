@@ -12,6 +12,7 @@ namespace Jhu.Graywulf.Schema
     /// Contains information about a database view
     /// </summary>
     [Serializable]
+    [DataContract(Namespace = "")]
     public class View : TableOrView, ICloneable
     {
         /// <summary>

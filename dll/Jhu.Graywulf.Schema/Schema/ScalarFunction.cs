@@ -14,13 +14,16 @@ namespace Jhu.Graywulf.Schema
     /// Reflects a scalar function
     /// </summary>
     [Serializable]
+    [DataContract(Namespace="")]
     public class ScalarFunction : DatabaseObject, IParameters, ICloneable
     {
+        [NonSerialized]
         private LazyProperty<ConcurrentDictionary<string, Parameter>> parameters;
 
         /// <summary>
         /// Gets or sets the name of the function
         /// </summary>
+        [IgnoreDataMember]
         public string FunctionName
         {
             get { return ObjectName; }
@@ -30,6 +33,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets the return type of the function
         /// </summary>
+        [IgnoreDataMember]
         public DataType ReturnType
         {
             get
@@ -41,6 +45,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets the parameter collection
         /// </summary>
+        [IgnoreDataMember]
         public ConcurrentDictionary<string, Parameter> Parameters
         {
             get

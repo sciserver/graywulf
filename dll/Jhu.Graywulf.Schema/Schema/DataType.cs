@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.Common;
+using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Schema
 {
     [Serializable]
+    [DataContract(Namespace = "")]
     public class DataType : ICloneable
     {
 
@@ -306,7 +308,6 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Length = 1,
                     MaxLength = 8000,
-                    HasLength = true,
                     IsVarLength = false
                 };
             }
@@ -326,7 +327,6 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Length = 1,
                     MaxLength = 8000,
-                    HasLength = true,
                     IsVarLength = true
                 };
             }
@@ -346,7 +346,6 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Length = -1,
                     MaxLength = -1,
-                    HasLength = true,
                     IsVarLength = true
                 };
             }
@@ -369,7 +368,6 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Length = -1,
                     MaxLength = -1,
-                    HasLength = false,
                     IsVarLength = true
                 };
             }
@@ -389,7 +387,6 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Length = 1,
                     MaxLength = 4000,
-                    HasLength = true,
                     IsVarLength = false
                 };
             }
@@ -409,7 +406,6 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Length = 1,
                     MaxLength = 4000,
-                    HasLength = true,
                     IsVarLength = true
                 };
             }
@@ -429,7 +425,6 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Length = -1,
                     MaxLength = -1,
-                    HasLength = true,
                     IsVarLength = true
                 };
             }
@@ -452,7 +447,6 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Length = -1,
                     MaxLength = -1,
-                    HasLength = false,
                     IsVarLength = true
                 };
             }
@@ -480,7 +474,6 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Length = 1,
                     MaxLength = 8000,
-                    HasLength = true,
                     IsVarLength = false
                 };
             }
@@ -500,7 +493,6 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Length = 1,
                     MaxLength = 8000,
-                    HasLength = true,
                     IsVarLength = true
                 };
             }
@@ -520,7 +512,6 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Length = -1,
                     MaxLength = -1,
-                    HasLength = true,
                     IsVarLength = true
                 };
             }
@@ -543,7 +534,6 @@ namespace Jhu.Graywulf.Schema
                     Precision = 0,
                     Length = -1,
                     MaxLength = -1,
-                    HasLength = false,
                     IsVarLength = true
                 };
             }
@@ -615,7 +605,7 @@ namespace Jhu.Graywulf.Schema
                     Scale = 0,
                     Precision = 3
                 };
-                
+
             }
         }
 
@@ -871,17 +861,17 @@ namespace Jhu.Graywulf.Schema
                     break;
                 case System.Data.SqlDbType.Structured:
                     throw new NotImplementedException();
-                    //dt = DataType.SqlStructured;
-                    //break;
+                //dt = DataType.SqlStructured;
+                //break;
                 case System.Data.SqlDbType.Udt:
                     throw new NotImplementedException();
-                    //dt = DataType.SqlUdt;
-                    //break;
+                //dt = DataType.SqlUdt;
+                //break;
                 default:
                     throw new NotImplementedException();
             }
 
-            if (dt.hasLength)
+            if (dt.HasLength)
             {
                 dt.Length = length;
             }
@@ -1006,7 +996,7 @@ namespace Jhu.Graywulf.Schema
                 // This is a .Net type, might not be supported by SqlServer
                 dt = Create(type, length);
             }
-            
+
             return dt;
         }
 
@@ -1016,71 +1006,79 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Type name
         /// </summary>
+        [NonSerialized]
         private string name;
 
         /// <summary>
         /// Corresponding .Net type
         /// </summary>
+        [NonSerialized]
         private Type type;
 
         /// <summary>
         /// Corresponding SqlServer type
         /// </summary>
+        [NonSerialized]
         private SqlDbType? sqlDbType;
 
         /// <summary>
         /// Size of the primitive type in bytes
         /// </summary>
+        [NonSerialized]
         private int byteSize;
 
         /// <summary>
         /// Scale (for decimal)
         /// </summary>
+        [NonSerialized]
         private byte scale;
 
         /// <summary>
         /// Precision (for decimal)
         /// </summary>
+        [NonSerialized]
         private byte precision;
 
         /// <summary>
         /// Size in bytes (for char and binary)
         /// </summary>
+        [NonSerialized]
         private int length;
-
-        /// <summary>
-        /// Has length (is char or binary)
-        /// </summary>
-        private bool hasLength;
 
         /// <summary>
         /// Maximum length in SQL Server, -1 means max
         /// </summary>
+        [NonSerialized]
         private int maxLength;
 
         /// <summary>
         /// Is length variable (char, binary vs varchar, varbinary)
         /// </summary>
+        [NonSerialized]
         private bool isVarLength;
 
         /// <summary>
         /// Is an array, currently no SQL Server support
         /// </summary>
+        [NonSerialized]
         private bool isSqlArray;
 
         /// <summary>
-        /// Length of array, (minimum size, if variable length)
+        /// Length of array, (not supported by SQL Server)
         /// </summary>
+        [NonSerialized]
         private int arrayLength;
 
         /// <summary>
         /// Is variable length array
         /// </summary>
+        [NonSerialized]
         private bool isVarArrayLength;
 
         /// <summary>
         /// Is type nullable
         /// </summary>
+        [NonSerialized]
         private bool isNullable;
 
         #endregion
@@ -1089,6 +1087,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets or sets the name of the data type.
         /// </summary>
+        [DataMember]
         public string Name
         {
             get { return name; }
@@ -1101,11 +1100,12 @@ namespace Jhu.Graywulf.Schema
         /// <remarks>
         /// Type name is returned in SQL Server format, e.g. nvarchar(50)
         /// </remarks>
+        [IgnoreDataMember]
         public string NameWithLength
         {
             get
             {
-                if (!hasLength)
+                if (!HasLength)
                 {
                     return name;
                 }
@@ -1123,15 +1123,24 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets the corresponding .Net type
         /// </summary>
+        [IgnoreDataMember]
         public Type Type
         {
             get { return type; }
             private set { type = value; }
         }
 
+        [DataMember]
+        private string Type_ForXml
+        {
+            get { return type != null ? type.FullName : null; }
+            set { type = value != null ? Type.GetType(value) : null; }
+        }
+
         /// <summary>
         /// Gets the corresponding SQL Server type
         /// </summary>
+        [DataMember]
         public SqlDbType? SqlDbType
         {
             get { return sqlDbType; }
@@ -1141,6 +1150,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets the size of the primitive type in bytes
         /// </summary>
+        [DataMember]
         public int ByteSize
         {
             get { return byteSize; }
@@ -1150,6 +1160,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets or sets the scale (for decimal values)
         /// </summary>
+        [DataMember]
         public byte Scale
         {
             get { return scale; }
@@ -1159,6 +1170,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets or sets the precision (for decimal values)
         /// </summary>
+        [DataMember]
         public byte Precision
         {
             get { return precision; }
@@ -1168,6 +1180,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets or sets the length of the type (for char, etc.)
         /// </summary>
+        [DataMember]
         public int Length
         {
             get { return length; }
@@ -1175,17 +1188,9 @@ namespace Jhu.Graywulf.Schema
         }
 
         /// <summary>
-        /// Gets if the type has a length parameter (char, binary, etc.)
-        /// </summary>
-        public bool HasLength
-        {
-            get { return hasLength; }
-            private set { hasLength = value; }
-        }
-
-        /// <summary>
         /// Gets if the length parameter is set to max (varchar(max), etc.)
         /// </summary>
+        [IgnoreDataMember]
         public bool IsMaxLength
         {
             get { return length == -1 || (long)length * byteSize > 8000; }
@@ -1194,6 +1199,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets the maximum length of the type, in SQL Server
         /// </summary>
+        [DataMember]
         public int MaxLength
         {
             get { return maxLength; }
@@ -1203,6 +1209,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets if the length is variable (varchar, varbinary, etc.)
         /// </summary>
+        [DataMember]
         public bool IsVarLength
         {
             get { return isVarLength; }
@@ -1212,6 +1219,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets if the type is an array.
         /// </summary>
+        [DataMember]
         public bool IsSqlArray
         {
             get { return isSqlArray; }
@@ -1219,8 +1227,9 @@ namespace Jhu.Graywulf.Schema
         }
 
         /// <summary>
-        /// Gets or sets the array size.
+        /// Gets or sets the maximum array size.
         /// </summary>
+        [DataMember]
         public int ArrayLength
         {
             get { return arrayLength; }
@@ -1230,6 +1239,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets or sets if the array is bounded
         /// </summary>
+        [DataMember]
         private bool IsVarArrayLength
         {
             get { return isVarArrayLength; }
@@ -1239,6 +1249,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets or sets whether the data type is nullable
         /// </summary>
+        [DataMember]
         public bool IsNullable
         {
             get { return isNullable; }
@@ -1248,14 +1259,65 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets if type is compatible with SQL Server
         /// </summary>
+        [IgnoreDataMember]
         public bool IsSqlServerCompatible
         {
             get { return sqlDbType.HasValue; }
         }
 
         /// <summary>
+        /// Gets if the type has a length parameter (char, binary, etc.)
+        /// </summary>
+        [IgnoreDataMember]
+        public bool HasLength
+        {
+            get
+            {
+                switch (sqlDbType)
+                {
+                    case System.Data.SqlDbType.BigInt:
+                    case System.Data.SqlDbType.Decimal:
+                    case System.Data.SqlDbType.Float:
+                    case System.Data.SqlDbType.Int:
+                    case System.Data.SqlDbType.Money:
+                    case System.Data.SqlDbType.Real:
+                    case System.Data.SqlDbType.SmallInt:
+                    case System.Data.SqlDbType.SmallMoney:
+                    case System.Data.SqlDbType.Bit:
+                    case System.Data.SqlDbType.Date:
+                    case System.Data.SqlDbType.DateTime:
+                    case System.Data.SqlDbType.DateTime2:
+                    case System.Data.SqlDbType.DateTimeOffset:
+                    case System.Data.SqlDbType.Image:
+                    case System.Data.SqlDbType.NText:
+                    case System.Data.SqlDbType.SmallDateTime:
+                    case System.Data.SqlDbType.Structured:
+                    case System.Data.SqlDbType.Text:
+                    case System.Data.SqlDbType.Time:
+                    case System.Data.SqlDbType.Timestamp:
+                    case System.Data.SqlDbType.TinyInt:
+                    case System.Data.SqlDbType.Udt:
+                    case System.Data.SqlDbType.UniqueIdentifier:
+                    case System.Data.SqlDbType.Variant:
+                    case System.Data.SqlDbType.Xml:
+                        return false;
+                    case System.Data.SqlDbType.Char:
+                    case System.Data.SqlDbType.VarChar:
+                    case System.Data.SqlDbType.NChar:
+                    case System.Data.SqlDbType.NVarChar:
+                    case System.Data.SqlDbType.Binary:
+                    case System.Data.SqlDbType.VarBinary:
+                        return true;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets if the corresponding SQL Server type is signed
         /// </summary>
+        [IgnoreDataMember]
         public bool IsSigned
         {
             get
@@ -1304,6 +1366,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets if the corresponding SQL Server type is integer
         /// </summary>
+        [IgnoreDataMember]
         public bool IsInteger
         {
             get
@@ -1349,6 +1412,8 @@ namespace Jhu.Graywulf.Schema
             }
         }
 
+        // TODO: add properties for HasPrecision and HasScale?
+
         #endregion
         #region Constructors and initializers
 
@@ -1371,7 +1436,6 @@ namespace Jhu.Graywulf.Schema
             this.scale = 0;
             this.precision = 0;
             this.length = 0;
-            this.hasLength = false;
             this.maxLength = 0;
             this.isVarLength = false;
             this.isSqlArray = false;
@@ -1389,7 +1453,6 @@ namespace Jhu.Graywulf.Schema
             this.scale = old.scale;
             this.precision = old.precision;
             this.length = old.length;
-            this.hasLength = old.hasLength;
             this.maxLength = old.maxLength;
             this.isVarLength = old.isVarLength;
             this.isSqlArray = old.isSqlArray;
@@ -1413,7 +1476,7 @@ namespace Jhu.Graywulf.Schema
             res &= this.type == other.type;
             res &= this.scale == other.scale;
             res &= this.precision == other.precision;
-            res &= !this.hasLength || (this.length == other.length);
+            res &= !this.HasLength || (this.length == other.length);
             res &= this.isNullable == other.isNullable;
 
             return res;
@@ -1421,7 +1484,7 @@ namespace Jhu.Graywulf.Schema
 
         public void CopyToSchemaTableRow(DataRow dr)
         {
-            if (hasLength)
+            if (HasLength)
             {
                 dr[SchemaTableColumn.ColumnSize] = this.length;
             }

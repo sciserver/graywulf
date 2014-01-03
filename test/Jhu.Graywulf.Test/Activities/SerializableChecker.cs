@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using System.Xml;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Activities
 {
@@ -29,7 +32,49 @@ namespace Jhu.Graywulf.Activities
             this.serializableTypes = new HashSet<Type>();
             this.nonserializableTypes = new Dictionary<Type, string>();
 
-            return CheckType(t, t.Name);
+            // Look for SerializableAttribute
+            var res = CheckType(t, t.Name);
+
+            // Try to serialize with NetDataContractSerializer
+
+            res &= TryNetDataContractSerializer(t);
+
+            return res;
+        }
+
+        private bool TryNetDataContractSerializer(Type type)
+        {
+            using (var m = new MemoryStream())
+            {
+                var w = XmlTextWriter.Create(
+                    m,
+                    new XmlWriterSettings()
+                    {
+                        Indent = true,
+                        Encoding = Encoding.Unicode,
+                        NamespaceHandling = NamespaceHandling.OmitDuplicates,
+                    });
+
+                var s = new NetDataContractSerializer(
+                    new StreamingContext(),
+                    int.MaxValue,
+                    false,
+                    System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple,
+                    null);
+
+                var o = Activator.CreateInstance(type, true);
+
+                s.WriteObject(w, o);
+                w.Flush();
+                w.Close();
+
+                // Don't forget to skip byte order mark
+                var buffer = m.ToArray();
+                var prelen = Encoding.Unicode.GetPreamble().Length;
+                var xml = System.Text.Encoding.Unicode.GetString(buffer, prelen, buffer.Length - prelen);
+            }
+
+            return true;
         }
 
         private bool CheckType(Type type, string fieldName)

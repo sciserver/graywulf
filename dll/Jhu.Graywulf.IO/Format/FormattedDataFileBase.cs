@@ -5,36 +5,65 @@ using System.Text;
 using System.Globalization;
 using System.IO;
 using System.Xml;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
     [Serializable]
+    [DataContract(Namespace = "")]
     public abstract class FormattedDataFileBase : DataFileBase, IDisposable, ICloneable
     {
+        [NonSerialized]
         private Encoding encoding;
+
+        [NonSerialized]
         private CultureInfo culture;
+
+        [NonSerialized]
         private NumberStyles numberStyle;
+
+        [NonSerialized]
         private DateTimeStyles dateTimeStyle;
 
+        [IgnoreDataMember]
         public Encoding Encoding
         {
             get { return encoding; }
             set { encoding = value; }
         }
 
+        [DataMember(Name="Encoding")]
+        private string Encoding_ForXml
+        {
+            get { return encoding != null ? encoding.WebName : null; }
+            set { encoding = value != null ? System.Text.Encoding.GetEncoding(value) : null; }
+        }
+
+        [IgnoreDataMember]
         public CultureInfo Culture
         {
             get { return culture; }
             set { culture = value; }
         }
 
+        [DataMember(Name="Culture")]
+        private string Culture_ForXml
+        {
+            get { return culture != null ? culture.Name : null; }
+            set { culture = value != null ? System.Globalization.CultureInfo.GetCultureInfo(value) : null; }
+        }
+
+        // TODO: remove this and add to column data type format instead
+        [IgnoreDataMember]
         public NumberStyles NumberStyle
         {
             get { return numberStyle; }
             set { numberStyle = value; }
         }
 
+        // TODO: remove this and add to column data type format instead
+        [IgnoreDataMember]
         public DateTimeStyles DateTimeStyle
         {
             get { return dateTimeStyle; }
@@ -43,7 +72,7 @@ namespace Jhu.Graywulf.Format
 
         protected FormattedDataFileBase()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         protected FormattedDataFileBase(FormattedDataFileBase old)
@@ -55,7 +84,7 @@ namespace Jhu.Graywulf.Format
         protected FormattedDataFileBase(Uri uri, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
             : base(uri, fileMode)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
 
             this.encoding = encoding;
             this.culture = culture;
@@ -64,13 +93,14 @@ namespace Jhu.Graywulf.Format
         protected FormattedDataFileBase(Stream stream, DataFileMode fileMode, Encoding encoding, CultureInfo culture)
             : base(stream, fileMode)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
 
             this.encoding = encoding;
             this.culture = culture;
         }
 
-        private void InitializeMembers()
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
         {
             this.encoding = null;
             this.culture = null;

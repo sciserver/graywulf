@@ -13,17 +13,28 @@ namespace Jhu.Graywulf.Schema
     /// Contains information about a generic database object
     /// </summary>
     [Serializable]
+    [DataContract(Namespace="")]
     public class DatabaseObject : ICacheable, ICloneable, IDatabaseObjectName
     {
+        [NonSerialized]
         private long cachedVersion;
 
+        [NonSerialized]
         private DatabaseObjectType objectType;
+
+        [NonSerialized]
         private DatasetBase dataset;
 
+        [NonSerialized]
         private string databaseName;
+
+        [NonSerialized]
         private string schemaName;
+
+        [NonSerialized]
         private string objectName;
 
+        [NonSerialized]
         private DatabaseObjectMetadata metadata;
 
         #region ICacheable implementation
@@ -163,6 +174,8 @@ namespace Jhu.Graywulf.Schema
             get { return dataset.IsObjectExisting(this); }
         }
 
+        #region Constructors and initializers
+
         /// <summary>
         /// Creates a new object with variables set to default values.
         /// </summary>
@@ -237,6 +250,17 @@ namespace Jhu.Graywulf.Schema
             this.objectName = old.objectName;
         }
 
+        /// <summary>
+        /// When overloaded in derived classes, returns a copy of the object
+        /// </summary>
+        /// <returns></returns>
+        public virtual object Clone()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
         public virtual string GetFullyResolvedName()
         {
             return dataset.GetObjectFullyResolvedName(this);
@@ -266,19 +290,6 @@ namespace Jhu.Graywulf.Schema
         {
             return GetFullyResolvedName();
         }
-
-        #region ICloneable Members
-
-        /// <summary>
-        /// When overloaded in derived classes, returns a copy of the object
-        /// </summary>
-        /// <returns></returns>
-        public virtual object Clone()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
 
         /// <summary>
         /// Loads all columns belonging to a table or view

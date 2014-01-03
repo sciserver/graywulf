@@ -10,7 +10,6 @@ namespace Jhu.Graywulf.Schema
 {
     public partial class SchemaManager
     {
-
         /// <summary>
         /// Implements a synchronized collection to cache database objects
         /// of a dataset.
