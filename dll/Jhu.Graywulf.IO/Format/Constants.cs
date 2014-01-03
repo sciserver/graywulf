@@ -9,5 +9,6 @@ namespace Jhu.Graywulf.Format
     public static class Constants
     {
         public const string FileExtensionCsv = ".csv";
+        public const string FileExtensionBcp = ".bcp";
     }
 }

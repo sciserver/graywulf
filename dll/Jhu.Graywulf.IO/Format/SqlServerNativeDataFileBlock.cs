@@ -160,10 +160,14 @@ namespace Jhu.Graywulf.Format
 
         private void WriteBulkInsertScript()
         {
+            var filename = Util.UriConverter.ToFileName(File.Uri);
+            // Strip the extension of the archive
+            filename = Path.GetFileNameWithoutExtension(filename);
+
             var sql = new StringBuilder();
 
             sql.AppendLine(String.Format("BULK INSERT [{0}]", "$tablename"));
-            sql.AppendLine(String.Format("FROM '{0}'", "table.dat"));
+            sql.AppendLine(String.Format("FROM '{0}'", filename));
             sql.AppendLine("WITH (DATAFILETYPE = 'native', TABLOCK)");
 
             WriteTextFileEntry("_insert.sql", sql.ToString());

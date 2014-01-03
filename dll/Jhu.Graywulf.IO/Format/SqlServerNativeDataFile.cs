@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Format
                 return new FileFormatDescription()
                 {
                     DisplayName = FileFormatNames.Jhu_Graywulf_Format_SqlServerNativeDataFile,
-                    DefaultExtension = Jhu.Graywulf.IO.Constants.FileExtensionZip,
+                    DefaultExtension = Constants.FileExtensionBcp,
                     CanRead = true,
                     CanWrite = true,
                     CanDetectColumnNames = true,
