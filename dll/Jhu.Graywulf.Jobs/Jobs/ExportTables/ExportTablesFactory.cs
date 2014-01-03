@@ -63,28 +63,28 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         {
             var job = GetInitializedJobInstance(queueName, comments);
 
-            path = Path.Combine(path, String.Format("{0}_{1}.{2}", Context.UserName, job.JobID, Jhu.Graywulf.IO.Constants.FileExtensionZip));
+            path = Path.Combine(path, String.Format("{0}_{1}{2}", Context.UserName, job.JobID, Jhu.Graywulf.IO.Constants.FileExtensionZip));
 
             var destinations = new DataFileBase[sources.Length];
             for (int i = 0; i < sources.Length; i++)
             {
                 var ff = FileFormatFactory.Create(Federation.AppSettings.FileFormatFactory);
 
-                var dest = ff.CreateFile(format);
-                dest.Uri = Util.UriConverter.FromFilePath(String.Format("{0}{1}", sources[i].ObjectName, format.DefaultExtension));
+                var destination = ff.CreateFile(format);
+                destination.Uri = Util.UriConverter.FromFilePath(String.Format("{0}{1}", sources[i].ObjectName, format.DefaultExtension));
 
                 // special initialization in case of a text file
                 // TODO: move this somewhere else, maybe web?
-                if (dest is TextDataFileBase)
+                if (destination is TextDataFileBase)
                 {
-                    var tf = (TextDataFileBase)dest;
+                    var tf = (TextDataFileBase)destination;
                     tf.Encoding = Encoding.ASCII;
                     tf.Culture = System.Globalization.CultureInfo.InvariantCulture;
                     tf.GenerateIdentityColumn = false;
                     tf.ColumnNamesInFirstLine = true;
                 }
 
-                destinations[i] = dest;
+                destinations[i] = destination;
             }
 
             var et = new ExportTables()

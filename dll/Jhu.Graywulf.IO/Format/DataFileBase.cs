@@ -418,12 +418,8 @@ namespace Jhu.Graywulf.Format
             if (IsArchive)
             {
                 // Determine file name form the archive's name
-                var filename = Util.UriConverter.ToFileName(uri);
-                
-                // Strip the extension of the archive
-                filename = Path.GetFileNameWithoutExtension(filename);
-
-                var entry = CreateArchiveEntry(filename, 0);
+                var filename = Util.UriConverter.ToFilePath(uri);
+                CreateArchiveEntry(filename, 0);
             }
         }
 
