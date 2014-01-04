@@ -39,9 +39,6 @@ namespace Jhu.Graywulf.Jobs.Query
         #region Member variables
 
         [NonSerialized]
-        private EntityProperty<DatabaseInstance> destinationDatabaseInstance;
-
-        [NonSerialized]
         private string partitioningTable;
         [NonSerialized]
         private string partitioningKey;
@@ -150,8 +147,6 @@ namespace Jhu.Graywulf.Jobs.Query
             this.tableStatistics = new List<TableReference>();
             this.partitions = new List<QueryPartitionBase>();
 
-            this.destinationDatabaseInstance = new EntityProperty<DatabaseInstance>();
-
             this.partitioningTable = null;
             this.partitioningKey = null;
         }
@@ -166,10 +161,8 @@ namespace Jhu.Graywulf.Jobs.Query
             this.sourceDatabaseVersionName = old.sourceDatabaseVersionName;
             this.statDatabaseVersionName = old.statDatabaseVersionName;
 
-            this.tableStatistics = new List<TableReference>();  // ***
+            this.tableStatistics = new List<TableReference>();  // *** TODO
             this.partitions = new List<QueryPartitionBase>(old.partitions.Select(p => (QueryPartitionBase)p.Clone()));
-
-            this.destinationDatabaseInstance = new EntityProperty<DatabaseInstance>(old.destinationDatabaseInstance);
 
             this.partitioningTable = old.partitioningTable;
             this.partitioningKey = old.partitioningKey;
@@ -183,13 +176,6 @@ namespace Jhu.Graywulf.Jobs.Query
             Parse(true);
             Interpret(true);
             Validate();
-        }
-
-        protected override void UpdateContext()
-        {
-            base.UpdateContext();
-
-            if (this.destinationDatabaseInstance != null) this.destinationDatabaseInstance.Context = Context;
         }
 
         protected override void FinishInterpret(bool forceReinitialize)
@@ -225,17 +211,6 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 this.Context = context;
                 UpdateContext();
-            }
-
-            switch (ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    break;
-                case ExecutionMode.Graywulf:
-                    LoadDestinationDatabaseInstance(forceReinitialize);
-                    break;
-                default:
-                    throw new NotImplementedException();
             }
 
             base.InitializeQueryObject(context, scheduler, forceReinitialize);
@@ -395,21 +370,6 @@ namespace Jhu.Graywulf.Jobs.Query
 
         #endregion
         #region Query execution functions
-
-        public void LoadDestinationDatabaseInstance(bool forceReinitialize)
-        {
-            if (destinationDatabaseInstance.IsEmpty || forceReinitialize)
-            {
-                var dd = (GraywulfDataset)destination.Dataset;
-                if (destinationDatabaseInstance.IsEmpty && !dd.DatabaseInstance.IsEmpty)
-                {
-                    dd.Context = Context;
-                    destinationDatabaseInstance.Value = dd.DatabaseInstance.Value;
-                }
-
-                destinationDatabaseInstance.Value.GetConnectionString();
-            }
-        }
 
         public virtual void CheckDestinationTable()
         {
