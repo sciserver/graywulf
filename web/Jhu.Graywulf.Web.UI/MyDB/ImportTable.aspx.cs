@@ -61,6 +61,31 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             return destination;
         }
 
+        private Uri GetUploadedFileUri()
+        {
+            // Now this is tricky here because we don't know anything about the
+            // file path format the browser sends us. Lets's assume it has a '/', '\' or ':'
+            // in the path before the file name, or if not, the whole string is
+            // a file name.
+
+            var filename = ImportedFile.PostedFile.FileName;
+            int i;
+
+            i = filename.LastIndexOf('/');
+            i = Math.Max(i, filename.LastIndexOf('\\'));
+            i = Math.Max(i, filename.LastIndexOf(':'));
+
+            if (i >= 0)
+            {
+                filename = filename.Substring(i + 1);
+            }
+
+            // TODO: test this method with all browses and various types
+            // containing fancy characters
+
+            return new Uri(filename, UriKind.Relative);
+        }
+
         private IO.Tasks.ImportTable CreateImporterSimple()
         {
             string filename, extension;
@@ -68,7 +93,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
             // Determine file format
             var format = FileFormatFactory.GetFileFormatDescription(
-                new Uri(ImportedFile.PostedFile.FileName),
+                GetUploadedFileUri(),
                 out filename,
                 out extension,
                 out compression);
@@ -89,6 +114,11 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         private IO.Tasks.ImportTable CreateImporterAdvanced()
         {
+            throw new NotImplementedException();
+
+            // TODO this simply needs more testing
+
+            /*
             var format = FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
             var source = FileFormatFactory.CreateFile(format);
 
@@ -105,6 +135,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                 Source = source,
                 Destination = destination
             };
+             * */
         }
 
         protected void RefreshForm()

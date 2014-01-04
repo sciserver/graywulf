@@ -26,7 +26,7 @@
                     </tr>
                 </table>
                 <p style="text-align: center">
-                    <asp:LinkButton runat="server" ID="ToggleDetails" OnClick="ToggleDetails_Click">advanced mode</asp:LinkButton>
+                    <asp:LinkButton runat="server" ID="ToggleDetails" OnClick="ToggleDetails_Click" Visible="false">advanced mode</asp:LinkButton>
                 </p>
                 <table runat="server" id="DetailsTable" class="FormTable" visible="false">
                     <tr>

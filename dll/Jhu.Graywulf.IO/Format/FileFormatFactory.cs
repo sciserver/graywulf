@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         protected void GetExtensionWithoutCompression(Uri uri, out string filename, out string extension, out DataFileCompression compressionMethod)
         {
-            var path = uri.PathAndQuery;    // This isn't always a file path, so it's the safest to do now
+            var path = Util.UriConverter.ToFilePath(uri);    // This isn't always a file path, so it's the safest to do now
             extension = Path.GetExtension(path);
 
             if (Jhu.Graywulf.IO.Constants.CompressionExtensions.ContainsKey(extension))
