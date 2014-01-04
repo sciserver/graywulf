@@ -182,8 +182,8 @@ namespace Jhu.Graywulf.Web
                 xml.LoadXml(job.Parameters["Query"].XmlValue);
 
                 jobDescription.Query = GetXmlInnerText(xml, "Query/QueryString");
-                jobDescription.SchemaName = GetXmlInnerText(xml, "Query/Destination/Table/SchemaName");
-                jobDescription.ObjectName = GetXmlInnerText(xml, "Query/Destination/Table/ObjectName");
+                jobDescription.SchemaName = GetXmlInnerText(xml, "Query/Destination/SchemaName");
+                jobDescription.ObjectName = GetXmlInnerText(xml, "Query/Destination/TableName");
             }
             else
             {
