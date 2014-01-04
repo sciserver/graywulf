@@ -150,6 +150,7 @@ namespace Jhu.Graywulf.Format
             dt.Columns.Add(SchemaTableColumn.IsUnique, typeof(bool));
             dt.Columns.Add(SchemaTableColumn.IsKey, typeof(bool));
             dt.Columns.Add(SchemaTableColumn.DataType, typeof(Type));
+            dt.Columns.Add("DataTypeName", typeof(string));
             dt.Columns.Add(SchemaTableColumn.AllowDBNull, typeof(bool));
             dt.Columns.Add(SchemaTableColumn.ProviderType, typeof(string));
             dt.Columns.Add(SchemaTableColumn.IsAliased, typeof(bool));
@@ -161,7 +162,6 @@ namespace Jhu.Graywulf.Format
             dt.Columns.Add(SchemaTableColumn.IsLong, typeof(bool));
             dt.Columns.Add(SchemaTableOptionalColumn.IsReadOnly, typeof(bool));
             dt.Columns.Add(SchemaTableOptionalColumn.ProviderSpecificDataType, typeof(string));
-            //dt.Columns.Add(SchemaTableColumn.DataTypeName, typeof(string));
 
             // Add column ID
             int q = 0;
@@ -185,6 +185,7 @@ namespace Jhu.Graywulf.Format
             dr[SchemaTableColumn.IsUnique] = col.IsIdentity;
             dr[SchemaTableColumn.IsKey] = col.IsIdentity;
             dr[SchemaTableColumn.DataType] = col.DataType.Type;
+            dr["DataTypeName"] = col.DataType.Name;
             dr[SchemaTableColumn.AllowDBNull] = col.DataType.IsNullable;
             dr[SchemaTableColumn.ProviderType] = col.DataType.Name;
             dr[SchemaTableColumn.IsAliased] = false;

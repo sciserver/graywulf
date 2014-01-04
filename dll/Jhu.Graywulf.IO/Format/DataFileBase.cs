@@ -91,9 +91,11 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Gets the stream that can be used to read data
         /// </summary>
+        [IgnoreDataMember]
         public virtual Stream BaseStream
         {
             get { return baseStream; }
+            set { baseStream = value; }
         }
 
         /// <summary>
@@ -110,6 +112,7 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Gets or sets file mode (read or write)
         /// </summary>
+        [IgnoreDataMember]
         public DataFileMode FileMode
         {
             get { return fileMode; }
@@ -158,6 +161,7 @@ namespace Jhu.Graywulf.Format
         /// will be created automatically during read/write with default settings
         /// and column.
         /// </remarks>
+        [IgnoreDataMember]
         protected List<DataFileBlockBase> Blocks
         {
             get { return blocks; }
@@ -173,6 +177,7 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Gets a reference to the current data file block.
         /// </summary>
+        [IgnoreDataMember]
         internal DataFileBlockBase CurrentBlock
         {
             get { return blocks[blockCounter]; }
@@ -181,6 +186,7 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Gets if the underlying data file is closed
         /// </summary>
+        [IgnoreDataMember]
         public virtual bool IsClosed
         {
             get { return baseStream == null; }
@@ -189,6 +195,7 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Gets if the underlying data file is an archive
         /// </summary>
+        [IgnoreDataMember]
         public bool IsArchive
         {
             get { return BaseStream is IArchiveOutputStream || BaseStream is IArchiveInputStream; }

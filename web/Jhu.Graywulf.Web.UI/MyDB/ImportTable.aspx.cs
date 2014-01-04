@@ -52,8 +52,8 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             GetUniqueTableName(schemaName, ref tableName);
 
             var destination = new DestinationTable(
-                MyDBDatabaseInstance.GetDataset(),
-                MyDBDatabaseInstance.DatabaseName,
+                MyDBDataset,
+                MyDBDataset.DatabaseName,
                 schemaName,
                 tableName,
                 Graywulf.Schema.TableInitializationOptions.Create);
@@ -75,8 +75,8 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
             var source = FileFormatFactory.CreateFile(format);
 
-            // TODO: check and delete if works source.Compression = compression;
-            source.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read);
+            source.BaseStream = ImportedFile.PostedFile.InputStream;
+            //source.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read);
 
             var destination = CreateDestination("dbo", filename.Replace(".", "_")); // TODO: get 'dbo' from dataset description
 
