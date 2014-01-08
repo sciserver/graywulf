@@ -8,12 +8,14 @@ using System.Data.Sql;
 // associated with an assembly.
 [assembly: AssemblyTitle("Jhu.Graywulf.Registry.Sql")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Jhu.Graywulf.Registry.Sql")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2012")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+/*
+[assembly: AssemblyConfiguration(Jhu.Graywulf.Constants.InfoConfiguration)]
+[assembly: AssemblyCompany(Jhu.Graywulf.Constants.InfoCompany)]
+[assembly: AssemblyProduct(Jhu.Graywulf.Constants.InfoProduct)]
+[assembly: AssemblyCopyright(Jhu.Graywulf.Constants.InfoCopyright)]
+[assembly: AssemblyTrademark(Jhu.Graywulf.Constants.InfoTrademark)]
+[assembly: AssemblyCulture(Jhu.Graywulf.Constants.InfoCulture)]
+ * */
 
 [assembly: ComVisible(false)]
 

@@ -1,5 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" Inherits="Jhu.Graywulf.Web.Admin.Controls.Footer" Codebehind="Footer.ascx.cs" %>
-&copy; 2012 The Johns Hopkins University - Department of Physics &amp; Astronomy
+<%= Jhu.Graywulf.Copyright.InfoCopyright %>
 |
 <a runat="server" id="Feedback" href="~/Feedback.aspx">feedback</a>
 |

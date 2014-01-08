@@ -47,12 +47,8 @@ namespace Jhu.Graywulf.ConfigUtil
 
         private static void PrintHeader()
         {
-            Console.WriteLine(
-@"JHU Graywulf Build Configuration Utility
-(c) 2008-2012 László Dobos dobos@pha.jhu.edu
-Department of Physics and Astronomy, The Johns Hopkins University
-
-");
+            Console.WriteLine("Graywulf Build Configuration Utility");
+            Console.WriteLine(Copyright.InfoCopyright);
         }
     }
 }

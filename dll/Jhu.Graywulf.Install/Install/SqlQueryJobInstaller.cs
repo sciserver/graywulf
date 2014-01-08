@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Install
                 Name = typeof(Jobs.Query.SqlQueryJob).Name,
                 System = federation.System,
                 WorkflowTypeName = typeof(Jobs.Query.SqlQueryJob).AssemblyQualifiedName,
-                Settings = Util.SaveSettings(new Dictionary<SqlQueryFactory.Settings, string>()
+                Settings = Jhu.Graywulf.Registry.Util.SaveSettings(new Dictionary<SqlQueryFactory.Settings, string>()
                 {
                     // TODO: update these in the query factory
                     {SqlQueryFactory.Settings.HotDatabaseVersionName, Registry.Constants.HotDatabaseVersionName},

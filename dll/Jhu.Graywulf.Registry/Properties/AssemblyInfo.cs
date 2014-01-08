@@ -7,12 +7,12 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("Jhu.Graywulf.Registry")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Jhu.Graywulf.Registry")]
-[assembly: AssemblyCopyright("Copyright ©  2012")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+[assembly: AssemblyConfiguration(Jhu.Graywulf.Copyright.InfoConfiguration)]
+[assembly: AssemblyCompany(Jhu.Graywulf.Copyright.InfoCompany)]
+[assembly: AssemblyProduct(Jhu.Graywulf.Copyright.InfoProduct)]
+[assembly: AssemblyCopyright(Jhu.Graywulf.Copyright.InfoCopyright)]
+[assembly: AssemblyTrademark(Jhu.Graywulf.Copyright.InfoTrademark)]
+[assembly: AssemblyCulture(Jhu.Graywulf.Copyright.InfoCulture)]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
