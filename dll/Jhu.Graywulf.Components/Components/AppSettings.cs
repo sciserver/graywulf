@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Components
     {
         private static object GetValue(string key)
         {
-            return ((NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf"))[key];
+            return ((NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf/Components"))[key];
         }
 
         public static string AssemblyPath

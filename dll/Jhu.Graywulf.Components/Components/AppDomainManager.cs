@@ -167,14 +167,22 @@ namespace Jhu.Graywulf.Components
         /// </remarks>
         private string FindDirectoryWithAssembly(AssemblyName assemblyName)
         {
+            // *** TODO: this might be wrong if we open another app domain from an
+            // app domain opened by the domain manager because relative paths
+            // might get incorrectly combined!
+
+            // Because base directory might be relative to the current path
+            // we have to combine it with the base path of the app domain
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, baseDirectory);
+
             // See if the binBasePath contains the required assembly
-            if (HasDirectoryAssembly(baseDirectory, assemblyName))
+            if (HasDirectoryAssembly(path, assemblyName))
             {
-                return baseDirectory;
+                return path;
             }
 
             // Check first level subdirectories
-            foreach (var dir in Directory.GetDirectories(baseDirectory))
+            foreach (var dir in Directory.GetDirectories(path))
             {
                 if (HasDirectoryAssembly(dir, assemblyName))
                 {
