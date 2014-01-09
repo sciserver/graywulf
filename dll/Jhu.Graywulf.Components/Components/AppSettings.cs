@@ -5,18 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Configuration;
 
-namespace Jhu.Graywulf.Activities
+namespace Jhu.Graywulf.Components
 {
     public static class AppSettings
     {
         private static object GetValue(string key)
         {
-            return ((NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf/Activities"))[key];
+            return ((NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf"))[key];
         }
 
-        public static string WorkflowAssemblyPath
+        public static string AssemblyPath
         {
-            get { return (string)GetValue("WorkflowAssemblyPath"); }
+            get { return (string)GetValue("AssemblyPath"); }
         }
     }
 }
