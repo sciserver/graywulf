@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Scheduler
     {
         private static string GetValue(string key)
         {
-            return (string)((NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf/Activities.Scheduler"))[key];
+            return (string)((NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf/Scheduler"))[key];
         }
 
         public static TimeSpan PollingInterval
@@ -66,7 +66,7 @@ namespace Jhu.Graywulf.Scheduler
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 EntityFactory ef = new EntityFactory(context);
-                ef.LoadEntity<Registry.Cluster>(Registry.Cluster.AppSettings.ClusterName);
+                ef.LoadEntity<Registry.Cluster>(Registry.AppSettings.ClusterName);
             }
         }
     }

@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Install
                 Name = typeof(Jobs.Query.SqlQueryJob).Name,
                 System = federation.System,
                 WorkflowTypeName = typeof(Jobs.Query.SqlQueryJob).AssemblyQualifiedName,
-                Settings = new JobDefinition.JobDefinitionSettings()
+                Settings = new SqlQueryJobSettings()
                 {
                     HotDatabaseVersionName = Registry.Constants.HotDatabaseVersionName,
                     StatDatabaseVersionName = Registry.Constants.StatDatabaseVersionName,

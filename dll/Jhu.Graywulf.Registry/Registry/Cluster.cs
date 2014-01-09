@@ -14,19 +14,6 @@ namespace Jhu.Graywulf.Registry
     /// </summary>
     public partial class Cluster : Entity
     {
-        public static class AppSettings
-        {
-            private static string GetValue(string key)
-            {
-                return (string)((NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf/Registry/Cluster"))[key];
-            }
-
-            public static string ClusterName
-            {
-                get { return GetValue("ClusterName"); }
-            }
-        }
-
         #region Validation Properties
         #endregion
         #region Navigation Properties

@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Scheduler
             {
                 Console.WriteLine("Graywulf scheduler is starting...");
 
-                QueueManager.Instance.Start(Jhu.Graywulf.Registry.Cluster.AppSettings.ClusterName, true);
+                QueueManager.Instance.Start(Jhu.Graywulf.Registry.AppSettings.ClusterName, true);
 
                 Console.WriteLine("                                  done.");
 
@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             AppSettings.RunSanityCheck();
 
-            QueueManager.Instance.Start(Jhu.Graywulf.Registry.Cluster.AppSettings.ClusterName, false);
+            QueueManager.Instance.Start(Jhu.Graywulf.Registry.AppSettings.ClusterName, false);
         }
 
         public static void StopDebug()

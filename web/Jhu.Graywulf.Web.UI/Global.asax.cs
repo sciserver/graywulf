@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Web.UI
             using (var context = Jhu.Graywulf.Registry.ContextManager.Instance.CreateContext(Registry.ConnectionMode.AutoOpen, Registry.TransactionMode.DirtyRead))
             {
                 var ef = new EntityFactory(context);
-                var federation = ef.LoadEntity<Federation>(Federation.AppSettings.FederationName);
+                var federation = ef.LoadEntity<Federation>(Registry.AppSettings.FederationName);
 
                 Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle] = federation.ShortTitle;
                 Application[Jhu.Graywulf.Web.Constants.ApplicatonLongTitle] = federation.LongTitle;

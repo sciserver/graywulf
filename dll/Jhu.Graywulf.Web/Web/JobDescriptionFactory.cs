@@ -25,7 +25,6 @@ namespace Jhu.Graywulf.Web
         private static Dictionary<Guid, string> exportJobDefinitions = null;
 
         private WebJobInstanceFactory jobFactory;
-        private QueryFactory queryFactory;
 
         public static HashSet<Guid> QueryJobDefinitionGuids
         {
@@ -77,14 +76,6 @@ namespace Jhu.Graywulf.Web
             InitializeMembers();
         }
 
-        public JobDescriptionFactory(Context context, QueryFactory queryFactory)
-            : base(context)
-        {
-            InitializeMembers();
-
-            this.queryFactory = queryFactory;
-        }
-
         private void InitializeMembers()
         {
             LoadJobDefinitions();
@@ -104,7 +95,7 @@ namespace Jhu.Graywulf.Web
                     exportJobDefinitions = new Dictionary<Guid, string>();
 
                     var ef = new EntityFactory(Context);
-                    var f = ef.LoadEntity<Federation>(Federation.AppSettings.FederationName);
+                    var f = ef.LoadEntity<Federation>(Jhu.Graywulf.Registry.AppSettings.FederationName);
 
                     f.LoadJobDefinitions(true);
 

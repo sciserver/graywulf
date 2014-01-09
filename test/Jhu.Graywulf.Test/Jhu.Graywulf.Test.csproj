@@ -120,11 +120,12 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Test</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy $(ProjectDir)..\..\util\eseutil.exe $(TargetDir)
-copy $(ProjectDir)..\..\util\ese.dll $(TargetDir)</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

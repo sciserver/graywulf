@@ -47,7 +47,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activities\AppSettings.cs" />
     <Compile Include="Activities\Checkpoint.cs" />
     <Compile Include="Activities\CheckpointDesigner.xaml.cs">
       <DependentUpon>CheckpointDesigner.xaml</DependentUpon>

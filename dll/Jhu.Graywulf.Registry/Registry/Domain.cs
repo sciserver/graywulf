@@ -16,20 +16,6 @@ namespace Jhu.Graywulf.Registry
     /// </summary>
     public partial class Domain : Entity
     {
-
-        public static class AppSettings
-        {
-            private static string GetValue(string key)
-            {
-                return (string)((NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf/Registry/Domain"))[key];
-            }
-
-            public static string DomainName
-            {
-                get { return GetValue("DomainName"); }
-            }
-        }
-
         public enum ReferenceType : int
         {
             StandardUserGroup = 1,

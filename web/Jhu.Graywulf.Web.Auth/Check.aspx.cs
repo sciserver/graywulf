@@ -19,8 +19,8 @@ namespace Jhu.Graywulf.Web.Auth
 
             Checks.Routines.Add(new EmailCheck(Domain.Email));
 
-            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.Cluster.AppSettings.ClusterName));
-            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.Domain.AppSettings.DomainName));
+            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.AppSettings.ClusterName));
+            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.AppSettings.DomainName));
         }
     }
 }

@@ -70,7 +70,7 @@ namespace Jhu.Graywulf.Parser.Test
 
                     Jhu.Graywulf.Schema.SchemaManager sm =
                         new Jhu.Graywulf.Schema.GraywulfSchemaManager(context,
-                            Jhu.Graywulf.Registry.Federation.AppSettings.FederationName);
+                            Jhu.Graywulf.Registry.AppSettings.FederationName);
 
 
                     // *** Add test datasets here

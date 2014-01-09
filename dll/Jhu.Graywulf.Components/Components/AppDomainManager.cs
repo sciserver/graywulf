@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Components
 
         private void InitializeMembers()
         {
-            this.baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            this.baseDirectory = Components.AppSettings.AssemblyPath;
             this.appDomains = new Dictionary<int, AppDomainHandle>();
         }
 
@@ -123,7 +123,7 @@ namespace Jhu.Graywulf.Components
 
             if (applicationBase == null)
             {
-                throw new FileNotFoundException("Assembly not found.");
+                throw new FileNotFoundException("Assembly not found.");     // *** TODO
             }
 
             return CreateAppDomain(applicationBase);

@@ -31,6 +31,12 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
+        public string this[string key]
+        {
+            get { return GetValue(key); }
+            set { SetValue(key, value); }
+        }
+
         public EntitySettings()
         {
             InitializeMembers();
@@ -91,7 +97,7 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
-        protected string GetValue(string key)
+        public string GetValue(string key)
         {
             if (items == null)
             {
@@ -101,7 +107,7 @@ namespace Jhu.Graywulf.Registry
             return null;
         }
 
-        protected void SetValue(string key, string value)
+        public void SetValue(string key, string value)
         {
             if (items == null)
             {

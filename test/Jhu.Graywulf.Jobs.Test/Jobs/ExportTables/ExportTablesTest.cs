@@ -27,11 +27,10 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 var user = SignInTestUser(context);
 
                 var ef = new EntityFactory(context);
-                var f = ef.LoadEntity<Federation>(Federation.AppSettings.FederationName);
+                var federation = ef.LoadEntity<Federation>(Registry.AppSettings.FederationName);
+                var format = FileFormatFactory.Create(federation.Settings.FileFormatFactory).GetFileFormatDescription(typeof(Jhu.Graywulf.Format.DelimitedTextDataFile).FullName);
 
-                var format = FileFormatFactory.Create(null).GetFileFormatDescription(typeof(Jhu.Graywulf.Format.DelimitedTextDataFile).FullName);
-
-                var mydbds = user.GetUserDatabaseInstance(f.MyDBDatabaseVersion).GetDataset();
+                var mydbds = user.GetUserDatabaseInstance(federation.MyDBDatabaseVersion).GetDataset();
 
                 var source = new Jhu.Graywulf.Schema.Table()
                 {
@@ -43,6 +42,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
                 var etf = new ExportTablesFactory(context);
                 var ji = etf.ScheduleAsJob(
+                    federation,
                     new TableOrView[] {source },
                     path,
                     format,

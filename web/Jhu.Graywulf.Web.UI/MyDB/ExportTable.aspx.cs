@@ -78,6 +78,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             var f = new Jhu.Graywulf.Jobs.ExportTables.ExportTablesFactory(RegistryContext);
             
             var job = f.ScheduleAsJob(
+                Federation,
                 new [] { table },
                 Jhu.Graywulf.Web.UI.AppSettings.ExportDir,
                 format,

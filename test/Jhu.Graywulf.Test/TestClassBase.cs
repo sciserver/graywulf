@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Test
             var ef = new EntityFactory(context);
             
             //var c = ef.LoadEntity<Cluster>(Cluster.AppSettings.ClusterName);
-            var d = ef.LoadEntity<Domain>(Domain.AppSettings.DomainName);
+            var d = ef.LoadEntity<Domain>(Registry.AppSettings.DomainName);
 
             var uu = new UserFactory(context);
             return uu.LoginUser(d, "test", "alma");
@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.Test
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var ef = new EntityFactory(context);
-                var jd = ef.LoadEntity<JobDefinition>(Cluster.AppSettings.ClusterName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
+                var jd = ef.LoadEntity<JobDefinition>(Registry.AppSettings.ClusterName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
 
                 var jf = new JobInstanceFactory(context);
                 foreach (var job in jf.FindJobInstances(Guid.Empty, Guid.Empty, new HashSet<Guid>() { jd.Guid }, JobExecutionState.Scheduled))
@@ -66,7 +66,7 @@ namespace Jhu.Graywulf.Test
                 SignInTestUser(context);
 
                 var ef = new EntityFactory(context);
-                var jd = ef.LoadEntity<JobDefinition>(Cluster.AppSettings.ClusterName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
+                var jd = ef.LoadEntity<JobDefinition>(Registry.AppSettings.ClusterName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
 
                 var queue = String.Format("Graywulf.Controller.Controller.{0}", queueType.ToString());
 
@@ -173,7 +173,7 @@ namespace Jhu.Graywulf.Test
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var ef = new EntityFactory(context);
-                var federation = ef.LoadEntity<Federation>(Federation.AppSettings.FederationName);
+                var federation = ef.LoadEntity<Federation>(Registry.AppSettings.FederationName);
                 var user = SignInTestUser(context);
                 var di = user.GetUserDatabaseInstance(federation.MyDBDatabaseVersion);
 

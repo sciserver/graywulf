@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 SignInTestUser(context);
 
                 var ef = new EntityFactory(context);
-                var jd = ef.LoadEntity<JobDefinition>(Cluster.AppSettings.ClusterName, typeof(MirrorDatabaseJob).Name);
+                var jd = ef.LoadEntity<JobDefinition>(Registry.AppSettings.ClusterName, typeof(MirrorDatabaseJob).Name);
 
                 var ji = jd.CreateJobInstance(queue, ScheduleType.Queued);
 

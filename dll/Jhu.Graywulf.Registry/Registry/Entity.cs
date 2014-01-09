@@ -402,6 +402,7 @@ namespace Jhu.Graywulf.Registry
         public EntitySettings Settings
         {
             get { return settings; }
+            set { settings = value; }
         }
 
         /// <summary>

@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Web.Auth
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var ef = new EntityFactory(context);
-                var domain = ef.LoadEntity<Domain>(Domain.AppSettings.DomainName);
+                var domain = ef.LoadEntity<Domain>(Registry.AppSettings.DomainName);
 
                 Application[Constants.ApplicationShortTitle] = domain.ShortTitle;
                 Application[Constants.ApplicatonLongTitle] = domain.LongTitle;

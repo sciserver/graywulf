@@ -17,8 +17,6 @@ namespace Jhu.Graywulf.Web.Admin
 
             Application[Web.Constants.ApplicationShortTitle] = "Graywulf admin";
             Application[Web.Constants.ApplicatonLongTitle] = "Graywulf admin interface";
-
-            Components.AppDomainManager.Instance.BaseDirectory = Activities.AppSettings.WorkflowAssemblyPath;
         }
 
         protected override void Session_Start(object sender, EventArgs e)

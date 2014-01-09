@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             return new Type[] { typeof(Jhu.Graywulf.Format.DelimitedTextDataFile) };
         }
 
-        public JobInstance ScheduleAsJob(TableOrView[] sources, string path, FileFormatDescription format, string queueName, string comments)
+        public JobInstance ScheduleAsJob(Federation federation, TableOrView[] sources, string path, FileFormatDescription format, string queueName, string comments)
         {
             var job = GetInitializedJobInstance(queueName, comments);
 
@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             var destinations = new DataFileBase[sources.Length];
             for (int i = 0; i < sources.Length; i++)
             {
-                var ff = FileFormatFactory.Create(Federation.AppSettings.FileFormatFactory);
+                var ff = FileFormatFactory.Create(federation.Settings.FileFormatFactory);
 
                 var destination = ff.CreateFile(format);
                 destination.Uri = Util.UriConverter.FromFilePath(String.Format("{0}{1}", sources[i].ObjectName, format.DefaultExtension));
@@ -93,8 +93,8 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 Destinations = destinations,
                 Archival = DataFileArchival.Zip,
                 Uri = Util.UriConverter.FromFilePath(path),
-                FileFormatFactoryType = Federation.AppSettings.FileFormatFactory,
-                StreamFactoryType = Federation.AppSettings.StreamFactory,
+                FileFormatFactoryType = federation.Settings.FileFormatFactory,
+                StreamFactoryType = federation.Settings.StreamFactory,
             };
 
             job.Parameters["Parameters"].SetValue(et);
@@ -105,7 +105,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         private JobInstance GetInitializedJobInstance(string queueName, string comments)
         {
             JobInstance job = CreateJobInstance(
-                String.Format("{0}.{1}", Federation.AppSettings.FederationName, typeof(ExportTablesJob).Name),
+                String.Format("{0}.{1}", Registry.AppSettings.FederationName, typeof(ExportTablesJob).Name),
                 queueName,
                 comments);
 

@@ -23,20 +23,22 @@ namespace Jhu.Graywulf.Web.UI
             Checks.Routines.Add(new UrlCheck(FormsAuthentication.LoginUrl));
             Checks.Routines.Add(new UrlCheck("Download", System.Net.HttpStatusCode.Forbidden)); // No directory browsing allowed
 
-            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.Cluster.AppSettings.ClusterName));
-            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.Domain.AppSettings.DomainName));
-            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.Federation.AppSettings.FederationName));
+            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.AppSettings.ClusterName));
+            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.AppSettings.DomainName));
+            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.AppSettings.FederationName));
 
-            Checks.Routines.Add(new AssemblyCheck(Path.Combine(Jhu.Graywulf.Activities.AppSettings.WorkflowAssemblyPath, "Jhu.Graywulf.Activities.dll")));
-            Checks.Routines.Add(new AssemblyCheck(Path.Combine(Jhu.Graywulf.Activities.AppSettings.WorkflowAssemblyPath, "Jhu.Graywulf.Components.dll")));
-            Checks.Routines.Add(new AssemblyCheck(Path.Combine(Jhu.Graywulf.Activities.AppSettings.WorkflowAssemblyPath, "Jhu.Graywulf.Format.dll")));
-            Checks.Routines.Add(new AssemblyCheck(Path.Combine(Jhu.Graywulf.Activities.AppSettings.WorkflowAssemblyPath, "Jhu.Graywulf.IO.dll")));
-            Checks.Routines.Add(new AssemblyCheck(Path.Combine(Jhu.Graywulf.Activities.AppSettings.WorkflowAssemblyPath, "Jhu.Graywulf.Jobs.dll")));
-            Checks.Routines.Add(new AssemblyCheck(Path.Combine(Jhu.Graywulf.Activities.AppSettings.WorkflowAssemblyPath, "Jhu.Graywulf.Logging.dll")));
-            Checks.Routines.Add(new AssemblyCheck(Path.Combine(Jhu.Graywulf.Activities.AppSettings.WorkflowAssemblyPath, "Jhu.Graywulf.Activities.dll")));
-            Checks.Routines.Add(new AssemblyCheck(Path.Combine(Jhu.Graywulf.Activities.AppSettings.WorkflowAssemblyPath, "Jhu.Graywulf.Registry.dll")));
-            Checks.Routines.Add(new AssemblyCheck(Path.Combine(Jhu.Graywulf.Activities.AppSettings.WorkflowAssemblyPath, "Jhu.Graywulf.Schema.dll")));
-            Checks.Routines.Add(new AssemblyCheck(Path.Combine(Jhu.Graywulf.Activities.AppSettings.WorkflowAssemblyPath, "Jhu.Graywulf.SqlParser.dll")));
+            var dir = Jhu.Graywulf.Components.AppSettings.AssemblyPath;
+
+            Checks.Routines.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Activities.dll")));
+            Checks.Routines.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Components.dll")));
+            Checks.Routines.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Format.dll")));
+            Checks.Routines.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.IO.dll")));
+            Checks.Routines.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Jobs.dll")));
+            Checks.Routines.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Logging.dll")));
+            Checks.Routines.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Activities.dll")));
+            Checks.Routines.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Registry.dll")));
+            Checks.Routines.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Schema.dll")));
+            Checks.Routines.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.SqlParser.dll")));
         }
     }
 }

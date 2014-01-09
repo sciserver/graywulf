@@ -18,5 +18,20 @@ namespace Jhu.Graywulf.Registry
         {
             get { return ConfigurationManager.ConnectionStrings["Jhu.Graywulf.Registry"].ConnectionString; }
         }
+
+        public static string ClusterName
+        {
+            get { return GetValue("ClusterName"); }
+        }
+
+        public static string DomainName
+        {
+            get { return GetValue("DomainName"); }
+        }
+
+        public static string FederationName
+        {
+            get { return GetValue("FederationName"); }
+        }
     }
 }

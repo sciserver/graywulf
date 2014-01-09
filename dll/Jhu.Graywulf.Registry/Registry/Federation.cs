@@ -16,31 +16,24 @@ namespace Jhu.Graywulf.Registry
     /// </summary>
     public partial class Federation : Entity
     {
-        public static class AppSettings
+        public class FederationSettings : EntitySettings
         {
-            private static string GetValue(string key)
-            {
-                return (string)((NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf/Registry/Federation"))[key];
-            }
-
-            public static string FederationName
-            {
-                get { return GetValue("FederationName"); }
-            }
-
-            public static string QueryFactory
+            public string QueryFactory
             {
                 get { return GetValue("QueryFactory"); }
+                set { SetValue("QueryFactory", value); }
             }
 
-            public static string FileFormatFactory
+            public string FileFormatFactory
             {
                 get { return GetValue("FileFormatFactory"); }
+                set { SetValue("FileFormatFactory", value); }
             }
 
-            public static string StreamFactory
+            public string StreamFactory
             {
                 get { return GetValue("StreamFactory"); }
+                set { SetValue("FileFormatFactory", value); }
             }
         }
 
@@ -62,6 +55,12 @@ namespace Jhu.Graywulf.Registry
 
         #endregion
         #region Member Access Properties
+
+        public new FederationSettings Settings
+        {
+            get { return (FederationSettings)settings; }
+            set { settings = value; }
+        }
 
         [DBColumn(Size = 50)]
         public string ShortTitle
@@ -306,6 +305,8 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
+            base.settings = new FederationSettings();
+
             base.EntityType = EntityType.Federation;
             base.EntityGroup = EntityGroup.Federation | EntityGroup.Layout | EntityGroup.Log | EntityGroup.Jobs | EntityGroup.Security;
 

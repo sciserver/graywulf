@@ -189,9 +189,6 @@ namespace Jhu.Graywulf.Scheduler
             e.UserData.Add("UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName));
             LogEvent(e);
 
-            // Initialize AppDomain manage
-            Components.AppDomainManager.Instance.BaseDirectory = Activities.AppSettings.WorkflowAssemblyPath;
-
             // *** TODO: error handling, and repeat a couple of times, then shut down with exception
 
             InitializeCluster(clusterName);

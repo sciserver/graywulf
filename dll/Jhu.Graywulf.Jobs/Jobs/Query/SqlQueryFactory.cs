@@ -19,19 +19,6 @@ namespace Jhu.Graywulf.Jobs.Query
     [Serializable]
     public class SqlQueryFactory : QueryFactory
     {
-        /*
-         * TODO: delete
-         * public enum Settings
-        {
-            HotDatabaseVersionName,
-            StatDatabaseVersionName,
-            DefaultSchemaName,
-            DefaultDatasetName,
-            DefaultTableName,
-            TemporarySchemaName,
-            LongQueryTimeout,
-        }*/
-
         public SqlQueryFactory()
             : base()
         {
@@ -86,31 +73,30 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected override void GetInitializedQuery_Graywulf(QueryBase query, string queryString, string outputTable)
         {
-            var federationname = Federation.AppSettings.FederationName;
-
             var ef = new EntityFactory(Context);
 
-            var federation = ef.LoadEntity<Federation>(federationname);
+            var federation = ef.LoadEntity<Federation>(Registry.AppSettings.FederationName);
+            var jd = ef.LoadEntity<JobDefinition>(Registry.AppSettings.FederationName, typeof(SqlQueryJob).Name);
 
-            var jd = ef.LoadEntity<JobDefinition>(federationname, typeof(SqlQueryJob).Name);
+            var settings = new SqlQueryJobSettings(jd.Settings);
 
             var user = new User(Context);
             user.Guid = Context.UserGuid;
             user.Load();
 
             query.ExecutionMode = ExecutionMode.Graywulf;
-            query.FederationReference.Name = federationname;
+            query.FederationReference.Name = Registry.AppSettings.FederationName;
             query.QueryString = queryString;
 
-            query.SourceDatabaseVersionName = jd.Settings.HotDatabaseVersionName;
-            query.StatDatabaseVersionName = jd.Settings.StatDatabaseVersionName;
-            
-            query.QueryTimeout = jd.Settings.QueryTimeout;
+            query.SourceDatabaseVersionName = settings.HotDatabaseVersionName;
+            query.StatDatabaseVersionName = settings.StatDatabaseVersionName;
+
+            query.QueryTimeout = settings.QueryTimeout;
 
             // Add MyDB as custom source
             var mydbds = new GraywulfDataset();
-            mydbds.Name = jd.Settings.DefaultDatasetName;
-            mydbds.DefaultSchemaName = jd.Settings.DefaultSchemaName;
+            mydbds.Name = settings.DefaultDatasetName;
+            mydbds.DefaultSchemaName = settings.DefaultSchemaName;
             mydbds.DatabaseInstance.Value = user.GetUserDatabaseInstance(federation.MyDBDatabaseVersion);
             mydbds.CacheSchemaConnectionString();
             mydbds.IsMutable = true;
@@ -123,7 +109,7 @@ namespace Jhu.Graywulf.Jobs.Query
             query.Destination = new DestinationTable(
                 mydbds,
                 mydbds.DatabaseName,
-                jd.Settings.DefaultSchemaName,
+                settings.DefaultSchemaName,
                 String.IsNullOrWhiteSpace(outputTable) ? "outputtable" : outputTable,
                 TableInitializationOptions.Drop | TableInitializationOptions.Create);
 
@@ -173,7 +159,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public override JobInstance ScheduleAsJob(QueryBase query, string queueName, string comments)
         {
             var job = CreateJobInstance(
-                String.Format("{0}.{1}", Federation.AppSettings.FederationName, typeof(SqlQueryJob).Name),
+                String.Format("{0}.{1}", Registry.AppSettings.FederationName, typeof(SqlQueryJob).Name),
                 queueName,
                 comments);
 

@@ -15,45 +15,6 @@ namespace Jhu.Graywulf.Registry
     /// </summary>
     public partial class JobDefinition : Entity
     {
-        public class JobDefinitionSettings : EntitySettings
-        {
-            public string HotDatabaseVersionName
-            {
-                get { return GetValue("HotDatabaseVersionName"); }
-                set { SetValue("HotDatabaseVersionName", value); }
-            }
-
-            public string StatDatabaseVersionName
-            {
-                get { return GetValue("StatDatabaseVersionName"); }
-                set { SetValue("StatDatabaseVersionName", value); }
-            }
-
-            public string DefaultDatasetName
-            {
-                get { return GetValue("DefaultDatasetName"); }
-                set { SetValue("DefaultDatasetName", value); }
-            }
-
-            public string DefaultSchemaName
-            {
-                get { return GetValue("DefaultSchemaName"); }
-                set { SetValue("DefaultSchemaName", value); }
-            }
-
-            public int QueryTimeout
-            {
-                get { return int.Parse(GetValue("QueryTimeout")); }
-                set { SetValue("QueryTimeout", value.ToString()); }
-            }
-        }
-
-        public new JobDefinitionSettings Settings
-        {
-            get { return (JobDefinitionSettings)settings; }
-            set { settings = value; }
-        }
-
         #region Member Variables
 
         // --- Background storage for properties ---

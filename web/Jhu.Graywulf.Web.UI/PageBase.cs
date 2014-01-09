@@ -19,12 +19,12 @@ namespace Jhu.Graywulf.Web.UI
 
         public FileFormatFactory FileFormatFactory
         {
-            get { return FileFormatFactory.Create(Federation.AppSettings.FileFormatFactory); }
+            get { return FileFormatFactory.Create(this.Federation.Settings.FileFormatFactory); }
         }
 
         public StreamFactory StreamFactory
         {
-            get { return StreamFactory.Create(Federation.AppSettings.StreamFactory); }
+            get { return StreamFactory.Create(Federation.Settings.StreamFactory); }
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Web.UI
             {
                 if (schemaManager == null)
                 {
-                    schemaManager = new GraywulfSchemaManager(RegistryContext, Jhu.Graywulf.Registry.Federation.AppSettings.FederationName);
+                    schemaManager = new GraywulfSchemaManager(RegistryContext, Jhu.Graywulf.Registry.AppSettings.FederationName);
 
                     // Load datasets from the federation
                     if (schemaManager.Datasets.IsEmpty)

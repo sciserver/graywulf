@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.Web
                 if (domain == null)
                 {
                     var ef = new EntityFactory(RegistryContext);
-                    domain = ef.LoadEntity<Domain>(Domain.AppSettings.DomainName);
+                    domain = ef.LoadEntity<Domain>(Registry.AppSettings.DomainName);
                 }
 
                 return domain;
@@ -88,7 +88,7 @@ namespace Jhu.Graywulf.Web
                 if (federation == null)
                 {
                     var ef = new EntityFactory(RegistryContext);
-                    federation = ef.LoadEntity<Federation>(Federation.AppSettings.FederationName);
+                    federation = ef.LoadEntity<Federation>(Registry.AppSettings.FederationName);
                 }
 
                 return federation;

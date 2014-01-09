@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
         protected void jobDataSource_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
         {
             RegistryContext.TransactionMode = Registry.TransactionMode.DirtyRead;
-            var factory = new JobDescriptionFactory(RegistryContext, QueryFactory.Create(RegistryContext));
+            var factory = new JobDescriptionFactory(RegistryContext);
             e.ObjectInstance = factory;
 
             switch (multiView.ActiveViewIndex)

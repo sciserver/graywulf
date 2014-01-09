@@ -24,10 +24,11 @@ namespace Jhu.Graywulf.Jobs.Query
     {
         #region Static members
 
-        public static QueryFactory Create(Context context)
+        public static QueryFactory Create(Federation federation)
         {
-            var ft = Type.GetType(Federation.AppSettings.QueryFactory);
-            return (QueryFactory)Activator.CreateInstance(ft, context);
+            // Load federation and get query factory name from settings
+            var ft = Type.GetType(federation.Settings.QueryFactory);
+            return (QueryFactory)Activator.CreateInstance(ft, federation.Context);
         }
 
         #endregion

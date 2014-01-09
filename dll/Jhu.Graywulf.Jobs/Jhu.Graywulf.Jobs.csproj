@@ -129,6 +129,7 @@
     <Compile Include="Jobs\Query\SqlQueryJob.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Jobs\Query\SqlQueryJobSettings.cs" />
     <Compile Include="Jobs\Query\SqlQueryPartition.cs">
       <SubType>Code</SubType>
     </Compile>
