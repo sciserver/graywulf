@@ -40,6 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandLineParser\ArgumentParser.cs" />
+    <Compile Include="CommandLineParser\ArgumentParserException.cs" />
+    <Compile Include="CommandLineParser\ExceptionMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="CommandLineParser\OptionAttribute.cs" />
+    <Compile Include="CommandLineParser\ParameterAttribute.cs" />
+    <Compile Include="CommandLineParser\PartialStringComparer.cs" />
+    <Compile Include="CommandLineParser\VerbAttribute.cs" />
     <Compile Include="Components\AppDomainHelper.cs" />
     <Compile Include="Components\AppDomainManager.cs" />
     <Compile Include="Components\AssemblyNameComparer.cs" />
@@ -57,6 +68,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\DeepCopyUtil.cs" />
     <Compile Include="Util\UriConverter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CommandLineParser\ExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
