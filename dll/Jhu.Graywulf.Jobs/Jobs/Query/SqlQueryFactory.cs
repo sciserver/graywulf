@@ -19,7 +19,9 @@ namespace Jhu.Graywulf.Jobs.Query
     [Serializable]
     public class SqlQueryFactory : QueryFactory
     {
-        public enum Settings
+        /*
+         * TODO: delete
+         * public enum Settings
         {
             HotDatabaseVersionName,
             StatDatabaseVersionName,
@@ -28,7 +30,7 @@ namespace Jhu.Graywulf.Jobs.Query
             DefaultTableName,
             TemporarySchemaName,
             LongQueryTimeout,
-        }
+        }*/
 
         public SqlQueryFactory()
             : base()
@@ -96,23 +98,19 @@ namespace Jhu.Graywulf.Jobs.Query
             user.Guid = Context.UserGuid;
             user.Load();
 
-            // Load settings
-            // **** TODO: this always takes settings from SqlQueryJob!!
-            var settings = Jhu.Graywulf.Registry.Util.LoadSettings<Settings>(jd.Settings);
-
             query.ExecutionMode = ExecutionMode.Graywulf;
             query.FederationReference.Name = federationname;
             query.QueryString = queryString;
 
-            query.SourceDatabaseVersionName = settings[Settings.HotDatabaseVersionName];
-            query.StatDatabaseVersionName = settings[Settings.StatDatabaseVersionName];
+            query.SourceDatabaseVersionName = jd.Settings.HotDatabaseVersionName;
+            query.StatDatabaseVersionName = jd.Settings.StatDatabaseVersionName;
             
-            query.QueryTimeout = int.Parse(settings[Settings.LongQueryTimeout]);
+            query.QueryTimeout = jd.Settings.QueryTimeout;
 
             // Add MyDB as custom source
             var mydbds = new GraywulfDataset();
-            mydbds.Name = settings[Settings.DefaultDatasetName];
-            mydbds.DefaultSchemaName = settings[Settings.DefaultSchemaName];
+            mydbds.Name = jd.Settings.DefaultDatasetName;
+            mydbds.DefaultSchemaName = jd.Settings.DefaultSchemaName;
             mydbds.DatabaseInstance.Value = user.GetUserDatabaseInstance(federation.MyDBDatabaseVersion);
             mydbds.CacheSchemaConnectionString();
             mydbds.IsMutable = true;
@@ -125,24 +123,23 @@ namespace Jhu.Graywulf.Jobs.Query
             query.Destination = new DestinationTable(
                 mydbds,
                 mydbds.DatabaseName,
-                settings[Settings.DefaultSchemaName],
+                jd.Settings.DefaultSchemaName,
                 String.IsNullOrWhiteSpace(outputTable) ? "outputtable" : outputTable,
                 TableInitializationOptions.Drop | TableInitializationOptions.Create);
 
             // Set up temporary database
             var tempds = new GraywulfDataset();
+            tempds.Name = Registry.Constants.TempDbName;
             tempds.IsOnLinkedServer = false;
             tempds.DatabaseVersion.Value = federation.TempDatabaseVersion;
             query.TemporaryDataset = tempds;
-            query.TemporaryDataset.DefaultSchemaName = settings[Settings.TemporarySchemaName];
 
             // Set up code database
             var codeds = new GraywulfDataset();
-            codeds.Name = "Code";   //  *** TODO
+            codeds.Name = Registry.Constants.CodeDbName;
             codeds.IsOnLinkedServer = false;
             codeds.DatabaseVersion.Value = federation.CodeDatabaseVersion;
             query.CodeDataset = codeds;
-            query.CodeDataset.DefaultSchemaName = "dbo";    // *** TODO
         }
 
         protected override void GetInitializedQuery_SingleServer(QueryBase query, string queryString, string outputTable, SqlServerDataset mydbds, SqlServerDataset tempds, SqlServerDataset codeds)

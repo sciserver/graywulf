@@ -129,6 +129,7 @@ namespace Jhu.Graywulf.Registry
             return res;
         }
 
+        /* TODO: delete
         public static Dictionary<K, string> LoadSettings<K>(string settings)
         {
             var xml = new XmlDocument();
@@ -145,7 +146,9 @@ namespace Jhu.Graywulf.Registry
 
             return res;
         }
+         * */
 
+        /* TODO: delete
         public static string SaveSettings(IDictionary settings)
         {
             var xml = new XmlDocument();
@@ -162,6 +165,7 @@ namespace Jhu.Graywulf.Registry
 
             return xml.InnerXml;
         }
+         * */
 
         public static void RunSqlServerDiagnostics(string connectionString, DiagnosticMessage message)
         {

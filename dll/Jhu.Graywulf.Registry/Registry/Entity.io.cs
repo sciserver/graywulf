@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Registry
             this.userGuidModified = dr.GetGuid(++o);
             this.dateDeleted = dr.IsDBNull(++o) ? DateTime.MinValue : dr.GetDateTime(o);
             this.userGuidDeleted = dr.IsDBNull(++o) ? Guid.Empty : dr.GetGuid(o);
-            this.settings = dr.GetString(++o);
+            this.settings.XmlText = dr.GetString(++o);
             this.comments = dr.GetString(++o);
 
             DBHelpers[this.GetType()].LoadFromDataReader(this, dr, ++o);
@@ -286,7 +286,7 @@ namespace Jhu.Graywulf.Registry
             cmd.Parameters.Add("@DeploymentState", SqlDbType.Int).Value = deploymentState;
             cmd.Parameters.Add("@DateCreated", SqlDbType.DateTime).Value = dateCreated;
             cmd.Parameters.Add("@DateModified", SqlDbType.DateTime).Value = dateModified;
-            cmd.Parameters.Add("@Settings", SqlDbType.NVarChar).Value = settings;
+            cmd.Parameters.Add("@Settings", SqlDbType.NVarChar).Value = settings.XmlText;
             cmd.Parameters.Add("@Comments", SqlDbType.NVarChar).Value = comments;
 
             // Process entity feferences

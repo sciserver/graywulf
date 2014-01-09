@@ -121,6 +121,7 @@
     <Compile Include="Registry\EntityProperty.cs" />
     <Compile Include="Registry\EntityReference.cs" />
     <Compile Include="Registry\EntityReferenceBase.cs" />
+    <Compile Include="Registry\EntitySettings.cs" />
     <Compile Include="Registry\Enum.cs" />
     <Compile Include="Registry\ExceptionMessages.Designer.cs">
       <DependentUpon>ExceptionMessages.resx</DependentUpon>

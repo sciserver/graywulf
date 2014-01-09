@@ -77,7 +77,7 @@ namespace Jhu.Graywulf.Registry
         private Guid userGuidModified;
         private DateTime dateDeleted;
         private Guid userGuidDeleted;
-        private string settings;
+        protected EntitySettings settings;
         private string comments;
 
         private EntityGroup entityGroup;
@@ -399,10 +399,9 @@ namespace Jhu.Graywulf.Registry
         /// <remarks>
         /// This property is for extendability purposes.
         /// </remarks>
-        public string Settings
+        public EntitySettings Settings
         {
             get { return settings; }
-            set { settings = value; }
         }
 
         /// <summary>
@@ -512,7 +511,7 @@ namespace Jhu.Graywulf.Registry
             this.userGuidModified = Guid.Empty;
             this.dateDeleted = DateTime.MinValue;
             this.userGuidDeleted = Guid.Empty;
-            this.settings = string.Empty;
+            //this.settings = new EntitySettings();
             this.comments = string.Empty;
 
             this.entityGroup = Registry.EntityGroup.None;
@@ -552,7 +551,7 @@ namespace Jhu.Graywulf.Registry
             this.userGuidModified = old.userGuidModified;
             this.dateDeleted = old.dateDeleted;
             this.userGuidDeleted = old.userGuidDeleted;
-            this.settings = old.settings;
+            //this.settings = new EntitySettings(old.settings);
             this.comments = old.comments;
 
             this.entityGroup = old.entityGroup;

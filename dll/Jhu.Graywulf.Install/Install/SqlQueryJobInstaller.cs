@@ -24,17 +24,14 @@ namespace Jhu.Graywulf.Install
                 Name = typeof(Jobs.Query.SqlQueryJob).Name,
                 System = federation.System,
                 WorkflowTypeName = typeof(Jobs.Query.SqlQueryJob).AssemblyQualifiedName,
-                Settings = Jhu.Graywulf.Registry.Util.SaveSettings(new Dictionary<SqlQueryFactory.Settings, string>()
+                Settings = new JobDefinition.JobDefinitionSettings()
                 {
-                    // TODO: update these in the query factory
-                    {SqlQueryFactory.Settings.HotDatabaseVersionName, Registry.Constants.HotDatabaseVersionName},
-                    {SqlQueryFactory.Settings.StatDatabaseVersionName, Registry.Constants.StatDatabaseVersionName},
-                    {SqlQueryFactory.Settings.DefaultSchemaName, Registry.Constants.DefaultSchemaName},
-                    {SqlQueryFactory.Settings.DefaultDatasetName, Registry.Constants.MyDbName},
-                    {SqlQueryFactory.Settings.DefaultTableName, "outputtable"}, // TODO
-                    {SqlQueryFactory.Settings.TemporarySchemaName, Registry.Constants.DefaultSchemaName},
-                    {SqlQueryFactory.Settings.LongQueryTimeout, "7200"},    // TODO
-                }),
+                    HotDatabaseVersionName = Registry.Constants.HotDatabaseVersionName,
+                    StatDatabaseVersionName = Registry.Constants.StatDatabaseVersionName,
+                    DefaultSchemaName = Registry.Constants.DefaultSchemaName,
+                    DefaultDatasetName = Registry.Constants.MyDbName,
+                    QueryTimeout = 7200,    // TODO
+                }
             };
             jd.Save();
         }
