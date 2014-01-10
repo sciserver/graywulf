@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.Format
         [TestMethod]
         public void SimpleWriterAllTypesTest()
         {
-            var uri = new Uri("SimpleWriterAllTypesTest_SimpleWriterAllTypesTest.dat.zip", UriKind.Relative);
+            var uri = new Uri("SqlServerNativeDataFileWriterTest_SimpleWriterAllTypesTest.dat.zip", UriKind.Relative);
 
             using (var nat = new SqlServerNativeDataFile(uri, DataFileMode.Write))
             {
@@ -83,7 +83,7 @@ namespace Jhu.Graywulf.Format
         [TestMethod]
         public void SimpleWriterAllTypesNullableTest()
         {
-            var uri = new Uri("SimpleWriterAllTypesTest_SimpleWriterAllTypesNullableTest.dat.zip", UriKind.Relative);
+            var uri = new Uri("SqlServerNativeDataFileWriterTest_SimpleWriterAllTypesNullableTest.dat.zip", UriKind.Relative);
 
             using (var nat = new SqlServerNativeDataFile(uri, DataFileMode.Write))
             {

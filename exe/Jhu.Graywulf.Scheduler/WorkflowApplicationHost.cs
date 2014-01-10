@@ -109,6 +109,7 @@ namespace Jhu.Graywulf.Scheduler
 
         #region AppDomain event handlers
 
+        //*** TODO: move this to an appdomainhelper class
         void ad_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             // **** TODO: handle app domain level exception here
