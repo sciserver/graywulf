@@ -753,21 +753,17 @@
 
 REM Create symlinks to directories under shared
 
-IF EXIST $(ProjectDir)App_Masters GOTO NO_App_Masters
+IF EXIST $(ProjectDir)App_Masters rmdir $(ProjectDir)App_Masters
 mklink /D $(ProjectDir)App_Masters $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Masters
-:NO_App_Masters
 
-IF EXIST $(ProjectDir)App_Themes GOTO NO_App_Themes
+IF EXIST $(ProjectDir)App_Themes rmdir $(ProjectDir)App_Themes
 mklink /D $(ProjectDir)App_Themes $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Themes
-:NO_App_Themes
 
-IF EXIST $(ProjectDir)Templates GOTO NO_Templates
+IF EXIST $(ProjectDir)Templates rmdir $(ProjectDir)Templates
 mklink /D $(ProjectDir)Templates $(ProjectDir)..\Jhu.Graywulf.Web.Shared\Templates
-:NO_Templates
 
-IF EXIST $(ProjectDir)Docs\pages GOTO NO_pages
+IF EXIST $(ProjectDir)Docs\pages rmdir $(ProjectDir)Docs\pages
 mklink /D $(ProjectDir)Docs\pages $(SolutionDir)docs\pages
-:NO_pages
 </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
