@@ -56,6 +56,7 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
         public new FederationSettings Settings
         {
             get { return (FederationSettings)settings; }

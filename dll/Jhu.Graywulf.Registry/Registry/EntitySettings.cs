@@ -65,14 +65,15 @@ namespace Jhu.Graywulf.Registry
         {
             items = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
-            // TODO: what if xmltext's empty?
-
-            var xml = new XmlDocument();
-            xml.LoadXml(xmltext);
-
-            foreach (XmlNode node in xml.DocumentElement.ChildNodes)
+            if (!String.IsNullOrEmpty(xmltext))
             {
-                items.Add(node.Name, node.Attributes["value"].Value);
+                var xml = new XmlDocument();
+                xml.LoadXml(xmltext);
+
+                foreach (XmlNode node in xml.DocumentElement.ChildNodes)
+                {
+                    items.Add(node.Name, node.Attributes["value"].Value);
+                }
             }
         }
 
@@ -104,7 +105,7 @@ namespace Jhu.Graywulf.Registry
                 LoadItems();
             }
 
-            return null;
+            return items[key];
         }
 
         public void SetValue(string key, string value)

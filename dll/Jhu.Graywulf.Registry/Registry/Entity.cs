@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using System.IO;
 
@@ -399,10 +400,18 @@ namespace Jhu.Graywulf.Registry
         /// <remarks>
         /// This property is for extendability purposes.
         /// </remarks>
+        [XmlIgnore]
         public EntitySettings Settings
         {
             get { return settings; }
             set { settings = value; }
+        }
+
+        [XmlElement("Settings")]
+        public string Settings_ForXml
+        {
+            get { return settings.XmlText; }
+            set { settings.XmlText = value; }
         }
 
         /// <summary>
@@ -437,7 +446,7 @@ namespace Jhu.Graywulf.Registry
         public Entity()
             : base()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -450,7 +459,7 @@ namespace Jhu.Graywulf.Registry
         public Entity(Context context)
             : base(context)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -461,7 +470,7 @@ namespace Jhu.Graywulf.Registry
         protected Entity(Context context, Entity parent)
             : base(context)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
 
             this.parentReference.Value = parent;
         }
@@ -482,7 +491,8 @@ namespace Jhu.Graywulf.Registry
         /// <remarks>
         /// This function is called by the contructors.
         /// </remarks>
-        private void InitializeMembers()
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
         {
             var now = DateTime.Now;
 
@@ -512,7 +522,7 @@ namespace Jhu.Graywulf.Registry
             this.userGuidModified = Guid.Empty;
             this.dateDeleted = DateTime.MinValue;
             this.userGuidDeleted = Guid.Empty;
-            //this.settings = new EntitySettings();
+            this.settings = new EntitySettings();
             this.comments = string.Empty;
 
             this.entityGroup = Registry.EntityGroup.None;
