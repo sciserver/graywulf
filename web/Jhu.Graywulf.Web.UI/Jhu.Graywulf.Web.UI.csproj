@@ -329,7 +329,6 @@
     <Content Include="Schema\Peek.aspx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Scripts\SyntaxHighlighter\index.html" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shAutoloader.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushAppleScript.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushAS3.js" />
@@ -342,7 +341,6 @@
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushDiff.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushErlang.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushGroovy.js" />
-    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushHaxe.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushJava.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushJavaFX.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushJScript.js" />
@@ -355,8 +353,6 @@
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushSass.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushScala.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushSql.js" />
-    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushTAP.js" />
-    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushTypeScript.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushVb.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushXml.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shCore.js" />

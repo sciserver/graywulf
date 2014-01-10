@@ -67,7 +67,6 @@ namespace Jhu.Graywulf.Web.UI.Controls
 
         protected override void OnPreRender(EventArgs e)
         {
-            ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "xregexp", VirtualPathUtility.ToAbsolute("~/Scripts/SyntaxHighlighter/scripts/XRegExp.js"));
             ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "core", VirtualPathUtility.ToAbsolute("~/Scripts/SyntaxHighlighter/scripts/shCore.js"));
             ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "autoloader", VirtualPathUtility.ToAbsolute("~/Scripts/SyntaxHighlighter/scripts/shAutoLoader.js"));
             ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "brushsql", VirtualPathUtility.ToAbsolute("~/Scripts/SyntaxHighlighter/scripts/shBrushSql.js"));
