@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.SqlCodeGen.Test
         private SchemaManager CreateSchemaManager()
         {
             var sm = new SqlServerSchemaManager();
-            var ds = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.MySqlSchemaTestConnectionString);
+            var ds = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerSchemaTestConnectionString);
 
             sm.Datasets[ds.Name] = ds;
 
@@ -102,6 +102,8 @@ FROM Book b1, Book b2";
 
             var res = GenerateCode(sql, true);
 
+            // *** TODO
+
             Assert.AreEqual(
 @"SELECT `b1`.`Title` AS `b1_Title`, `b2`.`Title` AS `b2_Title`
 FROM `Book` `b1`, `Book` `b2`", res);
@@ -140,7 +142,7 @@ WHERE b.ID = 1";
             var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
 
             Assert.AreEqual(1, res.Length);
-            Assert.AreEqual("SELECT `ID`, `Title` FROM `Book` `b` WHERE `b`.`ID` = 1", res[0]);
+            Assert.AreEqual("SELECT CAST(`ID` AS SIGNED) AS `ID`, `Title` FROM `Book` `b` WHERE `b`.`ID` = 1", res[0]);
         }
 
         [TestMethod]
@@ -154,8 +156,8 @@ WHERE b.ID = 1 AND a.ID IN (3, 4)";
             var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
 
             Assert.AreEqual(2, res.Length);
-            Assert.AreEqual("SELECT `ID`, `Title` FROM `Book` `a` WHERE `a`.`ID` IN (3, 4)", res[0]);
-            Assert.AreEqual("SELECT `ID` FROM `Book` `b` WHERE `b`.`ID` = 1", res[1]);
+            Assert.AreEqual("SELECT CAST(`ID` AS SIGNED) AS `ID`, `Title` FROM `Book` `a` WHERE `a`.`ID` IN (3, 4)", res[0]);
+            Assert.AreEqual("SELECT CAST(`ID` AS SIGNED) AS `ID` FROM `Book` `b` WHERE `b`.`ID` = 1", res[1]);
         }
 
         [TestMethod]
@@ -173,8 +175,8 @@ WHERE ID = 1";
             var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
 
             Assert.AreEqual(2, res.Length);
-            Assert.AreEqual("SELECT `ID`, `Title` FROM `Book` WHERE `Book`.`ID` IN (2, 3)", res[0]);
-            Assert.AreEqual("SELECT `ID`, `Title` FROM `Book` WHERE `Book`.`ID` = 1", res[1]);
+            Assert.AreEqual("SELECT CAST(`ID` AS SIGNED) AS `ID`, `Title` FROM `Book` WHERE `Book`.`ID` IN (2, 3)", res[0]);
+            Assert.AreEqual("SELECT CAST(`ID` AS SIGNED) AS `ID`, `Title` FROM `Book` WHERE `Book`.`ID` = 1", res[1]);
         }
 
     }

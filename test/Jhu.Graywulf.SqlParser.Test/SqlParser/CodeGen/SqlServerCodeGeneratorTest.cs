@@ -200,19 +200,19 @@ WHERE ID = 1";
             var cg = new SqlServerCodeGenerator();
             var res = cg.GenerateCreateDestinationTableQuery(schema, dest);
 
-            Assert.AreEqual(@"CREATE TABLE [dbo].[destination] ([float] real NOT NULL,
-[double] float NOT NULL,
-[decimal] money NOT NULL,
-[nvarchar(50)] nvarchar(50) NOT NULL,
-[bigint] bigint NOT NULL,
+            Assert.AreEqual(@"CREATE TABLE [dbo].[destination] ([float] real  NULL,
+[double] float  NULL,
+[decimal] money  NULL,
+[nvarchar(50)] nvarchar(50)  NULL,
+[bigint] bigint  NULL,
 [int] int NOT NULL,
-[tinyint] tinyint NOT NULL,
-[smallint] smallint NOT NULL,
-[bit] bit NOT NULL,
-[ntext] nvarchar(max) NOT NULL,
-[char] char(1) NOT NULL,
-[datetime] datetime NOT NULL,
-[guid] uniqueidentifier NOT NULL)", res);
+[tinyint] tinyint  NULL,
+[smallint] smallint  NULL,
+[bit] bit  NULL,
+[ntext] nvarchar(max)  NULL,
+[char] char(1)  NULL,
+[datetime] datetime  NULL,
+[guid] uniqueidentifier  NULL)", res);
         }
     }
 }
