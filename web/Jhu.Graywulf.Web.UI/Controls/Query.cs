@@ -67,19 +67,12 @@ namespace Jhu.Graywulf.Web.UI.Controls
 
         protected override void OnPreRender(EventArgs e)
         {
-            ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "xregexp", VirtualPathUtility.ToAbsolute("~/SyntaxHighlighter/scripts/XRegExp.js"));
-            ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "core", VirtualPathUtility.ToAbsolute("~/SyntaxHighlighter/scripts/shCore.js"));
-            ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "autoloader", VirtualPathUtility.ToAbsolute("~/SyntaxHighlighter/scripts/shAutoLoader.js"));
-            ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "brushsql", VirtualPathUtility.ToAbsolute("~/SyntaxHighlighter/scripts/shBrushSql.js"));
+            ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "xregexp", VirtualPathUtility.ToAbsolute("~/Scripts/SyntaxHighlighter/scripts/XRegExp.js"));
+            ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "core", VirtualPathUtility.ToAbsolute("~/Scripts/SyntaxHighlighter/scripts/shCore.js"));
+            ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "autoloader", VirtualPathUtility.ToAbsolute("~/Scripts/SyntaxHighlighter/scripts/shAutoLoader.js"));
+            ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "brushsql", VirtualPathUtility.ToAbsolute("~/Scripts/SyntaxHighlighter/scripts/shBrushSql.js"));
 
             ScriptManager.RegisterStartupScript(this, this.GetType(), "all", "SyntaxHighlighter.all();", true);
-
-            /*HtmlLink css1 = new HtmlLink();
-            css1.Href = VirtualPathUtility.ToAbsolute("~/SyntaxHighlighter/styles/shCore.css");
-            css1.Attributes["rel"] = "stylesheet";
-            css1.Attributes["type"] = "text/css";
-            css1.Attributes["media"] = "all";
-            Page.Header.Controls.Add(css1);*/
 
             base.OnPreRender(e);
         }

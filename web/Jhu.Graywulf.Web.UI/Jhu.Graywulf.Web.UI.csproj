@@ -329,6 +329,55 @@
     <Content Include="Schema\Peek.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Scripts\SyntaxHighlighter\index.html" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shAutoloader.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushAppleScript.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushAS3.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushBash.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushColdFusion.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushCpp.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushCSharp.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushCss.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushDelphi.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushDiff.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushErlang.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushGroovy.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushHaxe.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushJava.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushJavaFX.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushJScript.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushPerl.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushPhp.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushPlain.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushPowerShell.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushPython.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushRuby.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushSass.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushScala.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushSql.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushTAP.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushTypeScript.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushVb.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushXml.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shCore.js" />
+    <Content Include="Scripts\SyntaxHighlighter\scripts\shLegacy.js" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shCore.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shCoreDefault.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shCoreDjango.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shCoreEclipse.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shCoreEmacs.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shCoreFadeToGrey.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shCoreMDUltra.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shCoreMidnight.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shCoreRDark.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shThemeDefault.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shThemeDjango.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shThemeEclipse.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shThemeEmacs.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shThemeFadeToGrey.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shThemeMDUltra.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shThemeMidnight.css" />
+    <Content Include="Scripts\SyntaxHighlighter\styles\shThemeRDark.css" />
     <Content Include="Web.original.config" />
   </ItemGroup>
   <ItemGroup>
@@ -413,6 +462,9 @@
     <Content Include="App_Masters\Basic.master" />
     <Content Include="App_Themes\Basic\Basic.skin" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <ProjectExtensions>
@@ -439,7 +491,6 @@ xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Masters $(ProjectDir)App_Maste
 xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Themes $(ProjectDir)App_Themes /I /E /Y
 xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\Templates $(ProjectDir)Templates /I /E /Y
 xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\CodeMirror $(ProjectDir)CodeMirror /I /E /Y
-xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\SyntaxHighlighter $(ProjectDir)SyntaxHighlighter /I /E /Y
 REM xcopy $(SolutionDir)docs\pages $(ProjectDir)docs\pages /I /E /Y</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
