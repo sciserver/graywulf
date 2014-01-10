@@ -145,8 +145,6 @@ $find('{0}${1}').onBeforeSubmit.call($find('{0}${1}'));
             selectionCoords.RenderControl(writer);
 
             writer.RenderEndTag();
-
-            //base.Render(writer);
         }
 
         IEnumerable<ScriptDescriptor> IScriptControl.GetScriptDescriptors()
@@ -164,11 +162,11 @@ $find('{0}${1}').onBeforeSubmit.call($find('{0}${1}'));
         IEnumerable<ScriptReference> IScriptControl.GetScriptReferences()
         {
             yield return new ScriptReference("Jhu.Graywulf.Web.Controls.CodeMirror.js", "Jhu.Graywulf.Web");
-            yield return new ScriptReference("~/CodeMirror/lib/codemirror.js");
+            yield return new ScriptReference("~/Scripts/CodeMirror/lib/codemirror.js");
 
             if (!String.IsNullOrWhiteSpace(Mode))
             {
-                yield return new ScriptReference(String.Format("~/CodeMirror/mode/{0}/{0}.js", Modes[Mode]));
+                yield return new ScriptReference(String.Format("~/Scripts/CodeMirror/mode/{0}/{0}.js", Modes[Mode]));
             }
         }
     }

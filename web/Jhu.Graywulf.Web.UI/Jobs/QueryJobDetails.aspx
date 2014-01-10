@@ -3,7 +3,7 @@
 
 <%@ Register Src="~/Jobs/Error.ascx" TagPrefix="jgwc" TagName="Error" %>
 <asp:Content runat="server" ContentPlaceHolderID="head">
-    <link rel="stylesheet" href="../CodeMirror/lib/codemirror.css">
+    <link rel="stylesheet" href="../Scripts/CodeMirror/lib/codemirror.css">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="middle" runat="Server">
     <asp:UpdatePanel runat="server" class="dock-fill dock-container">
