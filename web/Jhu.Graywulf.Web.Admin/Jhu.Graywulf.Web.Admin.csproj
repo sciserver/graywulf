@@ -1077,8 +1077,7 @@
     <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Web.Admin
 xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Masters $(ProjectDir)App_Masters /I /E /Y
 xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Themes $(ProjectDir)App_Themes /I /E /Y
-xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\CodeMirror $(ProjectDir)CodeMirror /I /E /Y
-xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\SyntaxHighlighter $(ProjectDir)SyntaxHighlighter /I /E /Y</PreBuildEvent>
+xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\CodeMirror $(ProjectDir)CodeMirror /I /E /Y</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
