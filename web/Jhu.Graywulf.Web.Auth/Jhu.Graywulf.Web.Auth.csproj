@@ -90,6 +90,10 @@
     <Content Include="RequestReset.aspx" />
     <Content Include="SignIn.aspx" />
     <Content Include="SignOut.aspx" />
+    <Content Include="Templates\ActivationEmail.xml" />
+    <Content Include="Templates\ErrorFeedbackEmail.xml" />
+    <Content Include="Templates\FeedbackEmail.xml" />
+    <Content Include="Templates\RequestResetEmail.xml" />
     <Content Include="User.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>

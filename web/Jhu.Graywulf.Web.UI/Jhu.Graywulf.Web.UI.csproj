@@ -765,7 +765,10 @@ IF EXIST $(ProjectDir)Templates GOTO NO_Templates
 mklink /D $(ProjectDir)Templates $(ProjectDir)..\Jhu.Graywulf.Web.Shared\Templates
 :NO_Templates
 
-REM xcopy $(SolutionDir)docs\pages $(ProjectDir)docs\pages /I /E /Y</PreBuildEvent>
+IF EXIST $(ProjectDir)Docs\pages GOTO NO_pages
+mklink /D $(ProjectDir)Docs\pages $(SolutionDir)docs\pages
+:NO_pages
+</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
