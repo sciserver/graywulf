@@ -117,7 +117,7 @@ namespace Jhu.Graywulf.Format
             }
 
             // Wrap underlying stream, so it doesn't get disposed automatically
-            nativeWriter = new SqlServerNativeBinaryWriter(BaseStream);
+            nativeWriter = new SqlServerNativeBinaryWriter(new DetachedStream(BaseStream));
         }
 
         public override void Close()

@@ -49,8 +49,8 @@ namespace Jhu.Graywulf.IO.SharpZipLibWrapper
         /// <returns></returns>
         public IArchiveEntry CreateFileEntry(string filename, long size)
         {
-            var f = new ICSharpCode.SharpZipLib.Zip.ZipEntryFactory();
-            return new ZipEntry(f.MakeFileEntry(filename));
+            var e = new ICSharpCode.SharpZipLib.Zip.ZipEntry(filename);
+            return new ZipEntry(e);
         }
 
         /// <summary>
