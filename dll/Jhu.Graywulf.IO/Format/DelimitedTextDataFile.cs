@@ -115,6 +115,8 @@ namespace Jhu.Graywulf.Format
             : base(inputReader, encoding, culture)
         {
             InitializeMembers(new StreamingContext());
+
+            Open();
         }
 
         public DelimitedTextDataFile(TextReader inputReader)
