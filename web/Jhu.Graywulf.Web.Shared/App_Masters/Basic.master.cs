@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Web
             this.theScriptManager.Scripts.Add(new ScriptReference(Jhu.Graywulf.Web.Util.JQuery.JQueryUrl));
             this.theScriptManager.Scripts.Add(new ScriptReference("Jhu.Graywulf.Web.Controls.DockingPanel.js", "Jhu.Graywulf.Web"));
 
-            this.Page.Title = (string)Page.Application[Constants.ApplicatonLongTitle];
+            this.Page.Title = (string)Page.Application[Constants.ApplicationLongTitle];
             this.Caption.Text = (string)Page.Application[Constants.ApplicationShortTitle];
         }
     }

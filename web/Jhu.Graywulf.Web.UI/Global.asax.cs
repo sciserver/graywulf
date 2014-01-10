@@ -21,7 +21,8 @@ namespace Jhu.Graywulf.Web.UI
                 var federation = ef.LoadEntity<Federation>(Registry.AppSettings.FederationName);
 
                 Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle] = federation.ShortTitle;
-                Application[Jhu.Graywulf.Web.Constants.ApplicatonLongTitle] = federation.LongTitle;
+                Application[Jhu.Graywulf.Web.Constants.ApplicationLongTitle] = federation.LongTitle;
+                Application[Jhu.Graywulf.Web.Constants.ApplicationCopyright] = federation.Settings.Copyright;
             }
         }
     }

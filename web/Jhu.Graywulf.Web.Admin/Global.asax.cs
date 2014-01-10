@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Web.Admin
             base.Application_Start(sender, e);
 
             Application[Web.Constants.ApplicationShortTitle] = "Graywulf admin";
-            Application[Web.Constants.ApplicatonLongTitle] = "Graywulf admin interface";
+            Application[Web.Constants.ApplicationLongTitle] = "Graywulf admin interface";
         }
 
         protected override void Session_Start(object sender, EventArgs e)

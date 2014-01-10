@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Web.Auth
                 var domain = ef.LoadEntity<Domain>(Registry.AppSettings.DomainName);
 
                 Application[Constants.ApplicationShortTitle] = domain.ShortTitle;
-                Application[Constants.ApplicatonLongTitle] = domain.LongTitle;
+                Application[Constants.ApplicationLongTitle] = domain.LongTitle;
             }
         }
     }

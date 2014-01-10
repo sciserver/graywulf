@@ -35,6 +35,12 @@ namespace Jhu.Graywulf.Registry
                 get { return GetValue("StreamFactory"); }
                 set { SetValue("FileFormatFactory", value); }
             }
+
+            public string Copyright
+            {
+                get { return GetValue("Copyright"); }
+                set { SetValue("Copyright", value); }
+            }
         }
 
         enum ReferenceType : int

@@ -11,7 +11,8 @@ namespace Jhu.Graywulf.Web
         public const string OriginalReferer = "OriginalReferer";
 
         public const string ApplicationShortTitle = "Jhu.Graywulf.Web.ShortTitle";
-        public const string ApplicatonLongTitle = "Jhu.Graywulf.Web.LongTitle";
+        public const string ApplicationLongTitle = "Jhu.Graywulf.Web.LongTitle";
+        public const string ApplicationCopyright = "Jhu.Graywulf.Web.Copyright";
 
         public const string SessionDatabase = "Jhu.Graywulf.Web.Database";
         public const string SessionUsername = "Jhu.Graywulf.Web.Username";
