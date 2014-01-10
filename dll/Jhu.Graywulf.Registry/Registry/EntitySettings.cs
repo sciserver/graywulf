@@ -93,7 +93,18 @@ namespace Jhu.Graywulf.Registry
                     xml.DocumentElement.AppendChild(node);
                 }
 
-                xmltext = xml.ToString();
+                var sb = new StringBuilder();
+                var xs = new XmlWriterSettings()
+                {
+                    Encoding = Encoding.UTF8,
+                    Indent = true,
+                    IndentChars = "    ",
+                };
+                var xw = XmlWriter.Create(sb, xs);
+
+                xml.WriteTo(xw);
+
+                xmltext = sb.ToString();
                 isDirty = false;
             }
         }

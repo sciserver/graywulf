@@ -18,6 +18,7 @@ namespace Jhu.Graywulf.Web.Controls
             {"text/x-sql", "sql"},
             {"text/x-mysql", "mysql"},
             {"text/x-plsql", "plsql"},
+            {"text/xml", "xml"},
         };
 
         private TextBox text;

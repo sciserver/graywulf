@@ -19,6 +19,6 @@ namespace Jhu.Graywulf.Web.Admin.Controls {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox Settings;
+        protected global::Jhu.Graywulf.Web.Controls.CodeMirror Settings;
     }
 }
