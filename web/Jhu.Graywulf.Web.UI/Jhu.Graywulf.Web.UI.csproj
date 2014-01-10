@@ -634,6 +634,10 @@
     <Content Include="Scripts\SyntaxHighlighter\styles\shThemeMDUltra.css" />
     <Content Include="Scripts\SyntaxHighlighter\styles\shThemeMidnight.css" />
     <Content Include="Scripts\SyntaxHighlighter\styles\shThemeRDark.css" />
+    <Content Include="Templates\ActivationEmail.xml" />
+    <Content Include="Templates\ErrorFeedbackEmail.xml" />
+    <Content Include="Templates\FeedbackEmail.xml" />
+    <Content Include="Templates\RequestResetEmail.xml" />
     <Content Include="Web.original.config" />
   </ItemGroup>
   <ItemGroup>
@@ -746,9 +750,21 @@
   </ProjectExtensions>
   <PropertyGroup>
     <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Web.UI
-xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Masters $(ProjectDir)App_Masters /I /E /Y
-xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Themes $(ProjectDir)App_Themes /I /E /Y
-xcopy $(ProjectDir)..\Jhu.Graywulf.Web.Shared\Templates $(ProjectDir)Templates /I /E /Y
+
+REM Create symlinks to directories under shared
+
+IF EXIST $(ProjectDir)App_Masters GOTO NO_App_Masters
+mklink /D $(ProjectDir)App_Masters $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Masters
+:NO_App_Masters
+
+IF EXIST $(ProjectDir)App_Themes GOTO NO_App_Themes
+mklink /D $(ProjectDir)App_Themes $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Themes
+:NO_App_Themes
+
+IF EXIST $(ProjectDir)Templates GOTO NO_Templates
+mklink /D $(ProjectDir)Templates $(ProjectDir)..\Jhu.Graywulf.Web.Shared\Templates
+:NO_Templates
+
 REM xcopy $(SolutionDir)docs\pages $(ProjectDir)docs\pages /I /E /Y</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
