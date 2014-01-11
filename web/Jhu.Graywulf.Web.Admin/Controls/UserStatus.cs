@@ -99,7 +99,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             signOut.NavigateUrl = VirtualPathUtility.MakeRelative(Page.AppRelativeVirtualPath, String.Format("~/User/SignOut.aspx?ReturnUrl={0}", returl));
             signIn.NavigateUrl = VirtualPathUtility.MakeRelative(Page.AppRelativeVirtualPath, String.Format("~/User/SignIn.aspx?ReturnUrl={0}", returl));
 
-            database.Text = (string)Session[Web.Constants.SessionDatabase];
+            database.Text = (string)Session[Web.Constants.SessionRegistryDatabase];
         }
 
         protected override void Render(System.Web.UI.HtmlTextWriter writer)

@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Web.Admin
             base.Session_Start(sender, e);
 
             var csb = new SqlConnectionStringBuilder(Registry.AppSettings.ConnectionString);
-            Session[Web.Constants.SessionDatabase] = String.Format("{0}\\{1}", csb.DataSource, csb.InitialCatalog);
+            Session[Web.Constants.SessionRegistryDatabase] = String.Format("{0}\\{1}", csb.DataSource, csb.InitialCatalog);
         }
     }
 }

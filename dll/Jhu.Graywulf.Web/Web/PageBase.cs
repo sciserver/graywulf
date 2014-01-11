@@ -273,11 +273,15 @@ namespace Jhu.Graywulf.Web
         protected virtual void EnsureUserIdentified()
         {
             // Check newly signed in user
+            // If user is authenticated successfully User.Identity.Name is set to
+            // the user's GUID (intead of their name). Compare it with session variables
+            // to make sure the user we see is actually the one who's authenticated.
             if (Request.IsAuthenticated &&
                 (Session[Constants.SessionUsername] == null ||
-                 (string)Session[Constants.SessionUsername] != RegistryUser.Name))
+                 (Guid)Session[Constants.SessionUserGuid] != Guid.Parse(User.Identity.Name)))
             {
                 Session[Constants.SessionUsername] = RegistryUser.Name;
+                Session[Constants.SessionUserGuid] = RegistryUser.Guid;
                 OnUserSignedIn();
             }
 
