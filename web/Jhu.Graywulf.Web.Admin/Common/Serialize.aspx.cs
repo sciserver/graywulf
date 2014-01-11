@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Web.Admin.Common
             var entity = f.LoadEntity(new Guid(Request.QueryString["guid"]));
 
             Response.ContentType = "text/xml";
-            f.Serialize(entity, Response.Output, EntityType.AllCluster);
+            f.Serialize(entity, Response.Output, null);
             Response.End();
         }
     }
