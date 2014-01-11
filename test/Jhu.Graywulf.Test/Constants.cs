@@ -9,6 +9,8 @@ namespace Jhu.Graywulf.Test
     {
         public static readonly string Localhost = Environment.MachineName;
 
+        // Although these are defined in the registry, need to be repeated
+        // to avoid the need to reference the registry dll from all projects
         public static readonly string TestDatasetName = "TEST";
         public static readonly string CodeDatasetName = "CODE";
 

@@ -133,7 +133,7 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         UserDatabaseInstance = Layout | 0x0400,
 
-        AllLayou = Layout | 0xFFFF,
+        AllLayout = Layout | 0xFFFF,
 
         #endregion
         #region Security

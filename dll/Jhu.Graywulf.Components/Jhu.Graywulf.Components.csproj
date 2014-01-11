@@ -68,7 +68,7 @@
     <Compile Include="Components\Map.cs" />
     <Compile Include="Copyright.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util\DeepCopyUtil.cs" />
+    <Compile Include="Util\DeepCloner.cs" />
     <Compile Include="Util\UriConverter.cs" />
   </ItemGroup>
   <ItemGroup>

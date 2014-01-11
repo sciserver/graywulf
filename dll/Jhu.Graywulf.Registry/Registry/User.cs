@@ -485,7 +485,7 @@ namespace Jhu.Graywulf.Registry
             this.timeZone = old.timeZone;
             this.integrated = old.integrated;
             this.ntlmUser = old.ntlmUser;
-            Util.CopyArray<byte>(old.passwordHash, out this.passwordHash);
+            old.passwordHash = Jhu.Graywulf.Util.DeepCloner.CopyArray(old.passwordHash);
 
             this.userGroups = null;
         }

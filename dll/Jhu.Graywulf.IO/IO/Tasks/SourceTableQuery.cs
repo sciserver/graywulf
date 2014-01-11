@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void CopyMembers(SourceTableQuery old)
         {
-            this.dataset = Util.DeepCopy.CopyObject(old.dataset);
+            this.dataset = Util.DeepCloner.CloneObject(old.dataset);
             this.query = old.query;
         }
 

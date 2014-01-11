@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Registry
                 ServiceName = "SQL Connection to Database"
             };
 
-            Util.RunSqlServerDiagnostics(GetConnectionString().ConnectionString, msg);
+            ServerInstance.RunDiagnostics(GetConnectionString().ConnectionString, msg);
 
             return msg;
         }

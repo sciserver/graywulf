@@ -115,8 +115,8 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
                 try
                 {
-                    Item.Name = Registry.Util.ResolveExpression(Item, Item.DatabaseDefinition.DatabaseInstanceNamePattern);
-                    Item.DatabaseName = Registry.Util.ResolveExpression(Item, Item.DatabaseDefinition.DatabaseNamePattern);
+                    Item.Name = ExpressionProperty.ResolveExpression(Item, Item.DatabaseDefinition.DatabaseInstanceNamePattern);
+                    Item.DatabaseName = ExpressionProperty.ResolveExpression(Item, Item.DatabaseDefinition.DatabaseNamePattern);
                 }
                 catch (ArgumentNullException)
                 {

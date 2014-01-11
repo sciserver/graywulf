@@ -185,7 +185,6 @@
     <Compile Include="Registry\UserFactory.cs" />
     <Compile Include="Registry\UserGroup.cs" />
     <Compile Include="Registry\UserGroup.io.cs" />
-    <Compile Include="Registry\Util.cs" />
     <Compile Include="Registry\ValidationMessage.cs" />
     <Compile Include="Registry\ValidationMessages.Designer.cs">
       <DependentUpon>ValidationMessages.resx</DependentUpon>

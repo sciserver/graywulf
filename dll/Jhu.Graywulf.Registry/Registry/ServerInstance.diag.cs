@@ -34,9 +34,31 @@ namespace Jhu.Graywulf.Registry
                 ServiceName = "SQL Connection"
             };
 
-            Util.RunSqlServerDiagnostics(GetConnectionString().ConnectionString, msg);
+            RunDiagnostics(GetConnectionString().ConnectionString, msg);
 
             return msg;
+        }
+
+        internal static void RunDiagnostics(string connectionString, DiagnosticMessage message)
+        {
+            var csb = new SqlConnectionStringBuilder(connectionString);
+            csb.ConnectTimeout = 5;
+
+            try
+            {
+                using (SqlConnection cn = new SqlConnection(csb.ConnectionString))
+                {
+                    cn.Open();
+                    cn.Close();
+                }
+
+                message.Status = DiagnosticMessageStatus.OK;
+            }
+            catch (System.Exception ex)
+            {
+                message.Status = DiagnosticMessageStatus.Error;
+                message.ErrorMessage = ex.Message;
+            }
         }
     }
 }

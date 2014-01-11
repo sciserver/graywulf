@@ -57,7 +57,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
                 }
                 else
                 {
-                    HyperLink.Text = Registry.Util.ResolveExpression(EntityReference.Value, expression);
+                    HyperLink.Text = ExpressionProperty.ResolveExpression(EntityReference.Value, expression);
                 }
 
                 HyperLink.NavigateUrl = entity.GetDetailsUrl();

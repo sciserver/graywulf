@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -17,6 +18,11 @@ namespace Jhu.Graywulf.Registry
     /// </remarks>
     public class ExpressionProperty
     {
+
+        private static Regex contextValueRegex = new Regex(@"\[\@([a-zA-Z]+)\]");        // Matches [@word]
+        private static Regex entityNameRegex = new Regex(@"\[\$([a-zA-Z\.]+)\]");        // Matches [$word.word.word]
+
+
         #region Member Variables
 
         private Entity entity;
@@ -25,6 +31,7 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
         public Entity Entity
         {
             get { return entity; }
@@ -33,6 +40,7 @@ namespace Jhu.Graywulf.Registry
         /// <summary>
         /// Gets or sets the value containing expressions.
         /// </summary>
+        [XmlText]
         public string Value
         {
             get { return this.value; }
@@ -42,6 +50,7 @@ namespace Jhu.Graywulf.Registry
         /// <summary>
         /// Gets the value and resolves expressions.
         /// </summary>
+        [XmlIgnore]
         public string ResolvedValue
         {
             get { return ResolveExpressions(); }
@@ -118,7 +127,98 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private string ResolveExpressions()
         {
-            return Util.ResolveExpression(entity, value);
+            return ResolveExpression(entity, value);
+        }
+
+        public static string ResolveExpression(Entity entity, string value)
+        {
+            return ResolveExpression(entity, value, 0);
+        }
+
+        private static string ResolveExpression(Entity entity, string value, int level)
+        {
+            if (level > 5)
+            {
+                throw new ArgumentException("Too deep recursion in expressions.");
+            }
+
+            string res = value;
+
+            foreach (Match m in contextValueRegex.Matches(value))
+            {
+                string key = m.Groups[1].Value;
+
+                if (StringComparer.InvariantCultureIgnoreCase.Compare(key, "username") == 0)
+                {
+                    res = res.Replace(m.Value, entity.Context.UserName);
+                }
+            }
+
+            foreach (Match m in entityNameRegex.Matches(value))
+            {
+                Entity ee = entity;
+                string[] parts = m.Groups[1].Value.Split('.');  // splits into parts along dots
+
+                for (int i = 0; i < parts.Length; i++)
+                {
+                    if (ee == null)
+                    {
+                        throw new ArgumentNullException(ExceptionMessages.EntityNullException);
+                    }
+
+                    System.Reflection.PropertyInfo prop = ee.GetType().GetProperty(parts[i]);
+
+                    // If the expression is parent, load the parent entity
+                    if (string.Compare(parts[i], "Parent", true) == 0)
+                    {
+                        ee = entity.Parent;
+                    }
+                    else if (prop == null)
+                    {
+                        throw new ArgumentException(String.Format(ExceptionMessages.InvalidExpression, m.Value));
+                    }
+                    else if (i != parts.Length - 1)
+                    {
+                        try
+                        {
+                            ee = (Entity)prop.GetValue(ee, null);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new ArgumentException(String.Format(ExceptionMessages.InvalidExpression, m.Value), ex);
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            string v = null;
+                            object vv = ee.GetType().GetProperty(parts[i]).GetValue(ee, null);
+
+                            if (vv is ExpressionProperty)
+                            {
+                                v = ResolveExpression(((ExpressionProperty)vv).Entity, ((ExpressionProperty)vv).Value, level + 1);
+                            }
+                            else if (vv is string)
+                            {
+                                v = (string)vv;
+                            }
+                            else
+                            {
+                                v = vv.ToString();
+                            }
+
+                            res = res.Replace(m.Value, v);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new ArgumentException(String.Format(ExceptionMessages.InvalidExpression, m.Value), ex);
+                        }
+                    }
+                }
+            }
+
+            return res;
         }
     }
 }

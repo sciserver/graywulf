@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Jhu.Graywulf.Util
 {
-    public static class DeepCopy
+    public static class DeepCloner
     {
-        public static T CopyObject<T>(T source)
+        public static T CloneObject<T>(T source)
             where T : ICloneable
         {
             if (source == null)
@@ -20,7 +20,35 @@ namespace Jhu.Graywulf.Util
             }
         }
 
+        /// <summary>
+        /// Creates a deep copy of an array of primitive types or structs
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public static T[] CopyArray<T>(T[] source)
+            where T : struct
+        {
+            if (source == null)
+            {
+                return null;
+            }
+            else
+            {
+                var res = new T[source.Length];
+                Array.Copy(source, res, source.Length);
+                return res;
+            }
+        }
+
+
+        /// <summary>
+        /// Creates a deep copy of an array of IClonable objects.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static T[] CloneArray<T>(T[] source)
             where T : ICloneable
         {
             if (source == null)
@@ -39,7 +67,7 @@ namespace Jhu.Graywulf.Util
             }
         }
 
-        public static IEnumerable<T> CopyCollection<T>(IEnumerable<T> source)
+        public static IEnumerable<T> CloneCollection<T>(IEnumerable<T> source)
             where T : ICloneable
         {
             if (source == null)

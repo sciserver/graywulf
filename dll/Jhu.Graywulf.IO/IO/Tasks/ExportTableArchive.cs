@@ -73,8 +73,8 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void CopyMembers(ExportTableArchive old)
         {
-            this.sources = Util.DeepCopy.CopyArray(old.sources);
-            this.destinations = Util.DeepCopy.CopyArray(old.destinations);
+            this.sources = Util.DeepCloner.CloneArray(old.sources);
+            this.destinations = Util.DeepCloner.CloneArray(old.destinations);
         }
 
         public override object Clone()

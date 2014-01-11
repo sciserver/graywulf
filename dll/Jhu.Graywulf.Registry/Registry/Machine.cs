@@ -35,7 +35,6 @@ namespace Jhu.Graywulf.Registry
         /// <summary>
         /// Gets or sets URL to the servers administrative web application
         /// </summary>
-        [XmlIgnore]
         [DBColumn(Size = 1024)]
         public ExpressionProperty AdminUrl
         {
@@ -44,36 +43,15 @@ namespace Jhu.Graywulf.Registry
         }
 
         /// <summary>
-        /// For internal use only
-        /// </summary>
-        [XmlElement("AdminUrl")]
-        public string AdminUrl_ForXml
-        {
-            get { return adminUrl.Value; }
-            set { adminUrl.Value = value; }
-        }
-
-        /// <summary>
         /// Gets or sets the UNC path to the share on the server for installing <b>Deployment Packages</b>.
         /// </summary>
-        [XmlIgnore]
         [DBColumn(Size = 1024)]
         public ExpressionProperty DeployUncPath
         {
             get { return deployUncPath; }
             set { deployUncPath = value; }
         }
-
-        /// <summary>
-        /// For interal use only.
-        /// </summary>
-        [XmlElement("DeployUncPath")]
-        public string DeployUncPath_ForXml
-        {
-            get { return adminUrl.Value; }
-            set { adminUrl.Value = value; }
-        }
-
+        
         #endregion
         #region Navigation Properties
 

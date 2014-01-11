@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Web.Util
         {
             // TODO: this fails if there are still tokens in the template that refer
             // to invalid properties of the entity
-            template = Jhu.Graywulf.Registry.Util.ResolveExpression(entity, template);
+            template = ExpressionProperty.ResolveExpression(entity, template);
         }
 
         public static void ReplaceEmailToken(ref string template, string token, string value)

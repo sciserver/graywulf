@@ -39,45 +39,23 @@ namespace Jhu.Graywulf.Registry
         /// <summary>
         /// Gets or sets the local path that the server itself uses for accessing the disk volume
         /// </summary>
-        [XmlIgnore]
         [DBColumn(Size = 256)]
         public ExpressionProperty LocalPath
         {
             get { return localPath; }
             set { localPath = value; }
         }
-
-        /// <summary>
-        /// For internal use only.
-        /// </summary>
-        [XmlElement("LocalPath")]
-        public string LocalPath_ForXml
-        {
-            get { return localPath.Value; }
-            set { localPath.Value = value; }
-        }
-
+        
         /// <summary>
         /// Gets or sets the UNC path that other servers can use for accessing the disk volume
         /// </summary>
-        [XmlIgnore]
         [DBColumn(Size = 256)]
         public ExpressionProperty UncPath
         {
             get { return uncPath; }
             set { uncPath = value; }
         }
-
-        /// <summary>
-        /// For internal use only.
-        /// </summary>
-        [XmlElement("UncPath")]
-        public string UncPath_ForXml
-        {
-            get { return uncPath.Value; }
-            set { uncPath.Value = value; }
-        }
-
+        
         /// <summary>
         /// Gets or sets the full space on the disk volume in bytes
         /// </summary>

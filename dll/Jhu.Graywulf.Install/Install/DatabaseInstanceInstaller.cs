@@ -42,8 +42,8 @@ namespace Jhu.Graywulf.Install
             ndi.SliceReference.Guid = slice.Guid;
             ndi.DatabaseVersionReference.Guid = databaseVersion.Guid;
 
-            ndi.Name = Registry.Util.ResolveExpression(ndi, namePattern);
-            ndi.DatabaseName = Registry.Util.ResolveExpression(ndi, databaseNamePattern);
+            ndi.Name = ExpressionProperty.ResolveExpression(ndi, namePattern);
+            ndi.DatabaseName = ExpressionProperty.ResolveExpression(ndi, databaseNamePattern);
 
             ndi.Save();
 

@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
                 var entity = f.LoadEntity(EntityName);
 
                 // *** TODO: create mask from input parameters
-                var mask = EntityType.AllCluster | EntityType.AllDomain | EntityType.AllFederation | EntityType.AllLayou | EntityType.AllSecurity | EntityType.AllJobs;
+                var mask = EntityType.AllCluster | EntityType.AllDomain | EntityType.AllFederation | EntityType.AllLayout | EntityType.AllSecurity | EntityType.AllJobs;
                 //mask = (EntityType)((int)mask & ~(0x0400));  // Leave out job instances
 
                 using (var outfile = new StreamWriter(Output))
