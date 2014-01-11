@@ -17,7 +17,9 @@ namespace Jhu.Graywulf.Registry.Sql
 
         #region Dummy members to support SQL CLR UDTs
 
+#pragma warning disable 169
         private bool dummy;
+#pragma warning restore 169
 
         public bool IsNull
         {

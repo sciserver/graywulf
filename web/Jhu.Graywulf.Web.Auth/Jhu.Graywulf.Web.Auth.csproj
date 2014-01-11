@@ -233,13 +233,13 @@
 
 REM Create symlinks to directories under shared
 
-IF EXIST $(ProjectDir)App_Masters rmdir $(ProjectDir)App_Masters
+IF EXIST $(ProjectDir)App_Masters rmdir $(ProjectDir)App_Masters /s /q
 mklink /D $(ProjectDir)App_Masters $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Masters
 
-IF EXIST $(ProjectDir)App_Themes rmdir $(ProjectDir)App_Themes
+IF EXIST $(ProjectDir)App_Themes rmdir $(ProjectDir)App_Themes /s /q
 mklink /D $(ProjectDir)App_Themes $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Themes
 
-IF EXIST $(ProjectDir)Templates rmdir $(ProjectDir)Templates
+IF EXIST $(ProjectDir)Templates rmdir $(ProjectDir)Templates /s /q
 mklink /D $(ProjectDir)Templates $(ProjectDir)..\Jhu.Graywulf.Web.Shared\Templates
 </PreBuildEvent>
   </PropertyGroup>
