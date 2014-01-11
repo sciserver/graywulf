@@ -660,6 +660,8 @@ namespace Jhu.Graywulf.Registry
 
                 cmd.ExecuteNonQuery();
             }
+
+            LoadUserGroups();
         }
 
         public void RemoveMemberOf(Guid userGroupGuid)
@@ -673,6 +675,8 @@ namespace Jhu.Graywulf.Registry
 
                 cmd.ExecuteNonQuery();
             }
+
+            LoadUserGroups();
         }
 
         public bool IsMemberOf(Guid userGroupGuid)
@@ -685,32 +689,6 @@ namespace Jhu.Graywulf.Registry
                 cmd.Parameters.Add("@UserGroupGuid", SqlDbType.UniqueIdentifier).Value = userGroupGuid;
 
                 return (int)cmd.ExecuteScalar() == 1;
-            }
-        }
-
-        public void LoadUserGroups()
-        {
-            this.userGroups = new List<UserGroup>();
-
-            var sql = "spFindUserGroup_byUser";
-
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
-                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
-                cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = this.Guid;
-
-                using (var dr = cmd.ExecuteReader())
-                {
-                    while (dr.Read())
-                    {
-                        var ug = new UserGroup(Context);
-                        ug.LoadFromDataReader(dr);
-
-                        userGroups.Add(ug);
-                    }
-                }
             }
         }
 

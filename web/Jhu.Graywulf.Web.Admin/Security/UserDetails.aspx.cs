@@ -59,7 +59,6 @@ namespace Jhu.Graywulf.Web.Admin.Security
         {
             base.InitLists();
 
-            Item.LoadUserGroups();
             UserGroupMemberList.DataSource = Item.UserGroups;
         }
 
@@ -73,8 +72,6 @@ namespace Jhu.Graywulf.Web.Admin.Security
                 {
                     Item.RemoveMemberOf(g);
                 }
-
-                Item.LoadUserGroups();
             }
         }
 

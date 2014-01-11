@@ -41,8 +41,6 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             {
                 Item.RemoveMemberOf(g);
             }
-
-            Item.LoadUserGroups();
         }
 
     }
