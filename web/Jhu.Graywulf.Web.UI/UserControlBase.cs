@@ -7,7 +7,7 @@ namespace Jhu.Graywulf.Web.UI
 {
     public class UserControlBase : Jhu.Graywulf.Web.UserControlBase
     {
-        public PageBase Page
+        public new PageBase Page
         {
             get { return (PageBase)base.Page; }
         }

@@ -275,7 +275,7 @@ namespace Jhu.Graywulf.Web
             // Check newly signed in user
             if (Request.IsAuthenticated &&
                 (Session[Constants.SessionUsername] == null ||
-                 Session[Constants.SessionUsername] != RegistryUser.Name))
+                 (string)Session[Constants.SessionUsername] != RegistryUser.Name))
             {
                 Session[Constants.SessionUsername] = RegistryUser.Name;
                 OnUserSignedIn();

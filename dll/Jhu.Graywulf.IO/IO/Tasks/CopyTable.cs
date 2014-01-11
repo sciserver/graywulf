@@ -82,6 +82,10 @@ namespace Jhu.Graywulf.IO.Tasks
             return new CopyTable(this);
         }
 
+        public override void Dispose()
+        {
+        }
+
         protected override void OnExecute()
         {
             if (source == null)

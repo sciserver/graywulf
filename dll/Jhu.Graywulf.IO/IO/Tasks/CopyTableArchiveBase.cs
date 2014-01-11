@@ -81,7 +81,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.ownsBaseStream = false;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             Close();
         }

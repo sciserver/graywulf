@@ -81,6 +81,10 @@ namespace Jhu.Graywulf.IO.Tasks
             return new ImportTable(this);
         }
 
+        public override void Dispose()
+        {
+        }
+
         protected override void OnExecute()
         {
             if (source == null)

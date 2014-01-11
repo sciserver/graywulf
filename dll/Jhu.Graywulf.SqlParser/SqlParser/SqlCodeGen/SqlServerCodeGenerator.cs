@@ -6,7 +6,6 @@ using System.IO;
 using System.Data;
 using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 {

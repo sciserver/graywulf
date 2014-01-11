@@ -116,9 +116,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         public abstract object Clone();
 
-        public virtual void Dispose()
-        {
-        }
+        public abstract void Dispose();
 
         protected FileFormatFactory GetFileFormatFactory()
         {

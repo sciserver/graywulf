@@ -85,7 +85,7 @@ namespace Jhu.Graywulf.IO.Tasks
             return new ExportTable(this);
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
         }
 
