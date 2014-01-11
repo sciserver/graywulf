@@ -744,6 +744,13 @@ WHERE nspname = @schemaName and proname= @objectName;";
             throw new NotImplementedException();
         }
 
+        protected override DatasetMetadata LoadDatasetMetadata()
+        {
+            // *** TODO: implement
+            // Where to get metadata from? Registry?
+            return new DatasetMetadata();
+        }
+
         /// <summary>
         /// Opens a connection to the Npgsql database
         /// </summary>

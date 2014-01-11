@@ -680,6 +680,13 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
             throw new NotImplementedException();
         }
 
+        protected override DatasetMetadata LoadDatasetMetadata()
+        {
+            // *** TODO: implement
+            // Where to get metadata from? Registry?
+            return new DatasetMetadata();
+        }
+
         protected override DataType GetTypeFromProviderSpecificName(string name)
         {
             switch (name.ToLowerInvariant().Trim())

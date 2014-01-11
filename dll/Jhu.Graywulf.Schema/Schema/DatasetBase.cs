@@ -60,6 +60,9 @@ namespace Jhu.Graywulf.Schema
         [NonSerialized]
         private LazyProperty<DatasetStatistics> statistics;
 
+        [NonSerialized]
+        private LazyProperty<DatasetMetadata> metadata;
+
         #endregion
         #region Properties
 
@@ -194,6 +197,13 @@ namespace Jhu.Graywulf.Schema
             get { return statistics.Value; }
         }
 
+        [IgnoreDataMember]
+        public DatasetMetadata Metadata
+        {
+            get { return metadata.Value; }
+            set { metadata.Value = value; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -236,6 +246,7 @@ namespace Jhu.Graywulf.Schema
             this.storedProcedures = new DatabaseObjectCollection<StoredProcedure>(this);
 
             this.statistics = new LazyProperty<DatasetStatistics>(LoadDatasetStatistics);
+            this.metadata = new LazyProperty<DatasetMetadata>(LoadDatasetMetadata);
 
             InitializeEventHandlers();
         }
@@ -262,6 +273,7 @@ namespace Jhu.Graywulf.Schema
             this.storedProcedures = new DatabaseObjectCollection<StoredProcedure>(this);
 
             this.statistics = new LazyProperty<DatasetStatistics>(LoadDatasetStatistics);
+            this.metadata = new LazyProperty<DatasetMetadata>(LoadDatasetMetadata);
 
             InitializeEventHandlers();
         }
@@ -561,6 +573,8 @@ namespace Jhu.Graywulf.Schema
         }
 
         protected abstract DatasetStatistics LoadDatasetStatistics();
+
+        protected abstract DatasetMetadata LoadDatasetMetadata();
 
         public abstract string GetSpecializedConnectionString(string connectionString, bool integratedSecurity, string username, string password, bool enlist);
 

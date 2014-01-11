@@ -728,6 +728,11 @@ WHERE f.type = 1
             }
         }
 
+        protected override DatasetMetadata LoadDatasetMetadata()
+        {
+            return new DatasetMetadata();      // *** TODO: implement
+        }
+
         /// <summary>
         /// Loads statistics of a table.
         /// </summary>

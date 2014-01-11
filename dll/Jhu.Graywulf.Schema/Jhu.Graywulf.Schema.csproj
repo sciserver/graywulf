@@ -62,6 +62,7 @@
     </Compile>
     <Compile Include="Schema\DatabaseObjectMetadata.cs" />
     <Compile Include="Schema\DatasetCollection.cs" />
+    <Compile Include="Schema\DatasetMetadata.cs" />
     <Compile Include="Schema\DatasetStatistics.cs" />
     <Compile Include="Schema\DataType.cs" />
     <Compile Include="Schema\DoubleComplex.cs" />
