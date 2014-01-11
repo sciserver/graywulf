@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Xml.Serialization;
+using System.ComponentModel;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -65,6 +66,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the size of the file in bytes.
         /// </summary>
         [DBColumn]
+        [DefaultValue(0)]
         public long AllocatedSpace
         {
             get { return allocatedSpace; }
@@ -75,6 +77,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the number of bytes in the file that is used for storing data.
         /// </summary>
         [DBColumn]
+        [DefaultValue(0)]
         public long UsedSpace
         {
             get { return usedSpace; }
@@ -85,6 +88,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the amount of reserver space in the file in bytes.
         /// </summary>
         [DBColumn]
+        [DefaultValue(0)]
         public long ReservedSpace
         {
             get { return reservedSpace; }

@@ -286,7 +286,7 @@ namespace Jhu.Graywulf.Registry
             cmd.Parameters.Add("@DeploymentState", SqlDbType.Int).Value = deploymentState;
             cmd.Parameters.Add("@DateCreated", SqlDbType.DateTime).Value = dateCreated;
             cmd.Parameters.Add("@DateModified", SqlDbType.DateTime).Value = dateModified;
-            cmd.Parameters.Add("@Settings", SqlDbType.NVarChar).Value = settings.XmlText ?? String.Empty;
+            cmd.Parameters.Add("@Settings", SqlDbType.NVarChar).Value = String.Empty;
             cmd.Parameters.Add("@Comments", SqlDbType.NVarChar).Value = comments;
 
             // Process entity feferences
@@ -724,9 +724,9 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Serialization Functions
 
-        internal IEnumerable<Entity> EnumerateChildrenForSerialize(EntityType mask)
+        internal IEnumerable<Entity> EnumerateChildrenForSerialize(HashSet<EntityType> mask)
         {
-            if ((this.EntityType & mask) == this.EntityType)
+            if (mask == null || !mask.Contains(this.EntityType))
             {
                 yield return this;
 

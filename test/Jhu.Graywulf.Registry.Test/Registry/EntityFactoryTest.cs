@@ -22,8 +22,12 @@ namespace Jhu.Graywulf.Registry
                 var entity = f.LoadEntity(Constants.ClusterName);
 
                 // *** TODO: create mask from input parameters
-                var mask = EntityType.AllCluster | EntityType.AllDomain | EntityType.AllFederation | EntityType.AllLayout | EntityType.AllSecurity | EntityType.AllJobs;
-                //mask = (EntityType)((int)mask & ~(0x0400));  // Leave out job instances
+                var mask = new HashSet<EntityType>()
+                {
+                    EntityType.JobInstance,
+                    EntityType.DatabaseInstanceFileGroup,
+                    EntityType.DatabaseInstanceFile,
+                };
 
                 using (var outfile = new StreamWriter("EntityFactoryTest_SaveRegistryTest.xml"))
                 {

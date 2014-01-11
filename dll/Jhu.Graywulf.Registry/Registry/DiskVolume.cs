@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using System.ComponentModel;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -60,6 +61,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the full space on the disk volume in bytes
         /// </summary>
         [DBColumn]
+        [DefaultValue(0)]
         public long FullSpace
         {
             get { return fullSpace; }
@@ -70,6 +72,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the already allocated space on the disk volume in bytes
         /// </summary>
         [DBColumn]
+        [DefaultValue(0)]
         public long AllocatedSpace
         {
             get { return allocatedSpace; }
@@ -85,6 +88,7 @@ namespace Jhu.Graywulf.Registry
         /// under the reserved limit.
         /// </remarks>
         [DBColumn]
+        [DefaultValue(0)]
         public long ReservedSpace
         {
             get { return reservedSpace; }
@@ -95,6 +99,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the maximum bandwidth information of the disk volume in bytes per second.
         /// </summary>
         [DBColumn]
+        [DefaultValue(0)]
         public long Speed
         {
             get { return speed; }

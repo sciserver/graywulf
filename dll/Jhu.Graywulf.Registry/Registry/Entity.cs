@@ -6,6 +6,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using System.IO;
+using System.ComponentModel;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -17,31 +18,6 @@ namespace Jhu.Graywulf.Registry
     /// properties for hierarchy handling, database IO and concurrency handling. Do not use this class
     /// directly, use inherited classes instead. About the entity hierarchy, refer to the Developer's Guide.
     /// </remarks>
-    [XmlInclude(typeof(Cluster))]
-    [XmlInclude(typeof(DatabaseDefinition))]
-    [XmlInclude(typeof(DatabaseInstance))]
-    [XmlInclude(typeof(DatabaseInstanceFile))]
-    [XmlInclude(typeof(DatabaseInstanceFileGroup))]
-    [XmlInclude(typeof(DatabaseVersion))]
-    [XmlInclude(typeof(DeploymentPackage))]
-    [XmlInclude(typeof(DiskVolume))]
-    [XmlInclude(typeof(Domain))]
-    [XmlInclude(typeof(Federation))]
-    [XmlInclude(typeof(FileGroup))]
-    [XmlInclude(typeof(Machine))]
-    [XmlInclude(typeof(MachineRole))]
-    [XmlInclude(typeof(Partition))]
-    [XmlInclude(typeof(DatabaseVersion))]
-    [XmlInclude(typeof(ServerVersion))]
-    [XmlInclude(typeof(ServerInstance))]
-    [XmlInclude(typeof(Slice))]
-    [XmlInclude(typeof(User))]
-    [XmlInclude(typeof(UserGroup))]
-    [XmlInclude(typeof(QueueDefinition))]
-    [XmlInclude(typeof(QueueInstance))]
-    [XmlInclude(typeof(JobDefinition))]
-    [XmlInclude(typeof(JobInstance))]
-    [XmlInclude(typeof(UserDatabaseInstance))]
     public partial class Entity : ContextObject, ICloneable
     {
         public static StringComparer StringComparer
@@ -198,7 +174,7 @@ namespace Jhu.Graywulf.Registry
         /// That is, if an entity has child entities of different type, each set will be numbered individually.
         /// Consistent ordering and numbering of child entities is essential in the automatic logical–physical
         /// mapping scenarios. Refer to the Developer's Guide for more information.</remarks>
-        [XmlAttribute]
+        [XmlIgnore]
         public int Number
         {
             get { return number; }
@@ -224,6 +200,7 @@ namespace Jhu.Graywulf.Registry
         /// Versioning of entities is not implemented inside the Cluster Management System, it is a placeholder
         /// for cluster builders.
         /// </remarks>
+        [DefaultValue("")]
         public string Version
         {
             get { return version; }
@@ -233,6 +210,7 @@ namespace Jhu.Graywulf.Registry
         /// <summary>
         /// Gets or sets the system flag. Reserved for future use.
         /// </summary>
+        [DefaultValue(false)]
         public bool System
         {
             get { return system; }
@@ -243,6 +221,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the value of the flag that determines whether the entity is diplayed in the
         /// Cluster Management Console.
         /// </summary>
+        [DefaultValue(false)]
         public bool Hidden
         {
             get { return hidden; }
@@ -254,6 +233,7 @@ namespace Jhu.Graywulf.Registry
         /// from the Cluster Management Console. Does not affect the behaviour of the class library,
         /// read-only entities can be saved anytime using the <see cref="Save()" /> method.
         /// </summary>
+        [DefaultValue(false)]
         public bool ReadOnly
         {
             get { return readOnly; }
@@ -263,6 +243,7 @@ namespace Jhu.Graywulf.Registry
         /// <summary>
         /// Reserved for future use.
         /// </summary>
+        [XmlIgnore]
         public bool Primary
         {
             get { return primary; }
@@ -274,6 +255,7 @@ namespace Jhu.Graywulf.Registry
         /// <remarks>
         /// Deleted entities are not removed from the database, only flagged. This is for system tracking purposes.
         /// </remarks>
+        [XmlIgnore]
         public bool Deleted
         {
             get { return deleted; }
@@ -297,6 +279,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the value of the entities running state. Used mainly for entities refering to hardware
         /// resources.
         /// </summary>
+        [DefaultValue(RunningState.Unknown)]
         public RunningState RunningState
         {
             get { return runningState; }
@@ -310,6 +293,7 @@ namespace Jhu.Graywulf.Registry
         /// Alert state is used to inform system administrators about the potential problems in the system.
         /// The value of this flag is displayed as an icon the the Cluster Management Console.
         /// </remarks>
+        [DefaultValue(0)]
         public int AlertState
         {
             get { return alertState; }
@@ -319,6 +303,7 @@ namespace Jhu.Graywulf.Registry
         /// <summary>
         /// Gets or sets the value indicating the deployment status of hardware, logical or mapping entities.
         /// </summary>
+        [DefaultValue(DeploymentState.New)]
         public DeploymentState DeploymentState
         {
             get { return deploymentState; }
@@ -408,6 +393,7 @@ namespace Jhu.Graywulf.Registry
         }
 
         [XmlElement("Settings")]
+        [DefaultValue("")]
         public string Settings_ForXml
         {
             get { return settings.XmlText; }
@@ -418,6 +404,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the value of a free text field for annotations by the
         /// system administrators.
         /// </summary>
+        [DefaultValue("")]
         public string Comments
         {
             get { return comments; }

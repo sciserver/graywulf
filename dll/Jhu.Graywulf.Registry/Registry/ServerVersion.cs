@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Data.SqlClient;
 using System.Xml.Serialization;
+using System.ComponentModel;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -28,6 +29,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the name of the SQL Server instance
         /// </summary>
         [DBColumn(Size = 50)]
+        [DefaultValue("")]
         public string InstanceName
         {
             get { return instanceName; }
@@ -43,6 +45,7 @@ namespace Jhu.Graywulf.Registry
         /// in the <see cref="AdminUser"/> and the <see cref="AdminPassword"/> properties.
         /// </remarks>
         [DBColumn]
+        [DefaultValue(true)]
         public bool IntegratedSecurity
         {
             get { return integratedSecurity; }
@@ -53,6 +56,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the username of the SQL Server user account for configuring the <b>Server Instance</b>
         /// </summary>
         [DBColumn(Size = 50)]
+        [DefaultValue("")]
         public string AdminUser
         {
             get { return adminUser; }
@@ -63,6 +67,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the password of the SQL Server user account for configuring the <b>Server Instance</b>
         /// </summary>
         [DBColumn(Size = 50)]
+        [DefaultValue("")]
         public string AdminPassword
         {
             get { return adminPassword; }

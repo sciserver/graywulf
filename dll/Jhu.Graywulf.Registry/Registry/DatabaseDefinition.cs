@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using System.Data.SqlClient;
+using System.ComponentModel;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -81,6 +82,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the number of slices used for the database layout.
         /// </summary>
         [DBColumn]
+        [DefaultValue(1)]
         public int SliceCount
         {
             get { return sliceCount; }
@@ -91,6 +93,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the default number of partitions per physical database instances.
         /// </summary>
         [DBColumn]
+        [DefaultValue(1)]
         public int PartitionCount
         {
             get { return partitionCount; }
@@ -101,6 +104,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the range type for the partition function
         /// </summary>
         [DBColumn]
+        [DefaultValue(PartitionRangeType.Left)]
         public PartitionRangeType PartitionRangeType
         {
             get { return partitionRangeType; }
@@ -108,6 +112,7 @@ namespace Jhu.Graywulf.Registry
         }
 
         [DBColumn(Size = 50)]
+        [DefaultValue("")]
         public string PartitionFunction
         {
             get { return partitionFunction; }

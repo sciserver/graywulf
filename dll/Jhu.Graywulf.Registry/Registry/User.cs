@@ -8,6 +8,8 @@ using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Net.Mail;
 using System.Xml.Serialization;
+using System.ComponentModel;
+using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -55,6 +57,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the title (Mr., Dr. etc) of the <b>User</b>
         /// </summary>
         [DBColumn(Size = 10)]
+        [DefaultValue("")]
         public string Title
         {
             get { return title; }
@@ -65,6 +68,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the first name of the <b>User</b>
         /// </summary>
         [DBColumn(Size = 50)]
+        [DefaultValue("")]
         public string FirstName
         {
             get { return firstName; }
@@ -75,6 +79,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the middle name (or initials) of the <b>User</b>
         /// </summary>
         [DBColumn(Size = 50)]
+        [DefaultValue("")]
         public string MiddleName
         {
             get { return middleName; }
@@ -85,6 +90,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the last name of the <b>User</b>
         /// </summary>
         [DBColumn(Size = 50)]
+        [DefaultValue("")]
         public string LastName
         {
             get { return lastName; }
@@ -95,6 +101,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the gender of the person.
         /// </summary>
         [DBColumn]
+        [DefaultValue(Gender.Male)]
         public Gender Gender
         {
             get { return gender; }
@@ -105,6 +112,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the email of the user that has not been validated yet.
         /// </summary>
         [DBColumn(Size = 128)]
+        [DefaultValue("")]
         public string NonValidatedEmail
         {
             get { return nonValidatedEmail; }
@@ -119,6 +127,7 @@ namespace Jhu.Graywulf.Registry
         /// Cluster Management Console instead of a username.
         /// </remarks>
         [DBColumn(Size = 128)]
+        [DefaultValue("")]
         public string Email
         {
             get { return email; }
@@ -129,6 +138,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the date of birth of the person.
         /// </summary>
         [DBColumn]
+        [DefaultDateTime("1950-01-01")]
         public DateTime DateOfBirth
         {
             get { return dateOfBirth; }
@@ -139,6 +149,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the affiliation of the user.
         /// </summary>
         [DBColumn(Size = 128)]
+        [DefaultValue("")]
         public string Company
         {
             get { return company; }
@@ -149,6 +160,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the job title of the user.
         /// </summary>
         [DBColumn(Size = 128)]
+        [DefaultValue("")]
         public string JobTitle
         {
             get { return jobTitle; }
@@ -159,6 +171,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the street address of the <b>User</b>.
         /// </summary>
         [DBColumn(Size = 128)]
+        [DefaultValue("")]
         public string Address
         {
             get { return address; }
@@ -169,6 +182,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the street address of the <b>User</b>, second line.
         /// </summary>
         [DBColumn(Size = 128)]
+        [DefaultValue("")]
         public string Address2
         {
             get { return address2; }
@@ -179,6 +193,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the name of the state of the address of the user.
         /// </summary>
         [DBColumn(Size = 50)]
+        [DefaultValue("")]
         public string State
         {
             get { return state; }
@@ -189,6 +204,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the two-letter code of the state.
         /// </summary>
         [DBColumn(Size = 50)]
+        [DefaultValue("")]
         public string StateCode
         {
             get { return stateCode; }
@@ -199,6 +215,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the city part of the address of the user.
         /// </summary>
         [DBColumn(Size = 50)]
+        [DefaultValue("")]
         public string City
         {
             get { return city; }
@@ -209,6 +226,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the country part of the address of the user.
         /// </summary>
         [DBColumn(Size = 128)]
+        [DefaultValue("")]
         public string Country
         {
             get { return country; }
@@ -219,6 +237,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the two-letter code of the country of the user.
         /// </summary>
         [DBColumn(Size = 2)]
+        [DefaultValue("")]
         public string CountryCode
         {
             get { return countryCode; }
@@ -229,6 +248,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the zip code part of the address of the user.
         /// </summary>
         [DBColumn(Size = 10)]
+        [DefaultValue("")]
         public string ZipCode
         {
             get { return zipCode; }
@@ -239,6 +259,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the work phone number of the <b>User</b>
         /// </summary>
         [DBColumn(Size = 50)]
+        [DefaultValue("")]
         public string WorkPhone
         {
             get { return workPhone; }
@@ -249,6 +270,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the home phone number of the <b>User</b>
         /// </summary>
         [DBColumn(Size = 50)]
+        [DefaultValue("")]
         public string HomePhone
         {
             get { return homePhone; }
@@ -259,6 +281,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the cell phone number of the <b>User</b>
         /// </summary>
         [DBColumn(Size = 50)]
+        [DefaultValue("")]
         public string CellPhone
         {
             get { return cellPhone; }
@@ -272,6 +295,7 @@ namespace Jhu.Graywulf.Registry
         /// Expressed as the difference from GMT in number of minutes.
         /// </remarks>
         [DBColumn]
+        [DefaultValue(0)]
         public int TimeZone
         {
             get { return timeZone; }
@@ -288,6 +312,7 @@ namespace Jhu.Graywulf.Registry
         /// the <see cref="NtlmUser"/> property is ignored at authentication.
         /// </remarks>
         [DBColumn]
+        [DefaultValue(false)]
         public bool Integrated
         {
             get { return integrated; }
@@ -303,6 +328,7 @@ namespace Jhu.Graywulf.Registry
         /// match the <b>User's</b> windows domain username including any domain information, e.g. <i>GRAYWULF\johndoe</i>.
         /// </remarks>
         [DBColumn(Size = 50)]
+        [DefaultValue("")]
         public string NtlmUser
         {
             get { return ntlmUser; }
@@ -321,6 +347,7 @@ namespace Jhu.Graywulf.Registry
         }
 
         [DBColumn(Size = 50)]
+        [DefaultValue("")]
         public string ActivationCode
         {
             get { return activationCode; }

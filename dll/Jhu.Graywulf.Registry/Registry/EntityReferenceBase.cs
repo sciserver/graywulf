@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Registry
@@ -64,6 +65,7 @@ namespace Jhu.Graywulf.Registry
         }
 
         [DataMember]
+        [XmlText]
         public string Name
         {
             get

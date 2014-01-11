@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using System.ComponentModel;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -43,6 +44,7 @@ namespace Jhu.Graywulf.Registry
         /// Zero value means no timeout.
         /// </remarks>
         [DBColumn]
+        [DefaultValue(0)]
         public int Timeout
         {
             get { return timeout; }

@@ -12,6 +12,7 @@ namespace Jhu.Graywulf.Registry
     /// <summary>
     /// Implements the functionality related to a database server cluster's <b>Cluster</b> entity
     /// </summary>
+    [XmlType("Cluster")]
     public partial class Cluster : Entity
     {
         #region Validation Properties

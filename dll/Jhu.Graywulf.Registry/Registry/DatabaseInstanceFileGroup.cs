@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using System.ComponentModel;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -64,6 +65,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the number of bytes to be allocated when the files are created.
         /// </summary>
         [DBColumn]
+        [DefaultValue(0)]
         public long AllocatedSpace
         {
             get { return allocatedSpace; }
@@ -74,6 +76,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the number of bytes that are filled with data in this file group.
         /// </summary>
         [DBColumn]
+        [DefaultValue(0)]
         public long UsedSpace
         {
             get { return usedSpace; }
@@ -89,6 +92,7 @@ namespace Jhu.Graywulf.Registry
         /// under the reserved limit.
         /// </remarks>
         [DBColumn]
+        [DefaultValue(0)]
         public long ReservedSpace
         {
             get { return reservedSpace; }

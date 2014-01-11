@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using System.ComponentModel;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -25,6 +26,7 @@ namespace Jhu.Graywulf.Registry
         /// Lower limit of the interval of the <b>Partitioning Column</b> values belonging to this slice.
         /// </summary>
         [DBColumn]
+        [DefaultValue(0)]
         public long From
         {
             get { return from; }
@@ -35,6 +37,7 @@ namespace Jhu.Graywulf.Registry
         /// Upper limit of the interval of the <b>Partitioning Column</b> values belonging to this slice.
         /// </summary>
         [DBColumn]
+        [DefaultValue(0)]
         public long To
         {
             get { return to; }

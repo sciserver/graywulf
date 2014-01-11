@@ -18,6 +18,37 @@ namespace Jhu.Graywulf.Registry
     /// </remarks>
     public class EntityFactory : ContextObject
     {
+        [XmlRoot(ElementName = "Registry", Namespace = "")]
+        [XmlType(TypeName = "Registry", Namespace = "")]
+        public class Registry
+        {
+            [XmlArrayItem(typeof(Cluster))]
+            [XmlArrayItem(typeof(DatabaseDefinition))]
+            [XmlArrayItem(typeof(DatabaseInstance))]
+            [XmlArrayItem(typeof(DatabaseInstanceFile))]
+            [XmlArrayItem(typeof(DatabaseInstanceFileGroup))]
+            [XmlArrayItem(typeof(DatabaseVersion))]
+            [XmlArrayItem(typeof(DeploymentPackage))]
+            [XmlArrayItem(typeof(DiskVolume))]
+            [XmlArrayItem(typeof(Domain))]
+            [XmlArrayItem(typeof(Federation))]
+            [XmlArrayItem(typeof(FileGroup))]
+            [XmlArrayItem(typeof(JobDefinition))]
+            [XmlArrayItem(typeof(JobInstance))]
+            [XmlArrayItem(typeof(Machine))]
+            [XmlArrayItem(typeof(MachineRole))]
+            [XmlArrayItem(typeof(Partition))]
+            [XmlArrayItem(typeof(QueueDefinition))]
+            [XmlArrayItem(typeof(QueueInstance))]
+            [XmlArrayItem(typeof(ServerInstance))]
+            [XmlArrayItem(typeof(ServerVersion))]
+            [XmlArrayItem(typeof(Slice))]
+            [XmlArrayItem(typeof(User))]
+            [XmlArrayItem(typeof(UserDatabaseInstance))]
+            [XmlArrayItem(typeof(UserGroup))]
+            public Entity[] Entities;
+        }
+
         #region Constructors
 
         /// <summary>
@@ -305,12 +336,15 @@ ORDER BY Number
         /// </summary>
         /// <param name="entity">The root entity of the serialization.</param>
         /// <param name="output">The TextWriter object used for writing the XML stream.</param>
-        public void Serialize(Entity entity, TextWriter output, EntityType mask)
+        public void Serialize(Entity entity, TextWriter output, HashSet<EntityType> mask)
         {
-            var entities = new List<Entity>(entity.EnumerateChildrenForSerialize(mask));
+            //var entities = new List<Entity>(entity.EnumerateChildrenForSerialize(mask));
 
-            var ser = new XmlSerializer(entities.GetType());
-            ser.Serialize(output, entities);
+            var registry = new Registry();
+            registry.Entities = entity.EnumerateChildrenForSerialize(mask).ToArray();
+
+            var ser = new XmlSerializer(registry.GetType());
+            ser.Serialize(output, registry);
         }
 
         /// <summary>

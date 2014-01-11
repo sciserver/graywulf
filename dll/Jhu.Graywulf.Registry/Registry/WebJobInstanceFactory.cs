@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.Registry
             this.userGuid = Guid.Empty;
             this.queueInstanceGuid = Guid.Empty;
             this.jobDefinitionGuids = new HashSet<Guid>();
-            this.jobExecutionStatus = Registry.JobExecutionState.All;
+            this.jobExecutionStatus = JobExecutionState.All;
         }
 
         public int CountChildren()

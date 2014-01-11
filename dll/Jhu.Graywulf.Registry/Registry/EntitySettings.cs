@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Xml.Serialization;
+using System.ComponentModel;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -12,6 +14,8 @@ namespace Jhu.Graywulf.Registry
         private Dictionary<string, string> items;
         private bool isDirty;
 
+        [XmlText]
+        [DefaultValue("")]
         public string XmlText
         {
             get
@@ -31,6 +35,7 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
+        [XmlIgnore]
         public string this[string key]
         {
             get { return GetValue(key); }
@@ -49,14 +54,14 @@ namespace Jhu.Graywulf.Registry
 
         private void InitializeMembers()
         {
-            this.xmltext = null;
+            this.xmltext = String.Empty;
             this.items = null;
             this.isDirty = false;
         }
 
         private void CopyMembers(EntitySettings old)
         {
-            this.xmltext = old.XmlText;  // Make sure read via the property
+            this.xmltext = old.XmlText;  // Make sure to read via the property
             this.items = null;
             this.isDirty = false;
         }
