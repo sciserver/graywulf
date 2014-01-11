@@ -27,6 +27,46 @@
                 <asp:TextBox ID="Email" runat="server" />
             </td>
         </tr>
+        <tr>
+            <td class="FormLabel">
+                <asp:Label ID="CopyrightLabel" runat="server" Text="Copyright:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:TextBox ID="Copyright" runat="server" />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabel">
+                <asp:Label ID="DisclaimerLabel" runat="server" Text="Disclaimer:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:TextBox ID="Disclaimer" runat="server" />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabel">
+                <asp:Label ID="QueryFactoryLabel" runat="server" Text="Query Factory:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:TextBox ID="QueryFactory" runat="server" />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabel">
+                <asp:Label ID="StreamFactoryLabel" runat="server" Text="Stream Factory:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:TextBox ID="StreamFactory" runat="server" />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabel">
+                <asp:Label ID="FileFormatFactoryLabel" runat="server" Text="File Format Factory:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:TextBox ID="FileFormatFactory" runat="server" />
+            </td>
+        </tr>
         <tr runat="server" id="MyDbDatabaseVersionRow">
             <td class="FormLabel">
                 <asp:Label ID="MyDbDatabaseVersionLabel" runat="server" Text="MYDB Database Version:"></asp:Label>

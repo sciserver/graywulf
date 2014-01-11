@@ -16,6 +16,14 @@ namespace Jhu.Graywulf.Install
             this.federation = federation;
         }
 
+        public void GenerateDefaultSettings()
+        {
+            federation.QueryFactory = typeof(Jhu.Graywulf.Jobs.Query.QueryFactory).AssemblyQualifiedName;
+            federation.FileFormatFactory = typeof(Jhu.Graywulf.Format.FileFormatFactory).AssemblyQualifiedName;
+            federation.StreamFactory = typeof(Jhu.Graywulf.IO.StreamFactory).AssemblyQualifiedName;
+            federation.Copyright = Jhu.Graywulf.Copyright.InfoCopyright;
+        }
+
         public void GenerateDefaultChildren(ServerVersion myDbServerVersion)
         {
             // MyDB database definition

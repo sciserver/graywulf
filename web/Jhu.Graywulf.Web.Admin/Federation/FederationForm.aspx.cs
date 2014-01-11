@@ -29,9 +29,14 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             RefreshControllerMachineList();
             RefreshServerInstanceList();
 
+            QueryFactory.Text = item.QueryFactory;
+            FileFormatFactory.Text = item.FileFormatFactory;
+            StreamFactory.Text = item.StreamFactory;
             ShortTitle.Text = item.ShortTitle;
             LongTitle.Text = item.LongTitle;
             Email.Text = item.Email;
+            Copyright.Text = item.Copyright;
+            Disclaimer.Text = item.Disclaimer;
             MyDbDatabaseVersion.SelectedValue = item.MyDBDatabaseVersionReference.Guid.ToString();
             TempDatabaseVersion.SelectedValue = item.TempDatabaseVersionReference.Guid.ToString();
             CodeDatabaseVersion.SelectedValue = item.CodeDatabaseVersionReference.Guid.ToString();
@@ -51,14 +56,28 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.OnSaveForm();
 
+            item.QueryFactory = QueryFactory.Text;
+            item.FileFormatFactory = FileFormatFactory.Text;
+            item.StreamFactory = StreamFactory.Text;
             item.ShortTitle = ShortTitle.Text;
             item.LongTitle = LongTitle.Text;
             item.Email = Email.Text;
+            item.Copyright = Copyright.Text;
+            item.Disclaimer = Disclaimer.Text;
             item.MyDBDatabaseVersionReference.Guid = new Guid(MyDbDatabaseVersion.SelectedValue);
             item.TempDatabaseVersionReference.Guid = new Guid(TempDatabaseVersion.SelectedValue);
             item.CodeDatabaseVersionReference.Guid = new Guid(CodeDatabaseVersion.SelectedValue);
             item.ControllerMachineReference.Guid = new Guid(ControllerMachine.SelectedValue);
             item.SchemaSourceServerInstanceReference.Guid = new Guid(SchemaSourceServerInstance.SelectedValue);
+        }
+
+        protected override void OnItemCreated(bool newentity)
+        {
+            if (newentity)
+            {
+                var fi = new FederationInstaller(item);
+                fi.GenerateDefaultSettings();
+            }
         }
 
         protected override void OnSaveFormCompleted(bool newentity)

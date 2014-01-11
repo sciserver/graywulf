@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public static QueryFactory Create(Federation federation)
         {
             // Load federation and get query factory name from settings
-            var ft = Type.GetType(federation.Settings.QueryFactory);
+            var ft = Type.GetType(federation.QueryFactory);
             return (QueryFactory)Activator.CreateInstance(ft, federation.Context);
         }
 

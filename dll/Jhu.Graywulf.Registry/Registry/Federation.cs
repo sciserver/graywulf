@@ -16,33 +16,6 @@ namespace Jhu.Graywulf.Registry
     /// </summary>
     public partial class Federation : Entity
     {
-        public class FederationSettings : EntitySettings
-        {
-            public string QueryFactory
-            {
-                get { return GetValue("QueryFactory"); }
-                set { SetValue("QueryFactory", value); }
-            }
-
-            public string FileFormatFactory
-            {
-                get { return GetValue("FileFormatFactory"); }
-                set { SetValue("FileFormatFactory", value); }
-            }
-
-            public string StreamFactory
-            {
-                get { return GetValue("StreamFactory"); }
-                set { SetValue("FileFormatFactory", value); }
-            }
-
-            public string Copyright
-            {
-                get { return GetValue("Copyright"); }
-                set { SetValue("Copyright", value); }
-            }
-        }
-
         enum ReferenceType : int
         {
             ControllerMachine = 1,
@@ -55,18 +28,37 @@ namespace Jhu.Graywulf.Registry
         #region Member Variables
 
         // --- Background storage for properties ---
+        private string queryFactory;
+        private string fileFormatFactory;
+        private string streamFactory;
         private string shortTitle;
         private string longTitle;
         private string email;
+        private string copyright;
+        private string disclaimer;
 
         #endregion
         #region Member Access Properties
 
-        [XmlIgnore]
-        public new FederationSettings Settings
+        [DBColumn(Size = 1024)]
+        public string QueryFactory
         {
-            get { return (FederationSettings)settings; }
-            set { settings = value; }
+            get { return queryFactory; }
+            set { queryFactory = value; }
+        }
+
+        [DBColumn(Size = 1024)]
+        public string FileFormatFactory
+        {
+            get { return fileFormatFactory; }
+            set { fileFormatFactory = value; }
+        }
+
+        [DBColumn(Size = 1024)]
+        public string StreamFactory
+        {
+            get { return streamFactory; }
+            set { streamFactory = value; }
         }
 
         [DBColumn(Size = 50)]
@@ -88,6 +80,20 @@ namespace Jhu.Graywulf.Registry
         {
             get { return email; }
             set { email = value; }
+        }
+
+        [DBColumn(Size = 1024)]
+        public string Copyright
+        {
+            get { return copyright; }
+            set { copyright = value; }
+        }
+
+        [DBColumn(Size = 1024)]
+        public string Disclaimer
+        {
+            get { return disclaimer; }
+            set { disclaimer = value; }
         }
 
         [XmlIgnore]
@@ -312,14 +318,17 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.settings = new FederationSettings();
-
             base.EntityType = EntityType.Federation;
             base.EntityGroup = EntityGroup.Federation | EntityGroup.Layout | EntityGroup.Log | EntityGroup.Jobs | EntityGroup.Security;
 
+            this.queryFactory = String.Empty;
+            this.fileFormatFactory = String.Empty;
+            this.streamFactory = String.Empty;
             this.shortTitle = String.Empty;
             this.longTitle = String.Empty;
             this.email = String.Empty;
+            this.copyright = String.Empty;
+            this.disclaimer = String.Empty;
         }
 
         /// <summary>
@@ -328,9 +337,14 @@ namespace Jhu.Graywulf.Registry
         /// <param name="old">A <b>Federation</b> object to create the deep copy from.</param>
         private void CopyMembers(Federation old)
         {
+            this.queryFactory = old.queryFactory;
+            this.fileFormatFactory = old.fileFormatFactory;
+            this.streamFactory = old.streamFactory;
             this.shortTitle = old.shortTitle;
             this.longTitle = old.longTitle;
             this.email = old.email;
+            this.copyright = old.copyright;
+            this.disclaimer = old.disclaimer;
         }
 
         public override object Clone()

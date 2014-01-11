@@ -61,6 +61,8 @@ namespace Jhu.Graywulf.Web.Admin
             {
                 item.ParentReference.Guid = new Guid(Request.QueryString["parentGuid"]);
             }
+
+            OnItemCreated(item.Guid == Guid.Empty && !IsPostBack);
         }
 
         protected virtual void OnUpdateForm()
@@ -68,6 +70,10 @@ namespace Jhu.Graywulf.Web.Admin
         }
 
         protected virtual void OnSaveForm()
+        {
+        }
+
+        protected virtual void OnItemCreated(bool newentity)
         {
         }
 

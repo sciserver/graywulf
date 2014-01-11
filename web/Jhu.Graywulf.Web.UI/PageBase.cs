@@ -19,12 +19,12 @@ namespace Jhu.Graywulf.Web.UI
 
         public FileFormatFactory FileFormatFactory
         {
-            get { return FileFormatFactory.Create(this.Federation.Settings.FileFormatFactory); }
+            get { return FileFormatFactory.Create(this.Federation.FileFormatFactory); }
         }
 
         public StreamFactory StreamFactory
         {
-            get { return StreamFactory.Create(Federation.Settings.StreamFactory); }
+            get { return StreamFactory.Create(Federation.StreamFactory); }
         }
 
         /// <summary>

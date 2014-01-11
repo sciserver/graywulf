@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             var destinations = new DataFileBase[sources.Length];
             for (int i = 0; i < sources.Length; i++)
             {
-                var ff = FileFormatFactory.Create(federation.Settings.FileFormatFactory);
+                var ff = FileFormatFactory.Create(federation.FileFormatFactory);
 
                 var destination = ff.CreateFile(format);
                 destination.Uri = Util.UriConverter.FromFilePath(String.Format("{0}{1}", sources[i].ObjectName, format.DefaultExtension));
@@ -93,8 +93,8 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 Destinations = destinations,
                 Archival = DataFileArchival.Zip,
                 Uri = Util.UriConverter.FromFilePath(path),
-                FileFormatFactoryType = federation.Settings.FileFormatFactory,
-                StreamFactoryType = federation.Settings.StreamFactory,
+                FileFormatFactoryType = federation.FileFormatFactory,
+                StreamFactoryType = federation.StreamFactory,
             };
 
             job.Parameters["Parameters"].SetValue(et);

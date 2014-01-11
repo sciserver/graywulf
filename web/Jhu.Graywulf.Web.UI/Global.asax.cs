@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Web.UI
 
                 Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle] = federation.ShortTitle;
                 Application[Jhu.Graywulf.Web.Constants.ApplicationLongTitle] = federation.LongTitle;
-                Application[Jhu.Graywulf.Web.Constants.ApplicationCopyright] = federation.Settings.Copyright;
+                Application[Jhu.Graywulf.Web.Constants.ApplicationCopyright] = federation.Copyright;
             }
         }
     }
