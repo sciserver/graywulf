@@ -25,12 +25,12 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
             RefreshStandardUserGroupList();
 
-            ShortTitle.Text = item.ShortTitle;
-            LongTitle.Text = item.LongTitle;
-            Email.Text = item.Email;
-            StandardUserGroup.SelectedValue = item.StandardUserGroupReference.Guid.ToString();
+            ShortTitle.Text = Item.ShortTitle;
+            LongTitle.Text = Item.LongTitle;
+            Email.Text = Item.Email;
+            StandardUserGroup.SelectedValue = Item.StandardUserGroupReference.Guid.ToString();
 
-            if (!item.IsExisting)
+            if (!Item.IsExisting)
             {
                 StandardUserGroupRow.Visible = false;
             }
@@ -40,17 +40,17 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.OnSaveForm();
 
-            item.ShortTitle = ShortTitle.Text;
-            item.LongTitle = LongTitle.Text;
-            item.Email = Email.Text;
-            item.StandardUserGroupReference.Guid = new Guid(StandardUserGroup.SelectedValue);
+            Item.ShortTitle = ShortTitle.Text;
+            Item.LongTitle = LongTitle.Text;
+            Item.Email = Email.Text;
+            Item.StandardUserGroupReference.Guid = new Guid(StandardUserGroup.SelectedValue);
         }
 
         protected override void OnSaveFormCompleted(bool newentity)
         {
             if (newentity)
             {
-                var conf = new DomainInstaller(item);
+                var conf = new DomainInstaller(Item);
                 conf.GenerateDefaultChildren();
             }
         }
@@ -59,9 +59,9 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             StandardUserGroup.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
 
-            item.LoadUserGroups(false);
+            Item.LoadUserGroups(false);
 
-            foreach (UserGroup ug in item.UserGroups.Values)
+            foreach (UserGroup ug in Item.UserGroups.Values)
             {
                 StandardUserGroup.Items.Add(new ListItem(ug.Name, ug.Guid.ToString()));
             }

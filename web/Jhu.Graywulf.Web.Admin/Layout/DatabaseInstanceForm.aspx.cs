@@ -26,29 +26,29 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
             UpdateResolvedNames();
 
-            DatabaseName.Text = item.DatabaseName;
-            Slice.SelectedValue = item.SliceReference.Guid.ToString();
-            DatabaseVersion.SelectedValue = item.DatabaseVersionReference.Guid.ToString();
-            ServerInstance.SelectedValue = item.ServerInstanceReference.Guid.ToString();
+            DatabaseName.Text = Item.DatabaseName;
+            Slice.SelectedValue = Item.SliceReference.Guid.ToString();
+            DatabaseVersion.SelectedValue = Item.DatabaseVersionReference.Guid.ToString();
+            ServerInstance.SelectedValue = Item.ServerInstanceReference.Guid.ToString();
         }
 
         protected override void OnSaveForm()
         {
             base.OnSaveForm();
 
-            item.DatabaseName = DatabaseName.Text;
-            item.SliceReference.Guid = new Guid(Slice.SelectedValue);
-            item.ServerInstanceReference.Guid = new Guid(ServerInstance.SelectedValue);
-            item.DatabaseVersionReference.Guid = new Guid(DatabaseVersion.SelectedValue);
+            Item.DatabaseName = DatabaseName.Text;
+            Item.SliceReference.Guid = new Guid(Slice.SelectedValue);
+            Item.ServerInstanceReference.Guid = new Guid(ServerInstance.SelectedValue);
+            Item.DatabaseVersionReference.Guid = new Guid(DatabaseVersion.SelectedValue);
         }
 
         protected void RefreshSliceList()
         {
             Slice.Items.Clear();
-            item.DatabaseDefinition.LoadSlices(false);
+            Item.DatabaseDefinition.LoadSlices(false);
 
             Slice.Items.Add(new ListItem("(select slice)", Guid.Empty.ToString()));
-            foreach (Slice s in item.DatabaseDefinition.Slices.Values)
+            foreach (Slice s in Item.DatabaseDefinition.Slices.Values)
             {
                 Slice.Items.Add(new ListItem(s.Name, s.Guid.ToString()));
             }
@@ -57,10 +57,10 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         protected void RefreshDatabaseVersionList()
         {
             DatabaseVersion.Items.Clear();
-            item.DatabaseDefinition.LoadDatabaseVersions(false);
+            Item.DatabaseDefinition.LoadDatabaseVersions(false);
 
             DatabaseVersion.Items.Add(new ListItem("(select version)", Guid.Empty.ToString()));
-            foreach (DatabaseVersion r in item.DatabaseDefinition.DatabaseVersions.Values)
+            foreach (DatabaseVersion r in Item.DatabaseDefinition.DatabaseVersions.Values)
             {
                 DatabaseVersion.Items.Add(new ListItem(r.Name, r.Guid.ToString()));
             }
@@ -107,21 +107,21 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
         protected void UpdateResolvedNames()
         {
-            if (!item.IsExisting)
+            if (!Item.IsExisting)
             {
-                item.SliceReference.Guid = new Guid(Slice.SelectedValue);
-                item.DatabaseVersionReference.Guid = new Guid(DatabaseVersion.SelectedValue);
-                item.ServerInstanceReference.Guid = new Guid(ServerInstance.SelectedValue);
+                Item.SliceReference.Guid = new Guid(Slice.SelectedValue);
+                Item.DatabaseVersionReference.Guid = new Guid(DatabaseVersion.SelectedValue);
+                Item.ServerInstanceReference.Guid = new Guid(ServerInstance.SelectedValue);
 
                 try
                 {
-                    item.Name = Registry.Util.ResolveExpression(item, item.DatabaseDefinition.DatabaseInstanceNamePattern);
-                    item.DatabaseName = Registry.Util.ResolveExpression(item, item.DatabaseDefinition.DatabaseNamePattern);
+                    Item.Name = Registry.Util.ResolveExpression(Item, Item.DatabaseDefinition.DatabaseInstanceNamePattern);
+                    Item.DatabaseName = Registry.Util.ResolveExpression(Item, Item.DatabaseDefinition.DatabaseNamePattern);
                 }
                 catch (ArgumentNullException)
                 {
-                    item.Name = String.Empty;
-                    item.DatabaseName = String.Empty;
+                    Item.Name = String.Empty;
+                    Item.DatabaseName = String.Empty;
                 }
             }
         }
@@ -135,8 +135,8 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         {
             UpdateResolvedNames();
 
-            EntityForm.Name.Text = item.Name;
-            DatabaseName.Text = item.DatabaseName;
+            EntityForm.Name.Text = Item.Name;
+            DatabaseName.Text = Item.DatabaseName;
         }
 
 

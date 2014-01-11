@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         {
             base.InitLists();
 
-            DatabaseDefinitionList.ParentEntity = item;
+            DatabaseDefinitionList.ParentEntity = Item;
         }
 
         /*

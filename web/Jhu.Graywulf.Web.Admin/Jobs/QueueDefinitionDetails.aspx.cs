@@ -20,8 +20,8 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
         {
             base.UpdateForm();
 
-            MaxOutstandingJobs.Text = item.MaxOutstandingJobs.ToString();
-            Timeout.Text = item.Timeout.ToString();
+            MaxOutstandingJobs.Text = Item.MaxOutstandingJobs.ToString();
+            Timeout.Text = Item.Timeout.ToString();
         }
     }
 }

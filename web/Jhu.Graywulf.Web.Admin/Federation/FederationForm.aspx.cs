@@ -29,21 +29,21 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             RefreshControllerMachineList();
             RefreshServerInstanceList();
 
-            QueryFactory.Text = item.QueryFactory;
-            FileFormatFactory.Text = item.FileFormatFactory;
-            StreamFactory.Text = item.StreamFactory;
-            ShortTitle.Text = item.ShortTitle;
-            LongTitle.Text = item.LongTitle;
-            Email.Text = item.Email;
-            Copyright.Text = item.Copyright;
-            Disclaimer.Text = item.Disclaimer;
-            MyDbDatabaseVersion.SelectedValue = item.MyDBDatabaseVersionReference.Guid.ToString();
-            TempDatabaseVersion.SelectedValue = item.TempDatabaseVersionReference.Guid.ToString();
-            CodeDatabaseVersion.SelectedValue = item.CodeDatabaseVersionReference.Guid.ToString();
-            ControllerMachine.SelectedValue = item.ControllerMachineReference.Guid.ToString();
-            SchemaSourceServerInstance.SelectedValue = item.SchemaSourceServerInstanceReference.Guid.ToString();
+            QueryFactory.Text = Item.QueryFactory;
+            FileFormatFactory.Text = Item.FileFormatFactory;
+            StreamFactory.Text = Item.StreamFactory;
+            ShortTitle.Text = Item.ShortTitle;
+            LongTitle.Text = Item.LongTitle;
+            Email.Text = Item.Email;
+            Copyright.Text = Item.Copyright;
+            Disclaimer.Text = Item.Disclaimer;
+            MyDbDatabaseVersion.SelectedValue = Item.MyDBDatabaseVersionReference.Guid.ToString();
+            TempDatabaseVersion.SelectedValue = Item.TempDatabaseVersionReference.Guid.ToString();
+            CodeDatabaseVersion.SelectedValue = Item.CodeDatabaseVersionReference.Guid.ToString();
+            ControllerMachine.SelectedValue = Item.ControllerMachineReference.Guid.ToString();
+            SchemaSourceServerInstance.SelectedValue = Item.SchemaSourceServerInstanceReference.Guid.ToString();
 
-            if (!item.IsExisting)
+            if (!Item.IsExisting)
             {
                 MyDbDatabaseVersionRow.Visible = false;
 
@@ -56,26 +56,26 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.OnSaveForm();
 
-            item.QueryFactory = QueryFactory.Text;
-            item.FileFormatFactory = FileFormatFactory.Text;
-            item.StreamFactory = StreamFactory.Text;
-            item.ShortTitle = ShortTitle.Text;
-            item.LongTitle = LongTitle.Text;
-            item.Email = Email.Text;
-            item.Copyright = Copyright.Text;
-            item.Disclaimer = Disclaimer.Text;
-            item.MyDBDatabaseVersionReference.Guid = new Guid(MyDbDatabaseVersion.SelectedValue);
-            item.TempDatabaseVersionReference.Guid = new Guid(TempDatabaseVersion.SelectedValue);
-            item.CodeDatabaseVersionReference.Guid = new Guid(CodeDatabaseVersion.SelectedValue);
-            item.ControllerMachineReference.Guid = new Guid(ControllerMachine.SelectedValue);
-            item.SchemaSourceServerInstanceReference.Guid = new Guid(SchemaSourceServerInstance.SelectedValue);
+            Item.QueryFactory = QueryFactory.Text;
+            Item.FileFormatFactory = FileFormatFactory.Text;
+            Item.StreamFactory = StreamFactory.Text;
+            Item.ShortTitle = ShortTitle.Text;
+            Item.LongTitle = LongTitle.Text;
+            Item.Email = Email.Text;
+            Item.Copyright = Copyright.Text;
+            Item.Disclaimer = Disclaimer.Text;
+            Item.MyDBDatabaseVersionReference.Guid = new Guid(MyDbDatabaseVersion.SelectedValue);
+            Item.TempDatabaseVersionReference.Guid = new Guid(TempDatabaseVersion.SelectedValue);
+            Item.CodeDatabaseVersionReference.Guid = new Guid(CodeDatabaseVersion.SelectedValue);
+            Item.ControllerMachineReference.Guid = new Guid(ControllerMachine.SelectedValue);
+            Item.SchemaSourceServerInstanceReference.Guid = new Guid(SchemaSourceServerInstance.SelectedValue);
         }
 
-        protected override void OnItemCreated(bool newentity)
+        protected override void OnItemLoaded(bool newentity)
         {
             if (newentity)
             {
-                var fi = new FederationInstaller(item);
+                var fi = new FederationInstaller(Item);
                 fi.GenerateDefaultSettings();
             }
         }
@@ -92,7 +92,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
                     sv.Guid = new Guid(MyDbServerVersion.SelectedValue);
                     sv.Load();
 
-                    var fi = new FederationInstaller(item);
+                    var fi = new FederationInstaller(Item);
                     fi.GenerateDefaultChildren(sv);
                 }
             }
@@ -102,9 +102,9 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             MyDbDatabaseVersion.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
 
-            item.LoadDatabaseDefinitions(false);
+            Item.LoadDatabaseDefinitions(false);
 
-            foreach (DatabaseDefinition dd in item.DatabaseDefinitions.Values)
+            foreach (DatabaseDefinition dd in Item.DatabaseDefinitions.Values)
             {
                 dd.LoadDatabaseVersions(false);
 
@@ -130,12 +130,12 @@ namespace Jhu.Graywulf.Web.Admin.Federation
                 }
             }
 
-            item.LoadDatabaseDefinitions(false);
-            foreach (var dd in item.DatabaseDefinitions.Values)
+            Item.LoadDatabaseDefinitions(false);
+            foreach (var dd in Item.DatabaseDefinitions.Values)
             {
                 foreach (var dv in dd.DatabaseVersions.Values)
                 {
-                    TempDatabaseVersion.Items.Add(new ListItem(String.Format("{0}\\{1}\\{2}", item.Name, dd.Name, dv.Name), dv.Guid.ToString()));
+                    TempDatabaseVersion.Items.Add(new ListItem(String.Format("{0}\\{1}\\{2}", Item.Name, dd.Name, dv.Name), dv.Guid.ToString()));
                 }
             }
         }
@@ -144,12 +144,12 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             CodeDatabaseVersion.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
 
-            item.LoadDatabaseDefinitions(false);
-            foreach (var dd in item.DatabaseDefinitions.Values)
+            Item.LoadDatabaseDefinitions(false);
+            foreach (var dd in Item.DatabaseDefinitions.Values)
             {
                 foreach (var dv in dd.DatabaseVersions.Values)
                 {
-                    CodeDatabaseVersion.Items.Add(new ListItem(String.Format("{0}\\{1}\\{2}", item.Name, dd.Name, dv.Name), dv.Guid.ToString()));
+                    CodeDatabaseVersion.Items.Add(new ListItem(String.Format("{0}\\{1}\\{2}", Item.Name, dd.Name, dv.Name), dv.Guid.ToString()));
                 }
             }
         }
@@ -158,9 +158,9 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             ControllerMachine.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
 
-            item.Domain.Cluster.LoadMachineRoles(false);
+            Item.Domain.Cluster.LoadMachineRoles(false);
 
-            foreach (MachineRole mr in item.Domain.Cluster.MachineRoles.Values)
+            foreach (MachineRole mr in Item.Domain.Cluster.MachineRoles.Values)
             {
                 mr.LoadMachines(false);
                 foreach (Machine m in mr.Machines.Values)
@@ -174,9 +174,9 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             SchemaSourceServerInstance.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
 
-            item.Domain.Cluster.LoadMachineRoles(false);
+            Item.Domain.Cluster.LoadMachineRoles(false);
 
-            foreach (MachineRole mr in item.Domain.Cluster.MachineRoles.Values)
+            foreach (MachineRole mr in Item.Domain.Cluster.MachineRoles.Values)
             {
                 mr.LoadMachines(false);
                 foreach (Machine m in mr.Machines.Values)
@@ -194,9 +194,9 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             MyDbServerVersion.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
 
-            item.Domain.Cluster.LoadMachineRoles(false);
+            Item.Domain.Cluster.LoadMachineRoles(false);
 
-            foreach (MachineRole mr in item.Domain.Cluster.MachineRoles.Values)
+            foreach (MachineRole mr in Item.Domain.Cluster.MachineRoles.Values)
             {
                 mr.LoadServerVersions(false);
                 foreach (ServerVersion sv in mr.ServerVersions.Values)

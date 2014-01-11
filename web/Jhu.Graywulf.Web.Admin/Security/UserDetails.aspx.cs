@@ -20,32 +20,32 @@ namespace Jhu.Graywulf.Web.Admin.Security
         {
             base.UpdateForm();
 
-            Title.Text = item.Title;
-            FirstName.Text = item.FirstName;
-            MiddleName.Text = item.MiddleName;
-            LastName.Text = item.LastName;
-            Gender.Text = item.Gender.ToString();
-            Email.Text = item.Email;
-            DateOfBirth.Text = item.DateOfBirth.ToShortDateString();
-            Company.Text = item.Company;
-            JobTitle.Text = item.JobTitle;
-            Address.Text = item.Address;
-            Address.Text = item.Address2;
-            State.Text = item.State;
-            StateCode.Text = item.StateCode;
-            City.Text = item.City;
-            Country.Text = item.Country;
-            CountryCode.Text = item.CountryCode;
-            ZipCode.Text = item.ZipCode;
-            WorkPhone.Text = item.WorkPhone;
-            HomePhone.Text = item.HomePhone;
-            CellPhone.Text = item.CellPhone;
-            TimeZone.Text = item.TimeZone.ToString();
-            NtlmUser.Text = item.NtlmUser;
+            Title.Text = Item.Title;
+            FirstName.Text = Item.FirstName;
+            MiddleName.Text = Item.MiddleName;
+            LastName.Text = Item.LastName;
+            Gender.Text = Item.Gender.ToString();
+            Email.Text = Item.Email;
+            DateOfBirth.Text = Item.DateOfBirth.ToShortDateString();
+            Company.Text = Item.Company;
+            JobTitle.Text = Item.JobTitle;
+            Address.Text = Item.Address;
+            Address.Text = Item.Address2;
+            State.Text = Item.State;
+            StateCode.Text = Item.StateCode;
+            City.Text = Item.City;
+            Country.Text = Item.Country;
+            CountryCode.Text = Item.CountryCode;
+            ZipCode.Text = Item.ZipCode;
+            WorkPhone.Text = Item.WorkPhone;
+            HomePhone.Text = Item.HomePhone;
+            CellPhone.Text = Item.CellPhone;
+            TimeZone.Text = Item.TimeZone.ToString();
+            NtlmUser.Text = Item.NtlmUser;
 
-            AddUserGroupButton.OnClientClick = Util.UrlFormatter.GetClientRedirect(AddUserGroupMember.GetUrl(item.Guid));
+            AddUserGroupButton.OnClientClick = Util.UrlFormatter.GetClientRedirect(AddUserGroupMember.GetUrl(Item.Guid));
 
-            if (item.DeploymentState == DeploymentState.Deployed)
+            if (Item.DeploymentState == DeploymentState.Deployed)
             {
                 ToggleActive.Text = "Deactivate";
             }
@@ -59,8 +59,8 @@ namespace Jhu.Graywulf.Web.Admin.Security
         {
             base.InitLists();
 
-            item.LoadUserGroups();
-            UserGroupMemberList.DataSource = item.UserGroups;
+            Item.LoadUserGroups();
+            UserGroupMemberList.DataSource = Item.UserGroups;
         }
 
         private void RemoveUserGroup(Guid[] guids)
@@ -71,10 +71,10 @@ namespace Jhu.Graywulf.Web.Admin.Security
             {
                 foreach (var g in guids)
                 {
-                    item.RemoveMemberOf(g);
+                    Item.RemoveMemberOf(g);
                 }
 
-                item.LoadUserGroups();
+                Item.LoadUserGroups();
             }
         }
 

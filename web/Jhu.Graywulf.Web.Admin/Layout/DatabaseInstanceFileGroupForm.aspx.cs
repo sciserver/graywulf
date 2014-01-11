@@ -25,22 +25,22 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             RefreshFileGroupList();
             RefreshPartitionList();
 
-            FileGroup.SelectedValue = item.FileGroupReference.Guid.ToString();
-            Partition.SelectedValue = item.PartitionReference.Guid.ToString();
-            AllocatedSpace.Text = item.AllocatedSpace.ToString(); // TODO
-            UsedSpace.Text = item.UsedSpace.ToString(); // TODO
-            ReservedSpace.Text = item.ReservedSpace.ToString(); // TODO
+            FileGroup.SelectedValue = Item.FileGroupReference.Guid.ToString();
+            Partition.SelectedValue = Item.PartitionReference.Guid.ToString();
+            AllocatedSpace.Text = Item.AllocatedSpace.ToString(); // TODO
+            UsedSpace.Text = Item.UsedSpace.ToString(); // TODO
+            ReservedSpace.Text = Item.ReservedSpace.ToString(); // TODO
         }
 
         protected override void OnSaveForm()
         {
             base.OnSaveForm();
 
-            item.FileGroupReference.Guid = new Guid(FileGroup.SelectedValue);
-            item.PartitionReference.Guid = new Guid(Partition.SelectedValue);
-            item.AllocatedSpace = long.Parse(AllocatedSpace.Text); // TODO
-            item.UsedSpace = long.Parse(UsedSpace.Text);    // TODO
-            item.ReservedSpace = long.Parse(ReservedSpace.Text);
+            Item.FileGroupReference.Guid = new Guid(FileGroup.SelectedValue);
+            Item.PartitionReference.Guid = new Guid(Partition.SelectedValue);
+            Item.AllocatedSpace = long.Parse(AllocatedSpace.Text); // TODO
+            Item.UsedSpace = long.Parse(UsedSpace.Text);    // TODO
+            Item.ReservedSpace = long.Parse(ReservedSpace.Text);
         }
 
         protected void RefreshFileGroupList()
@@ -48,9 +48,9 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             FileGroup.Items.Clear();
             FileGroup.Items.Add(new ListItem("(select file group)", Guid.Empty.ToString()));
 
-            item.Context = RegistryContext;
-            item.DatabaseInstance.DatabaseDefinition.LoadFileGroups(false);
-            foreach (FileGroup fg in item.DatabaseInstance.DatabaseDefinition.FileGroups.Values)
+            Item.Context = RegistryContext;
+            Item.DatabaseInstance.DatabaseDefinition.LoadFileGroups(false);
+            foreach (FileGroup fg in Item.DatabaseInstance.DatabaseDefinition.FileGroups.Values)
             {
                 FileGroup.Items.Add(new ListItem(fg.Name, fg.Guid.ToString()));
             }
@@ -61,9 +61,9 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             Partition.Items.Clear();
             Partition.Items.Add(new ListItem(Resources.Labels.NotApplicable, Guid.Empty.ToString()));
 
-            item.Context = RegistryContext;
-            item.DatabaseInstance.Slice.LoadPartitions(false);
-            foreach (Partition p in item.DatabaseInstance.Slice.Partitions.Values)
+            Item.Context = RegistryContext;
+            Item.DatabaseInstance.Slice.LoadPartitions(false);
+            foreach (Partition p in Item.DatabaseInstance.Slice.Partitions.Values)
             {
                 Partition.Items.Add(new ListItem(p.Name, p.Guid.ToString()));
             }

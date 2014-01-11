@@ -20,22 +20,22 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.UpdateForm();
 
-            ShortTitle.Text = item.ShortTitle;
-            LongTitle.Text = item.LongTitle;
-            Email.Text = item.Email;
-            MyDbDatabaseVersion.EntityReference.Value = item.MyDBDatabaseVersion;
-            TempDatabaseVersion.EntityReference.Value = item.TempDatabaseVersion;
-            CodeDatabaseVersion.EntityReference.Value = item.CodeDatabaseVersion;
-            ControllerMachine.EntityReference.Value = item.ControllerMachine;
-            SchemaSourceServerInstance.EntityReference.Value = item.SchemaSourceServerInstance;
+            ShortTitle.Text = Item.ShortTitle;
+            LongTitle.Text = Item.LongTitle;
+            Email.Text = Item.Email;
+            MyDbDatabaseVersion.EntityReference.Value = Item.MyDBDatabaseVersion;
+            TempDatabaseVersion.EntityReference.Value = Item.TempDatabaseVersion;
+            CodeDatabaseVersion.EntityReference.Value = Item.CodeDatabaseVersion;
+            ControllerMachine.EntityReference.Value = Item.ControllerMachine;
+            SchemaSourceServerInstance.EntityReference.Value = Item.SchemaSourceServerInstance;
         }
 
         protected override void InitLists()
         {
             base.InitLists();
 
-            DatabaseDefinitionList.ParentEntity = item;
-            RemoteDatabaseList.ParentEntity = item;
+            DatabaseDefinitionList.ParentEntity = Item;
+            RemoteDatabaseList.ParentEntity = Item;
         }
     }
 }

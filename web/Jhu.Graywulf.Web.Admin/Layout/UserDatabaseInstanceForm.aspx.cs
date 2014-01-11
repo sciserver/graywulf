@@ -20,27 +20,27 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         {
             base.OnUpdateForm();
 
-            if (item.User.Domain == null)
+            if (Item.User.Domain == null)
             {
                 throw new InvalidOperationException();
             }
 
             RefreshFederationList();
-            if (item.IsExisting)
+            if (Item.IsExisting)
             {
-                Federation.SelectedValue = item.DatabaseVersion.DatabaseDefinition.Federation.Guid.ToString();
+                Federation.SelectedValue = Item.DatabaseVersion.DatabaseDefinition.Federation.Guid.ToString();
             }
             
             RefreshDatabaseVersionList();
-            if (item.IsExisting)
+            if (Item.IsExisting)
             {
-                DatabaseVersion.SelectedValue = item.DatabaseVersion.Guid.ToString();
+                DatabaseVersion.SelectedValue = Item.DatabaseVersion.Guid.ToString();
             }
 
             RefreshDatabaseInstanceList();
-            if (item.IsExisting)
+            if (Item.IsExisting)
             {
-                DatabaseInstance.SelectedValue = item.DatabaseInstance.Guid.ToString();
+                DatabaseInstance.SelectedValue = Item.DatabaseInstance.Guid.ToString();
             }
         }
 
@@ -48,8 +48,8 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         {
             base.OnSaveForm();
 
-            item.DatabaseVersionReference.Guid = new Guid(DatabaseVersion.SelectedValue);
-            item.DatabaseInstanceReference.Guid = new Guid(DatabaseInstance.SelectedValue);
+            Item.DatabaseVersionReference.Guid = new Guid(DatabaseVersion.SelectedValue);
+            Item.DatabaseInstanceReference.Guid = new Guid(DatabaseInstance.SelectedValue);
         }
 
         private void RefreshFederationList()
@@ -57,8 +57,8 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             Federation.Items.Clear();
             Federation.Items.Add(new ListItem("(select federation", Guid.Empty.ToString()));
 
-            item.User.Domain.LoadFederations(false);
-            foreach (var f in item.User.Domain.Federations.Values)
+            Item.User.Domain.LoadFederations(false);
+            foreach (var f in Item.User.Domain.Federations.Values)
             {
                 Federation.Items.Add(new ListItem(f.Name, f.Guid.ToString()));
             }

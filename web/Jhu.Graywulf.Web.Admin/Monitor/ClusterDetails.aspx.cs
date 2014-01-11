@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Web.Admin.Monitor
             base.InitLists();
 
             List<DiagnosticMessage> messages = new List<DiagnosticMessage>();
-            RunDiagnostics(messages, item);
+            RunDiagnostics(messages, Item);
             MessageList.DataSource = messages;
         }
 

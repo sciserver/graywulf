@@ -20,10 +20,10 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
         {
             base.UpdateForm();
 
-            ServerVersion.EntityReference.Value = item.ServerVersion;
-            InstanceName.Text = item.InstanceName;
-            IntegratedSecurity.Text = item.IntegratedSecurity ? Resources.Labels.IntegratedSecurity : Resources.Labels.SqlSecurity;
-            AdminUser.Text = item.AdminUser;
+            ServerVersion.EntityReference.Value = Item.ServerVersion;
+            InstanceName.Text = Item.InstanceName;
+            IntegratedSecurity.Text = Item.IntegratedSecurity ? Resources.Labels.IntegratedSecurity : Resources.Labels.SqlSecurity;
+            AdminUser.Text = Item.AdminUser;
         }
     }
 }

@@ -20,16 +20,16 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
         {
             base.OnUpdateForm();
 
-            MaxOutstandingJobs.Text = item.MaxOutstandingJobs.ToString();
-            Timeout.Text = item.Timeout.ToString();
+            MaxOutstandingJobs.Text = Item.MaxOutstandingJobs.ToString();
+            Timeout.Text = Item.Timeout.ToString();
         }
 
         protected override void OnSaveForm()
         {
             base.OnSaveForm();
 
-            item.MaxOutstandingJobs = int.Parse(MaxOutstandingJobs.Text);
-            item.Timeout = int.Parse(Timeout.Text);
+            Item.MaxOutstandingJobs = int.Parse(MaxOutstandingJobs.Text);
+            Item.Timeout = int.Parse(Timeout.Text);
         }
     }
 }

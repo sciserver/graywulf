@@ -21,17 +21,17 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
         {
             base.UpdateForm();
 
-            DiskVolumeType.Text = item.DiskVolumeType.ToString();
-            LocalPath.Text = String.Format("{0} ({1})", item.LocalPath.Value, item.LocalPath.ResolvedValue);
-            UncPath.Text = String.Format("{0} ({1})", item.UncPath.Value, item.UncPath.ResolvedValue);
-            FullSpace.Text = ByteSizeFormatter.Format(item.FullSpace);
-            AllocatedSpace.Text = ByteSizeFormatter.Format(item.AllocatedSpace);
-            ReservedSpace.Text = ByteSizeFormatter.Format(item.ReservedSpace);
-            Speed.Text = (item.Speed / 100000.0).ToString("0.00");
+            DiskVolumeType.Text = Item.DiskVolumeType.ToString();
+            LocalPath.Text = String.Format("{0} ({1})", Item.LocalPath.Value, Item.LocalPath.ResolvedValue);
+            UncPath.Text = String.Format("{0} ({1})", Item.UncPath.Value, Item.UncPath.ResolvedValue);
+            FullSpace.Text = ByteSizeFormatter.Format(Item.FullSpace);
+            AllocatedSpace.Text = ByteSizeFormatter.Format(Item.AllocatedSpace);
+            ReservedSpace.Text = ByteSizeFormatter.Format(Item.ReservedSpace);
+            Speed.Text = (Item.Speed / 100000.0).ToString("0.00");
 
             Usage.Values.Clear();
-            Usage.Values.Add((double)item.AllocatedSpace / item.FullSpace);
-            Usage.Values.Add((double)item.ReservedSpace / item.FullSpace);
+            Usage.Values.Add((double)Item.AllocatedSpace / Item.FullSpace);
+            Usage.Values.Add((double)Item.ReservedSpace / Item.FullSpace);
         }
     }
 }

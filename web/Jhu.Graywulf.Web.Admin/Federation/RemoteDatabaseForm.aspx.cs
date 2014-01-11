@@ -23,32 +23,32 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
             RefreshProviderList();
 
-            ProviderName.SelectedValue = item.ProviderName;
-            ConnectionString.Text = item.ConnectionString;
-            IntegratedSecurity.Checked = item.IntegratedSecurity;
-            Username.Text = item.Username;
-            Password.Text = item.Password;
-            RequiresSshTunnel.Checked = item.RequiresSshTunnel;
-            SshHostName.Text = item.SshHostName;
-            SshPortNumber.Text = item.SshPortNumber.ToString();
-            SshUsername.Text = item.SshUsername;
-            SshPassword.Text = item.SshPassword;
+            ProviderName.SelectedValue = Item.ProviderName;
+            ConnectionString.Text = Item.ConnectionString;
+            IntegratedSecurity.Checked = Item.IntegratedSecurity;
+            Username.Text = Item.Username;
+            Password.Text = Item.Password;
+            RequiresSshTunnel.Checked = Item.RequiresSshTunnel;
+            SshHostName.Text = Item.SshHostName;
+            SshPortNumber.Text = Item.SshPortNumber.ToString();
+            SshUsername.Text = Item.SshUsername;
+            SshPassword.Text = Item.SshPassword;
         }
 
         protected override void OnSaveForm()
         {
             base.OnSaveForm();
 
-            item.ProviderName = ProviderName.SelectedValue;
-            item.ConnectionString = ConnectionString.Text;
-            item.IntegratedSecurity = IntegratedSecurity.Checked;
-            item.Username = Username.Text;
-            item.Password = Password.Text;
-            item.RequiresSshTunnel = RequiresSshTunnel.Checked;
-            item.SshHostName = SshHostName.Text;
-            item.SshPortNumber = int.Parse(SshPortNumber.Text);
-            item.SshUsername = SshUsername.Text;
-            item.SshPassword = SshPassword.Text;
+            Item.ProviderName = ProviderName.SelectedValue;
+            Item.ConnectionString = ConnectionString.Text;
+            Item.IntegratedSecurity = IntegratedSecurity.Checked;
+            Item.Username = Username.Text;
+            Item.Password = Password.Text;
+            Item.RequiresSshTunnel = RequiresSshTunnel.Checked;
+            Item.SshHostName = SshHostName.Text;
+            Item.SshPortNumber = int.Parse(SshPortNumber.Text);
+            Item.SshUsername = SshUsername.Text;
+            Item.SshPassword = SshPassword.Text;
         }
 
         private void RefreshProviderList()

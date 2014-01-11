@@ -19,9 +19,14 @@ namespace Jhu.Graywulf.Web.Admin
     public class EntityDetailsPageBase<T> : PageBase, IEntityForm
         where T : Entity, new()
     {
-        protected T item;
+        private T item;
 
-        public Entity Item
+        public T Item
+        {
+            get { return item; }
+        }
+
+        Entity IEntityForm.Item
         {
             get { return item; }
         }

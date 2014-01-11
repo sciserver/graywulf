@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.UpdateForm();
 
-            Filename.Text = item.Filename;
+            Filename.Text = Item.Filename;
         }
     }
 }

@@ -20,14 +20,14 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
         {
             base.UpdateForm();
 
-            TypeName.Text = item.WorkflowTypeName;
+            TypeName.Text = Item.WorkflowTypeName;
 
-            foreach (var par in item.Parameters.Values)
+            foreach (var par in Item.Parameters.Values)
             {
                 Parameters.Items.Add(string.Format("{0} ({1})", par.Name, par.TypeName));
             }
 
-            CheckpointProgress.Checkpoints = item.Checkpoints;
+            CheckpointProgress.Checkpoints = Item.Checkpoints;
         }
 
     }

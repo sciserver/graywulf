@@ -20,9 +20,9 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
         {
             base.UpdateForm();
 
-            InstanceName.Text = item.InstanceName;
-            IntegratedSecurity.Text = item.IntegratedSecurity ? Resources.Labels.IntegratedSecurity : Resources.Labels.SqlSecurity;
-            AdminUser.Text = item.AdminUser;
+            InstanceName.Text = Item.InstanceName;
+            IntegratedSecurity.Text = Item.IntegratedSecurity ? Resources.Labels.IntegratedSecurity : Resources.Labels.SqlSecurity;
+            AdminUser.Text = Item.AdminUser;
         }
     }
 }

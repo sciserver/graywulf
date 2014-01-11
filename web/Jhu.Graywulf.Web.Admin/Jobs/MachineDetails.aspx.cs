@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
         {
             base.InitLists();
 
-            QueueInstanceList.ParentEntity = item;
+            QueueInstanceList.ParentEntity = Item;
         }
 
         /*

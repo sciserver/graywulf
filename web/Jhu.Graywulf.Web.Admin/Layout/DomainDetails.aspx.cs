@@ -20,8 +20,8 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         {
             base.InitLists();
 
-            FederationList.ParentEntity = item;
-            UserList.ParentEntity = item;
+            FederationList.ParentEntity = Item;
+            UserList.ParentEntity = Item;
         }
     }
 }

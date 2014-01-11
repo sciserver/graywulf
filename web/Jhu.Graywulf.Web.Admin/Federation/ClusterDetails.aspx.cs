@@ -25,8 +25,8 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.InitLists();
 
-            DatabaseDefinitionList.ParentEntity = item;
-            DomainList.ParentEntity = item;
+            DatabaseDefinitionList.ParentEntity = Item;
+            DomainList.ParentEntity = Item;
         }
 
         /*

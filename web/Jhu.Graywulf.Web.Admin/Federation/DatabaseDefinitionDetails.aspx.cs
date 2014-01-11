@@ -20,33 +20,33 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.UpdateForm();
 
-            SchemaSourceServerInstance.EntityReference.Value = item.SchemaSourceServerInstance;
-            SchemaSourceDatabaseName.Text = item.SchemaSourceDatabaseName;
-            LayoutType.Text = item.LayoutType.ToString();
-            DatabaseInstanceNamePattern.Text = item.DatabaseInstanceNamePattern;
-            DatabaseNamePattern.Text = item.DatabaseNamePattern;
-            SliceCount.Text = item.SliceCount.ToString();
-            PartitionCount.Text = item.PartitionCount.ToString();
-            PartitionRangeType.Text = item.PartitionRangeType.ToString();
-            PartitionFunction.Text = item.PartitionFunction;
+            SchemaSourceServerInstance.EntityReference.Value = Item.SchemaSourceServerInstance;
+            SchemaSourceDatabaseName.Text = Item.SchemaSourceDatabaseName;
+            LayoutType.Text = Item.LayoutType.ToString();
+            DatabaseInstanceNamePattern.Text = Item.DatabaseInstanceNamePattern;
+            DatabaseNamePattern.Text = Item.DatabaseNamePattern;
+            SliceCount.Text = Item.SliceCount.ToString();
+            PartitionCount.Text = Item.PartitionCount.ToString();
+            PartitionRangeType.Text = Item.PartitionRangeType.ToString();
+            PartitionFunction.Text = Item.PartitionFunction;
         }
 
         protected override void InitLists()
         {
-            FileGroupList.ParentEntity = item;
-            SliceList.ParentEntity = item;
-            DatabaseVersionList.ParentEntity = item;
-            DeploymentPackageList.ParentEntity = item;
+            FileGroupList.ParentEntity = Item;
+            SliceList.ParentEntity = Item;
+            DatabaseVersionList.ParentEntity = Item;
+            DeploymentPackageList.ParentEntity = Item;
 
             base.InitLists();
         }
 
         private void ActivateDeactivateItem()
         {
-            item.DeploymentState = DeploymentState.Deployed;
-            item.RunningState = RunningState.Running;
+            Item.DeploymentState = DeploymentState.Deployed;
+            Item.RunningState = RunningState.Running;
 
-            item.Save();
+            Item.Save();
 
             UpdateForm();
         }
@@ -56,7 +56,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             switch (e.CommandName)
             {
                 case "Slice":
-                    Response.Redirect(SlicingWizard.GetUrl(item.Guid));
+                    Response.Redirect(SlicingWizard.GetUrl(Item.Guid));
                     break;
                 default:
                     base.OnButtonCommand(sender, e);

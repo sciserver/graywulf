@@ -23,11 +23,11 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
 
             RefreshServerVersionList();
 
-            ServerVersion.SelectedValue = item.ServerVersionReference.Guid.ToString();
-            InstanceName.Text = item.InstanceName;
-            IntegratedSecurity.Checked = item.IntegratedSecurity;
-            AdminUser.Text = item.AdminUser;
-            AdminPassword.Text = item.AdminPassword;
+            ServerVersion.SelectedValue = Item.ServerVersionReference.Guid.ToString();
+            InstanceName.Text = Item.InstanceName;
+            IntegratedSecurity.Checked = Item.IntegratedSecurity;
+            AdminUser.Text = Item.AdminUser;
+            AdminPassword.Text = Item.AdminPassword;
 
             AdminUser.Enabled = !IntegratedSecurity.Checked;
             AdminPassword.Enabled = !IntegratedSecurity.Checked;
@@ -37,19 +37,19 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
         {
             base.OnSaveForm();
 
-            item.ServerVersionReference.Guid = new Guid(ServerVersion.SelectedValue);
-            item.InstanceName = InstanceName.Text;
-            item.IntegratedSecurity = IntegratedSecurity.Checked;
-            item.AdminUser = AdminUser.Text;
-            item.AdminPassword = AdminPassword.Text;
+            Item.ServerVersionReference.Guid = new Guid(ServerVersion.SelectedValue);
+            Item.InstanceName = InstanceName.Text;
+            Item.IntegratedSecurity = IntegratedSecurity.Checked;
+            Item.AdminUser = AdminUser.Text;
+            Item.AdminPassword = AdminPassword.Text;
         }
 
         private void RefreshServerVersionList()
         {
-            item.Machine.MachineRole.LoadServerVersions(false);
+            Item.Machine.MachineRole.LoadServerVersions(false);
 
             ServerVersion.Items.Add(new ListItem("(select version)", Guid.Empty.ToString()));
-            foreach (ServerVersion sv in item.Machine.MachineRole.ServerVersions.Values)
+            foreach (ServerVersion sv in Item.Machine.MachineRole.ServerVersions.Values)
             {
                 ServerVersion.Items.Add(new ListItem(sv.Name, sv.Guid.ToString()));
             }

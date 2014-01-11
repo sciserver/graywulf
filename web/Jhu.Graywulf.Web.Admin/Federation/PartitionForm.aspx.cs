@@ -20,16 +20,16 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.OnUpdateForm();
 
-            From.Text = item.From.ToString();
-            To.Text = item.To.ToString();
+            From.Text = Item.From.ToString();
+            To.Text = Item.To.ToString();
         }
 
         protected override void OnSaveForm()
         {
             base.OnSaveForm();
 
-            item.From = long.Parse(From.Text);
-            item.To = long.Parse(To.Text);
+            Item.From = long.Parse(From.Text);
+            Item.To = long.Parse(To.Text);
         }
     }
 }

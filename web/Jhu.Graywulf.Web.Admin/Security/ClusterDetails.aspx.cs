@@ -26,9 +26,9 @@ namespace Jhu.Graywulf.Web.Admin.Security
         {
             base.InitLists();
 
-            DomainList.ParentEntity = item;
-            UserList.ParentEntity = item;
-            UserGroupList.ParentEntity = item;
+            DomainList.ParentEntity = Item;
+            UserList.ParentEntity = Item;
+            UserGroupList.ParentEntity = Item;
         }
 
         /*

@@ -20,14 +20,14 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
         {
             base.OnUpdateForm();
 
-            TypeName.Text = item.WorkflowTypeName;
+            TypeName.Text = Item.WorkflowTypeName;
         }
 
         protected override void OnSaveForm()
         {
             base.OnSaveForm();
 
-            item.WorkflowTypeName = TypeName.Text;
+            Item.WorkflowTypeName = TypeName.Text;
         }
 
     }

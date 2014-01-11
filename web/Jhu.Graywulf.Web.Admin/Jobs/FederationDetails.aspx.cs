@@ -20,8 +20,8 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
         {
             base.InitLists();
 
-            QueueDefinitionList.ParentEntity = item;
-            JobDefinitionList.ParentEntity = item;
+            QueueDefinitionList.ParentEntity = Item;
+            JobDefinitionList.ParentEntity = Item;
         }
 
         /*

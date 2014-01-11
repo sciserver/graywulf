@@ -25,16 +25,16 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.UpdateForm();
 
-            ProviderName.Text = item.ProviderName.ToString();
-            ConnectionString.Text = item.ConnectionString;
-            IntegratedSecurity.Text = item.IntegratedSecurity.ToString();
-            Username.Text = item.Username;
-            Password.Text = item.Password;
-            RequiresSshTunnel.Text = item.RequiresSshTunnel.ToString();
-            SshHostName.Text = item.SshHostName;
-            SshPortNumber.Text = item.SshPortNumber.ToString();
-            SshUsername.Text = item.SshUsername;
-            SshPassword.Text = item.SshPassword;
+            ProviderName.Text = Item.ProviderName.ToString();
+            ConnectionString.Text = Item.ConnectionString;
+            IntegratedSecurity.Text = Item.IntegratedSecurity.ToString();
+            Username.Text = Item.Username;
+            Password.Text = Item.Password;
+            RequiresSshTunnel.Text = Item.RequiresSshTunnel.ToString();
+            SshHostName.Text = Item.SshHostName;
+            SshPortNumber.Text = Item.SshPortNumber.ToString();
+            SshUsername.Text = Item.SshUsername;
+            SshPassword.Text = Item.SshPassword;
 
             //Activate.Visible = item.DeploymentState != DeploymentState.Deployed || item.RunningState != RunningState.Running;
             //Deactivate.Visible = !Activate.Visible;

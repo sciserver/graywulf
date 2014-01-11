@@ -20,8 +20,8 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.UpdateForm();
 
-            ServerVersion.EntityReference.Value = item.ServerVersion;
-            SizeMultiplier.Text = item.SizeMultiplier.ToString();
+            ServerVersion.EntityReference.Value = Item.ServerVersion;
+            SizeMultiplier.Text = Item.SizeMultiplier.ToString();
         }
     }
 }

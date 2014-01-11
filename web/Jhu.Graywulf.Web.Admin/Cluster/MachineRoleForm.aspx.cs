@@ -21,14 +21,14 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
         {
             base.OnUpdateForm();
 
-            MachineRoleType.SelectedValue = item.MachineRoleType.ToString();
+            MachineRoleType.SelectedValue = Item.MachineRoleType.ToString();
         }
 
         protected override void OnSaveForm()
         {
             base.OnSaveForm();
 
-            item.MachineRoleType = (MachineRoleType)Enum.Parse(typeof(MachineRoleType), MachineRoleType.SelectedValue);
+            Item.MachineRoleType = (MachineRoleType)Enum.Parse(typeof(MachineRoleType), MachineRoleType.SelectedValue);
         }
     }
 }

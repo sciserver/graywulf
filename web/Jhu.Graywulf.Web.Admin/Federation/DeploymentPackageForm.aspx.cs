@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
             if (Data.PostedFile != null)
             {
-                item.Filename = System.IO.Path.GetFileName(Data.PostedFile.FileName);
+                Item.Filename = System.IO.Path.GetFileName(Data.PostedFile.FileName);
             }
         }
 
@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             {
                 byte[] buffer = new byte[Data.PostedFile.InputStream.Length];
                 Data.PostedFile.InputStream.Read(buffer, 0, buffer.Length);
-                item.SetData(buffer);
+                Item.SetData(buffer);
             }
         }
     }

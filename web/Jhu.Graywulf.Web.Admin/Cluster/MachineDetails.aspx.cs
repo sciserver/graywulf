@@ -20,19 +20,19 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
         {
             base.UpdateForm();
 
-            HostName.Text = String.Format("{0} ({1})", item.HostName.Value, item.HostName.ResolvedValue);
-            AdminUrl.Text = String.Format("{0} ({1})", item.AdminUrl.Value, item.AdminUrl.ResolvedValue);
-            AdminUrl.NavigateUrl = item.AdminUrl.ResolvedValue;
-            DeployUncPath.Text = String.Format("{0} ({1})", item.DeployUncPath.Value, item.DeployUncPath.ResolvedValue);
-            DeployUncPath.NavigateUrl = item.DeployUncPath.ResolvedValue;
+            HostName.Text = String.Format("{0} ({1})", Item.HostName.Value, Item.HostName.ResolvedValue);
+            AdminUrl.Text = String.Format("{0} ({1})", Item.AdminUrl.Value, Item.AdminUrl.ResolvedValue);
+            AdminUrl.NavigateUrl = Item.AdminUrl.ResolvedValue;
+            DeployUncPath.Text = String.Format("{0} ({1})", Item.DeployUncPath.Value, Item.DeployUncPath.ResolvedValue);
+            DeployUncPath.NavigateUrl = Item.DeployUncPath.ResolvedValue;
         }
 
         protected override void InitLists()
         {
             base.InitLists();
 
-            ServerInstanceList.ParentEntity = item;
-            DiskVolumeList.ParentEntity = item;
+            ServerInstanceList.ParentEntity = Item;
+            DiskVolumeList.ParentEntity = Item;
         }
 
         /*

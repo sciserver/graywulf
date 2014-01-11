@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         {
             base.InitLists();
 
-            DatabaseInstanceList.ParentEntity = item;
+            DatabaseInstanceList.ParentEntity = Item;
         }
 
         public override void OnButtonCommand(object sender, CommandEventArgs e)
@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             switch (e.CommandName)
             {
                 case "Map":
-                    Response.Redirect(MappingWizard.GetUrl(item.Guid));
+                    Response.Redirect(MappingWizard.GetUrl(Item.Guid));
                     break;
                 default:
                     base.OnButtonCommand(sender, e);

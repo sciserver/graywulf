@@ -21,8 +21,8 @@ namespace Jhu.Graywulf.Web.Admin.Security
         {
             base.InitLists();
 
-            UserList.ParentEntity = item;
-            UserGroupList.ParentEntity = item;
+            UserList.ParentEntity = Item;
+            UserGroupList.ParentEntity = Item;
         }
 
         /*

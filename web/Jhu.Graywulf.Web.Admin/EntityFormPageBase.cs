@@ -19,10 +19,14 @@ namespace Jhu.Graywulf.Web.Admin
     public class EntityFormPageBase<T> : PageBase, IEntityForm
         where T : Entity, new()
     {
-        protected System.Web.UI.WebControls.Label message;
-        protected T item;
+        private T item;
 
-        public Entity Item
+        public T Item
+        {
+            get { return item; }
+        }
+
+        Entity IEntityForm.Item
         {
             get { return item; }
         }
@@ -62,7 +66,7 @@ namespace Jhu.Graywulf.Web.Admin
                 item.ParentReference.Guid = new Guid(Request.QueryString["parentGuid"]);
             }
 
-            OnItemCreated(item.Guid == Guid.Empty && !IsPostBack);
+            OnItemLoaded(item.Guid == Guid.Empty && !IsPostBack);
         }
 
         protected virtual void OnUpdateForm()
@@ -73,7 +77,7 @@ namespace Jhu.Graywulf.Web.Admin
         {
         }
 
-        protected virtual void OnItemCreated(bool newentity)
+        protected virtual void OnItemLoaded(bool newentity)
         {
         }
 
@@ -122,24 +126,24 @@ namespace Jhu.Graywulf.Web.Admin
                 }
                 catch (Registry.DuplicateNameException)
                 {
-                    message.Text = Resources.Messages.DuplicateName;
-                    message.Visible = true;
+                    Message.Text = Resources.Messages.DuplicateName;
+                    Message.Visible = true;
                     ViewState["ForceOverwrite"] = false;
 
                     return;
                 }
                 catch (InvalidConcurrencyVersionException)
                 {
-                    message.Text = Resources.Messages.InvalidConcurrencyVersion;
-                    message.Visible = true;
+                    Message.Text = Resources.Messages.InvalidConcurrencyVersion;
+                    Message.Visible = true;
                     ViewState["ForceOverwrite"] = true;
 
                     return;
                 }
                 catch (LockingCollisionException)
                 {
-                    message.Text = Resources.Messages.LockingCollision;
-                    message.Visible = true;
+                    Message.Text = Resources.Messages.LockingCollision;
+                    Message.Visible = true;
                     ViewState["ForceOverwrite"] = true;
 
                     return;

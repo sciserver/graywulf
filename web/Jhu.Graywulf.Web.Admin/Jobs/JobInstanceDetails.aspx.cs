@@ -20,24 +20,24 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
         {
             base.UpdateForm();
 
-            JobDefinition.EntityReference.Value = item.JobDefinition;
-            WorkflowType.Text = item.WorkflowTypeName;
-            DateStarted.Text = item.DateStarted == DateTime.MinValue ? "n/a" : item.DateStarted.ToString();
-            DateFinished.Text = item.DateFinished == DateTime.MinValue ? "n/a" : item.DateFinished.ToString();
-            ExecutionStatus.Text = item.JobExecutionStatus.ToString();
-            ScheduleType.Text = item.ScheduleType.ToString();
-            if (item.ScheduleType == Registry.ScheduleType.Recurring)
+            JobDefinition.EntityReference.Value = Item.JobDefinition;
+            WorkflowType.Text = Item.WorkflowTypeName;
+            DateStarted.Text = Item.DateStarted == DateTime.MinValue ? "n/a" : Item.DateStarted.ToString();
+            DateFinished.Text = Item.DateFinished == DateTime.MinValue ? "n/a" : Item.DateFinished.ToString();
+            ExecutionStatus.Text = Item.JobExecutionStatus.ToString();
+            ScheduleType.Text = Item.ScheduleType.ToString();
+            if (Item.ScheduleType == Registry.ScheduleType.Recurring)
             {
-                ScheduleTime.Text = String.Format("{0} (next: {1})", item.ScheduleTime.ToString(), item.GetNextScheduleTime().ToString());
+                ScheduleTime.Text = String.Format("{0} (next: {1})", Item.ScheduleTime.ToString(), Item.GetNextScheduleTime().ToString());
             }
             else
             {
-                ScheduleTime.Text = item.ScheduleTime.ToString();
+                ScheduleTime.Text = Item.ScheduleTime.ToString();
             }
-            RecurringPeriod.Text = item.RecurringPeriod.ToString();
-            RecurringInterval.Text = item.RecurringInterval.ToString();
+            RecurringPeriod.Text = Item.RecurringPeriod.ToString();
+            RecurringInterval.Text = Item.RecurringInterval.ToString();
 
-            string[] days = item.GetDayNamesFromMask();
+            string[] days = Item.GetDayNamesFromMask();
             string daysstring = string.Empty;
             for (int i = 0; i < days.Length; i++)
             {
@@ -69,15 +69,15 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
             }
              * */
 
-            ExceptionMessage.Text = item.ExceptionMessage;
+            ExceptionMessage.Text = Item.ExceptionMessage;
 
             RefreshParametersTable();
-            CheckpointProgress.Checkpoints = item.Checkpoints;
+            CheckpointProgress.Checkpoints = Item.Checkpoints;
         }
 
         private void RefreshParametersTable()
         {
-            foreach (string name in item.Parameters.Keys)
+            foreach (string name in Item.Parameters.Keys)
             {
                 HtmlTableRow tr = new HtmlTableRow();
 
@@ -95,7 +95,7 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
                 Label value = new Label();
                 value.Attributes.Add("class", "FormField");
                 value.ID = "Parameter_" + name;
-                value.Text = Server.HtmlEncode(item.Parameters[name].XmlValue.ToString());
+                value.Text = Server.HtmlEncode(Item.Parameters[name].XmlValue.ToString());
                 tdfield.Controls.Add(value);
                 tr.Cells.Add(tdfield);
 
@@ -116,7 +116,7 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
 
         protected void Log_Click(object sender, EventArgs e)
         {
-            Response.Redirect("~/log/?jobGuid=" + item.Guid);
+            Response.Redirect("~/log/?jobGuid=" + Item.Guid);
         }
     }
 }

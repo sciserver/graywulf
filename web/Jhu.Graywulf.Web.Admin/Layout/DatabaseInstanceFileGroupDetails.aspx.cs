@@ -21,18 +21,18 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         {
             base.UpdateForm();
 
-            FileGroup.EntityReference.Value = item.FileGroup;
-            Partition.EntityReference.Value = item.Partition;
-            AllocatedSpace.Text = ByteSizeFormatter.Format(item.AllocatedSpace);
-            UsedSpace.Text = ByteSizeFormatter.Format(item.UsedSpace); // TODO
-            ReservedSpace.Text = ByteSizeFormatter.Format(item.ReservedSpace); // TODO
+            FileGroup.EntityReference.Value = Item.FileGroup;
+            Partition.EntityReference.Value = Item.Partition;
+            AllocatedSpace.Text = ByteSizeFormatter.Format(Item.AllocatedSpace);
+            UsedSpace.Text = ByteSizeFormatter.Format(Item.UsedSpace); // TODO
+            ReservedSpace.Text = ByteSizeFormatter.Format(Item.ReservedSpace); // TODO
         }
 
         protected override void InitLists()
         {
             base.InitLists();
 
-            FileList.ParentEntity = item;
+            FileList.ParentEntity = Item;
         }
 
         /*

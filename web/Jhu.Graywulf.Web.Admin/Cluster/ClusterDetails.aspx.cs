@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
 
         protected override void InitLists()
         {
-            MachineRoleList.ParentEntity = item;
+            MachineRoleList.ParentEntity = Item;
         }
     }
 }

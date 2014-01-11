@@ -20,23 +20,23 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         {
             base.UpdateForm();
 
-            DatabaseName.Text = item.DatabaseName;
-            ServerInstance.EntityReference.Value = item.ServerInstance;
-            Slice.EntityReference.Value = item.Slice;
-            DatabaseVersion.EntityReference.Value = item.DatabaseVersion;
+            DatabaseName.Text = Item.DatabaseName;
+            ServerInstance.EntityReference.Value = Item.ServerInstance;
+            Slice.EntityReference.Value = Item.Slice;
+            DatabaseVersion.EntityReference.Value = Item.DatabaseVersion;
 
-            Allocate.Visible = item.DeploymentState == DeploymentState.New || item.DeploymentState == DeploymentState.Undeployed;
-            Drop.Visible = item.DeploymentState == DeploymentState.Deployed;
+            Allocate.Visible = Item.DeploymentState == DeploymentState.New || Item.DeploymentState == DeploymentState.Undeployed;
+            Drop.Visible = Item.DeploymentState == DeploymentState.Deployed;
 
-            Attach.Visible = item.DeploymentState == DeploymentState.Deployed && item.RunningState == RunningState.Detached;
-            Detach.Visible = item.DeploymentState == DeploymentState.Deployed && item.RunningState == RunningState.Attached;
+            Attach.Visible = Item.DeploymentState == DeploymentState.Deployed && Item.RunningState == RunningState.Detached;
+            Detach.Visible = Item.DeploymentState == DeploymentState.Deployed && Item.RunningState == RunningState.Attached;
         }
 
         protected override void InitLists()
         {
             base.InitLists();
 
-            FileGroupList.ParentEntity = item;
+            FileGroupList.ParentEntity = Item;
         }
 
         public override void OnButtonCommand(object sender, CommandEventArgs e)
@@ -44,16 +44,16 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             switch (e.CommandName)
             {
                 case "Allocate":
-                    item.Deploy();
+                    Item.Deploy();
                     break;
                 case "Drop":
-                    item.Undeploy();
+                    Item.Undeploy();
                     break;
                 case "Attach":
-                    item.Attach();
+                    Item.Attach();
                     break;
                 case "Detach":
-                    item.Detach();
+                    Item.Detach();
                     break;
                 default:
                     base.OnButtonCommand(sender, e);

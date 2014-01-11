@@ -21,14 +21,14 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         {
             base.UpdateForm();
 
-            DiskVolume.EntityReference.Value = item.DiskVolume;
-            DatabaseFileType.Text = item.DatabaseFileType.ToString();
-            LogicalName.Text = item.LogicalName;
-            filename.Text = item.GetFullUncFilename();
-            filename.NavigateUrl = String.Format("file:{0}", item.GetFullUncFilename().Replace('\\', '/'));
-            AllocatedSpace.Text = ByteSizeFormatter.Format(item.AllocatedSpace);
-            UsedSpace.Text = ByteSizeFormatter.Format(item.UsedSpace);
-            ReservedSpace.Text = ByteSizeFormatter.Format(item.ReservedSpace);
+            DiskVolume.EntityReference.Value = Item.DiskVolume;
+            DatabaseFileType.Text = Item.DatabaseFileType.ToString();
+            LogicalName.Text = Item.LogicalName;
+            filename.Text = Item.GetFullUncFilename();
+            filename.NavigateUrl = String.Format("file:{0}", Item.GetFullUncFilename().Replace('\\', '/'));
+            AllocatedSpace.Text = ByteSizeFormatter.Format(Item.AllocatedSpace);
+            UsedSpace.Text = ByteSizeFormatter.Format(Item.UsedSpace);
+            ReservedSpace.Text = ByteSizeFormatter.Format(Item.ReservedSpace);
         }
     }
 }

@@ -21,19 +21,19 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
             base.OnUpdateForm();
 
             RefreshQueueDefinitionList();
-            MaxOutstandingJobs.Text = item.MaxOutstandingJobs.ToString();
-            Timeout.Text = item.Timeout.ToString();
+            MaxOutstandingJobs.Text = Item.MaxOutstandingJobs.ToString();
+            Timeout.Text = Item.Timeout.ToString();
 
-            QueueDefinition.SelectedValue = item.QueueDefinitionReference.Guid.ToString();
+            QueueDefinition.SelectedValue = Item.QueueDefinitionReference.Guid.ToString();
         }
 
         protected override void OnSaveForm()
         {
             base.OnSaveForm();
 
-            item.QueueDefinitionReference.Guid = new Guid(QueueDefinition.SelectedValue);
-            item.MaxOutstandingJobs = int.Parse(MaxOutstandingJobs.Text);
-            item.Timeout = int.Parse(Timeout.Text);
+            Item.QueueDefinitionReference.Guid = new Guid(QueueDefinition.SelectedValue);
+            Item.MaxOutstandingJobs = int.Parse(MaxOutstandingJobs.Text);
+            Item.Timeout = int.Parse(Timeout.Text);
         }
 
         private void RefreshQueueDefinitionList()

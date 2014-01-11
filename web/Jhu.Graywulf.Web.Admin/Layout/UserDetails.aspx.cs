@@ -20,29 +20,29 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         {
             base.UpdateForm();
 
-            FirstName.Text = item.FirstName;
-            MiddleName.Text = item.MiddleName;
-            LastName.Text = item.LastName;
-            Email.Text = item.Email;
-            Company.Text = item.Company;
-            NtlmUser.Text = item.NtlmUser;
+            FirstName.Text = Item.FirstName;
+            MiddleName.Text = Item.MiddleName;
+            LastName.Text = Item.LastName;
+            Email.Text = Item.Email;
+            Company.Text = Item.Company;
+            NtlmUser.Text = Item.NtlmUser;
         }
 
         protected override void InitLists()
         {
             base.InitLists();
 
-            UserDatabaseInstanceList.ParentEntity = item;
+            UserDatabaseInstanceList.ParentEntity = Item;
         }
 
         private void RemoveUserGroup(Guid[] guids)
         {
             foreach (var g in guids)
             {
-                item.RemoveMemberOf(g);
+                Item.RemoveMemberOf(g);
             }
 
-            item.LoadUserGroups();
+            Item.LoadUserGroups();
         }
 
     }

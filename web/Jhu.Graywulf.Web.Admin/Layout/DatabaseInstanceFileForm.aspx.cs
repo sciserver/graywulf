@@ -25,26 +25,26 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
             RefreshDiskVolumeList();
 
-            DiskVolume.SelectedValue = item.DiskVolumeReference.Guid.ToString();
-            DatabaseFileType.SelectedValue = item.DatabaseFileType.ToString();
-            LogicalName.Text = item.LogicalName;
-            Filename.Text = item.Filename;
-            AllocatedSpace.Text = ByteSizeFormatter.Format(item.AllocatedSpace);
-            UsedSpace.Text = ByteSizeFormatter.Format(item.UsedSpace);
-            ReservedSpace.Text = ByteSizeFormatter.Format(item.ReservedSpace);
+            DiskVolume.SelectedValue = Item.DiskVolumeReference.Guid.ToString();
+            DatabaseFileType.SelectedValue = Item.DatabaseFileType.ToString();
+            LogicalName.Text = Item.LogicalName;
+            Filename.Text = Item.Filename;
+            AllocatedSpace.Text = ByteSizeFormatter.Format(Item.AllocatedSpace);
+            UsedSpace.Text = ByteSizeFormatter.Format(Item.UsedSpace);
+            ReservedSpace.Text = ByteSizeFormatter.Format(Item.ReservedSpace);
         }
 
         protected override void OnSaveForm()
         {
             base.OnSaveForm();
 
-            item.DiskVolumeReference.Guid = new Guid(DiskVolume.SelectedValue);
-            item.DatabaseFileType = (DatabaseFileType)Enum.Parse(typeof(DatabaseFileType), DatabaseFileType.SelectedValue);
-            item.LogicalName = LogicalName.Text;
-            item.Filename = Filename.Text;
-            item.AllocatedSpace = ByteSizeFormatter.Parse(AllocatedSpace.Text);
-            item.UsedSpace = ByteSizeFormatter.Parse(UsedSpace.Text);
-            item.ReservedSpace = ByteSizeFormatter.Parse(ReservedSpace.Text);
+            Item.DiskVolumeReference.Guid = new Guid(DiskVolume.SelectedValue);
+            Item.DatabaseFileType = (DatabaseFileType)Enum.Parse(typeof(DatabaseFileType), DatabaseFileType.SelectedValue);
+            Item.LogicalName = LogicalName.Text;
+            Item.Filename = Filename.Text;
+            Item.AllocatedSpace = ByteSizeFormatter.Parse(AllocatedSpace.Text);
+            Item.UsedSpace = ByteSizeFormatter.Parse(UsedSpace.Text);
+            Item.ReservedSpace = ByteSizeFormatter.Parse(ReservedSpace.Text);
         }
 
         protected void RefreshDiskVolumeList()
@@ -53,17 +53,17 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             DiskVolume.Items.Clear();
             DiskVolume.Items.Add(new ListItem("(select disk volume)", Guid.Empty.ToString()));
 
-            item.Context = RegistryContext;
+            Item.Context = RegistryContext;
             
             DatabaseInstance di;
-            if (item.Parent is DatabaseInstanceFileGroup)
+            if (Item.Parent is DatabaseInstanceFileGroup)
             {
-                var fg = (DatabaseInstanceFileGroup)item.Parent;
+                var fg = (DatabaseInstanceFileGroup)Item.Parent;
                 di = (DatabaseInstance)fg.Parent;
             }
             else
             {
-                di = (DatabaseInstance)item.Parent;
+                di = (DatabaseInstance)Item.Parent;
             }
 
             if (di.ServerInstance != null)

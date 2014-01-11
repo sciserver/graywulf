@@ -22,8 +22,8 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
             RefreshServerVersionList();
 
-            ServerVersion.SelectedValue = item.ServerVersionReference.Guid.ToString();
-            SizeMultiplier.Text = item.SizeMultiplier.ToString();
+            ServerVersion.SelectedValue = Item.ServerVersionReference.Guid.ToString();
+            SizeMultiplier.Text = Item.SizeMultiplier.ToString();
         }
 
 
@@ -31,8 +31,8 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.OnSaveForm();
 
-            item.ServerVersionReference.Guid = new Guid(ServerVersion.SelectedValue);
-            item.SizeMultiplier = float.Parse(SizeMultiplier.Text);
+            Item.ServerVersionReference.Guid = new Guid(ServerVersion.SelectedValue);
+            Item.SizeMultiplier = float.Parse(SizeMultiplier.Text);
         }
 
         protected void RefreshServerVersionList()

@@ -18,13 +18,13 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
     {
         protected override void UpdateForm()
         {
-            MachineRoleType.Text = item.MachineRoleType.ToString();
+            MachineRoleType.Text = Item.MachineRoleType.ToString();
         }
 
         protected override void InitLists()
         {
-            MachineList.ParentEntity = item;
-            ServerVersionList.ParentEntity = item;
+            MachineList.ParentEntity = Item;
+            ServerVersionList.ParentEntity = Item;
         }
 
         /*

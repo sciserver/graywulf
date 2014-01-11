@@ -20,8 +20,8 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.UpdateForm();
 
-            From.Text = item.From.ToString();
-            To.Text = item.To.ToString();
+            From.Text = Item.From.ToString();
+            To.Text = Item.To.ToString();
         }
     }
 }

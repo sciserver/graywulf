@@ -21,13 +21,13 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.UpdateForm();
 
-            FileGroupType.Text = item.FileGroupType.ToString();
-            LayoutType.Text = item.LayoutType.ToString();
-            AllocationType.Text = item.AllocationType.ToString();
-            DiskVolumeType.Text = item.DiskVolumeType.ToString();
-            FileGroupName.Text = item.FileGroupName;
-            AllocatedSpace.Text = ByteSizeFormatter.Format(item.AllocatedSpace);
-            FileCount.Text = item.FileCount.ToString();
+            FileGroupType.Text = Item.FileGroupType.ToString();
+            LayoutType.Text = Item.LayoutType.ToString();
+            AllocationType.Text = Item.AllocationType.ToString();
+            DiskVolumeType.Text = Item.DiskVolumeType.ToString();
+            FileGroupName.Text = Item.FileGroupName;
+            AllocatedSpace.Text = ByteSizeFormatter.Format(Item.AllocatedSpace);
+            FileCount.Text = Item.FileCount.ToString();
         }
     }
 }

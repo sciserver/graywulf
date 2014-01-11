@@ -20,17 +20,17 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.UpdateForm();
 
-            ShortTitle.Text = item.ShortTitle;
-            LongTitle.Text = item.LongTitle;
-            Email.Text = item.Email;
-            StandardUserGroup.EntityReference.Value = item.StandardUserGroup;
+            ShortTitle.Text = Item.ShortTitle;
+            LongTitle.Text = Item.LongTitle;
+            Email.Text = Item.Email;
+            StandardUserGroup.EntityReference.Value = Item.StandardUserGroup;
         }
 
         protected override void InitLists()
         {
             base.InitLists();
 
-            FederationList.ParentEntity = item;
+            FederationList.ParentEntity = Item;
         }
 
         /*

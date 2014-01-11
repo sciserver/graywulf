@@ -23,38 +23,38 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
             // Display server version box for new database definitions
             // Default database version will be generated using this
-            if (!item.IsExisting)
+            if (!Item.IsExisting)
             {
                 RefreshServerVersionList();
                 ServerVersionRow.Visible = true;
             }
 
             RefreshServerInstanceList();
-            SchemaSourceServerInstance.SelectedValue = item.SchemaSourceServerInstanceReference.Guid.ToString();
+            SchemaSourceServerInstance.SelectedValue = Item.SchemaSourceServerInstanceReference.Guid.ToString();
 
-            SchemaSourceDatabaseName.Text = item.SchemaSourceDatabaseName;
-            LayoutType.SelectedValue = item.LayoutType.ToString();
-            DatabaseInstanceNamePattern.Text = item.DatabaseInstanceNamePattern;
-            DatabaseNamePattern.Text = item.DatabaseNamePattern;
-            SliceCount.Text = item.SliceCount.ToString();
-            PartitionCount.Text = item.PartitionCount.ToString();
-            PartitionRangeType.SelectedValue = item.PartitionRangeType.ToString();
-            PartitionFunction.Text = item.PartitionFunction;
+            SchemaSourceDatabaseName.Text = Item.SchemaSourceDatabaseName;
+            LayoutType.SelectedValue = Item.LayoutType.ToString();
+            DatabaseInstanceNamePattern.Text = Item.DatabaseInstanceNamePattern;
+            DatabaseNamePattern.Text = Item.DatabaseNamePattern;
+            SliceCount.Text = Item.SliceCount.ToString();
+            PartitionCount.Text = Item.PartitionCount.ToString();
+            PartitionRangeType.SelectedValue = Item.PartitionRangeType.ToString();
+            PartitionFunction.Text = Item.PartitionFunction;
         }
 
         protected override void OnSaveForm()
         {
             base.OnSaveForm();
 
-            item.SchemaSourceServerInstanceReference.Guid = new Guid(SchemaSourceServerInstance.SelectedValue);
-            item.SchemaSourceDatabaseName = SchemaSourceDatabaseName.Text;
-            item.LayoutType = (DatabaseLayoutType)Enum.Parse(typeof(DatabaseLayoutType), LayoutType.SelectedValue);
-            item.DatabaseInstanceNamePattern = DatabaseInstanceNamePattern.Text;
-            item.DatabaseNamePattern = DatabaseNamePattern.Text;
-            item.SliceCount = int.Parse(SliceCount.Text);
-            item.PartitionCount = int.Parse(PartitionCount.Text);
-            item.PartitionRangeType = (PartitionRangeType)Enum.Parse(typeof(PartitionRangeType), PartitionRangeType.SelectedValue);
-            item.PartitionFunction = PartitionFunction.Text;
+            Item.SchemaSourceServerInstanceReference.Guid = new Guid(SchemaSourceServerInstance.SelectedValue);
+            Item.SchemaSourceDatabaseName = SchemaSourceDatabaseName.Text;
+            Item.LayoutType = (DatabaseLayoutType)Enum.Parse(typeof(DatabaseLayoutType), LayoutType.SelectedValue);
+            Item.DatabaseInstanceNamePattern = DatabaseInstanceNamePattern.Text;
+            Item.DatabaseNamePattern = DatabaseNamePattern.Text;
+            Item.SliceCount = int.Parse(SliceCount.Text);
+            Item.PartitionCount = int.Parse(PartitionCount.Text);
+            Item.PartitionRangeType = (PartitionRangeType)Enum.Parse(typeof(PartitionRangeType), PartitionRangeType.SelectedValue);
+            Item.PartitionFunction = PartitionFunction.Text;
         }
 
         protected override void OnSaveFormCompleted(bool newentity)
@@ -65,7 +65,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
                 sv.Guid = new Guid(ServerVersion.SelectedValue);
                 sv.Load();
 
-                var ddi = new DatabaseDefinitionInstaller(item);
+                var ddi = new DatabaseDefinitionInstaller(Item);
                 ddi.GenerateDefaultChildren(sv, Registry.Constants.HotDatabaseVersionName);
             }
         }
@@ -74,9 +74,9 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             SchemaSourceServerInstance.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
 
-            item.Federation.Domain.Cluster.LoadMachineRoles(false);
+            Item.Federation.Domain.Cluster.LoadMachineRoles(false);
 
-            foreach (MachineRole mr in item.Federation.Domain.Cluster.MachineRoles.Values)
+            foreach (MachineRole mr in Item.Federation.Domain.Cluster.MachineRoles.Values)
             {
                 mr.LoadMachines(false);
                 foreach (Machine m in mr.Machines.Values)
@@ -95,13 +95,13 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             ServerVersion.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
 
             Jhu.Graywulf.Registry.Cluster c;
-            if (item.Parent is Jhu.Graywulf.Registry.Cluster)
+            if (Item.Parent is Jhu.Graywulf.Registry.Cluster)
             {
-                c = item.Cluster;
+                c = Item.Cluster;
             }
-            else if (item.Parent is Jhu.Graywulf.Registry.Federation)
+            else if (Item.Parent is Jhu.Graywulf.Registry.Federation)
             {
-                c = item.Federation.Domain.Cluster;
+                c = Item.Federation.Domain.Cluster;
             }
             else
             {

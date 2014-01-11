@@ -21,9 +21,9 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         {
             base.UpdateForm();
 
-            Federation.EntityReference.Value = item.DatabaseVersion.DatabaseDefinition.Federation;
-            DatabaseVersion.EntityReference.Value = item.DatabaseVersion;
-            DatabaseInstance.EntityReference.Value = item.DatabaseInstance;
+            Federation.EntityReference.Value = Item.DatabaseVersion.DatabaseDefinition.Federation;
+            DatabaseVersion.EntityReference.Value = Item.DatabaseVersion;
+            DatabaseInstance.EntityReference.Value = Item.DatabaseInstance;
         }
     }
 }

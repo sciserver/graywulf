@@ -20,10 +20,10 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
         {
             base.OnUpdateForm();
 
-            InstanceName.Text = item.InstanceName;
-            IntegratedSecurity.Checked = item.IntegratedSecurity;
-            AdminUser.Text = item.AdminUser;
-            AdminPassword.Text = item.AdminPassword;
+            InstanceName.Text = Item.InstanceName;
+            IntegratedSecurity.Checked = Item.IntegratedSecurity;
+            AdminUser.Text = Item.AdminUser;
+            AdminPassword.Text = Item.AdminPassword;
 
             AdminUser.Enabled = !IntegratedSecurity.Checked;
             AdminPassword.Enabled = !IntegratedSecurity.Checked;
@@ -33,10 +33,10 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
         {
             base.OnSaveForm();
 
-            item.InstanceName = InstanceName.Text;
-            item.IntegratedSecurity = IntegratedSecurity.Checked;
-            item.AdminUser = AdminUser.Text;
-            item.AdminPassword = AdminPassword.Text;
+            Item.InstanceName = InstanceName.Text;
+            Item.IntegratedSecurity = IntegratedSecurity.Checked;
+            Item.AdminUser = AdminUser.Text;
+            Item.AdminPassword = AdminPassword.Text;
         }
 
         protected void IntegratedSecurity_CheckedChanged(object sender, EventArgs e)

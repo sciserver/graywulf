@@ -20,18 +20,18 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
         {
             base.OnUpdateForm();
 
-            HostName.Text = item.HostName.Value;
-            AdminUrl.Text = item.AdminUrl.Value;
-            DeployUncPath.Text = item.DeployUncPath.Value;
+            HostName.Text = Item.HostName.Value;
+            AdminUrl.Text = Item.AdminUrl.Value;
+            DeployUncPath.Text = Item.DeployUncPath.Value;
         }
 
         protected override void OnSaveForm()
         {
             base.OnSaveForm();
 
-            item.HostName.Value = HostName.Text;
-            item.AdminUrl.Value = AdminUrl.Text;
-            item.DeployUncPath.Value = DeployUncPath.Text;
+            Item.HostName.Value = HostName.Text;
+            Item.AdminUrl.Value = AdminUrl.Text;
+            Item.DeployUncPath.Value = DeployUncPath.Text;
         }
     }
 }

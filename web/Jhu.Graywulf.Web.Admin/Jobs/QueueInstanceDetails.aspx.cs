@@ -20,16 +20,16 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
         {
             base.InitLists();
 
-            JobInstanceList.ParentEntity = item;
+            JobInstanceList.ParentEntity = Item;
         }
 
         protected override void UpdateForm()
         {
             base.UpdateForm();
 
-            QueueDefinition.EntityReference.Value = item.QueueDefinition;
-            MaxOutstandingJobs.Text = item.MaxOutstandingJobs.ToString();
-            Timeout.Text = item.Timeout.ToString();
+            QueueDefinition.EntityReference.Value = Item.QueueDefinition;
+            MaxOutstandingJobs.Text = Item.MaxOutstandingJobs.ToString();
+            Timeout.Text = Item.Timeout.ToString();
 
             //switch (item.RunningState)
             //{

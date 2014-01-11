@@ -21,26 +21,26 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.OnUpdateForm();
 
-            fileGroupTypeList.SelectedValue = item.FileGroupType.ToString();
-            LayoutType.SelectedValue = item.LayoutType.ToString();
-            allocationTypeList.SelectedValue = item.AllocationType.ToString();
-            diskVolumeTypeList.SelectedValue = item.DiskVolumeType.ToString();
-            FileGroupName.Text = item.FileGroupName;
-            AllocatedSpace.Text = ByteSizeFormatter.Format(item.AllocatedSpace);
-            FileCount.Text = item.FileCount.ToString();
+            fileGroupTypeList.SelectedValue = Item.FileGroupType.ToString();
+            LayoutType.SelectedValue = Item.LayoutType.ToString();
+            allocationTypeList.SelectedValue = Item.AllocationType.ToString();
+            diskVolumeTypeList.SelectedValue = Item.DiskVolumeType.ToString();
+            FileGroupName.Text = Item.FileGroupName;
+            AllocatedSpace.Text = ByteSizeFormatter.Format(Item.AllocatedSpace);
+            FileCount.Text = Item.FileCount.ToString();
         }
 
         protected override void OnSaveForm()
         {
             base.OnSaveForm();
 
-            item.FileGroupType = (FileGroupType)Enum.Parse(typeof(FileGroupType), fileGroupTypeList.SelectedValue);
-            item.LayoutType = (FileGroupLayoutType)Enum.Parse(typeof(FileGroupLayoutType), LayoutType.SelectedValue);
-            item.AllocationType = (FileGroupAllocationType)Enum.Parse(typeof(FileGroupAllocationType), allocationTypeList.SelectedValue);
-            item.DiskVolumeType = (DiskVolumeType)Enum.Parse(typeof(DiskVolumeType), diskVolumeTypeList.SelectedValue);
-            item.FileGroupName = FileGroupName.Text;
-            item.AllocatedSpace = ByteSizeFormatter.Parse(AllocatedSpace.Text);
-            item.FileCount = int.Parse(FileCount.Text);
+            Item.FileGroupType = (FileGroupType)Enum.Parse(typeof(FileGroupType), fileGroupTypeList.SelectedValue);
+            Item.LayoutType = (FileGroupLayoutType)Enum.Parse(typeof(FileGroupLayoutType), LayoutType.SelectedValue);
+            Item.AllocationType = (FileGroupAllocationType)Enum.Parse(typeof(FileGroupAllocationType), allocationTypeList.SelectedValue);
+            Item.DiskVolumeType = (DiskVolumeType)Enum.Parse(typeof(DiskVolumeType), diskVolumeTypeList.SelectedValue);
+            Item.FileGroupName = FileGroupName.Text;
+            Item.AllocatedSpace = ByteSizeFormatter.Parse(AllocatedSpace.Text);
+            Item.FileCount = int.Parse(FileCount.Text);
         }
     }
 }

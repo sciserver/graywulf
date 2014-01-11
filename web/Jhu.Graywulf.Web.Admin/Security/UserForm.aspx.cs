@@ -20,62 +20,62 @@ namespace Jhu.Graywulf.Web.Admin.Security
         {
             base.OnUpdateForm();
 
-            Title.Text = item.Title;
-            FirstName.Text = item.FirstName;
-            MiddleName.Text = item.MiddleName;
-            LastName.Text = item.LastName;
-            Gender.SelectedValue = item.Gender.ToString();
-            Email.Text = item.Email;
-            DateOfBirth.Text = item.DateOfBirth.ToShortDateString();
-            Company.Text = item.Company;
-            JobTitle.Text = item.JobTitle;
-            Address.Text = item.Address;
-            Address.Text = item.Address2;
-            State.Text = item.State;
-            StateCode.Text = item.StateCode;
-            City.Text = item.City;
-            Country.Text = item.Country;
-            CountryCode.Text = item.CountryCode;
-            ZipCode.Text = item.ZipCode;
-            WorkPhone.Text = item.WorkPhone;
-            HomePhone.Text = item.HomePhone;
-            CellPhone.Text = item.CellPhone;
-            TimeZone.Text = item.TimeZone.ToString();
-            Integrated.Checked = item.Integrated;
-            NtlmUser.Text = item.NtlmUser;
+            Title.Text = Item.Title;
+            FirstName.Text = Item.FirstName;
+            MiddleName.Text = Item.MiddleName;
+            LastName.Text = Item.LastName;
+            Gender.SelectedValue = Item.Gender.ToString();
+            Email.Text = Item.Email;
+            DateOfBirth.Text = Item.DateOfBirth.ToShortDateString();
+            Company.Text = Item.Company;
+            JobTitle.Text = Item.JobTitle;
+            Address.Text = Item.Address;
+            Address.Text = Item.Address2;
+            State.Text = Item.State;
+            StateCode.Text = Item.StateCode;
+            City.Text = Item.City;
+            Country.Text = Item.Country;
+            CountryCode.Text = Item.CountryCode;
+            ZipCode.Text = Item.ZipCode;
+            WorkPhone.Text = Item.WorkPhone;
+            HomePhone.Text = Item.HomePhone;
+            CellPhone.Text = Item.CellPhone;
+            TimeZone.Text = Item.TimeZone.ToString();
+            Integrated.Checked = Item.Integrated;
+            NtlmUser.Text = Item.NtlmUser;
             Password.Text = String.Empty;
 
-            PasswordRequiredValidator.Enabled = !item.IsExisting;
+            PasswordRequiredValidator.Enabled = !Item.IsExisting;
         }
 
         protected override void OnSaveForm()
         {
             base.OnSaveForm();
 
-            item.Title = Title.Text;
-            item.FirstName = FirstName.Text;
-            item.MiddleName = MiddleName.Text;
-            item.LastName = LastName.Text;
-            item.Gender = (Gender)Enum.Parse(typeof(Gender), Gender.SelectedValue);
-            item.Email = Email.Text;
-            item.DateOfBirth = DateTime.Parse(DateOfBirth.Text);
-            item.Company = Company.Text;
-            item.JobTitle = JobTitle.Text;
-            item.Address = Address.Text;
-            item.Address2 = Address2.Text;
-            item.State = State.Text;
-            item.StateCode = StateCode.Text;
-            item.City = City.Text;
-            item.Country = Country.Text;
-            item.CountryCode = CountryCode.Text;
-            item.ZipCode = ZipCode.Text;
-            item.WorkPhone = WorkPhone.Text;
-            item.HomePhone = HomePhone.Text;
-            item.CellPhone = CellPhone.Text;
-            item.TimeZone = int.Parse(TimeZone.Text);
-            item.Integrated = Integrated.Checked;
-            item.NtlmUser = NtlmUser.Text;
-            if (Password.Text != String.Empty) item.SetPassword(Password.Text);
+            Item.Title = Title.Text;
+            Item.FirstName = FirstName.Text;
+            Item.MiddleName = MiddleName.Text;
+            Item.LastName = LastName.Text;
+            Item.Gender = (Gender)Enum.Parse(typeof(Gender), Gender.SelectedValue);
+            Item.Email = Email.Text;
+            Item.DateOfBirth = DateTime.Parse(DateOfBirth.Text);
+            Item.Company = Company.Text;
+            Item.JobTitle = JobTitle.Text;
+            Item.Address = Address.Text;
+            Item.Address2 = Address2.Text;
+            Item.State = State.Text;
+            Item.StateCode = StateCode.Text;
+            Item.City = City.Text;
+            Item.Country = Country.Text;
+            Item.CountryCode = CountryCode.Text;
+            Item.ZipCode = ZipCode.Text;
+            Item.WorkPhone = WorkPhone.Text;
+            Item.HomePhone = HomePhone.Text;
+            Item.CellPhone = CellPhone.Text;
+            Item.TimeZone = int.Parse(TimeZone.Text);
+            Item.Integrated = Integrated.Checked;
+            Item.NtlmUser = NtlmUser.Text;
+            if (Password.Text != String.Empty) Item.SetPassword(Password.Text);
         }
 
     }
