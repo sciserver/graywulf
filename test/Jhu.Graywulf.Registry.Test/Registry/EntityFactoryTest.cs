@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Registry
                 // *** TODO: create mask from input parameters
                 var mask = new HashSet<EntityType>()
                 {
-                    //EntityType.JobInstance,
+                    EntityType.JobInstance,
                     EntityType.DatabaseInstanceFileGroup,
                     EntityType.DatabaseInstanceFile,
                 };

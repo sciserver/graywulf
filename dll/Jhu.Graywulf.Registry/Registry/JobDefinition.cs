@@ -7,6 +7,8 @@ using System.Xml.Serialization;
 using System.Reflection;
 using System.IO;
 using System.Configuration;
+using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -19,8 +21,7 @@ namespace Jhu.Graywulf.Registry
 
         // --- Background storage for properties ---
         private string workflowTypeName;
-
-        private Dictionary<string, JobParameter> parameters;
+        private ParameterCollection parameters;
 
         #endregion
         #region Member Access Properties
@@ -39,23 +40,20 @@ namespace Jhu.Graywulf.Registry
         /// Gets a dictionary with the workflow input parameters.
         /// </summary>
         [XmlIgnore]
-        public Dictionary<string, JobParameter> Parameters
+        [DBColumn]
+        public ParameterCollection Parameters
         {
             get { return parameters; }
+            set { parameters = value; }
         }
 
         [XmlArray("Parameters")]
-        public JobParameter[] Parameters_ForXml
+        [XmlArrayItem(typeof(JobDefinitionParameter))]
+        [DefaultValue(null)]
+        public Parameter[] Parameters_ForXml
         {
-            get { return parameters.Values.ToArray(); }
-            set
-            {
-                parameters = new Dictionary<string, JobParameter>();
-                foreach (var p in value)
-                {
-                    parameters.Add(p.Name, p);
-                }
-            }
+            get { return parameters.GetAsArray(); }
+            set { parameters = new ParameterCollection(value); }
         }
 
         #endregion
@@ -88,7 +86,7 @@ namespace Jhu.Graywulf.Registry
         public JobDefinition()
             : base()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -98,7 +96,7 @@ namespace Jhu.Graywulf.Registry
         public JobDefinition(Context context)
             : base(context)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -109,7 +107,7 @@ namespace Jhu.Graywulf.Registry
         public JobDefinition(Cluster parent)
             : base(parent.Context, parent)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -120,7 +118,7 @@ namespace Jhu.Graywulf.Registry
         public JobDefinition(Federation parent)
             : base(parent.Context, parent)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -139,14 +137,14 @@ namespace Jhu.Graywulf.Registry
         /// <remarks>
         /// This function is called by the contructors.
         /// </remarks>
-        private void InitializeMembers()
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
         {
             base.EntityType = EntityType.JobDefinition;
             base.EntityGroup = EntityGroup.Jobs;
 
             this.workflowTypeName = string.Empty;
-
-            this.parameters = new Dictionary<string, JobParameter>();
+            this.parameters = new ParameterCollection();
         }
 
         /// <summary>
@@ -155,7 +153,8 @@ namespace Jhu.Graywulf.Registry
         /// <param name="old">A <b>Database Definition</b> object to create the deep copy from.</param>
         private void CopyMembers(JobDefinition old)
         {
-            this.parameters = new Dictionary<string, JobParameter>(old.parameters);
+            this.workflowTypeName = old.workflowTypeName;
+            this.parameters = new ParameterCollection(old.parameters);
         }
 
         public override object Clone()
@@ -181,9 +180,10 @@ namespace Jhu.Graywulf.Registry
             parameters.Clear();
 
             var rh = JobReflectionHelper.CreateInstance(this.workflowTypeName);
+            // Create a copy to release proxy objects.
             foreach (var par in rh.GetParameters().Values)
             {
-                parameters.Add(par.Name, new JobParameter(par));
+                parameters.Add(par.Name, new JobDefinitionParameter((JobDefinitionParameter)par));
             }
         }
 
@@ -200,9 +200,13 @@ namespace Jhu.Graywulf.Registry
 
             // Create workflow parameters
             var rh = JobReflectionHelper.CreateInstance(this.workflowTypeName);
-            foreach (var par in rh.GetParameters().Values)
+            foreach (JobDefinitionParameter par in rh.GetParameters().Values)
             {
-                job.Parameters.Add(par.Name, new JobParameter(par));
+                job.Parameters.Add(par.Name, new JobInstanceParameter()
+                    {
+                        Name = par.Name,
+                        Direction = par.Direction,
+                    });
             }
 
             return job;

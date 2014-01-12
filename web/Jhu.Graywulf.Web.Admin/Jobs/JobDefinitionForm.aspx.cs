@@ -28,6 +28,7 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
             base.OnSaveForm();
 
             Item.WorkflowTypeName = TypeName.Text;
+            Item.DiscoverWorkflowParameters();
         }
 
     }

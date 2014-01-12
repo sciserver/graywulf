@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
 {
     public partial class JobInstanceForm : EntityFormPageBase<JobInstance>
     {
-        protected Dictionary<string, JobParameter> parameters;
+        protected Registry.ParameterCollection parameters;
 
         protected override void OnUpdateForm()
         {
@@ -49,7 +49,6 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
 
         protected override void OnSaveForm()
         {
-
             base.OnSaveForm();
 
             Item.JobDefinitionReference.Guid = new Guid(JobDefinition.SelectedValue);

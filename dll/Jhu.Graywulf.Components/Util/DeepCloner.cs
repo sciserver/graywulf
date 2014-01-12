@@ -79,5 +79,18 @@ namespace Jhu.Graywulf.Util
                 return source.Select(i => (T)i.Clone());
             }
         }
+
+        public static IEnumerable<KeyValuePair<TKey, TValue>> CloneDictionary<TKey, TValue>(IDictionary<TKey, TValue> source)
+            where TValue : ICloneable
+        {
+            if (source == null)
+            {
+                return null;
+            }
+            else
+            {
+                return source.Select(i => new KeyValuePair<TKey, TValue>(i.Key, (TValue)i.Value.Clone()));
+            }
+        }
     }
 }

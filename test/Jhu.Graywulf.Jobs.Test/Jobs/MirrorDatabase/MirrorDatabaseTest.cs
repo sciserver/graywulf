@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
                 var ji = jd.CreateJobInstance(queue, ScheduleType.Queued);
 
-                ji.Parameters["DatabaseVersionName"].SetValue("Graywulf.VOServices.SkyQuery.Galex.STAT");
+                ji.Parameters["DatabaseVersionName"].Value = "Graywulf.VOServices.SkyQuery.Galex.STAT";
 
                 ji.Save();
 

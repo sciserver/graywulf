@@ -72,8 +72,8 @@ namespace Jhu.Graywulf.Test
 
                 JobInstance job = jd.CreateJobInstance(queue, Jhu.Graywulf.Registry.ScheduleType.Queued);
 
-                job.Parameters["DelayPeriod"].SetValue((int)delayPeriod.TotalMilliseconds);
-                job.Parameters["TestMethod"].SetValue(jobType.ToString());
+                job.Parameters["DelayPeriod"].Value = (int)delayPeriod.TotalMilliseconds;
+                job.Parameters["TestMethod"].Value = jobType.ToString();
 
                 job.Name = String.Format("{0}_{1}", "test", DateTime.Now.ToString("yyMMddHHmmssff"));
 
@@ -90,7 +90,6 @@ namespace Jhu.Graywulf.Test
                 var job = new JobInstance(context);
                 job.Guid = guid;
                 job.Load();
-                job.LoadParameters();
 
                 return job;
             }
@@ -103,7 +102,6 @@ namespace Jhu.Graywulf.Test
                 var job = new JobInstance(context);
                 job.Guid = guid;
                 job.Load();
-                job.LoadParameters();
 
                 job.Cancel();
             }

@@ -56,13 +56,13 @@ namespace Jhu.Graywulf.Registry
         /// the <see cref="WorkflowParameterAttribute"/> attribute.
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string, JobParameter> GetParameters()
+        public ParameterCollection GetParameters()
         {
             var excluded = new HashSet<string>() { "JobGuid", "UserGuid" };
 
             var t = Type.GetType(workflowTypeName);
 
-            var res = new Dictionary<string, JobParameter>();
+            var res = new ParameterCollection();
 
             foreach (PropertyInfo pinfo in t.GetProperties())
             {
@@ -91,7 +91,7 @@ namespace Jhu.Graywulf.Registry
                             continue;
                         }
 
-                        var par = new JobParameter()
+                        var par = new JobDefinitionParameter()
                         {
                             Name = pinfo.Name,
                             TypeName = pinfo.PropertyType.GetGenericArguments()[0].AssemblyQualifiedName,

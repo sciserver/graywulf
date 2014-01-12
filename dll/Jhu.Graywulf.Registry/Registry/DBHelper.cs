@@ -28,6 +28,7 @@ namespace Jhu.Graywulf.Registry
             { typeof(DateTime), SqlDbType.DateTime },
             { typeof(Byte[]), SqlDbType.VarBinary },
             { typeof(Guid), SqlDbType.UniqueIdentifier },
+            { typeof(ParameterCollection), SqlDbType.Xml },
         };
 
         private static readonly Dictionary<Type, bool> SqlTypeHasSize = new Dictionary<Type, bool>()
@@ -44,6 +45,7 @@ namespace Jhu.Graywulf.Registry
             { typeof(DateTime), false },
             { typeof(Byte[]), true },
             { typeof(Guid), false },
+            { typeof(ParameterCollection), false },
         };
 
         private class ColumnDescription
@@ -90,7 +92,6 @@ namespace Jhu.Graywulf.Registry
 
             cmd.CommandType = CommandType.Text;
 
-            //AppendBasicParameters(entity, cmd);
             AppendCreateModifyParameters(entity, cmd);
 
             return cmd;
@@ -102,7 +103,6 @@ namespace Jhu.Graywulf.Registry
 
             cmd.CommandType = CommandType.Text;
 
-            //AppendBasicParameters(entity, cmd);
             AppendCreateModifyParameters(entity, cmd);
 
             return cmd;
@@ -214,6 +214,18 @@ WHERE Entity.Guid = @Guid
 
                     exps.Add(Expression.Assign(prop, val));
                 }
+                else if (column.PropertyInfo.PropertyType == typeof(ParameterCollection))
+                {
+                    var val = Expression.Condition(
+                            Expression.Call(dr, typeof(SqlDataReader).GetMethod("IsDBNull"), o),
+                            Expression.Constant(null),
+                            getval);
+
+                    var cast = Expression.ConvertChecked(val, typeof(string));
+                    var cal = Expression.Call(prop, typeof(ParameterCollection).GetMethod("LoadFromXml"), cast);
+
+                    exps.Add(cal);
+                }
                 else if (SqlTypes.ContainsKey(column.PropertyInfo.PropertyType))
                 {
                     // Cast it to type of column
@@ -238,6 +250,10 @@ WHERE Entity.Guid = @Guid
                 }
                 else
                 {
+                    // This is a generic case when the object is a class
+                    // This has to be a known type (unlike job settings and parameters
+                    // which can come from plug-ins and are serialized via ParameterCollection
+
                     // Value has to be deserialized from xml
                     var sf = typeof(DBHelper).GetMethod("Deserialize", BindingFlags.Public | BindingFlags.Static);
 
@@ -334,24 +350,36 @@ WHERE Entity.Guid = @Guid
                     Expression psize = null;
                     Expression pval = null;
 
+                    var prop = Expression.Property(typede, column.PropertyInfo);
+
                     if (column.PropertyInfo.PropertyType.IsEnum)
                     {
                         ptype = Expression.Constant(SqlTypes[Enum.GetUnderlyingType(column.PropertyInfo.PropertyType)]);
-                        pval = Expression.Property(typede, column.PropertyInfo);
+                        pval = prop;
                     }
                     else if (column.PropertyInfo.PropertyType == typeof(ExpressionProperty))
                     {
                         ptype = Expression.Constant(SqlDbType.NVarChar);
                         psize = Expression.Constant(column.ColumnAttribute.Size);
-                        pval = Expression.Property(Expression.Property(typede, column.PropertyInfo), typeof(ExpressionProperty).GetProperty("Value"));
+                        pval = Expression.Property(prop, typeof(ExpressionProperty).GetProperty("Value"));
                     }
                     else if (column.PropertyInfo.PropertyType == typeof(DateTime))
                     {
                         ptype = Expression.Constant(SqlDbType.DateTime);
                         pval = Expression.Condition(
-                            Expression.Equal(Expression.Property(typede, column.PropertyInfo), Expression.Constant(DateTime.MinValue)),
+                            Expression.Equal(prop, Expression.Constant(DateTime.MinValue)),
                             Expression.Convert(Expression.Constant(DBNull.Value), typeof(object)),
-                            Expression.Convert(Expression.Property(typede, column.PropertyInfo), typeof(object)));
+                            Expression.Convert(prop, typeof(object)));
+                    }
+                    else if (column.PropertyInfo.PropertyType == typeof(ParameterCollection))
+                    {
+                        ptype = Expression.Constant(SqlDbType.Xml);
+
+                        var cal = Expression.Call(prop, typeof(ParameterCollection).GetMethod("SaveToXml"));
+
+                        pval = Expression.Coalesce(
+                            cal,
+                            Expression.Convert(Expression.Constant(DBNull.Value), typeof(object)));
                     }
                     else if (SqlTypes.ContainsKey(column.PropertyInfo.PropertyType))
                     {

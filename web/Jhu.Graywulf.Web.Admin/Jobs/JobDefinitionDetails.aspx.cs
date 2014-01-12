@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
 
             TypeName.Text = Item.WorkflowTypeName;
 
-            foreach (var par in Item.Parameters.Values)
+            foreach (JobDefinitionParameter par in Item.Parameters.Values)
             {
                 Parameters.Items.Add(string.Format("{0} ({1})", par.Name, par.TypeName));
             }

@@ -180,6 +180,7 @@ namespace Jhu.Graywulf.Install
                 System = system,
                 WorkflowTypeName = typeof(Jhu.Graywulf.Jobs.MirrorDatabase.MirrorDatabaseJob).AssemblyQualifiedName,
             };
+            jd.DiscoverWorkflowParameters();
             jd.Save();
 
             //      -- test job
@@ -189,6 +190,7 @@ namespace Jhu.Graywulf.Install
                 System = system,
                 WorkflowTypeName = typeof(Jhu.Graywulf.Jobs.Test.TestJob).AssemblyQualifiedName,
             };
+            jd.DiscoverWorkflowParameters();
             jd.Save();
         }
     }

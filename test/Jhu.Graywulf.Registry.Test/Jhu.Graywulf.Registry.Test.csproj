@@ -47,11 +47,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Registry\EntitySettingsTest.cs" />
     <Compile Include="Registry\EntityFactoryTest.cs" />
+    <Compile Include="Registry\ParameterCollectionTest.cs" />
     <Compile Include="Registry\XmlSerializationTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
+      <Project>{57392DA3-E280-48EE-80C8-64E09FD8AFB5}</Project>
+      <Name>Jhu.Graywulf.Activities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
@@ -63,10 +67,6 @@
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry\Jhu.Graywulf.Registry.csproj">
       <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
       <Name>Jhu.Graywulf.Registry</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.Test\Jhu.Graywulf.Test.csproj">
-      <Project>{EA6164BA-B283-46C2-874B-348D6BAD41AD}</Project>
-      <Name>Jhu.Graywulf.Test</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

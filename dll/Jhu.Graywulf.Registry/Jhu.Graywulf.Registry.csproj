@@ -62,6 +62,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Registry\AppSettings.cs" />
+    <Compile Include="Registry\JobInstanceParameter.cs" />
+    <Compile Include="Registry\JobDefinitionParameter.cs" />
+    <Compile Include="Registry\ParameterCollection.cs" />
     <Compile Include="Registry\Cluster.cs" />
     <Compile Include="Registry\Cluster.io.cs" />
     <Compile Include="Registry\Constants.cs">
@@ -121,7 +124,6 @@
     <Compile Include="Registry\EntityProperty.cs" />
     <Compile Include="Registry\EntityReference.cs" />
     <Compile Include="Registry\EntityReferenceBase.cs" />
-    <Compile Include="Registry\EntitySettings.cs" />
     <Compile Include="Registry\Enum.cs" />
     <Compile Include="Registry\ExceptionMessages.Designer.cs">
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
@@ -142,7 +144,6 @@
     <Compile Include="Registry\JobInstance.cs" />
     <Compile Include="Registry\JobInstance.io.cs" />
     <Compile Include="Registry\JobInstanceFactory.cs" />
-    <Compile Include="Registry\JobParameter.cs" />
     <Compile Include="Activities\LockEntity.cs" />
     <Compile Include="Registry\LockingCollisionException.cs" />
     <Compile Include="Registry\LogMessages.Designer.cs">
@@ -155,6 +156,7 @@
     <Compile Include="Registry\Machine.io.cs" />
     <Compile Include="Registry\MachineRole.cs" />
     <Compile Include="Registry\MachineRole.io.cs" />
+    <Compile Include="Registry\Parameter.cs" />
     <Compile Include="Registry\ParentEntityReference.cs" />
     <Compile Include="Registry\Partition.cs" />
     <Compile Include="Registry\Partition.io.cs" />

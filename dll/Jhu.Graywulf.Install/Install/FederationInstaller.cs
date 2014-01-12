@@ -53,6 +53,7 @@ namespace Jhu.Graywulf.Install
                 System = federation.System,
                 WorkflowTypeName = typeof(Jobs.ExportTables.ExportTablesJob).AssemblyQualifiedName,
             };
+            jd.DiscoverWorkflowParameters();
             jd.Save();
 
             jd = new JobDefinition(federation)
@@ -61,6 +62,7 @@ namespace Jhu.Graywulf.Install
                 System = federation.System,
                 WorkflowTypeName = typeof(Jobs.ExportTables.ExportMaintenanceJob).AssemblyQualifiedName,
             };
+            jd.DiscoverWorkflowParameters();
             jd.Save();
 
 

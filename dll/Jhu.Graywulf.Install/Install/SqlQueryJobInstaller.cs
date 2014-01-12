@@ -33,6 +33,7 @@ namespace Jhu.Graywulf.Install
                     QueryTimeout = 7200,    // TODO
                 }
             };
+            jd.DiscoverWorkflowParameters();
             jd.Save();
         }
     }

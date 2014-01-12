@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Scheduler.Test
                 var job = LoadJob(guid);
 
                 Assert.AreEqual(JobExecutionState.Completed, job.JobExecutionStatus);
-                Assert.AreEqual("OK", (string)job.Parameters["Result"].GetValue());
+                Assert.AreEqual("OK", (string)job.Parameters["Result"].Value);
             }
         }
 
@@ -174,7 +174,7 @@ namespace Jhu.Graywulf.Scheduler.Test
 
                 ji = LoadJob(guid);
                 Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
-                Assert.AreEqual("OK", (string)ji.Parameters["Result"].GetValue());
+                Assert.AreEqual("OK", (string)ji.Parameters["Result"].Value);
             }
         }
 

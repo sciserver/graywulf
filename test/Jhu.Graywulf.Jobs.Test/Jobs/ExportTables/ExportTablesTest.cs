@@ -101,7 +101,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                     var ji = LoadJob(guid);
                     Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
 
-                    var uri = ((ExportTables)ji.Parameters["Parameters"].GetValue()).Uri;
+                    var uri = ((ExportTables)ji.Parameters["Parameters"].Value).Uri;
 
                     path = Util.UriConverter.ToFilePath(uri);
 

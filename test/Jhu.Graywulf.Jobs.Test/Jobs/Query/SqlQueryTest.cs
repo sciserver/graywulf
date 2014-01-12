@@ -16,6 +16,15 @@ namespace Jhu.Graywulf.Test.Jobs.Query
     public class SqlQueryTest : QueryTestBase
     {
         [TestMethod]
+        public void DiscoverParametersTest()
+        {
+
+            var jd = new JobDefinition();
+            jd.WorkflowTypeName = typeof(Jhu.Graywulf.Jobs.Query.SqlQueryJob).AssemblyQualifiedName;
+            jd.DiscoverWorkflowParameters();
+        }
+
+        [TestMethod]
         public void SqlQuerySerializableTest()
         {
             var t = typeof(SqlQuery);

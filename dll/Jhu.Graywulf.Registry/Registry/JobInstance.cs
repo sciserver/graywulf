@@ -6,6 +6,8 @@ using System.Text;
 using System.Xml.Serialization;
 using System.IO;
 using System.Configuration;
+using System.ComponentModel;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Registry
@@ -38,8 +40,7 @@ namespace Jhu.Graywulf.Registry
         private JobAdminRequestData adminRequestData;
         private int adminRequestResult;
         private string exceptionMessage;
-
-        private Dictionary<string, JobParameter> parameters;
+        private ParameterCollection parameters;
 
         #endregion
         #region Member Access Properties
@@ -155,24 +156,24 @@ namespace Jhu.Graywulf.Registry
             set { exceptionMessage = value; }
         }
 
+        /// <summary>
+        /// Gets a dictionary with the workflow input parameters.
+        /// </summary>
         [XmlIgnore]
-        public Dictionary<string, JobParameter> Parameters
+        [DBColumn]
+        public ParameterCollection Parameters
         {
             get { return parameters; }
+            set { parameters = value; }
         }
 
         [XmlArray("Parameters")]
-        public JobParameter[] Parameters_ForXml
+        [XmlArrayItem(typeof(JobInstanceParameter))]
+        [DefaultValue(null)]
+        public Parameter[] Parameters_ForXml
         {
-            get { return parameters.Values.ToArray(); }
-            set
-            {
-                parameters = new Dictionary<string, JobParameter>();
-                foreach (var p in value)
-                {
-                    parameters.Add(p.Name, p);
-                }
-            }
+            get { return parameters.GetAsArray(); }
+            set { parameters = new ParameterCollection(value); }
         }
 
         #endregion
@@ -244,7 +245,7 @@ namespace Jhu.Graywulf.Registry
         public JobInstance()
             : base()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -254,7 +255,7 @@ namespace Jhu.Graywulf.Registry
         public JobInstance(Context context)
             : base(context)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -265,7 +266,7 @@ namespace Jhu.Graywulf.Registry
         public JobInstance(QueueInstance parent)
             : base(parent.Context, parent)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -284,7 +285,8 @@ namespace Jhu.Graywulf.Registry
         /// <remarks>
         /// This function is called by the contructors.
         /// </remarks>
-        private void InitializeMembers()
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
         {
             base.EntityType = EntityType.JobInstance;
             base.EntityGroup = EntityGroup.Jobs;
@@ -304,8 +306,7 @@ namespace Jhu.Graywulf.Registry
             this.adminRequestData = null;
             this.adminRequestResult = -1;
             this.exceptionMessage = null;
-
-            this.parameters = new Dictionary<string, JobParameter>();
+            this.parameters = new ParameterCollection();
         }
 
         /// <summary>
@@ -329,9 +330,7 @@ namespace Jhu.Graywulf.Registry
             this.adminRequestData = old.adminRequestData == null ? null : new JobAdminRequestData(old.adminRequestData);
             this.adminRequestResult = old.adminRequestResult;
             this.exceptionMessage = old.exceptionMessage;
-
-            // TODO: do deep copy here?
-            this.parameters = new Dictionary<string, JobParameter>(old.parameters);
+            this.parameters = new ParameterCollection(old.parameters);
         }
 
         public override object Clone()

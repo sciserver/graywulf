@@ -125,7 +125,6 @@ namespace Jhu.Graywulf.Web
         {
             foreach (JobInstance job in jobFactory.SelectChildren(from, max))
             {
-                job.LoadParameters();
                 yield return GetJobDescription(job);
             }
         }

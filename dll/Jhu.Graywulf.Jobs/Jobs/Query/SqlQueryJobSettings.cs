@@ -6,43 +6,43 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class SqlQueryJobSettings : EntitySettings
+    public class SqlQueryJobSettings : ParameterCollection
     {
         public string HotDatabaseVersionName
         {
-            get { return GetValue("HotDatabaseVersionName"); }
-            set { SetValue("HotDatabaseVersionName", value); }
+            get { return (string)this["HotDatabaseVersionName"].Value; }
+            set { this["HotDatabaseVersionName"].Value = value; }
         }
 
         public string StatDatabaseVersionName
         {
-            get { return GetValue("StatDatabaseVersionName"); }
-            set { SetValue("StatDatabaseVersionName", value); }
+            get { return (string)this["StatDatabaseVersionName"].Value; }
+            set { this["StatDatabaseVersionName"].Value = value; }
         }
 
         public string DefaultDatasetName
         {
-            get { return GetValue("DefaultDatasetName"); }
-            set { SetValue("DefaultDatasetName", value); }
+            get { return (string)this["DefaultDatasetName"].Value; }
+            set { this["DefaultDatasetName"].Value = value; }
         }
 
         public string DefaultSchemaName
         {
-            get { return GetValue("DefaultSchemaName"); }
-            set { SetValue("DefaultSchemaName", value); }
+            get { return (string)this["DefaultSchemaName"].Value; }
+            set { this["DefaultSchemaName"].Value = value; }
         }
 
         public int QueryTimeout
         {
-            get { return int.Parse(GetValue("QueryTimeout")); }
-            set { SetValue("QueryTimeout", value.ToString()); }
+            get { return (int)this["QueryTimeout"].Value; }
+            set { this["QueryTimeout"].Value = value; }
         }
 
         public SqlQueryJobSettings()
         {
         }
 
-        public SqlQueryJobSettings(EntitySettings old)
+        public SqlQueryJobSettings(ParameterCollection old)
             : base(old)
         {
         }

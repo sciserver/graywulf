@@ -32,14 +32,14 @@ namespace Jhu.Graywulf.Web.Admin.Controls
         {
             Entity entity = ((IEntityForm)Page).Item;
 
-            Settings.Text = entity.Settings.XmlText;
+            Settings.Text = entity.Settings.SaveToXml();
         }
 
         public void SaveForm()
         {
             Entity entity = ((IEntityForm)Page).Item;
 
-            entity.Settings.XmlText = Settings.Text;
+            entity.Settings.LoadFromXml(Settings.Text);
         }
     }
 }

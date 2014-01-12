@@ -55,7 +55,7 @@ namespace Jhu.Graywulf.Registry
         private Guid userGuidModified;
         private DateTime dateDeleted;
         private Guid userGuidDeleted;
-        protected EntitySettings settings;
+        private ParameterCollection settings;
         private string comments;
 
         private EntityGroup entityGroup;
@@ -380,40 +380,28 @@ namespace Jhu.Graywulf.Registry
             get { return userGuidDeleted; }
         }
 
+        [XmlIgnore]
+        public ParameterCollection Settings
+        {
+            get { return settings; }
+            set { settings = value; }
+        }
+
         /// <summary>
         /// Gets or sets an XML string containing additional settings.
         /// </summary>
         /// <remarks>
         /// This property is for extendability purposes.
         /// </remarks>
-        [XmlIgnore]
-        public EntitySettings Settings
-        {
-            get { return settings; }
-            set { settings = value; }
-        }
-
-        [XmlElement("Settings")]
+        [XmlArray("Settings")]
+        [XmlArrayItem(typeof(Parameter))]
+        [XmlArrayItem(typeof(JobDefinitionParameter))]
+        [XmlArrayItem(typeof(JobInstanceParameter))]
         [DefaultValue(null)]
-        public XmlDocument Settings_ForXml
+        public Parameter[] Settings_ForXml
         {
-            get
-            {
-                if (String.IsNullOrEmpty(settings.XmlText))
-                {
-                    return null;
-                }
-                else
-                {
-                    var xmldoc = new XmlDocument();
-                    xmldoc.LoadXml(settings.XmlText);
-                    return xmldoc;
-                }
-            }
-            set
-            {
-                settings.XmlText = value == null ? "" : value.InnerXml;
-            }
+            get { return settings.GetAsArray(); }
+            set { settings = new ParameterCollection(value); }
         }
 
         /// <summary>
@@ -525,7 +513,7 @@ namespace Jhu.Graywulf.Registry
             this.userGuidModified = Guid.Empty;
             this.dateDeleted = DateTime.MinValue;
             this.userGuidDeleted = Guid.Empty;
-            this.settings = new EntitySettings();
+            this.settings = new ParameterCollection();
             this.comments = string.Empty;
 
             this.entityGroup = Registry.EntityGroup.None;
@@ -565,7 +553,7 @@ namespace Jhu.Graywulf.Registry
             this.userGuidModified = old.userGuidModified;
             this.dateDeleted = old.dateDeleted;
             this.userGuidDeleted = old.userGuidDeleted;
-            //this.settings = new EntitySettings(old.settings);
+            this.settings = new ParameterCollection(old.settings);
             this.comments = old.comments;
 
             this.entityGroup = old.entityGroup;

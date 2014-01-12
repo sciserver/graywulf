@@ -404,8 +404,6 @@ namespace Jhu.Graywulf.Scheduler
                         // Locking must be handled
                         context.ContextGuid = j.WorkflowInstanceId;
 
-                        j.LoadParameters();
-
                         j.ReleaseLock(true);
 
                         j.JobExecutionStatus = JobExecutionState.Failed;
@@ -432,8 +430,6 @@ namespace Jhu.Graywulf.Scheduler
                     {
                         // Locking must be handled
                         context.ContextGuid = j.WorkflowInstanceId;
-
-                        j.LoadParameters();
 
                         j.ReleaseLock(true);
 

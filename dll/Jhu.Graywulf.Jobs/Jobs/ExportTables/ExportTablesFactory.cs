@@ -97,7 +97,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 StreamFactoryType = federation.StreamFactory,
             };
 
-            job.Parameters["Parameters"].SetValue(et);
+            job.Parameters["Parameters"].Value = et;
 
             return job;
         }

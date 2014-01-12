@@ -208,11 +208,11 @@ namespace Jhu.Graywulf.Scheduler
 
                 // Deserialize parameters
                 Dictionary<string, object> pars = new Dictionary<string, object>();
-                foreach (var par in ji.Parameters.Values)
+                foreach (JobInstanceParameter par in ji.Parameters.Values)
                 {
                     if ((par.Direction & JobParameterDirection.In) != 0)
                     {
-                        pars.Add(par.Name, ji.Parameters[par.Name].GetValue());
+                        pars.Add(par.Name, ji.Parameters[par.Name].Value);
                     }
                 }
 
@@ -286,7 +286,7 @@ namespace Jhu.Graywulf.Scheduler
 
                 foreach (var name in outputs.Keys)
                 {
-                    ji.Parameters[name].SetValue(outputs[name]);
+                    ji.Parameters[name].Value = outputs[name];
                 }
 
                 ji.Save();

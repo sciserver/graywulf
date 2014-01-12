@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Registry
             this.userGuidModified = dr.GetGuid(++o);
             this.dateDeleted = dr.IsDBNull(++o) ? DateTime.MinValue : dr.GetDateTime(o);
             this.userGuidDeleted = dr.IsDBNull(++o) ? Guid.Empty : dr.GetGuid(o);
-            this.settings.XmlText = dr.GetString(++o);
+            this.settings.LoadFromXml(dr.IsDBNull(++o) ? null : dr.GetString(o));
             this.comments = dr.GetString(++o);
 
             DBHelpers[this.GetType()].LoadFromDataReader(this, dr, ++o);
