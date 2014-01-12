@@ -217,8 +217,7 @@
                             <jgwc:SelectionField ItemStyle-CssClass="GridViewIcon" />
                             <asp:ImageField DataImageUrlField="Guid" DataImageUrlFormatString="~/Icons/Small/UserGroup.gif"
                                 ItemStyle-CssClass="GridViewIcon" />
-                            <asp:HyperLinkField HeaderText="Name" DataTextField="Name" ItemStyle-CssClass="GridViewSpan"
-                                DataNavigateUrlFields="Guid" DataNavigateUrlFormatString="~/Security/UserGroupDetails.aspx?guid={0}" />
+                            <jgwc:BoundField HeaderText="Name" DataField="Name" ItemStyle-CssClass="GridViewSpan" />
                         </Columns>
                     </jgwc:MultiSelectGridView>
                 </div>

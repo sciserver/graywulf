@@ -48,8 +48,6 @@ namespace Jhu.Graywulf.Registry
         private byte[] passwordHash;
         private string activationCode;
 
-        private List<EntityProperty<UserGroup>> userGroupReferences;
-
         #endregion
         #region Member Access Properties
 
@@ -353,38 +351,7 @@ namespace Jhu.Graywulf.Registry
             get { return activationCode; }
             set { activationCode = value; }
         }
-
-        [XmlIgnore]
-        public List<EntityProperty<UserGroup>> UserGroups
-        {
-            get { return userGroupReferences; }
-        }
-
-        [XmlArray("MemberOf")]
-        [XmlArrayItem(typeof(EntityProperty<UserGroup>), ElementName = "UserGroup")]
-        public List<EntityProperty<UserGroup>> UserGroups_ForXml
-        {
-            get { return userGroupReferences; }
-            set { userGroupReferences = value; }
-        }
-
-        /*
-        public string[] UserGroups_ForXml
-        {
-            get { return userGroupReferences.Select(ug => ug.Name).ToArray(); }
-            set 
-            {
-                userGroupReferences = new List<EntityProperty<UserGroup>>();
-                for (int i = 0; i < value.Length; i++)
-                {
-                    var ug = new EntityProperty<UserGroup>(this.Context);
-                    ug.Name = value[i];
-
-                    userGroupReferences.Add(ug);
-                }
-            }
-        }*/
-
+        
         #endregion
         #region Navigation Properties
 
@@ -398,6 +365,13 @@ namespace Jhu.Graywulf.Registry
         public Domain Domain
         {
             get { return (Domain)Parent; }
+        }
+
+        [XmlIgnore]
+        public Dictionary<string, UserGroupMembership> UserGroupMemberships
+        {
+            get { return GetChildren<UserGroupMembership>(); }
+            set { SetChildren<UserGroupMembership>(value); }
         }
 
         [XmlIgnore]
@@ -503,8 +477,6 @@ namespace Jhu.Graywulf.Registry
             this.ntlmUser = String.Empty;
             this.passwordHash = null;
             this.activationCode = String.Empty;
-
-            this.userGroupReferences = null;
         }
 
         /// <summary>
@@ -537,9 +509,7 @@ namespace Jhu.Graywulf.Registry
             this.timeZone = old.timeZone;
             this.integrated = old.integrated;
             this.ntlmUser = old.ntlmUser;
-            old.passwordHash = Jhu.Graywulf.Util.DeepCloner.CopyArray(old.passwordHash);
-
-            this.userGroupReferences = null;
+            this.passwordHash = Jhu.Graywulf.Util.DeepCloner.CopyArray(old.passwordHash);
         }
 
         public override object Clone()
@@ -551,6 +521,7 @@ namespace Jhu.Graywulf.Registry
         {
             return new Type[] 
             {
+                typeof(UserGroupMembership),
                 typeof(UserDatabaseInstance),
             };
         }

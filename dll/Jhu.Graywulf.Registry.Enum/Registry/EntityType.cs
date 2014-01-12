@@ -150,6 +150,11 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         User = Security | 0x0200,
 
+        /// <summary>
+        /// User group membership
+        /// </summary>
+        UserGroupMembership = Security | 0x0400,
+
         AllSecurity = Security | 0xFFFF,
 
         #endregion

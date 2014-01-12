@@ -59,7 +59,8 @@ namespace Jhu.Graywulf.Web.Admin.Security
         {
             base.InitLists();
 
-            UserGroupMemberList.DataSource = Item.UserGroups;
+            Item.LoadUserGroupMemberships(true);
+            UserGroupMemberList.DataSource = Item.UserGroupMemberships.Values;
         }
 
         private void RemoveUserGroup(Guid[] guids)

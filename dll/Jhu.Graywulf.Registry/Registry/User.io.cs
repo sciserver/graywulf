@@ -11,97 +11,67 @@ namespace Jhu.Graywulf.Registry
     {
         #region Database IO Functions
 
+        public void LoadUserGroupMemberships(bool forceReload)
+        {
+            LoadChildren<UserGroupMembership>(forceReload);
+        }
+
         public void LoadUserDatabaseInstances(bool forceReload)
         {
             LoadChildren<UserDatabaseInstance>(forceReload);
         }
 
-        /// <summary>
-        /// Loads the user from the database. Also loads user group associations.
-        /// </summary>
-        protected override void OnLoaded()
-        {
-            base.OnLoaded();
-
-            LoadUserGroups();
-        }
-
         #endregion
         #region Group membership
 
-        private void LoadUserGroups()
+        public UserGroupMembership MakeMemberOf(Guid userGroupGuid)
         {
-            this.userGroupReferences = new List<EntityProperty<UserGroup>>();
-
-            var sql = "spFindUserGroupMembership";
-
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
+            if (IsMemberOf(userGroupGuid))
             {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = this.Guid;
-
-                using (var dr = cmd.ExecuteReader())
-                {
-                    while (dr.Read())
-                    {
-                        var p = new EntityProperty<UserGroup>(Context);
-
-                        p.Guid = dr.GetGuid(1);
-
-                        userGroupReferences.Add(p);
-                    }
-                }
+                throw new Exception("Already a member of ..."); // TODO ***
             }
-        }
 
-        private void SaveUserGroups()
-        {
-            var sql = "spCreateUserGroupMembership";
-
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = this.Guid;
-                cmd.Parameters.Add("@UserGroupGuid", SqlDbType.UniqueIdentifier);
-
-                foreach (var ug in userGroupReferences)
-                {
-                    ug.Context = this.Context;
-                    cmd.Parameters["@UserGroupGuid"].Value = ug.Guid;
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-
-        protected void DeleteParameters()
-        {
-            string sql = "spDeleteUserGroupMembership";
-
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = this.Guid;
-
-                cmd.ExecuteNonQuery();
-            }
-        }
-
-        public void MakeMemberOf(Guid userGroupGuid)
-        {
-            var ug = new EntityProperty<UserGroup>(Context);
+            var ug = new UserGroup(Context);
             ug.Guid = userGroupGuid;
-            userGroupReferences.Add(ug);
+            ug.Load();
+
+            var ugm = new UserGroupMembership(this);
+            ugm.Name = ug.Name;
+            ugm.Save();
+
+            return ugm;
         }
 
         public void RemoveMemberOf(Guid userGroupGuid)
         {
-            userGroupReferences = new List<EntityProperty<UserGroup>>(
-                userGroupReferences.Where(ug => ug.Guid != userGroupGuid));
+            LoadUserGroupMemberships(true);
+
+            foreach (var ugm in UserGroupMemberships.Values)
+            {
+                if (ugm.Guid == userGroupGuid)
+                {
+                    ugm.Delete();
+                }
+            }
         }
 
         public bool IsMemberOf(Guid userGroupGuid)
         {
-            return userGroupReferences.Where(ug => ug.Guid == userGroupGuid).FirstOrDefault() != null;
+            LoadUserGroupMemberships(true);
+
+            foreach (var ugm in UserGroupMemberships.Values)
+            {
+                if (ugm.Guid == userGroupGuid)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+
         }
 
-        
+
 
         #endregion
     }
