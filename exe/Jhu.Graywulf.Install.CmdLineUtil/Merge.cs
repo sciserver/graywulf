@@ -16,6 +16,8 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
         public override void Run()
         {
+            base.Run();
+
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var f = new EntityFactory(context);

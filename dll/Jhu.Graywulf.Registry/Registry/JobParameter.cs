@@ -66,7 +66,7 @@ namespace Jhu.Graywulf.Registry
             }
             set
             {
-                xmlValue = value == null ? "" : value.ToString();
+                xmlValue = value == null ? "" : value.InnerXml;
             }
         }
 

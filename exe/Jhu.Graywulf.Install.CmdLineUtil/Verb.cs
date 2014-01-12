@@ -2,11 +2,41 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data;
+using System.Data.SqlClient;
+using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.CommandLineParser;
 
 namespace Jhu.Graywulf.Registry.CmdLineUtil
 {
     abstract class Verb
     {
-        public abstract void Run();
+        [Parameter(Name = "Server", Description = "Name of server", Required = false)]
+        public string Server { get; set; }
+
+        [Parameter(Name = "Database", Description = "Registry database", Required = false)]
+        public string Database { get; set; }
+
+        private void UpdateConnectionString()
+        {
+            var csb = new SqlConnectionStringBuilder();
+
+            // TODO: add more connection properties (u/n, pass)
+            // create variables for properties.
+
+            if (Server != null || Database != null)
+            {
+                csb.DataSource = Server;
+                csb.InitialCatalog = Database;
+                csb.IntegratedSecurity = true;
+
+                ContextManager.Instance.ConnectionString = csb.ConnectionString;
+            }
+        }
+
+        public virtual void Run()
+        {
+            UpdateConnectionString();
+        }
     }
 }

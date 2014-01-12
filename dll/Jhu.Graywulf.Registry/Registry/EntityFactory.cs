@@ -352,20 +352,20 @@ ORDER BY Number
         /// </summary>
         /// <param name="input">The TextReader object used for reading from the XML stream.</param>
         /// <returns>An IEnumerable interface to the deserialized objects.</returns>
-        public List<Entity> Deserialize(TextReader input)
+        public IEnumerable<Entity> Deserialize(TextReader input)
         {
-            List<Entity> entities;
-            XmlSerializer ser = new XmlSerializer(typeof(List<Entity>));
+            Registry registry;
+            var ser = new XmlSerializer(typeof(Registry));
 
             // Deserialize object into memory, they don't have GUIDs now
-            entities = (List<Entity>)ser.Deserialize(input);
+            registry = (Registry)ser.Deserialize(input);
 
             int depth = 0;
             int count = 0;
 
-            while (count < entities.Count)
+            while (count < registry.Entities.Length)
             {
-                foreach (var entity in entities)
+                foreach (var entity in registry.Entities)
                 {
                     if (entity.ParentReference.IsEmpty && depth == 0 ||
                         !entity.ParentReference.IsEmpty && depth == entity.ParentReference.Name.Count(c => c == '.') + 1)
@@ -389,14 +389,14 @@ ORDER BY Number
                 depth++;
             }
 
-            foreach (var entity in entities)
+            foreach (var entity in registry.Entities)
             {
                 entity.IsDeserializing = false;     // Allows saving entity references
                 entity.ResolveNameReferences();
                 entity.Save();
             }
 
-            return entities;
+            return registry.Entities;
         }
 
         #endregion

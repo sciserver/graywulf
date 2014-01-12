@@ -58,6 +58,8 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
         public override void Run()
         {
+            base.Run();
+
             Console.Write("Creating cluster... ");
 
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))

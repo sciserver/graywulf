@@ -412,7 +412,7 @@ namespace Jhu.Graywulf.Registry
             }
             set
             {
-                settings.XmlText = value == null ? "" : value.ToString();
+                settings.XmlText = value == null ? "" : value.InnerXml;
             }
         }
 
