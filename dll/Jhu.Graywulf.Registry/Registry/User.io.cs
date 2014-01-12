@@ -19,38 +19,89 @@ namespace Jhu.Graywulf.Registry
         /// <summary>
         /// Loads the user from the database. Also loads user group associations.
         /// </summary>
-        public override void Load()
+        protected override void OnLoaded()
         {
-            base.Load();
+            base.OnLoaded();
 
             LoadUserGroups();
         }
 
+        #endregion
+        #region Group membership
+
         private void LoadUserGroups()
         {
-            this.userGroups = new List<UserGroup>();
+            this.userGroupReferences = new List<EntityProperty<UserGroup>>();
 
-            var sql = "spFindUserGroup_byUser";
+            var sql = "spFindUserGroupMembership";
 
             using (var cmd = Context.CreateStoredProcedureCommand(sql))
             {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
-                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
-                cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = this.Guid;
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = this.Guid;
 
                 using (var dr = cmd.ExecuteReader())
                 {
                     while (dr.Read())
                     {
-                        var ug = new UserGroup(Context);
-                        ug.LoadFromDataReader(dr);
+                        var p = new EntityProperty<UserGroup>(Context);
 
-                        userGroups.Add(ug);
+                        p.Guid = dr.GetGuid(1);
+
+                        userGroupReferences.Add(p);
                     }
                 }
             }
         }
+
+        private void SaveUserGroups()
+        {
+            var sql = "spCreateUserGroupMembership";
+
+            using (var cmd = Context.CreateStoredProcedureCommand(sql))
+            {
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = this.Guid;
+                cmd.Parameters.Add("@UserGroupGuid", SqlDbType.UniqueIdentifier);
+
+                foreach (var ug in userGroupReferences)
+                {
+                    ug.Context = this.Context;
+                    cmd.Parameters["@UserGroupGuid"].Value = ug.Guid;
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        protected void DeleteParameters()
+        {
+            string sql = "spDeleteUserGroupMembership";
+
+            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
+            {
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = this.Guid;
+
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void MakeMemberOf(Guid userGroupGuid)
+        {
+            var ug = new EntityProperty<UserGroup>(Context);
+            ug.Guid = userGroupGuid;
+            userGroupReferences.Add(ug);
+        }
+
+        public void RemoveMemberOf(Guid userGroupGuid)
+        {
+            userGroupReferences = new List<EntityProperty<UserGroup>>(
+                userGroupReferences.Where(ug => ug.Guid != userGroupGuid));
+        }
+
+        public bool IsMemberOf(Guid userGroupGuid)
+        {
+            return userGroupReferences.Where(ug => ug.Guid == userGroupGuid).FirstOrDefault() != null;
+        }
+
+        
 
         #endregion
     }

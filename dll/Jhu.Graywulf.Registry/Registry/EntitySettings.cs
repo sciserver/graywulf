@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 using System.ComponentModel;
@@ -72,12 +73,26 @@ namespace Jhu.Graywulf.Registry
 
             if (!String.IsNullOrEmpty(xmltext))
             {
-                var xml = new XmlDocument();
-                xml.LoadXml(xmltext);
+                var doc = new XmlDocument();
+                doc.LoadXml(xmltext);
 
-                foreach (XmlNode node in xml.DocumentElement.ChildNodes)
+                foreach (XmlNode node in doc.DocumentElement.ChildNodes)
                 {
-                    items.Add(node.Name, node.Attributes["value"].Value);
+                    string name;
+                    string value;
+
+                    name = node.Name;
+
+                    if (node.Attributes["value"] != null)
+                    {
+                        value = node.Attributes["value"].Value;
+                    }
+                    else
+                    {
+                        value = node.InnerXml;
+                    }
+
+                    items.Add(name, value);
                 }
             }
         }

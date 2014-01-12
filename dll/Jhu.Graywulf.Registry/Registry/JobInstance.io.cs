@@ -118,12 +118,9 @@ namespace Jhu.Graywulf.Registry
             SaveParameters();
         }
 
-        /// <summary>
-        /// Loads the job instance from the database. Also loads job input parameters.
-        /// </summary>
-        public override void Load()
+        protected override void OnLoaded()
         {
-            base.Load();
+            base.OnLoaded();
 
             LoadParameters();
             LoadCheckpoints();

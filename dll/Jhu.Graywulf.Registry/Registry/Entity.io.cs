@@ -79,6 +79,12 @@ namespace Jhu.Graywulf.Registry
             DBHelpers[this.GetType()].LoadFromDataReader(this, dr, ++o);
 
             isExisting = true;
+
+            OnLoaded();
+        }
+
+        protected virtual void OnLoaded()
+        {
         }
 
         /// <summary>
@@ -88,7 +94,7 @@ namespace Jhu.Graywulf.Registry
         /// The value of the <see cref="Guid" /> property and the object context must be set.
         /// The <see cref="Context" /> property must have a value of a valid object context with open database connection.
         /// </remarks>
-        public virtual void Load()
+        public void Load()
         {
             var sql = DBHelpers[this.GetType()].SelectQuery;
 

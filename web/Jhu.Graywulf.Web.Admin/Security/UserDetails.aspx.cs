@@ -73,6 +73,8 @@ namespace Jhu.Graywulf.Web.Admin.Security
                     Item.RemoveMemberOf(g);
                 }
             }
+
+            InitLists();
         }
 
         public override void OnButtonCommand(object sender, CommandEventArgs e)

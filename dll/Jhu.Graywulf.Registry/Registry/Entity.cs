@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using System.IO;
 using System.ComponentModel;
+using System.Xml;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -393,11 +394,26 @@ namespace Jhu.Graywulf.Registry
         }
 
         [XmlElement("Settings")]
-        [DefaultValue("")]
-        public string Settings_ForXml
+        [DefaultValue(null)]
+        public XmlDocument Settings_ForXml
         {
-            get { return settings.XmlText; }
-            set { settings.XmlText = value; }
+            get
+            {
+                if (String.IsNullOrEmpty(settings.XmlText))
+                {
+                    return null;
+                }
+                else
+                {
+                    var xmldoc = new XmlDocument();
+                    xmldoc.LoadXml(settings.XmlText);
+                    return xmldoc;
+                }
+            }
+            set
+            {
+                settings.XmlText = value == null ? "" : value.ToString();
+            }
         }
 
         /// <summary>

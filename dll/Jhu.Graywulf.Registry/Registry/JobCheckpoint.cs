@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -30,6 +31,7 @@ namespace Jhu.Graywulf.Registry
         /// <summary>
         /// Gets or sets the ordinal number of the checkpoint in the sequence.
         /// </summary>
+        [XmlAttribute]
         public int SequenceNumber
         {
             get { return sequenceNumber; }
@@ -39,6 +41,7 @@ namespace Jhu.Graywulf.Registry
         /// <summary>
         /// Gets or sets the name of the checkpoint.
         /// </summary>
+        [XmlAttribute]
         public string Name
         {
             get { return name; }
@@ -52,6 +55,7 @@ namespace Jhu.Graywulf.Registry
         /// This property is only meaningful for checkpoints of <b>JobInstance</b> classes.
         /// The status of checkpoints is set automatically by the <b>CheckpointActivity</b> activities.
         /// </remarks>
+        [XmlIgnore]
         public JobExecutionState ExecutionStatus
         {
             get { return executionStatus; }

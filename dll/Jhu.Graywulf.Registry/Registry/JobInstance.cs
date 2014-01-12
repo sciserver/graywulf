@@ -162,10 +162,31 @@ namespace Jhu.Graywulf.Registry
             get { return parameters; }
         }
 
+        [XmlArray("Parameters")]
+        public JobParameter[] Parameters_ForXml
+        {
+            get { return parameters.Values.ToArray(); }
+            set
+            {
+                parameters = new Dictionary<string, JobParameter>();
+                foreach (var p in value)
+                {
+                    parameters.Add(p.Name, p);
+                }
+            }
+        }
+
         [XmlIgnore]
         public IEnumerable<JobCheckpoint> Checkpoints
         {
             get { return checkpoints; }
+        }
+
+        [XmlArray("Checkpoints")]
+        public List<JobCheckpoint> Checkpoints_ForXml
+        {
+            get { return checkpoints; }
+            set { checkpoints = value; }
         }
 
         #endregion

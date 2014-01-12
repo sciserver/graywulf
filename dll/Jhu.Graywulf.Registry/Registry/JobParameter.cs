@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Xml;
+using System.Xml.Serialization;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.RemoteService;
 
@@ -17,28 +19,55 @@ namespace Jhu.Graywulf.Registry
         private JobParameterDirection direction;
         private string xmlValue;
 
+        [XmlAttribute]
         public string Name
         {
             get { return name; }
             set { name = value; }
         }
 
+        [XmlAttribute]
         public string TypeName
         {
             get { return typeName; }
             set { typeName = value; }
         }
 
+        [XmlAttribute]
         public JobParameterDirection Direction
         {
             get { return direction; }
             set { direction = value; }
         }
 
+        [XmlIgnore]
         public string XmlValue
         {
             get { return this.xmlValue; }
             set { this.xmlValue = value; }
+        }
+
+        [XmlElement("Value")]
+        [DefaultValue(null)]
+        public XmlDocument XmlValue_ForXml
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(xmlValue))
+                {
+                    return null;
+                }
+                else
+                {
+                    var doc = new XmlDocument();
+                    doc.LoadXml(xmlValue);
+                    return doc;
+                }
+            }
+            set
+            {
+                xmlValue = value == null ? "" : value.ToString();
+            }
         }
 
         public JobParameter()

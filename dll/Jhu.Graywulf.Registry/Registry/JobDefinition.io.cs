@@ -52,15 +52,9 @@ namespace Jhu.Graywulf.Registry
             SaveCheckpoints();
         }
 
-        /// <summary>
-        /// Loads the <b>Job Definition</b> from the database.
-        /// </summary>
-        /// <remarks>
-        /// Also loads workflow input parameters and checkpoints.
-        /// </remarks>
-        public override void Load()
+        protected override void OnLoaded()
         {
-            base.Load();
+            base.OnLoaded();
 
             LoadParameters();
             LoadCheckpoints();

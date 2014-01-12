@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -30,6 +31,7 @@ namespace Jhu.Graywulf.Registry
         #region Member Access Properties
 
         [IgnoreDataMember]
+        [XmlIgnore]
         public Context Context
         {
             get { return context; }
@@ -50,6 +52,13 @@ namespace Jhu.Graywulf.Registry
         public EntityProperty()
         {
             InitializeMembers();
+        }
+
+        public EntityProperty(Context context)
+        {
+            InitializeMembers();
+
+            this.context = context;
         }
 
         /// <summary>

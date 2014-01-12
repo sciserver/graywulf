@@ -46,6 +46,7 @@ namespace Jhu.Graywulf.Registry
         /// Always use this property to set the referenced entity.
         /// </remarks>
         [IgnoreDataMember]
+        [XmlIgnore]
         public Guid Guid
         {
             get
@@ -92,6 +93,7 @@ namespace Jhu.Graywulf.Registry
         /// are updated. This property does lazy loading, a valid context is required.
         /// </remarks>
         [IgnoreDataMember]
+        [XmlIgnore]
         public T Value
         {
             get

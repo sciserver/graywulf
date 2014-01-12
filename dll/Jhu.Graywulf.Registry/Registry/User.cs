@@ -48,7 +48,7 @@ namespace Jhu.Graywulf.Registry
         private byte[] passwordHash;
         private string activationCode;
 
-        private List<UserGroup> userGroups;
+        private List<EntityProperty<UserGroup>> userGroupReferences;
 
         #endregion
         #region Member Access Properties
@@ -354,11 +354,36 @@ namespace Jhu.Graywulf.Registry
             set { activationCode = value; }
         }
 
-        // TODO: serialization
-        public List<UserGroup> UserGroups
+        [XmlIgnore]
+        public List<EntityProperty<UserGroup>> UserGroups
         {
-            get { return userGroups; }
+            get { return userGroupReferences; }
         }
+
+        [XmlArray("MemberOf")]
+        [XmlArrayItem(typeof(EntityProperty<UserGroup>), ElementName = "UserGroup")]
+        public List<EntityProperty<UserGroup>> UserGroups_ForXml
+        {
+            get { return userGroupReferences; }
+            set { userGroupReferences = value; }
+        }
+
+        /*
+        public string[] UserGroups_ForXml
+        {
+            get { return userGroupReferences.Select(ug => ug.Name).ToArray(); }
+            set 
+            {
+                userGroupReferences = new List<EntityProperty<UserGroup>>();
+                for (int i = 0; i < value.Length; i++)
+                {
+                    var ug = new EntityProperty<UserGroup>(this.Context);
+                    ug.Name = value[i];
+
+                    userGroupReferences.Add(ug);
+                }
+            }
+        }*/
 
         #endregion
         #region Navigation Properties
@@ -479,7 +504,7 @@ namespace Jhu.Graywulf.Registry
             this.passwordHash = null;
             this.activationCode = String.Empty;
 
-            this.userGroups = null;
+            this.userGroupReferences = null;
         }
 
         /// <summary>
@@ -514,7 +539,7 @@ namespace Jhu.Graywulf.Registry
             this.ntlmUser = old.ntlmUser;
             old.passwordHash = Jhu.Graywulf.Util.DeepCloner.CopyArray(old.passwordHash);
 
-            this.userGroups = null;
+            this.userGroupReferences = null;
         }
 
         public override object Clone()
@@ -644,52 +669,6 @@ namespace Jhu.Graywulf.Registry
         {
             HashAlgorithm hashalg = new SHA512Managed();
             return hashalg.ComputeHash(Encoding.Unicode.GetBytes(password));
-        }
-
-        #endregion
-        #region Group membership
-
-        public void MakeMemberOf(Guid userGroupGuid)
-        {
-            var sql = "spCreateUserGroupMembership";
-
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = this.Guid;
-                cmd.Parameters.Add("@UserGroupGuid", SqlDbType.UniqueIdentifier).Value = userGroupGuid;
-
-                cmd.ExecuteNonQuery();
-            }
-
-            LoadUserGroups();
-        }
-
-        public void RemoveMemberOf(Guid userGroupGuid)
-        {
-            var sql = "spRemoveUserGroupMembership";
-
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = this.Guid;
-                cmd.Parameters.Add("@UserGroupGuid", SqlDbType.UniqueIdentifier).Value = userGroupGuid;
-
-                cmd.ExecuteNonQuery();
-            }
-
-            LoadUserGroups();
-        }
-
-        public bool IsMemberOf(Guid userGroupGuid)
-        {
-            var sql = "spGetUserGroupMembership";
-
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = this.Guid;
-                cmd.Parameters.Add("@UserGroupGuid", SqlDbType.UniqueIdentifier).Value = userGroupGuid;
-
-                return (int)cmd.ExecuteScalar() == 1;
-            }
         }
 
         #endregion
