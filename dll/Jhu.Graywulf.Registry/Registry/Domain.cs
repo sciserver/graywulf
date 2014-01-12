@@ -27,6 +27,8 @@ namespace Jhu.Graywulf.Registry
         private string shortTitle;
         private string longTitle;
         private string email;
+        private string copyright;
+        private string disclaimer;
 
         #endregion
         #region Member Access Properties
@@ -50,6 +52,20 @@ namespace Jhu.Graywulf.Registry
         {
             get { return email; }
             set { email = value; }
+        }
+
+        [DBColumn(Size = 1024)]
+        public string Copyright
+        {
+            get { return copyright; }
+            set { copyright = value; }
+        }
+
+        [DBColumn(Size = 1024)]
+        public string Disclaimer
+        {
+            get { return disclaimer; }
+            set { disclaimer = value; }
         }
 
         [XmlIgnore]
@@ -169,6 +185,8 @@ namespace Jhu.Graywulf.Registry
             this.shortTitle = String.Empty;
             this.longTitle = String.Empty;
             this.email = String.Empty;
+            this.copyright = String.Empty;
+            this.disclaimer = String.Empty;
         }
 
         /// <summary>
@@ -180,6 +198,8 @@ namespace Jhu.Graywulf.Registry
             this.shortTitle = old.shortTitle;
             this.longTitle = old.longTitle;
             this.email = old.email;
+            this.copyright = old.copyright;
+            this.disclaimer = old.disclaimer;
         }
 
         public override object Clone()

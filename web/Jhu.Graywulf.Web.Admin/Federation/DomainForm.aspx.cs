@@ -28,6 +28,8 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             ShortTitle.Text = Item.ShortTitle;
             LongTitle.Text = Item.LongTitle;
             Email.Text = Item.Email;
+            Copyright.Text = Item.Copyright;
+            Disclaimer.Text = Item.Disclaimer;
             StandardUserGroup.SelectedValue = Item.StandardUserGroupReference.Guid.ToString();
 
             if (!Item.IsExisting)
@@ -43,6 +45,8 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             Item.ShortTitle = ShortTitle.Text;
             Item.LongTitle = LongTitle.Text;
             Item.Email = Email.Text;
+            Item.Copyright = Copyright.Text;
+            Item.Disclaimer = Disclaimer.Text;
             Item.StandardUserGroupReference.Guid = new Guid(StandardUserGroup.SelectedValue);
         }
 

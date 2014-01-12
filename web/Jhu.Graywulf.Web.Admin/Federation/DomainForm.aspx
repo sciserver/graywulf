@@ -27,6 +27,22 @@
                 <asp:TextBox ID="Email" runat="server" />
             </td>
         </tr>
+        <tr>
+            <td class="FormLabel">
+                <asp:Label ID="CopyrightLabel" runat="server" Text="Copyright:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:TextBox ID="Copyright" runat="server" />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabel">
+                <asp:Label ID="DisclaimerLabel" runat="server" Text="Disclaimer:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:TextBox ID="Disclaimer" runat="server" />
+            </td>
+        </tr>
         <tr runat="server" id="StandardUserGroupRow">
             <td class="FormLabel">
                 <asp:Label ID="StandardUserGroupLabel" runat="server" Text="Standard User Group:"></asp:Label>
