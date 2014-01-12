@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Install
         {
             string catalog;
 
-            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(AppSettings.ConnectionString);
+            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(Registry.ContextManager.Instance.ConnectionString);
             catalog = csb.InitialCatalog;
             csb.InitialCatalog = string.Empty;
 
@@ -91,7 +91,7 @@ namespace Jhu.Graywulf.Install
 
             string dropcatalog;
 
-            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(AppSettings.ConnectionString);
+            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(ContextManager.Instance.ConnectionString);
             if (catalog == null)
             {
                 dropcatalog = csb.InitialCatalog;
@@ -106,7 +106,7 @@ namespace Jhu.Graywulf.Install
             if (checkExistance)
                 sql = string.Format(@"IF EXISTS (SELECT * FROM master..sysdatabases WHERE name = '{0}') DROP DATABASE {0}", dropcatalog);
             else
-                sql = string.Format(@"DROP DATABASE {0}", dropcatalog);
+                sql = string.Format(@"ALTER DATABASE {0} SET RESTRICTED_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE {0}", dropcatalog);
 
             using (SqlConnection cn = new SqlConnection(csb.ConnectionString))
             {
@@ -131,6 +131,8 @@ namespace Jhu.Graywulf.Install
         public void CreateSchema()
         {
             ExecuteSqlScript(GetCreateAssemblyScript());
+            ExecuteSqlScript(Scripts.Jhu_Graywulf_Registry_Tables);
+            ExecuteSqlScript(Scripts.Jhu_Graywulf_Registry_Logic);
         }
 
         private void ExecuteSqlScript(string sql)
@@ -141,9 +143,12 @@ namespace Jhu.Graywulf.Install
 
                 foreach (string q in scripts)
                 {
-                    using (SqlCommand cmd = context.CreateTextCommand(q))
+                    if (!String.IsNullOrWhiteSpace(q))
                     {
-                        cmd.ExecuteNonQuery();
+                        using (SqlCommand cmd = context.CreateTextCommand(q))
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
                     }
                 }
             }
@@ -169,7 +174,7 @@ namespace Jhu.Graywulf.Install
 
             for (int i = 0; i < buffer.Length; i++)
             {
-                sb.AppendFormat("{0:X}", buffer[i]);
+                sb.AppendFormat("{0:X2}", buffer[i]);
             }
 
             return sb.ToString();

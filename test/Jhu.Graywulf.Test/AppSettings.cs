@@ -17,6 +17,15 @@ namespace Jhu.Graywulf.Test
             }
         }
 
+        public static string RegistryTestConnectionString
+        {
+            get
+            {
+                var cs = ConfigurationManager.ConnectionStrings["Jhu.Graywulf.Registry.Test"];
+                return cs != null ? cs.ConnectionString : null;
+            }
+        }
+
         public static string SqlServerSchemaTestConnectionString
         {
             get

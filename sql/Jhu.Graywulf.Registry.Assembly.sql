@@ -1,4 +1,4 @@
-CREATE ASSEMBLY [Jhu.Graywulf.Registry.Enum]
+﻿CREATE ASSEMBLY [Jhu.Graywulf.Registry.Enum]
 AUTHORIZATION [dbo]
 FROM [$Hex]
 WITH PERMISSION_SET = SAFE

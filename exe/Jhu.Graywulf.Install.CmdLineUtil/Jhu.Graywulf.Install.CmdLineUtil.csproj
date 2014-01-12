@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CreateSchema.cs" />
     <Compile Include="CreateAdmin.cs" />
     <Compile Include="CreateCluster.cs" />
     <Compile Include="CreateDb.cs" />

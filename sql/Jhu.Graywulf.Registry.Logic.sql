@@ -1,4 +1,4 @@
--- USER DEFINE TYPES --
+﻿-- USER DEFINE TYPES --
 
 CREATE TYPE [dbo].[DeploymentState]
 EXTERNAL NAME [Jhu.Graywulf.Registry.Enum].[Jhu.Graywulf.Registry.Sql.DeploymentState]
