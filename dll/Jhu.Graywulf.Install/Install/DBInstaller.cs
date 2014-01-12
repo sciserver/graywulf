@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
@@ -29,7 +30,7 @@ namespace Jhu.Graywulf.Install
             SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(AppSettings.ConnectionString);
             catalog = csb.InitialCatalog;
             csb.InitialCatalog = string.Empty;
-            
+
             string sql = string.Format(@"CREATE DATABASE {0}", catalog);
 
             using (SqlConnection cn = new SqlConnection(csb.ConnectionString))
@@ -102,7 +103,7 @@ namespace Jhu.Graywulf.Install
             csb.InitialCatalog = string.Empty;
 
             string sql;
-            if(checkExistance)
+            if (checkExistance)
                 sql = string.Format(@"IF EXISTS (SELECT * FROM master..sysdatabases WHERE name = '{0}') DROP DATABASE {0}", dropcatalog);
             else
                 sql = string.Format(@"DROP DATABASE {0}", dropcatalog);
@@ -129,57 +130,49 @@ namespace Jhu.Graywulf.Install
         /// </remarks>
         public void CreateSchema()
         {
-            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
-            {
-                string[] scripts = SplitSqlScript(Scripts.Jhu_Graywulf_Registry);
-
-                foreach (string sql in scripts)
-                {
-                    if (!sql.StartsWith("USE"))
-                    {
-                        using (SqlCommand cmd = context.CreateTextCommand(sql))
-                        {
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
-                }
-            }
+            ExecuteSqlScript(GetCreateAssemblyScript());
         }
 
-        /// <summary>
-        /// Executest a transact SQL script on the database specified in the app.config file.
-        /// </summary>
-        /// <param name="script">The script to execute.</param>
-        /// <remarks>
-        /// The database name is taken from the app.config file. It preparses the script,
-        /// identifies the GO statements and executesb the script in chunks, just like
-        /// SQL Management Studio does. It does not remove lines starting with USE!
-        /// </remarks>
-        public void ExecuteScript(string script)
+        private void ExecuteSqlScript(string sql)
         {
-            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder();
-            
-            string s = AppSettings.ConnectionString;
-
-
-
-            csb.ConnectionString = s;
-            
-           
-            csb.InitialCatalog = string.Empty;
-
-            using (SqlConnection cn = new SqlConnection(csb.ConnectionString))
+            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                cn.Open();
+                string[] scripts = SplitSqlScript(sql);
 
-                foreach (string sql in SplitSqlScript(script))
+                foreach (string q in scripts)
                 {
-                    using (SqlCommand cmd = new SqlCommand(sql, cn))
+                    using (SqlCommand cmd = context.CreateTextCommand(q))
                     {
                         cmd.ExecuteNonQuery();
                     }
                 }
             }
+        }
+
+        private string GetCreateAssemblyScript()
+        {
+            var sb = new StringBuilder(Scripts.Jhu_Graywulf_Registry_Assembly);
+            var hex = GetFileAsHex("Jhu.Graywulf.Registry.Enum.dll");
+
+            sb.Replace("[$Hex]", hex);
+
+            return sb.ToString();
+        }
+
+        private string GetFileAsHex(string filename)
+        {
+            // Load enum assembly as a binary and convert to hex
+            var buffer = File.ReadAllBytes(filename);
+            var sb = new StringBuilder();
+
+            sb.Append("0x");
+
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                sb.AppendFormat("{0:X}", buffer[i]);
+            }
+
+            return sb.ToString();
         }
 
         /// <summary>

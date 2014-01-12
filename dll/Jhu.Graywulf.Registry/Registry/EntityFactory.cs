@@ -200,7 +200,7 @@ ORDER BY Number
 
         private Entity LoadEntityByNameParts(string[] nameParts)
         {
-            var sql = @"spGetEntity_byNameParts";
+            var sql = @"spFindEntity_byNameParts";
 
             var npdt = new DataTable();
             npdt.Columns.Add("ID", typeof(int));
