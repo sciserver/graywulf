@@ -337,15 +337,6 @@ namespace Jhu.Graywulf.Web.Admin.Jobs {
         protected global::System.Web.UI.HtmlControls.HtmlTable ParametersTable;
         
         /// <summary>
-        /// CheckpointProgress control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.CheckpointProgress CheckpointProgress;
-        
-        /// <summary>
         /// EntityButtons control.
         /// </summary>
         /// <remarks>

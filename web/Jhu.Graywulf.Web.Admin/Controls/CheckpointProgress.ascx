@@ -1,2 +1,0 @@
-﻿<%@ Control Language="C#"  Inherits="Jhu.Graywulf.Web.Admin.Controls.CheckpointProgress" Codebehind="CheckpointProgress.ascx.cs" %>
-<table runat="server" id="CheckpointsTable" class="CheckpointProgress"></table>

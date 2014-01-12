@@ -150,9 +150,6 @@
         Job Parameters</h3>
     <table cellpadding="0" cellspacing="0" class="Form" runat="server" id="ParametersTable">
     </table>
-    <h3>
-        Job Progress</h3>
-    <jgwac:CheckpointProgress ID="CheckpointProgress" runat="server" />
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="FormButtons">
     <jgwac:EntityButtons runat="server" ID="EntityButtons" />

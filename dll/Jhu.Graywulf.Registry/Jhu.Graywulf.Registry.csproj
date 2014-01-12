@@ -137,7 +137,6 @@
     <Compile Include="Registry\InvalidConcurrencyVersionException.cs" />
     <Compile Include="Registry\InvalidContextException.cs" />
     <Compile Include="Registry\JobAdminRequestData.cs" />
-    <Compile Include="Registry\JobCheckpoint.cs" />
     <Compile Include="Registry\JobDefinition.cs" />
     <Compile Include="Registry\JobDefinition.io.cs" />
     <Compile Include="Registry\JobInstance.cs" />

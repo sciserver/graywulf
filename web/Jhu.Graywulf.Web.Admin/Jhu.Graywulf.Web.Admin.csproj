@@ -97,7 +97,6 @@
     <Content Include="Common\Delete.aspx" />
     <Content Include="Common\Discover.aspx" />
     <Content Include="Common\Serialize.aspx" />
-    <Content Include="Controls\CheckpointProgress.ascx" />
     <Content Include="Controls\EntityButtons.ascx" />
     <Content Include="Controls\EntityChildren.ascx" />
     <Content Include="Controls\EntityProperties.ascx" />
@@ -654,13 +653,6 @@
       <DependentUpon>Serialize.aspx</DependentUpon>
     </Compile>
     <Compile Include="Constants.cs" />
-    <Compile Include="Controls\CheckpointProgress.ascx.cs">
-      <DependentUpon>CheckpointProgress.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\CheckpointProgress.ascx.designer.cs">
-      <DependentUpon>CheckpointProgress.ascx</DependentUpon>
-    </Compile>
     <Compile Include="Controls\EntityButtons.ascx.cs">
       <DependentUpon>EntityButtons.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

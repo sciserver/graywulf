@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Registry
         /// Saves a new <b>Job Definition</b> to the database.
         /// </summary>
         /// <remarks>
-        /// This function also queries the workflow for input parameters and checkpoints.
+        /// This function also queries the workflow for input parameters
         /// </remarks>
         protected override void Create()
         {
@@ -26,18 +26,12 @@ namespace Jhu.Graywulf.Registry
 
             DiscoverWorkflowParameters();
             SaveParameters();
-
-            DiscoverWorkflowCheckpoints();
-            SaveCheckpoints();
         }
 
         /// <summary>
         /// Modifies and existiong <b>Job Definition</b> in the database.
         /// </summary>
         /// <param name="forceOverwrite">If true, record in the database is overwritten despite of any exceptions.</param>
-        /// <remarks>
-        /// This function also queries the workflow for input parameters and checkpoints.
-        /// </remarks>
         protected override void Modify(bool forceOverwrite)
         {
             base.Modify(forceOverwrite);
@@ -45,11 +39,6 @@ namespace Jhu.Graywulf.Registry
             DeleteParameters();
             DiscoverWorkflowParameters();
             SaveParameters();
-
-            DeleteCheckpoints();
-
-            DiscoverWorkflowCheckpoints();
-            SaveCheckpoints();
         }
 
         protected override void OnLoaded()
@@ -57,78 +46,6 @@ namespace Jhu.Graywulf.Registry
             base.OnLoaded();
 
             LoadParameters();
-            LoadCheckpoints();
-        }
-
-        /// <summary>
-        /// Loads workflow checkpoints from the database.
-        /// </summary>
-        protected void LoadCheckpoints()
-        {
-            checkpoints.Clear();
-
-            string sql = "spFindJobDefinitionCheckpoint";
-
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-                cmd.Parameters.Add("@JobDefinitionGuid", SqlDbType.UniqueIdentifier).Value = Guid;
-
-                using (SqlDataReader dr = cmd.ExecuteReader())
-                {
-                    while (dr.Read())
-                    {
-                        JobCheckpoint cp = new JobCheckpoint();
-
-                        // 0 index is the job instance guid
-                        int o = 0;
-                        cp.SequenceNumber = dr.GetInt32(++o);
-                        cp.Name = dr.GetString(++o);
-
-                        checkpoints.Add(cp);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Saves workflow checkpoints to the database.
-        /// </summary>
-        protected void SaveCheckpoints()
-        {
-            string sql = "spCreateJobDefinitionCheckpoint";
-
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-                cmd.Parameters.Add("@JobDefinitionGuid", SqlDbType.UniqueIdentifier).Value = Guid;
-                cmd.Parameters.Add("@SequenceNumber", SqlDbType.Int);
-                cmd.Parameters.Add("@Name", SqlDbType.NVarChar, 128);
-
-                for (int i = 0; i < checkpoints.Count; i++)
-                {
-                    cmd.Parameters["@SequenceNumber"].Value = i;
-                    cmd.Parameters["@Name"].Value = checkpoints[i].Name;
-
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Deletes workflow checkpoints from the database.
-        /// </summary>
-        protected void DeleteCheckpoints()
-        {
-            string sql = "spDeleteJobDefinitionCheckpoint";
-
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-                cmd.Parameters.Add("@JobDefinitionGuid", SqlDbType.UniqueIdentifier).Value = Guid;
-
-                cmd.ExecuteNonQuery();
-            }
         }
 
         /// <summary>

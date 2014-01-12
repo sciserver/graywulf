@@ -40,7 +40,6 @@ namespace Jhu.Graywulf.Registry
         private string exceptionMessage;
 
         private Dictionary<string, JobParameter> parameters;
-        private List<JobCheckpoint> checkpoints;
 
         #endregion
         #region Member Access Properties
@@ -176,19 +175,6 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
-        [XmlIgnore]
-        public IEnumerable<JobCheckpoint> Checkpoints
-        {
-            get { return checkpoints; }
-        }
-
-        [XmlArray("Checkpoints")]
-        public List<JobCheckpoint> Checkpoints_ForXml
-        {
-            get { return checkpoints; }
-            set { checkpoints = value; }
-        }
-
         #endregion
         #region Navigation Properties
 
@@ -320,7 +306,6 @@ namespace Jhu.Graywulf.Registry
             this.exceptionMessage = null;
 
             this.parameters = new Dictionary<string, JobParameter>();
-            this.checkpoints = new List<JobCheckpoint>();
         }
 
         /// <summary>
@@ -347,7 +332,6 @@ namespace Jhu.Graywulf.Registry
 
             // TODO: do deep copy here?
             this.parameters = new Dictionary<string, JobParameter>(old.parameters);
-            this.checkpoints = new List<JobCheckpoint>(old.checkpoints);
         }
 
         public override object Clone()

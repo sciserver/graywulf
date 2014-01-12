@@ -21,7 +21,6 @@ namespace Jhu.Graywulf.Registry
         private string workflowTypeName;
 
         private Dictionary<string, JobParameter> parameters;
-        private List<JobCheckpoint> checkpoints;
 
         #endregion
         #region Member Access Properties
@@ -57,22 +56,6 @@ namespace Jhu.Graywulf.Registry
                     parameters.Add(p.Name, p);
                 }
             }
-        }
-
-        /// <summary>
-        /// Gets the list of the workflow checkpoints.
-        /// </summary>
-        [XmlIgnore]
-        public IEnumerable<JobCheckpoint> Checkpoints
-        {
-            get { return checkpoints; }
-        }
-
-        [XmlArray("Checkpoints")]
-        public List<JobCheckpoint> Checkpoints_ForXml
-        {
-            get { return checkpoints; }
-            set { checkpoints = value; }
         }
 
         #endregion
@@ -164,7 +147,6 @@ namespace Jhu.Graywulf.Registry
             this.workflowTypeName = string.Empty;
 
             this.parameters = new Dictionary<string, JobParameter>();
-            this.checkpoints = new List<JobCheckpoint>();
         }
 
         /// <summary>
@@ -174,7 +156,6 @@ namespace Jhu.Graywulf.Registry
         private void CopyMembers(JobDefinition old)
         {
             this.parameters = new Dictionary<string, JobParameter>(old.parameters);
-            this.checkpoints = new List<JobCheckpoint>(old.checkpoints);
         }
 
         public override object Clone()
@@ -203,28 +184,6 @@ namespace Jhu.Graywulf.Registry
             foreach (var par in rh.GetParameters().Values)
             {
                 parameters.Add(par.Name, new JobParameter(par));
-            }
-        }
-
-        /// <summary>
-        /// Queries the workflow class definition for checkpoints.
-        /// </summary>
-        /// <remarks>
-        /// Checkpoints are defined by adding <b>Jhu.Graywulf.Workflow.Activities.CheckpointActivity</b> activities
-        /// to the workflow.
-        /// The logic is implemented in
-        /// the <see cref="Jhu.Graywulf.Workflow.ReflectionHelper"/> class.
-        /// </remarks>
-        public void DiscoverWorkflowCheckpoints()
-        {
-            checkpoints.Clear();
-
-            var rh = JobReflectionHelper.CreateInstance(this.workflowTypeName);
-            foreach (string name in rh.GetCheckpoints())
-            {
-                JobCheckpoint cp = new JobCheckpoint();
-                cp.Name = name;
-                checkpoints.Add(cp);
             }
         }
 

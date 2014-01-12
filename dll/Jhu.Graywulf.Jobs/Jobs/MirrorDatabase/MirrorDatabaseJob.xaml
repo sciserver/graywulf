@@ -16,7 +16,6 @@
         <x:Boolean x:Key="IsExpanded">True</x:Boolean>
       </scg3:Dictionary>
     </sap:WorkflowViewStateService.ViewState>
-    <jga:Checkpoint CheckpointName="INIT" DisplayName="INIT Checkpoint" sap:VirtualizedContainerService.HintSize="383,182">
       <Sequence DisplayName="Init Sequence" sap:VirtualizedContainerService.HintSize="222,146">
         <sap:WorkflowViewStateService.ViewState>
           <scg3:Dictionary x:TypeArguments="x:String, x:Object">
@@ -25,8 +24,6 @@
         </sap:WorkflowViewStateService.ViewState>
         <local:FindSourcesAndDestinations DestinationDatabaseInstanceGuids="[DestinationDatabaseInstanceGuids]" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" DatabaseVersionName="[DatabaseVersionName]" SourceDatabaseInstanceGuids="[SourceDatabaseInstanceGuids]" UserGuid="[UserGuid]" />
       </Sequence>
-    </jga:Checkpoint>
-    <jga:Checkpoint CheckpointName="EXEC" DisplayName="EXEC Checkpoint" sap:VirtualizedContainerService.HintSize="383,1317">
       <ParallelForEach x:TypeArguments="s:Guid" DisplayName="ParallelForEach DestinationDatabaseInstance" sap:VirtualizedContainerService.HintSize="369,1281" Values="[DestinationDatabaseInstanceGuids]">
         <sap:WorkflowViewStateService.ViewState>
           <scg3:Dictionary x:TypeArguments="x:String, x:Object">
@@ -131,6 +128,5 @@
           </Sequence>
         </ActivityAction>
       </ParallelForEach>
-    </jga:Checkpoint>
   </Sequence>
 </Activity>

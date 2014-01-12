@@ -105,42 +105,7 @@ namespace Jhu.Graywulf.Registry
             }
 
             return res;
-        }
-
-        /// <summary>
-        /// Extracts the checkpoints (<see cref="CheckpointActivity"/>) from the workflow.
-        /// </summary>
-        /// <returns>A list with the names of the checkpoints.</returns>
-        /// <remarks>
-        /// The function creates an instance of the workflow class and digs down
-        /// in the activity hierarchy to get all activities with the type of <see cref="CheckpointActivity"/>.
-        /// </remarks>
-        public List<string> GetCheckpoints()
-        {
-            Type t = Type.GetType(workflowTypeName);
-            return GetCheckpoints((Activity)Activator.CreateInstance(t, true));
-        }
-
-        private List<string> GetCheckpoints(Activity root)
-        {
-            List<string> res = new List<string>();
-
-            // Inspect the activity tree using WorkflowInspectionServices.
-            IEnumerator<Activity> activities = WorkflowInspectionServices.GetActivities(root).GetEnumerator();
-
-            while (activities.MoveNext())
-            {
-                if (activities.Current is ICheckpoint)
-                {
-                    ICheckpoint cp = (ICheckpoint)activities.Current;
-                    res.Add(cp.CheckpointName.Expression.ToString());
-                }
-
-                res.AddRange(GetCheckpoints(activities.Current));
-            }
-
-            return res;
-        }
+        }        
 
         /// <summary>
         /// Checks if a type implements a given interface.

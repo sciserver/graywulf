@@ -23,9 +23,6 @@
                 <asp:BulletedList ID="Parameters" runat="server">
                 </asp:BulletedList>
             </jgwc:TabView>
-            <jgwc:TabView runat="server" Text="Checkpoints">
-                <jgwac:CheckpointProgress ID="CheckpointProgress" runat="server" />
-            </jgwc:TabView>
         </asp:MultiView>
     </div>
 </asp:Content>

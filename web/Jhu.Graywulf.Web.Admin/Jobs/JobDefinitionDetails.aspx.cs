@@ -26,8 +26,6 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
             {
                 Parameters.Items.Add(string.Format("{0} ({1})", par.Name, par.TypeName));
             }
-
-            CheckpointProgress.Checkpoints = Item.Checkpoints;
         }
 
     }

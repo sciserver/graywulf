@@ -13,7 +13,6 @@
           <x:Boolean x:Key="IsExpanded">True</x:Boolean>
         </scg3:Dictionary>
       </sap:WorkflowViewStateService.ViewState>
-      <jga:Checkpoint CheckpointName="INIT" DisplayName="Checkpoint INIT" sap:VirtualizedContainerService.HintSize="362,244">
         <Sequence sap:VirtualizedContainerService.HintSize="222,208">
           <sap:WorkflowViewStateService.ViewState>
             <scg3:Dictionary x:TypeArguments="x:String, x:Object">
@@ -23,8 +22,6 @@
           <local:InitializeQuery EntityGuid="{x:Null}" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Query="[Query]" UserGuid="[UserGuid]" />
           <local:CheckDestinationTable sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Query="[Query]" UserGuid="[UserGuid]" />
         </Sequence>
-      </jga:Checkpoint>
-      <jga:Checkpoint CheckpointName="STAT" DisplayName="Checkpoint STAT" sap:VirtualizedContainerService.HintSize="362,447">
         <Sequence sap:VirtualizedContainerService.HintSize="304,411">
           <sap:WorkflowViewStateService.ViewState>
             <scg3:Dictionary x:TypeArguments="x:String, x:Object">
@@ -43,8 +40,6 @@
           </ParallelForEach>
           <local:GeneratePartitions EntityGuid="{x:Null}" sap:VirtualizedContainerService.HintSize="282,22" JobGuid="[JobGuid]" Query="[Query]" UserGuid="[UserGuid]" />
         </Sequence>
-      </jga:Checkpoint>
-      <jga:Checkpoint CheckpointName="EXEC" DisplayName="Checkpoint EXEC" sap:VirtualizedContainerService.HintSize="362,885">
         <ParallelForEach x:TypeArguments="local:QueryPartitionBase" DisplayName="ParallelForEach&lt;QueryPartitionBase&gt;" sap:VirtualizedContainerService.HintSize="348,849" Values="[Query.Partitions]">
           <ActivityAction x:TypeArguments="local:QueryPartitionBase">
             <ActivityAction.Argument>
@@ -77,7 +72,6 @@
             </jga:Retry>
           </ActivityAction>
         </ParallelForEach>
-      </jga:Checkpoint>
     </Sequence>
     <CancellationScope.CancellationHandler>
       <ParallelForEach x:TypeArguments="local:QueryPartitionBase" DisplayName="ParallelForEach&lt;QueryPartitionBase&gt;" sap:VirtualizedContainerService.HintSize="384,203" Values="[Query.Partitions]">

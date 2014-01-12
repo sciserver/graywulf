@@ -72,7 +72,6 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
             ExceptionMessage.Text = Item.ExceptionMessage;
 
             RefreshParametersTable();
-            CheckpointProgress.Checkpoints = Item.Checkpoints;
         }
 
         private void RefreshParametersTable()
