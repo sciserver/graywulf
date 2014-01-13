@@ -1,4 +1,4 @@
--- CREATE TABLES --
+﻿-- CREATE TABLES --
 
 CREATE TABLE [dbo].[Entity]
 (
@@ -405,6 +405,18 @@ CREATE TABLE [dbo].[Slice]
 	[From] [bigint] NOT NULL,
 	[To] [bigint] NOT NULL,
 	CONSTRAINT [PK_Slice] PRIMARY KEY CLUSTERED 
+	(
+		[EntityGuid] ASC
+	)
+)
+
+GO
+
+
+CREATE TABLE [dbo].[UserGroup]
+(
+	[EntityGuid] [uniqueidentifier] NOT NULL,
+	CONSTRAINT [PK_UserGroup] PRIMARY KEY CLUSTERED 
 	(
 		[EntityGuid] ASC
 	)
