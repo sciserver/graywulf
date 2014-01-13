@@ -230,13 +230,13 @@
     <Content Include="Layout\DatabaseInstanceFileGroupDetails.aspx" />
     <Content Include="Layout\DatabaseInstanceFileGroupForm.aspx" />
     <Content Include="Layout\DatabaseInstanceForm.aspx" />
+    <Content Include="Layout\DatabaseVersionDetails.aspx" />
     <Content Include="Layout\Default.aspx" />
     <Content Include="Layout\DomainDetails.aspx" />
     <Content Include="Layout\FederationDetails.aspx" />
     <Content Include="Layout\MappingWizard.aspx" />
     <Content Include="Layout\UserDatabaseInstanceDetails.aspx" />
     <Content Include="Layout\UserDatabaseInstanceForm.aspx" />
-    <Content Include="Layout\UserDetails.aspx" />
     <Content Include="Log\Default.aspx" />
     <Content Include="Log\EventDetails.aspx" />
     <Content Include="Log\LogEventDetails.ascx" />
@@ -1077,6 +1077,13 @@
     <Compile Include="Layout\DatabaseInstanceForm.aspx.designer.cs">
       <DependentUpon>DatabaseInstanceForm.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Layout\DatabaseVersionDetails.aspx.cs">
+      <DependentUpon>DatabaseVersionDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Layout\DatabaseVersionDetails.aspx.designer.cs">
+      <DependentUpon>DatabaseVersionDetails.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Layout\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -1118,13 +1125,6 @@
     </Compile>
     <Compile Include="Layout\UserDatabaseInstanceForm.aspx.designer.cs">
       <DependentUpon>UserDatabaseInstanceForm.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Layout\UserDetails.aspx.cs">
-      <DependentUpon>UserDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Layout\UserDetails.aspx.designer.cs">
-      <DependentUpon>UserDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Log\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>

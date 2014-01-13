@@ -127,7 +127,7 @@ namespace Jhu.Graywulf.Web
             {
                 if (myDBDatabaseInstance == null)
                 {
-                    myDBDatabaseInstance = RegistryUser.GetUserDatabaseInstance(MyDBDatabaseVersion);
+                    myDBDatabaseInstance = MyDBDatabaseVersion.GetUserDatabaseInstance(RegistryUser);
                 }
 
                 return myDBDatabaseInstance;

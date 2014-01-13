@@ -20,27 +20,16 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         {
             base.OnUpdateForm();
 
-            if (Item.User.Domain == null)
-            {
-                throw new InvalidOperationException();
-            }
-
-            RefreshFederationList();
+            RefreshUserList();
             if (Item.IsExisting)
             {
-                Federation.SelectedValue = Item.DatabaseVersion.DatabaseDefinition.Federation.Guid.ToString();
-            }
-            
-            RefreshDatabaseVersionList();
-            if (Item.IsExisting)
-            {
-                DatabaseVersion.SelectedValue = Item.DatabaseVersion.Guid.ToString();
+                UserList.SelectedValue = Item.User.Guid.ToString();
             }
 
             RefreshDatabaseInstanceList();
             if (Item.IsExisting)
             {
-                DatabaseInstance.SelectedValue = Item.DatabaseInstance.Guid.ToString();
+                DatabaseInstanceList.SelectedValue = Item.DatabaseInstance.Guid.ToString();
             }
         }
 
@@ -48,74 +37,33 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         {
             base.OnSaveForm();
 
-            Item.DatabaseVersionReference.Guid = new Guid(DatabaseVersion.SelectedValue);
-            Item.DatabaseInstanceReference.Guid = new Guid(DatabaseInstance.SelectedValue);
+            Item.UserReference.Guid = new Guid(UserList.SelectedValue);
+            Item.DatabaseInstanceReference.Guid = new Guid(DatabaseInstanceList.SelectedValue);
         }
 
-        private void RefreshFederationList()
+        private void RefreshUserList()
         {
-            Federation.Items.Clear();
-            Federation.Items.Add(new ListItem("(select federation", Guid.Empty.ToString()));
+            UserList.Items.Clear();
 
-            Item.User.Domain.LoadFederations(false);
-            foreach (var f in Item.User.Domain.Federations.Values)
+            var domain = Item.DatabaseVersion.DatabaseDefinition.Federation.Domain;
+            domain.LoadUsers(false);
+
+            foreach (var user in domain.Users.Values.OrderBy(i => i.Name))
             {
-                Federation.Items.Add(new ListItem(f.Name, f.Guid.ToString()));
-            }
-        }
-
-        private void RefreshDatabaseVersionList()
-        {
-            DatabaseVersion.Items.Clear();
-            DatabaseVersion.Items.Add(new ListItem("(select database version)", Guid.Empty.ToString()));
-
-            if (Federation.SelectedValue != Guid.Empty.ToString())
-            {
-                var f = new Registry.Federation(RegistryContext);
-                f.Guid = new Guid(Federation.SelectedValue);
-                f.Load();
-
-                f.LoadDatabaseDefinitions(false);
-                foreach (var dd in f.DatabaseDefinitions.Values)
-                {
-                    dd.LoadDatabaseVersions(false);
-
-                    foreach (var dv in dd.DatabaseVersions.Values)
-                    {
-                        DatabaseVersion.Items.Add(new ListItem(String.Format("{0}\\{1}", dd.Name, dv.Name), dv.Guid.ToString()));
-                    }
-                }
+                UserList.Items.Add(new ListItem(user.Name, user.Guid.ToString()));
             }
         }
 
         private void RefreshDatabaseInstanceList()
         {
-            DatabaseInstance.Items.Clear();
-            DatabaseInstance.Items.Add(new ListItem("(select database instance)", Guid.Empty.ToString()));
+            var dv = Item.DatabaseVersion;
+            var dd = dv.DatabaseDefinition;
+            dd.LoadDatabaseInstances(false);
 
-            if (DatabaseVersion.SelectedValue != Guid.Empty.ToString())
+            foreach (var di in dd.DatabaseInstances.Values.Where(dii => dii.DatabaseVersionReference.Guid == dv.Guid))  // TODO
             {
-                var dv = new Registry.DatabaseVersion(RegistryContext);
-                dv.Guid = new Guid(DatabaseVersion.SelectedValue);
-                dv.Load();
-
-                var dd = dv.DatabaseDefinition;
-                dd.LoadDatabaseInstances(false);
-                foreach (var di in dd.DatabaseInstances.Values.Where(dii => dii.DatabaseVersionReference.Guid == dv.Guid))
-                {
-                    DatabaseInstance.Items.Add(new ListItem(di.Name, di.Guid.ToString()));
-                }
+                DatabaseInstanceList.Items.Add(new ListItem(di.Name, di.Guid.ToString()));
             }
-        }
-
-        protected void Federation_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            RefreshDatabaseVersionList();
-        }
-
-        protected void DatabaseDefinition_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            RefreshDatabaseInstanceList();
         }
     }
 }

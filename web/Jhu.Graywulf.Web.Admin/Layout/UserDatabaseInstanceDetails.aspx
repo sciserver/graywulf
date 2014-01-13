@@ -5,18 +5,10 @@
     <table class="DetailsForm">
         <tr>
             <td class="FormLabel">
-                <asp:Label ID="FederationLabel" runat="server" Text="Federation:"></asp:Label>
+                <asp:Label ID="UserLabel" runat="server" Text="User:"></asp:Label>
             </td>
             <td class="FormField">
-                <jgwac:EntityLink ID="Federation" Expression="[$Name]" runat="server" />
-            </td>
-        </tr>
-        <tr>
-            <td class="FormLabel">
-                <asp:Label ID="DatabaseDefinitionLabel" runat="server" Text="Database Definition:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <jgwac:EntityLink ID="DatabaseDefinition" Expression="[$Name]" runat="server" />
+                <jgwac:EntityLink ID="User" Expression="[$Name]" runat="server" />
             </td>
         </tr>
         <tr>

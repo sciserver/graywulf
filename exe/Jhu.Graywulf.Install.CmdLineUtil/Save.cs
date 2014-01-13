@@ -44,6 +44,8 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
                 var f = new EntityFactory(context);
                 var entity = f.LoadEntity(EntityName);
 
+                // TODO: move masking logic to entity factory!
+
                 HashSet<EntityType> mask;
                 
                 // If no flags are specified, all entities are exported by default
@@ -54,6 +56,9 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
                 else
                 {
                     mask = new HashSet<EntityType>();
+
+                    // Generate the entity masks
+                    // Entities 'cluster' and 'domain' are always exported.
 
                     if (!Cluster)
                     {
@@ -81,6 +86,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
                         mask.Add(EntityType.DatabaseInstance);
                         mask.Add(EntityType.DatabaseInstanceFile);
                         mask.Add(EntityType.DatabaseInstanceFileGroup);
+                        mask.Add(EntityType.UserDatabaseInstance);
                     }
 
                     if (!Jobs)
@@ -94,7 +100,6 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
                     if (!Security)
                     {
                         mask.Add(EntityType.User);
-                        mask.Add(EntityType.UserDatabaseInstance);
                         mask.Add(EntityType.UserGroup);
                         mask.Add(EntityType.UserGroupMembership);
                     }
@@ -102,7 +107,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
                 using (var outfile = new StreamWriter(Output))
                 {
-                    f.Serialize(entity, outfile, null, !NoUserJobs);
+                    f.Serialize(entity, outfile, mask, !NoUserJobs);
                 }
             }
         }

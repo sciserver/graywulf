@@ -24,27 +24,5 @@ namespace Jhu.Graywulf.Web.Admin.Security
             UserList.ParentEntity = Item;
             UserGroupList.ParentEntity = Item;
         }
-
-        /*
-        protected void UserList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/security/UserDetails.aspx?Guid=" + e.CommandArgument);
-        }
-
-        protected void UserGroupList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/security/UserGroupDetails.aspx?Guid=" + e.CommandArgument);
-        }
-
-        protected void AddUser_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(item.GetNewChildFormUrl(EntityType.User));
-        }
-
-        protected void AddUserGroup_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(item.GetNewChildFormUrl(EntityType.UserGroup));
-        }
-         * */
     }
 }
