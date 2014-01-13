@@ -1,4 +1,4 @@
-﻿-- CREATE TABLES --
+-- CREATE TABLES --
 
 CREATE TABLE [dbo].[Entity]
 (

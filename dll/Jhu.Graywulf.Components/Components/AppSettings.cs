@@ -11,12 +11,24 @@ namespace Jhu.Graywulf.Components
     {
         private static object GetValue(string key)
         {
-            return ((NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf/Components"))[key];
+            var collection = (NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf/Components");
+
+            if (collection != null)
+            {
+                return collection[key];
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public static string AssemblyPath
         {
-            get { return (string)GetValue("AssemblyPath"); }
+            get
+            {
+                return (string)GetValue("AssemblyPath") ?? "";
+            }
         }
     }
 }

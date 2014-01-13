@@ -14,16 +14,22 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
         {
             base.Run();
 
-            Console.Write("Creating database schema... ");
-
-            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            try
             {
+                Console.Write("Creating database... ");
+
                 var i = new DBInstaller();
-
+                i.CreateDatabase();
                 i.CreateSchema();
-            }
 
-            Console.WriteLine("done.");
+                Console.WriteLine("done.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("failed.");
+
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }
