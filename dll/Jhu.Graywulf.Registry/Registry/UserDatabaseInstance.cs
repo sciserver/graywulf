@@ -24,6 +24,18 @@ namespace Jhu.Graywulf.Registry
         #region Member Access Properties
 
         [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.UserDatabaseInstance; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Layout; }
+        }
+
+        [XmlIgnore]
         public User User
         {
             get { return UserReference.Value; }
@@ -135,8 +147,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.UserDatabaseInstance;
-            base.EntityGroup = EntityGroup.Layout;
         }
 
         /// <summary>

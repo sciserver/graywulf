@@ -27,6 +27,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.QueueInstance; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Cluster; }
+        }
+
         /// <summary>
         /// Gets or sets the maximum number of concurrently executing jobs.
         /// </summary>
@@ -158,9 +170,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.QueueInstance;
-            base.EntityGroup = EntityGroup.Jobs;
-
             this.RunningState = Registry.RunningState.Paused;
             this.maxOutstandingJobs = 1;
             this.timeout = 0;

@@ -27,6 +27,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.DiskVolume; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Cluster; }
+        }
+
         /// <summary>
         /// Gets or sets the type of the disk volume according to its designation like System, Data etc.
         /// </summary>
@@ -46,7 +58,7 @@ namespace Jhu.Graywulf.Registry
             get { return localPath; }
             set { localPath = value; }
         }
-        
+
         /// <summary>
         /// Gets or sets the UNC path that other servers can use for accessing the disk volume
         /// </summary>
@@ -56,7 +68,7 @@ namespace Jhu.Graywulf.Registry
             get { return uncPath; }
             set { uncPath = value; }
         }
-        
+
         /// <summary>
         /// Gets or sets the full space on the disk volume in bytes
         /// </summary>
@@ -178,9 +190,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.DiskVolume;
-            base.EntityGroup = EntityGroup.Cluster;
-
             this.diskVolumeType = DiskVolumeType.Unknown;
             this.localPath = new ExpressionProperty(this, Constants.DiskVolumeLocalPath);
             this.uncPath = new ExpressionProperty(this, Constants.DiskVolumeUncPath);

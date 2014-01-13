@@ -33,6 +33,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.Domain; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Domain; }
+        }
+
         [DBColumn(Size = 50)]
         public string ShortTitle
         {
@@ -179,9 +191,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.Domain;
-            base.EntityGroup = EntityGroup.Federation | EntityGroup.Layout | EntityGroup.Log | EntityGroup.Jobs | EntityGroup.Security;
-
             this.shortTitle = String.Empty;
             this.longTitle = String.Empty;
             this.email = String.Empty;

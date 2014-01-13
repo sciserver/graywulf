@@ -32,6 +32,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.DatabaseInstanceFile; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Layout; }
+        }
+
         /// <summary>
         /// Gets or sets the value determining the type of this file: Log or Data
         /// </summary>
@@ -204,9 +216,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.DatabaseInstanceFile;
-            base.EntityGroup = EntityGroup.Layout;
-
             this.databaseFileType = DatabaseFileType.Unknown;
             this.logicalName = string.Empty;
             this.filename = string.Empty;

@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
 
         protected override void OnLoad(EventArgs e)
         {
-            entityGroupMask = EntityGroup.None;
+            entityGroupMask = EntityGroup.Unknown;
             string dir = Request.AppRelativeCurrentExecutionFilePath;
             if (dir.Length > 2)
             {

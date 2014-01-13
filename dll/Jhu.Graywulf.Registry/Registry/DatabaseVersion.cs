@@ -25,6 +25,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.DatabaseVersion; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Federation; }
+        }
+
         [DBColumn]
         public float SizeMultiplier
         {
@@ -138,9 +150,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.DatabaseVersion;
-            base.EntityGroup = EntityGroup.Federation;
-
             this.sizeMultiplier = 1.0f;
         }
 

@@ -15,9 +15,22 @@ namespace Jhu.Graywulf.Registry
     [XmlType("Cluster")]
     public partial class Cluster : Entity
     {
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.Cluster; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Cluster; }
+        }
+
         #region Validation Properties
         #endregion
         #region Navigation Properties
+
 
         [XmlIgnore]
         public Dictionary<string, MachineRole> MachineRoles
@@ -111,8 +124,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.Cluster;
-            base.EntityGroup = EntityGroup.All;
         }
 
         /// <summary>

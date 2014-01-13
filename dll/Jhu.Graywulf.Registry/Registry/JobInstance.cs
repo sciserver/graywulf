@@ -46,6 +46,18 @@ namespace Jhu.Graywulf.Registry
         #region Member Access Properties
 
         [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.JobInstance; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Jobs; }
+        }
+
+        [XmlIgnore]
         public string JobID
         {
             get { return DateCreated.ToString("yyMMddHHmmssff"); }
@@ -288,9 +300,6 @@ namespace Jhu.Graywulf.Registry
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            base.EntityType = EntityType.JobInstance;
-            base.EntityGroup = EntityGroup.Jobs;
-
             this.workflowTypeName = string.Empty;
             this.dateStarted = DateTime.MinValue;
             this.dateFinished = DateTime.MinValue;

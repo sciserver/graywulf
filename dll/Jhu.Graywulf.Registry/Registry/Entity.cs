@@ -58,8 +58,6 @@ namespace Jhu.Graywulf.Registry
         private ParameterCollection settings;
         private string comments;
 
-        private EntityGroup entityGroup;
-
         // --- Background storage for navigation properties ---
         private Dictionary<int, IEntityReference> entityReferences;
         private bool isEntityReferencesLoaded;
@@ -100,10 +98,10 @@ namespace Jhu.Graywulf.Registry
         /// The value of this property is set by the constructor of the inherited classes.
         /// </summary>
         [XmlIgnore]
-        public EntityType EntityType
+        public virtual EntityType EntityType
         {
             get { return entityType; }
-            internal set { entityType = value; }
+            private set { entityType = value; }
         }
 
         /// <summary>
@@ -419,10 +417,9 @@ namespace Jhu.Graywulf.Registry
         /// Gets the Group mask of the entity.
         /// </summary>
         [XmlIgnore]
-        public EntityGroup EntityGroup
+        public virtual EntityGroup EntityGroup
         {
-            get { return entityGroup; }
-            internal set { entityGroup = value; }
+            get { return EntityGroup.Unknown; }
         }
 
         #endregion
@@ -516,8 +513,6 @@ namespace Jhu.Graywulf.Registry
             this.settings = new ParameterCollection();
             this.comments = string.Empty;
 
-            this.entityGroup = Registry.EntityGroup.None;
-
             InitializeEntityReferences();
             this.isEntityReferencesLoaded = false;
 
@@ -555,8 +550,6 @@ namespace Jhu.Graywulf.Registry
             this.userGuidDeleted = old.userGuidDeleted;
             this.settings = new ParameterCollection(old.settings);
             this.comments = old.comments;
-
-            this.entityGroup = old.entityGroup;
 
             CopyEntityReferences(old);
             InitializeChildTypes();

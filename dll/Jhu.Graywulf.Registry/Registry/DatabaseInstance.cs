@@ -29,6 +29,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.DatabaseInstance; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Layout; }
+        }
+
         /// <summary>
         /// Gets or sets the name of the referenced physical database.
         /// </summary>
@@ -204,9 +216,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.DatabaseInstance;
-            base.EntityGroup = EntityGroup.Layout;
-
             this.databaseName = string.Empty;
         }
 

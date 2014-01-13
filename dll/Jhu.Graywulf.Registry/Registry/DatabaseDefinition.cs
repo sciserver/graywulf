@@ -34,6 +34,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.DatabaseDefinition; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Federation; }
+        }
+
         /// <summary>
         /// Gets the server instance containing the template databases.
         /// </summary>
@@ -263,9 +275,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.DatabaseDefinition;
-            base.EntityGroup = EntityGroup.Federation | EntityGroup.Layout;
-
             this.schemaSourceDatabaseName = string.Empty;
             this.layoutType = DatabaseLayoutType.Monolithic;
             this.databaseInstanceNamePattern = Constants.MonolithicDatabaseInstanceNamePattern;
@@ -317,7 +326,7 @@ namespace Jhu.Graywulf.Registry
         }
 
         #endregion
-        
+
         //
 
         public DatabaseInstance GetDatabaseInstance(DatabaseVersion databaseVersion, long partitionKeyValue)

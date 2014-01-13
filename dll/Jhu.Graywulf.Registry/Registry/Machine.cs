@@ -22,6 +22,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.Machine; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Cluster; }
+        }
+
         /// <summary>
         /// Gets or sets NetBIOS name of the server.
         /// </summary>
@@ -51,7 +63,7 @@ namespace Jhu.Graywulf.Registry
             get { return deployUncPath; }
             set { deployUncPath = value; }
         }
-        
+
         #endregion
         #region Navigation Properties
 
@@ -145,9 +157,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.Machine;
-            base.EntityGroup = EntityGroup.Cluster | EntityGroup.Jobs;
-
             this.hostName = new ExpressionProperty(this, Constants.MachineHostName);
             this.adminUrl = new ExpressionProperty(this, Constants.MachineAdminUrl);
             this.deployUncPath = new ExpressionProperty(this, Constants.MachineDeployUncPath);

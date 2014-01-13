@@ -25,6 +25,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.ServerVersion; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Cluster; }
+        }
+
         /// <summary>
         /// Gets or sets the name of the SQL Server instance
         /// </summary>
@@ -146,9 +158,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.ServerVersion;
-            base.EntityGroup = EntityGroup.Cluster;
-
             this.instanceName = string.Empty;
             this.integratedSecurity = true;
             this.adminUser = string.Empty;

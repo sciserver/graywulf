@@ -21,6 +21,19 @@ namespace Jhu.Graywulf.Registry
 
         #endregion
         #region Member Access Properties
+
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.UserGroup; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Domain; }
+        }
+
         #endregion
         #region Navigation Properties
 
@@ -105,8 +118,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.UserGroup;
-            base.EntityGroup = EntityGroup.Security;
         }
 
         /// <summary>

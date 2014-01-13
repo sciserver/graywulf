@@ -118,6 +118,8 @@ namespace Jhu.Graywulf.Web.Admin
         /// </remarks>
         private static EntityGroup GetDefaultEntityGroup(EntityType entityType)
         {
+            // TODO: review this
+
             EntityGroup group;
 
             switch (entityType)
@@ -156,7 +158,7 @@ namespace Jhu.Graywulf.Web.Admin
                     break;
                 case EntityType.UserGroup:
                 case EntityType.User:
-                    group = EntityGroup.Security;
+                    group = EntityGroup.Domain;
                     break;
                 default:
                     throw new NotImplementedException();
@@ -177,6 +179,8 @@ namespace Jhu.Graywulf.Web.Admin
         /// </remarks>
         private static void OverrideEntityGroup(EntityType entityType, ref EntityGroup group)
         {
+            // TODO: review this
+
             switch (entityType)
             {
                 case EntityType.Cluster:
@@ -214,7 +218,7 @@ namespace Jhu.Graywulf.Web.Admin
                     break;
                 case EntityType.UserGroup:
                 case EntityType.User:
-                    group = EntityGroup.Security;
+                    group = EntityGroup.Domain;
                     break;
                 default:
                     throw new NotImplementedException();

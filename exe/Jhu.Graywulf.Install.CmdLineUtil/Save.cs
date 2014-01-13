@@ -107,7 +107,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
                 using (var outfile = new StreamWriter(Output))
                 {
-                    f.Serialize(entity, outfile, mask, !NoUserJobs);
+                    f.Serialize(entity, outfile, mask, NoUserJobs);
                 }
             }
         }

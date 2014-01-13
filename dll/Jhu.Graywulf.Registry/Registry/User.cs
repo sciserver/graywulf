@@ -51,6 +51,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.User; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Domain; }
+        }
+
         /// <summary>
         /// Gets or sets the title (Mr., Dr. etc) of the <b>User</b>
         /// </summary>
@@ -351,7 +363,7 @@ namespace Jhu.Graywulf.Registry
             get { return activationCode; }
             set { activationCode = value; }
         }
-        
+
         #endregion
         #region Navigation Properties
 
@@ -441,9 +453,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.User;
-            base.EntityGroup = EntityGroup.Security;
-
             this.title = String.Empty;
             this.firstName = String.Empty;
             this.middleName = String.Empty;
