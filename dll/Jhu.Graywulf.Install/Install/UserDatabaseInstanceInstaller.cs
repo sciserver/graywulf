@@ -79,10 +79,10 @@ namespace Jhu.Graywulf.Install
             di.Save();
 
             // Add user database mapping
-            var udi = new UserDatabaseInstance(user)
+            var udi = new UserDatabaseInstance(databaseVersion)
             {
                 Name = String.Format("{0}_{1}_", user.Name, di.DatabaseDefinition.Federation.Name, di.DatabaseDefinition.Name),
-                DatabaseVersion = databaseVersion,
+                User = user,
                 DatabaseInstance = di,
             };
 

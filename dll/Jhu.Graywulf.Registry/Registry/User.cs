@@ -374,13 +374,6 @@ namespace Jhu.Graywulf.Registry
             set { SetChildren<UserGroupMembership>(value); }
         }
 
-        [XmlIgnore]
-        public Dictionary<string, UserDatabaseInstance> UserDatabaseInstances
-        {
-            get { return GetChildren<UserDatabaseInstance>(); }
-            set { SetChildren<UserDatabaseInstance>(value); }
-        }
-
         #endregion
         #region Validation Properties
         #endregion
@@ -522,101 +515,11 @@ namespace Jhu.Graywulf.Registry
             return new Type[] 
             {
                 typeof(UserGroupMembership),
-                typeof(UserDatabaseInstance),
             };
         }
 
         #endregion
         #region Authentication and Password Generation Logic
-
-#if false
-        public bool Login()
-        {
-            // Load user from the database
-            string sql = "spLoginUserNtlm";
-
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@NtlmUser", SqlDbType.NVarChar, 50).Value = Environment.UserName;
-
-                using (SqlDataReader dr = cmd.ExecuteReader())
-                {
-                    dr.Read();
-                    LoadFromDataReader(dr);
-                    dr.Close();
-                }
-            }
-
-            if (this.DeploymentState == Registry.DeploymentState.Deployed)
-            {
-                UpdateContextAfterLogin();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Authenticates the user against the user database and loads it.
-        /// </summary>
-        /// <param name="nameOrEmail">E-mail address of the user</param>
-        /// <param name="password">Password string</param>
-        /// <returns><b>True</b> if the user is successfully authenticated.</returns>
-        /// <remarks>
-        /// The function computes the password hash from the supplied password string
-        /// and compares with the hash in the database.
-        /// </remarks>
-        public bool Login(string nameOrEmail, string password)
-        {
-            // Load user from the database
-            string sql = "spLoginUser";
-
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@NameOrEmail", SqlDbType.NVarChar, 50).Value = nameOrEmail;
-
-                using (SqlDataReader dr = cmd.ExecuteReader())
-                {
-                    dr.Read();
-                    LoadFromDataReader(dr);
-                    dr.Close();
-                }
-            }
-
-            // Compute password hash
-            byte[] hash = ComputePasswordHash(password);
-
-            // Compare the hash with the one in the database
-            if (hash.Length != passwordHash.Length)
-                return false;
-            else
-            {
-                for (int i = 0; i < hash.Length; i++)
-                    if (hash[i] != passwordHash[i]) return false;
-            }
-
-            if (this.DeploymentState == Registry.DeploymentState.Deployed)
-            {
-                UpdateContextAfterLogin();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        private void UpdateContextAfterLogin()
-        {
-            if (Context != null)
-            {
-                Context.UserGuid = this.Guid;
-                Context.UserName = this.Name;
-            }
-        }
-#endif
 
         /// <summary>
         /// Sets the users password by computing the password hash.
@@ -646,6 +549,8 @@ namespace Jhu.Graywulf.Registry
         #region Database mappings and MyDB
 
 
+        /*
+         * TODO: delete
         public DatabaseInstance GetUserDatabaseInstance(DatabaseVersion databaseVersion)
         {
             LoadUserDatabaseInstances(true);
@@ -660,6 +565,7 @@ namespace Jhu.Graywulf.Registry
                 return null;
             }
         }
+        */
 
         #endregion
         #region Email functions

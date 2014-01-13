@@ -16,6 +16,11 @@ namespace Jhu.Graywulf.Registry
             LoadChildren<Federation>(forceReload);
         }
 
+        public void LoadUsers(bool forceReload)
+        {
+            LoadChildren<User>(forceReload);
+        }
+
         public void LoadUserGroups(bool forceReload)
         {
             LoadChildren<UserGroup>(forceReload);

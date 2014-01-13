@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.Jobs.Query
                             var ef = new EntityFactory(context);
                             var federation = queryPartition.FederationReference.Value;
                             var user = ef.LoadEntity<User>(context.UserGuid);
-                            var di = user.GetUserDatabaseInstance(federation.MyDBDatabaseVersion);
+                            var di = federation.MyDBDatabaseVersion.GetUserDatabaseInstance(user);
 
                             queryPartition.AssignedServerInstance = di.ServerInstance;
                         }

@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Registry
         {
             if (!dr.HasRows)
             {
-                throw new EntityNotFoundException(ExceptionMessages.EntityNotFound);
+                throw new EntityNotFoundException(String.Format(ExceptionMessages.EntityNotFound, String.IsNullOrWhiteSpace(name) ? guid.ToString() : name));
             }
 
             int o = -1;
@@ -730,9 +730,10 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Serialization Functions
 
-        internal IEnumerable<Entity> EnumerateChildrenForSerialize(HashSet<EntityType> mask, bool excludeUserJobs)
+        /*
+        internal IEnumerable<Entity> EnumerateChildrenForSerialize(HashSet<EntityType> excludeEntities, bool excludeUserJobs)
         {
-            if (mask == null || !mask.Contains(this.EntityType))
+            if (excludeEntities == null || !excludeEntities.Contains(this.EntityType))
             {
                 // Make sure it's not a simple user job
                 if (excludeUserJobs &&
@@ -748,13 +749,14 @@ namespace Jhu.Graywulf.Registry
                 this.LoadAllChildren(true);
                 foreach (Entity e in this.EnumerateAllChildren())
                 {
-                    foreach (Entity ee in e.EnumerateChildrenForSerialize(mask, excludeUserJobs))
+                    foreach (Entity ee in e.EnumerateChildrenForSerialize(excludeEntities, excludeUserJobs))
                     {
                         yield return ee;
                     }
                 }
             }
         }
+         * */
 
         internal void ResolveParentReference()
         {

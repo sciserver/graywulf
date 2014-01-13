@@ -181,6 +181,53 @@ ORDER BY Number
             }
         }
 
+        public IEnumerable<ItemType> FindConnection<ItemType>(Entity parent, Entity to, int? referenceType)
+            where ItemType : Entity, new()
+        {
+            var sql = @"
+WITH q AS
+(
+	SELECT Entity.*, [{0}].*
+	FROM Entity
+	INNER JOIN [{0}] ON [{0}].EntityGuid = Entity.Guid
+    INNER JOIN EntityReference ON EntityReference.EntityGuid = Entity.Guid
+	WHERE 
+        Entity.ParentGuid = @ParentGuid AND
+		EntityReference.ReferencedEntityGuid = @EntityGuidTo AND
+		(@ReferenceType IS NULL OR EntityReference.ReferenceType = @ReferenceType) AND
+		(@ShowHidden = 1 OR Entity.Hidden = 0) AND
+		(@ShowDeleted = 1 OR Entity.Deleted = 0)
+)
+SELECT q.* FROM q
+ORDER BY Number";
+
+            var childrentype = new ItemType().EntityType;
+            sql = String.Format(sql, childrentype);
+
+            using (var cmd = Context.CreateTextCommand(sql))
+            {
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
+                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
+                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
+                cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parent.Guid;
+                cmd.Parameters.Add("@EntityGuidTo", SqlDbType.UniqueIdentifier).Value = to.Guid;
+                cmd.Parameters.Add("@ReferenceType", SqlDbType.Int).Value = referenceType.HasValue ? (object)referenceType.Value : DBNull.Value;
+
+                using (var dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        ItemType item = new ItemType();
+                        item.Context = Context;
+                        item.Parent = parent;
+                        item.LoadFromDataReader(dr);
+                        yield return item;
+                    }
+                    dr.Close();
+                }
+            }
+        }
+
         #endregion
         #region Entity Load Functions
 
@@ -342,13 +389,59 @@ ORDER BY Number
         /// </summary>
         /// <param name="entity">The root entity of the serialization.</param>
         /// <param name="output">The TextWriter object used for writing the XML stream.</param>
-        public void Serialize(Entity entity, TextWriter output, HashSet<EntityType> mask, bool excludeUserJobs)
+        public void Serialize(Entity entity, TextWriter output, HashSet<EntityType> excludeEntities, bool excludeUserJobs)
         {
             var registry = new Registry();
-            registry.Entities = entity.EnumerateChildrenForSerialize(mask, excludeUserJobs).ToArray();
+            registry.Entities = EnumerateChildrenForSerialize(entity, excludeEntities, excludeUserJobs).ToArray();
 
             var ser = new XmlSerializer(registry.GetType());
             ser.Serialize(output, registry);
+        }
+
+        /// <summary>
+        /// Recursively enumerate entities in the registry tree
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="excludeEntities"></param>
+        /// <param name="excludeUserJobs"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// The function enumerates nodes of a subtree of the registry,
+        /// returning parent items first, then immediate children in their
+        /// appropriate order by the field 'Number'.
+        /// Certain entities are excluded but their children are still
+        /// included in the search!
+        /// </remarks>
+        private IEnumerable<Entity> EnumerateChildrenForSerialize(Entity entity, HashSet<EntityType> excludeEntities, bool excludeUserJobs)
+        {
+            // Make sure it's not a simple user job
+            // TODO: exclude user jobs is an ad-hoc solution
+            // maybe filtering on name prefixes?
+            if (excludeUserJobs &&
+                entity.EntityType == EntityType.JobInstance &&
+                (((JobInstance)entity).ScheduleType != ScheduleType.Recurring ||
+                 ((JobInstance)entity).JobExecutionStatus != JobExecutionState.Scheduled))
+            {
+                yield break;
+            }
+
+            // See if this particular type of entity is excluded
+            if (excludeEntities == null || !excludeEntities.Contains(entity.EntityType))
+            {
+                yield return entity;
+            }
+
+            // Even if it's excluded, return children.
+            // Some exports (layout) might require exporting certain security
+            // objects (user-mydb mapping)
+            entity.LoadAllChildren(true);
+            foreach (Entity e in entity.EnumerateAllChildren().OrderBy(ei => ei.Number))
+            {
+                foreach (Entity ee in EnumerateChildrenForSerialize(e, excludeEntities, excludeUserJobs))
+                {
+                    yield return ee;
+                }
+            }
         }
 
         /// <summary>
@@ -356,7 +449,7 @@ ORDER BY Number
         /// </summary>
         /// <param name="input">The TextReader object used for reading from the XML stream.</param>
         /// <returns>An IEnumerable interface to the deserialized objects.</returns>
-        public IEnumerable<Entity> Deserialize(TextReader input)
+        public IEnumerable<Entity> Deserialize(TextReader input, bool ignoreDuplicates)
         {
             Registry registry;
             var ser = new XmlSerializer(typeof(Registry));
@@ -382,7 +475,17 @@ ORDER BY Number
                             entity.ResolveParentReference();
                         }
 
-                        entity.Save();
+                        try
+                        {
+                            entity.Save();
+                        }
+                        catch (DuplicateNameException)
+                        {
+                            if (!ignoreDuplicates)
+                            {
+                                throw;
+                            }
+                        }
 
                         Console.Error.WriteLine("Created {0}", entity.Name);
 
@@ -395,9 +498,19 @@ ORDER BY Number
 
             foreach (var entity in registry.Entities)
             {
-                entity.IsDeserializing = false;     // Allows saving entity references
-                entity.ResolveNameReferences();
-                entity.Save();
+                try
+                {
+                    entity.IsDeserializing = false;     // Allows saving entity references
+                    entity.ResolveNameReferences();
+                    entity.Save();
+                }
+                catch (DuplicateNameException)
+                {
+                    if (!ignoreDuplicates)
+                    {
+                        throw;
+                    }
+                }
             }
 
             return registry.Entities;

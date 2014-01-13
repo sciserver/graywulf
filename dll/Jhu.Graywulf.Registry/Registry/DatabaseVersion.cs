@@ -77,6 +77,13 @@ namespace Jhu.Graywulf.Registry
             set { ServerVersionReference.Name = value; }
         }
 
+        [XmlIgnore]
+        public Dictionary<string, UserDatabaseInstance> UserDatabaseInstances
+        {
+            get { return GetChildren<UserDatabaseInstance>(); }
+            set { SetChildren<UserDatabaseInstance>(value); }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -159,6 +166,31 @@ namespace Jhu.Graywulf.Registry
             };
         }
 
+        protected override Type[] CreateChildTypes()
+        {
+            return new Type[] 
+            {
+                typeof(UserDatabaseInstance),
+            };
+        }
+
         #endregion
+
+        public DatabaseInstance GetUserDatabaseInstance(User user)
+        {
+            var ef = new EntityFactory(Context);
+
+            var udis = ef.FindConnection<UserDatabaseInstance>(this, user, (int)UserDatabaseInstance.ReferenceType.User);
+            var udi = udis.FirstOrDefault();
+
+            if (udi == null)
+            {
+                return null;
+            }
+            else
+            {
+                return udi.DatabaseInstance;
+            }
+        }
     }
 }

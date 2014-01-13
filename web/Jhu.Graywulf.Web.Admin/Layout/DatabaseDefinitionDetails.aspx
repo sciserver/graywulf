@@ -18,5 +18,6 @@
                 <asp:BoundField DataField="RunningState" HeaderText="Running State" />
             </columns>
         </jgwac:EntityList>
+        <jgwac:EntityList runat="server" ID="DatabaseVersionList" ChildrenType="DatabaseVersion" EntityGroup="Layout" />
     </jgwac:EntityChildren>
 </asp:Content>

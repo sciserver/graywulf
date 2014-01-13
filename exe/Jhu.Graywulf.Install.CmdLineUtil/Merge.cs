@@ -14,6 +14,9 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
         [Parameter(Name = "Input", Description = "Name of input file", Required = true)]
         public string Input { get; set; }
 
+        [Option(Name = "IgnoreDuplicates", Description = "Ignore duplicates")]
+        public bool IgnoreDuplicates { get; set; }
+
         public override void Run()
         {
             base.Run();
@@ -24,7 +27,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
                 using (var infile = new StreamReader(Input))
                 {
-                    f.Deserialize(infile);
+                    f.Deserialize(infile, IgnoreDuplicates);
                 }
             }
         }
