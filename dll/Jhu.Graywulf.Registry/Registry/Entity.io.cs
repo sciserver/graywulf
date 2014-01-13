@@ -730,16 +730,25 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Serialization Functions
 
-        internal IEnumerable<Entity> EnumerateChildrenForSerialize(HashSet<EntityType> mask)
+        internal IEnumerable<Entity> EnumerateChildrenForSerialize(HashSet<EntityType> mask, bool excludeUserJobs)
         {
             if (mask == null || !mask.Contains(this.EntityType))
             {
+                // Make sure it's not a simple user job
+                if (excludeUserJobs &&
+                    this.entityType == Registry.EntityType.JobInstance &&
+                    (((JobInstance)this).ScheduleType != ScheduleType.Recurring ||
+                     ((JobInstance)this).JobExecutionStatus != JobExecutionState.Scheduled))
+                {
+                    yield break;
+                }
+
                 yield return this;
 
                 this.LoadAllChildren(true);
                 foreach (Entity e in this.EnumerateAllChildren())
                 {
-                    foreach (Entity ee in e.EnumerateChildrenForSerialize(mask))
+                    foreach (Entity ee in e.EnumerateChildrenForSerialize(mask, excludeUserJobs))
                     {
                         yield return ee;
                     }

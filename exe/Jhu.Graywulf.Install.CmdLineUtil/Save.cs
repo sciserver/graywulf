@@ -17,6 +17,24 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
         [Parameter(Name = "EntityName", Description = "Name of entity to serialize", Required = true)]
         public string EntityName { get; set; }
 
+        [Option(Name = "Cluster", Description = "Export hardware info", Required = false)]
+        public bool Cluster { get; set; }
+
+        [Option(Name = "Federation", Description = "Export federation info", Required = false)]
+        public bool Federation { get; set; }
+
+        [Option(Name = "Layout", Description = "Export layout info", Required = false)]
+        public bool Layout { get; set; }
+
+        [Option(Name = "Jobs", Description = "Export job info", Required = false)]
+        public bool Jobs { get; set; }
+
+        [Option(Name = "NoUserJobs", Description = "Exclude user jobs", Required = false)]
+        public bool NoUserJobs { get; set; }
+
+        [Option(Name = "Security", Description = "Export security info", Required = false)]
+        public bool Security { get; set; }
+
         public override void Run()
         {
             base.Run();
@@ -26,11 +44,65 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
                 var f = new EntityFactory(context);
                 var entity = f.LoadEntity(EntityName);
 
-                // *** TODO: create mask from input parameters
+                HashSet<EntityType> mask;
+                
+                // If no flags are specified, all entities are exported by default
+                if (!Cluster && !Federation && !Layout && !Jobs && !Security)
+                {
+                    mask = null;
+                }
+                else
+                {
+                    mask = new HashSet<EntityType>();
+
+                    if (!Cluster)
+                    {
+                        mask.Add(EntityType.DiskVolume);
+                        mask.Add(EntityType.Machine);
+                        mask.Add(EntityType.MachineRole);
+                        mask.Add(EntityType.ServerInstance);
+                        mask.Add(EntityType.ServerVersion);
+                    }
+
+                    if (!Federation)
+                    {
+                        mask.Add(EntityType.Federation);
+                        mask.Add(EntityType.DatabaseDefinition);
+                        mask.Add(EntityType.DatabaseVersion);
+                        mask.Add(EntityType.DistributedPartitionedView);
+                        mask.Add(EntityType.FileGroup);
+                        mask.Add(EntityType.Partition);
+                        mask.Add(EntityType.RemoteDatabase);
+                        mask.Add(EntityType.Slice);
+                    }
+
+                    if (!Layout)
+                    {
+                        mask.Add(EntityType.DatabaseInstance);
+                        mask.Add(EntityType.DatabaseInstanceFile);
+                        mask.Add(EntityType.DatabaseInstanceFileGroup);
+                    }
+
+                    if (!Jobs)
+                    {
+                        mask.Add(EntityType.JobDefinition);
+                        mask.Add(EntityType.JobInstance);
+                        mask.Add(EntityType.QueueDefinition);
+                        mask.Add(EntityType.QueueInstance);
+                    }
+
+                    if (!Security)
+                    {
+                        mask.Add(EntityType.User);
+                        mask.Add(EntityType.UserDatabaseInstance);
+                        mask.Add(EntityType.UserGroup);
+                        mask.Add(EntityType.UserGroupMembership);
+                    }
+                }
 
                 using (var outfile = new StreamWriter(Output))
                 {
-                    f.Serialize(entity, outfile, null);
+                    f.Serialize(entity, outfile, null, !NoUserJobs);
                 }
             }
         }

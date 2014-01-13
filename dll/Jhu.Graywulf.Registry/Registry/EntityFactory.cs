@@ -46,6 +46,7 @@ namespace Jhu.Graywulf.Registry
             [XmlArrayItem(typeof(User))]
             [XmlArrayItem(typeof(UserDatabaseInstance))]
             [XmlArrayItem(typeof(UserGroup))]
+            [XmlArrayItem(typeof(UserGroupMembership))]
             public Entity[] Entities;
         }
 
@@ -331,17 +332,20 @@ ORDER BY Number
 
         #region Serialization Functions
 
+        public void Serialize(Entity entity, TextWriter output, HashSet<EntityType> mask)
+        {
+            Serialize(entity, output, mask, false);
+        }
+
         /// <summary>
         /// Serializes an entity and all its child elements into XML.
         /// </summary>
         /// <param name="entity">The root entity of the serialization.</param>
         /// <param name="output">The TextWriter object used for writing the XML stream.</param>
-        public void Serialize(Entity entity, TextWriter output, HashSet<EntityType> mask)
+        public void Serialize(Entity entity, TextWriter output, HashSet<EntityType> mask, bool excludeUserJobs)
         {
-            //var entities = new List<Entity>(entity.EnumerateChildrenForSerialize(mask));
-
             var registry = new Registry();
-            registry.Entities = entity.EnumerateChildrenForSerialize(mask).ToArray();
+            registry.Entities = entity.EnumerateChildrenForSerialize(mask, excludeUserJobs).ToArray();
 
             var ser = new XmlSerializer(registry.GetType());
             ser.Serialize(output, registry);
