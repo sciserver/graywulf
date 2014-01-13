@@ -8,8 +8,8 @@ using Jhu.Graywulf.Install;
 
 namespace Jhu.Graywulf.Registry.CmdLineUtil
 {
-    [Verb(Name = "Merge", Description = "Merges an XML file into the registry")]
-    class Merge : Verb
+    [Verb(Name = "Import", Description = "Imports an XML file into the registry")]
+    class Import : Verb
     {
         [Parameter(Name = "Input", Description = "Name of input file", Required = true)]
         public string Input { get; set; }

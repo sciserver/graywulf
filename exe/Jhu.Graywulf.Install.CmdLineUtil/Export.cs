@@ -8,8 +8,8 @@ using Jhu.Graywulf.Install;
 
 namespace Jhu.Graywulf.Registry.CmdLineUtil
 {
-    [Verb(Name = "Save", Description = "Saves a branch of the registry into an XML file")]
-    class Save : Verb
+    [Verb(Name = "Export", Description = "Exports a branch of the registry into an XML file")]
+    class Export : Verb
     {
         [Parameter(Name = "Output", Description = "Name of output file", Required = true)]
         public string Output { get; set; }
