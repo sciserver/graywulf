@@ -5,8 +5,6 @@
 </asp:Content>
 <asp:Content ID="Content5" runat="server" ContentPlaceHolderID="FormTabs">
     <jgwac:EntityChildren runat="server">
-        <jgwac:EntityList runat="server" ID="QueueDefinitionList" ChildrenType="QueueDefinition"
-            EntityGroup="Jobs" />
         <jgwac:EntityList runat="server" ID="JobDefinitionList" ChildrenType="JobDefinition"
             EntityGroup="Jobs" />
     </jgwac:EntityChildren>

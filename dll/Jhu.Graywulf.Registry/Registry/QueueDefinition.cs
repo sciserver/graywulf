@@ -63,20 +63,6 @@ namespace Jhu.Graywulf.Registry
             get { return ParentReference.Value as Cluster; }
         }
 
-        /// <summary>
-        /// Gets the <b>Federation</b> object to which this <b>Database Definition</b> belongs.
-        /// </summary>
-        /// <remarks>
-        /// This property does do lazy loading, no calling of a loader function is necessary, but
-        /// a valid object context with an open database connection must be set.
-        /// Null if the <b>Queue Definition</b> is not a direct child of a <b>Federation</b>.
-        /// </remarks>
-        [XmlIgnore]
-        public Federation Federation
-        {
-            get { return ParentReference.Value as Federation; }
-        }
-
         #endregion
         #region Validation Properties
         #endregion

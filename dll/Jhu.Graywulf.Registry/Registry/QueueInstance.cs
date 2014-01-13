@@ -55,6 +55,18 @@ namespace Jhu.Graywulf.Registry
         #region Navigation Properties
 
         /// <summary>
+        /// Gets the <b>Machine</b> object to which the <b>Queue Instance</b> belongs to.
+        /// </summary>
+        /// <remarks>
+        /// This property does do lazy loading, no calling of a loader function is necessary, but
+        /// a valid object context with an open database connection must be set.
+        /// </remarks>
+        public Machine Machine
+        {
+            get { return (Machine)ParentReference.Value; }
+        }
+
+        /// <summary>
         /// Gets the reference object to the queue definition associated with this queue instance.
         /// </summary>
         [XmlIgnore]

@@ -249,13 +249,6 @@ namespace Jhu.Graywulf.Registry
         }
 
         [XmlIgnore]
-        public Dictionary<string, QueueDefinition> QueueDefinitions
-        {
-            get { return GetChildren<QueueDefinition>(); }
-            set { SetChildren<QueueDefinition>(value); }
-        }
-
-        [XmlIgnore]
         public Dictionary<string, JobDefinition> JobDefinitions
         {
             get { return GetChildren<JobDefinition>(); }
@@ -370,7 +363,6 @@ namespace Jhu.Graywulf.Registry
             {
                 typeof(DatabaseDefinition),
                 typeof(RemoteDatabase),
-                typeof(QueueDefinition),
                 typeof(JobDefinition),
             };
         }

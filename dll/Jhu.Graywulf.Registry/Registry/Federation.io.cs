@@ -21,11 +21,6 @@ namespace Jhu.Graywulf.Registry
             LoadChildren<RemoteDatabase>(forceReload);
         }
 
-        public void LoadQueueDefinitions(bool forceReload)
-        {
-            LoadChildren<QueueDefinition>(forceReload);
-        }
-
         public void LoadJobDefinitions(bool forceReload)
         {
             LoadChildren<JobDefinition>(forceReload);
