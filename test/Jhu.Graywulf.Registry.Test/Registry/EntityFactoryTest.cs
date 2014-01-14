@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.Registry
 
                 using (var infile = new StreamReader(filename))
                 {
-                    f.Deserialize(infile, false);
+                    f.Deserialize(infile, true);
                 }
             }
         }

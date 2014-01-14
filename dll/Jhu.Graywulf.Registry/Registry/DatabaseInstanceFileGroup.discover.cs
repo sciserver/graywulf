@@ -29,21 +29,31 @@ namespace Jhu.Graywulf.Registry
         {
             InitializeDiscovery(update, delete, create);
             
-            LoadFromSmo(smofg);
-
             DiscoverDatabaseDefinitionFileGroup();
 
-            // Query database definition for filegroups
-            // --- add files
-            foreach (var smofile in smofg.Files.Cast<smo::DataFile>())
+            if (smofg != null)
             {
-                var file = Files.Values.FirstOrDefault(i => Entity.StringComparer.Compare(i.LogicalName, smofile.Name) == 0);
-                if (file == null)
-                {
-                    file = new DatabaseInstanceFile(this);
-                }
+                LoadFromSmo(smofg);
 
-                file.DiscoverFile(smofile, update, delete, create);
+                // Query database definition for filegroups
+                // --- add files
+                foreach (var smofile in smofg.Files.Cast<smo::DataFile>())
+                {
+                    var file = Files.Values.FirstOrDefault(i => Entity.StringComparer.Compare(i.LogicalName, smofile.Name) == 0);
+                    if (file == null)
+                    {
+                        file = new DatabaseInstanceFile(this);
+                    }
+
+                    file.DiscoverFile(smofile, update, delete, create);
+                }
+            }
+            else
+            {
+                foreach (var file in Files.Values)
+                {
+                    file.DiscoverFile(null, update, delete, create);
+                }
             }
 
             DiscoverDeletedFiles(update, delete, create);

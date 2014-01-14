@@ -29,7 +29,12 @@ namespace Jhu.Graywulf.Registry
         internal void DiscoverFile(smo::DataFile smofile, List<Entity> update, List<Entity> delete, List<Entity> create)
         {
             InitializeDiscovery(update, delete, create);
-            LoadFromSmo(smofile);
+
+            if (smofile != null)
+            {
+                LoadFromSmo(smofile);
+            }
+            
             DiscoverDiskVolume();
         }
 

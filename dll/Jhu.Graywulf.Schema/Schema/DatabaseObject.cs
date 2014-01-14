@@ -261,6 +261,19 @@ namespace Jhu.Graywulf.Schema
 
         #endregion
 
+        /// <summary>
+        /// Returns the fully resolved name of the database object.
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// The format of the fully resolved name might depend on
+        /// the actual type of the dataset. By default, the
+        /// format is [database].[schema].[object] for SQL Server.
+        /// MySql don't have the equivalent of SQL Server schemas
+        /// (databases are called schemas instead) so Graywulf converts
+        /// MySql object names into the [database].[object] format.
+        /// Postgres works like SQL Server.
+        /// </remarks>
         public virtual string GetFullyResolvedName()
         {
             return dataset.GetObjectFullyResolvedName(this);
