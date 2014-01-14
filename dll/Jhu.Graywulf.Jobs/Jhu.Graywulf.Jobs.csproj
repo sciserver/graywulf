@@ -57,6 +57,7 @@
     <Compile Include="Jobs\ExportTables\ExportTables.cs" />
     <Compile Include="Jobs\ExportTables\ExportTablesFactory.cs" />
     <Compile Include="Jobs\ExportTables\ExportTablesJob.cs" />
+    <Compile Include="Jobs\ExportTables\ExportTablesJobSettings.cs" />
     <Compile Include="Jobs\ExportTables\IExportTablesJob.cs" />
     <Compile Include="Jobs\JobFactoryBase.cs" />
     <Compile Include="Jobs\MirrorDatabase\AttachDatabase.cs" />

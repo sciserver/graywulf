@@ -215,7 +215,8 @@ namespace Jhu.Graywulf.Registry
             JobInstance job = new JobInstance(Context);
 
             job.Name = GenerateJobID();
-            job.JobDefinitionReference.Name = GetFullyQualifiedName();
+            // TODO: delete if works job.JobDefinitionReference.Name = GetFullyQualifiedName();
+            job.JobDefinition = this;
             job.ParentReference.Name = queueName;
             job.WorkflowTypeName = this.workflowTypeName;
             job.JobExecutionStatus = Jhu.Graywulf.Registry.JobExecutionState.Scheduled;

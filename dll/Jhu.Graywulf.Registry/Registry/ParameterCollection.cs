@@ -43,6 +43,28 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Collection implementation
 
+        public T GetValue<T>(string key)
+        {
+            return (T)this[key].Value;
+        }
+
+        public void SetValue<T>(string key, T value)
+        {
+            if (!this.ContainsKey(key))
+            {
+                this[key] = new Parameter()
+                {
+                    Name = key,
+                    Value = value
+                };
+            }
+            else
+            {
+                this[key].Value = value;
+            }
+        }
+        
+
         public void Add(Parameter item)
         {
             Add(item.Name, item);

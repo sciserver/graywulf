@@ -82,6 +82,9 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
         protected override void OnSaveFormCompleted(bool newentity)
         {
+            throw new NotImplementedException();
+
+            /*
             if (newentity)
             {
                 var svguid = new Guid(MyDbServerVersion.SelectedValue);
@@ -93,9 +96,9 @@ namespace Jhu.Graywulf.Web.Admin.Federation
                     sv.Load();
 
                     var fi = new FederationInstaller(Item);
-                    fi.GenerateDefaultChildren(sv);
+                    fi.GenerateDefaultChildren(sv); // *** TODO: fix this, add code database version
                 }
-            }
+            }*/
         }
 
         protected void RefreshMyDbDatabaseVersionList()

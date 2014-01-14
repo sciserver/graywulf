@@ -28,12 +28,16 @@ namespace Jhu.Graywulf.Registry
 
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
+                // Create a cluster
                 var ci = new ClusterInstaller(context);
+                var cluster = ci.Install();
 
-                ci.Install();
+                // Create a federation
+                var fi = new FederationInstaller(cluster);
+                var federation = fi.Install();
             }
 
-            dbi.DropDatabase(true);
+            //dbi.DropDatabase(true);
         }
     }
 }
