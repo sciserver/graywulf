@@ -11,25 +11,18 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Web.Admin;
 
-namespace Jhu.Graywulf.Web.Admin.Security
+namespace Jhu.Graywulf.Web.Admin.Domain
 {
-    public partial class UserGroupForm : EntityFormPageBase<UserGroup>
+    public partial class DomainDetails : EntityDetailsPageBase<Registry.Domain>
     {
-        protected override void OnUpdateForm()
+        protected override void InitLists()
         {
-            base.OnUpdateForm();
+            base.InitLists();
 
-            RefreshLists();
-        }
-
-        protected override void OnSaveForm()
-        {
-            base.OnSaveForm();
-        }
-
-        private void RefreshLists()
-        {
+            UserList.ParentEntity = Item;
+            UserGroupList.ParentEntity = Item;
         }
     }
 }

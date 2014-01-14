@@ -379,20 +379,15 @@ ORDER BY Number";
 
         #region Serialization Functions
 
-        public void Serialize(Entity entity, TextWriter output, HashSet<EntityType> mask)
-        {
-            Serialize(entity, output, mask, false);
-        }
-
         /// <summary>
         /// Serializes an entity and all its child elements into XML.
         /// </summary>
         /// <param name="entity">The root entity of the serialization.</param>
         /// <param name="output">The TextWriter object used for writing the XML stream.</param>
-        public void Serialize(Entity entity, TextWriter output, HashSet<EntityType> excludeEntities, bool excludeUserJobs)
+        public void Serialize(Entity entity, TextWriter output, EntityGroup entityGroupMask, bool excludeUserCreated)
         {
             var registry = new Registry();
-            registry.Entities = EnumerateChildrenForSerialize(entity, excludeEntities, excludeUserJobs).ToArray();
+            registry.Entities = EnumerateChildrenForSerialize(entity, entityGroupMask, excludeUserCreated).ToArray();
 
             var ser = new XmlSerializer(registry.GetType());
             ser.Serialize(output, registry);
@@ -412,8 +407,9 @@ ORDER BY Number";
         /// Certain entities are excluded but their children are still
         /// included in the search!
         /// </remarks>
-        private IEnumerable<Entity> EnumerateChildrenForSerialize(Entity entity, HashSet<EntityType> excludeEntities, bool excludeUserJobs)
+        private IEnumerable<Entity> EnumerateChildrenForSerialize(Entity entity, EntityGroup entityGroupMask, bool excludeUserJobs)
         {
+            /*
             // Make sure it's not a simple user job
             // TODO: exclude user jobs is an ad-hoc solution
             // maybe filtering on name prefixes?
@@ -424,9 +420,10 @@ ORDER BY Number";
             {
                 yield break;
             }
+            */
 
-            // See if this particular type of entity is excluded
-            if (excludeEntities == null || !excludeEntities.Contains(entity.EntityType))
+            // See if this particular type of entity is included by the mask
+            if ((entity.EntityGroup & entityGroupMask) != 0)
             {
                 yield return entity;
             }
@@ -437,7 +434,7 @@ ORDER BY Number";
             entity.LoadAllChildren(true);
             foreach (Entity e in entity.EnumerateAllChildren().OrderBy(ei => ei.Number))
             {
-                foreach (Entity ee in EnumerateChildrenForSerialize(e, excludeEntities, excludeUserJobs))
+                foreach (Entity ee in EnumerateChildrenForSerialize(e, entityGroupMask, excludeUserJobs))
                 {
                     yield return ee;
                 }

@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AddUserGroupMember.aspx.cs" Inherits="Jhu.Graywulf.Web.Admin.Security.AddUserGroupMember" MasterPageFile="~/Admin.master" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AddUserGroupMember.aspx.cs" Inherits="Jhu.Graywulf.Web.Admin.Domain.AddUserGroupMember" MasterPageFile="~/Admin.master" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="middle">
     <h3>

@@ -7,9 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Jhu.Graywulf.Web.Admin.Security {
-    
-    
-    public partial class UserGroupForm {
+
+
+namespace Jhu.Graywulf.Web.Admin.Domain
+{
+    public partial class Default
+    {
     }
 }

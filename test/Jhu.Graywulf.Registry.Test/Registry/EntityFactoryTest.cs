@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Registry
 
                 using (var outfile = new StreamWriter(filename))
                 {
-                    f.Serialize(entity, outfile, null);
+                    f.Serialize(entity, outfile, EntityGroup.All, false);
                 }
             }
         }

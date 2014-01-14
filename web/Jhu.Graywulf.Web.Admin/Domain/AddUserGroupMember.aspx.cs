@@ -6,7 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Web.Admin.Security
+namespace Jhu.Graywulf.Web.Admin.Domain
 {
     public partial class AddUserGroupMember : PageBase
     {
@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Web.Admin.Security
 
         public static string GetUrl(Guid guid)
         {
-            return String.Format("~/Security/AddUserGroupMember.aspx?guid={0}", guid);
+            return String.Format("~/Domain/AddUserGroupMember.aspx?guid={0}", guid);
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.Web.Admin.Security
                 c.LoadUserGroups(true);
                 usergroups = c.UserGroups.Values;
             }
-            else if (user.Parent is Domain)
+            else if (user.Parent is Registry.Domain)
             {
                 var d = user.Domain;
                 d.LoadUserGroups(true);

@@ -11,18 +11,10 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Web.Admin;
 
-namespace Jhu.Graywulf.Web.Admin.Security
+namespace Jhu.Graywulf.Web.Admin.Domain
 {
-    public partial class DomainDetails : EntityDetailsPageBase<Registry.Domain>
+    public partial class UserGroupDetails : EntityDetailsPageBase<UserGroup>
     {
-        protected override void InitLists()
-        {
-            base.InitLists();
-
-            UserList.ParentEntity = Item;
-            UserGroupList.ParentEntity = Item;
-        }
     }
 }

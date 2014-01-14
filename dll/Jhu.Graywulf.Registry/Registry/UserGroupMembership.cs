@@ -132,7 +132,6 @@ namespace Jhu.Graywulf.Registry
         /// <param name="old">A <b>Slice</b> object to create the deep copy from.</param>
         private void CopyMembers(UserGroupMembership old)
         {
-
         }
 
         public override object Clone()

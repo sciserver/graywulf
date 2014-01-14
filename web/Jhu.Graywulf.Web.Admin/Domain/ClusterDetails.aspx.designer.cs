@@ -7,45 +7,45 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Jhu.Graywulf.Web.Admin.Security {
+namespace Jhu.Graywulf.Web.Admin.Domain {
     
     
-    public partial class AddUserGroupMember {
+    public partial class ClusterDetails {
         
         /// <summary>
-        /// Message control.
+        /// DomainList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Message;
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList DomainList;
         
         /// <summary>
-        /// UserGroup control.
+        /// UserList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList UserGroup;
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList UserList;
         
         /// <summary>
-        /// Ok control.
+        /// UserGroupList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Ok;
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList UserGroupList;
         
         /// <summary>
-        /// Cancel control.
+        /// EntityButtons control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Cancel;
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityButtons EntityButtons;
     }
 }

@@ -7,45 +7,45 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Jhu.Graywulf.Web.Admin.Security {
+namespace Jhu.Graywulf.Web.Admin.Domain {
     
     
-    public partial class ClusterDetails {
+    public partial class AddUserGroupMember {
         
         /// <summary>
-        /// DomainList control.
+        /// Message control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList DomainList;
+        protected global::System.Web.UI.WebControls.Label Message;
         
         /// <summary>
-        /// UserList control.
+        /// UserGroup control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList UserList;
+        protected global::System.Web.UI.WebControls.DropDownList UserGroup;
         
         /// <summary>
-        /// UserGroupList control.
+        /// Ok control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList UserGroupList;
+        protected global::System.Web.UI.WebControls.Button Ok;
         
         /// <summary>
-        /// EntityButtons control.
+        /// Cancel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityButtons EntityButtons;
+        protected global::System.Web.UI.WebControls.Button Cancel;
     }
 }

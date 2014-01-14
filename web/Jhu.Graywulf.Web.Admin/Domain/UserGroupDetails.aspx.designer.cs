@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Jhu.Graywulf.Web.Admin.Security {
+namespace Jhu.Graywulf.Web.Admin.Domain {
     
     
     public partial class UserGroupDetails {

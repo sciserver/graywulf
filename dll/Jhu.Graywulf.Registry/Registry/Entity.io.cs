@@ -112,7 +112,7 @@ namespace Jhu.Graywulf.Registry
 
         private void LoadEntityReferences()
         {
-            if (Guid != Guid.Empty && entityType != EntityType.Unknown && entityReferences.Count > 0)
+            if (Guid != Guid.Empty && EntityType != EntityType.Unknown && entityReferences.Count > 0)
             {
                 var sql = "spFindEntityReference";
 
@@ -201,7 +201,7 @@ namespace Jhu.Graywulf.Registry
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Direction = ParameterDirection.Output;
 
                 cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parentReference.Guid;
-                cmd.Parameters.Add("@EntityType", SqlDbType.Int).Value = (int)entityType;
+                cmd.Parameters.Add("@EntityType", SqlDbType.Int).Value = (int)EntityType;   // always use property
                 cmd.Parameters.Add("@Number", SqlDbType.Int).Direction = ParameterDirection.Output;
 
                 AppendEntityCreateModifyParameters(cmd);

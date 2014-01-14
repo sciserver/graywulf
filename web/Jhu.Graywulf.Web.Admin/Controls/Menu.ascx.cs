@@ -10,22 +10,24 @@ namespace Jhu.Graywulf.Web.Admin.Controls
 
             if (Request.IsAuthenticated)
             {
-                Cluster.NavigateUrl = Jhu.Graywulf.Web.Admin.Cluster.ClusterDetails.GetUrl((Guid)Session[Constants.SessionClusterGuid]);
-                Federation.NavigateUrl = Jhu.Graywulf.Web.Admin.Federation.ClusterDetails.GetUrl((Guid)Session[Constants.SessionClusterGuid]);
-                Layout.NavigateUrl = Jhu.Graywulf.Web.Admin.Layout.ClusterDetails.GetUrl((Guid)Session[Constants.SessionClusterGuid]);
-                Jobs.NavigateUrl = Jhu.Graywulf.Web.Admin.Jobs.ClusterDetails.GetUrl((Guid)Session[Constants.SessionClusterGuid]);
-                Security.NavigateUrl = Jhu.Graywulf.Web.Admin.Security.ClusterDetails.GetUrl((Guid)Session[Constants.SessionClusterGuid]);
-                Monitor.NavigateUrl = Jhu.Graywulf.Web.Admin.Monitor.ClusterDetails.GetUrl((Guid)Session[Constants.SessionClusterGuid]);
+                var clusterGuid = (Guid)Session[Constants.SessionClusterGuid];
+
+                Cluster.NavigateUrl = Jhu.Graywulf.Web.Admin.Cluster.ClusterDetails.GetUrl(clusterGuid);
+                Domain.NavigateUrl = Jhu.Graywulf.Web.Admin.Domain.ClusterDetails.GetUrl(clusterGuid);
+                Federation.NavigateUrl = Jhu.Graywulf.Web.Admin.Federation.ClusterDetails.GetUrl(clusterGuid);
+                Layout.NavigateUrl = Jhu.Graywulf.Web.Admin.Layout.ClusterDetails.GetUrl(clusterGuid);
+                Jobs.NavigateUrl = Jhu.Graywulf.Web.Admin.Jobs.ClusterDetails.GetUrl(clusterGuid);
+                Monitor.NavigateUrl = Jhu.Graywulf.Web.Admin.Monitor.ClusterDetails.GetUrl(clusterGuid);
                 Log.NavigateUrl = Jhu.Graywulf.Web.Admin.Log.Default.GetUrl();
                 Docs.NavigateUrl = Jhu.Graywulf.Web.Admin.Docs.Default.GetUrl();
             }
             else
             {
                 Cluster.Visible = false;
+                Domain.Visible = false;
                 Federation.Visible = false;
                 Layout.Visible = false;
                 Jobs.Visible = false;
-                Security.Visible = false;
                 Monitor.Visible = false;
                 Log.Visible = false;
             }

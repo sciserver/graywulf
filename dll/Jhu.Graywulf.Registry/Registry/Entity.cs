@@ -528,7 +528,7 @@ namespace Jhu.Graywulf.Registry
             this.guid = old.guid;
             this.concurrencyVersion = old.concurrencyVersion;
             this.parentReference = new ParentEntityReference<Entity>(old.parentReference);
-            this.entityType = old.entityType;
+            this.entityType = old.EntityType;   // always use property!
             this.number = old.number;
             this.name = old.name;
             this.version = old.version;

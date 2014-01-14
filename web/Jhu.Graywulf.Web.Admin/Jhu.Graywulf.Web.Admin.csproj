@@ -128,6 +128,14 @@
     <Content Include="Docs\images\jhu.png" />
     <Content Include="Docs\images\nsf.png" />
     <Content Include="Docs\images\vao.png" />
+    <Content Include="Domain\AddUserGroupMember.aspx" />
+    <Content Include="Domain\ClusterDetails.aspx" />
+    <Content Include="Domain\Default.aspx" />
+    <Content Include="Domain\DomainDetails.aspx" />
+    <Content Include="Domain\UserDetails.aspx" />
+    <Content Include="Domain\UserForm.aspx" />
+    <Content Include="Domain\UserGroupDetails.aspx" />
+    <Content Include="Domain\UserGroupForm.aspx" />
     <Content Include="EntityDetails.master" />
     <Content Include="EntityForm.master" />
     <Content Include="Federation\ClusterDetails.aspx" />
@@ -503,14 +511,6 @@
     <Content Include="Scripts\CodeMirror\theme\vibrant-ink.css" />
     <Content Include="Scripts\CodeMirror\theme\xq-dark.css" />
     <Content Include="Scripts\CodeMirror\theme\xq-light.css" />
-    <Content Include="Security\ClusterDetails.aspx" />
-    <Content Include="Security\Default.aspx" />
-    <Content Include="Security\DomainDetails.aspx" />
-    <Content Include="Security\UserDetails.aspx" />
-    <Content Include="Security\UserForm.aspx" />
-    <Content Include="Security\UserGroupDetails.aspx" />
-    <Content Include="Security\UserGroupForm.aspx" />
-    <Content Include="Security\AddUserGroupMember.aspx" />
     <Content Include="User\SignIn.aspx" />
     <Content Include="User\SignOut.aspx" />
     <Content Include="Web.config" />
@@ -728,6 +728,62 @@
     </Compile>
     <Compile Include="Controls\UserStatus.cs">
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\AddUserGroupMember.aspx.cs">
+      <DependentUpon>AddUserGroupMember.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\AddUserGroupMember.aspx.designer.cs">
+      <DependentUpon>AddUserGroupMember.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Domain\ClusterDetails.aspx.cs">
+      <DependentUpon>ClusterDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\ClusterDetails.aspx.designer.cs">
+      <DependentUpon>ClusterDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Domain\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Domain\DomainDetails.aspx.cs">
+      <DependentUpon>DomainDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\DomainDetails.aspx.designer.cs">
+      <DependentUpon>DomainDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Domain\UserDetails.aspx.cs">
+      <DependentUpon>UserDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\UserDetails.aspx.designer.cs">
+      <DependentUpon>UserDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Domain\UserForm.aspx.cs">
+      <DependentUpon>UserForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\UserForm.aspx.designer.cs">
+      <DependentUpon>UserForm.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Domain\UserGroupDetails.aspx.cs">
+      <DependentUpon>UserGroupDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\UserGroupDetails.aspx.designer.cs">
+      <DependentUpon>UserGroupDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Domain\UserGroupForm.aspx.cs">
+      <DependentUpon>UserGroupForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\UserGroupForm.aspx.designer.cs">
+      <DependentUpon>UserGroupForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="EntityChildren.master.cs">
       <DependentUpon>EntityChildren.master</DependentUpon>
@@ -1175,62 +1231,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Security\ClusterDetails.aspx.cs">
-      <DependentUpon>ClusterDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Security\ClusterDetails.aspx.designer.cs">
-      <DependentUpon>ClusterDetails.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Security\Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Security\Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Security\DomainDetails.aspx.cs">
-      <DependentUpon>DomainDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Security\DomainDetails.aspx.designer.cs">
-      <DependentUpon>DomainDetails.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Security\UserDetails.aspx.cs">
-      <DependentUpon>UserDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Security\UserDetails.aspx.designer.cs">
-      <DependentUpon>UserDetails.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Security\UserForm.aspx.cs">
-      <DependentUpon>UserForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Security\UserForm.aspx.designer.cs">
-      <DependentUpon>UserForm.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Security\UserGroupDetails.aspx.cs">
-      <DependentUpon>UserGroupDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Security\UserGroupDetails.aspx.designer.cs">
-      <DependentUpon>UserGroupDetails.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Security\UserGroupForm.aspx.cs">
-      <DependentUpon>UserGroupForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Security\UserGroupForm.aspx.designer.cs">
-      <DependentUpon>UserGroupForm.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Security\AddUserGroupMember.aspx.cs">
-      <DependentUpon>AddUserGroupMember.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Security\AddUserGroupMember.aspx.designer.cs">
-      <DependentUpon>AddUserGroupMember.aspx</DependentUpon>
-    </Compile>
     <Compile Include="User\SignIn.aspx.cs">
       <DependentUpon>SignIn.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Jhu.Graywulf.Web.Admin.Security {
+namespace Jhu.Graywulf.Web.Admin.Domain {
     
     
-    public partial class UserDetails {
+    public partial class UserForm {
         
         /// <summary>
         /// TitleLabel control.
@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Title;
+        protected global::System.Web.UI.WebControls.TextBox Title;
         
         /// <summary>
         /// FirstNameLabel control.
@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label FirstName;
+        protected global::System.Web.UI.WebControls.TextBox FirstName;
         
         /// <summary>
         /// MiddleNameLable control.
@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label MiddleName;
+        protected global::System.Web.UI.WebControls.TextBox MiddleName;
         
         /// <summary>
         /// LastNameLabel control.
@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LastName;
+        protected global::System.Web.UI.WebControls.TextBox LastName;
         
         /// <summary>
         /// GenderLabel control.
@@ -100,7 +100,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Gender;
+        protected global::System.Web.UI.WebControls.DropDownList Gender;
         
         /// <summary>
         /// EmailLabel control.
@@ -118,25 +118,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Email;
-        
-        /// <summary>
-        /// NonValidatedEmailLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label NonValidatedEmailLabel;
-        
-        /// <summary>
-        /// NonValidatedEmail control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label NonValidatedEmail;
+        protected global::System.Web.UI.WebControls.TextBox Email;
         
         /// <summary>
         /// DateOfBirthLabel control.
@@ -154,7 +136,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label DateOfBirth;
+        protected global::System.Web.UI.WebControls.TextBox DateOfBirth;
         
         /// <summary>
         /// CompanyLabel control.
@@ -172,7 +154,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Company;
+        protected global::System.Web.UI.WebControls.TextBox Company;
         
         /// <summary>
         /// JobTitleLabel control.
@@ -190,7 +172,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label JobTitle;
+        protected global::System.Web.UI.WebControls.TextBox JobTitle;
         
         /// <summary>
         /// AddressLabel control.
@@ -208,7 +190,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Address;
+        protected global::System.Web.UI.WebControls.TextBox Address;
         
         /// <summary>
         /// Address2Label control.
@@ -226,7 +208,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Address2;
+        protected global::System.Web.UI.WebControls.TextBox Address2;
         
         /// <summary>
         /// StateLabel control.
@@ -244,7 +226,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label State;
+        protected global::System.Web.UI.WebControls.TextBox State;
         
         /// <summary>
         /// StateCodeLabel control.
@@ -262,7 +244,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label StateCode;
+        protected global::System.Web.UI.WebControls.TextBox StateCode;
         
         /// <summary>
         /// CityLabel control.
@@ -280,7 +262,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label City;
+        protected global::System.Web.UI.WebControls.TextBox City;
         
         /// <summary>
         /// CountryLabel control.
@@ -298,7 +280,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Country;
+        protected global::System.Web.UI.WebControls.TextBox Country;
         
         /// <summary>
         /// CountryCodeLabel control.
@@ -316,7 +298,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label CountryCode;
+        protected global::System.Web.UI.WebControls.TextBox CountryCode;
         
         /// <summary>
         /// ZipCodeLabel control.
@@ -334,7 +316,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label ZipCode;
+        protected global::System.Web.UI.WebControls.TextBox ZipCode;
         
         /// <summary>
         /// WorkPhoneLabel control.
@@ -352,7 +334,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label WorkPhone;
+        protected global::System.Web.UI.WebControls.TextBox WorkPhone;
         
         /// <summary>
         /// HomePhoneLabel1 control.
@@ -370,7 +352,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label HomePhone;
+        protected global::System.Web.UI.WebControls.TextBox HomePhone;
         
         /// <summary>
         /// CellPhoneLabel control.
@@ -388,25 +370,7 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label CellPhone;
-        
-        /// <summary>
-        /// IntegratedLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label IntegratedLabel;
-        
-        /// <summary>
-        /// Integrated control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Integrated;
+        protected global::System.Web.UI.WebControls.TextBox CellPhone;
         
         /// <summary>
         /// TimeZoneLabel control.
@@ -424,7 +388,25 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label TimeZone;
+        protected global::System.Web.UI.WebControls.TextBox TimeZone;
+        
+        /// <summary>
+        /// IntegratedLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label IntegratedLabel;
+        
+        /// <summary>
+        /// Integrated control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox Integrated;
         
         /// <summary>
         /// NtlmUserLabel control.
@@ -442,78 +424,33 @@ namespace Jhu.Graywulf.Web.Admin.Security {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label NtlmUser;
+        protected global::System.Web.UI.WebControls.TextBox NtlmUser;
         
         /// <summary>
-        /// EntityButtons control.
+        /// PasswordLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityButtons EntityButtons;
+        protected global::System.Web.UI.WebControls.Label PasswordLabel;
         
         /// <summary>
-        /// ToggleActive control.
+        /// Password control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button ToggleActive;
+        protected global::System.Web.UI.WebControls.TextBox Password;
         
         /// <summary>
-        /// Tabs control.
+        /// PasswordRequiredValidator control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.MultiViewTabHeader Tabs;
-        
-        /// <summary>
-        /// MultiViewTabs control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.MultiView MultiViewTabs;
-        
-        /// <summary>
-        /// UserGroupMemberList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.MultiSelectGridView UserGroupMemberList;
-        
-        /// <summary>
-        /// UserGroupSelectedValidator control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator UserGroupSelectedValidator;
-        
-        /// <summary>
-        /// AddUserGroupButton control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button AddUserGroupButton;
-        
-        /// <summary>
-        /// RemoveUserGroupButton control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button RemoveUserGroupButton;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator PasswordRequiredValidator;
     }
 }

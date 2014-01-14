@@ -10,11 +10,14 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
-using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Web.Admin.Security
+namespace Jhu.Graywulf.Web.Admin.Domain
 {
-    public partial class UserGroupDetails : EntityDetailsPageBase<UserGroup>
+    public partial class Default : PageBase
     {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            Response.Redirect(ClusterDetails.GetUrl((Guid)Session[Constants.SessionClusterGuid]));
+        }
     }
 }

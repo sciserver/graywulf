@@ -12,7 +12,7 @@ using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Web.Admin.Security
+namespace Jhu.Graywulf.Web.Admin.Domain
 {
     public partial class UserDetails : EntityDetailsPageBase<Registry.User>
     {
