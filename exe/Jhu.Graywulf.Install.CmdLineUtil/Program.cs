@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
-            List<Type> verbs = new List<Type>() { typeof(CreateDb), typeof(CreateSchema), typeof(CreateCluster), typeof(CreateAdmin), typeof(Save), typeof(Merge) };
+            List<Type> verbs = new List<Type>() { typeof(CreateDb), typeof(CreateSchema), typeof(CreateCluster), typeof(CreateAdmin), typeof(Export), typeof(Import) };
 
             Verb v = null;
 

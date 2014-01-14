@@ -27,6 +27,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.QueueInstance; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Cluster; }
+        }
+
         /// <summary>
         /// Gets or sets the maximum number of concurrently executing jobs.
         /// </summary>
@@ -53,6 +65,18 @@ namespace Jhu.Graywulf.Registry
 
         #endregion
         #region Navigation Properties
+
+        /// <summary>
+        /// Gets the <b>Machine</b> object to which the <b>Queue Instance</b> belongs to.
+        /// </summary>
+        /// <remarks>
+        /// This property does do lazy loading, no calling of a loader function is necessary, but
+        /// a valid object context with an open database connection must be set.
+        /// </remarks>
+        public Machine Machine
+        {
+            get { return (Machine)ParentReference.Value; }
+        }
 
         /// <summary>
         /// Gets the reference object to the queue definition associated with this queue instance.
@@ -146,9 +170,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.QueueInstance;
-            base.EntityGroup = EntityGroup.Jobs;
-
             this.RunningState = Registry.RunningState.Paused;
             this.maxOutstandingJobs = 1;
             this.timeout = 0;

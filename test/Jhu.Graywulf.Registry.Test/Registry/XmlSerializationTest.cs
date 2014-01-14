@@ -166,5 +166,11 @@ namespace Jhu.Graywulf.Registry.Test
         {
             TrySerialize(new UserGroup());
         }
+
+        [TestMethod]
+        public void SerializeUserGroupMembershipTest()
+        {
+            TrySerialize(new UserGroupMembership());
+        }
     }
 }

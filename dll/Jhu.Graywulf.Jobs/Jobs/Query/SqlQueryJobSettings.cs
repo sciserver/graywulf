@@ -10,32 +10,32 @@ namespace Jhu.Graywulf.Jobs.Query
     {
         public string HotDatabaseVersionName
         {
-            get { return (string)this["HotDatabaseVersionName"].Value; }
-            set { this["HotDatabaseVersionName"].Value = value; }
+            get { return GetValue<string>("HotDatabaseVersionName"); }
+            set { SetValue("HotDatabaseVersionName", value); }
         }
 
         public string StatDatabaseVersionName
         {
-            get { return (string)this["StatDatabaseVersionName"].Value; }
-            set { this["StatDatabaseVersionName"].Value = value; }
+            get { return GetValue<string>("StatDatabaseVersionName"); }
+            set { SetValue("StatDatabaseVersionName", value); }
         }
 
         public string DefaultDatasetName
         {
-            get { return (string)this["DefaultDatasetName"].Value; }
-            set { this["DefaultDatasetName"].Value = value; }
+            get { return GetValue<string>("DefaultDatasetName"); }
+            set { SetValue("DefaultDatasetName", value); }
         }
 
         public string DefaultSchemaName
         {
-            get { return (string)this["DefaultSchemaName"].Value; }
-            set { this["DefaultSchemaName"].Value = value; }
+            get { return GetValue<string>("DefaultSchemaName"); }
+            set { SetValue("DefaultSchemaName", value); }
         }
 
         public int QueryTimeout
         {
-            get { return (int)this["QueryTimeout"].Value; }
-            set { this["QueryTimeout"].Value = value; }
+            get { return GetValue<int>("QueryTimeout"); }
+            set { SetValue("QueryTimeout", value); }
         }
 
         public SqlQueryJobSettings()

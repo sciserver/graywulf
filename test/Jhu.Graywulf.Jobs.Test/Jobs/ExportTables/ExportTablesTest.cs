@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 var federation = ef.LoadEntity<Federation>(Registry.AppSettings.FederationName);
                 var format = FileFormatFactory.Create(federation.FileFormatFactory).GetFileFormatDescription(typeof(Jhu.Graywulf.Format.DelimitedTextDataFile).FullName);
 
-                var mydbds = user.GetUserDatabaseInstance(federation.MyDBDatabaseVersion).GetDataset();
+                var mydbds = federation.MyDBDatabaseVersion.GetUserDatabaseInstance(user).GetDataset();
 
                 var source = new Jhu.Graywulf.Schema.Table()
                 {

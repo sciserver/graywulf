@@ -20,6 +20,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.DeploymentPackage; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Federation; }
+        }
+
         /// <summary>
         /// Gets or sets the name of the file stored in the associated binary blob.
         /// </summary>
@@ -104,9 +116,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.DeploymentPackage;
-            base.EntityGroup = EntityGroup.Federation;
-
             this.filename = string.Empty;
         }
 

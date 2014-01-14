@@ -24,6 +24,18 @@ namespace Jhu.Graywulf.Registry
         #region Member Access Properties
 
         [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.UserGroupMembership; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Domain; }
+        }
+
+        [XmlIgnore]
         public UserGroup UserGroup
         {
             get { return UserGroupReference.Value; }
@@ -112,8 +124,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.UserGroupMembership;
-            base.EntityGroup = EntityGroup.Security;
         }
 
         /// <summary>
@@ -122,7 +132,6 @@ namespace Jhu.Graywulf.Registry
         /// <param name="old">A <b>Slice</b> object to create the deep copy from.</param>
         private void CopyMembers(UserGroupMembership old)
         {
-
         }
 
         public override object Clone()

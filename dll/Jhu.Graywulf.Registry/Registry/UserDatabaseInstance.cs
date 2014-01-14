@@ -14,21 +14,32 @@ namespace Jhu.Graywulf.Registry
     {
         public enum ReferenceType : int
         {
-            DatabaseVersion = 1,
-            DatabaseInstance = 2
+            User = 1,
+            DatabaseInstance = 2,
         }
 
         #region Member Variables
-
 
         #endregion
         #region Member Access Properties
 
         [XmlIgnore]
-        public DatabaseVersion DatabaseVersion
+        public override EntityType EntityType
         {
-            get { return DatabaseVersionReference.Value; }
-            set { DatabaseVersionReference.Value = value; }
+            get { return EntityType.UserDatabaseInstance; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Layout; }
+        }
+
+        [XmlIgnore]
+        public User User
+        {
+            get { return UserReference.Value; }
+            set { UserReference.Value = value; }
         }
 
         [XmlIgnore]
@@ -41,36 +52,29 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Navigation Properties
 
-        /// <summary>
-        /// Gets the <b>Database Definition</b> object to which this <b>Slice</b> belongs.
-        /// </summary>
-        /// <remarks>
-        /// This property does do lazy loading, no calling of a loader function is necessary, but
-        /// a valid object context with an open database connection must be set.
-        /// </remarks>
         [XmlIgnore]
-        public User User
+        public DatabaseVersion DatabaseVersion
         {
             get
             {
-                return (User)ParentReference.Value;
+                return (DatabaseVersion)ParentReference.Value;
             }
         }
 
         [XmlIgnore]
-        public EntityReference<DatabaseVersion> DatabaseVersionReference
+        public EntityReference<User> UserReference
         {
-            get { return (EntityReference<DatabaseVersion>)EntityReferences[(int)ReferenceType.DatabaseVersion]; }
+            get { return (EntityReference<User>)EntityReferences[(int)ReferenceType.User]; }
         }
 
         /// <summary>
         /// For internal use only.
         /// </summary>
-        [XmlElement("DatabaseVersion")]
-        public string DatabaseVersion_ForXml
+        [XmlElement("User")]
+        public string User_ForXml
         {
-            get { return DatabaseVersionReference.Name; }
-            set { DatabaseVersionReference.Name = value; }
+            get { return UserReference.Name; }
+            set { UserReference.Name = value; }
         }
 
         [XmlIgnore]
@@ -119,7 +123,7 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity in the entity hierarchy.</param>
-        public UserDatabaseInstance(User parent)
+        public UserDatabaseInstance(DatabaseVersion parent)
             : base(parent.Context, parent)
         {
             InitializeMembers();
@@ -143,8 +147,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.UserDatabaseInstance;
-            base.EntityGroup = EntityGroup.Layout;
         }
 
         /// <summary>
@@ -165,7 +167,7 @@ namespace Jhu.Graywulf.Registry
         {
             return new IEntityReference[]
             {
-                new EntityReference<DatabaseVersion>((int)ReferenceType.DatabaseVersion),
+                new EntityReference<User>((int)ReferenceType.User),
                 new EntityReference<DatabaseInstance>((int)ReferenceType.DatabaseInstance),
             };
         }

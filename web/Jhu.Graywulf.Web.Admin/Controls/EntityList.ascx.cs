@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
         {
             this.parentEntity = null;
             this.childrenType = EntityType.Unknown;
-            this.entityGroup = Registry.EntityGroup.None;
+            this.entityGroup = Registry.EntityGroup.Unknown;
             this.text = null;
             this.columns = new DataControlFieldCollection();
         }

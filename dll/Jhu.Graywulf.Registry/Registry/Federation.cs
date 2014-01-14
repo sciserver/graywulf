@@ -40,6 +40,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.Federation; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Federation; }
+        }
+
         [DBColumn(Size = 1024)]
         public string QueryFactory
         {
@@ -249,13 +261,6 @@ namespace Jhu.Graywulf.Registry
         }
 
         [XmlIgnore]
-        public Dictionary<string, QueueDefinition> QueueDefinitions
-        {
-            get { return GetChildren<QueueDefinition>(); }
-            set { SetChildren<QueueDefinition>(value); }
-        }
-
-        [XmlIgnore]
         public Dictionary<string, JobDefinition> JobDefinitions
         {
             get { return GetChildren<JobDefinition>(); }
@@ -318,9 +323,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.Federation;
-            base.EntityGroup = EntityGroup.Federation | EntityGroup.Layout | EntityGroup.Log | EntityGroup.Jobs | EntityGroup.Security;
-
             this.queryFactory = String.Empty;
             this.fileFormatFactory = String.Empty;
             this.streamFactory = String.Empty;
@@ -370,7 +372,6 @@ namespace Jhu.Graywulf.Registry
             {
                 typeof(DatabaseDefinition),
                 typeof(RemoteDatabase),
-                typeof(QueueDefinition),
                 typeof(JobDefinition),
             };
         }

@@ -5,21 +5,10 @@
     <table class="DetailsForm">
         <tr>
             <td class="FormLabel">
-                <asp:Label ID="FederationLabel" runat="server" Text="Federation:"></asp:Label>
+                <asp:Label ID="UserLabel" runat="server" Text="User:"></asp:Label>
             </td>
             <td class="FormField">
-                <asp:DropDownList ID="Federation" runat="server" CssClass="FormField" AutoPostBack="True"
-                    OnSelectedIndexChanged="Federation_SelectedIndexChanged">
-                </asp:DropDownList>
-            </td>
-        </tr>
-        <tr>
-            <td class="FormLabel">
-                <asp:Label ID="DatabaseVersionLabel" runat="server" Text="Database Version:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <asp:DropDownList ID="DatabaseVersion" runat="server" CssClass="FormField" AutoPostBack="True"
-                    OnSelectedIndexChanged="DatabaseVersion_SelectedIndexChanged">
+                <asp:DropDownList ID="UserList" runat="server" CssClass="FormField" AutoPostBack="True">
                 </asp:DropDownList>
             </td>
         </tr>
@@ -28,7 +17,7 @@
                 <asp:Label ID="DatabaseInstanceLabel" runat="server" Text="Database Instance:"></asp:Label>
             </td>
             <td class="FormField">
-                <asp:DropDownList ID="DatabaseInstance" runat="server" CssClass="FormField">
+                <asp:DropDownList ID="DatabaseInstanceList" runat="server" CssClass="FormField">
                 </asp:DropDownList>
             </td>
         </tr>

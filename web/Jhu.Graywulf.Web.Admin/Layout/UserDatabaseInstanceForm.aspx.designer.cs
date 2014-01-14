@@ -13,40 +13,22 @@ namespace Jhu.Graywulf.Web.Admin.Layout {
     public partial class UserDatabaseInstanceForm {
         
         /// <summary>
-        /// FederationLabel control.
+        /// UserLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label FederationLabel;
+        protected global::System.Web.UI.WebControls.Label UserLabel;
         
         /// <summary>
-        /// Federation control.
+        /// UserList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList Federation;
-        
-        /// <summary>
-        /// DatabaseVersionLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label DatabaseVersionLabel;
-        
-        /// <summary>
-        /// DatabaseVersion control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList DatabaseVersion;
+        protected global::System.Web.UI.WebControls.DropDownList UserList;
         
         /// <summary>
         /// DatabaseInstanceLabel control.
@@ -58,12 +40,12 @@ namespace Jhu.Graywulf.Web.Admin.Layout {
         protected global::System.Web.UI.WebControls.Label DatabaseInstanceLabel;
         
         /// <summary>
-        /// DatabaseInstance control.
+        /// DatabaseInstanceList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList DatabaseInstance;
+        protected global::System.Web.UI.WebControls.DropDownList DatabaseInstanceList;
     }
 }

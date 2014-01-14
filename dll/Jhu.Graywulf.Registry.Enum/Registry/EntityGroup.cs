@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Registry
         /// <summary>
         /// Default
         /// </summary>
-        None = 0,
+        Unknown = 0,
 
         /// <summary>
         /// Hardware related
@@ -21,29 +21,29 @@ namespace Jhu.Graywulf.Registry
         Cluster = 1,
 
         /// <summary>
+        /// Security related
+        /// </summary>
+        Domain = 2,
+
+        /// <summary>
         /// Logical layout related
         /// </summary>
-        Federation = 2,
+        Federation = 4,
 
         /// <summary>
         /// Logical to hardware mapping layout
         /// </summary>
-        Layout = 4,
-
-        /// <summary>
-        /// Security related
-        /// </summary>
-        Security = 8,
-
-        /// <summary>
-        /// Logging related
-        /// </summary>
-        Log = 16,
+        Layout = 8,
 
         /// <summary>
         /// Job and scheduling related
         /// </summary>
-        Jobs = 32,
+        Jobs = 16,
+
+        /// <summary>
+        /// Logging related
+        /// </summary>
+        Log = 32,
 
         /// <summary>
         /// System monitor related
@@ -53,6 +53,6 @@ namespace Jhu.Graywulf.Registry
         /// <summary>
         /// All groups
         /// </summary>
-        All = Cluster | Federation | Layout | Security | Log | Jobs | Monitor
+        All = Cluster | Federation | Layout | Domain | Log | Jobs | Monitor
     }
 }

@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                     TableName.SelectedValue = objid;
                 }
             }
-            
+
             base.OnLoad(e);
         }
 
@@ -76,14 +76,9 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
             var queue = String.Format("{0}.{1}", Federation.ControllerMachine.GetFullyQualifiedName(), Jhu.Graywulf.Registry.Constants.LongQueueName);
             var f = new Jhu.Graywulf.Jobs.ExportTables.ExportTablesFactory(RegistryContext);
-            
-            var job = f.ScheduleAsJob(
-                Federation,
-                new [] { table },
-                Jhu.Graywulf.Web.UI.AppSettings.ExportDir,
-                format,
-                queue,
-                "");
+
+            // TODO: maybe add comments?
+            var job = f.ScheduleAsJob(Federation, new[] { table }, null, format, queue, "");
 
             job.Save();
         }

@@ -21,7 +21,6 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             base.InitLists();
 
             FederationList.ParentEntity = Item;
-            UserList.ParentEntity = Item;
         }
     }
 }

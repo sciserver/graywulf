@@ -21,6 +21,7 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             base.InitLists();
 
             DatabaseInstanceList.ParentEntity = Item;
+            DatabaseVersionList.ParentEntity = Item;
         }
 
         public override void OnButtonCommand(object sender, CommandEventArgs e)

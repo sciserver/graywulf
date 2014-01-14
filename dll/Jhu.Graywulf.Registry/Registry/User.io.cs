@@ -37,6 +37,7 @@ namespace Jhu.Graywulf.Registry
 
             var ugm = new UserGroupMembership(this);
             ugm.Name = ug.Name;
+            ugm.UserGroup = ug;
             ugm.Save();
 
             return ugm;

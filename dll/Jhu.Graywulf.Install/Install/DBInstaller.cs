@@ -157,7 +157,10 @@ namespace Jhu.Graywulf.Install
         private string GetCreateAssemblyScript()
         {
             var sb = new StringBuilder(Scripts.Jhu_Graywulf_Registry_Assembly);
-            var hex = GetFileAsHex("Jhu.Graywulf.Registry.Enum.dll");
+
+            // Find location of the assembly
+            var filename = typeof(Jhu.Graywulf.Registry.EntityType).Assembly.Location;
+            var hex = GetFileAsHex(filename);
 
             sb.Replace("[$Hex]", hex);
 

@@ -63,6 +63,9 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         {
             var job = GetInitializedJobInstance(queueName, comments);
 
+            var settings = new ExportTablesJobSettings(job.JobDefinition.Settings);
+
+            path = path ?? settings.OutputDirectory;
             path = Path.Combine(path, String.Format("{0}_{1}{2}", Context.UserName, job.JobID, Jhu.Graywulf.IO.Constants.FileExtensionZip));
 
             var destinations = new DataFileBase[sources.Length];

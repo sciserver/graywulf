@@ -19,30 +19,7 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
         protected override void InitLists()
         {
             base.InitLists();
-
-            QueueDefinitionList.ParentEntity = Item;
             JobDefinitionList.ParentEntity = Item;
         }
-
-        /*
-        protected void QueueDefinitionList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/jobs/QueueDefinitionDetails.aspx?Guid=" + e.CommandArgument);
-        }
-
-        protected void AddQueueDefinition_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(item.GetNewChildFormUrl(EntityType.QueueDefinition));
-        }
-
-        protected void JobDefinitionList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/jobs/JobDefinitionDetails.aspx?Guid=" + e.CommandArgument);
-        }
-
-        protected void AddJobDefinition_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(item.GetNewChildFormUrl(EntityType.JobDefinition));
-        }*/
     }
 }

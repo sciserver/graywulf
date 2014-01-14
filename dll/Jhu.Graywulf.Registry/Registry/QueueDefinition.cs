@@ -22,6 +22,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.QueueDefinition; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Cluster; }
+        }
+
         /// <summary>
         /// Gets or sets the default maximum number of concurrently executing jobs.
         /// </summary>
@@ -61,20 +73,6 @@ namespace Jhu.Graywulf.Registry
         public Cluster Cluster
         {
             get { return ParentReference.Value as Cluster; }
-        }
-
-        /// <summary>
-        /// Gets the <b>Federation</b> object to which this <b>Database Definition</b> belongs.
-        /// </summary>
-        /// <remarks>
-        /// This property does do lazy loading, no calling of a loader function is necessary, but
-        /// a valid object context with an open database connection must be set.
-        /// Null if the <b>Queue Definition</b> is not a direct child of a <b>Federation</b>.
-        /// </remarks>
-        [XmlIgnore]
-        public Federation Federation
-        {
-            get { return ParentReference.Value as Federation; }
         }
 
         #endregion
@@ -144,9 +142,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.QueueDefinition;
-            base.EntityGroup = EntityGroup.Jobs;
-
             this.maxOutstandingJobs = 1;
             this.timeout = 0;
         }

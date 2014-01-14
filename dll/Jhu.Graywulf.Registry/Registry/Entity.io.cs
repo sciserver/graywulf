@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Registry
         {
             if (!dr.HasRows)
             {
-                throw new EntityNotFoundException(ExceptionMessages.EntityNotFound);
+                throw new EntityNotFoundException(String.Format(ExceptionMessages.EntityNotFound, String.IsNullOrWhiteSpace(name) ? guid.ToString() : name));
             }
 
             int o = -1;
@@ -112,7 +112,7 @@ namespace Jhu.Graywulf.Registry
 
         private void LoadEntityReferences()
         {
-            if (Guid != Guid.Empty && entityType != EntityType.Unknown && entityReferences.Count > 0)
+            if (Guid != Guid.Empty && EntityType != EntityType.Unknown && entityReferences.Count > 0)
             {
                 var sql = "spFindEntityReference";
 
@@ -201,7 +201,7 @@ namespace Jhu.Graywulf.Registry
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Direction = ParameterDirection.Output;
 
                 cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parentReference.Guid;
-                cmd.Parameters.Add("@EntityType", SqlDbType.Int).Value = (int)entityType;
+                cmd.Parameters.Add("@EntityType", SqlDbType.Int).Value = (int)EntityType;   // always use property
                 cmd.Parameters.Add("@Number", SqlDbType.Int).Direction = ParameterDirection.Output;
 
                 AppendEntityCreateModifyParameters(cmd);
@@ -292,7 +292,7 @@ namespace Jhu.Graywulf.Registry
             cmd.Parameters.Add("@DeploymentState", SqlDbType.Int).Value = deploymentState;
             cmd.Parameters.Add("@DateCreated", SqlDbType.DateTime).Value = dateCreated;
             cmd.Parameters.Add("@DateModified", SqlDbType.DateTime).Value = dateModified;
-            cmd.Parameters.Add("@Settings", SqlDbType.NVarChar).Value = String.Empty;
+            cmd.Parameters.Add("@Settings", SqlDbType.NVarChar).Value = (object)settings.SaveToXml() ?? DBNull.Value;
             cmd.Parameters.Add("@Comments", SqlDbType.NVarChar).Value = comments;
 
             // Process entity feferences
@@ -730,22 +730,33 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Serialization Functions
 
-        internal IEnumerable<Entity> EnumerateChildrenForSerialize(HashSet<EntityType> mask)
+        /*
+        internal IEnumerable<Entity> EnumerateChildrenForSerialize(HashSet<EntityType> excludeEntities, bool excludeUserJobs)
         {
-            if (mask == null || !mask.Contains(this.EntityType))
+            if (excludeEntities == null || !excludeEntities.Contains(this.EntityType))
             {
+                // Make sure it's not a simple user job
+                if (excludeUserJobs &&
+                    this.entityType == Registry.EntityType.JobInstance &&
+                    (((JobInstance)this).ScheduleType != ScheduleType.Recurring ||
+                     ((JobInstance)this).JobExecutionStatus != JobExecutionState.Scheduled))
+                {
+                    yield break;
+                }
+
                 yield return this;
 
                 this.LoadAllChildren(true);
                 foreach (Entity e in this.EnumerateAllChildren())
                 {
-                    foreach (Entity ee in e.EnumerateChildrenForSerialize(mask))
+                    foreach (Entity ee in e.EnumerateChildrenForSerialize(excludeEntities, excludeUserJobs))
                     {
                         yield return ee;
                     }
                 }
             }
         }
+         * */
 
         internal void ResolveParentReference()
         {

@@ -9,14 +9,16 @@ namespace Jhu.Graywulf.Install
 {
     public class ClusterInstaller : ContextObject
     {
+        Cluster cluster;
+
         public ClusterInstaller(Context context)
             : base(context)
         {
         }
 
-        public void Install()
+        public Cluster Install()
         {
-            Install(
+            return Install(
                 true,
                 Constants.ClusterName,
                 Constants.ClusterAdminName,
@@ -24,9 +26,9 @@ namespace Jhu.Graywulf.Install
                 Constants.ClusterAdminPassword);
         }
 
-        public void Install(bool system, string clusterName, string username, string email, string password)
+        public Cluster Install(bool system, string clusterName, string username, string email, string password)
         {
-            var cluster = new Cluster(Context)
+            cluster = new Cluster(Context)
             {
                 Name = clusterName,
                 System = system,
@@ -34,24 +36,7 @@ namespace Jhu.Graywulf.Install
             cluster.Save();
 
             // Create administrator group and user
-
-            var ug = new UserGroup(cluster)
-            {
-                Name = Constants.ClusterAdministratorUserGroupName,
-                System = system,
-            };
-            ug.Save();
-
-            var u = new User(cluster)
-            {
-                Name = username,
-                System = system,
-                Email = email,
-                DeploymentState = Registry.DeploymentState.Deployed,
-            };
-            u.SetPassword(password);
-            u.Save();
-            u.MakeMemberOf(ug.Guid);
+            GenerateAdmin(system, username, email, password);
 
             // Create machine roles and machines
 
@@ -192,6 +177,29 @@ namespace Jhu.Graywulf.Install
             };
             jd.DiscoverWorkflowParameters();
             jd.Save();
+
+            return cluster;
+        }
+
+        private void GenerateAdmin(bool system, string username, string email, string password)
+        {
+            var ug = new UserGroup(cluster)
+            {
+                Name = Constants.ClusterAdministratorUserGroupName,
+                System = system,
+            };
+            ug.Save();
+
+            var u = new User(cluster)
+            {
+                Name = username,
+                System = system,
+                Email = email,
+                DeploymentState = Registry.DeploymentState.Deployed,
+            };
+            u.SetPassword(password);
+            u.Save();
+            u.MakeMemberOf(ug.Guid);
         }
     }
 }

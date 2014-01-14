@@ -31,6 +31,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.DatabaseInstanceFileGroup; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Layout; }
+        }
+
         /// <summary>
         /// Gets or sets the value of the property refering to the file group in the physical database
         /// </summary>
@@ -202,9 +214,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.DatabaseInstanceFileGroup;
-            base.EntityGroup = EntityGroup.Layout;
-
             this.fileGroupName = string.Empty;
             this.fileGroupType = Registry.FileGroupType.Unknown;
             this.allocatedSpace = 0;

@@ -25,6 +25,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.DatabaseVersion; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Federation; }
+        }
+
         [DBColumn]
         public float SizeMultiplier
         {
@@ -75,6 +87,13 @@ namespace Jhu.Graywulf.Registry
         {
             get { return ServerVersionReference.Name; }
             set { ServerVersionReference.Name = value; }
+        }
+
+        [XmlIgnore]
+        public Dictionary<string, UserDatabaseInstance> UserDatabaseInstances
+        {
+            get { return GetChildren<UserDatabaseInstance>(); }
+            set { SetChildren<UserDatabaseInstance>(value); }
         }
 
         #endregion
@@ -131,9 +150,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.DatabaseVersion;
-            base.EntityGroup = EntityGroup.Federation;
-
             this.sizeMultiplier = 1.0f;
         }
 
@@ -159,6 +175,31 @@ namespace Jhu.Graywulf.Registry
             };
         }
 
+        protected override Type[] CreateChildTypes()
+        {
+            return new Type[] 
+            {
+                typeof(UserDatabaseInstance),
+            };
+        }
+
         #endregion
+
+        public DatabaseInstance GetUserDatabaseInstance(User user)
+        {
+            var ef = new EntityFactory(Context);
+
+            var udis = ef.FindConnection<UserDatabaseInstance>(this, user, (int)UserDatabaseInstance.ReferenceType.User);
+            var udi = udis.FirstOrDefault();
+
+            if (udi == null)
+            {
+                return null;
+            }
+            else
+            {
+                return udi.DatabaseInstance;
+            }
+        }
     }
 }

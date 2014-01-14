@@ -21,6 +21,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.Partition; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Federation; }
+        }
+
         /// <summary>
         /// Lower limit of the interval of the <b>Partitioning Column</b> values belonging to this <b>Partition</b>.
         /// </summary>
@@ -111,9 +123,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.Partition;
-            base.EntityGroup = EntityGroup.Federation;
-
             this.from = 0;
             this.to = 0;
         }

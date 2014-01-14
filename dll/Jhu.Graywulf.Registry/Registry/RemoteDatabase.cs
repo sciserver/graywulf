@@ -30,6 +30,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.RemoteDatabase; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Federation; }
+        }
+
         [DBColumn(Size = 128)]
         public string ProviderName
         {
@@ -172,9 +184,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.RemoteDatabase;
-            base.EntityGroup = EntityGroup.Federation;
-
             this.providerName = String.Empty;
             this.connectionString = String.Empty;
             this.integratedSecurity = false;

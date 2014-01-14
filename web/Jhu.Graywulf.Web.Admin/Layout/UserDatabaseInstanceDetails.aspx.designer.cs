@@ -13,40 +13,22 @@ namespace Jhu.Graywulf.Web.Admin.Layout {
     public partial class UserDatabaseInstanceDetails {
         
         /// <summary>
-        /// FederationLabel control.
+        /// UserLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label FederationLabel;
+        protected global::System.Web.UI.WebControls.Label UserLabel;
         
         /// <summary>
-        /// Federation control.
+        /// User control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityLink Federation;
-        
-        /// <summary>
-        /// DatabaseDefinitionLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label DatabaseDefinitionLabel;
-        
-        /// <summary>
-        /// DatabaseDefinition control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityLink DatabaseVersion;
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityLink User;
         
         /// <summary>
         /// DatabaseInstanceLabel control.

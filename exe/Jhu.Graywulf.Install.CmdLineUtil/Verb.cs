@@ -29,6 +29,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
                 csb.DataSource = Server;
                 csb.InitialCatalog = Database;
                 csb.IntegratedSecurity = true;
+                csb.MultipleActiveResultSets = true;
 
                 ContextManager.Instance.ConnectionString = csb.ConnectionString;
             }

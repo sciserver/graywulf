@@ -11,6 +11,11 @@ namespace Jhu.Graywulf.Registry
     {
         #region Database IO Functions
 
+        public void LoadUserDatabaseInstances(bool forceReload)
+        {
+            LoadChildren<UserDatabaseInstance>(forceReload);
+        }
+
         #endregion
     }
 }

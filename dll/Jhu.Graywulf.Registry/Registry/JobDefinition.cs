@@ -26,6 +26,32 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.JobDefinition; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get
+            {
+                if (Parent is Cluster)
+                {
+                    return Registry.EntityGroup.Cluster;
+                }
+                else if (Parent is Federation)
+                {
+                    return Registry.EntityGroup.Federation;
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            }
+        }
+
         /// <summary>
         /// Gets or sets the type name of the workflow class with namespace information.
         /// </summary>
@@ -140,9 +166,6 @@ namespace Jhu.Graywulf.Registry
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            base.EntityType = EntityType.JobDefinition;
-            base.EntityGroup = EntityGroup.Jobs;
-
             this.workflowTypeName = string.Empty;
             this.parameters = new ParameterCollection();
         }
@@ -192,7 +215,8 @@ namespace Jhu.Graywulf.Registry
             JobInstance job = new JobInstance(Context);
 
             job.Name = GenerateJobID();
-            job.JobDefinitionReference.Name = GetFullyQualifiedName();
+            // TODO: delete if works job.JobDefinitionReference.Name = GetFullyQualifiedName();
+            job.JobDefinition = this;
             job.ParentReference.Name = queueName;
             job.WorkflowTypeName = this.workflowTypeName;
             job.JobExecutionStatus = Jhu.Graywulf.Registry.JobExecutionState.Scheduled;

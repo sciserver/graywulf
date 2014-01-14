@@ -18,17 +18,9 @@ namespace Jhu.Graywulf.Registry
                 var f = new EntityFactory(context);
                 var entity = f.LoadEntity(Constants.ClusterName);
 
-                // *** TODO: create mask from input parameters
-                var mask = new HashSet<EntityType>()
-                {
-                    EntityType.JobInstance,
-                    EntityType.DatabaseInstanceFileGroup,
-                    EntityType.DatabaseInstanceFile,
-                };
-
                 using (var outfile = new StreamWriter(filename))
                 {
-                    f.Serialize(entity, outfile, mask);
+                    f.Serialize(entity, outfile, EntityGroup.All, false);
                 }
             }
         }
@@ -46,7 +38,7 @@ namespace Jhu.Graywulf.Registry
 
             SaveRegistry(filename);
 
-            ContextManager.Instance.ConnectionString = "Data Source=gwen1;Initial Catalog=Graywulf_Registry_Test;Integrated Security=true";
+            ContextManager.Instance.ConnectionString = Jhu.Graywulf.Test.AppSettings.RegistryTestConnectionString;
 
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
@@ -54,7 +46,7 @@ namespace Jhu.Graywulf.Registry
 
                 using (var infile = new StreamReader(filename))
                 {
-                    f.Deserialize(infile);
+                    f.Deserialize(infile, false);
                 }
             }
         }

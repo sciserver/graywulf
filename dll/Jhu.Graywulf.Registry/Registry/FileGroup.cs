@@ -26,6 +26,18 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        [XmlIgnore]
+        public override EntityType EntityType
+        {
+            get { return EntityType.FileGroup; }
+        }
+
+        [XmlIgnore]
+        public override EntityGroup EntityGroup
+        {
+            get { return EntityGroup.Federation; }
+        }
+
         /// <summary>
         /// Gets or sets the value determining whether the file group is a definition for
         /// data file or log files.
@@ -172,9 +184,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            base.EntityType = EntityType.FileGroup;
-            base.EntityGroup = EntityGroup.Federation;
-
             this.FileGroupType = FileGroupType.Unknown;
             this.layoutType = FileGroupLayoutType.Unknown;
             this.allocationType = FileGroupAllocationType.CrossVolume;
