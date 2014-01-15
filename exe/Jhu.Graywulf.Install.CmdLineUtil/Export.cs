@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
         public bool Cluster { get; set; }
 
         [Option(Name = "Domain", Description = "Export domain info", Required = false)]
-        public bool Security { get; set; }
+        public bool Domain { get; set; }
 
         [Option(Name = "Federation", Description = "Export federation info", Required = false)]
         public bool Federation { get; set; }
@@ -48,11 +48,14 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
                 var entityGroupMask = EntityGroup.All;
 
-                if (!Cluster) entityGroupMask &= ~EntityGroup.Cluster;
-                if (!Security) entityGroupMask &= ~EntityGroup.Domain;
-                if (!Federation) entityGroupMask &= ~EntityGroup.Federation;
-                if (!Layout) entityGroupMask &= ~EntityGroup.Layout;
-                if (!Jobs) entityGroupMask &= ~EntityGroup.Jobs;
+                if (Cluster || Domain || Federation || Layout || Jobs)
+                {
+                    if (!Cluster) entityGroupMask &= ~EntityGroup.Cluster;
+                    if (!Domain) entityGroupMask &= ~EntityGroup.Domain;
+                    if (!Federation) entityGroupMask &= ~EntityGroup.Federation;
+                    if (!Layout) entityGroupMask &= ~EntityGroup.Layout;
+                    if (!Jobs) entityGroupMask &= ~EntityGroup.Jobs;
+                }
 
                 using (var outfile = new StreamWriter(Output))
                 {
