@@ -162,6 +162,18 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Properties
 
+        [IgnoreDataMember]
+        protected SqlServerCodeGenerator CodeGenerator
+        {
+            get
+            {
+                return new SqlServerCodeGenerator()
+                {
+                    ResolveNames = true
+                };
+            }
+        }
+
         /// <summary>
         /// Gets or sets the registry context
         /// </summary>

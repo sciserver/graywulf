@@ -60,7 +60,6 @@ namespace Jhu.Graywulf.SqlParser.Test
                     if (where != null)
                     {
                         var cg = new SqlServerCodeGenerator();
-                        cg.QuoteIdentifiers = false;
                         cg.ResolveNames = true;
 
                         var sw = new StringWriter();

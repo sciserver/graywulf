@@ -49,7 +49,6 @@ namespace Jhu.Graywulf.SqlCodeGen.Test
 
             var cg = new MySqlCodeGenerator();
             cg.ResolveNames = resolved;
-            cg.QuoteIdentifiers = true;
             cg.Execute(w, ss);
 
             return w.ToString();
@@ -66,11 +65,11 @@ INNER JOIN Author ON Author.ID = BookAuthor.AuthorID
 WHERE Author.ID = 3";
 
             Assert.AreEqual(
-@"SELECT `Title`, `Name`
-FROM `Book`
-INNER JOIN `BookAuthor` ON `BookAuthor`.`BookID` = `Book`.`ID` AND `Book`.`ID` = 6
-INNER JOIN `Author` ON `Author`.`ID` = `BookAuthor`.`AuthorID`
-WHERE `Author`.`ID` = 3",
+@"SELECT Title, Name
+FROM Book
+INNER JOIN BookAuthor ON BookAuthor.BookID = Book.ID AND Book.ID = 6
+INNER JOIN Author ON Author.ID = BookAuthor.AuthorID
+WHERE Author.ID = 3",
                         GenerateCode(sql, false));
         }
 
@@ -85,11 +84,11 @@ INNER JOIN Author ON Author.ID = BookAuthor.AuthorID
 WHERE Author.ID = 3";
 
             Assert.AreEqual(
-@"SELECT `Book`.`Title` AS `Title`, `Author`.`Name` AS `Name`
-FROM `Book`
-INNER JOIN `BookAuthor` ON `BookAuthor`.`BookID` = `Book`.`ID` AND `Book`.`ID` = 6
-INNER JOIN `Author` ON `Author`.`ID` = `BookAuthor`.`AuthorID`
-WHERE `Author`.`ID` = 3",
+@"SELECT `Graywulf_Schema_Test`.`Book`.`Title` AS `Title`, `Graywulf_Schema_Test`.`Author`.`Name` AS `Name`
+FROM `Graywulf_Schema_Test`.`Book`
+INNER JOIN `Graywulf_Schema_Test`.`BookAuthor` ON `Graywulf_Schema_Test`.`BookAuthor`.`BookID` = `Graywulf_Schema_Test`.`Book`.`ID` AND `Graywulf_Schema_Test`.`Book`.`ID` = 6
+INNER JOIN `Graywulf_Schema_Test`.`Author` ON `Graywulf_Schema_Test`.`Author`.`ID` = `Graywulf_Schema_Test`.`BookAuthor`.`AuthorID`
+WHERE `Graywulf_Schema_Test`.`Author`.`ID` = 3",
                 GenerateCode(sql, true));
         }
 
@@ -106,7 +105,7 @@ FROM Book b1, Book b2";
 
             Assert.AreEqual(
 @"SELECT `b1`.`Title` AS `b1_Title`, `b2`.`Title` AS `b2_Title`
-FROM `Book` `b1`, `Book` `b2`", res);
+FROM `Graywulf_Schema_Test`.`Book` `b1`, `Graywulf_Schema_Test`.`Book` `b2`", res);
 
         }
 
@@ -142,7 +141,7 @@ WHERE b.ID = 1";
             var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
 
             Assert.AreEqual(1, res.Length);
-            Assert.AreEqual("SELECT CAST(`ID` AS SIGNED) AS `ID`, `Title` FROM `Book` `b` WHERE `b`.`ID` = 1", res[0]);
+            Assert.AreEqual("SELECT CAST(`b`.`ID` AS SIGNED) AS `ID`, `b`.`Title` FROM `Graywulf_Schema_Test`.`Book` AS `b` WHERE `b`.`ID` = 1", res[0]);
         }
 
         [TestMethod]
@@ -156,8 +155,8 @@ WHERE b.ID = 1 AND a.ID IN (3, 4)";
             var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
 
             Assert.AreEqual(2, res.Length);
-            Assert.AreEqual("SELECT CAST(`ID` AS SIGNED) AS `ID`, `Title` FROM `Book` `a` WHERE `a`.`ID` IN (3, 4)", res[0]);
-            Assert.AreEqual("SELECT CAST(`ID` AS SIGNED) AS `ID` FROM `Book` `b` WHERE `b`.`ID` = 1", res[1]);
+            Assert.AreEqual("SELECT CAST(`a`.`ID` AS SIGNED) AS `ID`, `a`.`Title` FROM `Graywulf_Schema_Test`.`Book` AS `a` WHERE `a`.`ID` IN (3, 4)", res[0]);
+            Assert.AreEqual("SELECT CAST(`b`.`ID` AS SIGNED) AS `ID` FROM `Graywulf_Schema_Test`.`Book` AS `b` WHERE `b`.`ID` = 1", res[1]);
         }
 
         [TestMethod]
@@ -175,8 +174,8 @@ WHERE ID = 1";
             var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
 
             Assert.AreEqual(2, res.Length);
-            Assert.AreEqual("SELECT CAST(`ID` AS SIGNED) AS `ID`, `Title` FROM `Book` WHERE `Book`.`ID` IN (2, 3)", res[0]);
-            Assert.AreEqual("SELECT CAST(`ID` AS SIGNED) AS `ID`, `Title` FROM `Book` WHERE `Book`.`ID` = 1", res[1]);
+            Assert.AreEqual("SELECT CAST(`Graywulf_Schema_Test`.`Book`.`ID` AS SIGNED) AS `ID`, `Graywulf_Schema_Test`.`Book`.`Title` FROM `Graywulf_Schema_Test`.`Book` WHERE `Graywulf_Schema_Test`.`Book`.`ID` IN (2, 3)", res[0]);
+            Assert.AreEqual("SELECT CAST(`Graywulf_Schema_Test`.`Book`.`ID` AS SIGNED) AS `ID`, `Graywulf_Schema_Test`.`Book`.`Title` FROM `Graywulf_Schema_Test`.`Book` WHERE `Graywulf_Schema_Test`.`Book`.`ID` = 1", res[1]);
         }
 
     }

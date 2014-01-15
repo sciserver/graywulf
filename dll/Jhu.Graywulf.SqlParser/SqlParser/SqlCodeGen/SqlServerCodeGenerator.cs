@@ -11,10 +11,6 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 {
     public class SqlServerCodeGenerator : SqlCodeGeneratorBase
     {
-        public SqlServerCodeGenerator()
-        {
-        }
-
         public static string GetCode(Node node, bool resolvedNames)
         {
             var sw = new StringWriter();
@@ -24,170 +20,69 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             return sw.ToString();
         }
 
-        public override bool WriteColumnExpression(ColumnExpression node)
+        public SqlServerCodeGenerator()
         {
-            if (ResolveNames)
-            {
-                Expression ex = node.FindDescendant<Expression>();
-                WriteNode(ex);
-                if (!node.ColumnReference.IsStar && !String.IsNullOrEmpty(node.ColumnReference.ColumnAlias))
-                {
-                    Writer.Write(" AS [{0}]", node.ColumnReference.ColumnAlias);
-                }
-
-                return false;
-            }
-            else
-            {
-                return true;
-            }
         }
 
-        public override bool WriteColumnIdentifier(ColumnIdentifier node)
-        {
-            if (ResolveNames)
-            {
-                Writer.Write(GetResolvedColumnName(node.ColumnReference));
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        public override bool WriteTableAlias(TableAlias node)
-        {
-            if (ResolveNames)
-            {
-                Writer.Write("[{0}]", Util.RemoveIdentifierQuotes(node.Value));
-                return false;
-            }
-            else
-            {
-                Writer.Write(node.Value);
-                return false;
-            }
-        }
-
-        public override bool WriteTableOrViewName(TableOrViewName node)
-        {
-            if (ResolveNames)
-            {
-                Writer.Write(GetResolvedTableName(node.TableReference));
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        public override bool WriteFunctionIdentifier(FunctionIdentifier node)
-        {
-            if (ResolveNames)
-            {
-                Writer.Write(GetResolvedFunctionName(node.FunctionReference));
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        public override bool WriteTableValuedFunctionCall(TableValuedFunctionCall node)
-        {
-            if (ResolveNames)
-            {
-                Writer.Write(GetResolvedTableName(node.TableReference));
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
+        #region Identifier formatting functions
 
         protected override string QuoteIdentifier(string identifier)
         {
             return String.Format("[{0}]", identifier);
         }
 
-        // ---
-
-        private string GetResolvedColumnName(ColumnReference column)
+        protected override string GetResolvedTableName(string databaseName, string schemaName, string tableName)
         {
-            string tablename;
-            if (!String.IsNullOrEmpty(column.TableReference.Alias))
+            string res = String.Empty;
+
+            if (!String.IsNullOrWhiteSpace(databaseName))
             {
-                tablename = QuoteIdentifier(column.TableReference.Alias);
-            }
-            else
-            {
-                tablename = GetResolvedTableName(column.TableReference);
+                res += QuoteIdentifier(databaseName) + ".";
             }
 
-            return String.Format("{0}.{1}", tablename, QuoteIdentifier(column.ColumnName));
+            if (!String.IsNullOrWhiteSpace(schemaName))
+            {
+                res += QuoteIdentifier(schemaName);
+            }
+
+            // If no schema name is specified but there's a database name,
+            // SQL Server uses the database..table syntax
+            if (res != String.Empty)
+            {
+                res += ".";
+            }
+
+            res += QuoteIdentifier(tableName);
+
+            return res;
         }
 
-        private string GetResolvedTableName(TableReference table)
+        protected override string GetResolvedFunctionName(string databaseName, string schemaName, string functionName)
         {
-            if (table.IsSubquery || table.IsComputed)
-            {
-                return QuoteIdentifier(table.Alias);
-            }
-            else
-            {
-                // If it is linked up to the schema, return
-                if (table.DatabaseObject != null)
-                {
-                    return table.DatabaseObject.GetFullyResolvedName();
-                }
-                else
-                {
-                    string res = String.Empty;
+            string res = String.Empty;
 
-                    // If it's not resolved yet
-                    if (table.DatabaseName != null) res += QuoteIdentifier(table.DatabaseName) + ".";
-                    if (table.SchemaName != null) res += QuoteIdentifier(table.SchemaName) + ".";
-                    if (table.DatabaseObjectName != null) res += QuoteIdentifier(table.DatabaseObjectName);
 
-                    return res;
-                }
+            if (databaseName != null)
+            {
+                res += QuoteIdentifier(databaseName) + ".";
             }
+
+            // SQL Server function must always have the schema name specified
+            res += QuoteIdentifier(schemaName) + ".";
+            res += QuoteIdentifier(functionName);
+
+            return res;
         }
 
-        private string GetResolvedFunctionName(FunctionReference function)
-        {
-            if (!function.IsUdf)
-            {
-                return function.GetFullyResolvedName();
-            }
-            else
-            {
-                if (function.DatabaseObject != null)
-                {
-                    return function.DatabaseObject.GetFullyResolvedName();
-                }
-                else
-                {
-                    string res = String.Empty;
-
-                    // If it's not resolved yet
-                    if (function.DatabaseName != null) res += QuoteIdentifier(function.DatabaseName) + ".";
-                    if (function.SchemaName != null) res += QuoteIdentifier(function.SchemaName) + ".";
-                    if (function.DatabaseObjectName != null) res += QuoteIdentifier(function.DatabaseObjectName);
-
-                    return res;
-                }
-            }
-        }
+        #endregion
+        #region Complete query generators
 
         public override string GenerateSelectStarQuery(TableOrView tableOrView, int top)
         {
-            var sql = "SELECT {0} * FROM {1}";
-            return String.Format(sql, GenerateTopExpression(top), tableOrView.GetFullyResolvedName());
+            return String.Format(
+                "SELECT {0} * FROM {1}",
+                GenerateTopExpression(top),
+                GetResolvedTableName(tableOrView.DatabaseName, tableOrView.SchemaName, tableOrView.ObjectName));
         }
 
         protected override string GenerateTopExpression(int top)
@@ -220,14 +115,17 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 
             // Now write the referenced columns
             var referencedcolumns = new HashSet<string>(Jhu.Graywulf.Schema.SqlServer.SqlServerSchemaManager.Comparer);
-            
+
             int q = 0;
             if (includePrimaryKey)
             {
                 var t = table.DatabaseObject as Jhu.Graywulf.Schema.Table;
                 foreach (var cr in t.PrimaryKey.Columns.Values)
                 {
-                    var columnname = String.Format("[{0}].[{1}]", table.Alias, cr.ColumnName);
+                    var columnname = String.Format(
+                        "{0}.{1}",
+                        QuoteIdentifier(table.Alias),
+                        QuoteIdentifier(cr.ColumnName));
 
                     if (!referencedcolumns.Contains(columnname))
                     {
@@ -246,7 +144,7 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 
             foreach (var cr in table.ColumnReferences.Where(c => c.IsReferenced))
             {
-                var columnname = cr.GetFullyResolvedName();
+                var columnname = GetResolvedColumnName(cr);     // TODO: verify
 
                 if (!referencedcolumns.Contains(columnname))
                 {
@@ -262,13 +160,11 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             }
 
             // From cluse
-            sql.Write(" FROM {0}", table.GetFullyResolvedName());
+            sql.Write(" FROM {0} ", GetResolvedTableName(table));
             if (!String.IsNullOrWhiteSpace(table.Alias))
             {
-                sql.Write(" AS [{0}]", table.Alias);
+                sql.Write("AS {0} ", QuoteIdentifier(table.Alias));
             }
-
-            sql.Write(" ");
 
             if (where != null)
             {
@@ -323,9 +219,9 @@ WHERE __rn % @step = 1 OR __rn = @count;
 
 DROP TABLE ##keys_{4};
 ",
-         GetResolvedTableName(table),      // TODO: Does it return database name???
-         table.Alias == null ? "" : String.Format(" AS [{0}] ", table.Alias),
-         table.Statistics.KeyColumn,
+         GetResolvedTableName(table),
+         table.Alias == null ? "" : String.Format(" AS {0} ", QuoteIdentifier(table.Alias)),
+         QuoteIdentifier(table.Statistics.KeyColumn),
          where.ToString(),
          Guid.NewGuid().ToString().Replace('-', '_'));
 
@@ -339,7 +235,6 @@ DROP TABLE ##keys_{4};
         /// <returns></returns>
         public string GenerateCreateDestinationTableQuery(DataTable schemaTable, Table destinationTable)
         {
-            var sql = "CREATE TABLE [{0}].[{1}] ({2})";
             var columnlist = String.Empty;
             var keylist = String.Empty;
             //var nokey = false;
@@ -402,9 +297,13 @@ CONSTRAINT [{0}] PRIMARY KEY CLUSTERED ({1})",
             }
              * */
 
-            sql = String.Format(sql, destinationTable.SchemaName, destinationTable.TableName, columnlist);
-
-            return sql;
+            return String.Format(
+                "CREATE TABLE {0}.{1} ({2})",
+                QuoteIdentifier(destinationTable.SchemaName),
+                QuoteIdentifier(destinationTable.TableName),
+                columnlist);
         }
+
+        #endregion
     }
 }

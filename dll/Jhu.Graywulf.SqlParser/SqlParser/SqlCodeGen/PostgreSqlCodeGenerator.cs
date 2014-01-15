@@ -14,171 +14,67 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
         {
         }
 
-        protected override string QuoteIdentifier(string id)
+        #region Identifier formatting functions
+
+        protected override string QuoteIdentifier(string identifier)
         {
-            return "\"" + UnquoteIdentifier(id) + "\"";
+            return String.Format("\"{0}\"", identifier);
         }
 
-        public override bool WriteColumnExpression(ColumnExpression node)
-        {
-            if (ResolveNames)
-            {
-                Expression ex = node.FindDescendant<Expression>();
-                WriteNode(ex);
-                if (!String.IsNullOrEmpty(node.ColumnReference.ColumnAlias))
-                {
-                    Writer.Write(" AS {0}", QuoteIdentifier(node.ColumnReference.ColumnAlias));
-                }
-
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        public override bool WriteColumnIdentifier(ColumnIdentifier node)
-        {
-            if (ResolveNames)
-            {
-                string res = String.Empty;
-
-                if (node.TableReference != null)
-                {
-                    res += GetTableReferenceName(node.TableReference);
-                }
-
-                if (res != String.Empty) res += ".";
-
-                if (node.ColumnReference.IsStar)
-                {
-                    res += "*";
-                }
-                else
-                {
-                    res += QuoteIdentifier(node.ColumnReference.ColumnName);
-                }
-
-                Writer.Write(res);
-
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        public override bool WriteTableOrViewName(TableOrViewName node)
-        {
-            if (ResolveNames)
-            {
-                Writer.Write(GetTableReferenceName(node.TableReference));
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        public override bool WriteFunctionIdentifier(FunctionIdentifier node)
-        {
-            if (ResolveNames)
-            {
-                Writer.Write(GetFunctionReferenceName(node.FunctionReference));
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        public override bool WriteTableValuedFunctionCall(TableValuedFunctionCall node)
-        {
-            if (ResolveNames)
-            {
-                Writer.Write(GetTableReferenceName(node.TableReference));
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        private string GetTableReferenceName(TableReference tableReference)
+        protected override string GetResolvedTableName(string databaseName, string schemaName, string tableName)
         {
             string res = String.Empty;
 
-            if (tableReference != null)
+            if (!String.IsNullOrWhiteSpace(databaseName))
             {
-                if (tableReference.Alias == null)
-                {
-                    if (tableReference.IsUdf || tableReference.IsSubquery || tableReference.IsComputed)
-                    {
-                        res = QuoteIdentifier(tableReference.Alias);
-                    }
-                    else
-                    {
-                        if (tableReference.DatabaseObject != null)
-                        {
-                            if (tableReference.DatabaseObject.ObjectName != null) res += QuoteIdentifier(tableReference.DatabaseObject.ObjectName);
-                        }
-                        else
-                        {
-                            //if (tableReference.DatabaseName != null) res += String.Format("`{0}`.", tableReference.DatabaseName);
-                            if (tableReference.DatabaseObjectName != null) res += QuoteIdentifier(tableReference.DatabaseObjectName);
-                        }
-                    }
-                }
-                else
-                {
-                    res = QuoteIdentifier(tableReference.Alias);
-                }
+                res += QuoteIdentifier(databaseName) + ".";
             }
+
+            if (!String.IsNullOrWhiteSpace(schemaName))
+            {
+                res += QuoteIdentifier(schemaName);
+            }
+
+            // TODO: verify this for postgres!
+            // If no schema name is specified but there's a database name,
+            // SQL Server uses the database..table syntax
+            if (res != String.Empty)
+            {
+                res += ".";
+            }
+
+            res += QuoteIdentifier(tableName);
 
             return res;
         }
 
-        private string GetFunctionReferenceName(FunctionReference function)
+        protected override string GetResolvedFunctionName(string databaseName, string schemaName, string functionName)
         {
             string res = String.Empty;
 
-            if (!function.IsUdf)
+
+            if (databaseName != null)
             {
-                throw new NotImplementedException();
+                res += QuoteIdentifier(databaseName) + ".";
             }
-            else
-            {
-                if (function.DatabaseObject != null)
-                {
-                    if (function.DatabaseObject.ObjectName != null) res += QuoteIdentifier(function.DatabaseObject.ObjectName);
-                }
-                else
-                {
-                    if (function.DatabaseObjectName != null) res += QuoteIdentifier(function.DatabaseObjectName);
-                }
-            }
+
+            // TODO: verify this for postgres
+            // SQL Server function must always have the schema name specified
+            res += QuoteIdentifier(schemaName) + ".";
+            res += QuoteIdentifier(functionName);
 
             return res;
         }
 
-        private string QuoteDatabaseObjectName(DatabaseObject dbobject)
-        {
-            string res = String.Empty;
-
-            return QuoteIdentifier(dbobject.ObjectName);
-        }
-
-        // ---
+        #endregion
+        #region Complete query generators
 
         public override string GenerateSelectStarQuery(TableOrView tableOrView, int top)
         {
-            string sql = "SELECT t.* FROM {1} AS t {0}";
-            return String.Format(sql, GenerateTopExpression(top), QuoteDatabaseObjectName(tableOrView));
+            return String.Format(
+                "SELECT t.* FROM {1} AS t {0}",
+                GenerateTopExpression(top),
+                GetResolvedTableName(tableOrView.DatabaseName, tableOrView.SchemaName, tableOrView.ObjectName));
         }
 
         protected override string GenerateTopExpression(int top)
@@ -237,5 +133,7 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 
             return sql.ToString();
         }
+
+        #endregion
     }
 }

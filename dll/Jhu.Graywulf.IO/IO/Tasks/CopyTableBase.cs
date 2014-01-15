@@ -199,13 +199,14 @@ namespace Jhu.Graywulf.IO.Tasks
         protected void ExecuteBulkCopy(IDataReader dr, Table destination)
         {
             // TODO: it can only import the first resultset from dr
+            var cg = new SqlServerCodeGenerator();
 
             isBulkCopyCanceled = false;
             bulkCopyFinishedEvent = new AutoResetEvent(false);
 
             // Initialize bulk copy
             var sbc = new System.Data.SqlClient.SqlBulkCopy(destination.Dataset.ConnectionString);
-            sbc.DestinationTableName = destination.GetFullyResolvedName();
+            sbc.DestinationTableName = cg.GetResolvedTableName(destination);
             sbc.BatchSize = batchSize;
             sbc.BulkCopyTimeout = timeout;
 

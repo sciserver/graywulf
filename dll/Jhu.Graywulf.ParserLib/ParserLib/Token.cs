@@ -76,11 +76,6 @@ namespace Jhu.Graywulf.ParserLib
 
         public abstract bool Match(Parser parser);
 
-        public virtual bool AcceptCodeGenerator(CodeGenerator cg)
-        {
-            return cg.WriteToken(this);
-        }
-
         public override string ToString()
         {
             return Value.Replace("\r\n", " ");

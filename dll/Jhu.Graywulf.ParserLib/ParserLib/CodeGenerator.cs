@@ -31,19 +31,34 @@ namespace Jhu.Graywulf.ParserLib
             WriteNode(node);
         }
 
-        protected internal virtual bool WriteNode(Token node)
+        /// <summary>
+        /// Writes a node by visiting its children.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Depending on the behavior of derived classes, this function
+        /// might or might not traverse the parsing tree further.
+        /// </remarks>
+        protected virtual void WriteNode(Token token)
         {
-            var res = node.AcceptCodeGenerator(this);
-
-            if (res && node is Node)
+            if (token is Node)
             {
-                WriteChildren((Node)node);
+                // Traverse tree
+                WriteChildren((Node)token);
             }
-            
-            return res;
+            else
+            {
+                // Write terminal
+                WriteToken(token);
+            }
         }
 
-        protected void WriteChildren(Node node)
+        /// <summary>
+        /// Writes all children of a parsing tree node
+        /// </summary>
+        /// <param name="node"></param>
+        private void WriteChildren(Node node)
         {
             foreach (var n in node.Nodes)
             {
@@ -51,10 +66,16 @@ namespace Jhu.Graywulf.ParserLib
             }
         }
 
-        protected internal virtual bool WriteToken(Token t)
+        /// <summary>
+        /// Writes the value of a token to the stream.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <remarks>
+        /// This function is called only for terminals
+        /// </remarks>
+        protected void WriteToken(Token token)
         {
-            writer.Write(t.Value);
-            return true;
+            writer.Write(token.Value);
         }
     }
 }

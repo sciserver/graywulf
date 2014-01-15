@@ -14,10 +14,5 @@ namespace Jhu.Graywulf.SqlParser
             res.Value = value;
             return res;
         }
-
-        public override bool AcceptCodeGenerator(CodeGenerator cg)
-        {
-            return ((SqlCodeGen.SqlCodeGeneratorBase)cg).WriteIdentifier(this);
-        }
     }
 }

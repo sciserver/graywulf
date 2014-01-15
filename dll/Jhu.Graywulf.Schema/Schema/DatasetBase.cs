@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Schema
     /// server product specific reflection logic
     /// </remarks>
     [Serializable]
-    [DataContract(Namespace="")]
+    [DataContract(Namespace = "")]
     public abstract partial class DatasetBase : ICloneable, ICacheable, IDatasetName
     {
         #region Property storage member variables
@@ -309,10 +309,90 @@ namespace Jhu.Graywulf.Schema
         #region Fully resolved names and keys
 
         /// <summary>
-        /// When overloaded returns the fully resolved name of the dataset
+        /// Returns the indentifier quoted according to the server type.
         /// </summary>
-        public abstract string GetFullyResolvedName();
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        protected abstract string QuoteIdentifier(string identifier);
 
+        /// <summary>
+        /// When overloaded in derived classes, returns the fully resolved name of the dataset.
+        /// </summary>
+        /// <remarks>
+        /// The fully resolved name uniquely identifies the dataset (as a database name)
+        /// for the underlying server. It uses the same quoting format that what the server
+        /// expects.
+        /// </remarks>
+        protected virtual string GetFullyResolvedName()
+        {
+            return QuoteIdentifier(DatabaseName);
+        }
+
+        /// <summary>
+        /// When overloaded in derived classes, returns the fully resolved name of an object.
+        /// </summary>
+        /// <remarks>
+        /// The fully resolved name uniquely identifies the object
+        /// for the underlying server. It uses the same quoting format that what the server
+        /// expects.
+        /// </remarks>
+        public abstract string GetObjectFullyResolvedName(DatabaseObject databaseObject);
+
+        /// <summary>
+        /// When overriden in derived classes, returns a unique key of a
+        /// database object that can be used in web urls, etc.
+        /// </summary>
+        /// <param name="objectType"></param>
+        /// <param name="datasetName"></param>
+        /// <param name="databaseName"></param>
+        /// <param name="schemaName"></param>
+        /// <param name="objectName"></param>
+        /// <returns></returns>
+        public virtual string GetObjectUniqueKey(DatabaseObjectType objectType, string datasetName, string databaseName, string schemaName, string objectName)
+        {
+            return String.Format(
+                "{0}|{1}|{2}|{3}|{4}",
+                objectType,
+                datasetName,
+                databaseName,
+                schemaName,
+                objectName);
+        }
+
+        /// <summary>
+        /// Returns a unique key for a database object that can be used
+        /// in web urls, etc.
+        /// </summary>
+        /// <param name="databaseObject"></param>
+        /// <returns></returns>
+        public string GetObjectUniqueKey(DatabaseObject databaseObject)
+        {
+            return GetObjectUniqueKey(
+                databaseObject.ObjectType,
+                this.Name,
+                databaseObject.DatabaseName,
+                databaseObject.SchemaName,
+                databaseObject.ObjectName);
+        }
+
+        /// <summary>
+        /// Takes an object unique name and sets the objects appropriate properties
+        /// to have this unique name.
+        /// </summary>
+        /// <param name="databaseObject"></param>
+        /// <param name="objectKey"></param>
+        public void GetNamePartsFromObjectUniqueKey(DatabaseObject databaseObject, string objectKey)
+        {
+            // TODO: compare object types
+
+            string[] parts = objectKey.Split('|');
+            databaseObject.DatabaseName = parts[2];
+            databaseObject.SchemaName = parts[3];
+            databaseObject.ObjectName = parts[4];
+        }
+
+        #endregion
+        #region Type conversion function
 
         protected abstract DataType GetTypeFromProviderSpecificName(string name);
 
@@ -332,43 +412,8 @@ namespace Jhu.Graywulf.Schema
             return t;
         }
 
-        /// <summary>
-        /// When overloaded in derived classes, returns the fully qualified name of an object
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="databaseObject"></param>
-        /// <returns></returns>
-        internal virtual string GetObjectFullyResolvedName(DatabaseObject databaseObject)
-        {
-            string format = "{0}.[{1}].[{2}]";
-            return String.Format(format, this.GetFullyResolvedName(), databaseObject.SchemaName, databaseObject.ObjectName);
-        }
-
-        public virtual void GetPartsFromObjectKey(DatabaseObject databaseObject, string objectKey)
-        {
-            string[] parts = objectKey.Split('|');
-            databaseObject.DatabaseName = parts[2];
-            databaseObject.SchemaName = parts[3];
-            databaseObject.ObjectName = parts[4];
-        }
-
-        public virtual string GetObjectKeyFromParts(DatabaseObjectType objectType, string datasetName, string databaseName, string schemaName, string objectName)
-        {
-            return String.Format("{0}|{1}|{2}|{3}|{4}", objectType, datasetName, databaseName, schemaName, objectName);
-        }
-
-        public string GetObjectKeyFromParts(DatabaseObject databaseObject)
-        {
-            return GetObjectKeyFromParts(
-                databaseObject.ObjectType,
-                this.name,
-                databaseObject.DatabaseName,
-                databaseObject.SchemaName,
-                databaseObject.ObjectName);
-        }
-
         #endregion
-        #region Object loading
+        #region Object loading functions
 
         public DatabaseObject GetObject(string databaseName, string schemaName, string objectName)
         {
@@ -380,10 +425,6 @@ namespace Jhu.Graywulf.Schema
             {
                 return views[databaseName, schemaName, objectName];
             }
-            else if (tableValuedFunctions.ContainsKey(databaseName, schemaName, objectName))
-            {
-                return tableValuedFunctions[databaseName, schemaName, objectName];
-            }
             else if (scalarFunctions.ContainsKey(databaseName, schemaName, objectName))
             {
                 return scalarFunctions[databaseName, schemaName, objectName];
@@ -391,6 +432,10 @@ namespace Jhu.Graywulf.Schema
             else if (storedProcedures.ContainsKey(databaseName, schemaName, objectName))
             {
                 return storedProcedures[databaseName, schemaName, objectName];
+            }
+            else if (tableValuedFunctions.ContainsKey(databaseName, schemaName, objectName))
+            {
+                return tableValuedFunctions[databaseName, schemaName, objectName];
             }
             else
             {
@@ -411,14 +456,14 @@ namespace Jhu.Graywulf.Schema
         {
             T obj = new T();
             obj.Dataset = this;
-            obj.ObjectKey = e.Key;
+            GetNamePartsFromObjectUniqueKey(obj, e.Key);
 
             try
             {
                 LoadObject<T>(obj);
 
                 e.Value = obj;
-                e.Key = obj.ObjectKey;
+                e.Key = GetObjectUniqueKey(obj);
                 e.IsFound = true;
             }
             catch (SchemaException)
@@ -481,6 +526,9 @@ namespace Jhu.Graywulf.Schema
         internal abstract IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject databaseObject);
 
         #endregion
+        #region Metadata functions
+
+        protected abstract DatasetMetadata LoadDatasetMetadata();
 
         internal abstract DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject);
 
@@ -502,7 +550,7 @@ namespace Jhu.Graywulf.Schema
             {
                 LoadAllColumnMetadata(databaseObject);
             }
-            
+
             if (databaseObject is IParameters)
             {
                 LoadAllParameterMetadata(databaseObject);
@@ -517,7 +565,15 @@ namespace Jhu.Graywulf.Schema
 
         internal abstract void DropAllVariableMetadata(DatabaseObject databaseObject);
 
+        #endregion
+        #region Statistics function
+
+        protected abstract DatasetStatistics LoadDatasetStatistics();
+
         internal abstract TableStatistics LoadTableStatistics(TableOrView tableOrView);
+
+        #endregion
+        #region Object modification functions
 
         /// <summary>
         /// When overloaded in derived classes, renames an object.
@@ -530,6 +586,8 @@ namespace Jhu.Graywulf.Schema
         /// </remarks>
         internal abstract void RenameObject(DatabaseObject obj, string name);
 
+        internal abstract void CreateTable(Table table);
+
         /// <summary>
         /// When overloaded in derived classes, drops an object.
         /// </summary>
@@ -540,9 +598,9 @@ namespace Jhu.Graywulf.Schema
         /// </remarks>
         internal abstract void DropObject(DatabaseObject obj);
 
-        internal abstract void CreateTable(Table table);
-
         internal abstract void TruncateTable(Table table);
+
+        #endregion
 
         protected void ThrowInvalidObjectNameException(DatabaseObject databaseObject)
         {
@@ -572,11 +630,6 @@ namespace Jhu.Graywulf.Schema
             throw new SchemaException(String.Format(message, databaseObject.ToString()));
         }
 
-        protected abstract DatasetStatistics LoadDatasetStatistics();
-
-        protected abstract DatasetMetadata LoadDatasetMetadata();
-
         public abstract string GetSpecializedConnectionString(string connectionString, bool integratedSecurity, string username, string password, bool enlist);
-
     }
 }

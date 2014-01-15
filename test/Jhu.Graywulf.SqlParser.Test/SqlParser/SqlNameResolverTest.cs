@@ -390,11 +390,11 @@ namespace Jhu.Graywulf.SqlParser.Test
             var qs = Parse(sql);
 
             Assert.AreEqual(5, qs.ResultsTableReference.ColumnReferences.Count);
-            Assert.AreEqual("[TEST]:[dbo].[Author].[ID]", qs.ResultsTableReference.ColumnReferences[0].FullyQualifiedName);
-            Assert.AreEqual("[TEST]:[dbo].[Author].[Name]", qs.ResultsTableReference.ColumnReferences[1].FullyQualifiedName);
-            Assert.AreEqual("[TEST]:[dbo].[Book].[ID]", qs.ResultsTableReference.ColumnReferences[2].FullyQualifiedName);
-            Assert.AreEqual("[TEST]:[dbo].[Book].[Title]", qs.ResultsTableReference.ColumnReferences[3].FullyQualifiedName);
-            Assert.AreEqual("[TEST]:[dbo].[Book].[Year]", qs.ResultsTableReference.ColumnReferences[4].FullyQualifiedName);
+            Assert.AreEqual("[TEST]:[Graywulf_Schema_Test].[dbo].[Author].[ID]", qs.ResultsTableReference.ColumnReferences[0].ToString());
+            Assert.AreEqual("[TEST]:[Graywulf_Schema_Test].[dbo].[Author].[Name]", qs.ResultsTableReference.ColumnReferences[1].ToString());
+            Assert.AreEqual("[TEST]:[Graywulf_Schema_Test].[dbo].[Book].[ID]", qs.ResultsTableReference.ColumnReferences[2].ToString());
+            Assert.AreEqual("[TEST]:[Graywulf_Schema_Test].[dbo].[Book].[Title]", qs.ResultsTableReference.ColumnReferences[3].ToString());
+            Assert.AreEqual("[TEST]:[Graywulf_Schema_Test].[dbo].[Book].[Year]", qs.ResultsTableReference.ColumnReferences[4].ToString());
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID] AS [ID], [Graywulf_Schema_Test].[dbo].[Author].[Name] AS [Name], [Graywulf_Schema_Test].[dbo].[Book].[ID] AS [ID_0], [Graywulf_Schema_Test].[dbo].[Book].[Title] AS [Title], [Graywulf_Schema_Test].[dbo].[Book].[Year] AS [Year] FROM [Graywulf_Schema_Test].[dbo].[Author] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Book]", res);
@@ -408,11 +408,11 @@ namespace Jhu.Graywulf.SqlParser.Test
             var qs = Parse(sql);
 
             Assert.AreEqual(5, qs.ResultsTableReference.ColumnReferences.Count);
-            Assert.AreEqual("[a].[ID]", qs.ResultsTableReference.ColumnReferences[0].FullyQualifiedName);
-            Assert.AreEqual("[a].[Name]", qs.ResultsTableReference.ColumnReferences[1].FullyQualifiedName);
-            Assert.AreEqual("[b].[ID]", qs.ResultsTableReference.ColumnReferences[2].FullyQualifiedName);
-            Assert.AreEqual("[b].[Title]", qs.ResultsTableReference.ColumnReferences[3].FullyQualifiedName);
-            Assert.AreEqual("[b].[Year]", qs.ResultsTableReference.ColumnReferences[4].FullyQualifiedName);
+            Assert.AreEqual("[a].[ID]", qs.ResultsTableReference.ColumnReferences[0].ToString());
+            Assert.AreEqual("[a].[Name]", qs.ResultsTableReference.ColumnReferences[1].ToString());
+            Assert.AreEqual("[b].[ID]", qs.ResultsTableReference.ColumnReferences[2].ToString());
+            Assert.AreEqual("[b].[Title]", qs.ResultsTableReference.ColumnReferences[3].ToString());
+            Assert.AreEqual("[b].[Year]", qs.ResultsTableReference.ColumnReferences[4].ToString());
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [a].[ID] AS [a_ID], [a].[Name] AS [a_Name], [b].[ID] AS [b_ID], [b].[Title] AS [b_Title], [b].[Year] AS [b_Year] FROM [Graywulf_Schema_Test].[dbo].[Author] AS [a] CROSS JOIN [Graywulf_Schema_Test].[dbo].[Book] AS [b]", res);
@@ -593,10 +593,11 @@ CROSS JOIN (SELECT [Graywulf_Schema_Test].[dbo].[Author].[ID], [Graywulf_Schema_
             Assert.AreEqual(1, tables.Length);
             Assert.IsTrue(tables[0].IsUdf);
             Assert.AreEqual("f", tables[0].Alias);
-            Assert.AreEqual("[TEST]:[dbo].[TestTableValuedFunction]", tables[0].FullyQualifiedName);
+            Assert.AreEqual("[f]", tables[0].ToString());
 
             var res = GenerateCode(qs);
             Assert.AreEqual("SELECT [f].[b] AS [f_b], [f].[a] AS [f_a] FROM [Graywulf_Schema_Test].[dbo].[TestTableValuedFunction](0) AS [f]", res);
+                           //SELECT [f].[b] AS [f_b], [f].[a] AS [f_a] FROM [Graywulf_Schema_Test].[dbo].[TestTableValuedFunction] AS [f]
         }
 
 #endregion

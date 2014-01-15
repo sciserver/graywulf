@@ -180,6 +180,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     tempds = query.TemporaryDataset;
                     break;
                 case ExecutionMode.Graywulf:
+                    // *** TODO: this throws null exception after persist and restore
                     tempds = TemporaryDatabaseInstanceReference.Value.GetDataset();
                     break;
                 default:
@@ -269,6 +270,47 @@ namespace Jhu.Graywulf.Jobs.Query
 
         #region Remote table caching functions
 
+        private string EscapeIdentifierName(string name)
+        {
+            var res = name.Replace(".", "_");
+
+            return res;
+        }
+
+        private string GetEscapedUniqueName(TableReference table)
+        {
+                if (table.IsSubquery || table.IsComputed)
+                {
+                    return EscapeIdentifierName(table.Alias);
+                }
+                else
+                {
+                    string res = String.Empty;
+
+                    if (table.DatasetName != null)
+                    {
+                        res += String.Format("{0}_", EscapeIdentifierName(table.DatasetName));
+                    }
+
+                    if (table.DatabaseName != null)
+                    {
+                        res += String.Format("{0}_", EscapeIdentifierName(table.DatabaseName));
+                    }
+
+                    if (table.SchemaName != null)
+                    {
+                        res += String.Format("{0}_", EscapeIdentifierName(table.SchemaName));
+                    }
+
+                    if (table.DatabaseObjectName != null)
+                    {
+                        res += String.Format("{0}", EscapeIdentifierName(table.DatabaseObjectName));
+                    }
+
+                    return res;
+                }
+        }
+
         /// <summary>
         /// Finds those tables that are required to execute the query but had to be
         /// copied from a remote source
@@ -340,7 +382,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public void CopyRemoteTable(TableReference table, SourceTableQuery source)
         {
             // Create a target table name
-            var temptable = GetTemporaryTable(table.EscapedUniqueName);
+            var temptable = GetTemporaryTable(GetEscapedUniqueName(table));
             TemporaryTables.TryAdd(table.UniqueName, temptable);
 
             var dest = new DestinationTable(temptable)
@@ -368,16 +410,11 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             if (RemoteTableReferences.ContainsKey(tr.UniqueName))
             {
-                var table = TemporaryTables[tr.UniqueName];
-
-                return String.Format("[{0}].[{1}].[{2}]",
-                    !String.IsNullOrEmpty(table.DatabaseName) ? table.DatabaseName : table.Dataset.DatabaseName,
-                    table.SchemaName,
-                    table.TableName);
+                return CodeGenerator.GetResolvedTableName(TemporaryTables[tr.UniqueName]);
             }
             else
             {
-                return tr.GetFullyResolvedName();
+                return CodeGenerator.GetResolvedTableName(tr);
             }
         }
 
@@ -409,7 +446,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             return String.Format(
                 "SELECT __tablealias.* FROM {0} AS __tablealias",
-                GetOutputTable().GetFullyResolvedName());
+                CodeGenerator.GetResolvedTableName(GetOutputTable()));
         }
 
         /// <summary>

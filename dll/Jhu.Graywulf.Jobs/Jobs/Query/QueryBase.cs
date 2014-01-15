@@ -264,9 +264,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             // Generate statistics query
-            var cg = new SqlServerCodeGenerator();
-            cg.ResolveNames = true;
-            sql = cg.GenerateTableStatisticsQuery(tr);
+            sql = CodeGenerator.GenerateTableStatisticsQuery(tr);
         }
 
         /// <summary>

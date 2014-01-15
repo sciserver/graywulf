@@ -109,7 +109,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
                 if (dbobj.ObjectType == DatabaseObjectType.Table || dbobj.ObjectType == DatabaseObjectType.View)
                 {
-                    Peek.OnClientClick = Web.Util.UrlFormatter.GetClientPopUp(Jhu.Graywulf.Web.UI.Schema.Peek.GetUrl(dbobj.ObjectKey));
+                    Peek.OnClientClick = Web.Util.UrlFormatter.GetClientPopUp(Jhu.Graywulf.Web.UI.Schema.Peek.GetUrl(dbobj.UniqueKey));
                     Peek.Enabled = true;
                 }
                 else

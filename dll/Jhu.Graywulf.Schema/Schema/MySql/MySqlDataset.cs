@@ -111,14 +111,11 @@ namespace Jhu.Graywulf.Schema.MySql
         }
 
         #endregion
+        #region Fully resolved names and keys
 
-        /// <summary>
-        /// Returns the fully resolved name of the dataset.
-        /// </summary>
-        /// <returns></returns>
-        public override string GetFullyResolvedName()
+        protected override string QuoteIdentifier(string identifier)
         {
-            return String.Format("[{0}]", DatabaseName);
+            return String.Format("`{0}`", identifier);
         }
 
         /// <summary>
@@ -126,19 +123,99 @@ namespace Jhu.Graywulf.Schema.MySql
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override string GetObjectFullyResolvedName(DatabaseObject databaseObject)
+        /// <remarks>
+        /// MySQL doesn't have the equivalent of schemas of SQL Server.
+        /// </remarks>
+        public override string GetObjectFullyResolvedName(DatabaseObject databaseObject)
         {
-            string format = "{0}.[{1}]";
+            var databaseName = GetFullyResolvedName();
+            var objectName = QuoteIdentifier(databaseObject.ObjectName);
 
-            return String.Format(format, this.GetFullyResolvedName(), databaseObject.ObjectName);
+            return String.Format("{0}.{1}", databaseName, objectName);
         }
 
-        public override string GetObjectKeyFromParts(DatabaseObjectType objectType, string datasetName, string databaseName, string schemaName, string objectName)
+        public override string GetObjectUniqueKey(DatabaseObjectType objectType, string datasetName, string databaseName, string schemaName, string objectName)
         {
             // MySQL doesn't have the equivalent of schemas of SQL Server.
             schemaName = String.Empty;
-            return String.Format("{0}|{1}|{2}|{3}|{4}", objectType, datasetName, databaseName, schemaName, objectName);
+
+            return base.GetObjectUniqueKey(objectType, datasetName, databaseName, schemaName, objectName);
         }
+
+        #endregion
+        #region Type conversion function
+
+        protected override DataType GetTypeFromProviderSpecificName(string name)
+        {
+            switch (name.ToLowerInvariant().Trim())
+            {
+                case Constants.TypeNameTinyInt:
+                    return DataType.SqlTinyInt;
+                case Constants.TypeNameSmallInt:
+                    return DataType.SqlSmallInt;
+                case Constants.TypeNameInt:
+                    return DataType.SqlInt;
+                case Constants.TypeNameMediumInt:
+                    return DataType.SqlBigInt;
+                case Constants.TypeNameBigInt:
+                    return DataType.SqlBigInt;
+                case Constants.TypeNameFloat:
+                    return DataType.SqlFloat;
+                case Constants.TypeNameDouble:
+                    return DataType.SqlReal;
+                case Constants.TypeNameDecimal:
+                    return DataType.SqlDecimal;
+                case Constants.TypeNameDate:
+                    return DataType.SqlDate;
+                case Constants.TypeNameYear:
+                    return DataType.SqlTinyInt;
+                case Constants.TypeNameTime:
+                    return DataType.SqlTime;
+                case Constants.TypeNameDateTime:
+                    return DataType.SqlDateTime;
+                case Constants.TypeNameTimestamp:
+                    return DataType.SqlTimestamp;
+                case Constants.TypeNameTinyText:
+                    return DataType.SqlText;
+                case Constants.TypeNameText:
+                    return DataType.SqlText;
+                case Constants.TypeNameMediumText:
+                    return DataType.SqlText;
+                case Constants.TypeNameLongText:
+                    return DataType.SqlText;
+                case Constants.TypeNameTinyBlob:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameBlob:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameMediumBlob:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameLongBlob:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameBit:
+                    return DataType.SqlBit;
+                case Constants.TypeNameSet:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameEnum:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameBinary:
+                    return DataType.SqlBinary;
+                case Constants.TypeNameVarBinary:
+                    return DataType.SqlVarBinary;
+                case Constants.TypeNameGeometry:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameChar:
+                    return DataType.SqlChar;
+                case Constants.TypeNameVarChar:
+                    return DataType.SqlVarChar;
+                case Constants.TypeNameXml:
+                    return DataType.SqlXml;
+
+                default:
+                    return DataType.Unknown;
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Loads the schema of a database object belonging to the dataset.
@@ -165,7 +242,7 @@ SELECT routine_name  as `object_name`, routine_type  as `object_type`
 FROM information_schema.routines
 WHERE routine_schema LIKE @databaseName AND routine_name LIKE @objectName AND routine_type IN ({0});";
                     break;
-                    // TODO: add table-valued function
+                // TODO: add table-valued function
                 default:
                     throw new NotImplementedException();
             }
@@ -248,7 +325,7 @@ WHERE table_schema LIKE @databaseName AND table_type IN({0})";
                                 ObjectType = Constants.MySqlObjectTypeIds[dr.GetString(1).Trim()],
                             };
 
-                            yield return new KeyValuePair<string, T>(obj.ObjectKey, obj);
+                            yield return new KeyValuePair<string, T>(GetObjectUniqueKey(obj), obj);
                         }
                     }
                 }
@@ -269,7 +346,7 @@ WHERE table_schema LIKE @databaseName AND table_type IN({0})";
 
             return res.Substring(1);
         }
-        
+
         /// <summary>
         /// Loads columns of a database object.
         /// </summary>
@@ -282,8 +359,8 @@ SELECT ordinal_position,
        column_name,
        data_type,
        COALESCE(character_maximum_length, -1) AS `max_length`,
-       COALESCE(numeric_scale, -1) AS `scale`,
-       COALESCE(numeric_precision, -1) AS `precision`,
+       COALESCE(numeric_scale, 0) AS `scale`,
+       COALESCE(numeric_precision, 0) AS `precision`,
        is_nullable
 FROM information_schema.columns
 WHERE table_schema LIKE @databaseName AND table_name LIKE @tableName;";
@@ -404,7 +481,7 @@ WHERE t.table_schema LIKE @databaseName AND kcu.table_name LIKE @tableName AND k
                                 Name = dr.GetString(0),
                                 KeyOrdinal = dr.GetInt32(1),
                                 Ordering = IndexColumnOrdering.Ascending,
-                                IsIdentity =  dr.IsDBNull(7) ? false : true
+                                IsIdentity = dr.IsDBNull(7) ? false : true
                             };
 
                             ic.DataType = GetTypeFromProviderSpecificName(
@@ -434,8 +511,8 @@ SELECT p.ordinal_position,
 	   p.parameter_mode,
 	   p.data_type,
        COALESCE(p.character_maximum_length, -1),
-       COALESCE(p.numeric_scale, -1),
-       COALESCE(p.numeric_precision, -1)
+       COALESCE(p.numeric_scale, 0),
+       COALESCE(p.numeric_precision, 0)
 FROM information_schema.parameters p
 WHERE p.specific_schema LIKE @databaseName AND p.specific_name = @objectName
 ORDER BY 1;";
@@ -482,7 +559,7 @@ ORDER BY 1;";
                                 HasDefaultValue = false,
                                 DefaultValue = null,
                             };
-                            
+
                             par.DataType = GetTypeFromProviderSpecificName(
                                 dr.GetString(3),
                                 Convert.ToInt32(dr.GetValue(4)),
@@ -685,76 +762,6 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
             // *** TODO: implement
             // Where to get metadata from? Registry?
             return new DatasetMetadata();
-        }
-
-        protected override DataType GetTypeFromProviderSpecificName(string name)
-        {
-            switch (name.ToLowerInvariant().Trim())
-            {
-                case Constants.TypeNameTinyInt:
-                    return DataType.SqlTinyInt;
-                case Constants.TypeNameSmallInt:
-                    return DataType.SqlSmallInt;
-                case Constants.TypeNameInt:
-                    return DataType.SqlInt;
-                case Constants.TypeNameMediumInt:
-                    return DataType.SqlBigInt;
-                case Constants.TypeNameBigInt:
-                    return DataType.SqlBigInt;
-                case Constants.TypeNameFloat:
-                    return DataType.SqlFloat;
-                case Constants.TypeNameDouble:
-                    return DataType.SqlReal;
-                case Constants.TypeNameDecimal:
-                    return DataType.SqlDecimal;
-                case Constants.TypeNameDate:
-                    return DataType.SqlDate;
-                case Constants.TypeNameYear:
-                    return DataType.SqlTinyInt;
-                case Constants.TypeNameTime:
-                    return DataType.SqlTime;
-                case Constants.TypeNameDateTime:
-                    return DataType.SqlDateTime;
-                case Constants.TypeNameTimestamp:
-                    return DataType.SqlTimestamp;
-                case Constants.TypeNameTinyText:
-                    return DataType.SqlText;
-                case Constants.TypeNameText:
-                    return DataType.SqlText;
-                case Constants.TypeNameMediumText:
-                    return DataType.SqlText;
-                case Constants.TypeNameLongText:
-                    return DataType.SqlText;
-                case Constants.TypeNameTinyBlob:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameBlob:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameMediumBlob:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameLongBlob:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameBit:
-                    return DataType.SqlBit;
-                case Constants.TypeNameSet:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameEnum:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameBinary:
-                    return DataType.SqlBinary;
-                case Constants.TypeNameVarBinary:
-                    return DataType.SqlVarBinary;
-                case Constants.TypeNameGeometry:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameChar:
-                    return DataType.SqlChar;
-                case Constants.TypeNameVarChar:
-                    return DataType.SqlVarChar;
-                case Constants.TypeNameXml:
-                    return DataType.SqlXml;
-
-                default:
-                    return DataType.Unknown;
-            }
         }
 
         /// <summary>

@@ -39,10 +39,5 @@ namespace Jhu.Graywulf.SqlParser
 
             return base.Interpret();
         }
-
-        public override bool AcceptCodeGenerator(CodeGenerator cg)
-        {
-            return ((SqlCodeGen.SqlCodeGeneratorBase)cg).WriteTableOrViewName(this);
-        }
     }
 }

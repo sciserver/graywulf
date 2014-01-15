@@ -18,11 +18,16 @@ namespace Jhu.Graywulf.Schema.SqlServer
     [DataContract(Namespace = "")]
     public class SqlServerDataset : DatasetBase
     {
+        #region Private members
+
         [NonSerialized]
         protected bool isOnLinkedServer;
 
         [NonSerialized]
         protected bool isRemoteDataset;
+
+        #endregion
+        #region Properties
 
         /// <summary>
         /// Gets or sets the value determining if the data is available
@@ -82,6 +87,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
             }
         }
 
+        #endregion
         #region Constructors and initializers
 
         /// <summary>
@@ -158,33 +164,40 @@ namespace Jhu.Graywulf.Schema.SqlServer
         }
 
         #endregion
+        #region Fully resolved names and keys
 
         /// <summary>
-        /// Returns the fully resolved name of the dataset.
+        /// Return a quoted version of an identifier
         /// </summary>
+        /// <param name="identifier"></param>
         /// <returns></returns>
-        public override string GetFullyResolvedName()
+        protected override string QuoteIdentifier(string identifier)
         {
-            return String.Format("[{0}]", DatabaseName);
+            return String.Format("[{0}]", identifier);
         }
 
         /// <summary>
-        /// Returns the fully resolved name of a database object belonging to the dataset.
+        /// Returns the fully resolved name of a database object
+        /// belonging to the dataset.
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal virtual string GetObjectFullyResolvedName(DatabaseObject databaseObject)
+        /// <remarks>
+        /// The function returns the object name as it can be referenced
+        /// 
+        /// </remarks>
+        public override string GetObjectFullyResolvedName(DatabaseObject databaseObject)
         {
-            string format = "{0}.[{1}].[{2}]";
+            // If schema name is empty, use default schema name
 
-            if (!String.IsNullOrWhiteSpace(databaseObject.SchemaName))
-            {
-                return String.Format(format, this.GetFullyResolvedName(), databaseObject.SchemaName, databaseObject.ObjectName);
-            }
-            else
-            {
-                return String.Format(format, this.GetFullyResolvedName(), this.DefaultSchemaName, databaseObject.ObjectName);
-            }
+            var databaseName = GetFullyResolvedName();
+            var schemaName =
+                String.IsNullOrWhiteSpace(databaseObject.SchemaName) ?
+                    QuoteIdentifier(DefaultSchemaName) :
+                    QuoteIdentifier(databaseObject.SchemaName);
+            var objectName = QuoteIdentifier(databaseObject.ObjectName);
+
+            return String.Format("{0}.{1}.{2}", databaseName, schemaName, objectName);
         }
 
         /// <summary>
@@ -196,17 +209,90 @@ namespace Jhu.Graywulf.Schema.SqlServer
         /// <param name="schemaName"></param>
         /// <param name="objectName"></param>
         /// <returns></returns>
-        public override string GetObjectKeyFromParts(DatabaseObjectType objectType, string datasetName, string databaseName, string schemaName, string objectName)
+        public override string GetObjectUniqueKey(DatabaseObjectType objectType, string datasetName, string databaseName, string schemaName, string objectName)
         {
-            if (String.IsNullOrWhiteSpace(schemaName))
-            {
-                schemaName = DefaultSchemaName;
-            }
+            // If schema name is empty, use default schema name
+            schemaName =
+                String.IsNullOrWhiteSpace(schemaName) ?
+                DefaultSchemaName :
+                schemaName;
 
-            return String.Format("{0}|{1}|{2}|{3}|{4}", objectType, datasetName, databaseName, schemaName, objectName);
+            return base.GetObjectUniqueKey(objectType, datasetName, databaseName, schemaName, objectName);
         }
 
-        //--
+        #endregion
+        #region Type conversion function
+
+        protected override DataType GetTypeFromProviderSpecificName(string name)
+        {
+            switch (name.ToLowerInvariant().Trim())
+            {
+                case Constants.TypeNameTinyInt:
+                    return DataType.SqlTinyInt;
+                case Constants.TypeNameSmallInt:
+                    return DataType.SqlSmallInt;
+                case Constants.TypeNameInt:
+                    return DataType.SqlInt;
+                case Constants.TypeNameBigInt:
+                    return DataType.SqlBigInt;
+                case Constants.TypeNameBit:
+                    return DataType.SqlBit;
+                case Constants.TypeNameDecimal:
+                    return DataType.SqlDecimal;
+                case Constants.TypeNameSmallMoney:
+                    return DataType.SqlSmallMoney;
+                case Constants.TypeNameMoney:
+                    return DataType.SqlMoney;
+                case Constants.TypeNameNumeric:
+                    return DataType.SqlNumeric;
+                case Constants.TypeNameReal:
+                    return DataType.SqlReal;
+                case Constants.TypeNameFloat:
+                    return DataType.SqlFloat;
+                case Constants.TypeNameDate:
+                    return DataType.SqlDate;
+                case Constants.TypeNameTime:
+                    return DataType.SqlTime;
+                case Constants.TypeNameSmallDateTime:
+                    return DataType.SqlSmallDateTime;
+                case Constants.TypeNameDateTime:
+                    return DataType.SqlDateTime;
+                case Constants.TypeNameDateTime2:
+                    return DataType.SqlDateTime2;
+                case Constants.TypeNameDateTimeOffset:
+                    return DataType.SqlDateTimeOffset;
+                case Constants.TypeNameChar:
+                    return DataType.SqlChar;
+                case Constants.TypeNameVarChar:
+                    return DataType.SqlVarChar;
+                case Constants.TypeNameText:
+                    return DataType.SqlText;
+                case Constants.TypeNameNChar:
+                    return DataType.SqlNChar;
+                case Constants.TypeNameNVarChar:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameNText:
+                    return DataType.SqlNText;
+                case Constants.TypeNameXml:
+                    return DataType.SqlXml;
+                case Constants.TypeNameBinary:
+                    return DataType.SqlBinary;
+                case Constants.TypeNameVarBinary:
+                    return DataType.SqlVarBinary;
+                case Constants.TypeNameImage:
+                    return DataType.SqlImage;
+                case Constants.TypeNameSqlVariant:
+                    return DataType.SqlVariant;
+                case Constants.TypeNameTimestamp:
+                    return DataType.SqlTimestamp;
+                case Constants.TypeNameUniqueIdentifier:
+                    return DataType.SqlUniqueIdentifier;
+                default:
+                    throw new ArgumentOutOfRangeException("name");
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Loads the schema of a database object belonging to the dataset.
@@ -263,9 +349,9 @@ WHERE o.type IN ({0}) AND
 
         internal override bool IsObjectExisting(DatabaseObject databaseObject)
         {
-            var sql = @"SELECT OBJECT_ID('{0}')";
-
-            sql = String.Format(sql, databaseObject.GetFullyResolvedName());
+            var sql = String.Format(
+                @"SELECT OBJECT_ID('{0}')",
+                GetObjectFullyResolvedName(databaseObject));
 
             using (var cn = OpenConnection())
             {
@@ -311,7 +397,7 @@ WHERE o.type IN ({0})
                                 ObjectType = Constants.SqlServerObjectTypeIds[dr.GetString(2).Trim()],
                             };
 
-                            yield return new KeyValuePair<string, T>(obj.ObjectKey, obj);
+                            yield return new KeyValuePair<string, T>(GetObjectUniqueKey(obj), obj);
                         }
                     }
                 }
@@ -808,17 +894,24 @@ WHERE s.name = @schemaName AND o.name = @objectName
                 throw new InvalidOperationException();
             }
 
+            // The stored procedure sp_name expects the old name
+            // the the schema.objectname or objectname format.
+            // No database name should be specified.
+
             var sql = @"sp_rename";
 
             // FullyQualifiedName cannot be used here because that contains DB name.
             string oldname;
             if (String.IsNullOrEmpty(obj.SchemaName))
             {
-                oldname = String.Format("[{0}]", obj.ObjectName);
+                oldname = QuoteIdentifier(obj.ObjectName);
             }
             else
             {
-                oldname = String.Format("[{0}].[{1}]", obj.SchemaName, obj.ObjectName);
+                oldname = String.Format(
+                    "{0}.{1}",
+                    QuoteIdentifier(obj.SchemaName),
+                    QuoteIdentifier(obj.ObjectName));
             }
 
             using (var cn = OpenConnection())
@@ -848,7 +941,7 @@ BEGIN
 DROP {0} {1}
 END",
                 Constants.SqlServerObjectTypeNames[obj.ObjectType],
-                obj.GetFullyResolvedName());
+                GetObjectFullyResolvedName(obj));
 
             using (var cn = OpenConnection())
             {
@@ -882,21 +975,18 @@ END",
                     cols.AppendLine(",");
                 }
 
-                cols.AppendFormat("[{0}] {1} {2}NULL",
-                    c.Name,
+                cols.AppendFormat("{0} {1} {2}NULL",
+                    QuoteIdentifier(c.Name),
                     c.DataType.NameWithLength,
                     c.DataType.IsNullable ? "" : "NOT ");
 
                 q++;
             }
 
-            var sql = @"
-CREATE TABLE {0}
-(
-    {1}
-)";
-
-            sql = String.Format(sql, table.GetFullyResolvedName(), cols.ToString());
+            var sql = String.Format(
+                "CREATE TABLE {0} (\r\n{1}\r\n)",
+                GetObjectFullyResolvedName(table),
+                cols.ToString());
 
             using (var cn = OpenConnection())
             {
@@ -914,7 +1004,9 @@ CREATE TABLE {0}
                 throw new InvalidOperationException();
             }
 
-            var sql = String.Format("TRUNCATE TABLE {0}", table.GetFullyResolvedName());
+            var sql = String.Format(
+                "TRUNCATE TABLE {0}",
+                GetObjectFullyResolvedName(table));
 
             using (var cn = OpenConnection())
             {
@@ -961,73 +1053,5 @@ CREATE TABLE {0}
             return csb.ConnectionString;
         }
 
-        protected override DataType GetTypeFromProviderSpecificName(string name)
-        {
-            switch (name.ToLowerInvariant().Trim())
-            {
-                case Constants.TypeNameTinyInt:
-                    return DataType.SqlTinyInt;
-                case Constants.TypeNameSmallInt:
-                    return DataType.SqlSmallInt;
-                case Constants.TypeNameInt:
-                    return DataType.SqlInt;
-                case Constants.TypeNameBigInt:
-                    return DataType.SqlBigInt;
-                case Constants.TypeNameBit:
-                    return DataType.SqlBit;
-                case Constants.TypeNameDecimal:
-                    return DataType.SqlDecimal;
-                case Constants.TypeNameSmallMoney:
-                    return DataType.SqlSmallMoney;
-                case Constants.TypeNameMoney:
-                    return DataType.SqlMoney;
-                case Constants.TypeNameNumeric:
-                    return DataType.SqlNumeric;
-                case Constants.TypeNameReal:
-                    return DataType.SqlReal;
-                case Constants.TypeNameFloat:
-                    return DataType.SqlFloat;
-                case Constants.TypeNameDate:
-                    return DataType.SqlDate;
-                case Constants.TypeNameTime:
-                    return DataType.SqlTime;
-                case Constants.TypeNameSmallDateTime:
-                    return DataType.SqlSmallDateTime;
-                case Constants.TypeNameDateTime:
-                    return DataType.SqlDateTime;
-                case Constants.TypeNameDateTime2:
-                    return DataType.SqlDateTime2;
-                case Constants.TypeNameDateTimeOffset:
-                    return DataType.SqlDateTimeOffset;
-                case Constants.TypeNameChar:
-                    return DataType.SqlChar;
-                case Constants.TypeNameVarChar:
-                    return DataType.SqlVarChar;
-                case Constants.TypeNameText:
-                    return DataType.SqlText;
-                case Constants.TypeNameNChar:
-                    return DataType.SqlNChar;
-                case Constants.TypeNameNVarChar:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameNText:
-                    return DataType.SqlNText;
-                case Constants.TypeNameXml:
-                    return DataType.SqlXml;
-                case Constants.TypeNameBinary:
-                    return DataType.SqlBinary;
-                case Constants.TypeNameVarBinary:
-                    return DataType.SqlVarBinary;
-                case Constants.TypeNameImage:
-                    return DataType.SqlImage;
-                case Constants.TypeNameSqlVariant:
-                    return DataType.SqlVariant;
-                case Constants.TypeNameTimestamp:
-                    return DataType.SqlTimestamp;
-                case Constants.TypeNameUniqueIdentifier:
-                    return DataType.SqlUniqueIdentifier;
-                default:
-                    throw new ArgumentOutOfRangeException("name");
-            }
-        }
     }
 }

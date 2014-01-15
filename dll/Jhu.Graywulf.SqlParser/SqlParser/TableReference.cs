@@ -7,18 +7,10 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.SqlParser
 {
-    public class TableReference
+    public class TableReference : DatabaseObjectReference
     {
         #region Property storage variables
-
-        private Node node;
-
-        private DatabaseObject databaseObject;
-
-        private string datasetName;
-        private string databaseName;
-        private string schemaName;
-        private string databaseObjectName;
+        
         private string alias;
 
         private bool isTableOrView;
@@ -27,64 +19,9 @@ namespace Jhu.Graywulf.SqlParser
         private bool isComputed;
 
         private List<ColumnReference> columnReferences;
-        //private List<SearchConditionReference> conditionReferences;
-
         private TableStatistics statistics;
 
         #endregion
-
-        /// <summary>
-        /// Gets the parser tree node this table reference references
-        /// </summary>
-        public Node Node
-        {
-            get { return node; }
-        }
-
-        /// <summary>
-        /// Gets or set the database object (schema object) this reference refers to
-        /// </summary>
-        public DatabaseObject DatabaseObject
-        {
-            get { return databaseObject; }
-            set { databaseObject = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the resolved dataset name
-        /// </summary>
-        public string DatasetName
-        {
-            get { return datasetName; }
-            set { datasetName = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the resolved database name
-        /// </summary>
-        public string DatabaseName
-        {
-            get { return databaseName; }
-            set { databaseName = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the resolved schema name
-        /// </summary>
-        public string SchemaName
-        {
-            get { return schemaName; }
-            set { schemaName = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the resolved object name
-        /// </summary>
-        public string DatabaseObjectName
-        {
-            get { return databaseObjectName; }
-            set { databaseObjectName = value; }
-        }
 
         /// <summary>
         /// Gets or sets the resolved alias
@@ -130,11 +67,6 @@ namespace Jhu.Graywulf.SqlParser
             protected set { isComputed = value; }
         }
 
-        public bool IsUndefined
-        {
-            get { return datasetName == null && databaseName == null && schemaName == null && databaseObjectName == null && alias == null; }
-        }
-
         public bool IsCachable
         {
             get { return !IsSubquery && !IsUdf && !IsComputed; }
@@ -150,13 +82,19 @@ namespace Jhu.Graywulf.SqlParser
         {
             get
             {
-                return (alias != null || databaseObjectName != null) && datasetName == null && databaseName == null;
+                return (alias != null || DatabaseObjectName != null) && DatasetName == null && DatabaseName == null;
             }
         }
 
+        /* TODO: delete
         /// <summary>
-        /// Gets the fully qualified name of the table or view in the : notation.
+        /// Gets the fully qualified name of the table or view.
         /// </summary>
+        /// <remarks>
+        /// The fully qualified name is always in the
+        /// [dataset]:[database].[schema].[object] format that is
+        /// specific to Graywulf.
+        /// </remarks>
         public string FullyQualifiedName
         {
             get
@@ -178,45 +116,30 @@ namespace Jhu.Graywulf.SqlParser
                     return res;
                 }
             }
+        }*/
+
+        public override bool IsUndefined
+        {
+            get { return base.IsUndefined && alias == null; }
         }
 
         /// <summary>
         /// Gets the unique name of the table (alias, if available)
         /// </summary>
-        public string UniqueName
+        /// <remarks>
+        /// Never use this in query generation!
+        /// </remarks>
+        public override string UniqueName
         {
             get
             {
                 if (String.IsNullOrWhiteSpace(alias))
                 {
-                    return FullyQualifiedName;
+                    return base.UniqueName;
                 }
                 else
                 {
-                    return Alias;
-                }
-            }
-        }
-
-        public string EscapedUniqueName
-        {
-            get
-            {
-                if (isSubquery || isComputed)
-                {
-                    return alias;
-                }
-                else
-                {
-                    string res = String.Empty;
-
-                    // If it's not resolved yet
-                    if (datasetName != null) res += String.Format("{0}_", Util.EscapeIdentifierName(datasetName));
-                    if (databaseName != null) res += String.Format("{0}_", Util.EscapeIdentifierName(databaseName));
-                    if (schemaName != null) res += String.Format("{0}_", Util.EscapeIdentifierName(schemaName));
-                    if (databaseObjectName != null) res += String.Format("{0}", Util.EscapeIdentifierName(databaseObjectName));
-
-                    return res;
+                    return String.Format("[{0}]", alias);
                 }
             }
         }
@@ -225,11 +148,6 @@ namespace Jhu.Graywulf.SqlParser
         {
             get { return columnReferences; }
         }
-
-        //public List<SearchConditionReference> ConditionReferences
-        //{
-        //    get { return conditionReferences; }
-        //}
 
         public TableStatistics Statistics
         {
@@ -243,6 +161,7 @@ namespace Jhu.Graywulf.SqlParser
         }
 
         public TableReference(TableReference old)
+            : base(old)
         {
             CopyMembers(old);
         }
@@ -251,14 +170,14 @@ namespace Jhu.Graywulf.SqlParser
         {
             InitializeMembers();
 
-            this.node = qe;
+            this.Node = qe;
         }
 
         public TableReference(QuerySpecification qs)
         {
             InitializeMembers();
 
-            this.node = qs;
+            this.Node = qs;
         }
 
         public TableReference(VariableTableSource ts)
@@ -296,14 +215,6 @@ namespace Jhu.Graywulf.SqlParser
 
         private void InitializeMembers()
         {
-            this.node = null;
-
-            this.databaseObject = null;
-
-            this.datasetName = null;
-            this.databaseName = null;
-            this.schemaName = null;
-            this.databaseObjectName = null;
             this.alias = null;
 
             this.isTableOrView = false;
@@ -312,21 +223,11 @@ namespace Jhu.Graywulf.SqlParser
             this.isComputed = false;
 
             this.columnReferences = new List<ColumnReference>();
-            //this.conditionReferences = new List<SearchConditionReference>();
-
             this.statistics = null;
         }
 
         private void CopyMembers(TableReference old)
         {
-            this.node = old.node;
-
-            this.databaseObject = old.databaseObject;
-
-            this.datasetName = old.datasetName;
-            this.databaseName = old.databaseName;
-            this.schemaName = old.schemaName;
-            this.databaseObjectName = old.databaseObjectName;
             this.alias = old.alias;
 
             this.isTableOrView = old.isTableOrView;
@@ -344,14 +245,12 @@ namespace Jhu.Graywulf.SqlParser
                 };
                 this.columnReferences.Add(ncr);
             }
-            //this.conditionReferences = new List<SearchConditionReference>(old.conditionReferences);
-
             this.statistics = old.statistics == null ? null : new TableStatistics(old.statistics);
         }
 
         internal void InterpretTableSource(Node tableSource)
         {
-            node = tableSource.FindAscendant<TableSource>();
+            Node = tableSource.FindAscendant<TableSource>();
 
             TableAlias a = tableSource.FindDescendant<TableAlias>();
             if (a != null)
@@ -367,31 +266,31 @@ namespace Jhu.Graywulf.SqlParser
         private void InterpretColumnIdentifier(ColumnIdentifier ci)
         {
             var ds = ci.FindDescendant<DatasetName>();
-            datasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
+            DatasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
 
             var dbn = ci.FindDescendant<DatabaseName>();
-            databaseName = (dbn != null) ? Util.RemoveIdentifierQuotes(dbn.Value) : null;
+            DatabaseName = (dbn != null) ? Util.RemoveIdentifierQuotes(dbn.Value) : null;
 
             var sn = ci.FindDescendant<SchemaName>();
-            schemaName = (sn != null) ? Util.RemoveIdentifierQuotes(sn.Value) : null;
+            SchemaName = (sn != null) ? Util.RemoveIdentifierQuotes(sn.Value) : null;
 
             var tn = ci.FindDescendant<TableName>();
-            databaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
+            DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
         }
 
         private void InterpretTableOrViewName(TableOrViewName ti)
         {
             var ds = ti.FindDescendant<DatasetName>();
-            datasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
+            DatasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
 
             var dbn = ti.FindDescendant<DatabaseName>();
-            databaseName = (dbn != null) ? Util.RemoveIdentifierQuotes(dbn.Value) : null;
+            DatabaseName = (dbn != null) ? Util.RemoveIdentifierQuotes(dbn.Value) : null;
 
             var sn = ti.FindDescendant<SchemaName>();
-            schemaName = (sn != null) ? Util.RemoveIdentifierQuotes(sn.Value) : null;
+            SchemaName = (sn != null) ? Util.RemoveIdentifierQuotes(sn.Value) : null;
 
             var tn = ti.FindDescendant<TableName>();
-            databaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
+            DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
 
             isTableOrView = true;
         }
@@ -405,16 +304,16 @@ namespace Jhu.Graywulf.SqlParser
             if (udfi != null)
             {
                 var ds = udfi.FindDescendant<DatasetName>();
-                datasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
+                DatasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
 
                 var dbn = udfi.FindDescendant<DatabaseName>();
-                databaseName = (dbn != null) ? Util.RemoveIdentifierQuotes(dbn.Value) : null;
+                DatabaseName = (dbn != null) ? Util.RemoveIdentifierQuotes(dbn.Value) : null;
 
                 var sn = udfi.FindDescendant<SchemaName>();
-                schemaName = (sn != null) ? Util.RemoveIdentifierQuotes(sn.Value) : null;
+                SchemaName = (sn != null) ? Util.RemoveIdentifierQuotes(sn.Value) : null;
 
                 var tn = udfi.FindDescendant<FunctionName>();
-                databaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
+                DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
 
                 isUdf = true;
             }
@@ -427,26 +326,6 @@ namespace Jhu.Graywulf.SqlParser
         private void InterpretSubquery()
         {
             isSubquery = true;
-        }
-
-        /// <summary>
-        /// Substitute default dataset and schema names, if necessary
-        /// </summary>
-        /// <param name="defaultDataSetName"></param>
-        /// <param name="defaultSchemaName"></param>
-        public void SubstituteDefaults(SchemaManager schemaManager, string defaultDataSetName)
-        {
-            // This cannot be called for subqueries
-
-            if (this.datasetName == null)
-            {
-                this.datasetName = defaultDataSetName;
-            }
-
-            if (this.schemaName == null)
-            {
-                this.schemaName = schemaManager.Datasets[this.datasetName].DefaultSchemaName;
-            }
         }
 
         public void LoadColumnReferences(SchemaManager schemaManager)
@@ -481,7 +360,7 @@ namespace Jhu.Graywulf.SqlParser
         {
             // TVF calls can have a column alias list
             List<ColumnAlias> calist = null;
-            var cal = this.node.FindDescendant<ColumnAliasList>();
+            var cal = this.Node.FindDescendant<ColumnAliasList>();
             if (cal != null)
             {
                 calist = new List<ColumnAlias>(cal.EnumerateDescendants<ColumnAlias>());
@@ -491,23 +370,23 @@ namespace Jhu.Graywulf.SqlParser
             DatasetBase ds;
             try
             {
-                ds = schemaManager.Datasets[datasetName];
+                ds = schemaManager.Datasets[DatasetName];
             }
             catch (SchemaException ex)
             {
-                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableDatasetReference, datasetName, node.Line, node.Col), ex);
+                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableDatasetReference, DatasetName, Node.Line, Node.Col), ex);
             }
 
             int q = 0;
             TableValuedFunction tvf;
-            if (ds.TableValuedFunctions.ContainsKey(databaseName, schemaName, databaseObjectName))
+            if (ds.TableValuedFunctions.ContainsKey(DatabaseName, SchemaName, DatabaseObjectName))
             {
-                tvf = ds.TableValuedFunctions[databaseName, schemaName, databaseObjectName];
+                tvf = ds.TableValuedFunctions[DatabaseName, SchemaName, DatabaseObjectName];
             }
             else
             {
                 // TODO: move this to name resolver instead
-                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableUdfReference, databaseObjectName, node.Line, node.Col));
+                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableUdfReference, DatabaseObjectName, Node.Line, Node.Col));
             }
 
             foreach (var cd in tvf.Columns.Values)
@@ -531,29 +410,29 @@ namespace Jhu.Graywulf.SqlParser
             DatasetBase ds;
             try
             {
-                ds = schemaManager.Datasets[datasetName];
+                ds = schemaManager.Datasets[DatasetName];
             }
             catch (SchemaException ex)
             {
-                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableDatasetReference, datasetName, node.Line, node.Col), ex);
+                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableDatasetReference, DatasetName, Node.Line, Node.Col), ex);
             }
 
             // Get table description
             TableOrView td;
-            if (ds.Tables.ContainsKey(databaseName, schemaName, databaseObjectName))
+            if (ds.Tables.ContainsKey(DatabaseName, SchemaName, DatabaseObjectName))
             {
                 //td = new Table(ds.Tables[databaseName, schemaName, databaseObjectName]);
-                td = ds.Tables[databaseName, schemaName, databaseObjectName];
+                td = ds.Tables[DatabaseName, SchemaName, DatabaseObjectName];
             }
-            else if (ds.Views.ContainsKey(databaseName, schemaName, databaseObjectName))
+            else if (ds.Views.ContainsKey(DatabaseName, SchemaName, DatabaseObjectName))
             {
                 //td = new View(ds.Views[databaseName, schemaName, databaseObjectName]);
-                td = ds.Views[databaseName, schemaName, databaseObjectName];
+                td = ds.Views[DatabaseName, SchemaName, DatabaseObjectName];
             }
             else
             {
                 // TODO: move this to name resolver instead
-                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableTableReference, databaseObjectName, node.Line, node.Col));
+                throw new NameResolverException(String.Format(ExceptionMessages.UnresolvableTableReference, DatabaseObjectName, Node.Line, Node.Col));
             }
 
             // Copy columns to the table reference in appropriate order
@@ -564,64 +443,22 @@ namespace Jhu.Graywulf.SqlParser
         {
             bool res = true;
 
-            res &= (this.datasetName == null || other.datasetName == null ||
-                    SchemaManager.Comparer.Compare(this.datasetName, other.datasetName) == 0);
+            res &= (this.DatasetName == null || other.DatasetName == null ||
+                    SchemaManager.Comparer.Compare(this.DatasetName, other.DatasetName) == 0);
 
-            res &= (this.databaseName == null || other.databaseName == null ||
-                    SchemaManager.Comparer.Compare(this.databaseName, other.databaseName) == 0);
+            res &= (this.DatabaseName == null || other.DatabaseName == null ||
+                    SchemaManager.Comparer.Compare(this.DatabaseName, other.DatabaseName) == 0);
 
-            res &= (this.schemaName == null || other.schemaName == null ||
-                    SchemaManager.Comparer.Compare(this.schemaName, other.schemaName) == 0);
+            res &= (this.SchemaName == null || other.SchemaName == null ||
+                    SchemaManager.Comparer.Compare(this.SchemaName, other.SchemaName) == 0);
 
-            res &= (this.databaseObjectName == null || other.databaseObjectName == null ||
-                    SchemaManager.Comparer.Compare(this.databaseObjectName, other.databaseObjectName) == 0);
+            res &= (this.DatabaseObjectName == null || other.DatabaseObjectName == null ||
+                    SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.DatabaseObjectName) == 0);
 
             res &= (this.alias == null || other.alias == null ||
                     SchemaManager.Comparer.Compare(this.alias, other.alias) == 0);
 
             return res;
-        }
-
-        /// <summary>
-        /// Gets the fully resolved three part name of the table or view.
-        /// </summary>
-        /// <remarks>
-        /// The fully resolved name is in the dbname.schema.tablename format.
-        /// </remarks>
-        public string GetFullyResolvedName()
-        {
-            if (isSubquery || isComputed)
-            {
-                return String.Format("[{0}]", alias);
-            }
-            else
-            {
-                // If it is linked up to the schema, return
-                if (databaseObject != null)
-                {
-                    return databaseObject.GetFullyResolvedName();
-                }
-                else
-                {
-                    return FullyQualifiedName;
-                }
-            }
-        }
-
-        public override string ToString()
-        {
-            if (IsSubquery)
-            {
-                return String.Format("[subquery] AS {0}", alias);
-            }
-            else if (alias != null)
-            {
-                return String.Format("{0} AS {1}", GetFullyResolvedName(), alias);
-            }
-            else
-            {
-                return GetFullyResolvedName();
-            }
         }
     }
 }

@@ -356,10 +356,5 @@ namespace Jhu.Graywulf.ParserLib
         }
 
         #endregion
-
-        public override bool AcceptCodeGenerator(CodeGenerator cg)
-        {
-            return true;
-        }
     }
 }

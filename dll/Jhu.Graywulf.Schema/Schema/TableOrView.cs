@@ -33,6 +33,7 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Gets the collection of columns
         /// </summary>
+        // TODO: how to serialize columns?
         [IgnoreDataMember]
         public ConcurrentDictionary<string, Column> Columns
         {

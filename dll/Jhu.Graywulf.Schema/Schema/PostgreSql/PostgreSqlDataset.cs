@@ -17,6 +17,8 @@ namespace Jhu.Graywulf.Schema.PostgreSql
     [DataContract(Namespace = "")]
     public class PostgreSqlDataset : DatasetBase
     {
+        #region Properties
+
         [IgnoreDataMember]
         public override string ProviderName
         {
@@ -42,6 +44,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql
             }
         }
 
+        #endregion
         #region Constructors and initializers
 
         /// <summary>
@@ -111,14 +114,11 @@ namespace Jhu.Graywulf.Schema.PostgreSql
         }
 
         #endregion
+        #region Fully resolved names and keys
 
-        /// <summary>
-        /// Returns the fully resolved name of the dataset.
-        /// </summary>
-        /// <returns></returns>
-        public override string GetFullyResolvedName()
+        protected override string QuoteIdentifier(string identifier)
         {
-            return String.Format("[{0}]", DatabaseName);
+            return String.Format("\"{0}\"", identifier);
         }
 
         /// <summary>
@@ -126,19 +126,145 @@ namespace Jhu.Graywulf.Schema.PostgreSql
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override string GetObjectFullyResolvedName(DatabaseObject databaseObject)
+        public override string GetObjectFullyResolvedName(DatabaseObject databaseObject)
         {
-            string format = "{0}.[{1}].[{2}]";
+            // If schema name is empty, use default schema name
 
-            if (!String.IsNullOrWhiteSpace(databaseObject.SchemaName))
+            var databaseName = GetFullyResolvedName();
+            var schemaName =
+                String.IsNullOrWhiteSpace(databaseObject.SchemaName) ?
+                    QuoteIdentifier(DefaultSchemaName) :
+                    QuoteIdentifier(databaseObject.SchemaName);
+            var objectName = databaseObject.ObjectName;
+
+            return String.Format("{0}.{1}.{2}", databaseName, schemaName, objectName);
+        }
+
+        /// <summary>
+        /// Returns the unique string key of a database object belonging to the dataset.
+        /// </summary>
+        /// <param name="objectType"></param>
+        /// <param name="datasetName"></param>
+        /// <param name="databaseName"></param>
+        /// <param name="schemaName"></param>
+        /// <param name="objectName"></param>
+        /// <returns></returns>
+        public override string GetObjectUniqueKey(DatabaseObjectType objectType, string datasetName, string databaseName, string schemaName, string objectName)
+        {
+            // If schema name is empty, use default schema name
+            schemaName =
+                String.IsNullOrWhiteSpace(schemaName) ?
+                DefaultSchemaName :
+                schemaName;
+
+            return base.GetObjectUniqueKey(objectType, datasetName, databaseName, schemaName, objectName);
+        }
+
+        #endregion
+        #region Type conversion function
+
+        protected override DataType GetTypeFromProviderSpecificName(string name)
+        {
+            switch (name.ToLowerInvariant().Trim())
             {
-                return String.Format(format, this.GetFullyResolvedName(), databaseObject.SchemaName, databaseObject.ObjectName);
-            }
-            else
-            {
-                return String.Format(format, this.GetFullyResolvedName(), this.DefaultSchemaName, databaseObject.ObjectName);
+                case Constants.TypeNameOidVector:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameRefCursor:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameChar:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameBpChar:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameVarChar:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameText:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameName:
+                    return DataType.SqlNVarChar;
+                case Constants.TypeNameBytea:
+                    return DataType.SqlBinary;
+                case Constants.TypeNameBit:
+                    return DataType.SqlBit;       //  need to check is it correct
+                case Constants.TypeNameVarBit:
+                    return DataType.SqlBit;       //  need to check is it correct, at documentation its an object
+                case Constants.TypeNameBoolean:
+                    return DataType.SqlBit;
+                case Constants.TypeNameInt16:
+                    return DataType.SqlSmallInt;
+                case Constants.TypeNameInt32:
+                    return DataType.SqlInt;
+                case Constants.TypeNameInt64:
+                    return DataType.SqlBigInt;
+                case Constants.TypeNameOid:
+                    return DataType.SqlBigInt;
+                case Constants.TypeNameReal:
+                    return DataType.SqlReal;
+                case Constants.TypeNameDouble:
+                    return DataType.SqlReal;
+                case Constants.TypeNameNumeric:
+                    return DataType.SqlDecimal;
+                case Constants.TypeNameInet:
+                    return DataType.SqlNVarChar;       //  it's an object, need to check
+                case Constants.TypeNameMacaddr:
+                    return DataType.SqlNVarChar;       //  it's an object, need to check
+                case Constants.TypeNameMoney:
+                    return DataType.SqlMoney;
+                case Constants.TypeNamePoint:
+                    return DataType.SqlNVarChar;       //  it's an object, need to check
+                case Constants.TypeNameLine:
+                    return DataType.SqlNVarChar;       //  it's an object, need to check
+                case Constants.TypeNameLseg:
+                    return DataType.SqlNVarChar;       //  it's an object, need to check
+                case Constants.TypeNamePath:
+                    return DataType.SqlNVarChar;       //  it's an object, need to check
+                case Constants.TypeNameBox:
+                    return DataType.SqlNVarChar;       //  it's an object, need to check
+                case Constants.TypeNameCircle:
+                    return DataType.SqlNVarChar;        //  it's an object, need to check
+                case Constants.TypeNamePolygon:
+                    return DataType.SqlNVarChar;        //  it's an object, need to check
+                case Constants.TypeNameUuid:
+                    return DataType.SqlNVarChar;        //  it's an object, need to check
+                case Constants.TypeNameXml:
+                    return DataType.SqlXml;
+                case Constants.TypeNameInterval:
+                    return DataType.SqlNVarChar;        //  it's an object, need to check
+                case Constants.TypeNameDate:
+                    return DataType.SqlDate;
+                case Constants.TypeNameTime:
+                    return DataType.SqlTime;
+                case Constants.TypeNameTimeWithTimeZone:
+                    return DataType.SqlTime;
+                case Constants.TypeNameTimestamp:
+                    return DataType.SqlDateTime;
+                case Constants.TypeNameTimestampWithTimeZone:
+                    return DataType.SqlDateTime;
+                case Constants.TypeNameTsRange:
+                    return DataType.SqlDateTime;       //check is it correct
+                case Constants.TypeNameTstzRange:
+                    return DataType.SqlDateTime;       //check is it correct
+                case Constants.TypeNameDateRange:
+                    return DataType.SqlDate;           //check is it correct
+                case Constants.TypeNameNumRange:
+                    return DataType.SqlNumeric;        //check is it correct
+                case Constants.TypeNameInt4Range:
+                    return DataType.SqlInt;            //check is it correct
+                case Constants.TypeNameInt8Range:
+                    return DataType.SqlBigInt;        //check is it correct
+                case Constants.TypeNameJson:
+                    return DataType.SqlNVarChar;       //check is it correct
+                case Constants.TypeNameTsVector:
+                    return DataType.SqlNVarChar;       //check is it correct
+                case Constants.TypeNameCidr:
+                    return DataType.SqlNVarChar;       //check is it correct
+                case Constants.TypeNameCString:
+                    return DataType.SqlNVarChar;       //check is it correct
+                default:
+                    return DataType.Unknown;
             }
         }
+
+        #endregion
 
         /// <summary>
         /// Loads the schema of a database object belonging to the dataset.
@@ -149,7 +275,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql
         {
             var sql = String.Empty;
             switch (Schema.Constants.DatabaseObjectTypes[typeof(T)])
-            { 
+            {
                 case DatabaseObjectType.Table:
                 case DatabaseObjectType.View:
                     sql = @"
@@ -256,29 +382,11 @@ WHERE table_type IN ({0}) AND table_schema NOT IN ('information_schema', 'pg_cat
                                 ObjectType = Constants.PostgreSqlObjectTypeIds[dr.GetString(1).Trim()],
                             };
 
-                            yield return new KeyValuePair<string, T>(obj.ObjectKey, obj);
+                            yield return new KeyValuePair<string, T>(GetObjectUniqueKey(obj), obj);
                         }
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Returns the unique string key of a database object belonging to the dataset.
-        /// </summary>
-        /// <param name="objectType"></param>
-        /// <param name="datasetName"></param>
-        /// <param name="databaseName"></param>
-        /// <param name="schemaName"></param>
-        /// <param name="objectName"></param>
-        /// <returns></returns>
-        public override string GetObjectKeyFromParts(DatabaseObjectType objectType, string datasetName, string databaseName, string schemaName, string objectName)
-        {
-            if (String.IsNullOrWhiteSpace(schemaName))
-            {
-                schemaName = DefaultSchemaName;
-            }
-            return String.Format("{0}|{1}|{2}|{3}|{4}", objectType, datasetName, databaseName, schemaName, objectName);
         }
 
         private string GetObjectTypeIdListString(DatabaseObjectType objectType)
@@ -304,7 +412,13 @@ WHERE table_type IN ({0}) AND table_schema NOT IN ('information_schema', 'pg_cat
         internal override IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject obj)
         {
             string sql = @"
-SELECT ordinal_position, column_name, udt_name, COALESCE(character_maximum_length, -1) AS ""max_length"", COALESCE(numeric_scale, -1) AS ""scale"", COALESCE(numeric_precision, -1) AS ""precision"", is_nullable
+SELECT ordinal_position, 
+       column_name, 
+       udt_name, 
+       COALESCE(character_maximum_length, -1) AS ""max_length"",
+       COALESCE(numeric_scale, 0) AS ""scale"",
+       COALESCE(numeric_precision, 0) AS ""precision"",
+       is_nullable
 FROM information_schema.columns
 WHERE table_catalog ILIKE @databaseName AND table_name ILIKE @tableName AND table_schema ILIKE @schemaName;";
 
@@ -461,8 +575,8 @@ SELECT p.ordinal_position,
        p.parameter_mode,
        p.udt_name,
        COALESCE(p.character_maximum_length, -1),
-       COALESCE(p.numeric_scale, -1),
-       COALESCE(p.numeric_precision, -1)
+       COALESCE(p.numeric_scale, 0),
+       COALESCE(p.numeric_precision, 0)
 FROM information_schema.parameters p
 INNER JOIN information_schema.routines r ON r.specific_catalog = p.specific_catalog AND r.specific_schema = p.specific_schema AND r.specific_name = p.specific_name
 WHERE p.specific_catalog ILIKE @databaseName AND p.specific_schema ILIKE @schemaName AND r.routine_name = @objectName";
@@ -604,8 +718,8 @@ WHERE nspname = @schemaName and proname= @objectName;";
                         while (dr.Read())
                         {
                             string value = dr.GetString(0);
-                            var paramname =dr.GetValue(1) as string[];
-                            if (paramname.Count()>0) 
+                            var paramname = dr.GetValue(1) as string[];
+                            if (paramname.Count() > 0)
                             {
                                 var paramlist = paramname;
 
@@ -615,8 +729,8 @@ WHERE nspname = @schemaName and proname= @objectName;";
                                     meta.Summary = value;
                                 }
                             }
-                            
-                            
+
+
                         }
                     }
                 }
@@ -757,7 +871,7 @@ WHERE nspname = @schemaName and proname= @objectName;";
         /// <returns></returns>
         protected NpgsqlConnection OpenConnection()
         {
-            
+
             NpgsqlConnectionStringBuilder csb = new NpgsqlConnectionStringBuilder(ConnectionString);
             csb.Enlist = false;
 
@@ -775,108 +889,6 @@ WHERE nspname = @schemaName and proname= @objectName;";
             csb.Enlist = enlist;
 
             return csb.ConnectionString;
-        }
-
-
-        protected override DataType GetTypeFromProviderSpecificName(string name)
-        {
-            switch (name.ToLowerInvariant().Trim())
-            {
-                case Constants.TypeNameOidVector:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameRefCursor:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameChar:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameBpChar:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameVarChar:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameText:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameName:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameBytea:
-                    return DataType.SqlBinary;
-                case Constants.TypeNameBit:
-                    return DataType.SqlBit;       //  need to check is it correct
-                case Constants.TypeNameVarBit:
-                    return DataType.SqlBit;       //  need to check is it correct, at documentation its an object
-                case Constants.TypeNameBoolean:
-                    return DataType.SqlBit;
-                case Constants.TypeNameInt16:
-                    return DataType.SqlSmallInt;
-                case Constants.TypeNameInt32:
-                    return DataType.SqlInt;
-                case Constants.TypeNameInt64:
-                    return DataType.SqlBigInt;
-                case Constants.TypeNameOid:
-                    return DataType.SqlBigInt;
-                case Constants.TypeNameReal:
-                    return DataType.SqlReal;
-                case Constants.TypeNameDouble:
-                    return DataType.SqlReal;
-                case Constants.TypeNameNumeric:
-                    return DataType.SqlDecimal;
-                case Constants.TypeNameInet:
-                    return DataType.SqlNVarChar;       //  it's an object, need to check
-                case Constants.TypeNameMacaddr:
-                    return DataType.SqlNVarChar;       //  it's an object, need to check
-                case Constants.TypeNameMoney:
-                    return DataType.SqlMoney;
-                case Constants.TypeNamePoint:
-                    return DataType.SqlNVarChar;       //  it's an object, need to check
-                case Constants.TypeNameLine:
-                    return DataType.SqlNVarChar;       //  it's an object, need to check
-                case Constants.TypeNameLseg:
-                    return DataType.SqlNVarChar;       //  it's an object, need to check
-                case Constants.TypeNamePath:
-                    return DataType.SqlNVarChar;       //  it's an object, need to check
-                case Constants.TypeNameBox:
-                    return DataType.SqlNVarChar;       //  it's an object, need to check
-                case Constants.TypeNameCircle:
-                    return DataType.SqlNVarChar;        //  it's an object, need to check
-                case Constants.TypeNamePolygon:
-                    return DataType.SqlNVarChar;        //  it's an object, need to check
-                case Constants.TypeNameUuid:
-                    return DataType.SqlNVarChar;        //  it's an object, need to check
-                case Constants.TypeNameXml:
-                    return DataType.SqlXml;
-                case Constants.TypeNameInterval:
-                    return DataType.SqlNVarChar;        //  it's an object, need to check
-                case Constants.TypeNameDate:
-                    return DataType.SqlDate;
-                case Constants.TypeNameTime:
-                    return DataType.SqlTime;
-                case Constants.TypeNameTimeWithTimeZone:
-                    return DataType.SqlTime;
-                case Constants.TypeNameTimestamp:
-                    return DataType.SqlDateTime;
-                case Constants.TypeNameTimestampWithTimeZone:
-                    return DataType.SqlDateTime;
-                case Constants.TypeNameTsRange:
-                    return DataType.SqlDateTime;       //check is it correct
-                case Constants.TypeNameTstzRange:
-                    return DataType.SqlDateTime;       //check is it correct
-                case Constants.TypeNameDateRange:
-                    return DataType.SqlDate;           //check is it correct
-                case Constants.TypeNameNumRange:
-                    return DataType.SqlNumeric;        //check is it correct
-                case Constants.TypeNameInt4Range:
-                    return DataType.SqlInt;            //check is it correct
-                case Constants.TypeNameInt8Range:
-                    return DataType.SqlBigInt;        //check is it correct
-                case Constants.TypeNameJson:
-                    return DataType.SqlNVarChar;       //check is it correct
-                case Constants.TypeNameTsVector:
-                    return DataType.SqlNVarChar;       //check is it correct
-                case Constants.TypeNameCidr:
-                    return DataType.SqlNVarChar;       //check is it correct
-                case Constants.TypeNameCString:
-                    return DataType.SqlNVarChar;       //check is it correct
-                default:
-                    return DataType.Unknown;
-            }
         }
 
     }

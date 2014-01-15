@@ -81,6 +81,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
             if (!double.IsInfinity(PartitioningKeyFrom) || !double.IsInfinity(PartitioningKeyTo))
             {
+                var cg = new SqlServerCodeGenerator();
+
                 string format;
                 if (double.IsInfinity(PartitioningKeyFrom) && double.IsInfinity(PartitioningKeyTo))
                 {
@@ -96,7 +98,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 }
 
                 string sql = String.Format(format,
-                    ts.PartitioningColumnReference.GetFullyResolvedName(),
+                    cg.GetResolvedColumnName(ts.PartitioningColumnReference),
                     PartitioningKeyFrom.ToString(System.Globalization.CultureInfo.InvariantCulture),
                     PartitioningKeyTo.ToString(System.Globalization.CultureInfo.InvariantCulture));
 

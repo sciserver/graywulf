@@ -11,22 +11,27 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
 {
     public abstract class SqlCodeGeneratorBase : CodeGenerator
     {
+        #region Private members
+
         private bool resolveNames;
         private bool quoteIdentifiers;
 
+        #endregion
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets whether to use resolved names in the generated code
+        /// </summary>
         public bool ResolveNames
         {
             get { return resolveNames; }
             set { resolveNames = value; }
         }
 
-        public bool QuoteIdentifiers
-        {
-            get { return quoteIdentifiers; }
-            set { quoteIdentifiers = value; }
-        }
+        #endregion
+        #region Constructors and initializers
 
-        public SqlCodeGeneratorBase()
+        protected SqlCodeGeneratorBase()
         {
             InitializeMembers();
         }
@@ -37,46 +42,264 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
             this.quoteIdentifiers = false;
         }
 
-        public abstract bool WriteColumnExpression(ColumnExpression node);
+        #endregion
+        #region Identifier formatting functions
 
-        public abstract bool WriteColumnIdentifier(ColumnIdentifier node);
+        /// <summary>
+        /// Puts quotes around an identifier.
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// The quoting characters used depends on the flavor of SQL
+        /// </remarks>
+        protected abstract string QuoteIdentifier(string identifier);
 
-        public virtual bool WriteTableAlias(TableAlias node)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Unquoting depends on the actual input and not on the
+        /// code generator, so this function is implemented as non-
+        /// virtual
+        /// </remarks>
+        public string UnquoteIdentifier(string identifier)
         {
-            Writer.Write(QuoteIdentifier(node.Value));
-            return false;
-        }
-
-        public abstract bool WriteTableOrViewName(TableOrViewName node);
-
-        public abstract bool WriteFunctionIdentifier(FunctionIdentifier node);
-
-        public abstract bool WriteTableValuedFunctionCall(TableValuedFunctionCall node);
-
-        public bool WriteIdentifier(Identifier node)
-        {
-            if (quoteIdentifiers)
+            if (identifier[0] == '[' && identifier[identifier.Length - 1] == ']')
             {
-                Writer.Write(QuoteIdentifier(UnquoteIdentifier(node.Value)));
+                return identifier.Substring(1, identifier.Length - 2);
             }
             else
             {
-                Writer.Write(node.Value);
+                return identifier;
+            }
+        }
+
+        public string GetResolvedTableName(TableReference table)
+        {
+            if (table.IsSubquery || table.IsComputed)
+            {
+                return QuoteIdentifier(table.Alias);
+            }
+            else
+            {
+                if (table.DatabaseObject != null)
+                {
+                    // If it is linked up to the schema already
+                    return GetResolvedTableName(table.DatabaseObject);
+                }
+                else
+                {
+                    // If it's not resolved yet against the schema
+                    return GetResolvedTableName(table.DatabaseName, table.SchemaName, table.DatabaseObjectName);
+                }
+            }
+        }
+
+        public string GetResolvedTableName(DatabaseObject table)
+        {
+            return GetResolvedTableName(table.DatabaseName, table.SchemaName, table.ObjectName);
+        }
+
+        protected abstract string GetResolvedTableName(string databaseName, string schemaName, string tableName);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="column"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// In this function call, tables are always referenced by
+        /// their aliases, if they have one.
+        /// </remarks>
+        public string GetResolvedColumnName(ColumnReference column)
+        {
+            string tablename;
+
+            if (!String.IsNullOrEmpty(column.TableReference.Alias))
+            {
+                tablename = QuoteIdentifier(column.TableReference.Alias);
+            }
+            else
+            {
+                tablename = GetResolvedTableName(column.TableReference);
             }
 
-            return true;
+            return GetResolvedColumnName(tablename, column.ColumnName);
         }
 
-        // --
-
-        protected abstract string QuoteIdentifier(string identifier);
-
-        protected virtual string UnquoteIdentifier(string identifier)
+        protected virtual string GetResolvedColumnName(string tableName, string columnName)
         {
-            return Util.RemoveIdentifierQuotes(identifier);
+            string res = String.Empty;
+
+            if (!String.IsNullOrWhiteSpace(tableName))
+            {
+                res = tableName + ".";
+            }
+
+            res += QuoteIdentifier(columnName);
+
+            return res;
         }
 
-        // ----
+        private string GetResolvedFunctionName(FunctionReference function)
+        {
+            if (function.IsSystem)
+            {
+                // This is a built-in function
+                return function.SystemFunctionName.ToUpperInvariant();
+            }
+            else if (function.DatabaseObject != null)
+            {
+                // If it is linked up to the schema already
+                return GetResolvedFunctionName(function.DatabaseObject.DatabaseName, function.DatabaseObject.SchemaName, function.DatabaseObject.ObjectName);
+            }
+            else
+            {
+                // If it's not resolved yet against the schema
+                return GetResolvedFunctionName(function.DatabaseName, function.SchemaName, function.DatabaseObjectName);
+            }
+        }
+
+        protected abstract string GetResolvedFunctionName(string databaseName, string schemaName, string functionName);
+
+        #endregion
+        #region Specialized node writer functions
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Do dispatching here based on node type
+        /// </remarks>
+        protected override void WriteNode(Token token)
+        {
+            if (token is TableAlias)
+            {
+                WriteTableAlias((TableAlias)token);
+            }
+            else if (token is TableOrViewName)
+            {
+                WriteTableOrViewName((TableOrViewName)token);
+            }
+            else if (token is ColumnIdentifier)
+            {
+                WriteColumnIdentifier((ColumnIdentifier)token);
+            }
+            else if (token is ColumnExpression)
+            {
+                WriteColumnExpression((ColumnExpression)token);
+            }
+            else if (token is FunctionIdentifier)
+            {
+                WriteFunctionIdentifier((FunctionIdentifier)token);
+            }
+            else
+            {
+                base.WriteNode(token);
+            }
+        }
+
+        public void WriteTableAlias(TableAlias node)
+        {
+            Writer.Write(QuoteIdentifier(node.Value));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Table names are only written by this function when the
+        /// table appears in the FROM clause. In all other cases it's
+        /// WriteColumnIdentifier that generates the output
+        /// </remarks>
+        public void WriteTableOrViewName(TableOrViewName node)
+        {
+            if (resolveNames)
+            {
+                Writer.Write(GetResolvedTableName(node.TableReference));
+            }
+            else
+            {
+                // Fall back to original behavior
+                base.WriteNode(node);
+            }
+        }
+
+        /// <summary>
+        /// Writes a column identifier, optionally with resolved
+        /// names and quoted
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public void WriteColumnIdentifier(ColumnIdentifier node)
+        {
+            if (ResolveNames)
+            {
+                Writer.Write(GetResolvedColumnName(node.ColumnReference));
+            }
+            else
+            {
+                // Fall back to original behavior
+                base.WriteNode(node);
+            }
+        }
+
+        /// <summary>
+        /// Writes a column expression
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public virtual void WriteColumnExpression(ColumnExpression node)
+        {
+            // A column expression is in the form of an expression,
+            // optionally followed by a column alias in the form of
+            // 'AS alias'
+
+            if (resolveNames)
+            {
+                // Write the expression first as it is
+                var exp = node.FindDescendant<Expression>();
+                WriteNode(exp);
+
+                // If it's not a * column and there's an alias, write it
+                if (!node.ColumnReference.IsStar && !String.IsNullOrEmpty(node.ColumnReference.ColumnAlias))
+                {
+                    Writer.Write(
+                        " AS {0}",
+                        QuoteIdentifier(node.ColumnReference.ColumnAlias));
+                }
+            }
+            else
+            {
+                // Fall back to original behavior
+                base.WriteNode(node);
+            }
+        }
+
+        public virtual void WriteFunctionIdentifier(FunctionIdentifier node)
+        {
+            if (resolveNames)
+            {
+                Writer.Write(GetResolvedFunctionName(node.FunctionReference));
+            }
+            else
+            {
+                // Fall back to original behavior
+                base.WriteNode(node);
+            }
+        }
+
+        #endregion
+        #region Complete query generators
+        // These functions don't use the parsing tree, they generate certain
+        // types of queries.
 
         /// <summary>
         /// 
@@ -93,5 +316,7 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
         protected abstract string GenerateTopExpression(int top);
 
         public abstract string GenerateMostRestrictiveTableQuery(TableReference table, bool includePrimaryKey, int top);
+
+        #endregion
     }
 }

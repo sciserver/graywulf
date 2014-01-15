@@ -112,7 +112,7 @@ namespace Jhu.Graywulf.Parser.Test
 
                 if (cr.TableReference != null)
                 {
-                    ni = new ListViewItem(cr.TableReference.FullyQualifiedName);
+                    ni = new ListViewItem(cr.TableReference.UniqueName);
                 }
                 else
                 {

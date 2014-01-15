@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             MyDBDataset.Tables.LoadAll();
             MyDBDataset.Views.LoadAll();
 
-            TableName.DataSource = MyDBDataset.Tables.Values.OrderBy(t => t.ObjectKey);
+            TableName.DataSource = MyDBDataset.Tables.Values.OrderBy(t => t.UniqueKey);
             TableName.DataBind();
 
             base.OnInit(e);

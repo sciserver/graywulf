@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Schema
             {
                 get
                 {
-                    string key = dataset.GetObjectKeyFromParts(
+                    string key = dataset.GetObjectUniqueKey(
                         Constants.DatabaseObjectTypes[typeof(T)],
                         dataset.Name,
                         databaseName,
@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.Schema
 
             public bool ContainsKey(string databaseName, string schemaName, string objectName)
             {
-                string key = dataset.GetObjectKeyFromParts(
+                string key = dataset.GetObjectUniqueKey(
                     Constants.DatabaseObjectTypes[typeof(T)],
                     dataset.Name,
                     databaseName,

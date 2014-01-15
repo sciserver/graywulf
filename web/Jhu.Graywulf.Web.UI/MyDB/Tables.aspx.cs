@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             MyDBDataset.Tables.LoadAll();
 
             // TODO: change this to support arbitrary sorting
-            var tables = MyDBDataset.Tables.Values.OrderBy(t => t.ObjectKey).ToArray();
+            var tables = MyDBDataset.Tables.Values.OrderBy(t => t.UniqueKey).ToArray();
             TableList.DataSource = tables;
         }
 

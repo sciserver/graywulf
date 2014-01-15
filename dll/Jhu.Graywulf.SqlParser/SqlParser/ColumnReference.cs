@@ -74,40 +74,6 @@ namespace Jhu.Graywulf.SqlParser
                 return columnContext != 0;
             }
         }
-        
-        public string FullyQualifiedName
-        {
-            get
-            {
-                string res = String.Empty;
-
-                if (tableReference != null)
-                {
-                    if (tableReference.Alias == null)
-                    {
-                        res = tableReference.FullyQualifiedName;
-                    }
-                    else
-                    {
-                        res = String.Format("[{0}]", tableReference.Alias);
-                    }
-                }
-
-                if (res != String.Empty) res += ".";
-
-
-                if (isStar)
-                {
-                    res += "*";
-                }
-                else
-                {
-                    res += String.Format("[{0}]", columnName);
-                }
-
-                return res;
-            }
-        }
 
         public ColumnReference()
         {
@@ -275,31 +241,21 @@ namespace Jhu.Graywulf.SqlParser
         }
 
         /// <summary>
-        /// Gets the name of a column prefixed with the
-        /// resolved table name or alias.
+        /// 
         /// </summary>
+        /// <returns></returns>
         /// <remarks>
-        /// This has to be used with complete queries where
-        /// the same table can be referenced multiple times and
-        /// they can only be distinguised by their aliases.
+        /// Never use this in query generation!
         /// </remarks>
-        public string GetFullyResolvedName()
+        public string ToString()
         {
-            string res = String.Empty;
+            var res = String.Empty;
 
             if (tableReference != null)
             {
-                if (tableReference.Alias == null)
-                {
-                    res = tableReference.GetFullyResolvedName();
-                }
-                else
-                {
-                    res = String.Format("[{0}]", tableReference.Alias);
-                }
+                res += tableReference.ToString();
+                res += ".";
             }
-
-            if (res != String.Empty) res += ".";
 
             if (isStar)
             {
@@ -311,11 +267,6 @@ namespace Jhu.Graywulf.SqlParser
             }
 
             return res;
-        }
-
-        public override string ToString()
-        {
-            return FullyQualifiedName;
         }
     }
 }

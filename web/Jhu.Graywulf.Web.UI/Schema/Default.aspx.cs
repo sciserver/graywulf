@@ -48,7 +48,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
                     ObjectTypeList.SelectedValue = Jhu.Graywulf.Schema.Constants.SimpleDatabaseObjectTypes[dbobj.ObjectType].ToString();
 
                     RefreshObjectList();
-                    ObjectList.SelectedValue = dbobj.ObjectKey;
+                    ObjectList.SelectedValue = dbobj.UniqueKey;
 
                     ShowDetails(dbobjid);
                 }
@@ -166,7 +166,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
         {
             foreach (var d in objects.OrderBy(f => f.DisplayName))
             {
-                var li = new ListItem(d.DisplayName, d.ObjectKey);
+                var li = new ListItem(d.DisplayName, d.UniqueKey);
                 ObjectList.Items.Add(li);
             }
         }

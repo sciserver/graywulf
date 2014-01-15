@@ -13,9 +13,11 @@ namespace Jhu.Graywulf.Schema
     /// Contains information about a generic database object
     /// </summary>
     [Serializable]
-    [DataContract(Namespace="")]
+    [DataContract(Namespace = "")]
     public class DatabaseObject : ICacheable, ICloneable, IDatabaseObjectName
     {
+        #region Private members
+
         [NonSerialized]
         private long cachedVersion;
 
@@ -35,8 +37,9 @@ namespace Jhu.Graywulf.Schema
         private string objectName;
 
         [NonSerialized]
-        private DatabaseObjectMetadata metadata;
+        private LazyProperty<DatabaseObjectMetadata> metadata;
 
+        #endregion
         #region ICacheable implementation
 
         /// <summary>
@@ -58,6 +61,7 @@ namespace Jhu.Graywulf.Schema
         }
 
         #endregion
+        #region Properties
 
         /// <summary>
         /// Database object type
@@ -122,17 +126,11 @@ namespace Jhu.Graywulf.Schema
             set { objectName = value; }
         }
 
+        // TODO: how to serialize metadata?
+        [IgnoreDataMember]
         public DatabaseObjectMetadata Metadata
         {
-            get
-            {
-                if (metadata == null)
-                {
-                    metadata = dataset.LoadDatabaseObjectMetadata(this);
-                }
-
-                return metadata;
-            }
+            get { return metadata.Value; }
         }
 
         /// <summary>
@@ -159,21 +157,27 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <remarks>
         /// This unique id is used in dictionaries and on the web page to
-        /// identify various types of database objects
+        /// identify various types of database objects. The actual format
+        /// depends on the type of the dataset, but for SQL Server it
+        /// is the format of objecttype|dataset|database|schema|object
         /// </remarks>
         [IgnoreDataMember]
-        public virtual string ObjectKey
+        public string UniqueKey
         {
-            get { return dataset.GetObjectKeyFromParts(this); }
-            set { dataset.GetPartsFromObjectKey(this, value); }
+            get { return dataset.GetObjectUniqueKey(this); }
+            set { dataset.GetNamePartsFromObjectUniqueKey(this, value); }
         }
 
+        /// <summary>
+        /// Gets the value indicating whether the object exists in the database
+        /// </summary>
         [IgnoreDataMember]
         public bool IsExisting
         {
             get { return dataset.IsObjectExisting(this); }
         }
 
+        #endregion
         #region Constructors and initializers
 
         /// <summary>
@@ -181,7 +185,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         public DatabaseObject()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         /// <summary>
@@ -190,7 +194,7 @@ namespace Jhu.Graywulf.Schema
         /// <param name="dataset"></param>
         public DatabaseObject(DatasetBase dataset)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
 
             this.dataset = dataset;
         }
@@ -204,14 +208,12 @@ namespace Jhu.Graywulf.Schema
         /// <param name="objectName"></param>
         protected DatabaseObject(DatasetBase dataset, string databaseName, string schemaName, string objectName)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
 
             this.dataset = dataset;
             this.databaseName = databaseName;
             this.schemaName = schemaName;
             this.objectName = objectName;
-
-            this.metadata = null;
         }
 
         /// <summary>
@@ -226,7 +228,8 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Initializes member variable to their default values
         /// </summary>
-        private void InitializeMembers()
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
         {
             this.cachedVersion = DateTime.Now.Ticks;
             this.objectType = DatabaseObjectType.Unknown;
@@ -234,6 +237,8 @@ namespace Jhu.Graywulf.Schema
             this.databaseName = null;
             this.schemaName = null;
             this.objectName = null;
+
+            this.metadata = new LazyProperty<DatabaseObjectMetadata>(LoadMetadata);
         }
 
         /// <summary>
@@ -248,6 +253,8 @@ namespace Jhu.Graywulf.Schema
             this.databaseName = old.databaseName;
             this.schemaName = old.schemaName;
             this.objectName = old.objectName;
+
+            this.metadata = new LazyProperty<DatabaseObjectMetadata>(LoadMetadata);
         }
 
         /// <summary>
@@ -261,6 +268,7 @@ namespace Jhu.Graywulf.Schema
 
         #endregion
 
+        /* TODO: delete
         /// <summary>
         /// Returns the fully resolved name of the database object.
         /// </summary>
@@ -278,6 +286,7 @@ namespace Jhu.Graywulf.Schema
         {
             return dataset.GetObjectFullyResolvedName(this);
         }
+         * */
 
         /// <summary>
         /// Touches the object so it won't get dropped from the cache.
@@ -301,7 +310,19 @@ namespace Jhu.Graywulf.Schema
 
         public override string ToString()
         {
-            return GetFullyResolvedName();
+            return dataset.GetObjectFullyResolvedName(this);
+        }
+
+        private DatabaseObjectMetadata LoadMetadata()
+        {
+            if (dataset != null)
+            {
+                return dataset.LoadDatabaseObjectMetadata(this);
+            }
+            else
+            {
+                return new DatabaseObjectMetadata();
+            }
         }
 
         /// <summary>

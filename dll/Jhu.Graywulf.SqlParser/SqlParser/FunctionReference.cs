@@ -7,82 +7,15 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.SqlParser
 {
-    public class FunctionReference
+    public class FunctionReference : DatabaseObjectReference
     {
         #region Property storage variables
-
-        private Node node;
-
-        private DatabaseObject databaseObject;
-
-        private string datasetName;
-        private string databaseName;
-        private string schemaName;
-        private string databaseObjectName;
 
         private string systemFunctionName;
 
         private bool isUdf;
 
         #endregion
-
-        /// <summary>
-        /// Gets the parser tree node this function reference
-        /// </summary>
-        public Node Node
-        {
-            get { return node; }
-        }
-
-        /// <summary>
-        /// Gets or set the database object (schema object) this reference refers to
-        /// </summary>
-        public DatabaseObject DatabaseObject
-        {
-            get { return databaseObject; }
-            set { databaseObject = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the resolved dataset name
-        /// </summary>
-        public string DatasetName
-        {
-            get { return datasetName; }
-            set { datasetName = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the resolved database name
-        /// </summary>
-        public string DatabaseName
-        {
-            get { return databaseName; }
-            set { databaseName = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the resolved schema name
-        /// </summary>
-        public string SchemaName
-        {
-            get { return schemaName; }
-            set { schemaName = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the resolved object name
-        /// </summary>
-        public string DatabaseObjectName
-        {
-            get { return databaseObjectName; }
-            set { databaseObjectName = value; }
-        }
-
-        public bool IsUndefined
-        {
-            get { return datasetName == null && databaseName == null && schemaName == null && databaseObjectName == null; }
-        }
 
         public string SystemFunctionName
         {
@@ -101,28 +34,23 @@ namespace Jhu.Graywulf.SqlParser
         }
 
         /// <summary>
-        /// Gets the fully qualified name of the table or view in the : notation.
+        /// 
         /// </summary>
-        public string FullyQualifiedName
+        /// <remarks>
+        /// Never use this in query generation!
+        /// </remarks>
+        public override string UniqueName
         {
             get
             {
-                string res = String.Empty;
-
-                if (IsSystem)
+                if (!IsSystem)
                 {
-                    res = systemFunctionName.ToUpper();
+                    return base.UniqueName;
                 }
                 else
                 {
-                    // If it's not resolved yet
-                    if (datasetName != null) res += String.Format("[{0}]:", datasetName);
-                    if (databaseName != null) res += String.Format("[{0}].", databaseName);
-                    if (schemaName != null) res += String.Format("[{0}].", schemaName);
-                    if (databaseObjectName != null) res += String.Format("[{0}]", databaseObjectName);
+                    return systemFunctionName;
                 }
-
-                return res;
             }
         }
 
@@ -132,6 +60,7 @@ namespace Jhu.Graywulf.SqlParser
         }
 
         public FunctionReference(FunctionReference old)
+            : base(old)
         {
             CopyMembers(old);
         }
@@ -144,28 +73,14 @@ namespace Jhu.Graywulf.SqlParser
 
         private void InitializeMembers()
         {
-            this.node = null;
-
-            this.databaseObject = null;
-
-            this.datasetName = null;
-            this.databaseName = null;
-            this.schemaName = null;
-            this.databaseObjectName = null;
             this.systemFunctionName = null;
+            this.isUdf = false;
         }
 
         private void CopyMembers(FunctionReference old)
         {
-            this.node = old.node;
-
-            this.databaseObject = old.databaseObject;
-
-            this.datasetName = old.datasetName;
-            this.databaseName = old.databaseName;
-            this.schemaName = old.schemaName;
-            this.databaseObjectName = old.databaseObjectName;
             this.systemFunctionName = old.systemFunctionName;
+            this.isUdf = old.isUdf;
         }
 
         private void InterpretFunctionIdentifier(FunctionIdentifier fi)
@@ -174,10 +89,10 @@ namespace Jhu.Graywulf.SqlParser
 
             if (fn != null)
             {
-                datasetName = null;
-                databaseName = null;
-                schemaName = null;
-                databaseObjectName = null;
+                DatasetName = null;
+                DatabaseName = null;
+                SchemaName = null;
+                DatabaseObjectName = null;
 
                 systemFunctionName = fn.Value;
 
@@ -190,16 +105,16 @@ namespace Jhu.Graywulf.SqlParser
                 if (udfi != null)
                 {
                     var ds = udfi.FindDescendant<DatasetName>();
-                    datasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
+                    DatasetName = (ds != null) ? Util.RemoveIdentifierQuotes(ds.Value) : null;
 
                     var dbn = udfi.FindDescendant<DatabaseName>();
-                    databaseName = (dbn != null) ? Util.RemoveIdentifierQuotes(dbn.Value) : null;
+                    DatabaseName = (dbn != null) ? Util.RemoveIdentifierQuotes(dbn.Value) : null;
 
                     var sn = udfi.FindDescendant<SchemaName>();
-                    schemaName = (sn != null) ? Util.RemoveIdentifierQuotes(sn.Value) : null;
+                    SchemaName = (sn != null) ? Util.RemoveIdentifierQuotes(sn.Value) : null;
 
                     var tn = udfi.FindDescendant<FunctionName>();
-                    databaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
+                    DatabaseObjectName = (tn != null) ? Util.RemoveIdentifierQuotes(tn.Value) : null;
 
                     systemFunctionName = null;
 
@@ -209,26 +124,6 @@ namespace Jhu.Graywulf.SqlParser
                 {
                     throw new InvalidOperationException();  // *** TODO
                 }
-            }
-        }
-
-        /// <summary>
-        /// Substitute default dataset and schema names, if necessary
-        /// </summary>
-        /// <param name="defaultDataSetName"></param>
-        /// <param name="defaultSchemaName"></param>
-        public void SubstituteDefaults(SchemaManager schemaManager, string defaultDataSetName)
-        {
-            // This cannot be called for subqueries
-
-            if (this.datasetName == null)
-            {
-                this.datasetName = defaultDataSetName;
-            }
-
-            if (this.schemaName == null)
-            {
-                this.schemaName = schemaManager.Datasets[this.datasetName].DefaultSchemaName;
             }
         }
 
@@ -262,36 +157,5 @@ namespace Jhu.Graywulf.SqlParser
 
             return res;
         }*/
-
-        /// <summary>
-        /// Gets the fully resolved three part name of the table or view.
-        /// </summary>
-        /// <remarks>
-        /// The fully resolved name is in the dbname.schema.tablename format.
-        /// </remarks>
-        public string GetFullyResolvedName()
-        {
-            if (IsSystem)
-            {
-                return systemFunctionName.ToUpper();
-            }
-            else
-            {
-                // If it is linked up to the schema, return
-                if (databaseObject != null)
-                {
-                    return databaseObject.GetFullyResolvedName();
-                }
-                else
-                {
-                    return FullyQualifiedName;
-                }
-            }
-        }
-
-        public override string ToString()
-        {
-            return GetFullyResolvedName();
-        }
     }
 }
