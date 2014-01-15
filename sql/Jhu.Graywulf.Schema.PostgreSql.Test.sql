@@ -1,4 +1,4 @@
-create database graywulf_schema_test;
+﻿create database graywulf_schema_test;
 
 CREATE USER graywulf WITH PASSWORD 'password';
 GRANT ALL PRIVILEGES ON DATABASE graywulf_schema_test TO graywulf;
@@ -163,4 +163,4 @@ CREATE TABLE SampleData(
  comment on function spTest(IN hello VARCHAR(50))  is 'spTestComment';
  comment on COLUMN Book.ID is 'id of user';
  comment on table Author  is 'this is my own table comment';
-/
+*/

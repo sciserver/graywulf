@@ -45,8 +45,8 @@ CREATE TABLE `tablewithprimarykey` (
 CREATE VIEW `viewcomputedcolumn`
 AS
 SELECT (`a`.`ID` + `b`.`ID`) AS `id`
-FROM (tablewithprimarykey` `a`
-JOIN `tablewithprimarykey` `b`);
+FROM (`tablewithprimarykey` `a`
+JOIN `tablewithprimarykey` b);
 
 CREATE VIEW `viewcrossjoinonetable`
 AS
