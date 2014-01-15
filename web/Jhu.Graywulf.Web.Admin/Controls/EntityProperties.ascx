@@ -63,7 +63,7 @@
             <asp:Label ID="AttributesLabel" runat="server" Text="Attributes:"></asp:Label>
         </td>
         <td class="FormField">
-            <asp:CheckBox ID="System" runat="server" Enabled="False" Text="System" />
+            <asp:CheckBox ID="System1" runat="server" Enabled="False" Text="System" />
             <asp:CheckBox ID="Hidden" runat="server" Enabled="False" Text="Hidden" />
             <asp:CheckBox ID="ReadOnly" runat="server" Enabled="False" Text="Read-only" />
         </td>

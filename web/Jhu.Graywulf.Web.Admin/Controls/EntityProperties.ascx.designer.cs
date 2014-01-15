@@ -67,6 +67,24 @@ namespace Jhu.Graywulf.Web.Admin.Controls {
         protected global::System.Web.UI.WebControls.Label Version;
         
         /// <summary>
+        /// DeploymentStateLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label DeploymentStateLabel;
+        
+        /// <summary>
+        /// DeploymentState control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label DeploymentState;
+        
+        /// <summary>
         /// RunningStateLabel control.
         /// </summary>
         /// <remarks>
@@ -103,24 +121,6 @@ namespace Jhu.Graywulf.Web.Admin.Controls {
         protected global::System.Web.UI.WebControls.Label AlertState;
         
         /// <summary>
-        /// DeploymentStateLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label DeploymentStateLabel;
-        
-        /// <summary>
-        /// DeploymentState control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label DeploymentState;
-        
-        /// <summary>
         /// CommentsLabel control.
         /// </summary>
         /// <remarks>
@@ -148,13 +148,13 @@ namespace Jhu.Graywulf.Web.Admin.Controls {
         protected global::System.Web.UI.WebControls.Label AttributesLabel;
         
         /// <summary>
-        /// System control.
+        /// System1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox System;
+        protected global::System.Web.UI.WebControls.CheckBox System1;
         
         /// <summary>
         /// Hidden control.

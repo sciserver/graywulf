@@ -85,6 +85,15 @@
                 </asp:DropDownList>
             </td>
         </tr>
+        <tr runat="server" visible="false">
+            <td class="FormLabel">
+                <asp:Label ID="NodeServerVersionLabel" runat="server" Text="Node Server Version:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:DropDownList ID="NodeServerVersion" runat="server" CssClass="FormField">
+                </asp:DropDownList>
+            </td>
+        </tr>
         <tr runat="server">
             <td class="FormLabel">
                 <asp:Label ID="TempDatabaseVersionLabel" runat="server" Text="Temp Database Version:"></asp:Label>

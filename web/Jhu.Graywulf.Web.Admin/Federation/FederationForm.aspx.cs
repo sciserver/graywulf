@@ -24,6 +24,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             base.OnUpdateForm();
 
             RefreshMyDbDatabaseVersionList();
+            RefreshNodeServerVersionList();
             RefreshTempDatabaseVersionList();
             RefreshCodeDatabaseVersionList();
             RefreshControllerMachineList();
@@ -82,23 +83,25 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
         protected override void OnSaveFormCompleted(bool newentity)
         {
-            throw new NotImplementedException();
-
-            /*
             if (newentity)
             {
-                var svguid = new Guid(MyDbServerVersion.SelectedValue);
+                var mydbsvguid = new Guid(MyDbServerVersion.SelectedValue);
+                var nodesvguid = new Guid(NodeServerVersion.SelectedValue);
 
-                if (svguid != Guid.Empty)
+                if (mydbsvguid != Guid.Empty && nodesvguid != Guid.Empty)
                 {
-                    var sv = new ServerVersion(RegistryContext);
-                    sv.Guid = new Guid(MyDbServerVersion.SelectedValue);
-                    sv.Load();
+                    var mydbsv = new ServerVersion(RegistryContext);
+                    mydbsv.Guid = new Guid(MyDbServerVersion.SelectedValue);
+                    mydbsv.Load();
+
+                    var nodesv = new ServerVersion(RegistryContext);
+                    nodesv.Guid = new Guid(NodeServerVersion.SelectedValue);
+                    nodesv.Load();
 
                     var fi = new FederationInstaller(Item);
-                    fi.GenerateDefaultChildren(sv); // *** TODO: fix this, add code database version
+                    fi.GenerateDefaultChildren(mydbsv, nodesv);
                 }
-            }*/
+            }
         }
 
         protected void RefreshMyDbDatabaseVersionList()
@@ -114,6 +117,23 @@ namespace Jhu.Graywulf.Web.Admin.Federation
                 foreach (DatabaseVersion dv in dd.DatabaseVersions.Values)
                 {
                     MyDbDatabaseVersion.Items.Add(new ListItem(String.Format("{0}\\{1}", dd.Name, dv.Name), dv.Guid.ToString()));
+                }
+            }
+        }
+
+        protected void RefreshNodeServerVersionList()
+        {
+            NodeServerVersion.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
+
+            Item.Domain.Cluster.LoadMachineRoles(false);
+
+            foreach (var mr in Item.Domain.Cluster.MachineRoles.Values)
+            {
+                mr.LoadServerVersions(false);
+
+                foreach (var sv in mr.ServerVersions.Values)
+                {
+                    NodeServerVersion.Items.Add(new ListItem(String.Format("{0}\\{1}", mr.Name, sv.Name), sv.Guid.ToString()));
                 }
             }
         }

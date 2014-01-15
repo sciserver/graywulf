@@ -36,7 +36,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             DeploymentState.Text = entity.DeploymentState.ToString();
             Comments.Text = entity.Comments;
 
-            System.Checked = entity.System;
+            System1.Checked = entity.System;
             Hidden.Checked = entity.Hidden;
             ReadOnly.Checked = entity.ReadOnly;
             Locked.Checked = entity.IsLocked;
