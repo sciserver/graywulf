@@ -50,6 +50,32 @@ namespace Jhu.Graywulf.Registry
             public Entity[] Entities;
         }
 
+        public static string CombineName(EntityType entityType, params string[] nameParts)
+        {
+            var name = entityType.ToString() + ":";
+
+            for (int i = 0; i < nameParts.Length; i++)
+            {
+                if (i > 0)
+                {
+                    name += ".";
+                }
+
+                var idx = nameParts[i].IndexOf(':');
+
+                if (idx < 0)
+                {
+                    name += nameParts[i];
+                }
+                else
+                {
+                    name += nameParts[i].Substring(idx + 1);
+                }
+            }
+
+            return name;
+        }
+
         #region Constructors
 
         /// <summary>
@@ -231,50 +257,11 @@ ORDER BY Number";
         #endregion
         #region Entity Load Functions
 
-        private Entity LoadStronglyTypedEntity(EntityType entityType, Guid guid)
-        {
-            // Figure out class name from the entity type
-            var classname = "Jhu.Graywulf.Registry." + entityType.ToString();
-
-            // Create the strongly typed class and load the entity again
-            var classtype = Type.GetType(classname);
-
-            var e = (Entity)classtype.GetConstructor(new Type[] { typeof(Context) }).Invoke(new object[] { Context });
-            e.Guid = guid;
-            e.Load();
-
-            return e;
-        }
-
-        private Entity LoadEntityByNameParts(string[] nameParts)
-        {
-            var sql = @"spFindEntity_byNameParts";
-
-            var npdt = new DataTable();
-            npdt.Columns.Add("ID", typeof(int));
-            npdt.Columns.Add("Name", typeof(string));
-
-            for (int i = 0; i < nameParts.Length; i++)
-            {
-                npdt.Rows.Add(i, nameParts[i]);
-            }
-
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-                cmd.Parameters.Add("@NameParts", SqlDbType.Structured).Value = npdt;
-
-                using (var dr = cmd.ExecuteReader())
-                {
-                    dr.Read();
-                    var e = new Entity(Context);
-                    e.LoadFromDataReader(dr);
-
-                    return LoadStronglyTypedEntity(e.EntityType, e.Guid);
-                }
-            }
-        }
-
+        /// <summary>
+        /// Loads a strongly typed entity by Guid.
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
         public Entity LoadEntity(Guid guid)
         {
             Entity e = new Entity(Context);
@@ -294,13 +281,25 @@ ORDER BY Number";
         /// strongly type to the entity type and not simply an <see cref="Entity"/> class.
         /// </remarks>
         public T LoadEntity<T>(Guid guid)
-            where T : Entity
+            where T : Entity, new()
         {
-            Entity e = new Entity(Context);
-            e.Guid = guid;
-            e.Load();
+            if (typeof(T) == typeof(Entity))
+            {
+                var e = new Entity(Context);
+                e.Guid = guid;
+                e.Load();
 
-            return (T)LoadStronglyTypedEntity(e.EntityType, guid);
+                return (T)LoadStronglyTypedEntity(e.EntityType, guid);
+            }
+            else
+            {
+                var e = new T();
+                e.Context = Context;
+                e.Guid = guid;
+                e.Load();
+
+                return e;
+            }
         }
 
         /// <summary>
@@ -314,19 +313,20 @@ ORDER BY Number";
         /// </remarks>
         public Entity LoadEntity(string name)
         {
-            return LoadEntityByNameParts(name.Split('.'));
-        }
+            var i = name.IndexOf(':');
 
-        public Entity LoadEntity(params string[] nameParts)
-        {
-            var parts = new List<string>();
-
-            for (int i = 0; i < nameParts.Length; i++)
+            if (i <= 0)
             {
-                parts.AddRange(nameParts[i].Split('.'));
+                throw new ArgumentException("Name must start with entity type.");   // *** TODO
             }
 
-            return LoadEntityByNameParts(parts.ToArray());
+            EntityType entityType;
+            if (!Enum.TryParse<EntityType>(name.Substring(0, i), out entityType))
+            {
+                throw new ArgumentException("Invalid entity type in string");       // *** TODO
+            }
+
+            return LoadEntityByNameParts(entityType, name.Substring(i + 1).Split('.'));
         }
 
         public T LoadEntity<T>(string name)
@@ -335,20 +335,72 @@ ORDER BY Number";
             return (T)LoadEntity(name);
         }
 
+        public Entity LoadEntity(EntityType entityType, params string[] nameParts)
+        {
+            return LoadEntity(CombineName(entityType, nameParts));
+        }
+
         public T LoadEntity<T>(params string[] nameParts)
             where T : Entity
         {
-            return (T)LoadEntity(nameParts);
+            return (T)LoadEntity(Entity.EntityTypeMap[typeof(T)], nameParts);
         }
 
-        public bool CheckEntityDuplicate(Entity parentEntity, string name)
+        private Entity LoadStronglyTypedEntity(EntityType entityType, Guid guid)
+        {
+            // Figure out class name from the entity type
+            var classname = "Jhu.Graywulf.Registry." + entityType.ToString();
+
+            // Create the strongly typed class and load the entity again
+            var classtype = Type.GetType(classname);
+
+            var e = (Entity)classtype.GetConstructor(new Type[] { typeof(Context) }).Invoke(new object[] { Context });
+            e.Guid = guid;
+            e.Load();
+
+            return e;
+        }
+
+        private Entity LoadEntityByNameParts(EntityType entityType, string[] nameParts)
+        {
+            var sql = @"spFindEntity_byName";
+
+            var npdt = new DataTable();
+            npdt.Columns.Add("ID", typeof(int));
+            npdt.Columns.Add("Name", typeof(string));
+
+            for (int i = 0; i < nameParts.Length; i++)
+            {
+                npdt.Rows.Add(i, nameParts[i]);
+            }
+
+            using (var cmd = Context.CreateStoredProcedureCommand(sql))
+            {
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
+                cmd.Parameters.Add("@EntityType", SqlDbType.Int).Value = entityType == EntityType.Unknown ? (object)DBNull.Value : entityType;
+                cmd.Parameters.Add("@NameParts", SqlDbType.Structured).Value = npdt;
+
+                using (var dr = cmd.ExecuteReader())
+                {
+                    dr.Read();
+                    var e = new Entity(Context);
+                    e.LoadFromDataReader(dr);
+
+                    return LoadStronglyTypedEntity(e.EntityType, e.Guid);
+                }
+            }
+        }
+
+        public bool CheckEntityDuplicate(EntityType entityType, Guid entityGuid, Guid parentEntityGuid, string name)
         {
             var sql = @"spCheckEntityDuplicate";
 
             using (var cmd = Context.CreateStoredProcedureCommand(sql))
             {
                 cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-                cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parentEntity == null ? Guid.Empty : parentEntity.Guid;
+                cmd.Parameters.Add("@EntityType", SqlDbType.Int).Value = entityType;
+                cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = entityGuid == Guid.Empty ? (object)DBNull.Value : entityGuid;
+                cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parentEntityGuid;
                 cmd.Parameters.Add("@Name", SqlDbType.NVarChar, 128).Value = name;
                 cmd.Parameters.Add("RETVAL", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
 

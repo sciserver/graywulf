@@ -262,6 +262,8 @@ DROP TABLE ##keys_{4};
                     cidx++;
                 }
 
+
+                // This code can figure out key columns but it doesn't really work now
                 /*
                 if (column.IsKey)
                 {

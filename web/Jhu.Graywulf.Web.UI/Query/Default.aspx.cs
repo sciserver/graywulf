@@ -47,7 +47,10 @@ namespace Jhu.Graywulf.Web.UI.Query
 
         protected void ExecuteQuick_Click(object sender, EventArgs e)
         {
-            string queuename = String.Format("{0}.{1}", Federation.ControllerMachine.GetFullyQualifiedName(), Jhu.Graywulf.Registry.Constants.QuickQueueName);
+            string queuename = EntityFactory.CombineName(
+                EntityType.QueueInstance,
+                Federation.ControllerMachine.GetFullyQualifiedName(),
+                Jhu.Graywulf.Registry.Constants.QuickQueueName);
 
             var q = CreateQuery();
             if (q != null)
@@ -70,7 +73,10 @@ namespace Jhu.Graywulf.Web.UI.Query
 
         protected void ExecuteLong_Click(object sender, EventArgs e)
         {
-            string queuename = String.Format("{0}.{1}", Federation.ControllerMachine.GetFullyQualifiedName(), Jhu.Graywulf.Registry.Constants.LongQueueName);
+            string queuename = EntityFactory.CombineName(
+                EntityType.QueueInstance,
+                Federation.ControllerMachine.GetFullyQualifiedName(),
+                Jhu.Graywulf.Registry.Constants.LongQueueName);
 
             var q = CreateQuery();
             if (q != null)

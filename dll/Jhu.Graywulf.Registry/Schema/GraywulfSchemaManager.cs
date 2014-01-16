@@ -77,7 +77,7 @@ namespace Jhu.Graywulf.Schema
         protected override DatasetBase LoadDataset(string datasetName)
         {
             var ef = new EntityFactory(context);
-            var ddrd = ef.LoadEntity(federationName, datasetName);
+            var ddrd = ef.LoadEntity(EntityType.Unknown, federationName, datasetName);
 
             if (ddrd is DatabaseDefinition)
             {

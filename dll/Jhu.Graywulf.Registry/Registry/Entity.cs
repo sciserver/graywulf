@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Registry
         private Guid guid;
         private long concurrencyVersion;
         private ParentEntityReference<Entity> parentReference;
-        private EntityType entityType;
+        private EntityType entityTypeInternal;
         private int number;
         private string name;
         private string version;
@@ -132,8 +132,8 @@ namespace Jhu.Graywulf.Registry
         [XmlIgnore]
         public virtual EntityType EntityType
         {
-            get { return entityType; }
-            private set { entityType = value; }
+            get { return entityTypeInternal; }
+            private set { entityTypeInternal = value; }
         }
 
         /// <summary>
@@ -528,7 +528,7 @@ namespace Jhu.Graywulf.Registry
             this.guid = Guid.Empty;
             this.concurrencyVersion = 0;
             this.parentReference = new ParentEntityReference<Entity>(this);
-            this.entityType = EntityType.Unknown;
+            this.entityTypeInternal = EntityType.Unknown;
             this.number = 0;
             this.name = string.Empty;
             this.version = string.Empty;
@@ -566,7 +566,7 @@ namespace Jhu.Graywulf.Registry
             this.guid = old.guid;
             this.concurrencyVersion = old.concurrencyVersion;
             this.parentReference = new ParentEntityReference<Entity>(old.parentReference);
-            this.entityType = old.EntityType;   // always use property!
+            this.EntityType = old.EntityType;   // always use property!
             this.number = old.number;
             this.name = old.name;
             this.version = old.version;
@@ -717,12 +717,12 @@ namespace Jhu.Graywulf.Registry
                 p = p.Parent;
             }
 
-            return n;
+            return EntityType.ToString() + ":" + n;
         }
 
         public override string ToString()
         {
-            return String.Format("{0}: {1}", EntityType, GetFullyQualifiedName());
+            return GetFullyQualifiedName();
         }
     }
 }

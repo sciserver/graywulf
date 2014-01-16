@@ -103,7 +103,7 @@ namespace Jhu.Graywulf.Web.Auth
             if (RegistryUser == null)
             {
                 EntityFactory ef = new EntityFactory(RegistryContext);
-                args.IsValid = !ef.CheckEntityDuplicate(Domain, args.Value);
+                args.IsValid = !ef.CheckEntityDuplicate(EntityType.User, Guid.Empty, Domain.Guid, args.Value);
             }
         }
 

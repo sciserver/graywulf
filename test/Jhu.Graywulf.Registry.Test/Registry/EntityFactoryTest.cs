@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Registry
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var f = new EntityFactory(context);
-                var entity = f.LoadEntity(Constants.ClusterName);
+                var entity = f.LoadEntity(EntityType.Cluster, Constants.ClusterName);
 
                 using (var outfile = new StreamWriter(filename))
                 {

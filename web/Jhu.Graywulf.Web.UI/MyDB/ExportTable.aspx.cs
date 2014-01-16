@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                 throw new InvalidOperationException();  // *** TODO
             }
 
-            var queue = String.Format("{0}.{1}", Federation.ControllerMachine.GetFullyQualifiedName(), Jhu.Graywulf.Registry.Constants.LongQueueName);
+            var queue = EntityFactory.CombineName(EntityType.QueueInstance, Federation.ControllerMachine.GetFullyQualifiedName(), Jhu.Graywulf.Registry.Constants.LongQueueName);
             var f = new Jhu.Graywulf.Jobs.ExportTables.ExportTablesFactory(RegistryContext);
 
             // TODO: maybe add comments?

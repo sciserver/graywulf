@@ -159,7 +159,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public override JobInstance ScheduleAsJob(QueryBase query, string queueName, string comments)
         {
             var job = CreateJobInstance(
-                String.Format("{0}.{1}", Registry.AppSettings.FederationName, typeof(SqlQueryJob).Name),
+                EntityFactory.CombineName(EntityType.JobDefinition, Registry.AppSettings.FederationName, typeof(SqlQueryJob).Name),
                 queueName,
                 comments);
 

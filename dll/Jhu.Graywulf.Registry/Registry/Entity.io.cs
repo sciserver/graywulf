@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Registry
             this.guid = dr.GetGuid(++o);
             this.concurrencyVersion = BitConverter.ToInt64(dr.GetSqlBytes(++o).Value, 0);
             this.parentReference.Guid = dr.GetGuid(++o);
-            this.entityType = (EntityType)dr.GetInt32(++o);
+            this.EntityType = (EntityType)dr.GetInt32(++o);
             this.number = dr.GetInt32(++o);
             this.name = dr.GetString(++o);
             this.version = dr.GetString(++o);
@@ -166,7 +166,14 @@ namespace Jhu.Graywulf.Registry
         /// </exception>
         public void Save(bool forceOverwrite)
         {
-            CheckDuplicateName();
+            // Check entity duplicate
+            var ef = new EntityFactory(Context);
+            if (ef.CheckEntityDuplicate(this.EntityType, this.Guid, this.parentReference.Guid, this.name))
+            {
+                Jhu.Graywulf.Logging.Event e = new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.CheckConcurrency", this.guid); ;
+                e.Message = String.Format(LogMessages.DuplicateName, name);
+                throw new DuplicateNameException();
+            }
 
             if (!IsExisting)
             {
@@ -425,34 +432,6 @@ namespace Jhu.Graywulf.Registry
                             Context.LogEvent(e);
                             throw new LockingCollisionException();
                     }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Checks if the name is a duplicate.
-        /// </summary>
-        public void CheckDuplicateName()
-        {
-            string sql = "spCheckEntityNameDuplicate";
-
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-                cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = IsExisting ? (object)guid : (object)DBNull.Value;
-                cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parentReference.Guid;
-                cmd.Parameters.Add("@Name", SqlDbType.NVarChar, 128).Value = name;
-                cmd.Parameters.Add("RETVAL", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
-
-                cmd.ExecuteNonQuery();
-
-                int retval = (int)cmd.Parameters["RETVAL"].Value;
-
-                if (retval > 0)
-                {
-                    Jhu.Graywulf.Logging.Event e = new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.CheckConcurrency", this.guid); ;
-                    e.Message = String.Format(LogMessages.DuplicateName, name);
-                    throw new DuplicateNameException();
                 }
             }
         }

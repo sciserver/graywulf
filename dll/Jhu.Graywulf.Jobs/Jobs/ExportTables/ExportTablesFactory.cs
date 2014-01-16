@@ -108,7 +108,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         private JobInstance GetInitializedJobInstance(string queueName, string comments)
         {
             JobInstance job = CreateJobInstance(
-                String.Format("{0}.{1}", Registry.AppSettings.FederationName, typeof(ExportTablesJob).Name),
+                EntityFactory.CombineName(EntityType.JobDefinition, Registry.AppSettings.FederationName, typeof(ExportTablesJob).Name),
                 queueName,
                 comments);
 

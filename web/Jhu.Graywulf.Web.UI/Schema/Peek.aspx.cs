@@ -26,8 +26,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
         private void GetServerSettings(schema::DatasetBase ds, out string connectionString, out DbProviderFactory dbf)
         {           
             EntityFactory ef = new EntityFactory(RegistryContext);
-            Entity db = ef.LoadEntity(Jhu.Graywulf.Registry.AppSettings.FederationName, ds.Name);
-            
+            Entity db = ef.LoadEntity(EntityType.Unknown, Jhu.Graywulf.Registry.AppSettings.FederationName, ds.Name);
 
             if (StringComparer.InvariantCultureIgnoreCase.Compare(ds.Name, MyDBDatabaseDefinition.Name) == 0)
             {

@@ -216,6 +216,8 @@ GO
 
 CREATE PROC [dbo].[spCheckEntityDuplicate]
 	@UserGuid uniqueidentifier,
+	@EntityType int,
+	@Guid uniqueidentifier,
 	@ParentGuid uniqueidentifier,
 	@Name nvarchar(128)
 AS
@@ -224,30 +226,14 @@ AS
 	SELECT @count = COUNT(*)
 	FROM Entity
 	WHERE
-		Entity.ParentGuid = @ParentGuid
+		Entity.EntityType = @EntityType
+		AND (@Guid IS NULL OR Guid <> @Guid)
+		AND Entity.ParentGuid = @ParentGuid
 		AND Entity.Name = @Name
 		AND Deleted = 0;
 		
 	RETURN ISNULL(@count, 0);
 GO
-
-
-CREATE PROC [dbo].[spCheckEntityNameDuplicate]
-	@UserGuid uniqueidentifier,
-	@Guid uniqueidentifier,
-	@ParentGuid uniqueidentifier,
-	@Name nvarchar(128)
-AS
-	DECLARE @cnt int
-
-	SELECT @cnt = COUNT(*) FROM Entity
-	WHERE ParentGuid = @ParentGuid AND (Guid <> @Guid OR @Guid IS NULL)
-		  AND (Deleted = 0)
-		  AND (Name = @Name)
-	
-	RETURN @cnt
-GO
-
 
 
 CREATE PROC [dbo].[spMoveDownEntity]
@@ -356,30 +342,39 @@ GO
 
 CREATE FUNCTION [dbo].[fGetEntityGuid_byName]
 (
+	@EntityType int,
 	@NameParts NamePartList READONLY
 )
 RETURNS uniqueidentifier
 AS
 BEGIN
 	-- Declare the return variable here
+	DECLARE @namecount int, @count int;
 	DECLARE @name nvarchar(128);
 	DECLARE @guid uniqueidentifier = '00000000-0000-0000-0000-000000000000';
+	DECLARE @nguid uniqueidentifier = NULL;
+
+	SELECT @namecount = COUNT(*) FROM @NameParts
 
 	DECLARE parts CURSOR FORWARD_ONLY FAST_FORWARD READ_ONLY
-	FOR
-	SELECT Name FROM @NameParts ORDER BY ID;
+	FOR SELECT Name FROM @NameParts ORDER BY ID;
 	
 	OPEN parts;
 	
 	FETCH NEXT FROM parts INTO @name;
 	
+	SET @count = 1;
 	WHILE (@@FETCH_STATUS = 0)
 	BEGIN
-		DECLARE @nguid uniqueidentifier = NULL;
+		SET @nguid  = NULL;
 	
 		SELECT @nguid = Guid
 		FROM Entity
-		WHERE Entity.Deleted = 0 AND Entity.ParentGuid = @guid AND Entity.Name = @name;
+		WHERE
+			(@count < @namecount OR @EntityType IS NULL OR Entity.EntityType = @EntityType)
+			AND Entity.Deleted = 0
+			AND Entity.ParentGuid = @guid
+			AND Entity.Name = @name;
 		
 		IF (@nguid IS NULL)
 		BEGIN
@@ -389,12 +384,12 @@ BEGIN
 		SET @guid = @nguid;
 	
 		FETCH NEXT FROM parts INTO @name;
+		SET @count = @count + 1
 	END 
 	
 	CLOSE parts;
 	DEALLOCATE parts;
-
-
+	
 	-- Return the result of the function
 	RETURN @guid
 
@@ -402,26 +397,29 @@ END
 GO
 
 
-CREATE PROC [dbo].[spFindEntity_byNameParts]
+CREATE PROC spFindEntity_byName
 	@UserGuid uniqueidentifier,
+	@EntityType int,
 	@NameParts NamePartList READONLY
 AS
-	DECLARE @guid uniqueidentifier;
+    DECLARE @guid uniqueidentifier;
 
-	SELECT @guid = dbo.fGetEntityGuid_byName(@NameParts);
-	
-	IF (@guid IS NULL)
-	BEGIN
-		RAISERROR ('Entity not found', 1, 1);
-	END
+    SELECT @guid = dbo.fGetEntityGuid_byName(@EntityType, @NameParts);
+    
+    IF (@guid IS NULL)
+    BEGIN
+            RAISERROR ('Entity not found', 1, 1);
+    END
 
-	SELECT Entity.*
-	FROM Entity
-	WHERE
-		Entity.Guid = @guid
-		AND Deleted = 0;
+
+    SELECT Entity.*
+    FROM Entity
+    WHERE
+        Entity.Guid = @guid
+        AND Deleted = 0;
+
 GO
-
+	
 
 
 CREATE PROC [dbo].[spFindEntityReference]
