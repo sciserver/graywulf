@@ -67,58 +67,12 @@
                 <asp:TextBox ID="FileFormatFactory" runat="server" />
             </td>
         </tr>
-        <tr runat="server" id="MyDbDatabaseVersionRow">
-            <td class="FormLabel">
-                <asp:Label ID="MyDbDatabaseVersionLabel" runat="server" Text="MYDB Database Version:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <asp:DropDownList ID="MyDbDatabaseVersion" runat="server" CssClass="FormField">
-                </asp:DropDownList>
-            </td>
-        </tr>
-        <tr runat="server" id="MyDbServerVersionRow" visible="false">
-            <td class="FormLabel">
-                <asp:Label ID="MyDbServerVersionLabel" runat="server" Text="MYDB Server Version:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <asp:DropDownList ID="MyDbServerVersion" runat="server" CssClass="FormField">
-                </asp:DropDownList>
-            </td>
-        </tr>
-        <tr runat="server" visible="false">
-            <td class="FormLabel">
-                <asp:Label ID="NodeServerVersionLabel" runat="server" Text="Node Server Version:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <asp:DropDownList ID="NodeServerVersion" runat="server" CssClass="FormField">
-                </asp:DropDownList>
-            </td>
-        </tr>
-        <tr runat="server">
-            <td class="FormLabel">
-                <asp:Label ID="TempDatabaseVersionLabel" runat="server" Text="Temp Database Version:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <asp:DropDownList ID="TempDatabaseVersion" runat="server" CssClass="FormField">
-                </asp:DropDownList>
-            </td>
-        </tr>
-        <tr runat="server">
-            <td class="FormLabel">
-                <asp:Label ID="CodeDatabaseVersionLabel" runat="server" Text="Code Database Version:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <asp:DropDownList ID="CodeDatabaseVersion" runat="server" CssClass="FormField">
-                </asp:DropDownList>
-            </td>
-        </tr>
         <tr runat="server">
             <td class="FormLabel">
                 <asp:Label ID="ControllerMachineLabel" runat="server" Text="Controller Machine:"></asp:Label>
             </td>
             <td class="FormField">
-                <asp:DropDownList ID="ControllerMachine" runat="server" CssClass="FormField">
-                </asp:DropDownList>
+                <jgwac:EntitySelect runat="server" id="ControllerMachine" CssClass="FormField" />
             </td>
         </tr>
         <tr runat="server">
@@ -126,8 +80,47 @@
                 <asp:Label ID="SchemaSourceServerInstanceLabel" runat="server" Text="Schema Source Server:"></asp:Label>
             </td>
             <td class="FormField">
-                <asp:DropDownList ID="SchemaSourceServerInstance" runat="server" CssClass="FormField">
-                </asp:DropDownList>
+                <jgwac:EntitySelect id="SchemaSourceServerInstance" runat="server" CssClass="FormField" />
+            </td>
+        </tr>
+        <tr runat="server" id="MyDbServerVersionRow" visible="false">
+            <td class="FormLabel">
+                <asp:Label ID="MyDbServerVersionLabel" runat="server" Text="MYDB Server Version:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <jgwac:EntitySelect ID="MyDbServerVersion" runat="server" CssClass="FormField" />
+            </td>
+        </tr>
+        <tr runat="server" id="MyDbDatabaseVersionRow" visible="false">
+            <td class="FormLabel">
+                <asp:Label ID="MyDbDatabaseVersionLabel" runat="server" Text="MYDB Database Version:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <jgwac:EntitySelect ID="MyDbDatabaseVersion" runat="server" CssClass="FormField" />
+            </td>
+        </tr>
+        <tr runat="server" id="NodeServerVersionRow" visible="false">
+            <td class="FormLabel">
+                <asp:Label ID="NodeServerVersionLabel" runat="server" Text="Worker Node Server Version:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <jgwac:EntitySelect ID="NodeServerVersion" runat="server" CssClass="FormField" />
+            </td>
+        </tr>
+        <tr runat="server" id="TempDatabaseVersionRow" visible="false">
+            <td class="FormLabel">
+                <asp:Label ID="TempDatabaseVersionLabel" runat="server" Text="Temp Database Version:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <jgwac:EntitySelect ID="TempDatabaseVersion" runat="server" CssClass="FormField" />
+            </td>
+        </tr>
+        <tr runat="server" id="CodeDatabaseVersionRow" visible="false">
+            <td class="FormLabel">
+                <asp:Label ID="CodeDatabaseVersionLabel" runat="server" Text="Code Database Version:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <jgwac:EntitySelect ID="CodeDatabaseVersion" runat="server" CssClass="FormField" />
             </td>
         </tr>
     </table>

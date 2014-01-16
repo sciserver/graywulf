@@ -157,31 +157,40 @@ namespace Jhu.Graywulf.Web.Admin.Federation {
         protected global::System.Web.UI.WebControls.TextBox FileFormatFactory;
         
         /// <summary>
-        /// MyDbDatabaseVersionRow control.
+        /// ControllerMachineLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow MyDbDatabaseVersionRow;
+        protected global::System.Web.UI.WebControls.Label ControllerMachineLabel;
         
         /// <summary>
-        /// MyDbDatabaseVersionLabel control.
+        /// ControllerMachine control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label MyDbDatabaseVersionLabel;
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntitySelect ControllerMachine;
         
         /// <summary>
-        /// MyDbDatabaseVersion control.
+        /// SchemaSourceServerInstanceLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList MyDbDatabaseVersion;
+        protected global::System.Web.UI.WebControls.Label SchemaSourceServerInstanceLabel;
+        
+        /// <summary>
+        /// SchemaSourceServerInstance control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntitySelect SchemaSourceServerInstance;
         
         /// <summary>
         /// MyDbServerVersionRow control.
@@ -208,7 +217,43 @@ namespace Jhu.Graywulf.Web.Admin.Federation {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList MyDbServerVersion;
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntitySelect MyDbServerVersion;
+        
+        /// <summary>
+        /// MyDbDatabaseVersionRow control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow MyDbDatabaseVersionRow;
+        
+        /// <summary>
+        /// MyDbDatabaseVersionLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label MyDbDatabaseVersionLabel;
+        
+        /// <summary>
+        /// MyDbDatabaseVersion control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntitySelect MyDbDatabaseVersion;
+        
+        /// <summary>
+        /// NodeServerVersionRow control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow NodeServerVersionRow;
         
         /// <summary>
         /// NodeServerVersionLabel control.
@@ -226,7 +271,16 @@ namespace Jhu.Graywulf.Web.Admin.Federation {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList NodeServerVersion;
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntitySelect NodeServerVersion;
+        
+        /// <summary>
+        /// TempDatabaseVersionRow control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow TempDatabaseVersionRow;
         
         /// <summary>
         /// TempDatabaseVersionLabel control.
@@ -244,7 +298,16 @@ namespace Jhu.Graywulf.Web.Admin.Federation {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList TempDatabaseVersion;
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntitySelect TempDatabaseVersion;
+        
+        /// <summary>
+        /// CodeDatabaseVersionRow control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow CodeDatabaseVersionRow;
         
         /// <summary>
         /// CodeDatabaseVersionLabel control.
@@ -262,42 +325,6 @@ namespace Jhu.Graywulf.Web.Admin.Federation {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList CodeDatabaseVersion;
-        
-        /// <summary>
-        /// ControllerMachineLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label ControllerMachineLabel;
-        
-        /// <summary>
-        /// ControllerMachine control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ControllerMachine;
-        
-        /// <summary>
-        /// SchemaSourceServerInstanceLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label SchemaSourceServerInstanceLabel;
-        
-        /// <summary>
-        /// SchemaSourceServerInstance control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList SchemaSourceServerInstance;
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntitySelect CodeDatabaseVersion;
     }
 }

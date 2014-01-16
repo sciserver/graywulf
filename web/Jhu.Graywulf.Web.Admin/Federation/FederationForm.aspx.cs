@@ -19,16 +19,20 @@ namespace Jhu.Graywulf.Web.Admin.Federation
     {
         protected Registry.Cluster cluster;
 
+        protected override void OnItemLoaded(bool newentity)
+        {
+            if (newentity)
+            {
+                var fi = new FederationInstaller(Item);
+                fi.GenerateDefaultSettings();
+            }
+        }
+
         protected override void OnUpdateForm()
         {
             base.OnUpdateForm();
 
-            RefreshMyDbDatabaseVersionList();
-            RefreshNodeServerVersionList();
-            RefreshTempDatabaseVersionList();
-            RefreshCodeDatabaseVersionList();
-            RefreshControllerMachineList();
-            RefreshServerInstanceList();
+            RefreshLists();
 
             QueryFactory.Text = Item.QueryFactory;
             FileFormatFactory.Text = Item.FileFormatFactory;
@@ -38,19 +42,13 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             Email.Text = Item.Email;
             Copyright.Text = Item.Copyright;
             Disclaimer.Text = Item.Disclaimer;
-            MyDbDatabaseVersion.SelectedValue = Item.MyDBDatabaseVersionReference.Guid.ToString();
-            TempDatabaseVersion.SelectedValue = Item.TempDatabaseVersionReference.Guid.ToString();
-            CodeDatabaseVersion.SelectedValue = Item.CodeDatabaseVersionReference.Guid.ToString();
-            ControllerMachine.SelectedValue = Item.ControllerMachineReference.Guid.ToString();
-            SchemaSourceServerInstance.SelectedValue = Item.SchemaSourceServerInstanceReference.Guid.ToString();
 
-            if (!Item.IsExisting)
-            {
-                MyDbDatabaseVersionRow.Visible = false;
+            ControllerMachine.SelectedValue = Item.ControllerMachine;
+            SchemaSourceServerInstance.SelectedValue = Item.SchemaSourceServerInstance;
+            MyDbDatabaseVersion.SelectedValue = Item.MyDBDatabaseVersion;
+            TempDatabaseVersion.SelectedValue = Item.TempDatabaseVersion;
+            CodeDatabaseVersion.SelectedValue = Item.CodeDatabaseVersion;
 
-                RefreshServerVersionList();
-                MyDbServerVersionRow.Visible = true;
-            }
         }
 
         protected override void OnSaveForm()
@@ -65,169 +63,96 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             Item.Email = Email.Text;
             Item.Copyright = Copyright.Text;
             Item.Disclaimer = Disclaimer.Text;
-            Item.MyDBDatabaseVersionReference.Guid = new Guid(MyDbDatabaseVersion.SelectedValue);
-            Item.TempDatabaseVersionReference.Guid = new Guid(TempDatabaseVersion.SelectedValue);
-            Item.CodeDatabaseVersionReference.Guid = new Guid(CodeDatabaseVersion.SelectedValue);
-            Item.ControllerMachineReference.Guid = new Guid(ControllerMachine.SelectedValue);
-            Item.SchemaSourceServerInstanceReference.Guid = new Guid(SchemaSourceServerInstance.SelectedValue);
-        }
 
-        protected override void OnItemLoaded(bool newentity)
-        {
-            if (newentity)
-            {
-                var fi = new FederationInstaller(Item);
-                fi.GenerateDefaultSettings();
-            }
+            Item.ControllerMachine = (Machine) ControllerMachine.SelectedValue;
+            Item.MyDBDatabaseVersion = (DatabaseVersion)MyDbDatabaseVersion.SelectedValue;
+            Item.TempDatabaseVersion = (DatabaseVersion)TempDatabaseVersion.SelectedValue;
+            Item.CodeDatabaseVersion = (DatabaseVersion) CodeDatabaseVersion.SelectedValue;
+            Item.SchemaSourceServerInstance = (ServerInstance)SchemaSourceServerInstance.SelectedValue;
         }
 
         protected override void OnSaveFormCompleted(bool newentity)
         {
             if (newentity)
             {
-                var mydbsvguid = new Guid(MyDbServerVersion.SelectedValue);
-                var nodesvguid = new Guid(NodeServerVersion.SelectedValue);
-
-                if (mydbsvguid != Guid.Empty && nodesvguid != Guid.Empty)
+                if (MyDbServerVersion.SelectedValue != null &&
+                    NodeServerVersion.SelectedValue != null)
                 {
-                    var mydbsv = new ServerVersion(RegistryContext);
-                    mydbsv.Guid = new Guid(MyDbServerVersion.SelectedValue);
-                    mydbsv.Load();
-
-                    var nodesv = new ServerVersion(RegistryContext);
-                    nodesv.Guid = new Guid(NodeServerVersion.SelectedValue);
-                    nodesv.Load();
-
                     var fi = new FederationInstaller(Item);
-                    fi.GenerateDefaultChildren(mydbsv, nodesv);
+                    fi.GenerateDefaultChildren(
+                        (ServerVersion)MyDbServerVersion.SelectedValue,
+                        (ServerVersion)NodeServerVersion.SelectedValue);
                 }
             }
         }
 
-        protected void RefreshMyDbDatabaseVersionList()
+        private void RefreshLists()
         {
-            MyDbDatabaseVersion.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
-
-            Item.LoadDatabaseDefinitions(false);
-
-            foreach (DatabaseDefinition dd in Item.DatabaseDefinitions.Values)
+            // Set visibility of parts of the form depending whether
+            // this is a new federation or an exisiting one
+            if (!Item.IsExisting)
             {
-                dd.LoadDatabaseVersions(false);
+                // MyDB version will be automatically generated
+                MyDbServerVersionRow.Visible = true;
+                MyDbDatabaseVersionRow.Visible = false;
 
-                foreach (DatabaseVersion dv in dd.DatabaseVersions.Values)
-                {
-                    MyDbDatabaseVersion.Items.Add(new ListItem(String.Format("{0}\\{1}", dd.Name, dv.Name), dv.Guid.ToString()));
-                }
+                // CodeDB will also be automatically generated
+                NodeServerVersionRow.Visible = true;
+                TempDatabaseVersionRow.Visible = true;
+                CodeDatabaseVersionRow.Visible = false;
+            }
+            else
+            {
+                MyDbServerVersionRow.Visible = false;
+                MyDbDatabaseVersionRow.Visible = true;
+
+                TempDatabaseVersionRow.Visible = true;
+                CodeDatabaseVersionRow.Visible = true;
+            }
+
+            if (ControllerMachine.Visible)
+            {
+                ControllerMachine.ChildEntityTypes = new[] { EntityType.MachineRole, EntityType.Machine };
+                ControllerMachine.ParentEntity = Item.Domain.Cluster;
+            }
+
+            if (SchemaSourceServerInstance.Visible)
+            {
+                SchemaSourceServerInstance.ChildEntityTypes = new[] { EntityType.MachineRole, EntityType.Machine, EntityType.ServerInstance };
+                SchemaSourceServerInstance.ParentEntity = Item.Domain.Cluster;
+            }
+
+            if (MyDbServerVersion.Visible)
+            {
+                MyDbServerVersion.ChildEntityTypes = new[] { EntityType.MachineRole, EntityType.ServerVersion };
+                MyDbServerVersion.ParentEntity = Item.Domain.Cluster;
+            }
+
+            if (MyDbDatabaseVersion.Visible)
+            {
+                MyDbDatabaseVersion.ChildEntityTypes = new[] { EntityType.DatabaseDefinition, EntityType.DatabaseVersion };
+                MyDbDatabaseVersion.ParentEntity = Item;
+            }
+
+            if (NodeServerVersion.Visible)
+            {
+                NodeServerVersion.ChildEntityTypes = new[] { EntityType.MachineRole, EntityType.ServerVersion };
+                NodeServerVersion.ParentEntity = Item.Domain.Cluster;
+            }
+
+            // TODO: This can be done on the cluster or on the federation level!
+            if (TempDatabaseVersion.Visible)
+            {
+                TempDatabaseVersion.ChildEntityTypes = new[] { EntityType.DatabaseDefinition, EntityType.DatabaseVersion };
+                TempDatabaseVersion.ParentEntity = Item.Domain.Cluster;
+            }
+
+            // This is always on the federation level
+            if (CodeDatabaseVersion.Visible)
+            {
+                CodeDatabaseVersion.ChildEntityTypes = new[] { EntityType.DatabaseDefinition, EntityType.DatabaseVersion };
+                CodeDatabaseVersion.ParentEntity = Item;
             }
         }
-
-        protected void RefreshNodeServerVersionList()
-        {
-            NodeServerVersion.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
-
-            Item.Domain.Cluster.LoadMachineRoles(false);
-
-            foreach (var mr in Item.Domain.Cluster.MachineRoles.Values)
-            {
-                mr.LoadServerVersions(false);
-
-                foreach (var sv in mr.ServerVersions.Values)
-                {
-                    NodeServerVersion.Items.Add(new ListItem(String.Format("{0}\\{1}", mr.Name, sv.Name), sv.Guid.ToString()));
-                }
-            }
-        }
-
-        protected void RefreshTempDatabaseVersionList()
-        {
-            TempDatabaseVersion.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
-
-            Cluster.LoadDatabaseDefinitions(false);
-            foreach (var dd in Cluster.DatabaseDefinitions.Values)
-            {
-                dd.LoadDatabaseVersions(false);
-
-                foreach (var dv in dd.DatabaseVersions.Values)
-                {
-                    TempDatabaseVersion.Items.Add(new ListItem(String.Format("{0}\\{1}\\{2}", Cluster.Name, dd.Name, dv.Name), dv.Guid.ToString()));
-                }
-            }
-
-            Item.LoadDatabaseDefinitions(false);
-            foreach (var dd in Item.DatabaseDefinitions.Values)
-            {
-                foreach (var dv in dd.DatabaseVersions.Values)
-                {
-                    TempDatabaseVersion.Items.Add(new ListItem(String.Format("{0}\\{1}\\{2}", Item.Name, dd.Name, dv.Name), dv.Guid.ToString()));
-                }
-            }
-        }
-
-        protected void RefreshCodeDatabaseVersionList()
-        {
-            CodeDatabaseVersion.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
-
-            Item.LoadDatabaseDefinitions(false);
-            foreach (var dd in Item.DatabaseDefinitions.Values)
-            {
-                foreach (var dv in dd.DatabaseVersions.Values)
-                {
-                    CodeDatabaseVersion.Items.Add(new ListItem(String.Format("{0}\\{1}\\{2}", Item.Name, dd.Name, dv.Name), dv.Guid.ToString()));
-                }
-            }
-        }
-
-        protected void RefreshControllerMachineList()
-        {
-            ControllerMachine.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
-
-            Item.Domain.Cluster.LoadMachineRoles(false);
-
-            foreach (MachineRole mr in Item.Domain.Cluster.MachineRoles.Values)
-            {
-                mr.LoadMachines(false);
-                foreach (Machine m in mr.Machines.Values)
-                {
-                    ControllerMachine.Items.Add(new ListItem(m.Name, m.Guid.ToString()));
-                }
-            }
-        }
-
-        protected void RefreshServerInstanceList()
-        {
-            SchemaSourceServerInstance.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
-
-            Item.Domain.Cluster.LoadMachineRoles(false);
-
-            foreach (MachineRole mr in Item.Domain.Cluster.MachineRoles.Values)
-            {
-                mr.LoadMachines(false);
-                foreach (Machine m in mr.Machines.Values)
-                {
-                    m.LoadServerInstances(false);
-                    foreach (ServerInstance si in m.ServerInstances.Values)
-                    {
-                        SchemaSourceServerInstance.Items.Add(new ListItem(m.Name + "\\" + si.Name, si.Guid.ToString()));
-                    }
-                }
-            }
-        }
-
-        protected void RefreshServerVersionList()
-        {
-            MyDbServerVersion.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
-
-            Item.Domain.Cluster.LoadMachineRoles(false);
-
-            foreach (MachineRole mr in Item.Domain.Cluster.MachineRoles.Values)
-            {
-                mr.LoadServerVersions(false);
-                foreach (ServerVersion sv in mr.ServerVersions.Values)
-                {
-                    MyDbServerVersion.Items.Add(new ListItem(mr.Name + "\\" + sv.Name, sv.Guid.ToString()));
-                }
-            }
-        }
-
     }
 }

@@ -103,6 +103,7 @@
     <Content Include="Controls\EntityForm.ascx" />
     <Content Include="Controls\EntityLink.ascx" />
     <Content Include="Controls\EntityList.ascx" />
+    <Content Include="Controls\EntitySelect.ascx" />
     <Content Include="Controls\EntitySettings.ascx" />
     <Content Include="Controls\EntityTitle.ascx" />
     <Content Include="Controls\Footer.ascx" />
@@ -697,6 +698,13 @@
     </Compile>
     <Compile Include="Controls\EntityPath.cs">
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\EntitySelect.ascx.cs">
+      <DependentUpon>EntitySelect.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\EntitySelect.ascx.designer.cs">
+      <DependentUpon>EntitySelect.ascx</DependentUpon>
     </Compile>
     <Compile Include="Controls\EntitySettings.ascx.cs">
       <DependentUpon>EntitySettings.ascx</DependentUpon>

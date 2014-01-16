@@ -141,7 +141,6 @@ namespace Jhu.Graywulf.Web.Admin
                 case EntityType.DatabaseVersion:
                 case EntityType.Slice:
                 case EntityType.Partition:
-                case EntityType.DistributedPartitionedView:
                     group = EntityGroup.Federation;
                     break;
                 case EntityType.DatabaseInstance:
@@ -194,7 +193,6 @@ namespace Jhu.Graywulf.Web.Admin
                 case EntityType.FileGroup:
                 case EntityType.DeploymentPackage:
                 case EntityType.DatabaseVersion:
-                case EntityType.DistributedPartitionedView:
                     break;
                 case EntityType.ServerInstance:
                 case EntityType.DiskVolume:
