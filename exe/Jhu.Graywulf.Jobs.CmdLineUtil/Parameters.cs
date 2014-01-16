@@ -98,8 +98,11 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
 
         protected void SignIn(Cluster cluster)
         {
+            cluster.LoadDomains(false);
+            var domain = cluster.Domains[Constants.SharedDomainName];
+
             var uu = new UserFactory(cluster.Context);
-            uu.LoginUser(cluster, userName, password);
+            uu.LoginUser(domain, userName, password);
         }
     }
 }

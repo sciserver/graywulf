@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Web.Admin
 
             if (Cluster == null)
             {
-                cluster = RegistryUser.Cluster;
+                cluster = RegistryUser.Domain.Cluster;
 
                 Session[Constants.SessionClusterGuid] = cluster.Guid;
                 Session[Constants.SessionClusterName] = cluster.Name;

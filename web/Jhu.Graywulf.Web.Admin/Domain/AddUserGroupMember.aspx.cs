@@ -37,22 +37,9 @@ namespace Jhu.Graywulf.Web.Admin.Domain
         {
             IEnumerable<Registry.UserGroup> usergroups;
 
-            if (user.Parent is Registry.Cluster)
-            {
-                var c = user.Cluster;
-                c.LoadUserGroups(true);
-                usergroups = c.UserGroups.Values;
-            }
-            else if (user.Parent is Registry.Domain)
-            {
-                var d = user.Domain;
-                d.LoadUserGroups(true);
-                usergroups = d.UserGroups.Values;
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            var d = user.Domain;
+            d.LoadUserGroups(true);
+            usergroups = d.UserGroups.Values;
 
             UserGroup.Items.Add(new ListItem("(select user group)", Guid.Empty.ToString()));
             foreach (var ug in usergroups)

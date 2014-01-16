@@ -48,6 +48,9 @@ namespace Jhu.Graywulf.Registry
         public const string HotDatabaseVersionName = "HOT";
         public const string StatDatabaseVersionName = "STAT";
 
+        public const string SharedDomainName = "Shared";
+        public const string SharedFederationName = "Shared";
+
         public const string StandardUserGroupName = "StandardUser";
 
         public const string TempDbName = "TEMP";

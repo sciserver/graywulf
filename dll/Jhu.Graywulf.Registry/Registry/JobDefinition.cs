@@ -35,21 +35,7 @@ namespace Jhu.Graywulf.Registry
         [XmlIgnore]
         public override EntityGroup EntityGroup
         {
-            get
-            {
-                if (Parent is Cluster)
-                {
-                    return Registry.EntityGroup.Cluster;
-                }
-                else if (Parent is Federation)
-                {
-                    return Registry.EntityGroup.Federation;
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-            }
+            get { return EntityGroup.Federation; }
         }
 
         /// <summary>
@@ -121,17 +107,6 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         public JobDefinition(Context context)
             : base(context)
-        {
-            InitializeMembers(new StreamingContext());
-        }
-
-        /// <summary>
-        /// Constructor for creating a new entity with object context and parent entity set.
-        /// </summary>
-        /// <param name="context">An object context class containing session information.</param>
-        /// <param name="parent">The parent entity in the entity hierarchy.</param>
-        public JobDefinition(Cluster parent)
-            : base(parent.Context, parent)
         {
             InitializeMembers(new StreamingContext());
         }

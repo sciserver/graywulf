@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jhu.Graywulf.CommandLineParser;
+using Jhu.Graywulf.Install;
 
 namespace Jhu.Graywulf.Registry.CmdLineUtil
 {
@@ -13,23 +14,15 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
         {
             base.Run();
 
-            Console.Write("Creating admin user group and user... ");
+            Console.Write("Creating admin user... ");
 
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var f = new EntityFactory(context);
                 var c = f.LoadEntity<Cluster>(clusterName);
 
-                var u = new User(c)
-                {
-                    Name = adminUsername,
-                    Email = adminEmail,
-                    DeploymentState = Registry.DeploymentState.Deployed,
-                };
-                u.SetPassword(adminPassword);
-                u.Save();
-
-                // TODO: create admin group membership
+                var ci = new ClusterInstaller(c);
+                ci.GenerateAdmin(false, adminUsername, adminEmail, adminPassword);
             }
 
             Console.WriteLine("done.");

@@ -19,11 +19,6 @@ namespace Jhu.Graywulf.Registry
 
         #region User authentication
 
-        public User LoginUser(Cluster cluster, string nameOrEmail, string password)
-        {
-            return LoginUserInternal(cluster, nameOrEmail, password);
-        }
-
         public User LoginUser(Domain domain, string nameOrEmail, string password)
         {
             return LoginUserInternal(domain, nameOrEmail, password);

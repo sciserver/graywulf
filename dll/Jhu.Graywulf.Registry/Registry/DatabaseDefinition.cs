@@ -154,12 +154,6 @@ namespace Jhu.Graywulf.Registry
             set { SchemaSourceServerInstanceReference.Name = value; }
         }
 
-        [XmlIgnore]
-        public Cluster Cluster
-        {
-            get { return (Cluster)ParentReference.Value; }
-        }
-
         /// <summary>
         /// Gets the <b>Federation</b> object to which this <b>Database Definition</b> belongs.
         /// </summary>
@@ -231,17 +225,6 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         public DatabaseDefinition(Context context)
             : base(context)
-        {
-            InitializeMembers();
-        }
-
-        /// <summary>
-        /// Constructor for creating a new entity with object context and parent entity set.
-        /// </summary>
-        /// <param name="context">An object context class containing session information.</param>
-        /// <param name="parent">The parent entity in the entity hierarchy.</param>
-        public DatabaseDefinition(Cluster parent)
-            : base(parent.Context, parent)
         {
             InitializeMembers();
         }

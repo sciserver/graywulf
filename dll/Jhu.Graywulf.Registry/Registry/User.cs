@@ -368,12 +368,6 @@ namespace Jhu.Graywulf.Registry
         #region Navigation Properties
 
         [XmlIgnore]
-        public Cluster Cluster
-        {
-            get { return (Cluster)Parent; }
-        }
-
-        [XmlIgnore]
         public Domain Domain
         {
             get { return (Domain)Parent; }
@@ -409,17 +403,6 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         public User(Context context)
             : base(context)
-        {
-            InitializeMembers();
-        }
-
-        /// <summary>
-        /// Constructor for creating a new entity with object context and parent entity set.
-        /// </summary>
-        /// <param name="context">An object context class containing session information.</param>
-        /// <param name="parent">The parent entity in the entity hierarchy.</param>
-        public User(Cluster parent)
-            : base(parent.Context, parent)
         {
             InitializeMembers();
         }

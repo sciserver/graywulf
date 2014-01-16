@@ -16,6 +16,12 @@ namespace Jhu.Graywulf.Install
         {
         }
 
+        public ClusterInstaller(Cluster cluster)
+            : base(cluster.Context)
+        {
+            this.cluster = cluster;
+        }
+
         public Cluster Install()
         {
             return Install(
@@ -35,9 +41,6 @@ namespace Jhu.Graywulf.Install
             };
             cluster.Save();
 
-            // Create administrator group and user
-            GenerateAdmin(system, username, email, password);
-
             // Create machine roles and machines
 
             //      -- controller role
@@ -52,6 +55,7 @@ namespace Jhu.Graywulf.Install
             var sv = new ServerVersion(mrcont)
             {
                 Name = Constants.ServerVersionName,
+                System = system,
             };
             sv.Save();
 
@@ -77,11 +81,11 @@ namespace Jhu.Graywulf.Install
             };
             mrnode.Save();
 
-            sv = new ServerVersion(mrnode)
+            var nodesv = new ServerVersion(mrnode)
             {
                 Name = Constants.ServerVersionName,
             };
-            sv.Save();
+            nodesv.Save();
 
             //      -- Create a node
             /*
@@ -94,8 +98,29 @@ namespace Jhu.Graywulf.Install
             si.ServerVersionReference.Value = sv;
             si.Save();*/
 
+            // Create the shared domain for cluster level databases and users
+            var domain = new Domain(cluster)
+            {
+                Name = Constants.SharedDomainName,
+                Email = email,
+                System = system,
+            };
+            domain.Save();
+
+            // Create administrator group and user
+            GenerateAdminGroup(system);
+            GenerateAdmin(system, username, email, password);
+
+            // Create the shared feredation
+            var federation = new Federation(domain)
+            {
+                Name = Constants.SharedFederationName,
+                Email = email,
+                System = system,
+            };
+
             // Temp database definition
-            var tempdd = new DatabaseDefinition(cluster)
+            var tempdd = new DatabaseDefinition(federation)
             {
                 Name = Constants.TempDbName,
                 System = system,
@@ -159,7 +184,7 @@ namespace Jhu.Graywulf.Install
             qi.Save();
 
             //      -- database mirror job
-            var jd = new JobDefinition(cluster)
+            var jd = new JobDefinition(federation)
             {
                 Name = typeof(Jhu.Graywulf.Jobs.MirrorDatabase.MirrorDatabaseJob).Name,
                 System = system,
@@ -169,7 +194,7 @@ namespace Jhu.Graywulf.Install
             jd.Save();
 
             //      -- test job
-            jd = new JobDefinition(cluster)
+            jd = new JobDefinition(federation)
             {
                 Name = typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name,
                 System = system,
@@ -181,16 +206,28 @@ namespace Jhu.Graywulf.Install
             return cluster;
         }
 
-        private void GenerateAdmin(bool system, string username, string email, string password)
+        private void GenerateAdminGroup(bool system)
         {
-            var ug = new UserGroup(cluster)
+            cluster.LoadDomains(true);
+            var domain = cluster.Domains[Constants.SharedDomainName];
+
+            var ug = new UserGroup(domain)
             {
                 Name = Constants.ClusterAdministratorUserGroupName,
                 System = system,
             };
             ug.Save();
+        }
 
-            var u = new User(cluster)
+        public void GenerateAdmin(bool system, string username, string email, string password)
+        {
+            cluster.LoadDomains(true);
+            var domain = cluster.Domains[Constants.SharedDomainName];
+
+            domain.LoadUserGroups(true);
+            var ug = domain.UserGroups[Constants.ClusterAdministratorUserGroupName];
+
+            var u = new User(domain)
             {
                 Name = username,
                 System = system,
@@ -199,6 +236,7 @@ namespace Jhu.Graywulf.Install
             };
             u.SetPassword(password);
             u.Save();
+
             u.MakeMemberOf(ug.Guid);
         }
     }

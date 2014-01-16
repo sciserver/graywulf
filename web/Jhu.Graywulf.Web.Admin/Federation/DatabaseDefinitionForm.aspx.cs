@@ -94,20 +94,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             ServerVersion.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
 
-            Jhu.Graywulf.Registry.Cluster c;
-            if (Item.Parent is Jhu.Graywulf.Registry.Cluster)
-            {
-                c = Item.Cluster;
-            }
-            else if (Item.Parent is Jhu.Graywulf.Registry.Federation)
-            {
-                c = Item.Federation.Domain.Cluster;
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-
+            var c = Item.Federation.Domain.Cluster;
             c.LoadMachineRoles(false);
 
             foreach (MachineRole mr in c.MachineRoles.Values)

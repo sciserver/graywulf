@@ -38,12 +38,6 @@ namespace Jhu.Graywulf.Registry
         #region Navigation Properties
 
         [XmlIgnore]
-        public Cluster Cluster
-        {
-            get { return (Cluster)ParentReference.Value; }
-        }
-
-        [XmlIgnore]
         public Domain Domain
         {
             get { return (Domain)ParentReference.Value; }
@@ -72,18 +66,6 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         public UserGroup(Context context)
             : base(context)
-        {
-            InitializeMembers();
-        }
-
-        /// <summary>
-        /// Constructor for creating a new <b>User Group</b> object and setting the
-        /// context and the parent (Cluster).
-        /// </summary>
-        /// <param name="context">An object context class containing session information.</param>
-        /// <param name="parent">The parent entity of the <b>User Group</b> of type Cluster.</param>
-        public UserGroup(Cluster parent)
-            : base(parent.Context, parent)
         {
             InitializeMembers();
         }

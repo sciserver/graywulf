@@ -46,13 +46,15 @@ namespace Jhu.Graywulf.Web.Admin.User
             // Attempt to log in with supplied credentials
             try
             {
-                var c = new Registry.Cluster(RegistryContext);
-                c.Guid = new Guid(ClusterList.SelectedValue);
-                c.Load();
+                var cluster = new Registry.Cluster(RegistryContext);
+                cluster.Guid = new Guid(ClusterList.SelectedValue);
+                cluster.Load();
+
+                cluster.LoadDomains(false);
+                var domain = cluster.Domains[Registry.Constants.SharedDomainName];
 
                 var uu = new UserFactory(RegistryContext);
-
-                user = uu.LoginUser(c, Username.Text, Password.Text);
+                user = uu.LoginUser(domain, Username.Text, Password.Text);
 
                 RegistryContext.UserGuid = user.Guid;
                 RegistryContext.UserName = user.Name;
