@@ -146,12 +146,12 @@ namespace Jhu.Graywulf.Registry
             return new MachineRole(this);
         }
 
-        protected override Type[] CreateChildTypes()
+        protected override EntityType[] CreateChildTypes()
         {
-            return new Type[]
+            return new EntityType[]
             {
-                typeof(Machine),
-                typeof(ServerVersion),
+                EntityType.Machine,
+                EntityType.ServerVersion,
             };
         }
 

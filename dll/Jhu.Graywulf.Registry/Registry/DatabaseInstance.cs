@@ -243,10 +243,10 @@ namespace Jhu.Graywulf.Registry
             };
         }
 
-        protected override Type[] CreateChildTypes()
+        protected override EntityType[] CreateChildTypes()
         {
-            return new Type[] {
-                typeof(DatabaseInstanceFileGroup)
+            return new EntityType[] {
+                EntityType.DatabaseInstanceFileGroup
             };
         }
 

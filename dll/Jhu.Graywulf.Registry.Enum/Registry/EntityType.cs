@@ -94,7 +94,7 @@ namespace Jhu.Graywulf.Registry
         /// <summary>
         /// Distributed partitioned view logical definition
         /// </summary>
-        DistributedPartitionedView = Federation | 0x0600,
+        // TODO: delete DistributedPartitionedView = Federation | 0x0600,
 
         /// <summary>
         /// Binary code deployment package

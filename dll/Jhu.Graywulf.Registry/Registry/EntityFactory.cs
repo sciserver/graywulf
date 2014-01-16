@@ -113,10 +113,10 @@ ORDER BY rn
             }
         }
 
-        public IEnumerable<ItemType> FindChildren<ItemType>(Entity parent)
-            where ItemType : Entity, new()
+        public IEnumerable<T> FindChildren<T>(Entity parent)
+            where T : Entity, new()
         {
-            var childrentype = new ItemType().EntityType;
+            var childrentype = Entity.EntityTypeMap[typeof(T)];
 
             var sql = @"
 WITH q AS
@@ -145,7 +145,7 @@ ORDER BY Number
                 {
                     while (dr.Read())
                     {
-                        ItemType item = new ItemType();
+                        T item = new T();
                         item.Context = Context;
                         item.Parent = parent;
                         item.LoadFromDataReader(dr);
@@ -469,7 +469,7 @@ ORDER BY Number";
 
                         if (!entity.ParentReference.IsEmpty)
                         {
-                            entity.ResolveParentReference();
+                            ResolveParentReference(entity);
                         }
 
                         try
@@ -498,7 +498,7 @@ ORDER BY Number";
                 try
                 {
                     entity.IsDeserializing = false;     // Allows saving entity references
-                    entity.ResolveNameReferences();
+                    ResolveNameReferences(entity);
                     entity.Save();
                 }
                 catch (DuplicateNameException)
@@ -511,6 +511,30 @@ ORDER BY Number";
             }
 
             return registry.Entities;
+        }
+
+        private void ResolveParentReference(Entity entity)
+        {
+            entity.ParentReference.ResolveNameReference();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>
+        /// This is used by the XML deserializer
+        /// </remarks>
+        private void ResolveNameReferences(Entity entity)
+        {
+            foreach (IEntityReference r in entity.EntityReferences.Values)
+            {
+                if (!r.IsEmpty)
+                {
+                    r.ResolveNameReference();
+                }
+            }
+
+            entity.IsEntityReferencesLoaded = true;
         }
 
         #endregion

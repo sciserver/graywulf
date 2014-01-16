@@ -664,17 +664,24 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Navigation Functions
 
-        protected void LoadChildren<T>(bool forceReload)
+        public void LoadChildren(EntityType entityType, bool forceReload)
+        {
+            var gm = this.GetType().GetMethod("LoadChildren", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, new [] { typeof(bool) }, null);
+            gm = gm.MakeGenericMethod(EntityTypeMap[entityType]);
+            gm.Invoke(this, new object[] { forceReload });
+        }
+
+        public void LoadChildren<T>(bool forceReload)
             where T : Entity, new()
         {
-            var children = (Dictionary<string, T>)childEntities[typeof(T)];
+            var children = (Dictionary<string, T>)childEntities[EntityTypeMap[typeof(T)]];
 
             var reload = children == null || forceReload;
 
             if (children == null)
             {
                 children = CreateDictionary<T>();
-                childEntities[typeof(T)] = children;
+                childEntities[EntityTypeMap[typeof(T)]] = children;
             }
 
             if (forceReload)
@@ -693,7 +700,6 @@ namespace Jhu.Graywulf.Registry
         }
 
         private Dictionary<string, T> CreateDictionary<T>()
-            where T : Entity
         {
             return new Dictionary<string, T>(Entity.StringComparer);
         }
@@ -710,12 +716,9 @@ namespace Jhu.Graywulf.Registry
         /// <param name="forceReload">If true, reloads previously loaded entities too.</param>
         public void LoadAllChildren(bool forceReload)
         {
-            MethodInfo gm = this.GetType().GetMethod("LoadChildren", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            foreach (Type t in childEntities.Keys.ToArray())
+            foreach (EntityType t in childEntities.Keys.ToArray())
             {
-                MethodInfo m = gm.MakeGenericMethod(t);
-                m.Invoke(this, new object[] { forceReload });
+                LoadChildren(t, forceReload);
             }
         }
 
@@ -725,61 +728,6 @@ namespace Jhu.Graywulf.Registry
         public void LoadAllChildren()
         {
             LoadAllChildren(false);
-        }
-
-        #endregion
-        #region Serialization Functions
-
-        /*
-        internal IEnumerable<Entity> EnumerateChildrenForSerialize(HashSet<EntityType> excludeEntities, bool excludeUserJobs)
-        {
-            if (excludeEntities == null || !excludeEntities.Contains(this.EntityType))
-            {
-                // Make sure it's not a simple user job
-                if (excludeUserJobs &&
-                    this.entityType == Registry.EntityType.JobInstance &&
-                    (((JobInstance)this).ScheduleType != ScheduleType.Recurring ||
-                     ((JobInstance)this).JobExecutionStatus != JobExecutionState.Scheduled))
-                {
-                    yield break;
-                }
-
-                yield return this;
-
-                this.LoadAllChildren(true);
-                foreach (Entity e in this.EnumerateAllChildren())
-                {
-                    foreach (Entity ee in e.EnumerateChildrenForSerialize(excludeEntities, excludeUserJobs))
-                    {
-                        yield return ee;
-                    }
-                }
-            }
-        }
-         * */
-
-        internal void ResolveParentReference()
-        {
-            parentReference.ResolveNameReference();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <remarks>
-        /// This is used by the XML deserializer
-        /// </remarks>
-        internal void ResolveNameReferences()
-        {
-            foreach (IEntityReference r in entityReferences.Values)
-            {
-                if (!r.IsEmpty)
-                {
-                    r.ResolveNameReference();
-                }
-            }
-
-            isEntityReferencesLoaded = true;
         }
 
         #endregion

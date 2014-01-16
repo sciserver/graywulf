@@ -155,11 +155,11 @@ namespace Jhu.Graywulf.Registry
             return new Slice(this);
         }
 
-        protected override Type[] CreateChildTypes()
+        protected override EntityType[] CreateChildTypes()
         {
-            return new Type[]
+            return new EntityType[]
             {
-                typeof(Partition),
+                EntityType.Partition,
             };
         }
 

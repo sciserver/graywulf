@@ -8,6 +8,8 @@ using System.Xml.Serialization;
 using System.IO;
 using System.ComponentModel;
 using System.Xml;
+using System.Reflection;
+using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -25,6 +27,36 @@ namespace Jhu.Graywulf.Registry
         {
             get { return StringComparer.InvariantCultureIgnoreCase; }
         }
+
+        internal static Map<EntityType, Type> EntityTypeMap = new Map<EntityType, Type>()
+        {
+            { EntityType.Cluster, typeof(Cluster) },
+            { EntityType.DatabaseDefinition, typeof(DatabaseDefinition) },
+            { EntityType.DatabaseInstance, typeof(DatabaseInstance) },
+            { EntityType.DatabaseInstanceFile, typeof(DatabaseInstanceFile) },
+            { EntityType.DatabaseInstanceFileGroup, typeof(DatabaseInstanceFileGroup) },
+            { EntityType.DatabaseVersion, typeof(DatabaseVersion) },
+            { EntityType.DeploymentPackage, typeof(DeploymentPackage) },
+            { EntityType.DiskVolume, typeof(DiskVolume) },
+            { EntityType.Domain, typeof(Domain) },
+            { EntityType.Federation, typeof(Federation) },
+            { EntityType.FileGroup, typeof(FileGroup) },
+            { EntityType.JobDefinition, typeof(JobDefinition) },
+            { EntityType.JobInstance, typeof(JobInstance) },
+            { EntityType.Machine, typeof(Machine) },
+            { EntityType.MachineRole, typeof(MachineRole) },
+            { EntityType.Partition, typeof(Partition) },
+            { EntityType.QueueDefinition, typeof(QueueDefinition) },
+            { EntityType.QueueInstance, typeof(QueueInstance) },
+            { EntityType.RemoteDatabase, typeof(RemoteDatabase) },
+            { EntityType.ServerInstance, typeof(ServerInstance) },
+            { EntityType.ServerVersion, typeof(ServerVersion) },
+            { EntityType.Slice, typeof(Slice) },
+            { EntityType.User, typeof(User) },
+            { EntityType.UserDatabaseInstance, typeof(UserDatabaseInstance) },
+            { EntityType.UserGroup, typeof(UserGroup) },
+            { EntityType.UserGroupMembership, typeof(UserGroupMembership) },
+        };
 
         #region Member Variables
 
@@ -62,7 +94,7 @@ namespace Jhu.Graywulf.Registry
         private Dictionary<int, IEntityReference> entityReferences;
         private bool isEntityReferencesLoaded;
 
-        private Dictionary<Type, System.Collections.IDictionary> childEntities;
+        private Dictionary<EntityType, System.Collections.IDictionary> childEntities;
 
         #endregion
         #region Member Access Properties
@@ -163,6 +195,12 @@ namespace Jhu.Graywulf.Registry
 
                 return entityReferences;
             }
+        }
+
+        internal bool IsEntityReferencesLoaded
+        {
+            get { return isEntityReferencesLoaded; }
+            set { isEntityReferencesLoaded = value; }
         }
 
         /// <summary>
@@ -593,16 +631,16 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
-        protected virtual Type[] CreateChildTypes()
+        protected virtual EntityType[] CreateChildTypes()
         {
-            return new Type[0];
+            return new EntityType[0];
         }
 
         private void InitializeChildTypes()
         {
-            this.childEntities = new Dictionary<Type, System.Collections.IDictionary>();
+            this.childEntities = new Dictionary<EntityType, System.Collections.IDictionary>();
 
-            foreach (Type t in CreateChildTypes())
+            foreach (EntityType t in CreateChildTypes())
             {
                 childEntities.Add(t, null);
             }
@@ -610,15 +648,18 @@ namespace Jhu.Graywulf.Registry
 
         protected Dictionary<string, T> GetChildren<T>()
         {
-            return (Dictionary<string, T>)childEntities[typeof(T)];
+            return (Dictionary<string, T>)childEntities[EntityTypeMap[typeof(T)]];
         }
 
         protected void SetChildren<T>(Dictionary<string, T> value)
         {
-            childEntities[typeof(T)] = value;
+            childEntities[EntityTypeMap[typeof(T)]] = value;
         }
 
-        // Add enumerate children?
+        public IEnumerable<Entity> EnumerateChildren(EntityType entityType)
+        {
+            return childEntities[entityType].Values.Cast<Entity>();
+        }
 
         /// <summary>
         /// Gets an <b>IEnumerable&lt;<see cref="Entity" />&gt;</b> interface to the entity's child entities.
@@ -629,7 +670,7 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         public IEnumerable<Entity> EnumerateAllChildren()
         {
-            foreach (Type t in childEntities.Keys)
+            foreach (EntityType t in childEntities.Keys)
             {
                 foreach (object o in childEntities[t].Values)
                 {

@@ -314,14 +314,14 @@ namespace Jhu.Graywulf.Registry
             };
         }
 
-        protected override Type[] CreateChildTypes()
+        protected override EntityType[] CreateChildTypes()
         {
-            return new Type[] {
-                typeof(DatabaseVersion),
-                typeof(FileGroup),
-                typeof(Slice),
-                typeof(DeploymentPackage),
-                typeof(DatabaseInstance),
+            return new EntityType[] {
+                EntityType.DatabaseVersion,
+                EntityType.FileGroup,
+                EntityType.Slice,
+                EntityType.DeploymentPackage,
+                EntityType.DatabaseInstance,
             };
         }
 

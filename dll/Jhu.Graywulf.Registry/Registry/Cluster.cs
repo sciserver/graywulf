@@ -139,16 +139,16 @@ namespace Jhu.Graywulf.Registry
             return new Cluster(this);
         }
 
-        protected override Type[] CreateChildTypes()
+        protected override EntityType[] CreateChildTypes()
         {
-            return new Type[] {
-                    typeof(MachineRole),
-                    typeof(Domain),
-                    typeof(DatabaseDefinition),
-                    typeof(QueueDefinition),
-                    typeof(JobDefinition),
-                    typeof(User),
-                    typeof(UserGroup)
+            return new EntityType[] {
+                    EntityType.MachineRole,
+                    EntityType.Domain,
+                    EntityType.DatabaseDefinition,
+                    EntityType.QueueDefinition,
+                    EntityType.JobDefinition,
+                    EntityType.User,
+                    EntityType.UserGroup
             };
         }
 

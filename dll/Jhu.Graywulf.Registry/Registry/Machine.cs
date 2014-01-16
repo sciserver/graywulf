@@ -178,13 +178,13 @@ namespace Jhu.Graywulf.Registry
             return new Machine(this);
         }
 
-        protected override Type[] CreateChildTypes()
+        protected override EntityType[] CreateChildTypes()
         {
-            return new Type[]
+            return new EntityType[]
             {
-                typeof(DiskVolume),
-                typeof(ServerInstance),
-                typeof(QueueInstance),
+                EntityType.DiskVolume,
+                EntityType.ServerInstance,
+                EntityType.QueueInstance,
             };
         }
 

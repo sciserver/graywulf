@@ -224,13 +224,13 @@ namespace Jhu.Graywulf.Registry
             };
         }
 
-        protected override Type[] CreateChildTypes()
+        protected override EntityType[] CreateChildTypes()
         {
-            return new Type[]
+            return new EntityType[]
             {
-                typeof(Federation),
-                typeof(User),
-                typeof(UserGroup)
+                EntityType.Federation,
+                EntityType.User,
+                EntityType.UserGroup
             };
         }
 
