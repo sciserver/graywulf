@@ -516,6 +516,8 @@ ORDER BY Number";
                     if (entity.ParentReference.IsEmpty && depth == 0 ||
                         !entity.ParentReference.IsEmpty && depth == entity.ParentReference.Name.Count(c => c == '.') + 1)
                     {
+                        Console.Error.Write("Deserializing {0}... ", entity.Name);
+
                         entity.IsDeserializing = true;
                         entity.Context = this.Context;
 
@@ -527,6 +529,7 @@ ORDER BY Number";
                         try
                         {
                             entity.Save();
+                            Console.Error.WriteLine("done.");
                         }
                         catch (DuplicateNameException)
                         {
@@ -534,9 +537,13 @@ ORDER BY Number";
                             {
                                 throw;
                             }
+                            Console.Error.WriteLine("ignored duplicate.");
                         }
-
-                        Console.Error.WriteLine("Created {0}", entity.Name);
+                        catch (Exception)
+                        {
+                            Console.Error.WriteLine("failed.");
+                            throw;
+                        }
 
                         count++;
                     }
@@ -547,19 +554,29 @@ ORDER BY Number";
 
             foreach (var entity in registry.Entities)
             {
-                try
-                {
-                    entity.IsDeserializing = false;     // Allows saving entity references
-                    ResolveNameReferences(entity);
-                    entity.Save();
-                }
-                catch (DuplicateNameException)
-                {
-                    if (!ignoreDuplicates)
+                    Console.Error.Write("Resolving references of {0}... ", entity.Name);
+
+                    try
                     {
+                        entity.IsDeserializing = false;     // Allows saving entity references
+                        ResolveNameReferences(entity);
+                        entity.Save();
+
+                        Console.Error.WriteLine("done.");
+                    }
+                    catch (DuplicateNameException)
+                    {
+                        if (!ignoreDuplicates)
+                        {
+                            throw;
+                        }
+                        Console.Error.WriteLine("ignored duplicate.");
+                    }
+                    catch (Exception)
+                    {
+                        Console.Error.WriteLine("failed.");
                         throw;
                     }
-                }
             }
 
             return registry.Entities;

@@ -41,10 +41,12 @@ namespace Jhu.Graywulf.Registry
         /// on the <b>SqlDataReader</b> object. Reads data columns by their ordinal position in
         /// the query and not by their names.
         /// </remarks>
-        internal void LoadFromDataReader(SqlDataReader dr)
+        internal bool LoadFromDataReader(SqlDataReader dr)
         {
             if (!dr.HasRows)
             {
+                // TODO: move this outside, we can't determine here how the entity was referenced,
+                // so no way to report invalid guid or name correctly
                 throw new EntityNotFoundException(String.Format(ExceptionMessages.EntityNotFound, String.IsNullOrWhiteSpace(name) ? guid.ToString() : name));
             }
 
@@ -81,6 +83,8 @@ namespace Jhu.Graywulf.Registry
             isExisting = true;
 
             OnLoaded();
+
+            return true;
         }
 
         protected virtual void OnLoaded()

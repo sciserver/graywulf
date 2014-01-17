@@ -118,6 +118,7 @@ namespace Jhu.Graywulf.Install
                 Email = email,
                 System = system,
             };
+            federation.Save();
 
             // Temp database definition
             var tempdd = new DatabaseDefinition(federation)
@@ -133,7 +134,7 @@ namespace Jhu.Graywulf.Install
             tempdd.Save();
 
             var tempddi = new DatabaseDefinitionInstaller(tempdd);
-            tempddi.GenerateDefaultChildren(sv, Constants.TempDbName);
+            tempddi.GenerateDefaultChildren(nodesv, Constants.TempDbName);
 
             // Create cluster level jobs and queues
 
