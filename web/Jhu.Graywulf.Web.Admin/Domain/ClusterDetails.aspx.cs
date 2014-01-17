@@ -27,8 +27,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain
             base.InitLists();
 
             DomainList.ParentEntity = Item;
-            UserList.ParentEntity = Item;
-            UserGroupList.ParentEntity = Item;
         }
     }
 }

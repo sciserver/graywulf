@@ -64,11 +64,21 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
             {
-                var i = new ClusterInstaller(context);
+                try
+                {
+                    var i = new ClusterInstaller(context);
 
-                i.Install(true, clusterName, adminUsername, adminEmail, adminPassword);
+                    i.Install(true, clusterName, adminUsername, adminEmail, adminPassword);
 
-                context.CommitTransaction();
+                    context.CommitTransaction();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Importing xml file failed.");
+                    Console.WriteLine(ex.Message);
+
+                    context.RollbackTransaction();
+                }
             }
 
             Console.WriteLine("done.");

@@ -23,11 +23,21 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                var f = new EntityFactory(context);
-
-                using (var infile = new StreamReader(Input))
+                try
                 {
-                    f.Deserialize(infile, IgnoreDuplicates);
+                    var f = new EntityFactory(context);
+
+                    using (var infile = new StreamReader(Input))
+                    {
+                        f.Deserialize(infile, IgnoreDuplicates);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Importing xml file failed.");
+                    Console.WriteLine(ex.Message);
+
+                    context.RollbackTransaction();
                 }
             }
         }

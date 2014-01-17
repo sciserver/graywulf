@@ -10,8 +10,6 @@
             EntityGroup="Jobs" />
         <jgwac:EntityList runat="server" ID="QueueDefinitionList" ChildrenType="QueueDefinition"
             EntityGroup="Jobs" />
-        <jgwac:EntityList runat="server" ID="JobDefinitionList" ChildrenType="JobDefinition"
-            EntityGroup="Jobs" />
     </jgwac:EntityChildren>
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="FormButtons">

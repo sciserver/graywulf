@@ -22,24 +22,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain {
         protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList DomainList;
         
         /// <summary>
-        /// UserList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList UserList;
-        
-        /// <summary>
-        /// UserGroupList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList UserGroupList;
-        
-        /// <summary>
         /// EntityButtons control.
         /// </summary>
         /// <remarks>

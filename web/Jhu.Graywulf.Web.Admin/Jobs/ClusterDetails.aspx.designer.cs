@@ -40,15 +40,6 @@ namespace Jhu.Graywulf.Web.Admin.Jobs {
         protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList QueueDefinitionList;
         
         /// <summary>
-        /// JobDefinitionList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList JobDefinitionList;
-        
-        /// <summary>
         /// EntityButtons control.
         /// </summary>
         /// <remarks>

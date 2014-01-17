@@ -18,11 +18,21 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                var f = new EntityFactory(context);
-                var c = f.LoadEntity<Cluster>(clusterName);
+                try
+                {
+                    var f = new EntityFactory(context);
+                    var c = f.LoadEntity<Cluster>(clusterName);
 
-                var ci = new ClusterInstaller(c);
-                ci.GenerateAdmin(false, adminUsername, adminEmail, adminPassword);
+                    var ci = new ClusterInstaller(c);
+                    ci.GenerateAdmin(false, adminUsername, adminEmail, adminPassword);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("failed.");
+                    Console.WriteLine(ex.Message);
+
+                    context.RollbackTransaction();
+                }
             }
 
             Console.WriteLine("done.");

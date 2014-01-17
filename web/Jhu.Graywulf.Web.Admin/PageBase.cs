@@ -17,9 +17,17 @@ namespace Jhu.Graywulf.Web.Admin
             {
                 if (cluster == null && Session[Constants.SessionClusterGuid] != null)
                 {
-                    cluster = new Registry.Cluster(RegistryContext);
-                    cluster.Guid = (Guid)Session[Constants.SessionClusterGuid];
-                    cluster.Load();
+                    try
+                    {
+                        cluster = new Registry.Cluster(RegistryContext);
+                        cluster.Guid = (Guid)Session[Constants.SessionClusterGuid];
+                        cluster.Load();
+                    }
+                    catch (EntityNotFoundException)
+                    {
+                        Session.Abandon();
+                        Response.Redirect(Default.GetUrl());
+                    }
                 }
 
                 return cluster;

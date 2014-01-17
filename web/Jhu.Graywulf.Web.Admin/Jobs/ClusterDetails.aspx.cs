@@ -28,41 +28,6 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
             MachineRoleList.ParentEntity = Item;
             DomainList.ParentEntity = Item;
             QueueDefinitionList.ParentEntity = Item;
-            JobDefinitionList.ParentEntity = Item;
         }
-
-        /*
-        protected void MachineRoleList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/jobs/MachineRoleDetails.aspx?Guid=" + e.CommandArgument);
-        }
-
-        protected void DomainList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/jobs/DomainDetails.aspx?Guid=" + e.CommandArgument);
-        }
-
-        protected void QueueDefinitionList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/jobs/QueueDefinitionDetails.aspx?Guid=" + e.CommandArgument);
-        }
-
-        protected void AddQueueDefinition_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(item.GetNewChildFormUrl(EntityType.QueueDefinition));
-        }
-
-        protected void JobDefinitionList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect(EntityExtensions.GetDetailsUrl(
-                EntityType.JobDefinition,
-                EntityGroup.Jobs,
-                Guid.Parse((string)e.CommandArgument)));
-        }
-
-        protected void AddJobDefinition_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(item.GetNewChildFormUrl(EntityType.JobDefinition));
-        }*/
     }
 }

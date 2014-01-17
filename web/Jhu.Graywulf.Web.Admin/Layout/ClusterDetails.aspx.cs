@@ -24,20 +24,7 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         protected override void InitLists()
         {
             base.InitLists();
-
-            DatabaseDefinitionList.ParentEntity = Item;
             DomainList.ParentEntity = Item;
         }
-
-        /*
-        protected void DomainList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/layout/DomainDetails.aspx?Guid=" + e.CommandArgument);
-        }
-
-        protected void DatabaseDefinitionList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/layout/DatabaseDefinitionDetails.aspx?Guid=" + e.CommandArgument);
-        }*/
     }
 }

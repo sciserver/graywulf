@@ -25,29 +25,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.InitLists();
 
-            DatabaseDefinitionList.ParentEntity = Item;
             DomainList.ParentEntity = Item;
         }
-
-        /*
-        protected void DatabaseDefinitionList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/federation/DatabaseDefinitionDetails.aspx?Guid=" + e.CommandArgument);
-        }
-
-        protected void AddDatabaseDefinition_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(item.GetNewChildFormUrl(EntityType.DatabaseDefinition));
-        }
-
-        protected void DomainList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/federation/DomainDetails.aspx?Guid=" + e.CommandArgument);
-        }
-
-        protected void AddDomain_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(item.GetNewChildFormUrl(EntityType.Domain));
-        }*/
     }
 }
