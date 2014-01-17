@@ -143,8 +143,14 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             // TODO: This can be done on the cluster or on the federation level!
             if (TempDatabaseVersion.Visible)
             {
+                var c = Item.Domain.Cluster;
+                c.LoadDomains(false);
+                var d = c.Domains[Registry.Constants.SharedDomainName];
+                d.LoadFederations(false);
+                var f = d.Federations[Registry.Constants.SharedFederationName];
+
                 TempDatabaseVersion.ChildEntityTypes = new[] { EntityType.DatabaseDefinition, EntityType.DatabaseVersion };
-                TempDatabaseVersion.ParentEntity = Item.Domain.Cluster;
+                TempDatabaseVersion.ParentEntity = f;
             }
 
             // This is always on the federation level

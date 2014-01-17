@@ -65,12 +65,12 @@ namespace Jhu.Graywulf.Install
             };
             mcont.Save();
 
-            var si = new ServerInstance(mcont)
+            var sicont = new ServerInstance(mcont)
             {
                 Name = Constants.ServerInstanceName,
                 ServerVersion = sv,
             };
-            si.Save();
+            sicont.Save();
 
 
             //      -- node role
@@ -117,6 +117,8 @@ namespace Jhu.Graywulf.Install
                 Name = Constants.SharedFederationName,
                 Email = email,
                 System = system,
+                ControllerMachine = mcont,
+                SchemaSourceServerInstance = sicont,
             };
             federation.Save();
 
