@@ -131,6 +131,8 @@
     <Content Include="Docs\images\vao.png" />
     <Content Include="Domain\AddUserGroupMember.aspx" />
     <Content Include="Domain\ClusterDetails.aspx" />
+    <Content Include="Domain\UserIdentityDetails.aspx" />
+    <Content Include="Domain\UserIdentityForm.aspx" />
     <Content Include="Domain\Default.aspx" />
     <Content Include="Domain\DomainDetails.aspx" />
     <Content Include="Domain\UserDetails.aspx" />
@@ -750,6 +752,20 @@
     </Compile>
     <Compile Include="Domain\ClusterDetails.aspx.designer.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Domain\UserIdentityDetails.aspx.cs">
+      <DependentUpon>UserIdentityDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\UserIdentityDetails.aspx.designer.cs">
+      <DependentUpon>UserIdentityDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Domain\UserIdentityForm.aspx.cs">
+      <DependentUpon>UserIdentityForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\UserIdentityForm.aspx.designer.cs">
+      <DependentUpon>UserIdentityForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Domain\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>

@@ -273,4 +273,16 @@
   <data name="UserDatabaseInstance_Singular" xml:space="preserve">
     <value>User Database</value>
   </data>
+  <data name="UserGroupMembership_Plural" xml:space="preserve">
+    <value>User Group Memberships</value>
+  </data>
+  <data name="UserGroupMembership_Singular" xml:space="preserve">
+    <value>User Group Membership</value>
+  </data>
+  <data name="UserIdentity_Plural" xml:space="preserve">
+    <value>User Identities</value>
+  </data>
+  <data name="UserIdentity_Singular" xml:space="preserve">
+    <value>User Identity</value>
+  </data>
 </root>

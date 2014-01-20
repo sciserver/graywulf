@@ -380,6 +380,13 @@ namespace Jhu.Graywulf.Registry
             set { SetChildren<UserGroupMembership>(value); }
         }
 
+        [XmlIgnore]
+        public Dictionary<string, UserIdentity> UserIdentities
+        {
+            get { return GetChildren<UserIdentity>(); }
+            set { SetChildren<UserIdentity>(value); }
+        }
+
         #endregion
         #region Validation Properties
         #endregion
@@ -507,6 +514,7 @@ namespace Jhu.Graywulf.Registry
             return new EntityType[] 
             {
                 EntityType.UserGroupMembership,
+                EntityType.UserIdentity,
             };
         }
 
@@ -531,33 +539,11 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         /// <param name="password">The password string.</param>
         /// <returns>The binary hash.</returns>
-        public static byte[] ComputePasswordHash(string password)
+        internal static byte[] ComputePasswordHash(string password)
         {
             HashAlgorithm hashalg = new SHA512Managed();
             return hashalg.ComputeHash(Encoding.Unicode.GetBytes(password));
         }
-
-        #endregion
-        #region Database mappings and MyDB
-
-
-        /*
-         * TODO: delete
-        public DatabaseInstance GetUserDatabaseInstance(DatabaseVersion databaseVersion)
-        {
-            LoadUserDatabaseInstances(true);
-            var udi = UserDatabaseInstances.Values.FirstOrDefault(i => i.DatabaseVersionReference.Guid == databaseVersion.Guid);
-
-            if (udi != null)
-            {
-                return udi.DatabaseInstance;
-            }
-            else
-            {
-                return null;
-            }
-        }
-        */
 
         #endregion
         #region Email functions

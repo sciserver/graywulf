@@ -54,6 +54,7 @@ namespace Jhu.Graywulf.Registry
             { EntityType.Slice, typeof(Slice) },
             { EntityType.User, typeof(User) },
             { EntityType.UserDatabaseInstance, typeof(UserDatabaseInstance) },
+            { EntityType.UserIdentity, typeof(UserIdentity) },
             { EntityType.UserGroup, typeof(UserGroup) },
             { EntityType.UserGroupMembership, typeof(UserGroupMembership) },
         };

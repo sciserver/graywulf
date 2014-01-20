@@ -487,6 +487,21 @@ CREATE TABLE [dbo].[UserGroupMembership]
 GO
 
 
+CREATE TABLE [dbo].[UserIdentity]
+(
+	[EntityGuid] [uniqueidentifier] NOT NULL,
+	[Protocol] [nvarchar](25) NOT NULL,
+	[Authority] [nvarchar](50) NOT NULL,
+	[Identifier] [nvarchar](50) NOT NULL,
+	CONSTRAINT [PK_UserIdentity] PRIMARY KEY CLUSTERED 
+	(
+		[EntityGuid] ASC
+	)
+)
+
+GO
+
+
 -- USER DEFINED TABLE TYPES --
 
 CREATE TYPE [dbo].[EntityReferenceList] AS TABLE

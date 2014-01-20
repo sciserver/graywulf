@@ -61,6 +61,9 @@ namespace Jhu.Graywulf.Web.Admin.Domain
 
             Item.LoadUserGroupMemberships(true);
             UserGroupMemberList.DataSource = Item.UserGroupMemberships.Values;
+
+            Item.LoadUserIdentities(true);
+            IdentitiesList.ParentEntity = Item;
         }
 
         private void RemoveUserGroup(Guid[] guids)

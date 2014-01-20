@@ -16,9 +16,9 @@ namespace Jhu.Graywulf.Registry
             LoadChildren<UserGroupMembership>(forceReload);
         }
 
-        public void LoadUserDatabaseInstances(bool forceReload)
+        public void LoadUserIdentities(bool forceReload)
         {
-            LoadChildren<UserDatabaseInstance>(forceReload);
+            LoadChildren<UserIdentity>(forceReload);
         }
 
         #endregion

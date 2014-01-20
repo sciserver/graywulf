@@ -232,6 +232,9 @@
                     </p>
                 </div>
             </jgwc:TabView>
+            <jgwc:TabView runat="server" Text="Identities">
+                <jgwac:EntityList runat="server" ID="IdentitiesList" ChildrenType="UserIdentity" EntityGroup="Domain" DataObjectTypeName="UserIdentity" />
+            </jgwc:TabView>
         </asp:MultiView>
     </div>
 </asp:Content>

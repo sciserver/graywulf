@@ -155,6 +155,11 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         UserGroupMembership = Security | 0x0400,
 
+        /// <summary>
+        /// User identity (OpenID, Keystone etc.)
+        /// </summary>
+        UserIdentity = Security | 0x0800,
+
         AllSecurity = Security | 0xFFFF,
 
         #endregion

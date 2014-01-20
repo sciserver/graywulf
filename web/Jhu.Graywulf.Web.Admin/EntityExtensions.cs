@@ -97,17 +97,6 @@ namespace Jhu.Graywulf.Web.Admin
             return url;
         }
 
-        /*
-        public static string GetDeleteFormUrl(this Entity entity)
-        {
-            return "~/Common/EntityDelete.aspx?guid=" + entity.Guid.ToString();
-        }
-
-        public static string GetDiscoverUrl(this Entity entity)
-        {
-            return "~/Common/EntityDiscover.aspx?guid=" + entity.Guid.ToString();
-        }*/
-
         /// <summary>
         /// Returns the default entity group.
         /// </summary>
@@ -157,6 +146,8 @@ namespace Jhu.Graywulf.Web.Admin
                     break;
                 case EntityType.UserGroup:
                 case EntityType.User:
+                case EntityType.UserIdentity:
+                case EntityType.UserGroupMembership:
                     group = EntityGroup.Domain;
                     break;
                 default:
@@ -214,8 +205,10 @@ namespace Jhu.Graywulf.Web.Admin
                 case EntityType.JobInstance:
                     group = EntityGroup.Jobs;
                     break;
-                case EntityType.UserGroup:
                 case EntityType.User:
+                case EntityType.UserGroup:
+                case EntityType.UserGroupMembership:
+                case EntityType.UserIdentity:
                     group = EntityGroup.Domain;
                     break;
                 default:
