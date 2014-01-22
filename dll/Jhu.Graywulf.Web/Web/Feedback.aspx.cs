@@ -4,6 +4,7 @@ using System.Text;
 using System.Web.Mail;
 using System.Web;
 using System.Web.UI.WebControls;
+using Jhu.Graywulf.Security;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Web.Util;
 
@@ -64,13 +65,15 @@ namespace Jhu.Graywulf.Web
 
             if (!IsPostBack)
             {
+                var user = ((GraywulfIdentity)User.Identity).User;
+
                 // Load user if available
-                if (RegistryUser != null)
+                if (user != null)
                 {
-                    Name.Text = String.Format("{0} {1}", RegistryUser.FirstName, RegistryUser.LastName);
+                    Name.Text = String.Format("{0} {1}", user.FirstName, user.LastName);
                     NameRow.Visible = false;
 
-                    Email.Text = RegistryUser.Email;
+                    Email.Text = user.Email;
                     EmailRow.Visible = false;
                 }
 

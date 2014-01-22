@@ -152,6 +152,35 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
+        public User FindUserByIdentity(string protocol, string authority, string identifier)
+        {
+            return FindUserByIdentity(Context.Domain, protocol, authority, identifier);
+        }
+
+        private User FindUserByIdentity(Entity parent, string protocol, string authority, string identifier)
+        {
+            var user = new User(Context);
+
+            var sql = "spFindUser_byIdentity";
+
+            using (var cmd = Context.CreateStoredProcedureCommand(sql))
+            {
+                cmd.Parameters.Add("@DomainGuid", SqlDbType.UniqueIdentifier).Value = parent.Guid;
+                cmd.Parameters.Add("@Protocol", SqlDbType.NVarChar, 25).Value = protocol;
+                cmd.Parameters.Add("@Authority", SqlDbType.NVarChar, 25).Value = authority;
+                cmd.Parameters.Add("@Identifier", SqlDbType.NVarChar, 25).Value = identifier;
+
+                using (var dr = cmd.ExecuteReader())
+                {
+                    dr.Read();
+                    user.LoadFromDataReader(dr);
+                    dr.Close();
+                }
+            }
+
+            return user;
+        }
+
         #endregion
     }
 }

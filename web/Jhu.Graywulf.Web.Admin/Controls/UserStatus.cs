@@ -84,7 +84,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
         {
             base.OnLoad(e);
 
-            username.Text = (string)Page.Session[Web.Constants.SessionUsername];
+            username.Text = Page.User.Identity.Name;
 
             icon.CssClass = CssClass;
             usernameLabel.CssClass = CssClass;
@@ -120,7 +120,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
                     usernameLabel.RenderControl(writer);
                     writer.Write(": ");
 
-                    username.Text = Username;
+                    username.Text = Page.User.Identity.Name;
                     username.RenderControl(writer);
 
                     //writer.Write(" | ");

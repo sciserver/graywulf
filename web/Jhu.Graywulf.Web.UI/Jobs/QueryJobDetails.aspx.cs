@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security;
+using Jhu.Graywulf.Security;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
 
@@ -23,7 +24,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             job.Load();
 
             // Check user ID
-            if (job.UserGuidOwner != UserGuid)
+            if (IsAuthenticatedUser(job.UserGuidOwner))
             {
                 throw new Registry.SecurityException("Access denied.");
             }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.IO;
 using System.Security;
 using System.Web.UI.WebControls;
+using Jhu.Graywulf.Security;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
 
@@ -26,7 +27,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             job.Load();
 
             // Check user ID
-            if (job.UserGuidOwner != UserGuid)
+            if (IsAuthenticatedUser(job.UserGuidOwner))
             {
                 throw new Registry.SecurityException("Access denied.");  // TODO
             }

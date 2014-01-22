@@ -18,9 +18,6 @@ namespace Jhu.Graywulf.Web.Admin.User
         protected void Page_Load(object sender, EventArgs e)
         {
             FormsAuthentication.SignOut();
-            Session[Constants.SessionClusterGuid] = null;
-            Session[Web.Constants.SessionUsername] = null;
-            Session[Web.Constants.SessionContextGuid] = null;
             Session.Abandon();
 
             ShortTitle.Text = (string)Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle];

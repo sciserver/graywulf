@@ -15,9 +15,7 @@ namespace Jhu.Graywulf.Web
         public const string ApplicationCopyright = "Jhu.Graywulf.Web.Copyright";
 
         public const string SessionRegistryDatabase = "Jhu.Graywulf.Registry.Database";
-        public const string SessionUsername = "Jhu.Graywulf.Web.Username";
-        public const string SessionUserGuid = "Jhu.Graywulf.Web.UserGuid";
-        public const string SessionContextGuid = "Jhu.Graywulf.Web.ContextGuid";
+        public const string SessionPrincipal = "Jhu.Graywulf.Security.Principal";
         public const string SessionCaptcha = "Jhu.Graywulf.Web.Captcha";
         
         public const string SessionException = "Jhu.Graywulf.Web.Exception";

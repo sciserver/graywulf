@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.Security;
+using Jhu.Graywulf.Security;
 using Jhu.Graywulf.Web;
 using Jhu.Graywulf.Registry;
 
@@ -19,13 +20,10 @@ namespace Jhu.Graywulf.Web.Auth
 
         private Jhu.Graywulf.Registry.User user;
 
-        protected override void EnsureUserIdentified()
-        {
-            // Override default behavior to do nothing
-        }
-
         protected void Page_Load(object sender, EventArgs e)
         {
+            CreateAuthenticatorButtons();
+
             SignInForm.Text = String.Format("Welcome to {0}", Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle]);
 
             RegisterLink.NavigateUrl = Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl);
@@ -57,13 +55,15 @@ namespace Jhu.Graywulf.Web.Auth
         {
             if (IsValid)
             {
+                // Check if user was already activated. If not, redirect to activation page
+
                 if (user.DeploymentState != DeploymentState.Deployed)
                 {
                     Response.Redirect(Activate.GetUrl(ReturnUrl));
                 }
                 else
                 {
-                    FormsAuthentication.RedirectFromLoginPage(user.Guid.ToString(), Remember.Checked);
+                    FormsAuthentication.RedirectFromLoginPage(user.Name, Remember.Checked);
                 }
             }
         }
@@ -71,6 +71,41 @@ namespace Jhu.Graywulf.Web.Auth
         protected void Register_Click(object sender, EventArgs e)
         {
             Response.Redirect(Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl));
+        }
+
+        private void CreateAuthenticatorButtons()
+        {
+            var af = new AuthenticatorFactory();
+            var aus = af.GetAuthenticators();
+
+            for (int i = 0; i < aus.Length; i++)
+            {
+                if (aus[i].IsInteractive)
+                {
+                    var b = new ImageButton()
+                    {
+                        CausesValidation = false,
+                        AlternateText = aus[i].DisplayName,
+                        ToolTip = String.Format("Log on using {0}.", aus[i].DisplayName),
+                        CommandArgument = String.Format("{0}|{1}", aus[i].Protocol, aus[i].Authority)
+                    };
+
+                    b.Click += new ImageClickEventHandler(AuthenticatorButton_Click);
+
+                    Authenticators.Controls.Add(b);
+                }
+            }
+        }
+
+        void AuthenticatorButton_Click(object sender, ImageClickEventArgs e)
+        {
+            var parts = ((ImageButton) sender).CommandArgument.Split('|');
+
+            var af = new AuthenticatorFactory();
+
+            var a = af.GetAuthenticator(parts[0], parts[1]);
+
+            a.RedirectToLoginPage();
         }
     }
 }

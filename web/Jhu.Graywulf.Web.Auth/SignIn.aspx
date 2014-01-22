@@ -39,6 +39,10 @@
                     </td>
                 </tr>
             </table>
+            <p>
+                Alternatively, you can sign in using the following authentication providers:
+            </p>
+            <asp:Panel runat="server" ID="Authenticators"></asp:Panel>
             <ul>
                 <li>If not registered yet,
                     <asp:HyperLink runat="server" ID="RegisterLink">create a new

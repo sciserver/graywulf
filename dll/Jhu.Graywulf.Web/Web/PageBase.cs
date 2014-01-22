@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
 using System.Web.UI;
 using System.Web.Security;
+using Jhu.Graywulf.Security;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web
@@ -38,6 +40,11 @@ namespace Jhu.Graywulf.Web
             get { return Request.QueryString[Constants.ReturnUrl] ?? ""; }
         }
 
+        public User RegistryUser
+        {
+            get { return ((GraywulfIdentity)this.User.Identity).User; }
+        }
+
         public Context RegistryContext
         {
             get
@@ -45,21 +52,13 @@ namespace Jhu.Graywulf.Web
                 if (context == null)
                 {
                     context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.ManualCommit);
-                    context.ContextGuid = (Guid)Session[Constants.SessionContextGuid];
 
                     if (Request.IsAuthenticated)
                     {
-                        if (Username == null)
-                        {
-                            registryUser = new User(context);
-                            registryUser.Guid = UserGuid;
-                            registryUser.Load();
+                        var userProperty = ((GraywulfIdentity)User.Identity).UserProperty;
 
-                            Session[Constants.SessionUsername] = RegistryUser.Name;
-                        }
-
-                        context.UserGuid = UserGuid;
-                        context.UserName = Username;
+                        context.UserGuid = userProperty.Guid;
+                        context.UserName = userProperty.Name;
                     }
                 }
 
@@ -67,6 +66,7 @@ namespace Jhu.Graywulf.Web
             }
         }
 
+        // TODO: delete and use property from context
         public Domain Domain
         {
             get
@@ -81,6 +81,7 @@ namespace Jhu.Graywulf.Web
             }
         }
 
+        // TODO: delete and use property from context
         public Federation Federation
         {
             get
@@ -127,62 +128,10 @@ namespace Jhu.Graywulf.Web
             {
                 if (myDBDatabaseInstance == null)
                 {
-                    myDBDatabaseInstance = MyDBDatabaseVersion.GetUserDatabaseInstance(RegistryUser);
+                    myDBDatabaseInstance = MyDBDatabaseVersion.GetUserDatabaseInstance(((GraywulfIdentity)User.Identity).User);
                 }
 
                 return myDBDatabaseInstance;
-            }
-        }
-
-        public Guid UserGuid
-        {
-            get
-            {
-                if (Request.IsAuthenticated)
-                {
-                    return new Guid(User.Identity.Name);
-                }
-                else
-                {
-                    return Guid.Empty;
-                }
-            }
-        }
-
-        public string Username
-        {
-            get
-            {
-                if (Request.IsAuthenticated)
-                {
-                    return (string)Session[Constants.SessionUsername];
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        public Jhu.Graywulf.Registry.User RegistryUser
-        {
-            get
-            {
-                if (UserGuid != Guid.Empty)
-                {
-                    if (registryUser == null)
-                    {
-                        registryUser = new Jhu.Graywulf.Registry.User(RegistryContext);
-                        registryUser.Guid = UserGuid;
-                        registryUser.Load();
-                    }
-
-                    return registryUser;
-                }
-                else
-                {
-                    return null;
-                }
             }
         }
 
@@ -192,7 +141,7 @@ namespace Jhu.Graywulf.Web
         {
             base.OnPreInit(e);
 
-            EnsureUserIdentified();
+            EnsureUserAuthenticated();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -218,6 +167,11 @@ namespace Jhu.Graywulf.Web
             }
 
             base.OnUnload(e);
+        }
+
+        protected bool IsAuthenticatedUser(Guid userGuid)
+        {
+            return userGuid != ((GraywulfIdentity)User.Identity).UserProperty.Guid;
         }
 
         protected Logging.Event LogError(Exception ex)
@@ -252,7 +206,6 @@ namespace Jhu.Graywulf.Web
             Session[Constants.SessionException] = ex;
             Session[Constants.SessionExceptionEventID] = error.EventId;
 
-
             if (context != null)
             {
                 context.RollbackTransaction();
@@ -270,23 +223,16 @@ namespace Jhu.Graywulf.Web
         #endregion
         #region User managemenet functions
 
-        protected virtual void EnsureUserIdentified()
+        protected virtual void EnsureUserAuthenticated()
         {
-            // Check newly signed in user
-            // If user is authenticated successfully User.Identity.Name is set to
-            // the user's GUID (intead of their name). Compare it with session variables
-            // to make sure the user we see is actually the one who's authenticated.
-            if (Request.IsAuthenticated &&
-                (Session[Constants.SessionUsername] == null ||
-                 (Guid)Session[Constants.SessionUserGuid] != Guid.Parse(User.Identity.Name)))
+            var sessionPrincipal = (GraywulfPrincipal)Session[Constants.SessionPrincipal];
+
+            if (Request.IsAuthenticated && User is GraywulfPrincipal && sessionPrincipal == null)
             {
-                Session[Constants.SessionUsername] = RegistryUser.Name;
-                Session[Constants.SessionUserGuid] = RegistryUser.Guid;
+                Session[Constants.SessionPrincipal] = User;
                 OnUserSignedIn();
             }
-
-            // Check signed off user
-            if (!Request.IsAuthenticated && Session[Constants.SessionUsername] != null)
+            else if (!Request.IsAuthenticated && sessionPrincipal != null)
             {
                 OnUserSignedOut();
                 Session.Abandon();

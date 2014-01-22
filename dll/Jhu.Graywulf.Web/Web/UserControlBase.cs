@@ -19,34 +19,6 @@ namespace Jhu.Graywulf.Web
             get { return ((PageBase)Page).RegistryContext; }
         }
 
-        public Guid UserGuid
-        {
-            get
-            {
-                if (Page.Request.IsAuthenticated)
-                {
-                    return new Guid(Page.User.Identity.Name);
-                }
-                else
-                {
-                    return Guid.Empty;
-                }
-            }
-        }
-
-        public string Username
-        {
-            get
-            {
-                if (Page.Request.IsAuthenticated)
-                {
-                    return (string)Page.Session[Constants.SessionUsername];
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
+        
     }
 }

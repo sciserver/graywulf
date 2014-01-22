@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Jhu.Graywulf.Security;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.UI.Jobs
@@ -34,7 +35,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
                 job.Guid = guid;
                 job.Load();
 
-                if (job.UserGuidOwner != UserGuid)
+                if (IsAuthenticatedUser(job.UserGuidOwner))
                 {
                     throw new System.Security.SecurityException("Access denied.");  // TODO
                 }

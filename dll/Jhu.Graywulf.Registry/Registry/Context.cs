@@ -46,6 +46,10 @@ namespace Jhu.Graywulf.Registry
         private CodeActivityContext activityContext;
         private int eventOrder;
 
+        private EntityProperty<Cluster> clusterProperty;
+        private EntityProperty<Domain> domainProperty;
+        private EntityProperty<Federation> federationProperty;
+
         #endregion
         #region Member Access Properties
 
@@ -162,6 +166,21 @@ namespace Jhu.Graywulf.Registry
             internal set { this.databaseTransaction = value; }
         }
 
+        public Cluster Cluster
+        {
+            get { return clusterProperty.Value; }
+        }
+
+        public Domain Domain
+        {
+            get { return domainProperty.Value; }
+        }
+
+        public Federation Federation
+        {
+            get { return federationProperty.Value; }
+        }
+
         #endregion
         #region Constructors
 
@@ -231,6 +250,21 @@ namespace Jhu.Graywulf.Registry
 
             this.activity = null;
             this.eventOrder = 0;
+
+            this.clusterProperty = new EntityProperty<Cluster>(this)
+            {
+                Name = AppSettings.ClusterName
+            };
+
+            this.domainProperty = new EntityProperty<Domain>(this)
+            {
+                Name = AppSettings.DomainName
+            };
+
+            this.federationProperty = new EntityProperty<Federation>(this)
+            {
+                Name = AppSettings.FederationName
+            };
         }
 
         #endregion
