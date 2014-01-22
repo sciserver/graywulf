@@ -152,9 +152,27 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
-        public User FindUserByIdentity(string protocol, string authority, string identifier)
+        public User LoadUser(Guid guid)
         {
-            return FindUserByIdentity(Context.Domain, protocol, authority, identifier);
+            var ef = new EntityFactory(Context);
+            return ef.LoadEntity<User>(guid);
+        }
+
+        public User LoadUser(string name)
+        {
+            var ef = new EntityFactory(Context);
+            return ef.LoadEntity<User>(name);
+        }
+
+        public User FindUserByName(Domain domain, string name)
+        {
+            var ef = new EntityFactory(Context);
+            return ef.LoadEntity<User>(domain.GetFullyQualifiedName(), name);
+        }
+
+        public User FindUserByIdentity(Domain domain, string protocol, string authority, string identifier)
+        {
+            return FindUserByIdentity((Entity)domain, protocol, authority, identifier);
         }
 
         private User FindUserByIdentity(Entity parent, string protocol, string authority, string identifier)

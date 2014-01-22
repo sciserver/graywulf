@@ -18,7 +18,7 @@
                         </td>
                         <td class="FormField">
                             <asp:DropDownList runat="server" ID="TableName" CssClass="FormField" DataTextField="DisplayName"
-                                DataValueField="ObjectKey" />
+                                DataValueField="UniqueKey" />
                         </td>
                     </tr>
                     <tr>

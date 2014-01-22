@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
         protected void RefreshServerVersionList()
         {
-            Registry.Cluster cluster = this.Cluster;
+            Registry.Cluster cluster = RegistryContext.Cluster;
             cluster.LoadMachineRoles(false);
 
             ServerVersion.Items.Add(new ListItem("(select server version)", Guid.Empty.ToString()));

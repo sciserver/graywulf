@@ -76,9 +76,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Security\AuthenticatorBase.cs" />
     <Compile Include="Security\AuthenticatorFactory.cs" />
     <Compile Include="Security\Constants.cs" />
+    <Compile Include="Security\IAuthenticator.cs" />
+    <Compile Include="Security\InteractiveAuthenticatorBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Security\RequestAuthenticatorBase.cs" />
     <Compile Include="Security\GraywulfAuthenticationModule.cs">
       <SubType>Code</SubType>
     </Compile>

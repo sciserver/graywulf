@@ -166,14 +166,29 @@ namespace Jhu.Graywulf.Registry
             internal set { this.databaseTransaction = value; }
         }
 
+        public EntityProperty<Cluster> ClusterProperty
+        {
+            get { return clusterProperty; }
+        }
+
         public Cluster Cluster
         {
             get { return clusterProperty.Value; }
         }
 
+        public EntityProperty<Domain> DomainProperty
+        {
+            get { return domainProperty; }
+        }
+
         public Domain Domain
         {
             get { return domainProperty.Value; }
+        }
+
+        public EntityProperty<Federation> FederationProperty
+        {
+            get { return federationProperty; }
         }
 
         public Federation Federation
@@ -251,20 +266,9 @@ namespace Jhu.Graywulf.Registry
             this.activity = null;
             this.eventOrder = 0;
 
-            this.clusterProperty = new EntityProperty<Cluster>(this)
-            {
-                Name = AppSettings.ClusterName
-            };
-
-            this.domainProperty = new EntityProperty<Domain>(this)
-            {
-                Name = AppSettings.DomainName
-            };
-
-            this.federationProperty = new EntityProperty<Federation>(this)
-            {
-                Name = AppSettings.FederationName
-            };
+            this.clusterProperty = new EntityProperty<Cluster>(this);
+            this.domainProperty = new EntityProperty<Domain>(this);
+            this.federationProperty = new EntityProperty<Federation>(this);
         }
 
         #endregion

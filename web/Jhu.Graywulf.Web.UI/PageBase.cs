@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Jhu.Graywulf.Security;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Install;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
@@ -15,6 +15,10 @@ namespace Jhu.Graywulf.Web.UI
     public class PageBase : Jhu.Graywulf.Web.PageBase
     {
         private GraywulfSchemaManager schemaManager;
+        
+        private DatabaseDefinition myDBDatabaseDefinition;
+        private DatabaseVersion myDBDatabaseVersion;
+        private DatabaseInstance myDBDatabaseInstance;
         private DatasetBase myDBDataset;
 
         public FileFormatFactory FileFormatFactory
@@ -25,6 +29,45 @@ namespace Jhu.Graywulf.Web.UI
         public StreamFactory StreamFactory
         {
             get { return StreamFactory.Create(Federation.StreamFactory); }
+        }
+
+        public DatabaseDefinition MyDBDatabaseDefinition
+        {
+            get
+            {
+                if (myDBDatabaseDefinition == null)
+                {
+                    myDBDatabaseDefinition = MyDBDatabaseVersion.DatabaseDefinition;
+                }
+
+                return myDBDatabaseDefinition;
+            }
+        }
+
+        public DatabaseVersion MyDBDatabaseVersion
+        {
+            get
+            {
+                if (myDBDatabaseVersion == null)
+                {
+                    myDBDatabaseVersion = Federation.MyDBDatabaseVersion;
+                }
+
+                return myDBDatabaseVersion;
+            }
+        }
+
+        public DatabaseInstance MyDBDatabaseInstance
+        {
+            get
+            {
+                if (myDBDatabaseInstance == null)
+                {
+                    myDBDatabaseInstance = MyDBDatabaseVersion.GetUserDatabaseInstance(RegistryUser);
+                }
+
+                return myDBDatabaseInstance;
+            }
         }
 
         /// <summary>
@@ -113,22 +156,6 @@ namespace Jhu.Graywulf.Web.UI
             return String.Format(
                 "~/Download/{0}",
                 System.IO.Path.GetFileName(exportJob.Path));
-        }
-
-        // ---
-
-        protected override void OnUserSignedIn()
-        {
-            base.OnUserSignedIn();
-
-            if (MyDBDatabaseInstance == null)
-            {
-                var udii = new UserDatabaseInstanceInstaller(RegistryUser);
-                var udi = udii.GenerateUserDatabaseInstance(MyDBDatabaseVersion);
-
-                var mydb = udi.DatabaseInstance;
-                mydb.Deploy();
-            }
         }
 
         protected override void OnPreRender(EventArgs e)

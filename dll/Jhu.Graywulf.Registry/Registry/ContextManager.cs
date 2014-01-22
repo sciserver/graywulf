@@ -33,6 +33,10 @@ namespace Jhu.Graywulf.Registry
         private Guid userGuid;
         private string userName;
 
+        private string clusterName;
+        private string domainName;
+        private string federationName;
+
         #endregion
         #region Member Access Properties
 
@@ -52,24 +56,6 @@ namespace Jhu.Graywulf.Registry
         {
             get { return this.smtpString; }
             set { this.smtpString = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the Guid of the current user.
-        /// </summary>
-        public Guid UserGuid
-        {
-            get { return userGuid; }
-            set { userGuid = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the Guid of the current user.
-        /// </summary>
-        public string UserName
-        {
-            get { return userName; }
-            set { userName = value; }
         }
 
         #endregion
@@ -94,45 +80,14 @@ namespace Jhu.Graywulf.Registry
         {
             this.connectionString = AppSettings.ConnectionString;
             this.smtpString = string.Empty;
+
+            this.userGuid = Guid.Empty;
+            this.userName = null;
+
+            this.clusterName = AppSettings.ClusterName;
+            this.domainName = AppSettings.DomainName;
+            this.federationName = AppSettings.FederationName;
         }
-
-        #endregion
-        #region Login functions
-
-#if false
-        public void Login()
-        {
-            Login(null, null);
-        }
-
-        public void Login(string userNameOrEmail, string password)
-        {
-            using (Context context = CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
-            {
-                User u = new User(context);
-                bool res;
-
-                if (userNameOrEmail == null || password == null)
-                {
-                    res = u.Login();
-                }
-                else
-                {
-                    res = u.Login(userNameOrEmail, password);
-                }
-
-                if (res)
-                {
-                    this.userGuid = u.Guid;
-                    this.userName = u.Name;
-                }
-                else
-                {
-                    throw new System.UnauthorizedAccessException(ExceptionMessages.LoginFailed);
-                }
-            }
-        }
-#endif
 
         #endregion
         #region Context Creation Functions
@@ -148,12 +103,17 @@ namespace Jhu.Graywulf.Registry
         {
             var context = new Context()
             {
-                UserGuid = userGuid,
-                UserName = userName,
                 ConnectionString = connectionString,
                 ConnectionMode = connectionMode,
                 TransactionMode = transactionMode,
+
+                UserGuid = userGuid,
+                UserName = userName,
             };
+
+            context.ClusterProperty.Name = clusterName;
+            context.DomainProperty.Name = domainName;
+            context.FederationProperty.Name = federationName;
 
             return context;
         }

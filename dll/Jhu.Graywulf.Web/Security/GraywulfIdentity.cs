@@ -13,6 +13,7 @@ namespace Jhu.Graywulf.Security
         private string protocol;
         private string authority;
         private string identifier;
+        private bool isAuthenticated;
         private EntityProperty<User> userProperty;
 
         public string AuthenticationType
@@ -40,7 +41,8 @@ namespace Jhu.Graywulf.Security
 
         public bool IsAuthenticated
         {
-            get { return !userProperty.IsEmpty; }
+            get { return isAuthenticated; }
+            internal set { isAuthenticated = value; }
         }
 
         public EntityProperty<User> UserProperty
@@ -52,7 +54,16 @@ namespace Jhu.Graywulf.Security
         {
             get
             {
-                return userProperty.IsEmpty ? null : userProperty.Value.Name;
+                if (userProperty.IsEmpty)
+                {
+                    return null;
+                }
+                else
+                {
+                    // This should always work
+                    var idx = userProperty.Name.LastIndexOf('.');
+                    return userProperty.Name.Substring(idx + 1);
+                }
             }
         }
 
@@ -97,5 +108,40 @@ namespace Jhu.Graywulf.Security
                 StringComparer.InvariantCultureIgnoreCase.Compare(this.identifier, other.identifier) == 0;
         }
 
+
+        /// <summary>
+        /// Loads the user from the graywulf registry
+        /// </summary>
+        /// <param name="identity"></param>
+        public void LoadUser(Domain domain)
+        {
+            using (var registryContext = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            {
+                var uf = new UserFactory(registryContext);
+
+                try
+                {
+                    switch (protocol)
+                    {
+                        case Constants.ProtocolNameForms:
+                            userProperty.Value = uf.LoadUser(identifier);
+                            break;
+                        case Constants.ProtocolNameWindows:
+                            // TODO: implement NTLM auth
+                            throw new NotImplementedException();
+                        default:
+                            // All other cases use lookup by protocol name
+                            userProperty.Value = uf.FindUserByIdentity(domain, protocol, authority, identifier);
+                            break;
+                    }
+
+                    IsAuthenticated = true;
+                }
+                catch (EntityNotFoundException)
+                {
+                    isAuthenticated = false;
+                }
+            }
+        }
     }
 }

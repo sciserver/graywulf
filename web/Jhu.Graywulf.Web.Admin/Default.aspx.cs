@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Web.Admin
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            WelcomeForm.Text = String.Format("Welcome to {0} Admin", Session[Constants.SessionClusterName]);
+            WelcomeForm.Text = String.Format("Welcome to {0} Admin", RegistryContext.Cluster.Name);
         }
     }
 }

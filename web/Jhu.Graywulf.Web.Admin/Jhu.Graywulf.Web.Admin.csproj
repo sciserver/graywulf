@@ -655,7 +655,6 @@
     <Compile Include="Common\Serialize.aspx.designer.cs">
       <DependentUpon>Serialize.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Constants.cs" />
     <Compile Include="Controls\EntityButtons.ascx.cs">
       <DependentUpon>EntityButtons.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

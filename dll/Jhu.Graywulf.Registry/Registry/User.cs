@@ -389,6 +389,12 @@ namespace Jhu.Graywulf.Registry
 
         #endregion
         #region Validation Properties
+
+        public bool IsActivated
+        {
+            get { return DeploymentState != DeploymentState.Deployed; }
+        }
+
         #endregion
         #region Constructors and initializer function
 

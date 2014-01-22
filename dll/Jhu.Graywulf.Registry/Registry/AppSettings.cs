@@ -11,7 +11,15 @@ namespace Jhu.Graywulf.Registry
     {
         private static string GetValue(string key)
         {
-            return (string)((NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf/Registry"))[key];
+            var section = (NameValueCollection)ConfigurationManager.GetSection("Jhu.Graywulf/Registry");
+            if (section != null)
+            {
+                return (string)section[key];
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public static string ConnectionString

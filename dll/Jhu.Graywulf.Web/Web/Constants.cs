@@ -16,7 +16,12 @@ namespace Jhu.Graywulf.Web
 
         public const string SessionRegistryDatabase = "Jhu.Graywulf.Registry.Database";
         public const string SessionPrincipal = "Jhu.Graywulf.Security.Principal";
+        public const string SessionTempPrincipal = "Jhu.Graywulf.Security.TempUser";
         public const string SessionCaptcha = "Jhu.Graywulf.Web.Captcha";
+
+        public const string SessionClusterGuid = "Jhu.Graywulf.Web.Cluster";
+        public const string SessionDomainGuid = "Jhu.Graywulf.Web.Domain";
+        public const string SessionFederationGuid = "Jhu.Graywulf.Web.Federation";
         
         public const string SessionException = "Jhu.Graywulf.Web.Exception";
         public const string SessionExceptionEventID = "Jhu.Graywulf.Web.ExceptionEventID";

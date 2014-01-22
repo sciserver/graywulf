@@ -19,11 +19,6 @@ namespace Jhu.Graywulf.Web.Admin.User
 
         private Jhu.Graywulf.Registry.User user;
 
-        protected override void EnsureUserIdentified()
-        {
-            // Override default behavior to do nothing
-        }
-
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -71,7 +66,7 @@ namespace Jhu.Graywulf.Web.Admin.User
         {
             if (IsValid)
             {
-                FormsAuthentication.RedirectFromLoginPage(user.Guid.ToString(), Remember.Checked);
+                FormsAuthentication.RedirectFromLoginPage(user.GetFullyQualifiedName(), Remember.Checked);
             }
         }
     }

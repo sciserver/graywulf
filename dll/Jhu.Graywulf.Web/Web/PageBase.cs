@@ -13,136 +13,78 @@ namespace Jhu.Graywulf.Web
     public class PageBase : Page
     {
         private Context context;
-        private Domain domain;
-        private Federation federation;
-        private User registryUser;
-        private DatabaseDefinition myDBDatabaseDefinition;
-        private DatabaseVersion myDBDatabaseVersion;
-        private DatabaseInstance myDBDatabaseInstance;
 
+        /// <summary>
+        /// Gets the original referer of the page, even after postbacks.
+        /// </summary>
         public string OriginalReferer
         {
             get { return (string)(ViewState[Constants.OriginalReferer] ?? String.Empty); }
-            set { ViewState[Constants.OriginalReferer] = value; }
+            private set { ViewState[Constants.OriginalReferer] = value; }
         }
 
+        /// <summary>
+        /// Gets the root URL of the current web application
+        /// </summary>
         public string BaseUrl
         {
-            get
-            {
-                var url = new Uri(Request.Url.AbsoluteUri);
-                return String.Format("{0}://{1}{2}/", url.Scheme, url.Authority, Request.ApplicationPath.TrimEnd('/'));
-            }
+            get { return Util.UrlFormatter.ToBaseUrl(Request.Url.AbsoluteUri, Request.ApplicationPath); }
         }
 
+        /// <summary>
+        /// Gets the return url from the query string of the request
+        /// </summary>
         public string ReturnUrl
         {
             get { return Request.QueryString[Constants.ReturnUrl] ?? ""; }
         }
 
+        /// <summary>
+        /// Gets the authenticated Graywulf user
+        /// </summary>
         public User RegistryUser
         {
-            get { return ((GraywulfIdentity)this.User.Identity).User; }
+            get
+            {
+                var identity = (GraywulfIdentity)User.Identity;
+                identity.UserProperty.Context = RegistryContext;
+                return identity.User;
+            }
         }
 
+        /// <summary>
+        /// Gets an initialized  registry context.
+        /// </summary>
         public Context RegistryContext
         {
             get
             {
                 if (context == null)
                 {
-                    context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.ManualCommit);
-
-                    if (Request.IsAuthenticated)
-                    {
-                        var userProperty = ((GraywulfIdentity)User.Identity).UserProperty;
-
-                        context.UserGuid = userProperty.Guid;
-                        context.UserName = userProperty.Name;
-                    }
+                    var application = (ApplicationBase)HttpContext.Current.ApplicationInstance;
+                    context = application.CreateRegistryContext();
                 }
 
                 return context;
             }
         }
 
-        // TODO: delete and use property from context
+        public Cluster Cluster
+        {
+            get { return RegistryContext.Cluster; }
+        }
+
         public Domain Domain
         {
-            get
-            {
-                if (domain == null)
-                {
-                    var ef = new EntityFactory(RegistryContext);
-                    domain = ef.LoadEntity<Domain>(Registry.AppSettings.DomainName);
-                }
-
-                return domain;
-            }
+            get { return RegistryContext.Domain; }
         }
 
-        // TODO: delete and use property from context
         public Federation Federation
         {
-            get
-            {
-                if (federation == null)
-                {
-                    var ef = new EntityFactory(RegistryContext);
-                    federation = ef.LoadEntity<Federation>(Registry.AppSettings.FederationName);
-                }
-
-                return federation;
-            }
-        }
-
-        public DatabaseDefinition MyDBDatabaseDefinition
-        {
-            get
-            {
-                if (myDBDatabaseDefinition == null)
-                {
-                    myDBDatabaseDefinition = MyDBDatabaseVersion.DatabaseDefinition;
-                }
-
-                return myDBDatabaseDefinition;
-            }
-        }
-
-        public DatabaseVersion MyDBDatabaseVersion
-        {
-            get
-            {
-                if (myDBDatabaseVersion == null)
-                {
-                    myDBDatabaseVersion = Federation.MyDBDatabaseVersion;
-                }
-
-                return myDBDatabaseVersion;
-            }
-        }
-
-        public DatabaseInstance MyDBDatabaseInstance
-        {
-            get
-            {
-                if (myDBDatabaseInstance == null)
-                {
-                    myDBDatabaseInstance = MyDBDatabaseVersion.GetUserDatabaseInstance(((GraywulfIdentity)User.Identity).User);
-                }
-
-                return myDBDatabaseInstance;
-            }
+            get { return RegistryContext.Federation; }
         }
 
         #region Initializer functions
-
-        protected override void OnPreInit(EventArgs e)
-        {
-            base.OnPreInit(e);
-
-            EnsureUserAuthenticated();
-        }
 
         protected override void OnLoad(EventArgs e)
         {
@@ -218,39 +160,6 @@ namespace Jhu.Graywulf.Web
             base.OnError(e);
 
             Response.Redirect(Jhu.Graywulf.Web.Error.GetUrl());
-        }
-
-        #endregion
-        #region User managemenet functions
-
-        protected virtual void EnsureUserAuthenticated()
-        {
-            var sessionPrincipal = (GraywulfPrincipal)Session[Constants.SessionPrincipal];
-
-            if (Request.IsAuthenticated && User is GraywulfPrincipal && sessionPrincipal == null)
-            {
-                Session[Constants.SessionPrincipal] = User;
-                OnUserSignedIn();
-            }
-            else if (!Request.IsAuthenticated && sessionPrincipal != null)
-            {
-                OnUserSignedOut();
-                Session.Abandon();
-            }
-        }
-
-        /// <summary>
-        /// Called when a user signs in
-        /// </summary>
-        protected virtual void OnUserSignedIn()
-        {
-        }
-
-        /// <summary>
-        /// Called when a user sings out
-        /// </summary>
-        protected virtual void OnUserSignedOut()
-        {
         }
 
         #endregion

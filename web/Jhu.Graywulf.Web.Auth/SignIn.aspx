@@ -4,9 +4,23 @@
 <asp:Content runat="server" ContentPlaceHolderID="middle">
     <jgwc:Form runat="server" ID="SignInForm" SkinID="SignIn" Text="Welcome">
         <FormTemplate>
-            <p>
-                To start using the services, please sign in with your existing credentials.
-            </p>
+            <asp:Panel runat="server" ID="SignInIntroPanel">
+                <p>
+                    To start using the services, please sign in with your existing credentials.
+                </p>
+            </asp:Panel>
+            <asp:Panel runat="server" ID="UnknownIdentityIntroPanel">
+                <p>
+                    The
+                    <asp:Label runat="server" ID="AuthorityName" />
+                    identifier is not recognized.
+                    <ul>
+                        <li>Register now and associate account with the identifier.</li>
+                        <li>Sign in with an existing username and password to associate your account with the
+                            identifier.</li>
+                    </ul>
+                </p>
+            </asp:Panel>
             <table class="FormTable">
                 <tr>
                     <td class="FormLabel">
@@ -39,21 +53,26 @@
                     </td>
                 </tr>
             </table>
-            <p>
-                Alternatively, you can sign in using the following authentication providers:
-            </p>
-            <asp:Panel runat="server" ID="Authenticators"></asp:Panel>
-            <ul>
-                <li>If not registered yet,
-                    <asp:HyperLink runat="server" ID="RegisterLink">create a new
+            <asp:Panel runat="server" ID="SignInDetailsPanel">
+                <ul>
+                    <li>If not registered yet,
+                        <asp:HyperLink runat="server" ID="RegisterLink">create a new
                     account</asp:HyperLink>.</li>
-                <li>If you have already registered, proceed to
-                    <asp:HyperLink runat="server" ID="ActivateLink">
+                    <li>If you have already registered, proceed to
+                        <asp:HyperLink runat="server" ID="ActivateLink">
                     account activation</asp:HyperLink>.</li>
-                <li>If you have forgotten you password,
-                    <asp:HyperLink runat="server" ID="ResetLink">
+                    <li>If you have forgotten you password,
+                        <asp:HyperLink runat="server" ID="ResetLink">
                     request a password reset</asp:HyperLink>.</li>
-            </ul>
+                </ul>
+            </asp:Panel>
+            <asp:Panel runat="server" ID="AuthenticatorPanel">
+                <p>
+                    Alternatively, you can sign in using the following authentication providers:
+                </p>
+                <asp:Panel runat="server" ID="Authenticators">
+                </asp:Panel>
+            </asp:Panel>
         </FormTemplate>
         <ButtonsTemplate>
             <asp:Button runat="Server" ID="Ok" Text="Sign in" CssClass="FormButton" OnClick="Ok_Click" />

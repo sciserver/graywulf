@@ -6,7 +6,11 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Security
 {
-    public abstract class AuthenticatorBase
+    /// <summary>
+    /// When implemented in derived classes, performs per request
+    /// authentication based on form data and cookies.
+    /// </summary>
+    public abstract class RequestAuthenticatorBase : IAuthenticator
     {
         public abstract string Protocol { get; }
 
@@ -14,10 +18,6 @@ namespace Jhu.Graywulf.Security
 
         public abstract string DisplayName { get; set; }
 
-        public abstract bool IsInteractive { get; }
-
         public abstract GraywulfPrincipal Authenticate();
-
-        public abstract void RedirectToLoginPage();
     }
 }

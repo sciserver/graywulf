@@ -8,32 +8,13 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Security
 {
-    public class OpenIDAuthenticator : AuthenticatorBase
+    public class OpenIDAuthenticator : InteractiveAuthenticatorBase
     {
-        private string authority;
-        private string displayName;
         private string discoveryUrl;
 
         public override string Protocol
         {
             get { return Constants.ProtocolNameOpenID; }
-        }
-
-        public override string Authority
-        {
-            get { return authority; }
-            set { authority = value; }
-        }
-
-        public override string DisplayName
-        {
-            get { return displayName; }
-            set { displayName = value; }
-        }
-
-        public override bool IsInteractive
-        {
-            get { return true; }
         }
 
         public string DiscoveryUrl
@@ -49,8 +30,6 @@ namespace Jhu.Graywulf.Security
 
         private void InitializeMembers()
         {
-            this.authority = null;
-            this.displayName = null;
             this.discoveryUrl = null;
         }
 
@@ -121,6 +100,7 @@ namespace Jhu.Graywulf.Security
                 Protocol = this.Protocol,
                 Authority = response.Provider.Uri.ToString(),
                 Identifier = response.ClaimedIdentifier,
+                IsAuthenticated = false,
                 User = new User()
             };
 

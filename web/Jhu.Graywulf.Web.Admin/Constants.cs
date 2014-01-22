@@ -7,7 +7,6 @@ namespace Jhu.Graywulf.Web.Admin
 {
     public class Constants
     {
-        public const string SessionClusterGuid = "Jhu.Graywulf.Web.ClusterGuid";
-        public const string SessionClusterName = "Jhu.Graywulf.Web.ClusterName";
+
     }
 }

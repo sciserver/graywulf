@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Security;
 using System.Web.SessionState;
+using Jhu.Graywulf.Security;
 using Jhu.Graywulf.Web;
 using Jhu.Graywulf.Registry;
 
@@ -16,14 +17,23 @@ namespace Jhu.Graywulf.Web.Auth
             base.Application_Start(sender, e);
 
             // Load domain settings
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = CreateRegistryContext())
             {
-                var ef = new EntityFactory(context);
-                var domain = ef.LoadEntity<Domain>(Registry.AppSettings.DomainName);
+                var domain = context.Domain;
 
                 Application[Constants.ApplicationShortTitle] = domain.ShortTitle;
                 Application[Constants.ApplicationLongTitle] = domain.LongTitle;
             }
+        }
+
+        protected override void OnUserSignedIn(GraywulfIdentity identity)
+        {
+            
+        }
+
+        protected override void OnUserSignedOut()
+        {
+            
         }
     }
 }

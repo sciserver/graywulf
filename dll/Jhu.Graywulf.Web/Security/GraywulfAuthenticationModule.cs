@@ -13,11 +13,10 @@ namespace Jhu.Graywulf.Security
     /// </summary>
     public class GraywulfAuthenticationModule : IHttpModule
     {
-        private AuthenticatorBase[] authenticators;
+        private RequestAuthenticatorBase[] authenticators;
 
         public GraywulfAuthenticationModule()
         {
-
         }
 
         /// <summary>
@@ -35,7 +34,7 @@ namespace Jhu.Graywulf.Security
 
             // Create authenticators
             var af = AuthenticatorFactory.Create(null);
-            this.authenticators = af.GetAuthenticators();
+            this.authenticators = af.CreateRequestAuthenticators();
 
             // Wire up request events
             // --- Call all authenticators in this one
@@ -121,10 +120,11 @@ namespace Jhu.Graywulf.Security
                 }
             }
 
+            /*
             if (context.User is GraywulfPrincipal)
             {
                 LoadGraywulfPrincipal(context);
-            }
+            }*/
         }
 
         /// <summary>
@@ -138,12 +138,16 @@ namespace Jhu.Graywulf.Security
             var identity = new GraywulfIdentity()
             {
                 Protocol = Constants.ProtocolNameForms,
-                Identifier = formsIdentity.Name
+                Identifier = formsIdentity.Name,
+                IsAuthenticated = true,
             };
+
+            identity.UserProperty.Name = formsIdentity.Name;
 
             context.User = new GraywulfPrincipal(identity);
         }
 
+        /*
         private void LoadGraywulfPrincipal(HttpContext context)
         {
             // See if identity can be found in the cache. If so, use that
@@ -210,5 +214,6 @@ namespace Jhu.Graywulf.Security
             GraywulfPrincipal old;
             principalCache.TryRemove(principal, out old);
         }
+         * */
     }
 }

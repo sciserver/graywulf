@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Security
             return (AuthenticatorFactory)Activator.CreateInstance(type, true);
         }
 
-        public AuthenticatorBase[] GetAuthenticators()
+        public InteractiveAuthenticatorBase[] CreateInteractiveAuthenticators()
         {
             return new[] 
             {
@@ -40,9 +40,14 @@ namespace Jhu.Graywulf.Security
             };
         }
 
-        public AuthenticatorBase GetAuthenticator(string protocol, string authority)
+        public RequestAuthenticatorBase[] CreateRequestAuthenticators()
         {
-            var q = from a in GetAuthenticators()
+            return new RequestAuthenticatorBase[0];
+        }
+
+        public InteractiveAuthenticatorBase CreateInteractiveAuthenticator(string protocol, string authority)
+        {
+            var q = from a in CreateInteractiveAuthenticators()
                     where
                         StringComparer.InvariantCultureIgnoreCase.Compare(a.Protocol, protocol) == 0 &&
                         StringComparer.InvariantCultureIgnoreCase.Compare(a.Authority, authority) == 0

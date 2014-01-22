@@ -2,7 +2,7 @@
 
 namespace Jhu.Graywulf.Web.Admin.Controls
 {
-    public partial class Menu : System.Web.UI.UserControl
+    public partial class Menu : UserControlBase
     {
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
 
             if (Request.IsAuthenticated)
             {
-                var clusterGuid = (Guid)Session[Constants.SessionClusterGuid];
+                var clusterGuid = ((PageBase)Page).RegistryContext.ClusterProperty.Guid;
 
                 Cluster.NavigateUrl = Jhu.Graywulf.Web.Admin.Cluster.ClusterDetails.GetUrl(clusterGuid);
                 Domain.NavigateUrl = Jhu.Graywulf.Web.Admin.Domain.ClusterDetails.GetUrl(clusterGuid);

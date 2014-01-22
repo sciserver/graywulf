@@ -11,7 +11,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Auth
 {
-    public partial class SignIn : PageBase
+    public partial class SignIn : Jhu.Graywulf.Web.Auth.PageBase
     {
         public static string GetUrl(string returnUrl)
         {
@@ -22,13 +22,31 @@ namespace Jhu.Graywulf.Web.Auth
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            CreateAuthenticatorButtons();
+            var unknownId = TemporaryPrincipal == null;
+
+            SignInIntroPanel.Visible = !unknownId;
+            UnknownIdentityIntroPanel.Visible = unknownId;
+            SignInDetailsPanel.Visible = !unknownId;
+            AuthenticatorPanel.Visible = unknownId;
+
+            if (!unknownId)
+            {
+                CreateAuthenticatorButtons();
+            }
+            else
+            {
+                var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
+                AuthorityName.Text = identity.Authority;
+            }
 
             SignInForm.Text = String.Format("Welcome to {0}", Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle]);
 
             RegisterLink.NavigateUrl = Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl);
             ActivateLink.NavigateUrl = Jhu.Graywulf.Web.Auth.Activate.GetUrl(ReturnUrl);
             ResetLink.NavigateUrl = Jhu.Graywulf.Web.Auth.RequestReset.GetUrl(ReturnUrl);
+
+            // Try all authentication methods.
+            Authenticate();
         }
 
         protected void PasswordValidator_ServerValidate(object source, ServerValidateEventArgs args)
@@ -56,15 +74,7 @@ namespace Jhu.Graywulf.Web.Auth
             if (IsValid)
             {
                 // Check if user was already activated. If not, redirect to activation page
-
-                if (user.DeploymentState != DeploymentState.Deployed)
-                {
-                    Response.Redirect(Activate.GetUrl(ReturnUrl));
-                }
-                else
-                {
-                    FormsAuthentication.RedirectFromLoginPage(user.Name, Remember.Checked);
-                }
+                RedirectAuthenticatedUser(user);
             }
         }
 
@@ -73,39 +83,85 @@ namespace Jhu.Graywulf.Web.Auth
             Response.Redirect(Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl));
         }
 
+        void AuthenticatorButton_Click(object sender, ImageClickEventArgs e)
+        {
+            // Redirect to interactive page
+            var af = new AuthenticatorFactory();
+            var parts = ((ImageButton)sender).CommandArgument.Split('|');
+            var a = af.CreateInteractiveAuthenticator(parts[0], parts[1]);
+
+            a.RedirectToLoginPage();
+        }
+
         private void CreateAuthenticatorButtons()
         {
             var af = new AuthenticatorFactory();
-            var aus = af.GetAuthenticators();
+            var aus = af.CreateInteractiveAuthenticators();
 
             for (int i = 0; i < aus.Length; i++)
             {
-                if (aus[i].IsInteractive)
+
+                var b = new ImageButton()
                 {
-                    var b = new ImageButton()
+                    CausesValidation = false,
+                    AlternateText = aus[i].DisplayName,
+                    ToolTip = String.Format("Log on using {0}.", aus[i].DisplayName),
+                    CommandArgument = String.Format("{0}|{1}", aus[i].Protocol, aus[i].Authority)
+                };
+
+                b.Click += new ImageClickEventHandler(AuthenticatorButton_Click);
+
+                Authenticators.Controls.Add(b);
+            }
+
+            // Focus on the 'sign in' button
+            Ok.Focus();
+        }
+
+        private void Authenticate()
+        {
+            // Try authenticate with all interactive authenticators
+            var af = new AuthenticatorFactory();
+            var aus = af.CreateInteractiveAuthenticators();
+            for (int i = 0; i < aus.Length; i++)
+            {
+                var principal = aus[i].Authenticate();
+                if (principal != null)
+                {
+                    var identity = (GraywulfIdentity)principal.Identity;
+                    identity.LoadUser(RegistryContext.Domain);
+                    if (identity.IsAuthenticated)
                     {
-                        CausesValidation = false,
-                        AlternateText = aus[i].DisplayName,
-                        ToolTip = String.Format("Log on using {0}.", aus[i].DisplayName),
-                        CommandArgument = String.Format("{0}|{1}", aus[i].Protocol, aus[i].Authority)
-                    };
+                        RedirectAuthenticatedUser(identity.User);
+                    }
+                    else
+                    {
+                        // User doesn't exist. It can be either associated with
+                        // an existing one, or registration is offered. In the
+                        // latter case, save user data received from the authentication
+                        // authority
 
-                    b.Click += new ImageClickEventHandler(AuthenticatorButton_Click);
+                        // TODO: we may trust certain identity services, so users coming
+                        // from them could automatically registered without beging
+                        // sent to the user form.
 
-                    Authenticators.Controls.Add(b);
+                        Session[Constants.SessionTempPrincipal] = principal;
+                        Response.Redirect(Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl));
+                    }
                 }
             }
         }
 
-        void AuthenticatorButton_Click(object sender, ImageClickEventArgs e)
+        private void RedirectAuthenticatedUser(Registry.User user)
         {
-            var parts = ((ImageButton) sender).CommandArgument.Split('|');
-
-            var af = new AuthenticatorFactory();
-
-            var a = af.GetAuthenticator(parts[0], parts[1]);
-
-            a.RedirectToLoginPage();
+            if (user.IsActivated)
+            {
+                Response.Redirect(Activate.GetUrl(ReturnUrl));
+            }
+            else
+            {
+                FormsAuthentication.RedirectFromLoginPage(user.GetFullyQualifiedName(), Remember.Checked);
+            }
         }
     }
 }

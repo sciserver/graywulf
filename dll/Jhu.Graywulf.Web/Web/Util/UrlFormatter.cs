@@ -8,6 +8,12 @@ namespace Jhu.Graywulf.Web.Util
 {
     public static class UrlFormatter
     {
+        public static string ToBaseUrl(String url, string applicationPath)
+        {
+            var uri = new Uri(url);
+            return String.Format("{0}://{1}{2}/", uri.Scheme, uri.Authority, applicationPath.TrimEnd('/'));
+        }
+
         public static string GetClientRedirect(string url)
         {
             return String.Format("javascript:location='{0}';", MakeRelativePath(url));

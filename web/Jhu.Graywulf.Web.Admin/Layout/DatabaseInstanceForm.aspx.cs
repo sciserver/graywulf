@@ -89,9 +89,10 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
             ServerInstance.Items.Add(new ListItem("(select server instance)", Guid.Empty.ToString()));
 
-            Cluster.LoadMachineRoles(false);
+            var cluster = RegistryContext.Cluster;
+            cluster.LoadMachineRoles(false);
 
-            foreach (var mr in Cluster.MachineRoles.Values)
+            foreach (var mr in cluster.MachineRoles.Values)
             {
                 mr.LoadMachines(false);
                 foreach (var m in mr.Machines.Values)

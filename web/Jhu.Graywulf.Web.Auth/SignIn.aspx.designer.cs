@@ -22,6 +22,33 @@ namespace Jhu.Graywulf.Web.Auth {
         protected global::Jhu.Graywulf.Web.Controls.Form SignInForm;
         
         /// <summary>
+        /// SignInIntroPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel SignInIntroPanel;
+        
+        /// <summary>
+        /// UnknownIdentityIntroPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel UnknownIdentityIntroPanel;
+        
+        /// <summary>
+        /// AuthorityName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label AuthorityName;
+        
+        /// <summary>
         /// UsernameLabel control.
         /// </summary>
         /// <remarks>
@@ -94,13 +121,13 @@ namespace Jhu.Graywulf.Web.Auth {
         protected global::System.Web.UI.WebControls.CheckBox Remember;
         
         /// <summary>
-        /// Authenticators control.
+        /// SignInDetailsPanel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel Authenticators;
+        protected global::System.Web.UI.WebControls.Panel SignInDetailsPanel;
         
         /// <summary>
         /// RegisterLink control.
@@ -128,6 +155,24 @@ namespace Jhu.Graywulf.Web.Auth {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HyperLink ResetLink;
+        
+        /// <summary>
+        /// AuthenticatorPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel AuthenticatorPanel;
+        
+        /// <summary>
+        /// Authenticators control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel Authenticators;
         
         /// <summary>
         /// Ok control.
