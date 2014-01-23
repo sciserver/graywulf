@@ -248,7 +248,7 @@ namespace Jhu.Graywulf.SqlParser
             this.statistics = old.statistics == null ? null : new TableStatistics(old.statistics);
         }
 
-        internal void InterpretTableSource(Node tableSource)
+        public void InterpretTableSource(Node tableSource)
         {
             Node = tableSource.FindAscendant<TableSource>();
 

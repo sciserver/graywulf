@@ -11,7 +11,6 @@ namespace Jhu.Graywulf.SqlParser
     {
         private Dictionary<string, TableReference> sourceTableReferences;
         private TableReference resultsTableReference;
-        //private List<ColumnReference> columnReferences;
 
         public Dictionary<string, TableReference> SourceTableReferences
         {
@@ -22,11 +21,6 @@ namespace Jhu.Graywulf.SqlParser
         {
             get { return resultsTableReference; }
         }
-
-        /*public List<ColumnReference> ColumnReferences
-        {
-            get { return columnReferences; }
-        }*/
 
         public SelectList SelectList
         {
@@ -52,14 +46,12 @@ namespace Jhu.Graywulf.SqlParser
         {
             this.sourceTableReferences = new Dictionary<string, TableReference>(Schema.SchemaManager.Comparer);
             this.resultsTableReference = new TableReference(this);
-            //this.columnReferences = new List<ColumnReference>();
         }
 
         private void CopyMembers(QuerySpecification old)
         {
             this.sourceTableReferences = new Dictionary<string, TableReference>(old.sourceTableReferences);
             this.resultsTableReference = new TableReference(old.resultsTableReference);
-            //this.columnReferences = new List<ColumnReference>(old.columnReferences);
         }
 
         public IEnumerable<Subquery> EnumerateSubqueries()
@@ -172,12 +164,5 @@ namespace Jhu.Graywulf.SqlParser
                 }
             }
         }
-
-        /*public IEnumerable<ColumnReference> EnumerateSelectListColumnReferences()
-        {
-            return columnReferences
-                .Where(cr => (cr.ColumnContext & ColumnContext.SelectList) != 0)
-                .OrderBy(cr => cr.SelectListIndex);
-        }*/
     }
 }

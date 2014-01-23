@@ -273,17 +273,19 @@ namespace Jhu.Graywulf.SqlParser.Generator
             Sequence
             (
                 FunctionIdentifier,
-                May(CommentOrWhitespace),
-                BracketOpen,
-                May(ArgumentList),
-                May(CommentOrWhitespace),
-                BracketClose
+                FunctionArguments
             );
 
         public static Expression<Rule> TableValuedFunctionCall = () =>
             Sequence
             (
                 FunctionIdentifier,
+                FunctionArguments
+            );
+
+        public static Expression<Rule> FunctionArguments = () =>
+            Sequence
+            (
                 May(CommentOrWhitespace),
                 BracketOpen,
                 May(ArgumentList),
@@ -379,7 +381,10 @@ namespace Jhu.Graywulf.SqlParser.Generator
             Sequence(Keyword("FROM"), May(CommentOrWhitespace), TableSourceExpression);
 
         public static Expression<Rule> TableSourceExpression = () =>
-            Sequence(TableSource, May(Sequence(May(CommentOrWhitespace), JoinedTable)));
+            Sequence(
+                TableSource,
+                May(Sequence(May(CommentOrWhitespace), JoinedTable))
+            );
 
         public static Expression<Rule> JoinedTable = () =>
             Sequence
@@ -500,7 +505,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
             Sequence
             (
                 TableHint,
-                Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), TableHintList)
+                May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), TableHintList))
             );
 
         public static Expression<Rule> TableHint = () =>

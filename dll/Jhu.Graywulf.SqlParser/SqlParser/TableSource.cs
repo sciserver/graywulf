@@ -13,6 +13,7 @@ namespace Jhu.Graywulf.SqlParser
         public ITableSource SpecificTableSource
         {
             get { return specificTableSource; }
+            protected set { specificTableSource = value; }
         }
 
         public TableReference TableReference
@@ -32,32 +33,32 @@ namespace Jhu.Graywulf.SqlParser
             if (ts != null)
             {
                 this.specificTableSource = ts;
-                return base.Interpret();
             }
 
             var fts = FindDescendant<FunctionTableSource>();
             if (fts != null)
             {
                 this.specificTableSource = fts;
-                return base.Interpret();
             }
 
             var vts = FindDescendant<VariableTableSource>();
             if (vts != null)
             {
                 this.specificTableSource = vts;
-                return base.Interpret();
             }
 
             var sts = FindDescendant<SubqueryTableSource>();
             if (sts != null)
             {
                 this.specificTableSource = sts;
-                return base.Interpret();
             }
 
+            if (this.specificTableSource == null)
+            {
+                throw new NotImplementedException();
+            }
 
-            throw new NotImplementedException();
+            return base.Interpret();
         }
 
         public static TableSource Create(ComputedTableSource ts)

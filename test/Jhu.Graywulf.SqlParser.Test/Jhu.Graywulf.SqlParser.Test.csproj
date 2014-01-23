@@ -68,6 +68,7 @@
     <Compile Include="SqlParser\SelectStatementTest.cs" />
     <Compile Include="SqlParser\SqlNameResolverTest.cs" />
     <Compile Include="SqlParser\SqlParserTest.cs" />
+    <Compile Include="SqlParser\TableHintTest.cs" />
     <Compile Include="SqlParser\TableOrViewNameTest.cs" />
     <Compile Include="SqlParser\TableSourceExpressionTest.cs" />
     <Compile Include="SqlParser\TopExpressionTest.cs" />
