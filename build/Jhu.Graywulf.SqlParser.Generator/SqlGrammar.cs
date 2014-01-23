@@ -241,7 +241,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Rule> UdfIdentifier = () =>
             Sequence
             (
-                May(Sequence(DatasetName, May(CommentOrWhitespace), Comma, May(CommentOrWhitespace))),
+                May(Sequence(DatasetName, May(CommentOrWhitespace), Colon, May(CommentOrWhitespace))),
                 Must
                 (
                     Sequence(DatabaseName, May(CommentOrWhitespace), Dot, May(Sequence(May(CommentOrWhitespace), SchemaName)), May(CommentOrWhitespace), Dot, May(CommentOrWhitespace), FunctionName),
