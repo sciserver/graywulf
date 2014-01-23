@@ -46,9 +46,16 @@ namespace Jhu.Graywulf.Web
         {
             get
             {
-                var identity = (GraywulfIdentity)User.Identity;
-                identity.UserProperty.Context = RegistryContext;
-                return identity.User;
+                if (User.Identity is GraywulfIdentity)
+                {
+                    var identity = (GraywulfIdentity)User.Identity;
+                    identity.UserProperty.Context = RegistryContext;
+                    return identity.User;
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 

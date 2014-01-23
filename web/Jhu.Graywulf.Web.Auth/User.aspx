@@ -60,8 +60,10 @@
                         <asp:RegularExpressionValidator ID="EmailFormatValidator" runat="server" Display="Dynamic"
                             ErrorMessage="&lt;br /&gt;Invalid format" ValidationExpression="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*"
                             ControlToValidate="Email"></asp:RegularExpressionValidator>
-                        <asp:RequiredFieldValidator ID="PasswordRequiredValidator3" runat="server" ControlToValidate="Email"
+                        <asp:RequiredFieldValidator ID="EmailRequiredValidator" runat="server" ControlToValidate="Email"
                             Display="Dynamic" ErrorMessage="&lt;br /&gt;This field is required"></asp:RequiredFieldValidator>
+                        <asp:CustomValidator ID="EmailDuplicateValidator" runat="server" ControlToValidate="Email"
+                            Display="Dynamic" ErrorMessage="&lt;br /&gt;E-mail address is already in use." OnServerValidate="DuplicateEmailValidator_ServerValidate" />
                     </td>
                 </tr>
                 <tr>

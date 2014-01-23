@@ -568,6 +568,27 @@ AS
 GO
 
 
+CREATE PROC [dbo].[spFindUser_byIdentity]
+	@DomainGuid uniqueidentifier,
+	@Protocol nvarchar(25),
+	@Authority nvarchar(250),
+	@Identifier nvarchar(250)
+AS
+	SELECT Entity.*, [User].*
+	FROM Entity
+	INNER JOIN [User] ON [User].EntityGuid = Entity.Guid
+	INNER JOIN [Entity] ue ON ue.ParentGuid = [User].EntityGuid
+	INNER JOIN [UserIdentity] ON ue.Guid = [UserIdentity].EntityGuid
+	WHERE
+		ue.Deleted = 0 AND
+		Entity.ParentGuid = @DomainGuid AND
+		[Protocol] = @Protocol AND
+		[Authority] = @Authority AND
+		[Identifier] = @Identifier
+		
+GO
+
+
 CREATE PROC [dbo].[spLoginUser]
 	@ParentGuid uniqueidentifier,
 	@NameOrEmail nvarchar(128)
@@ -593,6 +614,27 @@ AS
 		NtlmUser = @NtlmUser AND Integrated = 1
 GO
 
+
+CREATE PROC [dbo].[spCheckUserEmailDuplicate]
+	@ParentGuid uniqueidentifier,
+	@Email nvarchar(128)
+AS
+	DECLARE @count int;
+
+	SELECT @count = COUNT(*)
+	FROM Entity
+	INNER JOIN [User] ON [User].EntityGuid = Entity.Guid
+	WHERE
+		Entity.ParentGuid = @ParentGuid
+		AND Deleted = 0
+		AND Email = @Email;
+		
+		
+	RETURN ISNULL(@count, 0);
+	
+GO
+
+	
 -- DEVELOPER TOOLS --
 
 CREATE SCHEMA dev

@@ -87,7 +87,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Security\GraywulfIdentity.cs" />
-    <Compile Include="Security\GraywulfPrincipalCache.cs" />
     <Compile Include="Security\GraywulfPrincipal.cs" />
     <Compile Include="Security\OpenIDAuthenticator.cs" />
     <Compile Include="Web\ApplicationBase.cs" />

@@ -22,31 +22,10 @@ namespace Jhu.Graywulf.Web.Auth
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            var unknownId = TemporaryPrincipal == null;
-
-            SignInIntroPanel.Visible = !unknownId;
-            UnknownIdentityIntroPanel.Visible = unknownId;
-            SignInDetailsPanel.Visible = !unknownId;
-            AuthenticatorPanel.Visible = unknownId;
-
-            if (!unknownId)
-            {
-                CreateAuthenticatorButtons();
-            }
-            else
-            {
-                var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
-                AuthorityName.Text = identity.Authority;
-            }
-
-            SignInForm.Text = String.Format("Welcome to {0}", Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle]);
-
-            RegisterLink.NavigateUrl = Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl);
-            ActivateLink.NavigateUrl = Jhu.Graywulf.Web.Auth.Activate.GetUrl(ReturnUrl);
-            ResetLink.NavigateUrl = Jhu.Graywulf.Web.Auth.RequestReset.GetUrl(ReturnUrl);
-
             // Try all authentication methods.
             Authenticate();
+
+            UpdateForm();
         }
 
         protected void PasswordValidator_ServerValidate(object source, ServerValidateEventArgs args)
@@ -54,12 +33,7 @@ namespace Jhu.Graywulf.Web.Auth
             // Attempt to log in with supplied credentials
             try
             {
-                var uu = new UserFactory(RegistryContext);
-                user = uu.LoginUser(Domain, Username.Text, Password.Text);
-
-                RegistryContext.UserGuid = user.Guid;
-                RegistryContext.UserName = user.Name;
-
+                LoginUser();
                 args.IsValid = true;
             }
             catch (Exception ex)
@@ -85,12 +59,48 @@ namespace Jhu.Graywulf.Web.Auth
 
         void AuthenticatorButton_Click(object sender, ImageClickEventArgs e)
         {
-            // Redirect to interactive page
-            var af = new AuthenticatorFactory();
-            var parts = ((ImageButton)sender).CommandArgument.Split('|');
-            var a = af.CreateInteractiveAuthenticator(parts[0], parts[1]);
+            var key = ((ImageButton)sender).CommandArgument;
+            var a = CreateAuthenticator(key);
+
+            Session[Constants.SessionAuthenticator] = key;
 
             a.RedirectToLoginPage();
+        }
+
+        private InteractiveAuthenticatorBase CreateAuthenticator(string key)
+        {
+            var af = new AuthenticatorFactory();
+            var parts = key.Split('|');
+            var a = af.CreateInteractiveAuthenticator(parts[0], parts[1]);
+
+            return a;
+        }
+
+
+        private void UpdateForm()
+        {
+            var unknownId = TemporaryPrincipal != null;
+
+            SignInIntroPanel.Visible = !unknownId;
+            UnknownIdentityIntroPanel.Visible = unknownId;
+            SignInDetailsPanel.Visible = !unknownId;
+            AuthenticatorPanel.Visible = !unknownId;
+
+            if (!unknownId)
+            {
+                CreateAuthenticatorButtons();
+            }
+            else
+            {
+                var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
+                Identifier.Text = identity.Identifier;
+            }
+
+            SignInForm.Text = String.Format("Welcome to {0}", Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle]);
+
+            RegisterLink.NavigateUrl = Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl);
+            ActivateLink.NavigateUrl = Jhu.Graywulf.Web.Auth.Activate.GetUrl(ReturnUrl);
+            ResetLink.NavigateUrl = Jhu.Graywulf.Web.Auth.RequestReset.GetUrl(ReturnUrl);
         }
 
         private void CreateAuthenticatorButtons()
@@ -106,7 +116,7 @@ namespace Jhu.Graywulf.Web.Auth
                     CausesValidation = false,
                     AlternateText = aus[i].DisplayName,
                     ToolTip = String.Format("Log on using {0}.", aus[i].DisplayName),
-                    CommandArgument = String.Format("{0}|{1}", aus[i].Protocol, aus[i].Authority)
+                    CommandArgument = String.Format("{0}|{1}", aus[i].Protocol, aus[i].AuthorityUri)
                 };
 
                 b.Click += new ImageClickEventHandler(AuthenticatorButton_Click);
@@ -120,12 +130,15 @@ namespace Jhu.Graywulf.Web.Auth
 
         private void Authenticate()
         {
-            // Try authenticate with all interactive authenticators
-            var af = new AuthenticatorFactory();
-            var aus = af.CreateInteractiveAuthenticators();
-            for (int i = 0; i < aus.Length; i++)
+            var key = (string)Session[Constants.SessionAuthenticator];
+
+            if (key != null)
             {
-                var principal = aus[i].Authenticate();
+                var a = CreateAuthenticator(key);
+
+                Session[Constants.SessionAuthenticator] = null;
+
+                var principal = a.Authenticate();
                 if (principal != null)
                 {
                     var identity = (GraywulfIdentity)principal.Identity;
@@ -145,10 +158,31 @@ namespace Jhu.Graywulf.Web.Auth
                         // from them could automatically registered without beging
                         // sent to the user form.
 
-                        Session[Constants.SessionTempPrincipal] = principal;
-                        Response.Redirect(Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl));
+                        TemporaryPrincipal = principal;
                     }
+
                 }
+            }
+        }
+
+        private void LoginUser()
+        {
+            // Load user from the registry
+            var uu = new UserFactory(RegistryContext);
+            user = uu.LoginUser(Domain, Username.Text, Password.Text);
+
+            RegistryContext.UserGuid = user.Guid;
+            RegistryContext.UserName = user.Name;
+
+            // If there's any temporary identifier set, associate
+            // with the user
+            if (TemporaryPrincipal != null)
+            {
+                var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
+                var ui = identity.CreateUserIdentity(user);
+                ui.Save();
+
+                TemporaryPrincipal = null;
             }
         }
 

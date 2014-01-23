@@ -143,6 +143,9 @@
     <Compile Include="ChangePassword.aspx.designer.cs">
       <DependentUpon>ChangePassword.aspx</DependentUpon>
     </Compile>
+    <Compile Include="PageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="RequestReset.aspx.cs">
       <DependentUpon>RequestReset.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

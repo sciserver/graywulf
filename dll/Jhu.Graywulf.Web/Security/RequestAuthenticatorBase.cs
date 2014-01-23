@@ -14,7 +14,9 @@ namespace Jhu.Graywulf.Security
     {
         public abstract string Protocol { get; }
 
-        public abstract string Authority { get; set; }
+        public abstract string AuthorityName { get; }
+
+        public abstract string AuthorityUri { get; set; }
 
         public abstract string DisplayName { get; set; }
 

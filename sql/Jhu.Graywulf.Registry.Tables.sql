@@ -491,8 +491,8 @@ CREATE TABLE [dbo].[UserIdentity]
 (
 	[EntityGuid] [uniqueidentifier] NOT NULL,
 	[Protocol] [nvarchar](25) NOT NULL,
-	[Authority] [nvarchar](50) NOT NULL,
-	[Identifier] [nvarchar](50) NOT NULL,
+	[Authority] [nvarchar](250) NOT NULL,
+	[Identifier] [nvarchar](250) NOT NULL,
 	CONSTRAINT [PK_UserIdentity] PRIMARY KEY CLUSTERED 
 	(
 		[EntityGuid] ASC

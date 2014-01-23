@@ -10,16 +10,15 @@
                 </p>
             </asp:Panel>
             <asp:Panel runat="server" ID="UnknownIdentityIntroPanel">
-                <p>
-                    The
-                    <asp:Label runat="server" ID="AuthorityName" />
-                    identifier is not recognized.
-                    <ul>
-                        <li>Register now and associate account with the identifier.</li>
-                        <li>Sign in with an existing username and password to associate your account with the
-                            identifier.</li>
-                    </ul>
-                </p>
+                <p style="color:Red">
+                    The identifier
+                    <asp:Label runat="server" ID="Identifier" /></p>
+                is not recognized.
+                <ul>
+                    <li>Register now and associate account with the identifier.</li>
+                    <li>Sign in with an existing username and password to associate your account with the
+                        identifier.</li>
+                </ul>
             </asp:Panel>
             <table class="FormTable">
                 <tr>
@@ -76,7 +75,8 @@
         </FormTemplate>
         <ButtonsTemplate>
             <asp:Button runat="Server" ID="Ok" Text="Sign in" CssClass="FormButton" OnClick="Ok_Click" />
-            <asp:Button runat="Server" ID="Register" Text="Register" CssClass="FormButton" OnClick="Register_Click" />
+            <asp:Button runat="Server" ID="Register" Text="Register" CssClass="FormButton" OnClick="Register_Click"
+                CausesValidation="false" />
         </ButtonsTemplate>
     </jgwc:Form>
 </asp:Content>

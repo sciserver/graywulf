@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Registry
             set { protocol = value; }
         }
 
-        [DBColumn(Size = 50)]
+        [DBColumn(Size = 250)]
         [DefaultValue("")]
         [XmlElement]
         public string Authority
@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.Registry
             set { authority = value; }
         }
 
-        [DBColumn(Size = 50)]
+        [DBColumn(Size = 250)]
         [DefaultValue("")]
         [XmlElement]
         public string Identifier

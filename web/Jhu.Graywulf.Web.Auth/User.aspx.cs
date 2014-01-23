@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.Security;
 using System.IO;
+using Jhu.Graywulf.Security;
 using Jhu.Graywulf.Web;
 using Jhu.Graywulf.Registry;
 
@@ -30,22 +31,21 @@ namespace Jhu.Graywulf.Web.Auth
             else
             {
                 UserForm.Text = "Modify user account";
-
-                Username.Text = user.Name;
                 Username.ReadOnly = true;
-
-                FirstName.Text = user.FirstName;
-                MiddleName.Text = user.MiddleName;
-                LastName.Text = user.LastName;
-                Email.Text = user.Email;
-                Company.Text = user.Company;
-                Address.Text = user.Address;
-                WorkPhone.Text = user.WorkPhone;
 
                 PasswordTable.Visible = false;
                 CaptchaTable.Visible = false;
                 ChangePasswordPanel.Visible = true;
             }
+
+            Username.Text = user.Name;
+            FirstName.Text = user.FirstName;
+            MiddleName.Text = user.MiddleName;
+            LastName.Text = user.LastName;
+            Email.Text = user.Email;
+            Company.Text = user.Company;
+            Address.Text = user.Address;
+            WorkPhone.Text = user.WorkPhone;
         }
 
         private void SaveForm()
@@ -69,6 +69,14 @@ namespace Jhu.Graywulf.Web.Auth
 
             user.MakeMemberOf(Domain.StandardUserGroup.Guid);
 
+            // If user signed in with a temporary identity
+            if (TemporaryPrincipal != null)
+            {
+                var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
+                var ui = identity.CreateUserIdentity(user);
+                ui.Save();
+            }
+
             Util.EmailSender.Send(user, File.ReadAllText(MapPath("~/templates/ActivationEmail.xml")), BaseUrl);
         }
 
@@ -80,9 +88,18 @@ namespace Jhu.Graywulf.Web.Auth
             {
                 user = RegistryUser;
             }
+            else if (TemporaryPrincipal != null)
+            {
+                // Create a user object based on the temporary user generated
+                // based on the OpenID etc. used at sing in.
+                var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
+                user = new Registry.User(identity.User);
+                user.ParentReference.Value = Domain;
+                user.Context = RegistryContext;
+            }
             else
             {
-                user = new Jhu.Graywulf.Registry.User(Domain);
+                user = new Registry.User(Domain);
             }
 
             // Update form
@@ -104,6 +121,15 @@ namespace Jhu.Graywulf.Web.Auth
             {
                 EntityFactory ef = new EntityFactory(RegistryContext);
                 args.IsValid = !ef.CheckEntityDuplicate(EntityType.User, Guid.Empty, Domain.Guid, args.Value);
+            }
+        }
+
+        protected void DuplicateEmailValidator_ServerValidate(object source, ServerValidateEventArgs args)
+        {
+            if (RegistryUser == null)
+            {
+                var ef = new UserFactory(RegistryContext);
+                args.IsValid = !ef.CheckEmailDuplicate(Domain, args.Value.Trim());
             }
         }
 

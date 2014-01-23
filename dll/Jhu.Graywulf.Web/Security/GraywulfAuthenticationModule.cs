@@ -29,9 +29,6 @@ namespace Jhu.Graywulf.Security
         /// </remarks>
         public void Init(HttpApplication context)
         {
-            // Initialize identity cache
-            context.Application[Constants.ApplicationPrincipalCache] = new GraywulfPrincipalCache();
-
             // Create authenticators
             var af = AuthenticatorFactory.Create(null);
             this.authenticators = af.CreateRequestAuthenticators();
@@ -108,7 +105,7 @@ namespace Jhu.Graywulf.Security
                 }
                 else if (identity is System.Web.Security.FormsIdentity)
                 {
-                    CreateGraywulfPrincipal(context, (System.Web.Security.FormsIdentity)identity);
+                    context.User = GraywulfPrincipal.Create((System.Web.Security.FormsIdentity)identity);
                 }
                 else if (identity is System.Security.Principal.GenericIdentity)
                 {
@@ -119,101 +116,6 @@ namespace Jhu.Graywulf.Security
                     throw new NotImplementedException();
                 }
             }
-
-            /*
-            if (context.User is GraywulfPrincipal)
-            {
-                LoadGraywulfPrincipal(context);
-            }*/
         }
-
-        /// <summary>
-        /// Creates a graywulf principal based on the guid stored in the
-        /// forms authentication token.
-        /// </summary>
-        /// <param name="identity"></param>
-        /// <returns></returns>
-        private void CreateGraywulfPrincipal(HttpContext context, System.Web.Security.FormsIdentity formsIdentity)
-        {
-            var identity = new GraywulfIdentity()
-            {
-                Protocol = Constants.ProtocolNameForms,
-                Identifier = formsIdentity.Name,
-                IsAuthenticated = true,
-            };
-
-            identity.UserProperty.Name = formsIdentity.Name;
-
-            context.User = new GraywulfPrincipal(identity);
-        }
-
-        /*
-        private void LoadGraywulfPrincipal(HttpContext context)
-        {
-            // See if identity can be found in the cache. If so, use that
-            // instance, otherwise load from the database.
-
-            var contextPrincipal = (GraywulfPrincipal)context.User;
-            context.User = CacheGraywulfPrincipal(context.Application, contextPrincipal);
-
-            if (!((GraywulfIdentity)context.User.Identity).IsAuthenticated)
-            {
-                AuthenticateGraywulfPrincipal(context);
-            }
-        }
-
-        /// <summary>
-        /// Authenticates user based on the Graywulf user database
-        /// </summary>
-        /// <param name="identity"></param>
-        private void AuthenticateGraywulfPrincipal(HttpContext context)
-        {
-            var principal = (GraywulfPrincipal)context.User;
-            var identity = (GraywulfIdentity)principal.Identity;
-
-            using (var registryContext = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
-            {
-                switch (identity.Protocol)
-                {
-                    case Constants.ProtocolNameForms:
-                        var ef = new EntityFactory(registryContext);
-                        identity.User = ef.LoadEntity<User>(registryContext.Domain.GetFullyQualifiedName(), identity.Identifier);
-                        break;
-                    case Constants.ProtocolNameWindows:
-                        // TODO: implement NTLM auth
-                        throw new NotImplementedException();
-                    default:
-                        // All other cases use lookup by protocol name
-                        try
-                        {
-                            var uf = new UserFactory(registryContext);
-                            identity.User = uf.FindUserByIdentity(identity.Protocol, identity.Authority, identity.Identifier);
-                        }
-                        catch (EntityNotFoundException)
-                        {
-                            identity.User = null;
-                        }
-                        break;
-                }
-            }
-
-            // TODO: make sure user is activated
-            // if (identity.User.DeploymentState == DeploymentState.Deployed)
-        }
-
-        internal static GraywulfPrincipal CacheGraywulfPrincipal(HttpApplicationState context, GraywulfPrincipal principal)
-        {
-            var principalCache = (GraywulfPrincipalCache)context[Constants.ApplicationPrincipalCache];
-            return principalCache.GetOrAdd(principal);
-        }
-
-        internal static void FlushGraywulfPrincipal(HttpApplicationState context, GraywulfPrincipal principal)
-        {
-            var principalCache = (GraywulfPrincipalCache)context[Constants.ApplicationPrincipalCache];
-            
-            GraywulfPrincipal old;
-            principalCache.TryRemove(principal, out old);
-        }
-         * */
     }
 }

@@ -12,17 +12,33 @@ namespace Jhu.Graywulf.Security
     /// </summary>
     public abstract class InteractiveAuthenticatorBase : IAuthenticator
     {
-        private string authority;
+        private string authorityName;
+        private string authorityUri;
         private string displayName;
 
         public abstract string Protocol { get; }
 
-        public string Authority
+        /// <summary>
+        /// Gets or sets the name of the authority
+        /// </summary>
+        public string AuthorityName
         {
-            get { return authority; }
-            set { authority = value; }
+            get { return authorityName; }
+            set { authorityName = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the URI uniquely identifying the authority
+        /// </summary>
+        public string AuthorityUri
+        {
+            get { return authorityUri; }
+            set { authorityUri = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the display name of the authority
+        /// </summary>
         public string DisplayName
         {
             get { return displayName; }
@@ -36,12 +52,20 @@ namespace Jhu.Graywulf.Security
 
         private void InitializeMembers()
         {
-            this.authority = null;
+            this.authorityUri = null;
             this.displayName = null;
         }
 
+        /// <summary>
+        /// When implemented in derived classes, authenticates the user.
+        /// </summary>
+        /// <returns></returns>
         public abstract GraywulfPrincipal Authenticate();
 
+        /// <summary>
+        /// When implemented in derived classes, redirects the browser
+        /// to the sign in form of the authority.
+        /// </summary>
         public abstract void RedirectToLoginPage();
     }
 }

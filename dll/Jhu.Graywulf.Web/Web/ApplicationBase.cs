@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Web
     public abstract class ApplicationBase : System.Web.HttpApplication
     {
         /// <summary>
-        /// Gets an initialized  registry context.
+        /// Gets an initialized registry context.
         /// </summary>
         public Context CreateRegistryContext()
         {
@@ -56,9 +56,12 @@ namespace Jhu.Graywulf.Web
         /// </summary>
         public User RegistryUser
         {
-            get { return ((GraywulfIdentity)this.User.Identity).User; }
+            get { return ((GraywulfIdentity)User.Identity).User; }
         }
 
+        /// <summary>
+        /// Initializes the application events.
+        /// </summary>
         public override void Init()
         {
             base.Init();
@@ -82,46 +85,56 @@ namespace Jhu.Graywulf.Web
 
         protected virtual void Session_End(object sender, EventArgs e)
         {
-            // Flush principal from the cache
-            /*var principal = (GraywulfPrincipal)Session[Constants.SessionPrincipal];
-            if (principal != null)
-            {
-                Security.GraywulfAuthenticationModule.FlushGraywulfPrincipal(Application, principal);
-            }*/
         }
 
         protected virtual void Application_BeginRequest(object sender, EventArgs e)
         {
-
         }
 
         protected virtual void Application_AuthenticateRequest(object sender, EventArgs e)
         {
-
         }
 
         protected virtual void Application_Error(object sender, EventArgs e)
         {
-
         }
 
         protected virtual void Application_End(object sender, EventArgs e)
         {
-
         }
 
         #region User managemenet functions
 
+        /// <summary>
+        /// Checks if the authenticated user appears for the first time,
+        /// and if so, raises an event. Also checks if the user signed out.
+        /// </summary>
         private void IdentifyUser()
         {
             var session = HttpContext.Current.Session;
 
             if (session != null)
             {
+                // Get the saved principal from the session
                 var sessionPrincipal = (GraywulfPrincipal)session[Constants.SessionPrincipal];
 
-                if (Request.IsAuthenticated && User is GraywulfPrincipal && sessionPrincipal == null)
+                // If the current request is authenticated by Graywulf, and this is the
+                // first time we see the user, we need to load details from the registry
+                if (Request.IsAuthenticated && User is GraywulfPrincipal)
                 {
+                    if (sessionPrincipal != null)
+                    {
+                        // Make sure that the known user is the same as the one
+                        // just being authenticated
+                        if (!sessionPrincipal.Identity.CompareByIdentifier((GraywulfIdentity)User.Identity))
+                        {
+                            // This is someone we haven't seen
+                            OnUserSignedOut();
+                            session.Abandon();
+                        }
+                    }
+
+                    // A new user has just arrived.
                     using (Registry.Context context = CreateRegistryContext())
                     {
                         ((GraywulfIdentity)User.Identity).LoadUser(context.Domain);
@@ -132,6 +145,7 @@ namespace Jhu.Graywulf.Web
                 }
                 else if (!Request.IsAuthenticated && sessionPrincipal != null)
                 {
+                    // A user left
                     OnUserSignedOut();
                     session.Abandon();
                 }

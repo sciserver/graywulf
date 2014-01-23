@@ -8,7 +8,8 @@ namespace Jhu.Graywulf.Security
     public interface IAuthenticator
     {
         string Protocol { get; }
-        string Authority { get; }
+        string AuthorityName { get; }
+        string AuthorityUri { get; }
         string DisplayName { get; }
     }
 }

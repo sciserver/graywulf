@@ -18,6 +18,7 @@ namespace Jhu.Graywulf.Web
         public const string SessionPrincipal = "Jhu.Graywulf.Security.Principal";
         public const string SessionTempPrincipal = "Jhu.Graywulf.Security.TempUser";
         public const string SessionCaptcha = "Jhu.Graywulf.Web.Captcha";
+        public const string SessionAuthenticator = "Jhu.Graywulf.Security.Authenticator";
 
         public const string SessionClusterGuid = "Jhu.Graywulf.Web.Cluster";
         public const string SessionDomainGuid = "Jhu.Graywulf.Web.Domain";

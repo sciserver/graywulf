@@ -40,13 +40,13 @@ namespace Jhu.Graywulf.Web.Auth {
         protected global::System.Web.UI.WebControls.Panel UnknownIdentityIntroPanel;
         
         /// <summary>
-        /// AuthorityName control.
+        /// Identifier control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label AuthorityName;
+        protected global::System.Web.UI.WebControls.Label Identifier;
         
         /// <summary>
         /// UsernameLabel control.

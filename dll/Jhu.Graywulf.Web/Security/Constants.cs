@@ -7,8 +7,6 @@ namespace Jhu.Graywulf.Security
 {
     public static class Constants
     {
-        public const string ApplicationPrincipalCache = "Jhu.Graywulf.Security.PrincipalCache";
-
         public const string AuthenticationTypeName = "Graywulf";
 
         public const string ProtocolNameForms = "Forms";
