@@ -42,9 +42,16 @@ namespace Jhu.Graywulf.Install
             // TODO: fill in other settings from default constants.
             
             cluster.LoadMachineRoles(false);
-            cluster.LoadDatabaseDefinitions(false);
-            
-            var tempdbdd = cluster.DatabaseDefinitions[Constants.TempDbName];
+
+            cluster.LoadDomains(false);
+            var shareddomain = cluster.Domains[Constants.SharedDomainName];
+
+            shareddomain.LoadFederations(false);
+            var sharedfederation = shareddomain.Federations[Constants.SharedFederationName];
+
+            sharedfederation.LoadDatabaseDefinitions(false);
+
+            var tempdbdd = sharedfederation.DatabaseDefinitions[Constants.TempDbName];
             tempdbdd.LoadDatabaseVersions(false);
             
             var controllerRole = cluster.MachineRoles[Constants.ControllerMachineRoleName];

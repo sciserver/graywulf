@@ -21,24 +21,9 @@ namespace Jhu.Graywulf.Registry
             LoadChildren<Domain>(forceReload);
         }
 
-        public void LoadDatabaseDefinitions(bool forceReload)
-        {
-            LoadChildren<DatabaseDefinition>(forceReload);
-        }
-
         public void LoadQueueDefinitions(bool forceReload)
         {
             LoadChildren<QueueDefinition>(forceReload);
-        }
-
-        public void LoadJobDefinitions(bool forceReload)
-        {
-            LoadChildren<JobDefinition>(forceReload);
-        }
-
-        public void LoadUserGroups(bool forceReload)
-        {
-            LoadChildren<UserGroup>(forceReload);
         }
 
         #endregion

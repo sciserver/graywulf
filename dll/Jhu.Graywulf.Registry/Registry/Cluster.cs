@@ -44,41 +44,13 @@ namespace Jhu.Graywulf.Registry
         {
             get { return GetChildren<Domain>(); }
             set { SetChildren<Domain>(value); }
-        }
-
-        [XmlIgnore]
-        public Dictionary<string, DatabaseDefinition> DatabaseDefinitions
-        {
-            get { return GetChildren<DatabaseDefinition>(); }
-            set { SetChildren<DatabaseDefinition>(value); }
-        }
+        }     
 
         [XmlIgnore]
         public Dictionary<string, QueueDefinition> QueueDefinitions
         {
             get { return GetChildren<QueueDefinition>(); }
             set { SetChildren<QueueDefinition>(value); }
-        }
-
-        [XmlIgnore]
-        public Dictionary<string, JobDefinition> JobDefinitions
-        {
-            get { return GetChildren<JobDefinition>(); }
-            set { SetChildren<JobDefinition>(value); }
-        }
-
-        [XmlIgnore]
-        public Dictionary<string, User> Users
-        {
-            get { return GetChildren<User>(); }
-            set { SetChildren<User>(value); }
-        }
-
-        [XmlIgnore]
-        public Dictionary<string, UserGroup> UserGroups
-        {
-            get { return GetChildren<UserGroup>(); }
-            set { SetChildren<UserGroup>(value); }
         }
 
         #endregion
@@ -144,11 +116,7 @@ namespace Jhu.Graywulf.Registry
             return new EntityType[] {
                     EntityType.MachineRole,
                     EntityType.Domain,
-                    EntityType.DatabaseDefinition,
                     EntityType.QueueDefinition,
-                    EntityType.JobDefinition,
-                    EntityType.User,
-                    EntityType.UserGroup
             };
         }
 

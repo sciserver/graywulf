@@ -74,18 +74,10 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
             Item.Context = RegistryContext;
             IEnumerable<JobDefinition> list = null;
 
-            if (Item.QueueInstance.QueueDefinition.Parent is Jhu.Graywulf.Registry.Federation)
-            {
-                Jhu.Graywulf.Registry.Federation f = Item.QueueInstance.QueueDefinition.Parent as Jhu.Graywulf.Registry.Federation;
-                f.LoadJobDefinitions(false);
-                list = f.JobDefinitions.Values;
-            }
-            else if (Item.QueueInstance.QueueDefinition.Parent is Jhu.Graywulf.Registry.Cluster)
-            {
-                Jhu.Graywulf.Registry.Cluster c = Item.QueueInstance.QueueDefinition.Parent as Jhu.Graywulf.Registry.Cluster;
-                c.LoadJobDefinitions(false);
-                list = c.JobDefinitions.Values;
-            }
+
+            Jhu.Graywulf.Registry.Federation f = Item.QueueInstance.QueueDefinition.Parent as Jhu.Graywulf.Registry.Federation;
+            f.LoadJobDefinitions(false);
+            list = f.JobDefinitions.Values;
 
             foreach (JobDefinition jd in list)
             {

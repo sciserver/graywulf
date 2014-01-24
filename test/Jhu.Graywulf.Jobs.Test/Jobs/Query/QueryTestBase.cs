@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Test.Jobs.Query
     {
         protected Guid ScheduleQueryJob(string query, QueueType queueType)
         {
-            var queue = String.Format("Graywulf.Controller.Controller.{0}", queueType.ToString());
+            var queue = String.Format("QueueInstance:Graywulf.Controller.Controller.{0}", queueType.ToString());
 
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {

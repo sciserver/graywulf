@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.Test
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var ef = new EntityFactory(context);
-                var jd = ef.LoadEntity<JobDefinition>(Registry.AppSettings.ClusterName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
+                var jd = ef.LoadEntity<JobDefinition>(Registry.AppSettings.ClusterName, Registry.Constants.SharedDomainName, Registry.Constants.SharedFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
 
                 var jf = new JobInstanceFactory(context);
                 foreach (var job in jf.FindJobInstances(Guid.Empty, Guid.Empty, new HashSet<Guid>() { jd.Guid }, JobExecutionState.Scheduled))
@@ -66,9 +66,9 @@ namespace Jhu.Graywulf.Test
                 SignInTestUser(context);
 
                 var ef = new EntityFactory(context);
-                var jd = ef.LoadEntity<JobDefinition>(Registry.AppSettings.ClusterName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
+                var jd = ef.LoadEntity<JobDefinition>(Registry.AppSettings.ClusterName, Registry.Constants.SharedDomainName, Registry.Constants.SharedFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
 
-                var queue = String.Format("Graywulf.Controller.Controller.{0}", queueType.ToString());
+                var queue = String.Format("QueueInstance:Graywulf.Controller.Controller.{0}", queueType.ToString());
 
                 JobInstance job = jd.CreateJobInstance(queue, Jhu.Graywulf.Registry.ScheduleType.Queued);
 
