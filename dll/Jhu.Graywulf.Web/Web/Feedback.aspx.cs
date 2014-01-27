@@ -65,16 +65,19 @@ namespace Jhu.Graywulf.Web
 
             if (!IsPostBack)
             {
-                var user = ((GraywulfIdentity)User.Identity).User;
-
-                // Load user if available
-                if (user != null)
+                if (User != null && User.Identity != null && User.Identity is GraywulfIdentity)
                 {
-                    Name.Text = String.Format("{0} {1}", user.FirstName, user.LastName);
-                    NameRow.Visible = false;
+                    var user = ((GraywulfIdentity)User.Identity).User;
 
-                    Email.Text = user.Email;
-                    EmailRow.Visible = false;
+                    // Load user if available
+                    if (user != null)
+                    {
+                        Name.Text = String.Format("{0} {1}", user.FirstName, user.LastName);
+                        NameRow.Visible = false;
+
+                        Email.Text = user.Email;
+                        EmailRow.Visible = false;
+                    }
                 }
 
                 switch (mode)

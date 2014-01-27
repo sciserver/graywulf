@@ -3,8 +3,8 @@
 |
 <a runat="server" href="~/Feedback.aspx">feedback</a>
 |
-<a runat="server" href="~/Docs/99_info/01_personnel.aspx">personnel</a>
+<a runat="server" href="~/Docs/pages/99_info/01_personnel.aspx">personnel</a>
 |
-<a runat="server" href="~/Docs/99_info/03_copyright.aspx">copyright</a>
+<a runat="server" href="~/Docs/pages/99_info/03_copyright.aspx">copyright</a>
 |
 <a runat="server" href="~/Docs">help</a>

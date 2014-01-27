@@ -17,6 +17,7 @@ namespace Jhu.Graywulf.Web.Controls
         private HyperLink account;
         private HyperLink signOut;
         private HyperLink signIn;
+        private HyperLink register;
 
         [Bindable(false), Themeable(true), UrlProperty]
         public string ImageUrl
@@ -61,6 +62,9 @@ namespace Jhu.Graywulf.Web.Controls
 
             this.signIn = new HyperLink();
             this.signIn.Text = Labels.SignIn;
+
+            this.register = new HyperLink();
+            this.register.Text = Labels.Register;
         }
 
         protected override void OnInit(EventArgs e)
@@ -72,6 +76,7 @@ namespace Jhu.Graywulf.Web.Controls
             Controls.Add(account);
             Controls.Add(signOut);
             Controls.Add(signIn);
+            Controls.Add(register);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -104,6 +109,7 @@ namespace Jhu.Graywulf.Web.Controls
             account.NavigateUrl = String.Format("{0}User.aspx?ReturnUrl={1}", url, returl);
             signOut.NavigateUrl = String.Format("{0}SignOut.aspx?ReturnUrl={1}", url, returl);
             signIn.NavigateUrl = String.Format("{0}SignIn.aspx?ReturnUrl={1}", url, returl);
+            register.NavigateUrl = String.Format("{0}User.aspx?ReturnUrl={1}", url, returl);
         }
 
         protected override void Render(System.Web.UI.HtmlTextWriter writer)
@@ -135,6 +141,8 @@ namespace Jhu.Graywulf.Web.Controls
                 else
                 {
                     signIn.RenderControl(writer);
+                    writer.Write(" | ");
+                    register.RenderControl(writer);
                 }
             }
         }

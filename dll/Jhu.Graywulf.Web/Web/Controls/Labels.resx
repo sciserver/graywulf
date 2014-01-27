@@ -132,4 +132,7 @@
   <data name="UserStatusDesigner" xml:space="preserve">
     <value>[ user status ]</value>
   </data>
+  <data name="Register" xml:space="preserve">
+    <value>register</value>
+  </data>
 </root>
