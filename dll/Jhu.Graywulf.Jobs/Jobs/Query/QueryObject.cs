@@ -8,6 +8,7 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using System.IO;
+using System.Xml.Serialization;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
@@ -276,11 +277,19 @@ namespace Jhu.Graywulf.Jobs.Query
         /// the datasets not in the default list (remote datasets,
         /// for instance)
         /// </remarks>
-        [DataMember]
+        [IgnoreDataMember]
         public List<DatasetBase> CustomDatasets
         {
             get { return customDatasets; }
             private set { customDatasets = value; }
+        }
+
+        [DataMember(Name = "CustomDatasets")]
+        [XmlArray]
+        public DatasetBase[] CustomDatasets_ForXml
+        {
+            get { return customDatasets.ToArray(); }
+            set { customDatasets = new List<DatasetBase>(value); }
         }
 
         /// <summary>

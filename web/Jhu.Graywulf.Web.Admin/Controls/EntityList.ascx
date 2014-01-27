@@ -5,11 +5,6 @@
     StartRowIndexParameterName="from" MaximumRowsParameterName="max" EnableCaching="false"
     OnObjectCreating="InternalDataSource_ObjectCreating" TypeName="Jhu.Graywulf.Registry.WebEntityFactory">
 </asp:ObjectDataSource>
-<div class="dock-top">
-    <jgwc:MultiSelectGridView runat="server" ID="InternalGridView" DataSourceID="InternalDataSource"
-        AllowPaging="true" DataKeyNames="Guid" AutoGenerateColumns="false" PagerSettings-Mode="NumericFirstLast" PageSize="50">
-    </jgwc:MultiSelectGridView>
-</div>
 <div class="dock-bottom">
     <p class="FormMessage">
         <asp:CustomValidator ID="ItemSelectedValidator" runat="server" ErrorMessage="No item was selected."
@@ -29,4 +24,9 @@
         <asp:Button ID="MoveDown" runat="server" CssClass="FormButtonIcon" Text="▼" CommandName="MoveDown"
             OnCommand="Button_Command" ValidationGroup="EntityList" />
     </p>
+</div>
+<div class="dock-fill" style="overflow:auto">
+    <jgwc:MultiSelectGridView runat="server" ID="InternalGridView" DataSourceID="InternalDataSource"
+        AllowPaging="true" DataKeyNames="Guid" AutoGenerateColumns="false" PagerSettings-Mode="NumericFirstLast" PageSize="50">
+    </jgwc:MultiSelectGridView>
 </div>

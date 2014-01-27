@@ -22,15 +22,6 @@ namespace Jhu.Graywulf.Web.Admin.Controls {
         protected global::System.Web.UI.WebControls.ObjectDataSource InternalDataSource;
         
         /// <summary>
-        /// InternalGridView control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.MultiSelectGridView InternalGridView;
-        
-        /// <summary>
         /// ItemSelectedValidator control.
         /// </summary>
         /// <remarks>
@@ -92,5 +83,14 @@ namespace Jhu.Graywulf.Web.Admin.Controls {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button MoveDown;
+        
+        /// <summary>
+        /// InternalGridView control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Controls.MultiSelectGridView InternalGridView;
     }
 }
