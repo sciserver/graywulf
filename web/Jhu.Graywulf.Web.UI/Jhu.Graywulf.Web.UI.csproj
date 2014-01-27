@@ -53,14 +53,12 @@
   <ItemGroup>
     <Compile Include="App_Masters\Basic.master.cs">
       <DependentUpon>Basic.master</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="App_Masters\Basic.master.designer.cs">
       <DependentUpon>Basic.master</DependentUpon>
     </Compile>
     <Compile Include="Check.aspx.cs">
       <DependentUpon>Check.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Check.aspx.designer.cs">
       <DependentUpon>Check.aspx</DependentUpon>
@@ -83,7 +81,6 @@
     </Compile>
     <Compile Include="Docs\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Docs\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -97,14 +94,12 @@
     </Compile>
     <Compile Include="Jobs\CancelJob.aspx.cs">
       <DependentUpon>CancelJob.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\CancelJob.aspx.designer.cs">
       <DependentUpon>CancelJob.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -118,14 +113,12 @@
     </Compile>
     <Compile Include="Jobs\ExportJobDetails.aspx.cs">
       <DependentUpon>ExportJobDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\ExportJobDetails.aspx.designer.cs">
       <DependentUpon>ExportJobDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\QueryJobDetails.aspx.cs">
       <DependentUpon>QueryJobDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\QueryJobDetails.aspx.designer.cs">
       <DependentUpon>QueryJobDetails.aspx</DependentUpon>
@@ -149,49 +142,42 @@
     </Compile>
     <Compile Include="MyDB\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MyDB\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="MyDB\Download.aspx.cs">
       <DependentUpon>Download.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MyDB\Download.aspx.designer.cs">
       <DependentUpon>Download.aspx</DependentUpon>
     </Compile>
     <Compile Include="MyDB\DropObject.aspx.cs">
       <DependentUpon>DropObject.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MyDB\DropObject.aspx.designer.cs">
       <DependentUpon>DropObject.aspx</DependentUpon>
     </Compile>
     <Compile Include="MyDB\ExportTable.aspx.cs">
       <DependentUpon>ExportTable.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MyDB\ExportTable.aspx.designer.cs">
       <DependentUpon>ExportTable.aspx</DependentUpon>
     </Compile>
     <Compile Include="MyDB\ImportTable.aspx.cs">
       <DependentUpon>ImportTable.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MyDB\ImportTable.aspx.designer.cs">
       <DependentUpon>ImportTable.aspx</DependentUpon>
     </Compile>
     <Compile Include="MyDB\RenameObject.aspx.cs">
       <DependentUpon>RenameObject.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MyDB\RenameObject.aspx.designer.cs">
       <DependentUpon>RenameObject.aspx</DependentUpon>
     </Compile>
     <Compile Include="MyDB\Tables.aspx.cs">
       <DependentUpon>Tables.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MyDB\Tables.aspx.designer.cs">
       <DependentUpon>Tables.aspx</DependentUpon>
@@ -203,41 +189,34 @@
     <Compile Include="MyDB\Tabs.ascx.designer.cs">
       <DependentUpon>Tabs.ascx</DependentUpon>
     </Compile>
-    <Compile Include="PageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="PageBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Query\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="Query\Results.aspx.cs">
       <DependentUpon>Results.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Query\Results.aspx.designer.cs">
       <DependentUpon>Results.aspx</DependentUpon>
     </Compile>
     <Compile Include="Schema\ColumnList.ascx.cs">
       <DependentUpon>ColumnList.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Schema\ColumnList.ascx.designer.cs">
       <DependentUpon>ColumnList.ascx</DependentUpon>
     </Compile>
     <Compile Include="Schema\DbObjectDetails.ascx.cs">
       <DependentUpon>DbObjectDetails.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Schema\DbObjectDetails.ascx.designer.cs">
       <DependentUpon>DbObjectDetails.ascx</DependentUpon>
     </Compile>
     <Compile Include="Schema\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Schema\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -258,14 +237,11 @@
     </Compile>
     <Compile Include="Schema\Peek.aspx.cs">
       <DependentUpon>Peek.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Schema\Peek.aspx.designer.cs">
       <DependentUpon>Peek.aspx</DependentUpon>
     </Compile>
-    <Compile Include="UserControlBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="UserControlBase.cs" />
     <Compile Include="Util\QueryEditorUtil.cs" />
   </ItemGroup>
   <ItemGroup>

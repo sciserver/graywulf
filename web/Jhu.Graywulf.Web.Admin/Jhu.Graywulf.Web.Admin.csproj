@@ -538,119 +538,102 @@
     </Compile>
     <Compile Include="App_Masters\Basic.master.cs">
       <DependentUpon>Basic.master</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="App_Masters\Basic.master.designer.cs">
       <DependentUpon>Basic.master</DependentUpon>
     </Compile>
     <Compile Include="Cluster\ClusterDetails.aspx.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\ClusterDetails.aspx.designer.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\ClusterForm.aspx.cs">
       <DependentUpon>ClusterForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\ClusterForm.aspx.designer.cs">
       <DependentUpon>ClusterForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\DiskVolumeDetails.aspx.cs">
       <DependentUpon>DiskVolumeDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\DiskVolumeDetails.aspx.designer.cs">
       <DependentUpon>DiskVolumeDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\DiskVolumeForm.aspx.cs">
       <DependentUpon>DiskVolumeForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\DiskVolumeForm.aspx.designer.cs">
       <DependentUpon>DiskVolumeForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\MachineDetails.aspx.cs">
       <DependentUpon>MachineDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\MachineDetails.aspx.designer.cs">
       <DependentUpon>MachineDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\MachineForm.aspx.cs">
       <DependentUpon>MachineForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\MachineForm.aspx.designer.cs">
       <DependentUpon>MachineForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\MachineRoleDetails.aspx.cs">
       <DependentUpon>MachineRoleDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\MachineRoleDetails.aspx.designer.cs">
       <DependentUpon>MachineRoleDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\MachineRoleForm.aspx.cs">
       <DependentUpon>MachineRoleForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\MachineRoleForm.aspx.designer.cs">
       <DependentUpon>MachineRoleForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\ServerInstanceDetails.aspx.cs">
       <DependentUpon>ServerInstanceDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\ServerInstanceDetails.aspx.designer.cs">
       <DependentUpon>ServerInstanceDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\ServerInstanceForm.aspx.cs">
       <DependentUpon>ServerInstanceForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\ServerInstanceForm.aspx.designer.cs">
       <DependentUpon>ServerInstanceForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\ServerVersionDetails.aspx.cs">
       <DependentUpon>ServerVersionDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\ServerVersionDetails.aspx.designer.cs">
       <DependentUpon>ServerVersionDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\ServerVersionForm.aspx.cs">
       <DependentUpon>ServerVersionForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\ServerVersionForm.aspx.designer.cs">
       <DependentUpon>ServerVersionForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Common\Delete.aspx.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Common\Delete.aspx.designer.cs">
       <DependentUpon>Delete.aspx</DependentUpon>
     </Compile>
     <Compile Include="Common\Discover.aspx.cs">
       <DependentUpon>Discover.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Common\Discover.aspx.designer.cs">
       <DependentUpon>Discover.aspx</DependentUpon>
     </Compile>
     <Compile Include="Common\Serialize.aspx.cs">
       <DependentUpon>Serialize.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Common\Serialize.aspx.designer.cs">
       <DependentUpon>Serialize.aspx</DependentUpon>
@@ -671,7 +654,6 @@
     </Compile>
     <Compile Include="Controls\EntityProperties.ascx.cs">
       <DependentUpon>EntityProperties.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\EntityProperties.ascx.designer.cs">
       <DependentUpon>EntityProperties.ascx</DependentUpon>
@@ -685,21 +667,17 @@
     </Compile>
     <Compile Include="Controls\EntityLink.ascx.cs">
       <DependentUpon>EntityLink.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\EntityLink.ascx.designer.cs">
       <DependentUpon>EntityLink.ascx</DependentUpon>
     </Compile>
     <Compile Include="Controls\EntityList.ascx.cs">
       <DependentUpon>EntityList.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\EntityList.ascx.designer.cs">
       <DependentUpon>EntityList.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Controls\EntityPath.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="Controls\EntityPath.cs" />
     <Compile Include="Controls\EntitySelect.ascx.cs">
       <DependentUpon>EntitySelect.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -709,14 +687,12 @@
     </Compile>
     <Compile Include="Controls\EntitySettings.ascx.cs">
       <DependentUpon>EntitySettings.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\EntitySettings.ascx.designer.cs">
       <DependentUpon>EntitySettings.ascx</DependentUpon>
     </Compile>
     <Compile Include="Controls\EntityTitle.ascx.cs">
       <DependentUpon>EntityTitle.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\EntityTitle.ascx.designer.cs">
       <DependentUpon>EntityTitle.ascx</DependentUpon>
@@ -730,80 +706,67 @@
     </Compile>
     <Compile Include="Controls\Menu.ascx.cs">
       <DependentUpon>Menu.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\Menu.ascx.designer.cs">
       <DependentUpon>Menu.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Controls\UserStatus.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="Controls\UserStatus.cs" />
     <Compile Include="Domain\AddUserGroupMember.aspx.cs">
       <DependentUpon>AddUserGroupMember.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Domain\AddUserGroupMember.aspx.designer.cs">
       <DependentUpon>AddUserGroupMember.aspx</DependentUpon>
     </Compile>
     <Compile Include="Domain\ClusterDetails.aspx.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Domain\ClusterDetails.aspx.designer.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Domain\UserIdentityDetails.aspx.cs">
       <DependentUpon>UserIdentityDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Domain\UserIdentityDetails.aspx.designer.cs">
       <DependentUpon>UserIdentityDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Domain\UserIdentityForm.aspx.cs">
       <DependentUpon>UserIdentityForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Domain\UserIdentityForm.aspx.designer.cs">
       <DependentUpon>UserIdentityForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Domain\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Domain\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="Domain\DomainDetails.aspx.cs">
       <DependentUpon>DomainDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Domain\DomainDetails.aspx.designer.cs">
       <DependentUpon>DomainDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Domain\UserDetails.aspx.cs">
       <DependentUpon>UserDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Domain\UserDetails.aspx.designer.cs">
       <DependentUpon>UserDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Domain\UserForm.aspx.cs">
       <DependentUpon>UserForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Domain\UserForm.aspx.designer.cs">
       <DependentUpon>UserForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Domain\UserGroupDetails.aspx.cs">
       <DependentUpon>UserGroupDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Domain\UserGroupDetails.aspx.designer.cs">
       <DependentUpon>UserGroupDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Domain\UserGroupForm.aspx.cs">
       <DependentUpon>UserGroupForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Domain\UserGroupForm.aspx.designer.cs">
       <DependentUpon>UserGroupForm.aspx</DependentUpon>
@@ -817,7 +780,6 @@
     </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -837,9 +799,7 @@
     <Compile Include="EntityDetails.master.designer.cs">
       <DependentUpon>EntityDetails.master</DependentUpon>
     </Compile>
-    <Compile Include="EntityDetailsPageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="EntityDetailsPageBase.cs" />
     <Compile Include="EntityExtensions.cs" />
     <Compile Include="EntityForm.master.cs">
       <DependentUpon>EntityForm.master</DependentUpon>
@@ -848,152 +808,129 @@
     <Compile Include="EntityForm.master.designer.cs">
       <DependentUpon>EntityForm.master</DependentUpon>
     </Compile>
-    <Compile Include="EntityFormPageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="EntityFormPageBase.cs" />
     <Compile Include="Federation\ClusterDetails.aspx.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\ClusterDetails.aspx.designer.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\DatabaseDefinitionDetails.aspx.cs">
       <DependentUpon>DatabaseDefinitionDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\DatabaseDefinitionDetails.aspx.designer.cs">
       <DependentUpon>DatabaseDefinitionDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\DatabaseDefinitionForm.aspx.cs">
       <DependentUpon>DatabaseDefinitionForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\DatabaseDefinitionForm.aspx.designer.cs">
       <DependentUpon>DatabaseDefinitionForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\DatabaseVersionDetails.aspx.cs">
       <DependentUpon>DatabaseVersionDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\DatabaseVersionDetails.aspx.designer.cs">
       <DependentUpon>DatabaseVersionDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\DatabaseVersionForm.aspx.cs">
       <DependentUpon>DatabaseVersionForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\DatabaseVersionForm.aspx.designer.cs">
       <DependentUpon>DatabaseVersionForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\DeploymentPackageDetails.aspx.cs">
       <DependentUpon>DeploymentPackageDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\DeploymentPackageDetails.aspx.designer.cs">
       <DependentUpon>DeploymentPackageDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\DeploymentPackageForm.aspx.cs">
       <DependentUpon>DeploymentPackageForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\DeploymentPackageForm.aspx.designer.cs">
       <DependentUpon>DeploymentPackageForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\DomainDetails.aspx.cs">
       <DependentUpon>DomainDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\DomainDetails.aspx.designer.cs">
       <DependentUpon>DomainDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\DomainForm.aspx.cs">
       <DependentUpon>DomainForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\DomainForm.aspx.designer.cs">
       <DependentUpon>DomainForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\FederationDetails.aspx.cs">
       <DependentUpon>FederationDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\FederationDetails.aspx.designer.cs">
       <DependentUpon>FederationDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\FederationForm.aspx.cs">
       <DependentUpon>FederationForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\FederationForm.aspx.designer.cs">
       <DependentUpon>FederationForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\FileGroupDetails.aspx.cs">
       <DependentUpon>FileGroupDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\FileGroupDetails.aspx.designer.cs">
       <DependentUpon>FileGroupDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\FileGroupForm.aspx.cs">
       <DependentUpon>FileGroupForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\FileGroupForm.aspx.designer.cs">
       <DependentUpon>FileGroupForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\PartitionDetails.aspx.cs">
       <DependentUpon>PartitionDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\PartitionDetails.aspx.designer.cs">
       <DependentUpon>PartitionDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\PartitionForm.aspx.cs">
       <DependentUpon>PartitionForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\PartitionForm.aspx.designer.cs">
       <DependentUpon>PartitionForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\RemoteDatabaseDetails.aspx.cs">
       <DependentUpon>RemoteDatabaseDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\RemoteDatabaseDetails.aspx.designer.cs">
       <DependentUpon>RemoteDatabaseDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\RemoteDatabaseForm.aspx.cs">
       <DependentUpon>RemoteDatabaseForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\RemoteDatabaseForm.aspx.designer.cs">
       <DependentUpon>RemoteDatabaseForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\SliceDetails.aspx.cs">
       <DependentUpon>SliceDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\SliceDetails.aspx.designer.cs">
       <DependentUpon>SliceDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\SliceForm.aspx.cs">
       <DependentUpon>SliceForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\SliceForm.aspx.designer.cs">
       <DependentUpon>SliceForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\SlicingWizard.aspx.cs">
       <DependentUpon>SlicingWizard.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\SlicingWizard.aspx.designer.cs">
       <DependentUpon>SlicingWizard.aspx</DependentUpon>
@@ -1004,224 +941,192 @@
     <Compile Include="IEntityForm.cs" />
     <Compile Include="Jobs\ClusterDetails.aspx.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\ClusterDetails.aspx.designer.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\DomainDetails.aspx.cs">
       <DependentUpon>DomainDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\DomainDetails.aspx.designer.cs">
       <DependentUpon>DomainDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\FederationDetails.aspx.cs">
       <DependentUpon>FederationDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\FederationDetails.aspx.designer.cs">
       <DependentUpon>FederationDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\JobDefinitionDetails.aspx.cs">
       <DependentUpon>JobDefinitionDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\JobDefinitionDetails.aspx.designer.cs">
       <DependentUpon>JobDefinitionDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\JobDefinitionForm.aspx.cs">
       <DependentUpon>JobDefinitionForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\JobDefinitionForm.aspx.designer.cs">
       <DependentUpon>JobDefinitionForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\JobInstanceDetails.aspx.cs">
       <DependentUpon>JobInstanceDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\JobInstanceDetails.aspx.designer.cs">
       <DependentUpon>JobInstanceDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\JobInstanceForm.aspx.cs">
       <DependentUpon>JobInstanceForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\JobInstanceForm.aspx.designer.cs">
       <DependentUpon>JobInstanceForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\MachineDetails.aspx.cs">
       <DependentUpon>MachineDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\MachineDetails.aspx.designer.cs">
       <DependentUpon>MachineDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\MachineRoleDetails.aspx.cs">
       <DependentUpon>MachineRoleDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\MachineRoleDetails.aspx.designer.cs">
       <DependentUpon>MachineRoleDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\QueueDefinitionDetails.aspx.cs">
       <DependentUpon>QueueDefinitionDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\QueueDefinitionDetails.aspx.designer.cs">
       <DependentUpon>QueueDefinitionDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\QueueDefinitionForm.aspx.cs">
       <DependentUpon>QueueDefinitionForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\QueueDefinitionForm.aspx.designer.cs">
       <DependentUpon>QueueDefinitionForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\QueueInstanceDetails.aspx.cs">
       <DependentUpon>QueueInstanceDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\QueueInstanceDetails.aspx.designer.cs">
       <DependentUpon>QueueInstanceDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\QueueInstanceForm.aspx.cs">
       <DependentUpon>QueueInstanceForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Jobs\QueueInstanceForm.aspx.designer.cs">
       <DependentUpon>QueueInstanceForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\ClusterDetails.aspx.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\ClusterDetails.aspx.designer.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\DatabaseDefinitionDetails.aspx.cs">
       <DependentUpon>DatabaseDefinitionDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\DatabaseDefinitionDetails.aspx.designer.cs">
       <DependentUpon>DatabaseDefinitionDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceDetails.aspx.cs">
       <DependentUpon>DatabaseInstanceDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceDetails.aspx.designer.cs">
       <DependentUpon>DatabaseInstanceDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileDetails.aspx.cs">
       <DependentUpon>DatabaseInstanceFileDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileDetails.aspx.designer.cs">
       <DependentUpon>DatabaseInstanceFileDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileForm.aspx.cs">
       <DependentUpon>DatabaseInstanceFileForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileForm.aspx.designer.cs">
       <DependentUpon>DatabaseInstanceFileForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileGroupDetails.aspx.cs">
       <DependentUpon>DatabaseInstanceFileGroupDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileGroupDetails.aspx.designer.cs">
       <DependentUpon>DatabaseInstanceFileGroupDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileGroupForm.aspx.cs">
       <DependentUpon>DatabaseInstanceFileGroupForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileGroupForm.aspx.designer.cs">
       <DependentUpon>DatabaseInstanceFileGroupForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceForm.aspx.cs">
       <DependentUpon>DatabaseInstanceForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceForm.aspx.designer.cs">
       <DependentUpon>DatabaseInstanceForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\DatabaseVersionDetails.aspx.cs">
       <DependentUpon>DatabaseVersionDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\DatabaseVersionDetails.aspx.designer.cs">
       <DependentUpon>DatabaseVersionDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\DomainDetails.aspx.cs">
       <DependentUpon>DomainDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\DomainDetails.aspx.designer.cs">
       <DependentUpon>DomainDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\FederationDetails.aspx.cs">
       <DependentUpon>FederationDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\FederationDetails.aspx.designer.cs">
       <DependentUpon>FederationDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\MappingWizard.aspx.cs">
       <DependentUpon>MappingWizard.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\MappingWizard.aspx.designer.cs">
       <DependentUpon>MappingWizard.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\UserDatabaseInstanceDetails.aspx.cs">
       <DependentUpon>UserDatabaseInstanceDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\UserDatabaseInstanceDetails.aspx.designer.cs">
       <DependentUpon>UserDatabaseInstanceDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\UserDatabaseInstanceForm.aspx.cs">
       <DependentUpon>UserDatabaseInstanceForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\UserDatabaseInstanceForm.aspx.designer.cs">
       <DependentUpon>UserDatabaseInstanceForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Log\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Log\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="Log\EventDetails.aspx.cs">
       <DependentUpon>EventDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Log\EventDetails.aspx.designer.cs">
       <DependentUpon>EventDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Log\LogEventDetails.ascx.cs">
       <DependentUpon>LogEventDetails.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Log\LogEventDetails.ascx.designer.cs">
       <DependentUpon>LogEventDetails.ascx</DependentUpon>
@@ -1233,37 +1138,29 @@
     <Compile Include="Log\LogFilterControl.ascx.designer.cs">
       <DependentUpon>LogFilterControl.ascx</DependentUpon>
     </Compile>
-    <Compile Include="MappingDetailsPageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="MappingDetailsPageBase.cs" />
     <Compile Include="Monitor\ClusterDetails.aspx.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Monitor\ClusterDetails.aspx.designer.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Monitor\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Monitor\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="PageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="PageBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="User\SignIn.aspx.cs">
       <DependentUpon>SignIn.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="User\SignIn.aspx.designer.cs">
       <DependentUpon>SignIn.aspx</DependentUpon>
     </Compile>
     <Compile Include="User\SignOut.aspx.cs">
       <DependentUpon>SignOut.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="User\SignOut.aspx.designer.cs">
       <DependentUpon>SignOut.aspx</DependentUpon>
