@@ -4,6 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Security;
 using System.Web.SessionState;
+using System.Web.Routing;
+using System.ServiceModel;
+using System.ServiceModel.Activation;
 using Jhu.Graywulf.Security;
 using Jhu.Graywulf.Web;
 using Jhu.Graywulf.Registry;
@@ -25,6 +28,9 @@ namespace Jhu.Graywulf.Web.UI
                 Application[Jhu.Graywulf.Web.Constants.ApplicationLongTitle] = federation.LongTitle;
                 Application[Jhu.Graywulf.Web.Constants.ApplicationCopyright] = federation.Copyright;
             }
+
+            // Add service routes here
+            RouteTable.Routes.Add(new ServiceRoute("Api/Jobs/", new WebServiceHostFactory(), typeof(Api.QueryJobService)));
         }
 
         protected override void OnUserSignedIn(GraywulfIdentity identity)
