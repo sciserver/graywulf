@@ -24,7 +24,14 @@ namespace Jhu.Graywulf.Web.UI.Jobs
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            GetVisibleListView().DataSource = JobDataSource;
+        }
+
+        protected override void OnLoadComplete(EventArgs e)
+        {
+            base.OnLoadComplete(e);
+
+            var list = GetVisibleListView();
+            list.DataSource = JobDataSource;
         }
 
         private void RedirectToDetails(Guid guid)
@@ -74,15 +81,12 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             switch ((Views)multiView.ActiveViewIndex)
             {
                 case Views.All:
-                    JobList.DataSource = JobDataSource;
                     break;
                 case Views.Query:
                     jf.JobDefinitionGuids.UnionWith(JobFactory.QueryJobDefinitionGuids);
-                    QueryJobList.DataSource = JobDataSource;
                     break;
                 case Views.Export:
                     jf.JobDefinitionGuids.UnionWith(JobFactory.ExportJobDefinitionGuids);
-                    ExportJobList.DataSource = JobDataSource;
                     break;
                 case Views.Import:
                 default:

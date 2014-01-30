@@ -42,7 +42,7 @@
                                     ItemStyle-HorizontalAlign="Center" />
                                 <asp:TemplateField HeaderText="Status" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
                                     <ItemTemplate>
-                                        <jgwc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.UI.Jobs.JobStatus)Eval("Status") %>' />
+                                        <jgwuc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.UI.Jobs.JobStatus)Eval("Status") %>' />
                                     </ItemTemplate>
                                 </asp:TemplateField>
                                 <jgwc:BoundField DataField="Comments" HeaderText="Comments" ItemStyle-CssClass="GridViewSpan"
@@ -64,7 +64,7 @@
                                     ItemStyle-HorizontalAlign="Center" />
                                 <asp:TemplateField HeaderText="Status" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
                                     <ItemTemplate>
-                                        <jgwc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.UI.Jobs.JobStatus)Eval("Status") %>' />
+                                        <jgwuc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.UI.Jobs.JobStatus)Eval("Status") %>' />
                                     </ItemTemplate>
                                 </asp:TemplateField>
                                 <jgwc:BoundField DataField="Comments" HeaderText="Comments" ItemStyle-CssClass="GridViewSpan"
@@ -87,7 +87,7 @@
                                     ItemStyle-HorizontalAlign="Center" />
                                 <asp:TemplateField HeaderText="Status" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
                                     <ItemTemplate>
-                                        <jgwc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.UI.Jobs.JobStatus)Eval("Status") %>' />
+                                        <jgwuc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.UI.Jobs.JobStatus)Eval("Status") %>' />
                                     </ItemTemplate>
                                 </asp:TemplateField>
                                 <jgwc:BoundField DataField="Comments" HeaderText="Comments" ItemStyle-CssClass="GridViewSpan"
