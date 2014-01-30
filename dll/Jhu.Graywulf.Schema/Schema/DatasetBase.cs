@@ -11,6 +11,11 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Schema
 {
+    public interface IDatasetSafe
+    {
+        string Name { get; }
+    }
+
     /// <summary>
     /// Implements basic functionality to reflect datasets
     /// </summary>
@@ -20,7 +25,7 @@ namespace Jhu.Graywulf.Schema
     /// </remarks>
     [Serializable]
     [DataContract(Namespace = "")]
-    public abstract partial class DatasetBase : ICloneable, ICacheable, IDatasetName
+    public abstract partial class DatasetBase : ICloneable, ICacheable, IDatasetSafe
     {
         #region Property storage member variables
 

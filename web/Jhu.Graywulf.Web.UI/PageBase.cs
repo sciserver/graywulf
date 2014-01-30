@@ -151,11 +151,11 @@ namespace Jhu.Graywulf.Web.UI
 
         // ---
 
-        protected string GetExportUrl(JobDescription exportJob)
+        protected string GetExportUrl(Jobs.ExportJob job)
         {
             return String.Format(
                 "~/Download/{0}",
-                System.IO.Path.GetFileName(exportJob.Path));
+                System.IO.Path.GetFileName(job.Uri));   // TODO: test
         }
 
         protected override void OnPreRender(EventArgs e)

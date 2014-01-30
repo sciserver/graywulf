@@ -388,61 +388,64 @@ namespace Jhu.Graywulf.Scheduler
         {
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                int q;
+                int failed = 0;
+                int started = 0;
                 Event e;
                 var jf = new JobInstanceFactory(context);
 
-                q = 1;
-                foreach (var qi in Cluster.Queues.Keys)
+                jf.UserGuid = Guid.Empty;
+                jf.QueueInstanceGuids.UnionWith(Cluster.Queues.Keys);
+
+                jf.JobExecutionStatus =
+                    JobExecutionState.Executing |
+                    JobExecutionState.Persisting |
+                    JobExecutionState.Cancelling |
+                    JobExecutionState.Starting;
+             
+                foreach (var j in jf.FindJobInstances())
                 {
-                    // Process previously interrupted jobs (that are marked as running)
-                    // Process jobs that are marked as executing - these remained in this state
-                    // because of a failure in the scheduler
-                    foreach (var j in jf.FindJobInstances(Guid.Empty, qi, null,
-                        JobExecutionState.Executing | JobExecutionState.Persisting | JobExecutionState.Cancelling))
+                    // Locking must be handled
+                    context.ContextGuid = j.WorkflowInstanceId;
+
+                    j.ReleaseLock(true);
+
+                    if ((jf.JobExecutionStatus & JobExecutionState.Starting) != 0)
                     {
-                        // Locking must be handled
-                        context.ContextGuid = j.WorkflowInstanceId;
+                        // Jobs marked as waiting probably can be restarted without a side effect
+                        j.JobExecutionStatus = JobExecutionState.Scheduled;
 
-                        j.ReleaseLock(true);
-
+                        started++;
+                    }
+                    else
+                    {
+                        // Process previously interrupted jobs (that are marked as running)
+                        // Process jobs that are marked as executing - these remained in this state
+                        // because of a failure in the scheduler
                         j.JobExecutionStatus = JobExecutionState.Failed;
                         j.ExceptionMessage = Jhu.Graywulf.Registry.ExceptionMessages.SchedulerUnexpectedShutdown;
-                        j.Save();
 
+                        failed++;
+                    }
+
+                    j.Save();
+
+                    if (j.JobExecutionStatus == JobExecutionState.Failed)
+                    {
                         j.RescheduleIfRecurring();
-
-                        q++;
                     }
                 }
-                if (q > 0)
+
+                if (failed > 0)
                 {
                     e = new Event("Jhu.Graywulf.Scheduler.QueueManager.ProcessInterruptedJobs[Executing]", Guid.Empty);
-                    e.Message = String.Format("Marked {0} jobs as failed.", q);
+                    e.Message = String.Format("Marked {0} jobs as failed.", failed);
                     LogEvent(e);
                 }
 
-                q = 0;
-                foreach (var qi in Cluster.Queues.Keys)
-                {
-                    // Jobs marked as waiting probably can be restarted without a side effect
-                    foreach (var j in jf.FindJobInstances(Guid.Empty, qi, null, JobExecutionState.Starting))
-                    {
-                        // Locking must be handled
-                        context.ContextGuid = j.WorkflowInstanceId;
-
-                        j.ReleaseLock(true);
-
-                        j.JobExecutionStatus = JobExecutionState.Scheduled;
-                        j.Save();
-
-                        q++;
-                    }
-                }
-                if (q > 0)
+                if (started > 0)
                 {
                     e = new Event("Jhu.Graywulf.Scheduler.QueueManager.ProcessInterruptedJobs[Starting]", Guid.Empty);
-                    e.Message = String.Format("Marked {0} jobs as scheduled.", q);
+                    e.Message = String.Format("Marked {0} jobs as scheduled.", started);
                     LogEvent(e);
                 }
             }
@@ -529,7 +532,12 @@ namespace Jhu.Graywulf.Scheduler
 
                 foreach (var queue in Cluster.Queues.Values)
                 {
-                    foreach (var ji in jf.FindJobInstances(Guid.Empty, queue.Guid, null, JobExecutionState.CancelRequested))
+                    jf.UserGuid = Guid.Empty;
+                    jf.QueueInstanceGuids.Clear();
+                    jf.QueueInstanceGuids.Add(queue.Guid);
+                    jf.JobExecutionStatus = JobExecutionState.CancelRequested;
+
+                    foreach (var ji in jf.FindJobInstances())
                     {
                         lock (queue)
                         {

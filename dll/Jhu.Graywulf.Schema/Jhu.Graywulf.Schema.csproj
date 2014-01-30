@@ -66,8 +66,6 @@
     <Compile Include="Schema\DatasetStatistics.cs" />
     <Compile Include="Schema\DataType.cs" />
     <Compile Include="Schema\DoubleComplex.cs" />
-    <Compile Include="Schema\IDatabaseObjectName.cs" />
-    <Compile Include="Schema\IDatasetName.cs" />
     <Compile Include="Schema\IIndexes.cs" />
     <Compile Include="Schema\IndexColumn.cs" />
     <Compile Include="Schema\Index.cs" />

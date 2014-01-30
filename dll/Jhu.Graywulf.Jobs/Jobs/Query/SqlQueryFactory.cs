@@ -163,7 +163,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 queueName,
                 comments);
 
-            job.Parameters["Query"].Value = query;
+            job.Parameters[Constants.JobParameterQuery].Value = query;
 
             return job;
         }
@@ -177,9 +177,9 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             return new Dictionary<string, object>()
             {
-                { "Query", query },
-                { "UserGuid", Guid.Empty },
-                { "JobGuid", Guid.Empty },
+                { Constants.JobParameterQuery, query },
+                { Constants.JobParameterUserGuid, Guid.Empty },
+                { Constants.JobParameterJobGuid, Guid.Empty },
             };
         }
     }

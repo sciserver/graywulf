@@ -13,7 +13,15 @@ namespace Jhu.Graywulf.Web.Controls
     {
         protected override object GetValue(System.Web.UI.Control controlContainer)
         {
-            return Util.DateFormatter.Format((DateTime)DataBinder.Eval(DataBinder.GetDataItem(controlContainer), DataField));
+            var value = DataBinder.Eval(DataBinder.GetDataItem(controlContainer), DataField);
+            if (value == null)
+            {
+                return "";
+            }
+            else
+            {
+                return Util.DateFormatter.Format((DateTime)value);
+            }
         }
     }
 }

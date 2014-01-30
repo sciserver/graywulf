@@ -34,6 +34,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activation" />
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -59,6 +62,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryJobService.cs" />
+    <Compile Include="SchemaService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.original.config" />
@@ -80,6 +85,14 @@
       <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
       <Name>Jhu.Graywulf.Registry</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
+      <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
+      <Name>Jhu.Graywulf.RemoteService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
+      <Project>{60920E0C-F7A1-47CE-85F6-7E6E3085FCF1}</Project>
+      <Name>Jhu.Graywulf.Schema</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
       <Project>{E9D182CF-746E-4E40-B01C-74A32FB70749}</Project>
       <Name>Jhu.Graywulf.Web</Name>
@@ -91,12 +104,11 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS>
+          <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>13484</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>
-          </IISUrl>
+          <IISUrl>http://localhost/gwws</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

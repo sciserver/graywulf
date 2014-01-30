@@ -14,22 +14,37 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             return "~/Jobs/Default.aspx";
         }
 
+        enum Views : int
+        {
+            All = 0,
+            Query = 1,
+            Export = 2,
+            Import = 3
+        }
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            GetVisibleListView().DataSource = JobDataSource;
+        }
+
         private void RedirectToDetails(Guid guid)
         {
-            var job = new JobInstance(RegistryContext);
-            job.Guid = guid;
-            job.Load();
+            var jobInstance = new JobInstance(RegistryContext);
+            jobInstance.Guid = guid;
+            jobInstance.Load();
 
-            var wjob = JobDescriptionFactory.GetJobDescription(job);
+            var jf = new JobFactory(RegistryContext);
+            var job = jf.CreateJobFromInstance(jobInstance);
 
-            switch (wjob.JobType)
+            switch (job.Type)
             {
                 case JobType.Query:
                     Response.Redirect(QueryJobDetails.GetUrl(guid));
                     break;
-                case JobType.ExportTable:
+                case JobType.Export:
                     Response.Redirect(ExportJobDetails.GetUrl(guid));
                     break;
+                case JobType.Import:
                 default:
                     throw new NotImplementedException();
             }
@@ -37,40 +52,44 @@ namespace Jhu.Graywulf.Web.UI.Jobs
 
         private MultiSelectGridView GetVisibleListView()
         {
-            switch (multiView.ActiveViewIndex)
+            switch ((Views)multiView.ActiveViewIndex)
             {
-                case 0:
+                case Views.All:
                     return JobList;
-                case 1:
+                case Views.Query:
                     return QueryJobList;
-                case 2:
+                case Views.Export:
                     return ExportJobList;
+                case Views.Import:
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        protected void jobDataSource_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
+        protected void JobDataSource_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
         {
             RegistryContext.TransactionMode = Registry.TransactionMode.DirtyRead;
-            var factory = new JobDescriptionFactory(RegistryContext);
-            e.ObjectInstance = factory;
+            var jf = new JobFactory(RegistryContext);
 
-            switch (multiView.ActiveViewIndex)
+            switch ((Views)multiView.ActiveViewIndex)
             {
-                case 0:     // all jobs
+                case Views.All:
+                    JobList.DataSource = JobDataSource;
                     break;
-                case 1:     // query jobs
-                    factory.JobDefinitionGuids.Clear();
-                    factory.JobDefinitionGuids.UnionWith(JobDescriptionFactory.QueryJobDefinitionGuids);
+                case Views.Query:
+                    jf.JobDefinitionGuids.UnionWith(JobFactory.QueryJobDefinitionGuids);
+                    QueryJobList.DataSource = JobDataSource;
                     break;
-                case 2:     // export jobs
-                    factory.JobDefinitionGuids.Clear();
-                    factory.JobDefinitionGuids.UnionWith(JobDescriptionFactory.ExportJobDefinitionGuids);
+                case Views.Export:
+                    jf.JobDefinitionGuids.UnionWith(JobFactory.ExportJobDefinitionGuids);
+                    ExportJobList.DataSource = JobDataSource;
                     break;
+                case Views.Import:
                 default:
                     throw new NotImplementedException();
             }
+
+            e.ObjectInstance = jf;
         }
 
         protected void JobSelected_ServerValidate(object source, ServerValidateEventArgs args)

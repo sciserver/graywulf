@@ -14,47 +14,47 @@ namespace Jhu.Graywulf.Web.UI.Jobs
         }
 
         private Guid guid;
-        private JobInstance job;
-        private JobDescription qj;
+        private JobInstance jobInstance;
+        private QueryJob queryJob;
 
         private void LoadJob()
         {
-            job = new JobInstance(RegistryContext);
-            job.Guid = guid;
-            job.Load();
+            jobInstance = new JobInstance(RegistryContext);
+            jobInstance.Guid = guid;
+            jobInstance.Load();
 
             // Check user ID
-            if (IsAuthenticatedUser(job.UserGuidOwner))
+            if (IsAuthenticatedUser(jobInstance.UserGuidOwner))
             {
                 throw new Registry.SecurityException("Access denied.");
             }
 
             // Get query details
-            qj = JobDescriptionFactory.GetJobDescription(job);
+            queryJob = new QueryJob(jobInstance);
         }
 
         private void UpdateForm()
         {
-            if (!String.IsNullOrEmpty(qj.Job.ExceptionMessage))
+            if (!String.IsNullOrEmpty(queryJob.Error))
             {
-                Error.JobDescription = qj;
+                Error.Job = queryJob;
             }
             else
             {
                 exceptionTab.Hidden = true;
             }
 
-            Name.Text = qj.Job.Name;
-            Comments.Text = qj.Job.Comments;
-            DateCreated.Text = Web.Util.DateFormatter.Format(qj.Job.DateCreated);
-            DateStarted.Text = Web.Util.DateFormatter.Format(qj.Job.DateStarted);
-            DateFinished.Text = Web.Util.DateFormatter.Format(qj.Job.DateFinished);
-            JobExecutionStatus.Status = qj.Job.JobExecutionStatus;
+            Name.Text = queryJob.Name;
+            Comments.Text = queryJob.Comments;
+            DateCreated.Text = Web.Util.DateFormatter.Format(queryJob.DateCreated);
+            DateStarted.Text = Web.Util.DateFormatter.Format(queryJob.DateStarted);
+            DateFinished.Text = Web.Util.DateFormatter.Format(queryJob.DateFinished);
+            JobExecutionStatus.Status = queryJob.Status;
 
-            Query.Text = qj.Query;
+            Query.Text = queryJob.Query;
 
             // Set button actions
-            Cancel.Enabled = qj.Job.CanCancel;
+            Cancel.Enabled = queryJob.CanCancel;
 
             Back.OnClientClick = Web.Util.UrlFormatter.GetClientRedirect(OriginalReferer);
         }
@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
         protected void Edit_Click(object sender, EventArgs e)
         {
             LoadJob();
-            SetQueryInSession(qj.Query, null, true);
+            SetQueryInSession(queryJob.Query, null, true);
             Response.Redirect(Jhu.Graywulf.Web.UI.Query.Default.GetUrl());
         }
 

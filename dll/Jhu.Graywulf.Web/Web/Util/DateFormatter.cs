@@ -7,6 +7,18 @@ namespace Jhu.Graywulf.Web.Util
 {
     public static class DateFormatter
     {
+        public static string Format(DateTime? value)
+        {
+            if (value.HasValue)
+            {
+                return value.ToString();
+            }
+            else
+            {
+                return "";
+            }
+        }
+
         public static string Format(DateTime value)
         {
             if (value == DateTime.MinValue)

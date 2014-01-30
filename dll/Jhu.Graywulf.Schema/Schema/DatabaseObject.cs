@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Schema
     /// </summary>
     [Serializable]
     [DataContract(Namespace = "")]
-    public class DatabaseObject : ICacheable, ICloneable, IDatabaseObjectName
+    public class DatabaseObject : ICacheable, ICloneable
     {
         #region Private members
 

@@ -9,33 +9,30 @@ namespace Jhu.Graywulf.Web.UI.Jobs
 {
     public partial class Error : System.Web.UI.UserControl
     {
-        private JobDescription jobDescription;
+        private Job job;
 
-        public JobDescription JobDescription
+        public Job Job
         {
-            set
-            {
-                this.jobDescription = value;
-
-                ExceptionMessage.Text = value.Job.ExceptionMessage;
-            }
-            get
-            {
-                return this.jobDescription;
-            }
-        }       
-
-        protected void Page_Load(object sender, EventArgs e)
-        {
-            if (JobDescription != null)
-            {
-                SendInquiry.NavigateUrl = Jhu.Graywulf.Web.Feedback.GetJobErrorUrl(JobDescription.Guid);
-            }
+            set { this.job = value; }
+            get { return this.job; }
         }
 
         protected void Inquiry_Click(object sender, EventArgs e)
         {
             Response.Redirect(SendInquiry.NavigateUrl);
+        }
+
+        protected override void OnPreRender(EventArgs e)
+        {
+            base.OnPreRender(e);
+
+            UpdateForm();
+        }
+
+        private void UpdateForm()
+        {
+            SendInquiry.NavigateUrl = Jhu.Graywulf.Web.Feedback.GetJobErrorUrl(job.Guid);
+            ExceptionMessage.Text = job.Error;
         }
     }
 }

@@ -196,7 +196,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Registry\WebEntityFactory.cs" />
-    <Compile Include="Registry\WebJobInstanceFactory.cs" />
     <Compile Include="Schema\DatasetFactory.cs" />
     <Compile Include="Schema\GraywulfDataset.cs" />
     <Compile Include="Schema\GraywulfSchemaManager.cs" />

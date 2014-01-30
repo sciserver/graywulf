@@ -52,7 +52,10 @@ namespace Jhu.Graywulf.Test
                 var jd = ef.LoadEntity<JobDefinition>(Registry.AppSettings.ClusterName, Registry.Constants.SharedDomainName, Registry.Constants.SharedFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
 
                 var jf = new JobInstanceFactory(context);
-                foreach (var job in jf.FindJobInstances(Guid.Empty, Guid.Empty, new HashSet<Guid>() { jd.Guid }, JobExecutionState.Scheduled))
+                jf.UserGuid = Guid.Empty;
+                jf.JobDefinitionGuids.Add(jd.Guid);
+                jf.JobExecutionStatus = JobExecutionState.Scheduled;
+                foreach (var job in jf.FindJobInstances())
                 {
                     job.Cancel();
                 }

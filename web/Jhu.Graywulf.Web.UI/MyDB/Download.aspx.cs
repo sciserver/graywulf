@@ -3,6 +3,7 @@ using System.Linq;
 using System.IO;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Web.UI.Jobs;
 using Jhu.Graywulf.Jobs.Query;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
@@ -20,11 +21,11 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         protected void jobDataSource_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
         {
-            var factory = new JobDescriptionFactory(RegistryContext);
-            factory.JobDefinitionGuids.Clear();
-            factory.JobDefinitionGuids.UnionWith(JobDescriptionFactory.ExportJobDefinitionGuids);
+            var jf = new JobFactory(RegistryContext);
+            jf.JobDefinitionGuids.Clear();
+            jf.JobDefinitionGuids.UnionWith(JobFactory.ExportJobDefinitionGuids);
 
-            e.ObjectInstance = factory;
+            e.ObjectInstance = jf;
         }
 
         protected void JobList_ItemCommand(object sender, ListViewCommandEventArgs e)
@@ -64,7 +65,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                         if (job.JobExecutionStatus == JobExecutionState.Completed)
                         {
                             // Get query details
-                            var ej = JobDescriptionFactory.GetJobDescription(job);
+                            var ej = new ExportJob(job);
 
                             Response.Redirect(GetExportUrl(ej));
                         }

@@ -440,11 +440,14 @@ CREATE PROC [dbo].[spFindJobInstance_byDetails]
 	@Max int,
 	@RowCount int OUTPUT,
 	@JobUserGuid uniqueidentifier,
-	@QueueInstanceGuid uniqueidentifier,
+	@QueueInstanceGuids GuidList READONLY,
 	@JobDefinitionGuids GuidList READONLY,
 	@JobExecutionStatus int
 AS
 	SET NOCOUNT ON;
+	
+	DECLARE @qicount int;
+	SELECT @qicount = COUNT(*) FROM @QueueInstanceGuids;
 	
 	DECLARE @jdcount int;
 	SELECT @jdcount = COUNT(*) FROM @JobDefinitionGuids;
@@ -462,7 +465,7 @@ AS
 			(@ShowDeleted = 1 OR Entity.Deleted = 0) AND
 			
 			(@JobUserGUID = Entity.UserGuidCreated OR @JobUserGuid IS NULL) AND
-			(@QueueInstanceGUID = Entity.ParentGuid OR @QueueInstanceGUID IS NULL) AND
+			(Entity.ParentGuid IN (SELECT Guid FROM @QueueInstanceGuids) OR @qicount = 0) AND
 			(JobDefinition.ReferencedEntityGuid IN (SELECT Guid FROM @JobDefinitionGuids) OR @jdcount = 0) AND
 			((@JobExecutionStatus & JobInstance.JobExecutionStatus) != 0 OR @JobExecutionStatus IS NULL)
 	)

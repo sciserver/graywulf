@@ -145,8 +145,6 @@
     <Compile Include="Web\Feedback.aspx.designer.cs">
       <DependentUpon>Feedback.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Web\JobDescription.cs" />
-    <Compile Include="Web\JobDescriptionFactory.cs" />
     <Compile Include="Web\MasterPageBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -175,6 +173,7 @@
     <Compile Include="Web\Util\EmailSender.cs" />
     <Compile Include="Web\Util\JQuery.cs" />
     <Compile Include="Web\Util\UrlFormatter.cs" />
+    <Compile Include="Web\WebServiceBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Web\Controls\Labels.resx">
@@ -211,6 +210,10 @@
       <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
       <Name>Jhu.Graywulf.Registry</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
+      <Project>{60920E0C-F7A1-47CE-85F6-7E6E3085FCF1}</Project>
+      <Name>Jhu.Graywulf.Schema</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Web\Captcha.aspx">
@@ -239,6 +242,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)

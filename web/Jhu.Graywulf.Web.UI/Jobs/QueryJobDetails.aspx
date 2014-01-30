@@ -62,7 +62,7 @@
                                             <asp:Label ID="Label4" runat="server" Text="Status:"></asp:Label>
                                         </td>
                                         <td>
-                                            <jgwc:JobStatus runat="server" ID="JobExecutionStatus" />
+                                            <jgwuc:JobStatus runat="server" ID="JobExecutionStatus" />
                                         </td>
                                     </tr>
                                 </table>
