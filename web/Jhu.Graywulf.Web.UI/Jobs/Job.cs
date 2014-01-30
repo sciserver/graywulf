@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
         private string name;
         private JobStatus status;
         private bool canCancel;
-        private string queue;
+        private JobQueue queue;
         private string comments;
         private string error;
         private DateTime? dateCreated;
@@ -55,7 +55,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             set { canCancel = value; }
         }
 
-        public string Queue
+        public JobQueue Queue
         {
             get { return queue; }
             set { queue = value; }
@@ -109,8 +109,8 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             this.name = null;
             this.status = JobStatus.Unknown;
             this.canCancel = false;
-            this.queue = null;
-            this.comments = null;
+            this.queue = JobQueue.Unknown;
+            this.comments = String.Empty;
             this.error = null;
             this.dateCreated = null;
             this.dateStarted = null;
@@ -122,13 +122,12 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             this.guid = jobInstance.Guid;
             this.name = jobInstance.Name;
             this.canCancel = jobInstance.CanCancel;
-            this.queue = jobInstance.QueueInstance.QueueDefinition.Name;
             this.comments = jobInstance.Comments;
             this.error = jobInstance.ExceptionMessage;
             this.dateCreated = jobInstance.DateCreated == DateTime.MinValue ? (DateTime?)null : jobInstance.DateCreated;
             this.dateStarted = jobInstance.DateStarted == DateTime.MinValue ? (DateTime?)null : jobInstance.DateStarted;
             this.dateFinished = jobInstance.DateFinished == DateTime.MinValue ? (DateTime?)null : jobInstance.DateFinished;
-            
+
             switch (jobInstance.JobExecutionStatus)
             {
                 case JobExecutionState.Cancelled:
@@ -159,6 +158,19 @@ namespace Jhu.Graywulf.Web.UI.Jobs
                 case JobExecutionState.Unknown:
                 default:
                     this.status = JobStatus.Unknown;
+                    break;
+            }
+
+            switch (jobInstance.QueueInstance.QueueDefinition.Name)
+            {
+                case Jhu.Graywulf.Registry.Constants.QuickQueueDefinitionName:
+                    this.queue = JobQueue.Quick;
+                    break;
+                case Jhu.Graywulf.Registry.Constants.LongQueueDefinitionName:
+                    this.queue = JobQueue.Long;
+                    break;
+                default:
+                    this.queue = JobQueue.Unknown;
                     break;
             }
         }

@@ -42,27 +42,17 @@ namespace Jhu.Graywulf.Web.UI.Query
 
         protected void Check_Click(object sender, EventArgs e)
         {
-            var q = CreateQuery();
+            var q = CreateQuery(Jobs.JobQueue.Unknown);
+            VerifyQuery(q);
         }
 
         protected void ExecuteQuick_Click(object sender, EventArgs e)
         {
-            string queuename = EntityFactory.CombineName(
-                EntityType.QueueInstance,
-                RegistryContext.Federation.ControllerMachine.GetFullyQualifiedName(),
-                Jhu.Graywulf.Registry.Constants.QuickQueueName);
+            var q = CreateQuery(Jobs.JobQueue.Quick);
 
-            var q = CreateQuery();
-            if (q != null)
+            if (VerifyQuery(q) != null)
             {
-                q.Destination = new IO.Tasks.DestinationTable(
-                    FederationContext.MyDBDataset,
-                    FederationContext.MyDBDataset.DatabaseName,
-                    FederationContext.MyDBDataset.DefaultSchemaName,
-                    "quickResults",
-                    TableInitializationOptions.Drop | TableInitializationOptions.Create);
-
-                var ji = ScheduleQuery(queuename, q);
+                var ji = ScheduleQuery(q);
 
                 LastQueryJobGuid = ji.Guid;
 
@@ -73,34 +63,51 @@ namespace Jhu.Graywulf.Web.UI.Query
 
         protected void ExecuteLong_Click(object sender, EventArgs e)
         {
-            string queuename = EntityFactory.CombineName(
-                EntityType.QueueInstance,
-                RegistryContext.Federation.ControllerMachine.GetFullyQualifiedName(),
-                Jhu.Graywulf.Registry.Constants.LongQueueName);
-
-            var q = CreateQuery();
-            if (q != null)
+            var q = CreateQuery(Jobs.JobQueue.Long);
+            
+            if (VerifyQuery(q) != null)
             {
-                ScheduleQuery(queuename, q);
-                Response.Redirect("~/jobs/");
+                ScheduleQuery(q);
+                Response.Redirect(Jobs.Default.GetUrl());
             }
         }
 
-        protected QueryBase CreateQuery()
+        protected void CloseResults_Click(object sender, EventArgs e)
+        {
+            ResultsDiv.Visible = false;
+            CloseResults.Visible = false;
+        }
+
+        private string GetQueryString()
+        {
+            string query;
+            if (SelectedOnly.Checked)
+            {
+                query = Query.SelectedText;
+            }
+            else
+            {
+                query = Query.Text;
+            }
+
+            return query;
+        }
+
+        private Jobs.QueryJob CreateQuery(Jobs.JobQueue queue)
+        {
+            return new Jobs.QueryJob(GetQueryString(), queue);
+        }
+
+        /// <summary>
+        /// Create a query, verify it and display errors, if any
+        /// </summary>
+        /// <param name="queue"></param>
+        /// <returns></returns>
+        private QueryBase VerifyQuery(Jobs.QueryJob queryJob)
         {
             try
             {
-                string query;
-                if (SelectedOnly.Checked)
-                {
-                    query = Query.SelectedText;
-                }
-                else
-                {
-                    query = Query.Text;
-                }
-
-                var q = QueryFactory.Create(RegistryContext.Federation).CreateQuery(query, ExecutionMode.Graywulf);
+                var q = queryJob.CreateQuery(FederationContext);
                 q.Verify();
 
                 Message.BackColor = Color.Green;
@@ -127,18 +134,10 @@ namespace Jhu.Graywulf.Web.UI.Query
             return null;
         }
 
-        protected JobInstance ScheduleQuery(string queuename, QueryBase q)
+        protected JobInstance ScheduleQuery(Jobs.QueryJob queryJob)
         {
-            var job = QueryFactory.Create(RegistryContext.Federation).ScheduleAsJob(q, queuename, Comments.Text);
-            job.Save();
-
-            return job;
-        }
-
-        protected void CloseResults_Click(object sender, EventArgs e)
-        {
-            ResultsDiv.Visible = false;
-            CloseResults.Visible = false;
+            var jobInstance = queryJob.Schedule(FederationContext);
+            return jobInstance;
         }
     }
 }

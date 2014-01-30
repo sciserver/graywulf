@@ -23,4 +23,11 @@ namespace Jhu.Graywulf.Web.UI.Jobs
         Failed,
         TimedOut,
     }
+
+    public enum JobQueue
+    {
+        Unknown,
+        Quick,
+        Long
+    }
 }

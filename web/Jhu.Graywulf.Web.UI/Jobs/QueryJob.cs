@@ -7,6 +7,7 @@ using System.Xml;
 using System.ServiceModel;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Jobs
 {
@@ -30,6 +31,13 @@ namespace Jhu.Graywulf.Web.UI.Jobs
         public QueryJob()
         {
             InitializeMembers();
+        }
+
+        public QueryJob(string query, JobQueue queue)
+            : this()
+        {
+            this.query = query;
+            this.Queue = queue;
         }
 
         public QueryJob(JobInstance jobInstance)
@@ -75,9 +83,22 @@ namespace Jhu.Graywulf.Web.UI.Jobs
         {
             var qf = QueryFactory.Create(context.Federation);
             var q = qf.CreateQuery(query, ExecutionMode.Graywulf);
-         
-            // Verify query
-            q.Verify();
+
+            switch (Queue)
+            {
+                case JobQueue.Quick:
+                    q.Destination = new IO.Tasks.DestinationTable(
+                        context.MyDBDataset,
+                        context.MyDBDataset.DatabaseName,
+                        context.MyDBDataset.DefaultSchemaName,
+                        "quickResults",
+                        TableInitializationOptions.Drop | TableInitializationOptions.Create);
+                    break;
+                case JobQueue.Long:
+                    break;
+                default:
+                    break;
+            }
 
             return q;
         }
@@ -90,9 +111,29 @@ namespace Jhu.Graywulf.Web.UI.Jobs
         public JobInstance Schedule(FederationContext context)
         {
             var q = CreateQuery(context);
+            q.Verify();
+
+            string queuename = null;
+
+            switch (Queue)
+            {
+                case JobQueue.Quick:
+                    queuename = Jhu.Graywulf.Registry.Constants.QuickQueueName;
+                    break;
+                case JobQueue.Long:
+                    queuename = Jhu.Graywulf.Registry.Constants.LongQueueName;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            queuename = EntityFactory.CombineName(
+                EntityType.QueueInstance,
+                context.Federation.ControllerMachine.GetFullyQualifiedName(),
+                queuename);
 
             var qf = QueryFactory.Create(context.Federation);
-            var job = qf.ScheduleAsJob(q, Queue, Comments);
+            var job = qf.ScheduleAsJob(q, queuename, Comments);
 
             job.Save();
 
