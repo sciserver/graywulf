@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Web.UI.Docs
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            FederationNameLabel.Text = Federation.ShortTitle;
+            FederationNameLabel.Text = RegistryContext.Federation.ShortTitle;
         }
     }
 }

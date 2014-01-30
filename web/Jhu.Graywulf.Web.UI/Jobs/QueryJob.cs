@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Xml;
 using System.ServiceModel;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Jobs.Query;
 
 namespace Jhu.Graywulf.Web.UI.Jobs
 {
@@ -63,6 +64,39 @@ namespace Jhu.Graywulf.Web.UI.Jobs
                 // TODO
                 // This is probably a wrong job in the database
             }
+        }
+
+        /// <summary>
+        /// Creates a new QueryBase object based on the job settings.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public QueryBase CreateQuery(FederationContext context)
+        {
+            var qf = QueryFactory.Create(context.Federation);
+            var q = qf.CreateQuery(query, ExecutionMode.Graywulf);
+         
+            // Verify query
+            q.Verify();
+
+            return q;
+        }
+
+        /// <summary>
+        /// Schedules a new query job based on the job settings.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public JobInstance Schedule(FederationContext context)
+        {
+            var q = CreateQuery(context);
+
+            var qf = QueryFactory.Create(context.Federation);
+            var job = qf.ScheduleAsJob(q, Queue, Comments);
+
+            job.Save();
+
+            return job;
         }
     }
 }

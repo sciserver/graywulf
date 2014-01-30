@@ -16,11 +16,11 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (!IsPostBack)
             {
-                DataSpace.Text = ByteSizeFormatter.Format(MyDBDataset.Statistics.DataSpace);
-                UsedSpace.Text = ByteSizeFormatter.Format(MyDBDataset.Statistics.UsedSpace);
-                LogSpace.Text = ByteSizeFormatter.Format(MyDBDataset.Statistics.LogSpace);
+                DataSpace.Text = ByteSizeFormatter.Format(FederationContext.MyDBDataset.Statistics.DataSpace);
+                UsedSpace.Text = ByteSizeFormatter.Format(FederationContext.MyDBDataset.Statistics.UsedSpace);
+                LogSpace.Text = ByteSizeFormatter.Format(FederationContext.MyDBDataset.Statistics.LogSpace);
 
-                var used = (double)MyDBDataset.Statistics.UsedSpace / MyDBDataset.Statistics.DataSpace;
+                var used = (double)FederationContext.MyDBDataset.Statistics.UsedSpace / FederationContext.MyDBDataset.Statistics.DataSpace;
                 var free = 1 - used;
 
                 if (used == 0)

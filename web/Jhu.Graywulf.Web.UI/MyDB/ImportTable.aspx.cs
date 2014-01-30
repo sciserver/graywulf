@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (!IsPostBack)
             {
-                var dfs = FileFormatFactory.GetFileFormatDescriptions();
+                var dfs = FederationContext.FileFormatFactory.GetFileFormatDescriptions();
 
                 foreach (var df in dfs)
                 {
@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             string newname = tableName;
             int q = 1;
 
-            while (MyDBDataset.GetObject(MyDBDataset.DatabaseName, schemaName, newname) != null)
+            while (FederationContext.MyDBDataset.GetObject(FederationContext.MyDBDataset.DatabaseName, schemaName, newname) != null)
             {
                 newname = String.Format("{0}_{1}", tableName, q);
                 q++;
@@ -52,8 +52,8 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             GetUniqueTableName(schemaName, ref tableName);
 
             var destination = new DestinationTable(
-                MyDBDataset,
-                MyDBDataset.DatabaseName,
+                FederationContext.MyDBDataset,
+                FederationContext.MyDBDataset.DatabaseName,
                 schemaName,
                 tableName,
                 Graywulf.Schema.TableInitializationOptions.Create);
@@ -92,13 +92,13 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             DataFileCompression compression;
 
             // Determine file format
-            var format = FileFormatFactory.GetFileFormatDescription(
+            var format = FederationContext.FileFormatFactory.GetFileFormatDescription(
                 GetUploadedFileUri(),
                 out filename,
                 out extension,
                 out compression);
 
-            var source = FileFormatFactory.CreateFile(format);
+            var source = FederationContext.FileFormatFactory.CreateFile(format);
 
             source.BaseStream = ImportedFile.PostedFile.InputStream;
             //source.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read);
@@ -140,7 +140,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         protected void RefreshForm()
         {
-            var format = FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
+            var format = FederationContext.FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
 
             DetectColumnNamesRow.Visible = format.CanDetectColumnNames;
             CompressedRow.Visible = !format.IsCompressed;

@@ -28,10 +28,10 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
             foreach (var objid in parts)
             {
-                var obj = SchemaManager.GetDatabaseObjectByKey(objid);
+                var obj = FederationContext.SchemaManager.GetDatabaseObjectByKey(objid);
 
                 // Make sure it's in MYDB
-                if (StringComparer.InvariantCultureIgnoreCase.Compare(obj.DatasetName, MyDBDatabaseDefinition.Name) != 0)
+                if (StringComparer.InvariantCultureIgnoreCase.Compare(obj.DatasetName, FederationContext.MyDBDatabaseDefinition.Name) != 0)
                 {
                     throw new InvalidOperationException();  // *** TODO
                 }

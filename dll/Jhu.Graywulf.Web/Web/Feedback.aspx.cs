@@ -129,10 +129,10 @@ namespace Jhu.Graywulf.Web
 
             EmailTemplateUtility.LoadEmailTemplate(template, out subject, out body);
 
-            EmailTemplateUtility.ReplaceEmailToken(ref subject, "[$ShortTitle]", Federation.ShortTitle);
+            EmailTemplateUtility.ReplaceEmailToken(ref subject, "[$ShortTitle]", RegistryContext.Federation.ShortTitle);
             EmailTemplateUtility.ReplaceEmailToken(ref subject, "[$Subject]", Subject.Text);
 
-            EmailTemplateUtility.ReplaceEmailToken(ref body, "[$ShortTitle]", Federation.ShortTitle);
+            EmailTemplateUtility.ReplaceEmailToken(ref body, "[$ShortTitle]", RegistryContext.Federation.ShortTitle);
             EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Name]", Name.Text);
             EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Email]", Email.Text);
             EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Subject]", Subject.Text);
@@ -156,8 +156,8 @@ namespace Jhu.Graywulf.Web
             }
 
             var msg = EmailTemplateUtility.CreateMessage(
-                Federation.Email, Federation.ShortTitle,
-                Federation.Email, Federation.ShortTitle,
+                RegistryContext.Federation.Email, RegistryContext.Federation.ShortTitle,
+                RegistryContext.Federation.Email, RegistryContext.Federation.ShortTitle,
                 subject, body);
 
             // Append stack trace

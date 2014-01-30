@@ -22,10 +22,10 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         protected override void OnInit(EventArgs e)
         {
-            MyDBDataset.Tables.LoadAll();
-            MyDBDataset.Views.LoadAll();
+            FederationContext.MyDBDataset.Tables.LoadAll();
+            FederationContext.MyDBDataset.Views.LoadAll();
 
-            TableName.DataSource = MyDBDataset.Tables.Values.OrderBy(t => t.UniqueKey);
+            TableName.DataSource = FederationContext.MyDBDataset.Tables.Values.OrderBy(t => t.UniqueKey);
             TableName.DataBind();
 
             base.OnInit(e);
@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         private void RefreshFileFormatList()
         {
-            var dfs = FileFormatFactory.GetFileFormatDescriptions();
+            var dfs = FederationContext.FileFormatFactory.GetFileFormatDescriptions();
 
             foreach (var df in dfs)
             {
@@ -65,20 +65,20 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         private void ScheduleExportTableJob()
         {
-            var table = (Jhu.Graywulf.Schema.Table)SchemaManager.GetDatabaseObjectByKey(TableName.SelectedValue);
-            var format = FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
+            var table = (Jhu.Graywulf.Schema.Table)FederationContext.SchemaManager.GetDatabaseObjectByKey(TableName.SelectedValue);
+            var format = FederationContext.FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
 
             // Make sure it's in MYDB
-            if (StringComparer.InvariantCultureIgnoreCase.Compare(table.DatasetName, MyDBDatabaseDefinition.Name) != 0)
+            if (StringComparer.InvariantCultureIgnoreCase.Compare(table.DatasetName, FederationContext.MyDBDatabaseDefinition.Name) != 0)
             {
                 throw new InvalidOperationException();  // *** TODO
             }
 
-            var queue = EntityFactory.CombineName(EntityType.QueueInstance, Federation.ControllerMachine.GetFullyQualifiedName(), Jhu.Graywulf.Registry.Constants.LongQueueName);
+            var queue = EntityFactory.CombineName(EntityType.QueueInstance, RegistryContext.Federation.ControllerMachine.GetFullyQualifiedName(), Jhu.Graywulf.Registry.Constants.LongQueueName);
             var f = new Jhu.Graywulf.Jobs.ExportTables.ExportTablesFactory(RegistryContext);
 
             // TODO: maybe add comments?
-            var job = f.ScheduleAsJob(Federation, new[] { table }, null, format, queue, "");
+            var job = f.ScheduleAsJob(RegistryContext.Federation, new[] { table }, null, format, queue, "");
 
             job.Save();
         }

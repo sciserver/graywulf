@@ -70,6 +70,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Controls\JobStatus.cs" />
     <Compile Include="Controls\Query.cs" />
+    <Compile Include="FederationContext.cs" />
     <Compile Include="Jobs\Enum.cs" />
     <Compile Include="Jobs\ExportJob.cs" />
     <Compile Include="Jobs\ImportJob.cs" />

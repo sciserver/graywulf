@@ -169,7 +169,7 @@ namespace Jhu.Graywulf.Web.Auth
         {
             // Load user from the registry
             var uu = new UserFactory(RegistryContext);
-            user = uu.LoginUser(Domain, Username.Text, Password.Text);
+            user = uu.LoginUser(RegistryContext.Domain, Username.Text, Password.Text);
 
             RegistryContext.UserGuid = user.Guid;
             RegistryContext.UserName = user.Name;

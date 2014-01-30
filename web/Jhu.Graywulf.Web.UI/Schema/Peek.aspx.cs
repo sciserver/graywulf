@@ -28,10 +28,10 @@ namespace Jhu.Graywulf.Web.UI.Schema
             EntityFactory ef = new EntityFactory(RegistryContext);
             Entity db = ef.LoadEntity(EntityType.Unknown, Jhu.Graywulf.Registry.AppSettings.FederationName, ds.Name);
 
-            if (StringComparer.InvariantCultureIgnoreCase.Compare(ds.Name, MyDBDatabaseDefinition.Name) == 0)
+            if (StringComparer.InvariantCultureIgnoreCase.Compare(ds.Name, FederationContext.MyDBDatabaseDefinition.Name) == 0)
             {
                 // In case of myDB
-                connectionString = ((schema::SqlServer.SqlServerDataset)SchemaManager.Datasets[MyDBDatabaseDefinition.Name]).ConnectionString;
+                connectionString = ((schema::SqlServer.SqlServerDataset)FederationContext.SchemaManager.Datasets[FederationContext.MyDBDatabaseDefinition.Name]).ConnectionString;
                 dbf = DbProviderFactories.GetFactory(ds.ProviderName);
             }
             else if (db is DatabaseDefinition)
@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
         protected void RenderTable()
         {
-            var tableOrView = (schema::TableOrView)SchemaManager.GetDatabaseObjectByKey(Request.QueryString["objid"]);
+            var tableOrView = (schema::TableOrView)FederationContext.SchemaManager.GetDatabaseObjectByKey(Request.QueryString["objid"]);
 
             var codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(tableOrView.Dataset);
 

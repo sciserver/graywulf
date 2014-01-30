@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Web.Auth
 
             user.Save();
 
-            user.MakeMemberOf(Domain.StandardUserGroup.Guid);
+            user.MakeMemberOf(RegistryContext.Domain.StandardUserGroup.Guid);
 
             // If user signed in with a temporary identity
             if (TemporaryPrincipal != null)
@@ -94,12 +94,12 @@ namespace Jhu.Graywulf.Web.Auth
                 // based on the OpenID etc. used at sing in.
                 var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
                 user = new Registry.User(identity.User);
-                user.ParentReference.Value = Domain;
+                user.ParentReference.Value = RegistryContext.Domain;
                 user.Context = RegistryContext;
             }
             else
             {
-                user = new Registry.User(Domain);
+                user = new Registry.User(RegistryContext.Domain);
             }
 
             // Update form
@@ -120,7 +120,7 @@ namespace Jhu.Graywulf.Web.Auth
             if (RegistryUser == null)
             {
                 EntityFactory ef = new EntityFactory(RegistryContext);
-                args.IsValid = !ef.CheckEntityDuplicate(EntityType.User, Guid.Empty, Domain.Guid, args.Value);
+                args.IsValid = !ef.CheckEntityDuplicate(EntityType.User, Guid.Empty, RegistryContext.Domain.Guid, args.Value);
             }
         }
 
@@ -129,7 +129,7 @@ namespace Jhu.Graywulf.Web.Auth
             if (RegistryUser == null)
             {
                 var ef = new UserFactory(RegistryContext);
-                args.IsValid = !ef.CheckEmailDuplicate(Domain, args.Value.Trim());
+                args.IsValid = !ef.CheckEmailDuplicate(RegistryContext.Domain, args.Value.Trim());
             }
         }
 

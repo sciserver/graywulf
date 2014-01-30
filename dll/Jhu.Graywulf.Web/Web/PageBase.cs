@@ -76,21 +76,6 @@ namespace Jhu.Graywulf.Web
             }
         }
 
-        public Cluster Cluster
-        {
-            get { return RegistryContext.Cluster; }
-        }
-
-        public Domain Domain
-        {
-            get { return RegistryContext.Domain; }
-        }
-
-        public Federation Federation
-        {
-            get { return RegistryContext.Federation; }
-        }
-
         #region Initializer functions
 
         protected override void OnLoad(EventArgs e)

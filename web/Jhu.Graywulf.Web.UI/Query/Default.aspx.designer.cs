@@ -49,42 +49,6 @@ namespace Jhu.Graywulf.Web.UI.Query {
         protected global::Jhu.Graywulf.Web.Controls.ToolbarButton ExecuteLong;
         
         /// <summary>
-        /// ToolbarElement1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarElement ToolbarElement1;
-        
-        /// <summary>
-        /// OutputTableLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label OutputTableLabel;
-        
-        /// <summary>
-        /// OutputTable control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox OutputTable;
-        
-        /// <summary>
-        /// ToolbarElement2 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarElement ToolbarElement2;
-        
-        /// <summary>
         /// CommentsLabel control.
         /// </summary>
         /// <remarks>

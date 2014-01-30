@@ -14,6 +14,22 @@ namespace Jhu.Graywulf.Web.UI
 {
     public class PageBase : Jhu.Graywulf.Web.PageBase
     {
+        private FederationContext federationContext;
+
+        public FederationContext FederationContext
+        {
+            get
+            {
+                if (federationContext == null)
+                {
+                    federationContext = new FederationContext(RegistryContext, RegistryUser);
+                }
+
+                return federationContext;
+            }
+        }
+
+#if false
         private GraywulfSchemaManager schemaManager;
         
         private DatabaseDefinition myDBDatabaseDefinition;
@@ -23,12 +39,12 @@ namespace Jhu.Graywulf.Web.UI
 
         public FileFormatFactory FileFormatFactory
         {
-            get { return FileFormatFactory.Create(this.Federation.FileFormatFactory); }
+            get { return FileFormatFactory.Create(RegistryContext.Federation.FileFormatFactory); }
         }
 
         public StreamFactory StreamFactory
         {
-            get { return StreamFactory.Create(Federation.StreamFactory); }
+            get { return StreamFactory.Create(RegistryContext.Federation.StreamFactory); }
         }
 
         public DatabaseDefinition MyDBDatabaseDefinition
@@ -50,7 +66,7 @@ namespace Jhu.Graywulf.Web.UI
             {
                 if (myDBDatabaseVersion == null)
                 {
-                    myDBDatabaseVersion = Federation.MyDBDatabaseVersion;
+                    myDBDatabaseVersion = RegistryContext.Federation.MyDBDatabaseVersion;
                 }
 
                 return myDBDatabaseVersion;
@@ -119,6 +135,7 @@ namespace Jhu.Graywulf.Web.UI
                 return (SqlServerDataset)myDBDataset;
             }
         }
+#endif
 
         // ---
 

@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
                     
                     try
                     {
-                        dbobj = SchemaManager.GetDatabaseObjectByKey(dbobjid);
+                        dbobj = FederationContext.SchemaManager.GetDatabaseObjectByKey(dbobjid);
                     }
                     catch
                     {
@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
             // Add MyDB as the first item
 
-            var mydbli = new ListItem(MyDBDatabaseDefinition.Name, MyDBDatabaseDefinition.Name);
+            var mydbli = new ListItem(FederationContext.MyDBDatabaseDefinition.Name, FederationContext.MyDBDatabaseDefinition.Name);
             mydbli.Attributes.Add("class", "ToolbarControlHighlight");
             DatasetList.Items.Add(mydbli);
 
@@ -79,8 +79,8 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
             // Add other registered catalogs            
 
-            SchemaManager.Datasets.LoadAll();
-            foreach (var dsd in SchemaManager.Datasets.Values.Where(k => k.Name != MyDBDatabaseDefinition.Name).OrderBy(k => k.Name))
+            FederationContext.SchemaManager.Datasets.LoadAll();
+            foreach (var dsd in FederationContext.SchemaManager.Datasets.Values.Where(k => k.Name != FederationContext.MyDBDatabaseDefinition.Name).OrderBy(k => k.Name))
             {
                 DatasetList.Items.Add(dsd.Name);
             }
@@ -95,7 +95,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
         {
             ObjectList.Items.Clear();
 
-            var dataset = SchemaManager.Datasets[DatasetList.SelectedValue];
+            var dataset = FederationContext.SchemaManager.Datasets[DatasetList.SelectedValue];
 
             DatabaseObjectType type;
             if (Enum.TryParse<DatabaseObjectType>(ObjectTypeList.SelectedValue, out type))
@@ -185,7 +185,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
             try
             {
-                dbobj = SchemaManager.GetDatabaseObjectByKey(dbobjid);
+                dbobj = FederationContext.SchemaManager.GetDatabaseObjectByKey(dbobjid);
             }
             catch
             {

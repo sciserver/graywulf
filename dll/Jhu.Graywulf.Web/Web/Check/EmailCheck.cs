@@ -28,11 +28,11 @@ namespace Jhu.Graywulf.Web.Check
             page.Response.Output.WriteLine("Delivery method: {0}", smtpclient.DeliveryMethod);
             page.Response.Output.WriteLine("Server: {0}:{1}", smtpclient.Host, smtpclient.Port);
 
-            var subject = String.Format("{0} test message from {1}", page.Domain.ShortTitle, Environment.MachineName);
+            var subject = String.Format("{0} test message from {1}", page.RegistryContext.Domain.ShortTitle, Environment.MachineName);
             var body = "Test message, please ignore.";
 
             var msg = EmailTemplateUtility.CreateMessage(
-                page.Domain.Email, page.Domain.ShortTitle,
+                page.RegistryContext.Domain.Email, page.RegistryContext.Domain.ShortTitle,
                 EmailAddress, EmailAddress,
                 subject, body);
 

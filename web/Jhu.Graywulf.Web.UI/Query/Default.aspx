@@ -20,11 +20,7 @@
             <jgwc:ToolbarButton ID="ExecuteQuick" runat="server" OnClick="ExecuteQuick_Click"
                 Text="quick execute" />
             <jgwc:ToolbarButton ID="ExecuteLong" runat="server" Text="execute" OnClick="ExecuteLong_Click" />
-            <jgwc:ToolbarElement ID="ToolbarElement1" runat="server" Style="width: 120px">
-                <asp:Label ID="OutputTableLabel" runat="server" Text="Output table:" /><br />
-                <asp:TextBox ID="OutputTable" runat="server" CssClass="ToolbarControl" Width="120px"></asp:TextBox>
-            </jgwc:ToolbarElement>
-            <jgwc:ToolbarElement ID="ToolbarElement2" runat="server">
+            <jgwc:ToolbarElement runat="server">
                 <asp:Label ID="CommentsLabel" runat="server" Text="Comments:" /><br />
                 <asp:TextBox ID="Comments" runat="server" CssClass="ToolbarControl" Style="width: 100%;
                     box-sizing: border-box;"></asp:TextBox>

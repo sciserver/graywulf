@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Web.Auth
             try
             {
                 var uu = new UserFactory(RegistryContext);
-                var user = uu.FindUserByEmail(Domain, args.Value);
+                var user = uu.FindUserByEmail(RegistryContext.Domain, args.Value);
 
                 user.GenerateActivationCode();
                 user.Save();

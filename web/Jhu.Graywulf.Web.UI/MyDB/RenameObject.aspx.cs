@@ -15,11 +15,11 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         protected void Page_Load(object sender, EventArgs e)
         {
             string objid = Request.QueryString["objid"];
-            obj = SchemaManager.GetDatabaseObjectByKey(objid);
+            obj = FederationContext.SchemaManager.GetDatabaseObjectByKey(objid);
 
             // Make sure it's in MYDB
             // *** TODO: implement security logic and replace this
-            if (StringComparer.InvariantCultureIgnoreCase.Compare(obj.DatasetName, MyDBDatabaseDefinition.Name) != 0)
+            if (StringComparer.InvariantCultureIgnoreCase.Compare(obj.DatasetName, FederationContext.MyDBDatabaseDefinition.Name) != 0)
             {
                 throw new InvalidOperationException();  // *** TODO
             }

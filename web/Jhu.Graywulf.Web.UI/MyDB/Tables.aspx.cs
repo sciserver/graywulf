@@ -16,10 +16,10 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            MyDBDataset.Tables.LoadAll();
+            FederationContext.MyDBDataset.Tables.LoadAll();
 
             // TODO: change this to support arbitrary sorting
-            var tables = MyDBDataset.Tables.Values.OrderBy(t => t.UniqueKey).ToArray();
+            var tables = FederationContext.MyDBDataset.Tables.Values.OrderBy(t => t.UniqueKey).ToArray();
             TableList.DataSource = tables;
         }
 

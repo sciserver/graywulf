@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
         {
             if (databaseObjectID != null)
             {
-                DatabaseObject dbobj = Page.SchemaManager.GetDatabaseObjectByKey(databaseObjectID);
+                DatabaseObject dbobj = Page.FederationContext.SchemaManager.GetDatabaseObjectByKey(databaseObjectID);
 
                 FullyQualifiedNameLabel.Text = Jhu.Graywulf.Schema.Constants.DatabaseObjectsName_Singular[dbobj.ObjectType];
 
@@ -103,7 +103,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
                 // Show or hide buttons that are applicable to mydb objects only
 
-                var mydbbuttonsenabled = GraywulfSchemaManager.Comparer.Compare(dbobj.DatasetName, Page.Federation.MyDBDatabaseVersion.Name) == 0;
+                var mydbbuttonsenabled = GraywulfSchemaManager.Comparer.Compare(dbobj.DatasetName, Page.RegistryContext.Federation.MyDBDatabaseVersion.Name) == 0;
                 Export.Enabled = Rename.Enabled = Drop.Enabled = mydbbuttonsenabled;
                 // TODO: funtions etc cannot be exported or peeked into!
 

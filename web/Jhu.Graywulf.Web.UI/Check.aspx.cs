@@ -17,8 +17,8 @@ namespace Jhu.Graywulf.Web.UI
             Checks.Routines.Add(new DatabaseCheck(Jhu.Graywulf.Registry.AppSettings.ConnectionString));
             Checks.Routines.Add(new DatabaseCheck(Jhu.Graywulf.Logging.AppSettings.ConnectionString));
 
-            Checks.Routines.Add(new EmailCheck(Domain.Email));
-            Checks.Routines.Add(new EmailCheck(Federation.Email));
+            Checks.Routines.Add(new EmailCheck(RegistryContext.Domain.Email));
+            Checks.Routines.Add(new EmailCheck(RegistryContext.Federation.Email));
 
             Checks.Routines.Add(new UrlCheck(FormsAuthentication.LoginUrl));
             Checks.Routines.Add(new UrlCheck("Download", System.Net.HttpStatusCode.Forbidden)); // No directory browsing allowed

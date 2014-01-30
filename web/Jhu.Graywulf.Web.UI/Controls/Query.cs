@@ -11,6 +11,10 @@ using System.Web.UI.HtmlControls;
 
 namespace Jhu.Graywulf.Web.UI.Controls
 {
+    /// <summary>
+    /// Implements functions to display a query using syntax highligher
+    /// in the documentation
+    /// </summary>
     [DefaultProperty("Text"), ParseChildren(false), PersistChildren(true), ToolboxData("<{0}:CodeView runat=server></{0}:CodeView>"), ControlValueProperty("Text")]
     public class Query : System.Web.UI.WebControls.WebControl, ITextControl
     {
