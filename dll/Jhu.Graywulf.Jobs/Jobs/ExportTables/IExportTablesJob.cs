@@ -8,6 +8,6 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 {
     public interface IExportTablesJob
     {
-        InArgument<ExportTables> Parameters { get; set; }
+        InArgument<ExportTablesParameters> Parameters { get; set; }
     }
 }

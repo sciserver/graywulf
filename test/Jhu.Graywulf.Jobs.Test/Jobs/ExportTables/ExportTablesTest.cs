@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         [TestMethod]
         public void ExportTableSerializableTest()
         {
-            var t = typeof(Jhu.Graywulf.Jobs.ExportTables.ExportTables);
+            var t = typeof(Jhu.Graywulf.Jobs.ExportTables.ExportTablesParameters);
 
             var sc = new Jhu.Graywulf.Activities.SerializableChecker();
             Assert.IsTrue(sc.Execute(t));
@@ -101,7 +101,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                     var ji = LoadJob(guid);
                     Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
 
-                    var uri = ((ExportTables)ji.Parameters["Parameters"].Value).Uri;
+                    var uri = ((ExportTablesParameters)ji.Parameters["Parameters"].Value).Uri;
 
                     path = Util.UriConverter.ToFilePath(uri);
 

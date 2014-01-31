@@ -18,8 +18,8 @@ using Jhu.Graywulf.Schema;
 namespace Jhu.Graywulf.Jobs.ExportTables
 {
     [Serializable]
-    [DataContract(Name = "ExportTables", Namespace = "")]
-    public class ExportTables
+    [DataContract(Name = "ExportTablesParameters", Namespace = "")]
+    public class ExportTablesParameters
     {
         private TableOrView[] sources;
         private DataFileBase[] destinations;
@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             set { timeout = value; }
         }
 
-        public ExportTables()
+        public ExportTablesParameters()
         {
             InitializeMembers(new StreamingContext());
         }

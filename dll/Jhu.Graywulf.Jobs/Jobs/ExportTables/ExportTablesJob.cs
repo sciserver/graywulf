@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         public InArgument<Guid> UserGuid { get; set; }
 
         [RequiredArgument]
-        public InArgument<ExportTables> Parameters { get; set; }
+        public InArgument<ExportTablesParameters> Parameters { get; set; }
 
         protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
         {
@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, parameters), callback, state);
         }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, ExportTables exportTable)
+        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, ExportTablesParameters exportTable)
         {
             // Create table exporter
             var exporter = exportTable.GetInitializedTableExportTask();
