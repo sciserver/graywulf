@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\QueryJobService.cs" />
+    <Compile Include="Api\ServiceBase.cs" />
     <Compile Include="App_Masters\Basic.master.cs">
       <DependentUpon>Basic.master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -82,7 +83,6 @@
     <Compile Include="Jobs\Job.cs" />
     <Compile Include="Jobs\JobFactory.cs" />
     <Compile Include="Jobs\QueryJob.cs" />
-    <Compile Include="ServiceBase.cs" />
     <Compile Include="UI.master.cs">
       <DependentUpon>UI.master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

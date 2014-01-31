@@ -173,7 +173,6 @@
     <Compile Include="Web\Util\EmailSender.cs" />
     <Compile Include="Web\Util\JQuery.cs" />
     <Compile Include="Web\Util\UrlFormatter.cs" />
-    <Compile Include="Web\WebServiceBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Web\Controls\Labels.resx">
