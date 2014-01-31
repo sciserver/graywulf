@@ -460,6 +460,7 @@ namespace Jhu.Graywulf.Registry
 
         private string GenerateRecurringJobID()
         {
+            // TODO: This is an ad-hoc solution, make it more robust
             // Take old name, but remove date part
             int i = Name.LastIndexOf('_');
 

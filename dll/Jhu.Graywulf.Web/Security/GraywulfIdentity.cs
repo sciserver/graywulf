@@ -102,9 +102,7 @@ namespace Jhu.Graywulf.Security
                 }
                 else
                 {
-                    // This should always work
-                    var idx = userProperty.Name.LastIndexOf('.');
-                    return userProperty.Name.Substring(idx + 1);
+                    return EntityFactory.GetName(userProperty.Name);
                 }
             }
         }

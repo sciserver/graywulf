@@ -56,7 +56,7 @@ namespace Jhu.Graywulf.Jobs
 
             var job = jd.CreateJobInstance(queueName, Jhu.Graywulf.Registry.ScheduleType.Queued);
 
-            job.Name = String.Format("{0}_{1}", Context.UserName, job.JobID);
+            job.Name = String.Format("{0}_{1}", EntityFactory.GetName(Context.UserName), job.JobID);
             job.Comments = comments;
 
             return job;

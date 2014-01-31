@@ -77,6 +77,28 @@ namespace Jhu.Graywulf.Registry
             return name;
         }
 
+        public static string GetName(string name)
+        {
+            var idx = name.LastIndexOf('.');
+
+            if (idx > -1)
+            {
+                return name.Substring(idx + 1);
+            }
+            else
+            {
+                idx = name.IndexOf(':');
+                if (idx > -1)
+                {
+                    return name.Substring(idx + 1);
+                }
+                else
+                {
+                    return name;
+                }
+            }
+        }
+
         #region Constructors
 
         /// <summary>
