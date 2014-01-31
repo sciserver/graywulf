@@ -17,8 +17,7 @@
                             <asp:Label runat="server" ID="TableNameLable">Table name:</asp:Label>
                         </td>
                         <td class="FormField">
-                            <asp:DropDownList runat="server" ID="TableName" CssClass="FormField" DataTextField="DisplayName"
-                                DataValueField="UniqueKey" />
+                            <asp:DropDownList runat="server" ID="TableName" CssClass="FormField" />
                         </td>
                     </tr>
                     <tr>

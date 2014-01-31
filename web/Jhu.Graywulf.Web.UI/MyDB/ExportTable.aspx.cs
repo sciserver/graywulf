@@ -22,17 +22,6 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             return String.Format("~/MyDb/ExportTable.aspx?objid={0}", objid);
         }
 
-        protected override void OnInit(EventArgs e)
-        {
-            FederationContext.MyDBDataset.Tables.LoadAll();
-            FederationContext.MyDBDataset.Views.LoadAll();
-
-            TableName.DataSource = FederationContext.MyDBDataset.Tables.Values.OrderBy(t => t.UniqueKey);
-            TableName.DataBind();
-
-            base.OnInit(e);
-        }
-
         protected override void OnLoad(EventArgs e)
         {
             if (!IsPostBack)
@@ -40,6 +29,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                 DownloadLink.NavigateUrl = Download.GetUrl();
 
                 RefreshFileFormatList();
+                RefreshTableList();
 
                 string objid = Request.QueryString["objid"];
                 if (objid != null)
@@ -49,6 +39,16 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             }
 
             base.OnLoad(e);
+        }
+
+        private void RefreshTableList()
+        {
+            FederationContext.MyDBDataset.Tables.LoadAll();
+
+            foreach (var table in FederationContext.MyDBDataset.Tables.Values.OrderBy(t => t.UniqueKey))
+            {
+                TableName.Items.Add(new ListItem(table.DisplayName, table.SchemaName + "." + table.TableName));
+            }
         }
 
         private void RefreshFileFormatList()
