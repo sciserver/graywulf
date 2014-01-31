@@ -52,13 +52,13 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        public QueryFactory()
+        protected QueryFactory()
             : base()
         {
             InitializeMembers(new StreamingContext());
         }
 
-        public QueryFactory(Context context)
+        protected QueryFactory(Context context)
             : base(context)
         {
             InitializeMembers(new StreamingContext());
