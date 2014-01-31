@@ -10,5 +10,8 @@ namespace Jhu.Graywulf.Format
     {
         public const string FileExtensionCsv = ".csv";
         public const string FileExtensionBcp = ".bcp";
+
+        public const string MimeTypeCsv = "text/csv";
+        public const string MimeTypeBcp = "application/octet-stream";
     }
 }

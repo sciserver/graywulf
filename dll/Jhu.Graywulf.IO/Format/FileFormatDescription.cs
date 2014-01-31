@@ -19,6 +19,11 @@ namespace Jhu.Graywulf.Format
         private string displayName;
 
         /// <summary>
+        /// MIME-type of the file format.
+        /// </summary>
+        private string mimeType;
+
+        /// <summary>
         /// Default extension of file format.
         /// </summary>
         private string defaultExtension;
@@ -63,6 +68,12 @@ namespace Jhu.Graywulf.Format
         {
             get { return displayName; }
             set { displayName = value; }
+        }
+
+        public string MimeType
+        {
+            get { return mimeType; }
+            set { mimeType = value; }
         }
 
         public string DefaultExtension
@@ -123,6 +134,7 @@ namespace Jhu.Graywulf.Format
         {
             this.type = null;
             this.displayName = null;
+            this.mimeType = null;
             this.defaultExtension = null;
             this.canRead = false;
             this.canWrite = false;

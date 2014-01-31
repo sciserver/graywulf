@@ -36,6 +36,7 @@ namespace Jhu.Graywulf.Format
                 return new FileFormatDescription()
                     {
                         DisplayName = FileFormatNames.Jhu_Graywulf_Format_DelimitedTextDataFile,
+                        MimeType = Constants.MimeTypeCsv,
                         DefaultExtension = Constants.FileExtensionCsv,
                         CanRead = true,
                         CanWrite = true,
