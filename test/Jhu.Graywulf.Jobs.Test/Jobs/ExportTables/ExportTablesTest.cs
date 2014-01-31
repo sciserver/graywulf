@@ -28,7 +28,9 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
                 var ef = new EntityFactory(context);
                 var federation = ef.LoadEntity<Federation>(Registry.AppSettings.FederationName);
-                var format = FileFormatFactory.Create(federation.FileFormatFactory).GetFileFormatDescription(typeof(Jhu.Graywulf.Format.DelimitedTextDataFile).FullName);
+
+                var ff = FileFormatFactory.Create(federation.FileFormatFactory);
+                var format = ff.GetFileFormatDescription(typeof(Jhu.Graywulf.Format.DelimitedTextDataFile).FullName);
 
                 var mydbds = federation.MyDBDatabaseVersion.GetUserDatabaseInstance(user).GetDataset();
 
@@ -40,14 +42,18 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                     TableName = tableName
                 };
 
-                var etf = new ExportTablesFactory(context);
-                var ji = etf.ScheduleAsJob(
-                    federation,
-                    new TableOrView[] {source },
-                    path,
-                    format,
-                    queue,
-                    "");
+                var destination = ff.CreateFile(format);
+                destination.Uri = Util.UriConverter.FromFilePath(tableName + format.DefaultExtension);
+
+                var parameters = new ExportTablesParameters()
+                {
+                    Sources = new TableOrView[] { source },
+                    Uri = new Uri(path, UriKind.Relative),
+                    Destinations = new DataFileBase[] { ff.CreateFile(format) },
+                };
+
+                var etf = ExportTablesFactory.Create(context.Federation);
+                var ji = etf.ScheduleAsJob(parameters, queue, "");
 
                 ji.Save();
 

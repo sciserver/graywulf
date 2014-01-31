@@ -111,17 +111,10 @@ namespace Jhu.Graywulf.Web.UI.Api
 
         public ExportTablesParameters CreateParameters(FederationContext context)
         {
-            var ep = new ExportTablesParameters()
-            {
-                StreamFactoryType = context.Federation.StreamFactory,
-                FileFormatFactoryType = context.Federation.FileFormatFactory,
-                Uri = new Uri(uri, UriKind.Absolute),
-                Archival = IO.DataFileArchival.Zip,
-            };
+            var ef = ExportTablesFactory.Create(context.Federation);
 
             // Add tables and destination files
             var ts = new TableOrView[tables.Length];
-            var ds = new DataFileBase[tables.Length];
             for (int i = 0; i < tables.Length; i++)
             {
                 string schemaName, tableName;
@@ -143,13 +136,9 @@ namespace Jhu.Graywulf.Web.UI.Api
                 }
 
                 ts[i] = context.MyDBDataset.Tables[context.MyDBDataset.DatabaseName, schemaName, tableName];
-                ds[i] = context.FileFormatFactory.CreateFile(GetTableName(ts[i]) + format);
             }
 
-            ep.Sources = ts;
-            ep.Destinations = ds;
-
-            return ep;
+            return ef.CreateParameters(context.Federation, ts, uri, format, GetQueueName(context), Comments);
         }
 
         private string GetTableName(TableOrView table)

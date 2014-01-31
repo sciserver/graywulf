@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.IO;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Jobs.ExportTables;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Format;
+using Jhu.Graywulf.Web.UI.Api;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
@@ -57,7 +59,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             {
                 if (df.Value.CanWrite)
                 {
-                    var li = new ListItem(df.Value.DisplayName, df.Key);
+                    var li = new ListItem(df.Value.DisplayName, df.Value.DefaultExtension);
                     FileFormat.Items.Add(li);
                 }
             }
@@ -65,22 +67,22 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         private void ScheduleExportTableJob()
         {
-            var table = (Jhu.Graywulf.Schema.Table)FederationContext.SchemaManager.GetDatabaseObjectByKey(TableName.SelectedValue);
-            var format = FederationContext.FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
+            var ef = ExportTablesFactory.Create(FederationContext.Federation);
+            var settings = ef.GetJobDefinitionSettings();
 
-            // Make sure it's in MYDB
-            if (StringComparer.InvariantCultureIgnoreCase.Compare(table.DatasetName, FederationContext.MyDBDatabaseDefinition.Name) != 0)
+            var path = settings.OutputDirectory;
+            //path = Path.Combine(path, String.Format("{0}_{1}{2}", RegistryContext.UserName, job.JobID, Jhu.Graywulf.IO.Constants.FileExtensionZip));
+
+            var ej = new ExportJob()
             {
-                throw new InvalidOperationException();  // *** TODO
-            }
+                Tables = new string[] { TableName.SelectedValue },
+                Format = FileFormat.SelectedValue,
+                Uri = path,
+                Queue = JobQueue.Long,
+                Comments = "",
+            };
 
-            var queue = EntityFactory.CombineName(EntityType.QueueInstance, RegistryContext.Federation.ControllerMachine.GetFullyQualifiedName(), Jhu.Graywulf.Registry.Constants.LongQueueName);
-            var f = new Jhu.Graywulf.Jobs.ExportTables.ExportTablesFactory(RegistryContext);
-
-            // TODO: maybe add comments?
-            var job = f.ScheduleAsJob(RegistryContext.Federation, new[] { table }, null, format, queue, "");
-
-            job.Save();
+            ej.Schedule(FederationContext);
         }
 
         protected void Ok_Click(object sender, EventArgs e)
