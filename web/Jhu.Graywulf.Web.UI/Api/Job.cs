@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using System.Xml;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Web.UI.Jobs
+namespace Jhu.Graywulf.Web.UI.Api
 {
     [KnownType(typeof(ExportJob))]
     [KnownType(typeof(ImportJob))]
@@ -199,6 +199,35 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             }
 
             throw new KeyNotFoundException();
+        }
+
+        public virtual JobInstance Schedule(FederationContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected string GetQueueName(FederationContext context)
+        {
+            string queuename = null;
+
+            switch (Queue)
+            {
+                case JobQueue.Quick:
+                    queuename = Jhu.Graywulf.Registry.Constants.QuickQueueName;
+                    break;
+                case JobQueue.Long:
+                    queuename = Jhu.Graywulf.Registry.Constants.LongQueueName;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            queuename = EntityFactory.CombineName(
+                EntityType.QueueInstance,
+                context.Federation.ControllerMachine.GetFullyQualifiedName(),
+                queuename);
+
+            return queuename;
         }
     }
 }

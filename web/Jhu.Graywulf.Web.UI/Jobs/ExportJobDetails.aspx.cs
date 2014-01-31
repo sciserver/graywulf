@@ -6,6 +6,7 @@ using System.Web.UI.WebControls;
 using Jhu.Graywulf.Security;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
+using Jhu.Graywulf.Web.UI.Api;
 
 namespace Jhu.Graywulf.Web.UI.Jobs
 {

@@ -7,6 +7,7 @@ using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Web.UI.Api;
 
 namespace Jhu.Graywulf.Web.UI.Query
 {
@@ -42,13 +43,13 @@ namespace Jhu.Graywulf.Web.UI.Query
 
         protected void Check_Click(object sender, EventArgs e)
         {
-            var q = CreateQuery(Jobs.JobQueue.Unknown);
+            var q = CreateQuery(JobQueue.Unknown);
             VerifyQuery(q);
         }
 
         protected void ExecuteQuick_Click(object sender, EventArgs e)
         {
-            var q = CreateQuery(Jobs.JobQueue.Quick);
+            var q = CreateQuery(JobQueue.Quick);
 
             if (VerifyQuery(q) != null)
             {
@@ -63,7 +64,7 @@ namespace Jhu.Graywulf.Web.UI.Query
 
         protected void ExecuteLong_Click(object sender, EventArgs e)
         {
-            var q = CreateQuery(Jobs.JobQueue.Long);
+            var q = CreateQuery(JobQueue.Long);
             
             if (VerifyQuery(q) != null)
             {
@@ -93,9 +94,9 @@ namespace Jhu.Graywulf.Web.UI.Query
             return query;
         }
 
-        private Jobs.QueryJob CreateQuery(Jobs.JobQueue queue)
+        private QueryJob CreateQuery(JobQueue queue)
         {
-            return new Jobs.QueryJob(GetQueryString(), queue);
+            return new QueryJob(GetQueryString(), queue);
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace Jhu.Graywulf.Web.UI.Query
         /// </summary>
         /// <param name="queue"></param>
         /// <returns></returns>
-        private QueryBase VerifyQuery(Jobs.QueryJob queryJob)
+        private QueryBase VerifyQuery(QueryJob queryJob)
         {
             try
             {
@@ -134,7 +135,7 @@ namespace Jhu.Graywulf.Web.UI.Query
             return null;
         }
 
-        protected JobInstance ScheduleQuery(Jobs.QueryJob queryJob)
+        protected JobInstance ScheduleQuery(QueryJob queryJob)
         {
             var jobInstance = queryJob.Schedule(FederationContext);
             return jobInstance;

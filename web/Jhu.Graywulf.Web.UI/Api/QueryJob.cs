@@ -9,7 +9,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Schema;
 
-namespace Jhu.Graywulf.Web.UI.Jobs
+namespace Jhu.Graywulf.Web.UI.Api
 {
     [DataContract]
     public class QueryJob : Job
@@ -113,27 +113,10 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             var q = CreateQuery(context);
             q.Verify();
 
-            string queuename = null;
-
-            switch (Queue)
-            {
-                case JobQueue.Quick:
-                    queuename = Jhu.Graywulf.Registry.Constants.QuickQueueName;
-                    break;
-                case JobQueue.Long:
-                    queuename = Jhu.Graywulf.Registry.Constants.LongQueueName;
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            queuename = EntityFactory.CombineName(
-                EntityType.QueueInstance,
-                context.Federation.ControllerMachine.GetFullyQualifiedName(),
-                queuename);
+            
 
             var qf = QueryFactory.Create(context.Federation);
-            var job = qf.ScheduleAsJob(q, queuename, Comments);
+            var job = qf.ScheduleAsJob(q, GetQueueName(context), Comments);
 
             job.Save();
 

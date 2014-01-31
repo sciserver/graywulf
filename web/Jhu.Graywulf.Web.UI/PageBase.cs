@@ -9,6 +9,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
+using Jhu.Graywulf.Web.UI.Api;
 
 namespace Jhu.Graywulf.Web.UI
 {
@@ -60,7 +61,7 @@ namespace Jhu.Graywulf.Web.UI
 
         // ---
 
-        protected string GetExportUrl(Jobs.ExportJob job)
+        protected string GetExportUrl(ExportJob job)
         {
             return String.Format(
                 "~/Download/{0}",

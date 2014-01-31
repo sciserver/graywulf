@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Web.UI.Api;
 
 namespace Jhu.Graywulf.Web.UI.Controls
 {
     public class JobStatus : WebControl
     {
-        private Jobs.JobStatus status;
+        private Api.JobStatus status;
 
-        public Jobs.JobStatus Status
+        public Api.JobStatus Status
         {
             get { return status; }
             set { status = value; }
@@ -24,25 +25,25 @@ namespace Jhu.Graywulf.Web.UI.Controls
 
         private void InitializeMembers()
         {
-            this.status = Jobs.JobStatus.Unknown;
+            this.status = Api.JobStatus.Unknown;
         }
 
         private string GetStatusBackColor()
         {
             switch (status)
             {
-                case Jobs.JobStatus.Waiting:
+                case Api.JobStatus.Waiting:
                     return "yellow";
-                case Jobs.JobStatus.Executing:
+                case Api.JobStatus.Executing:
                     return "green";
-                case Jobs.JobStatus.Completed:
+                case Api.JobStatus.Completed:
                     return "blue";
-                case Jobs.JobStatus.Canceled:
+                case Api.JobStatus.Canceled:
                     return "black";
-                case Jobs.JobStatus.Failed:
-                case Jobs.JobStatus.TimedOut:
+                case Api.JobStatus.Failed:
+                case Api.JobStatus.TimedOut:
                     return "red";
-                case Jobs.JobStatus.Unknown:
+                case Api.JobStatus.Unknown:
                 default:
                     return "";
             }
@@ -52,18 +53,18 @@ namespace Jhu.Graywulf.Web.UI.Controls
         {
             switch (status)
             {
-                case Jobs.JobStatus.Waiting:
+                case Api.JobStatus.Waiting:
                     return "black";
-                case Jobs.JobStatus.Executing:
+                case Api.JobStatus.Executing:
                     return "white";
-                case Jobs.JobStatus.Completed:
+                case Api.JobStatus.Completed:
                     return "white";
-                case Jobs.JobStatus.Canceled:
+                case Api.JobStatus.Canceled:
                     return "white";
-                case Jobs.JobStatus.Failed:
-                case Jobs.JobStatus.TimedOut:
+                case Api.JobStatus.Failed:
+                case Api.JobStatus.TimedOut:
                     return "white";
-                case Jobs.JobStatus.Unknown:
+                case Api.JobStatus.Unknown:
                 default:
                     return "";
             }

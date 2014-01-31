@@ -12,7 +12,7 @@ using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Jobs.ExportTables;
 
-namespace Jhu.Graywulf.Web.UI.Jobs
+namespace Jhu.Graywulf.Web.UI.Api
 {
     /// <summary>
     /// Wrapper around job factory to support query specific features

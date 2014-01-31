@@ -5,13 +5,6 @@ using System.Web;
 
 namespace Jhu.Graywulf.Web
 {
-    public enum JobType
-    {
-        Unknown,
-        Query,
-        ExportTable
-    }
-
     public enum DockingStyle
     {
         None,
