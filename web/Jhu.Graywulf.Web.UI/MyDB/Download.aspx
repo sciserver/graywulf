@@ -24,29 +24,25 @@
     <div class="TabFrame dock-fill">
         <asp:ObjectDataSource runat="server" ID="jobDataSource" EnableViewState="true" EnablePaging="true"
             OnObjectCreating="jobDataSource_ObjectCreating" SelectCountMethod="CountJobs"
-            SelectMethod="SelectJobs" TypeName="Jhu.Graywulf.Web.JobDescriptionFactory" StartRowIndexParameterName="from"
+            SelectMethod="SelectJobs" TypeName="Jhu.Graywulf.Web.UI.Api.JobFactory" StartRowIndexParameterName="from"
             MaximumRowsParameterName="max" EnableCaching="false" />
         <jgwc:MultiSelectGridView runat="server" ID="JobList" DataSourceID="jobDataSource"
             AllowPaging="true" AutoGenerateColumns="false" SelectionMode="Multiple" DataKeyNames="Guid">
             <Columns>
                 <jgwc:SelectionField ItemStyle-Width="24px" />
-                <jgwc:BoundField DataField="Job.Name" HeaderText="Job ID" ItemStyle-Width="150px" />
-                <asp:TemplateField HeaderText="Table name" ItemStyle-Width="120px">
-                    <ItemTemplate>
-                        <%# Eval("SchemaName") %>.<%# Eval("ObjectName") %></ItemTemplate>
-                </asp:TemplateField>
-                <jgwc:BoundDateTimeField DataField="Job.DateCreated" HeaderText="Submitted" ItemStyle-Width="130px"
+                <jgwc:BoundField DataField="Name" HeaderText="Job ID" ItemStyle-Width="150px" />
+                <jgwc:BoundDateTimeField DataField="DateCreated" HeaderText="Submitted" ItemStyle-Width="130px"
                     ItemStyle-HorizontalAlign="Center" />
-                <jgwc:BoundDateTimeField DataField="Job.DateStarted" HeaderText="Started" ItemStyle-Width="130px"
+                <jgwc:BoundDateTimeField DataField="DateStarted" HeaderText="Started" ItemStyle-Width="130px"
                     ItemStyle-HorizontalAlign="Center" />
-                <jgwc:BoundDateTimeField DataField="Job.DateFinished" HeaderText="Finished" ItemStyle-Width="130px"
+                <jgwc:BoundDateTimeField DataField="DateFinished" HeaderText="Finished" ItemStyle-Width="130px"
                     ItemStyle-HorizontalAlign="Center" />
                 <asp:TemplateField HeaderText="Status" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
                     <ItemTemplate>
-                        <jgwc:JobStatus ID="JobStatus1" runat="server" Status='<%# (Jhu.Graywulf.Registry.JobExecutionState)Eval("Job.JobExecutionStatus") %>' />
+                        <jgwuc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.UI.Api.JobStatus)Eval("Status") %>' />
                     </ItemTemplate>
                 </asp:TemplateField>
-                <jgwc:BoundField DataField="Job.Comments" HeaderText="Comments" ItemStyle-CssClass="GridViewSpan"
+                <jgwc:BoundField DataField="Comments" HeaderText="Comments" ItemStyle-CssClass="GridViewSpan"
                     HeaderStyle-CssClass="GridViewSpan" />
             </Columns>
         </jgwc:MultiSelectGridView>

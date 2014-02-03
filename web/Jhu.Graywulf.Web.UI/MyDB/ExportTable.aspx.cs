@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
             foreach (var table in FederationContext.MyDBDataset.Tables.Values.OrderBy(t => t.UniqueKey))
             {
-                TableName.Items.Add(new ListItem(table.DisplayName, table.SchemaName + "." + table.TableName));
+                TableName.Items.Add(new ListItem(table.DisplayName, table.UniqueKey));
             }
         }
 
@@ -70,14 +70,23 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             var ef = ExportTablesFactory.Create(FederationContext.Federation);
             var settings = ef.GetJobDefinitionSettings();
 
-            var path = settings.OutputDirectory;
-            //path = Path.Combine(path, String.Format("{0}_{1}{2}", RegistryContext.UserName, job.JobID, Jhu.Graywulf.IO.Constants.FileExtensionZip));
+            var path = Path.Combine(
+                settings.OutputDirectory,
+                String.Format(
+                    "{0}_{1:yyMMddHHmmssff}{2}",
+                    EntityFactory.GetName(RegistryContext.UserName),
+                    DateTime.Now,
+                    Jhu.Graywulf.IO.Constants.FileExtensionZip));
+
+            // TODO: add support for multiple tables
+            var tables = new string[1];
+            tables[0] = FederationContext.SchemaManager.GetDatabaseObjectByKey(TableName.SelectedValue).DisplayName;
 
             var ej = new ExportJob()
             {
-                Tables = new string[] { TableName.SelectedValue },
+                Tables = tables,
                 Format = FileFormat.SelectedValue,
-                Uri = path,
+                Uri = Jhu.Graywulf.Util.UriConverter.FromFilePath(path),
                 Queue = JobQueue.Long,
                 Comments = "",
             };

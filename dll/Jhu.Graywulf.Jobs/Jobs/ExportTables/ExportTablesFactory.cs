@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         {
         }
 
-        public ExportTablesParameters CreateParameters(Federation federation, TableOrView[] sources, string path, string format, string queueName, string comments)
+        public ExportTablesParameters CreateParameters(Federation federation, TableOrView[] sources, Uri uri, string format, string queueName, string comments)
         {
             // Create destination files
             // One file per source
@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 Sources = sources,
                 Destinations = destinations,
                 Archival = DataFileArchival.Zip,
-                Uri = Util.UriConverter.FromFilePath(path),
+                Uri = uri,
                 FileFormatFactoryType = federation.FileFormatFactory,
                 StreamFactoryType = federation.StreamFactory,
             };

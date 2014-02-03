@@ -22,6 +22,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         protected void jobDataSource_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
         {
+            RegistryContext.TransactionMode = Registry.TransactionMode.DirtyRead;
             var jf = new JobFactory(RegistryContext);
             jf.JobDefinitionGuids.Clear();
             jf.JobDefinitionGuids.UnionWith(JobFactory.ExportJobDefinitionGuids);

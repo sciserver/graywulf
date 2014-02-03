@@ -175,6 +175,11 @@ namespace Jhu.Graywulf.Web.UI.Api
             }
         }
 
+        protected string GetAttribute(XmlDocument xml, string path, string attribute)
+        {
+            return xml.SelectNodes(path)[0].Attributes[attribute].Value;
+        }
+
         protected string GetXmlInnerText(XmlDocument xml, string path)
         {
             return GetXmlInnerText(xml.ChildNodes, path.Split('/'), 0);

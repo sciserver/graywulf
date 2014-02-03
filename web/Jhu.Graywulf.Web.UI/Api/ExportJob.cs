@@ -7,6 +7,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Jobs.ExportTables;
+using Jhu.Graywulf.SqlParser;
 
 namespace Jhu.Graywulf.Web.UI.Api
 {
@@ -14,7 +15,7 @@ namespace Jhu.Graywulf.Web.UI.Api
     {
         private string[] tables;
         private string format;
-        private string uri;
+        private Uri uri;
 
         public override JobType Type
         {
@@ -34,7 +35,7 @@ namespace Jhu.Graywulf.Web.UI.Api
             set { format = value; }
         }
 
-        public string Uri
+        public Uri Uri
         {
             get { return uri; }
             set { uri = value; }
@@ -102,6 +103,10 @@ namespace Jhu.Graywulf.Web.UI.Api
                 var xml = new XmlDocument();
                 xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Jobs.Constants.JobParameterExport].XmlValue);
 
+                this.tables = new string[] { "xxx" };
+                this.format = GetAttribute(xml, "/ExportTablesParameters/Destinations/DataFileBase", "z:Type");
+                this.uri = new Uri(GetXmlInnerText(xml, "ExportTablesParameters/Uri"));
+
                 // TODO:
                 // jobDescription.SchemaName = GetXmlInnerText(xml, "ExportTables/Sources/TableOrView/SchemaName");
                 // jobDescription.ObjectName = GetXmlInnerText(xml, "ExportTables/Sources/TableOrView/ObjectName");
@@ -115,27 +120,20 @@ namespace Jhu.Graywulf.Web.UI.Api
 
             // Add tables and destination files
             var ts = new TableOrView[tables.Length];
+
+            // Table names are specified as string, so we need to parse them
+            var parser = new SqlParser.SqlParser();
+            var nr = new SqlNameResolver()
+            {
+                SchemaManager = context.SchemaManager
+            };
+
             for (int i = 0; i < tables.Length; i++)
             {
-                string schemaName, tableName;
-                var parts = tables[i].Split('.');
-                
-                if (parts.Length == 1)
-                {
-                    schemaName = context.MyDBDataset.DefaultSchemaName;
-                    tableName = parts[0];
-                }
-                else if (parts.Length == 2)
-                {
-                    schemaName = parts[0];
-                    tableName = parts[1];
-                }
-                else
-                {
-                    throw new InvalidOperationException(String.Format("Invalid table name: '{0}'", tables[i])); // TODO
-                }
-
-                ts[i] = context.MyDBDataset.Tables[context.MyDBDataset.DatabaseName, schemaName, tableName];
+                var tn = (SqlParser.TableOrViewName)parser.Execute(new SqlParser.TableOrViewName(), tables[i]);
+                var tr = tn.TableReference;
+                tr.SubstituteDefaults(context.SchemaManager, context.MyDBDataset.Name);
+                ts[i] = context.MyDBDataset.Tables[tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName];
             }
 
             return ef.CreateParameters(context.Federation, ts, uri, format, GetQueueName(context), Comments);

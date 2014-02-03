@@ -65,7 +65,7 @@ namespace Jhu.Graywulf.Web.UI
         {
             return String.Format(
                 "~/Download/{0}",
-                System.IO.Path.GetFileName(job.Uri));   // TODO: test
+                System.IO.Path.GetFileName(Jhu.Graywulf.Util.UriConverter.ToFileName(job.Uri)));
         }
 
         protected override void OnPreRender(EventArgs e)
