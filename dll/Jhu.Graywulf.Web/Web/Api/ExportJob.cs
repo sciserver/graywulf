@@ -9,7 +9,7 @@ using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Jobs.ExportTables;
 using Jhu.Graywulf.SqlParser;
 
-namespace Jhu.Graywulf.Web.UI.Api
+namespace Jhu.Graywulf.Web.Api
 {
     public class ExportJob : Job
     {

@@ -9,7 +9,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Schema;
 
-namespace Jhu.Graywulf.Web.UI.Api
+namespace Jhu.Graywulf.Web.Api
 {
     [DataContract]
     public class QueryJob : Job

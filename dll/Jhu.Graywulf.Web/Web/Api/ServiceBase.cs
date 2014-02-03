@@ -7,7 +7,7 @@ using System.ServiceModel;
 using Jhu.Graywulf.Security;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Web.UI.Api
+namespace Jhu.Graywulf.Web.Api
 {
     public abstract class ServiceBase
     {

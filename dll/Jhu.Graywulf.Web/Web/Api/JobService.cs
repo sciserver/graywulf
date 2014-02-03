@@ -5,34 +5,33 @@ using System.Web;
 using System.ServiceModel;
 using System.ServiceModel.Activation;
 using System.ServiceModel.Web;
+using System.Web.Routing;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
 
-namespace Jhu.Graywulf.Web.UI.Api
+namespace Jhu.Graywulf.Web.Api
 {
     [ServiceContract]
-    public interface IQueryJobService
+    public interface IJobService
     {
         [OperationContract]
         [WebGet(UriTemplate="{queue}")]
-        JobInstance[] GetJob(string queue);
+        Job[] GetJob(string queue);
     }
 
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
-    public class QueryJobService : ServiceBase, IQueryJobService
+    [RestServiceBehavior]
+    public class JobService : ServiceBase, IJobService
     {
-        public JobInstance[] GetJob(string queue)
+        public static void RegisterRoute()
         {
-            try
-            {
-                throw new Exception("message");
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
-                return null;
-            }
+            RouteTable.Routes.Add(new ServiceRoute("Api/Jobs/", new WebServiceHostFactory(), typeof(Api.JobService)));
+        }
+
+        public Job[] GetJob(string queue)
+        {
+            throw new NotImplementedException();
         }
     }
 }

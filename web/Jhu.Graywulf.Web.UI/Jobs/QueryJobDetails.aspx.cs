@@ -3,7 +3,7 @@ using System.Security;
 using Jhu.Graywulf.Security;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
-using Jhu.Graywulf.Web.UI.Api;
+using Jhu.Graywulf.Web.Api;
 
 namespace Jhu.Graywulf.Web.UI.Jobs
 {

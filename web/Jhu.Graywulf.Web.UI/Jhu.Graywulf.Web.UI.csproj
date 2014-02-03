@@ -57,14 +57,6 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\Enum.cs" />
-    <Compile Include="Api\ExportJob.cs" />
-    <Compile Include="Api\ImportJob.cs" />
-    <Compile Include="Api\Job.cs" />
-    <Compile Include="Api\JobFactory.cs" />
-    <Compile Include="Api\QueryJob.cs" />
-    <Compile Include="Api\QueryJobService.cs" />
-    <Compile Include="Api\ServiceBase.cs" />
     <Compile Include="App_Masters\Basic.master.cs">
       <DependentUpon>Basic.master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -82,7 +74,6 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Controls\JobStatus.cs" />
     <Compile Include="Controls\Query.cs" />
-    <Compile Include="FederationContext.cs" />
     <Compile Include="UI.master.cs">
       <DependentUpon>UI.master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

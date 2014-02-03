@@ -6,7 +6,7 @@ using Jhu.Graywulf.Jobs.ExportTables;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Format;
-using Jhu.Graywulf.Web.UI.Api;
+using Jhu.Graywulf.Web.Api;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {

@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using System.Xml;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Web.UI.Api
+namespace Jhu.Graywulf.Web.Api
 {
     [KnownType(typeof(ExportJob))]
     [KnownType(typeof(ImportJob))]

@@ -7,7 +7,7 @@ using Jhu.Graywulf.IO;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Schema;
 
-namespace Jhu.Graywulf.Web.UI
+namespace Jhu.Graywulf.Web
 {
     public class FederationContext
     {

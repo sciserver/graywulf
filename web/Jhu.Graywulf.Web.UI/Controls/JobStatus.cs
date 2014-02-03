@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Web.UI.Api;
+using Jhu.Graywulf.Web.Api;
 
 namespace Jhu.Graywulf.Web.UI.Controls
 {

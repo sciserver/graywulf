@@ -9,6 +9,7 @@ using System.ServiceModel;
 using System.ServiceModel.Activation;
 using Jhu.Graywulf.Security;
 using Jhu.Graywulf.Web;
+using Jhu.Graywulf.Web.Api;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Install;
 
@@ -30,7 +31,7 @@ namespace Jhu.Graywulf.Web.UI
             }
 
             // Add service routes here
-            RouteTable.Routes.Add(new ServiceRoute("Api/Jobs/", new WebServiceHostFactory(), typeof(Api.QueryJobService)));
+            JobService.RegisterRoute();
         }
 
         protected override void OnUserSignedIn(GraywulfIdentity identity)
