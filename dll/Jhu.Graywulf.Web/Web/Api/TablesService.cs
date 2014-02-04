@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Web.Api
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
     [RestServiceBehavior]
-    public class TablesService : ITablesService
+    public class TablesService : ServiceBase, ITablesService
     {
         public string Hello()
         {

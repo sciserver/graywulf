@@ -740,6 +740,7 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Api\Web.config" />
     <None Include="Scripts\CodeMirror\mode\livescript\livescript.ls" />
   </ItemGroup>
   <ItemGroup />

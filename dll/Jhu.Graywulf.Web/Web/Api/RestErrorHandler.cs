@@ -38,8 +38,16 @@ namespace Jhu.Graywulf.Web.Api
 
             var response = WebOperationContext.Current.OutgoingResponse;
 
+            if (error is System.Security.SecurityException)
+            {
+                response.StatusCode = System.Net.HttpStatusCode.Forbidden;
+            }
+            else
+            {
+                response.StatusCode = System.Net.HttpStatusCode.InternalServerError;
+            }
+
             response.SuppressEntityBody = true;
-            response.StatusCode = System.Net.HttpStatusCode.InternalServerError;
             response.StatusDescription = error.Message;
             response.ContentType = "text/plain";
             HttpContext.Current.Response.Write(error.Message);

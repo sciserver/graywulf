@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Web.Api
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
     [RestServiceBehavior]
-    public class SchemaService : ISchemaService
+    public class SchemaService : ServiceBase, ISchemaService
     {
         public string Hello()
         {
