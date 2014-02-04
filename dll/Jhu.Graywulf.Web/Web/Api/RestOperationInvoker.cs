@@ -42,12 +42,15 @@ namespace Jhu.Graywulf.Web.Api
 
             svc.OnBeforeInvoke();
 
+            // Catch exceptions so that they can be logged.
             try
             {
                 res = this.originalInvoker.Invoke(instance, inputs, out outputs);
             }
             catch (Exception ex)
             {
+                // TODO: this won't catch exceptions from IEnumerator that occur
+                // in MoveNext, so they won't be logged.
                 svc.OnError(operationName, ex);
                 throw;
             }

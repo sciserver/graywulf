@@ -12,7 +12,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Api
 {
-    public abstract class ServiceBase
+    public abstract class ServiceBase : IDisposable
     {
         private Context registryContext;
         private FederationContext federationContext;
@@ -72,15 +72,11 @@ namespace Jhu.Graywulf.Web.Api
             }
         }
 
-        internal void OnBeforeInvoke()
+        protected ServiceBase()
         {
         }
 
-        /// <summary>
-        /// Called by the infrastucture after each service operation
-        /// </summary>
-        /// <param name="invoker"></param>
-        internal void OnAfterInvoke()
+        public virtual void Dispose()
         {
             if (registryContext != null)
             {
@@ -92,6 +88,18 @@ namespace Jhu.Graywulf.Web.Api
                 registryContext.Dispose();
                 registryContext = null;
             }
+        }
+
+        internal void OnBeforeInvoke()
+        {
+        }
+
+        /// <summary>
+        /// Called by the infrastucture after each service operation
+        /// </summary>
+        /// <param name="invoker"></param>
+        internal void OnAfterInvoke()
+        {         
         }
 
         internal void OnError(string operationName, Exception ex)

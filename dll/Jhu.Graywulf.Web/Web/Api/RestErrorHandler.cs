@@ -13,6 +13,17 @@ namespace Jhu.Graywulf.Web.Api
 {
     public class RestErrorHandler : IErrorHandler
     {
+        private ServiceBase service;
+
+        public RestErrorHandler()
+        {
+        }
+
+        public RestErrorHandler(ServiceBase service)
+        {
+            this.service = service;
+        }
+
         public bool HandleError(Exception error)
         {
             return true; // do not abort session
@@ -27,6 +38,9 @@ namespace Jhu.Graywulf.Web.Api
         /// <param name="fault"></param>
         public void ProvideFault(Exception error, System.ServiceModel.Channels.MessageVersion version, ref System.ServiceModel.Channels.Message fault)
         {
+            // log error
+            
+
             // wrap exception so the framework doesn't choke on it
             var wfe = new WebFaultException<Exception>(error, System.Net.HttpStatusCode.InternalServerError);
 
