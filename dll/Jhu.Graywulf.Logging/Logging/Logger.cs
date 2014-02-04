@@ -65,5 +65,24 @@ namespace Jhu.Graywulf.Logging
                 }
             }
         }
+
+        public Event LogException(string operation, EventSource source, Guid userGuid, Guid contextGuid, Exception ex)
+        {
+            var errorEvent = new Logging.Event(operation, Guid.Empty)
+            {
+                Exception = ex,
+                ExceptionType = ex.GetType().Name,
+                Message = ex.Message,
+                StackTrace = ex.StackTrace,
+                UserGuid = userGuid,
+                ContextGuid = contextGuid,
+                EventSeverity = Logging.EventSeverity.Error,
+                EventSource = source,
+            };
+
+            Logging.Logger.Instance.LogEvent(errorEvent);
+
+            return errorEvent;
+        }
     }
 }

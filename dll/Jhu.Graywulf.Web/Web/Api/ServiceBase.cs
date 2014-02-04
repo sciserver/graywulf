@@ -4,6 +4,9 @@ using System.Linq;
 using System.Web;
 using System.ServiceModel.Web;
 using System.ServiceModel;
+using System.ServiceModel.Channels;
+using System.ServiceModel.Description;
+using System.ServiceModel.Dispatcher;
 using Jhu.Graywulf.Security;
 using Jhu.Graywulf.Registry;
 
@@ -69,12 +72,50 @@ namespace Jhu.Graywulf.Web.Api
             }
         }
 
-        protected void HandleException(Exception ex)
+        internal void OnBeforeInvoke()
         {
-            WebOperationContext.Current.OutgoingResponse.SuppressEntityBody = true;
-            WebOperationContext.Current.OutgoingResponse.ContentType = "text/plain";    // TODO: use constant
+        }
 
-            HttpContext.Response.Write(ex.Message);
+        /// <summary>
+        /// Called by the infrastucture after each service operation
+        /// </summary>
+        /// <param name="invoker"></param>
+        internal void OnAfterInvoke()
+        {
+            if (registryContext != null)
+            {
+                if (registryContext.DatabaseTransaction != null)
+                {
+                    registryContext.CommitTransaction();
+                }
+
+                registryContext.Dispose();
+                registryContext = null;
+            }
+        }
+
+        internal void OnError(string operationName, Exception ex)
+        {
+            LogError(operationName, ex);
+
+            if (registryContext != null)
+            {
+                registryContext.RollbackTransaction();
+                registryContext.Dispose();
+                registryContext = null;
+            }
+        }
+
+        private Logging.Event LogError(string operationName, Exception ex)
+        {
+            var error = Logging.Logger.Instance.LogException(
+                HttpContext.Current.Request.AppRelativeCurrentExecutionFilePath,
+                Logging.EventSource.WebService,
+                registryContext == null ? Guid.Empty : registryContext.UserGuid,
+                registryContext == null ? Guid.Empty : registryContext.ContextGuid,
+                ex);
+
+            return error;
         }
     }
 }

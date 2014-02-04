@@ -25,66 +25,77 @@ namespace Jhu.Graywulf.Web.Api
         private DateTime? dateStarted;
         private DateTime? dateFinished;
 
+        [DataMember]
         public Guid Guid
         {
             get { return guid; }
             set { guid = value; }
         }
 
+        [DataMember]
         public string Name
         {
             get { return name; }
             set { name = value; }
         }
 
+        [DataMember]
         public virtual JobType Type
         {
             get { return JobType.Unknown; }
             set { }
         }
 
+        [DataMember]
         public JobStatus Status
         {
             get { return status; }
             set { status = value; }
         }
 
+        [DataMember]
         public bool CanCancel
         {
             get { return canCancel; }
             set { canCancel = value; }
         }
 
+        [DataMember]
         public JobQueue Queue
         {
             get { return queue; }
             set { queue = value; }
         }
 
+        [DataMember]
         public string Comments
         {
             get { return comments; }
             set { comments = value; }
         }
 
+        [DataMember]
         public string Error
         {
             get { return error; }
             set { error = value; }
         }
 
+        [DataMember]
         public DateTime? DateCreated
         {
             get { return dateCreated; }
             set { dateCreated = value; }
         }
 
+        [DataMember]
         public DateTime? DateStarted
         {
             get { return dateStarted; }
             set { dateStarted = value; }
         }
 
+        [DataMember]
         public DateTime? DateFinished
         {
             get { return dateFinished; }

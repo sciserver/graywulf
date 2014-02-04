@@ -11,14 +11,44 @@ namespace Jhu.Graywulf.Security
     /// <summary>
     /// Implements OpenID authentication.
     /// </summary>
-    public class OpenIDAuthenticator : InteractiveAuthenticatorBase
+    public class OpenIDAuthenticator : IInteractiveAuthenticator
     {
+        private string authorityName;
+        private string authorityUri;
+        private string displayName;
         private string discoveryUrl;
+
+        /// <summary>
+        /// Gets or sets the name of the authority
+        /// </summary>
+        public string AuthorityName
+        {
+            get { return authorityName; }
+            set { authorityName = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the URI uniquely identifying the authority
+        /// </summary>
+        public string AuthorityUri
+        {
+            get { return authorityUri; }
+            set { authorityUri = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the display name of the authority
+        /// </summary>
+        public string DisplayName
+        {
+            get { return displayName; }
+            set { displayName = value; }
+        }
 
         /// <summary>
         /// Gets the name of the authentication protocol.
         /// </summary>
-        public override string Protocol
+        public string Protocol
         {
             get { return Constants.ProtocolNameOpenID; }
         }
@@ -39,6 +69,9 @@ namespace Jhu.Graywulf.Security
 
         private void InitializeMembers()
         {
+            this.authorityName = null;
+            this.authorityUri = null;
+            this.displayName = null;
             this.discoveryUrl = null;
         }
 
@@ -46,13 +79,13 @@ namespace Jhu.Graywulf.Security
         /// Authenicates a user based on the information in the HTTP request.
         /// </summary>
         /// <returns></returns>
-        public override GraywulfPrincipal Authenticate()
+        public GraywulfPrincipal Authenticate()
         {
             // Get OpenID provider's response from the http context
             using (var openid = new OpenIdRelyingParty())
             {
                 var response = openid.GetResponse();
-                
+
                 // TODO: figure out which OpenID provider sent the response
                 // and associate with the right authenticator
 
@@ -80,7 +113,7 @@ namespace Jhu.Graywulf.Security
         /// <summary>
         /// Redirects the browser to the sign in page of the OpenID authority.
         /// </summary>
-        public override void RedirectToLoginPage()
+        public void RedirectToLoginPage()
         {
             using (var openid = new OpenIdRelyingParty())
             {

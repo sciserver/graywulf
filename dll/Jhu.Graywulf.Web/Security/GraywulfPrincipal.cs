@@ -31,10 +31,30 @@ namespace Jhu.Graywulf.Security
             return new GraywulfPrincipal(identity);
         }
 
+        public static GraywulfPrincipal Create(System.Web.Security.FormsAuthenticationTicket ticket)
+        {
+            var identity = new GraywulfIdentity()
+            {
+                Protocol = Constants.ProtocolNameForms,
+                Identifier = ticket.Name,
+                IsAuthenticated = true,
+            };
+
+            identity.UserProperty.Name = ticket.Name;
+            return new GraywulfPrincipal(identity);
+        }
+
+        private HashSet<string> roles;
         private GraywulfIdentity identity;
+
+        public HashSet<string> Roles
+        {
+            get { return roles; }
+        }
 
         internal GraywulfPrincipal(GraywulfIdentity identity)
         {
+            this.roles = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
             this.identity = identity;
         }
 
@@ -58,8 +78,7 @@ namespace Jhu.Graywulf.Security
         /// <returns></returns>
         public bool IsInRole(string role)
         {
-            // TODO: Always returns true as we don't support user groups ATM
-            return true;
+            return roles.Contains(role);
         }
     }
 }

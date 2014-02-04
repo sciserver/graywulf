@@ -12,9 +12,19 @@ namespace Jhu.Graywulf.Web.Api
 {
     public class RestServiceBehavior : Attribute, IServiceBehavior
     {
+        /// <summary>
+        /// Sets up default binding parameters.
+        /// </summary>
+        /// <param name="serviceDescription"></param>
+        /// <param name="serviceHostBase"></param>
+        /// <param name="endpoints"></param>
+        /// <param name="bindingParameters"></param>
         public void AddBindingParameters(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase, System.Collections.ObjectModel.Collection<ServiceEndpoint> endpoints, BindingParameterCollection bindingParameters)
         {
             // (2.)
+
+            // Find all web http endpoint behaviors and
+            // turn on help
             foreach (var ep in endpoints)
             {
                 var whb = ep.Behaviors.Find<WebHttpBehavior>();
@@ -30,6 +40,19 @@ namespace Jhu.Graywulf.Web.Api
         {
             // (3.)
 
+            // Automatically add custom operation behavior to all operations
+            foreach (var ep in serviceDescription.Endpoints)
+            {
+                foreach (var op in ep.Contract.Operations)
+                {
+                    op.Behaviors.Add(new RestOperationBehavior());
+                }
+            }
+
+            // Remove any error handlers and replace
+            // them with own implementation to catch
+            // exceptions and turn them into simple
+            // error messages that aren't wrapped into xml
             foreach (ChannelDispatcher cd in serviceHostBase.ChannelDispatchers)
             {
                 cd.IncludeExceptionDetailInFaults = true;
@@ -41,8 +64,19 @@ namespace Jhu.Graywulf.Web.Api
 
                 // Add new custom error handler
                 cd.ErrorHandlers.Add(new RestErrorHandler());
+
+
+                foreach (EndpointDispatcher ep in cd.Endpoints)
+                {
+                    ep.DispatchRuntime.MessageInspectors.Add(new Security.RestAuthenticationModule());
+                    foreach (DispatchOperation op in ep.DispatchRuntime.Operations)
+                    {
+                        op.ParameterInspectors.Add(new Security.RestAuthenticationModule());
+                    }
+                }
             }
         }
+
 
         public void Validate(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
         {

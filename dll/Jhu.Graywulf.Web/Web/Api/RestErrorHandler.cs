@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Web.Api
         public void ProvideFault(Exception error, System.ServiceModel.Channels.MessageVersion version, ref System.ServiceModel.Channels.Message fault)
         {
             // wrap exception so the framework doesn't choke on it
-            var wfe = new WebFaultException<Exception>(error, System.Net.HttpStatusCode.BadRequest);
+            var wfe = new WebFaultException<Exception>(error, System.Net.HttpStatusCode.InternalServerError);
 
             fault = System.ServiceModel.Channels.Message.CreateMessage(
                 version,
@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Web.Api
             var response = WebOperationContext.Current.OutgoingResponse;
 
             response.SuppressEntityBody = true;
-            response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+            response.StatusCode = System.Net.HttpStatusCode.InternalServerError;
             response.StatusDescription = error.Message;
             response.ContentType = "text/plain";
             HttpContext.Current.Response.Write(error.Message);

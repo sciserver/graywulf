@@ -16,12 +16,14 @@ namespace Jhu.Graywulf.Web.Api
     {
         private string query;
 
+        [DataMember]
         public override JobType Type
         {
             get { return JobType.Query; }
             set { }
         }
 
+        [DataMember]
         public string Query
         {
             get { return query; }

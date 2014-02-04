@@ -31,8 +31,9 @@ namespace Jhu.Graywulf.Web.UI
             }
 
             // Add service routes here
-            JobService.RegisterRoute();
+            RouteTable.Routes.Add(new ServiceRoute("Api/Jobs/", new WebServiceHostFactory(), typeof(Api.JobService)));
         }
+
 
         protected override void OnUserSignedIn(GraywulfIdentity identity)
         {

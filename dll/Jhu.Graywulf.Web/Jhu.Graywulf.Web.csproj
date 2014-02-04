@@ -44,6 +44,7 @@
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel" />
     <Reference Include="System.IO">
       <HintPath>..\..\..\skyquery\packages\Microsoft.Bcl.1.1.6\lib\net40\System.IO.dll</HintPath>
     </Reference>
@@ -78,19 +79,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Security\AuthenticationModuleBase.cs" />
     <Compile Include="Security\AuthenticatorFactory.cs" />
     <Compile Include="Security\Constants.cs" />
-    <Compile Include="Security\IAuthenticator.cs" />
-    <Compile Include="Security\InteractiveAuthenticatorBase.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Security\RequestAuthenticatorBase.cs" />
-    <Compile Include="Security\GraywulfAuthenticationModule.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Security\FormsTicketAuthenticator.cs" />
+    <Compile Include="Security\IInteractiveAuthenticator.cs" />
+    <Compile Include="Security\IRequestAuthenticator.cs" />
     <Compile Include="Security\GraywulfIdentity.cs" />
     <Compile Include="Security\GraywulfPrincipal.cs" />
     <Compile Include="Security\OpenIDAuthenticator.cs" />
+    <Compile Include="Security\WebAuthenticationModule.cs" />
     <Compile Include="Web\Api\Enum.cs" />
     <Compile Include="Web\Api\ExportJob.cs" />
     <Compile Include="Web\Api\ImportJob.cs" />
@@ -98,7 +96,10 @@
     <Compile Include="Web\Api\JobFactory.cs" />
     <Compile Include="Web\Api\JobService.cs" />
     <Compile Include="Web\Api\QueryJob.cs" />
+    <Compile Include="Security\RestAuthenticationModule.cs" />
     <Compile Include="Web\Api\RestErrorHandler.cs" />
+    <Compile Include="Web\Api\RestOperationBehavior.cs" />
+    <Compile Include="Web\Api\RestOperationInvoker.cs" />
     <Compile Include="Web\Api\RestServiceBehavior.cs" />
     <Compile Include="Web\Api\ServiceBase.cs" />
     <Compile Include="Web\ApplicationBase.cs" />

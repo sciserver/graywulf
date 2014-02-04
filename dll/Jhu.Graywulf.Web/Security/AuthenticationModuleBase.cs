@@ -3,74 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
-using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Security
 {
     /// <summary>
-    /// Implements a generic authentication scheme for Graywulf
-    /// with pluggable authenticator algorithms
+    /// Implement functions to authenticate web requests using a set
+    /// of authenticators.
     /// </summary>
-    public class GraywulfAuthenticationModule : IHttpModule
+    public abstract class AuthenticationModuleBase
     {
-        private RequestAuthenticatorBase[] authenticators;
+        private IRequestAuthenticator[] requestAuthenticators;
 
-        public GraywulfAuthenticationModule()
-        {
-        }
-
-        /// <summary>
-        /// Initialize the authentication module events.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <remarks>
-        /// This function if called once by asp.net once, when the
-        /// application starts.
-        /// </remarks>
-        public void Init(HttpApplication context)
+        public void Init()
         {
             // Create authenticators
+            // TODO: add factory type name here
             var af = AuthenticatorFactory.Create(null);
-            this.authenticators = af.CreateRequestAuthenticators();
-
-            // Wire up request events
-            // --- Call all authenticators in this one
-            context.AuthenticateRequest += new EventHandler(OnAuthenticateRequest);
-            // --- Associate identity with graywulf user
-            context.PostAuthenticateRequest += new EventHandler(OnPostAuthenticateRequest);
+            this.requestAuthenticators = af.CreateRequestAuthenticators();
         }
 
-        public void Dispose()
-        {
-        }
-
-        /// <summary>
-        /// Tries to authenticate the request with all authenticators.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /// <remarks></remarks>
-        private void OnAuthenticateRequest(object sender, EventArgs e)
-        {
-            var context = ((HttpApplication)sender).Context;
-            CallAuthenticators(context);
-        }
-
-        private void OnPostAuthenticateRequest(object sender, EventArgs e)
-        {
-            var context = ((HttpApplication)sender).Context;
-            DispatchIdentityType(context);
-        }
-
-        private void CallAuthenticators(HttpContext context)
+        protected void CallRequestAuthenticators(HttpContext context)
         {
             // If user is not authenticated yet, try to authenticate them now using
             // various types of authenticators
 
             // Try each authentication protocol
-            for (int i = 0; context.User == null && i < authenticators.Length; i++)
+            for (int i = 0; context.User == null && i < requestAuthenticators.Length; i++)
             {
-                var user = authenticators[i].Authenticate();
+                var user = requestAuthenticators[i].Authenticate();
                 if (user != null)
                 {
                     context.User = user;
@@ -78,7 +38,7 @@ namespace Jhu.Graywulf.Security
             }
         }
 
-        private void DispatchIdentityType(HttpContext context)
+        protected void DispatchIdentityType(HttpContext context)
         {
             // The request is processed now. If the user has been authenticated but
             // the principal is not a Graywulf principal, it has to be replaced now

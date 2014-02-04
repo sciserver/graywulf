@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Web
 {
     public class PageBase : Page
     {
-        private Context context;
+        private Context registryContext;
 
         /// <summary>
         /// Gets the original referer of the page, even after postbacks.
@@ -66,13 +66,13 @@ namespace Jhu.Graywulf.Web
         {
             get
             {
-                if (context == null)
+                if (registryContext == null)
                 {
                     var application = (ApplicationBase)HttpContext.Current.ApplicationInstance;
-                    context = application.CreateRegistryContext();
+                    registryContext = application.CreateRegistryContext();
                 }
 
-                return context;
+                return registryContext;
             }
         }
 
@@ -90,14 +90,14 @@ namespace Jhu.Graywulf.Web
 
         protected override void OnUnload(EventArgs e)
         {
-            if (context != null)
+            if (registryContext != null)
             {
-                if (context.DatabaseTransaction != null)
+                if (registryContext.DatabaseTransaction != null)
                 {
-                    context.CommitTransaction();
+                    registryContext.CommitTransaction();
                 }
 
-                context.Dispose();
+                registryContext.Dispose();
             }
 
             base.OnUnload(e);
@@ -110,22 +110,12 @@ namespace Jhu.Graywulf.Web
 
         protected Logging.Event LogError(Exception ex)
         {
-            var error = new Logging.Event(AppRelativeVirtualPath, Guid.Empty);
-            error.Exception = ex;
-            error.ExceptionType = ex.GetType().Name;
-            error.Message = ex.Message;
-            error.StackTrace = ex.StackTrace;
-
-            if (context != null)
-            {
-                error.UserGuid = context.UserGuid;
-                error.ContextGuid = context.ContextGuid;
-            }
-
-            error.EventSeverity = Logging.EventSeverity.Error;
-            error.EventSource = Logging.EventSource.WebUI;
-
-            Logging.Logger.Instance.LogEvent(error);
+            var error = Logging.Logger.Instance.LogException(
+                AppRelativeVirtualPath,
+                Logging.EventSource.WebUI,
+                registryContext == null ? Guid.Empty : registryContext.UserGuid,
+                registryContext == null ? Guid.Empty : registryContext.ContextGuid,
+                ex);
 
             return error;
         }
@@ -140,11 +130,11 @@ namespace Jhu.Graywulf.Web
             Session[Constants.SessionException] = ex;
             Session[Constants.SessionExceptionEventID] = error.EventId;
 
-            if (context != null)
+            if (registryContext != null)
             {
-                context.RollbackTransaction();
-                context.Dispose();
-                context = null;
+                registryContext.RollbackTransaction();
+                registryContext.Dispose();
+                registryContext = null;
             }
 
             Server.ClearError();

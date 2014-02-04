@@ -15,5 +15,7 @@ namespace Jhu.Graywulf.Security
         public const string ProtocolNameOAuth = "OAuth";
         public const string ProtocolNameOAuth2 = "OAuth2";
         public const string ProtocolNameKeystone = "Keystone";
+
+        public const string UserRole = "User";
     }
 }

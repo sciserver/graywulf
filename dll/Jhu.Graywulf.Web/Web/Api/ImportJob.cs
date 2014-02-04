@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Web.Api
 {
-    class ImportJob
+    public class ImportJob : Job
     {
     }
 }

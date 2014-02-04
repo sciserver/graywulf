@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.Security
             return (AuthenticatorFactory)Activator.CreateInstance(type, true);
         }
 
-        public InteractiveAuthenticatorBase[] CreateInteractiveAuthenticators()
+        public IInteractiveAuthenticator[] CreateInteractiveAuthenticators()
         {
             return new[] 
             {
@@ -56,7 +56,8 @@ namespace Jhu.Graywulf.Security
             };
         }
 
-        public InteractiveAuthenticatorBase CreateInteractiveAuthenticator(string protocol, string authority)
+        // TODO: delete this and add logic to somewhere else
+        public IInteractiveAuthenticator CreateInteractiveAuthenticator(string protocol, string authority)
         {
             var q = from a in CreateInteractiveAuthenticators()
                     where
@@ -67,9 +68,12 @@ namespace Jhu.Graywulf.Security
             return q.FirstOrDefault();
         }
 
-        public RequestAuthenticatorBase[] CreateRequestAuthenticators()
+        public IRequestAuthenticator[] CreateRequestAuthenticators()
         {
-            return new RequestAuthenticatorBase[0];
+            return new IRequestAuthenticator[]
+            {
+                new FormsTicketAuthenticator()
+            };
         }
 
     }

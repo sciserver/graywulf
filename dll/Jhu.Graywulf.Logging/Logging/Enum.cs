@@ -17,6 +17,7 @@ namespace Jhu.Graywulf.Logging
         UserCode = 32,
         WebUI = 64,
         WebAdmin = 128,
+        WebService = 256,
         All = 0xFFFFFFFF,
     }
 

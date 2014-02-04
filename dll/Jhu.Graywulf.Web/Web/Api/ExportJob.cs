@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.ServiceModel;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Format;
@@ -11,30 +13,35 @@ using Jhu.Graywulf.SqlParser;
 
 namespace Jhu.Graywulf.Web.Api
 {
+    [DataContract]
     public class ExportJob : Job
     {
         private string[] tables;
         private string format;
         private Uri uri;
 
+        [DataMember]
         public override JobType Type
         {
             get { return JobType.Export; }
             set {  }
         }
 
+        [DataMember]
         public string[] Tables
         {
             get { return tables; }
             set { tables = value; }
         }
 
+        [DataMember]
         public string Format
         {
             get { return format; }
             set { format = value; }
         }
 
+        [DataMember]
         public Uri Uri
         {
             get { return uri; }

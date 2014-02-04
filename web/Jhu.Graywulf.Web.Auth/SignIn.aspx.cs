@@ -57,7 +57,7 @@ namespace Jhu.Graywulf.Web.Auth
             Response.Redirect(Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl));
         }
 
-        void AuthenticatorButton_Click(object sender, ImageClickEventArgs e)
+        void AuthenticatorButton_Click(object sender, EventArgs e)
         {
             var key = ((ImageButton)sender).CommandArgument;
             var a = CreateAuthenticator(key);
@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Web.Auth
             a.RedirectToLoginPage();
         }
 
-        private InteractiveAuthenticatorBase CreateAuthenticator(string key)
+        private IInteractiveAuthenticator CreateAuthenticator(string key)
         {
             var af = new AuthenticatorFactory();
             var parts = key.Split('|');
@@ -108,21 +108,24 @@ namespace Jhu.Graywulf.Web.Auth
             var af = new AuthenticatorFactory();
             var aus = af.CreateInteractiveAuthenticators();
 
+            Authenticators.Controls.Add(new LiteralControl("<ul>"));
             for (int i = 0; i < aus.Length; i++)
             {
-
-                var b = new ImageButton()
+                var b = new LinkButton()
                 {
                     CausesValidation = false,
-                    AlternateText = aus[i].DisplayName,
+                    //AlternateText = aus[i].DisplayName,
                     ToolTip = String.Format("Log on using {0}.", aus[i].DisplayName),
                     CommandArgument = String.Format("{0}|{1}", aus[i].Protocol, aus[i].AuthorityUri)
                 };
 
-                b.Click += new ImageClickEventHandler(AuthenticatorButton_Click);
+                b.Click += new EventHandler(AuthenticatorButton_Click);
 
+                Authenticators.Controls.Add(new LiteralControl("<li>"));
                 Authenticators.Controls.Add(b);
+                Authenticators.Controls.Add(new LiteralControl("</li>"));
             }
+            Authenticators.Controls.Add(new LiteralControl("</ul>"));
 
             // Focus on the 'sign in' button
             Ok.Focus();
@@ -194,6 +197,7 @@ namespace Jhu.Graywulf.Web.Auth
             }
             else
             {
+                
                 FormsAuthentication.RedirectFromLoginPage(user.GetFullyQualifiedName(), Remember.Checked);
             }
         }
