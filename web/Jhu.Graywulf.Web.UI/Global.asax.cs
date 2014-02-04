@@ -31,7 +31,12 @@ namespace Jhu.Graywulf.Web.UI
             }
 
             // Add service routes here
-            RouteTable.Routes.Add(new ServiceRoute("Api/Jobs/", new WebServiceHostFactory(), typeof(Api.JobService)));
+            // TODO: move these from here into a service factory,
+            // so applications can get their own services registered,
+            // for example SkyQuery:Tap
+            RouteTable.Routes.Add(new ServiceRoute("Api/Jobs/", new WebServiceHostFactory(), typeof(Jhu.Graywulf.Web.Api.JobsService)));
+            RouteTable.Routes.Add(new ServiceRoute("Api/Tables/", new WebServiceHostFactory(), typeof(Jhu.Graywulf.Web.Api.TablesService)));
+            RouteTable.Routes.Add(new ServiceRoute("Api/Schema/", new WebServiceHostFactory(), typeof(Jhu.Graywulf.Web.Api.SchemaService)));
         }
 
 

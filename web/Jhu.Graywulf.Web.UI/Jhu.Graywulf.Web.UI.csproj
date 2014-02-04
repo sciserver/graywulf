@@ -57,6 +57,13 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Api\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
     <Compile Include="App_Masters\Basic.master.cs">
       <DependentUpon>Basic.master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -276,6 +283,7 @@
     <Compile Include="Util\QueryEditorUtil.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Api\Default.aspx" />
     <Content Include="App_Themes\Basic\Css\codemirror.css" />
     <Content Include="App_Themes\Basic\Css\docs.css" />
     <Content Include="App_Themes\Basic\Css\fonts.css" />

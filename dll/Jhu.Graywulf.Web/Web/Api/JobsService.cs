@@ -14,7 +14,7 @@ using Jhu.Graywulf.Jobs.Query;
 namespace Jhu.Graywulf.Web.Api
 {
     [ServiceContract]
-    public interface IJobService
+    public interface IJobsService
     {
         [OperationContract]
         [WebGet(UriTemplate = "hello")]
@@ -73,14 +73,13 @@ namespace Jhu.Graywulf.Web.Api
 
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
-    //[PrincipalPermission(SecurityAction.Demand, Authenticated=true)]
+    [PrincipalPermission(SecurityAction.Demand, Authenticated=true)]
     [RestServiceBehavior]
-    public class JobService : ServiceBase, IJobService
+    public class JobsService : ServiceBase, IJobsService
     {
         public string Hello()
         {
             return string.Format("Hello {0}", System.Threading.Thread.CurrentPrincipal.Identity.Name);
-
         }
 
         public string Error()
