@@ -27,7 +27,10 @@ namespace Jhu.Graywulf.Web.Security
         /// </remarks>
         public void Init(HttpApplication context)
         {
-            base.Init();
+            // Create authenticators
+            // TODO: add factory type name here
+            var af = AuthenticatorFactory.Create(null);
+            CreateRequestAuthenticators(af.CreateRestRequestAuthenticators());
 
             // Wire up request events
             // --- Call all authenticators in this one

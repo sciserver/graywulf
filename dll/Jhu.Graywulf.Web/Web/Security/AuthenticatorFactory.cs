@@ -68,7 +68,12 @@ namespace Jhu.Graywulf.Web.Security
             return q.FirstOrDefault();
         }
 
-        public IRequestAuthenticator[] CreateRequestAuthenticators()
+        public IRequestAuthenticator[] CreateWebRequestAuthenticators()
+        {
+            return new IRequestAuthenticator[0];
+        }
+
+        public IRequestAuthenticator[] CreateRestRequestAuthenticators()
         {
             return new IRequestAuthenticator[]
             {

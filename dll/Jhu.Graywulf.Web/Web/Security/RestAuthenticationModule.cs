@@ -14,13 +14,23 @@ namespace Jhu.Graywulf.Web.Security
     {
         public RestAuthenticationModule()
         {
-            base.Init();
+            Init();
+        }
+
+        private void Init()
+        {
+            // Create authenticators
+            // TODO: add factory type name here
+            var af = AuthenticatorFactory.Create(null);
+            CreateRequestAuthenticators(af.CreateRestRequestAuthenticators());
         }
 
         public object AfterReceiveRequest(ref Message request, System.ServiceModel.IClientChannel channel, System.ServiceModel.InstanceContext instanceContext)
         {
             CallRequestAuthenticators(HttpContext.Current);
             DispatchIdentityType(HttpContext.Current);
+
+            System.Threading.Thread.CurrentPrincipal = HttpContext.Current.User;
 
             return null;
         }

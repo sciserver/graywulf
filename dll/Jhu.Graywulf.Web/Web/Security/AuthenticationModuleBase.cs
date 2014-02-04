@@ -14,12 +14,9 @@ namespace Jhu.Graywulf.Web.Security
     {
         private IRequestAuthenticator[] requestAuthenticators;
 
-        public void Init()
+        protected void CreateRequestAuthenticators(IRequestAuthenticator[] authenticators)
         {
-            // Create authenticators
-            // TODO: add factory type name here
-            var af = AuthenticatorFactory.Create(null);
-            this.requestAuthenticators = af.CreateRequestAuthenticators();
+            requestAuthenticators = authenticators;
         }
 
         protected void CallRequestAuthenticators(HttpContext context)

@@ -40,12 +40,16 @@ namespace Jhu.Graywulf.Web.Api
         {
             // (3.)
 
+            var rob = new RestOperationBehavior();
+            var reh = new RestErrorHandler();
+            var ram = new Security.RestAuthenticationModule();
+
             // Automatically add custom operation behavior to all operations
             foreach (var ep in serviceDescription.Endpoints)
             {
                 foreach (var op in ep.Contract.Operations)
                 {
-                    op.Behaviors.Add(new RestOperationBehavior());
+                    op.Behaviors.Add(rob);
                 }
             }
 
@@ -63,15 +67,15 @@ namespace Jhu.Graywulf.Web.Api
                 }
 
                 // Add new custom error handler
-                cd.ErrorHandlers.Add(new RestErrorHandler());
+                cd.ErrorHandlers.Add(reh);
 
 
                 foreach (EndpointDispatcher ep in cd.Endpoints)
                 {
-                    ep.DispatchRuntime.MessageInspectors.Add(new Security.RestAuthenticationModule());
+                    ep.DispatchRuntime.MessageInspectors.Add(ram);
                     foreach (DispatchOperation op in ep.DispatchRuntime.Operations)
                     {
-                        op.ParameterInspectors.Add(new Security.RestAuthenticationModule());
+                        op.ParameterInspectors.Add(ram);
                     }
                 }
             }
