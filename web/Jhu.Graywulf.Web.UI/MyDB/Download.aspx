@@ -24,7 +24,7 @@
     <div class="TabFrame dock-fill">
         <asp:ObjectDataSource runat="server" ID="jobDataSource" EnableViewState="true" EnablePaging="true"
             OnObjectCreating="jobDataSource_ObjectCreating" SelectCountMethod="CountJobs"
-            SelectMethod="SelectJobs" TypeName="Jhu.Graywulf.Web.UI.Api.JobFactory" StartRowIndexParameterName="from"
+            SelectMethod="SelectJobs" TypeName="Jhu.Graywulf.Web.Api.JobFactory" StartRowIndexParameterName="from"
             MaximumRowsParameterName="max" EnableCaching="false" />
         <jgwc:MultiSelectGridView runat="server" ID="JobList" DataSourceID="jobDataSource"
             AllowPaging="true" AutoGenerateColumns="false" SelectionMode="Multiple" DataKeyNames="Guid">
@@ -39,7 +39,7 @@
                     ItemStyle-HorizontalAlign="Center" />
                 <asp:TemplateField HeaderText="Status" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
                     <ItemTemplate>
-                        <jgwuc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.UI.Api.JobStatus)Eval("Status") %>' />
+                        <jgwuc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.Api.JobStatus)Eval("Status") %>' />
                     </ItemTemplate>
                 </asp:TemplateField>
                 <jgwc:BoundField DataField="Comments" HeaderText="Comments" ItemStyle-CssClass="GridViewSpan"

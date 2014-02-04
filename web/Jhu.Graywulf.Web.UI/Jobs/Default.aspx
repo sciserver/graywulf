@@ -7,7 +7,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="middle" runat="Server">
     <asp:ObjectDataSource runat="server" ID="JobDataSource" EnableViewState="true" EnablePaging="true"
         OnObjectCreating="JobDataSource_ObjectCreating" SelectCountMethod="CountJobs"
-        SelectMethod="SelectJobs" TypeName="Jhu.Graywulf.Web.UI.Api.JobFactory" StartRowIndexParameterName="from"
+        SelectMethod="SelectJobs" TypeName="Jhu.Graywulf.Web.Api.JobFactory" StartRowIndexParameterName="from"
         MaximumRowsParameterName="max" EnableCaching="false" />
     <asp:UpdatePanel runat="server" class="dock-fill dock-container">
         <ContentTemplate>
@@ -42,7 +42,7 @@
                                     ItemStyle-HorizontalAlign="Center" />
                                 <asp:TemplateField HeaderText="Status" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
                                     <ItemTemplate>
-                                        <jgwuc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.UI.Api.JobStatus)Eval("Status") %>' />
+                                        <jgwuc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.Api.JobStatus)Eval("Status") %>' />
                                     </ItemTemplate>
                                 </asp:TemplateField>
                                 <jgwc:BoundField DataField="Comments" HeaderText="Comments" ItemStyle-CssClass="GridViewSpan"
@@ -64,7 +64,7 @@
                                     ItemStyle-HorizontalAlign="Center" />
                                 <asp:TemplateField HeaderText="Status" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
                                     <ItemTemplate>
-                                        <jgwuc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.UI.Api.JobStatus)Eval("Status") %>' />
+                                        <jgwuc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.Api.JobStatus)Eval("Status") %>' />
                                     </ItemTemplate>
                                 </asp:TemplateField>
                                 <jgwc:BoundField DataField="Comments" HeaderText="Comments" ItemStyle-CssClass="GridViewSpan"
@@ -78,7 +78,6 @@
                             <Columns>
                                 <jgwc:SelectionField ItemStyle-Width="24px" />
                                 <jgwc:BoundField DataField="Name" HeaderText="Job ID" ItemStyle-Width="150px" />
-                                <jgwc:BoundField DataField="TableList" HeaderText="Output tables" ItemStyle-Width="120px" />
                                 <jgwc:BoundDateTimeField DataField="DateCreated" HeaderText="Submitted" ItemStyle-Width="140px"
                                     ItemStyle-HorizontalAlign="Center" />
                                 <jgwc:BoundDateTimeField DataField="DateStarted" HeaderText="Started" ItemStyle-Width="140px"
@@ -87,7 +86,7 @@
                                     ItemStyle-HorizontalAlign="Center" />
                                 <asp:TemplateField HeaderText="Status" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
                                     <ItemTemplate>
-                                        <jgwuc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.UI.Api.JobStatus)Eval("Status") %>' />
+                                        <jgwuc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.Api.JobStatus)Eval("Status") %>' />
                                     </ItemTemplate>
                                 </asp:TemplateField>
                                 <jgwc:BoundField DataField="Comments" HeaderText="Comments" ItemStyle-CssClass="GridViewSpan"
