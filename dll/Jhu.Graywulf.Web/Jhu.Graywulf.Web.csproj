@@ -84,13 +84,15 @@
     <Compile Include="Web\Api\ImportJob.cs" />
     <Compile Include="Web\Api\Job.cs" />
     <Compile Include="Web\Api\JobFactory.cs" />
-    <Compile Include="Web\Api\JobService.cs" />
+    <Compile Include="Web\Api\JobsService.cs" />
     <Compile Include="Web\Api\QueryJob.cs" />
     <Compile Include="Web\Api\RestErrorHandler.cs" />
     <Compile Include="Web\Api\RestOperationBehavior.cs" />
     <Compile Include="Web\Api\RestOperationInvoker.cs" />
     <Compile Include="Web\Api\RestServiceBehavior.cs" />
+    <Compile Include="Web\Api\SchemaService.cs" />
     <Compile Include="Web\Api\ServiceBase.cs" />
+    <Compile Include="Web\Api\TablesService.cs" />
     <Compile Include="Web\ApplicationBase.cs" />
     <Compile Include="Web\Captcha.aspx.cs">
       <DependentUpon>Captcha.aspx</DependentUpon>

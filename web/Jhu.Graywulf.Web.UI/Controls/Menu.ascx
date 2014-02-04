@@ -6,6 +6,7 @@
     <jgwc:ToolbarButton ID="Query" runat="server" Text="query" SkinID="Menu" />
     <jgwc:ToolbarButton ID="Jobs" runat="server" Text="jobs" SkinID="Menu" />
     <jgwc:ToolbarButton ID="MyDB" runat="server" Text="my db" SkinID="Menu" />
+    <jgwc:ToolbarButton ID="Api" runat="server" Text="api" SkinID="Menu" />
     <jgwc:ToolbarButton ID="Docs" runat="server" Text="docs" SkinID="Menu" />
     <jgwc:ToolbarSpan runat="server" SkinID="Menu" />
 </jgwc:Toolbar>

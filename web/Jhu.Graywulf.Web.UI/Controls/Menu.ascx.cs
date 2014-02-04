@@ -11,6 +11,7 @@ namespace Jhu.Graywulf.Web.UI.Controls
             Query.NavigateUrl = Jhu.Graywulf.Web.UI.Query.Default.GetUrl();
             Jobs.NavigateUrl = Jhu.Graywulf.Web.UI.Jobs.Default.GetUrl();
             MyDB.NavigateUrl = Jhu.Graywulf.Web.UI.MyDB.Default.GetUrl();
+            Api.NavigateUrl = Jhu.Graywulf.Web.UI.Api.Default.GetUrl();
             Docs.NavigateUrl = Jhu.Graywulf.Web.UI.Docs.Default.GetUrl();
         }
     }
