@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Web.Auth
 
         void AuthenticatorButton_Click(object sender, EventArgs e)
         {
-            var key = ((ImageButton)sender).CommandArgument;
+            var key = ((IButtonControl)sender).CommandArgument;
             var a = CreateAuthenticator(key);
 
             Session[Constants.SessionAuthenticator] = key;
@@ -114,7 +114,7 @@ namespace Jhu.Graywulf.Web.Auth
                 var b = new LinkButton()
                 {
                     CausesValidation = false,
-                    //AlternateText = aus[i].DisplayName,
+                    Text = aus[i].DisplayName,
                     ToolTip = String.Format("Log on using {0}.", aus[i].DisplayName),
                     CommandArgument = String.Format("{0}|{1}", aus[i].Protocol, aus[i].AuthorityUri)
                 };
