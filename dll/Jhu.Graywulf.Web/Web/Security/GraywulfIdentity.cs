@@ -6,7 +6,7 @@ using System.Security.Principal;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Security
+namespace Jhu.Graywulf.Web.Security
 {
     /// <summary>
     /// Implements an identity for Graywulf authentication schemes.

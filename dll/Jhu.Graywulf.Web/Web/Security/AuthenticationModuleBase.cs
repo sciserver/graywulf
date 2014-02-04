@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
-namespace Jhu.Graywulf.Security
+namespace Jhu.Graywulf.Web.Security
 {
     /// <summary>
     /// Implement functions to authenticate web requests using a set

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Security;
-using Jhu.Graywulf.Security;
+using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Web.Api;

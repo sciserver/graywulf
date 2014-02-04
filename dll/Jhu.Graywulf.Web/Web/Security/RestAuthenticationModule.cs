@@ -8,7 +8,7 @@ using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Channels;
 using System.Web;
 
-namespace Jhu.Graywulf.Security
+namespace Jhu.Graywulf.Web.Security
 {
     class RestAuthenticationModule : Security.AuthenticationModuleBase, IDispatchMessageInspector, IParameterInspector
     {

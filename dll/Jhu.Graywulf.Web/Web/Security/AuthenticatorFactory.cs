@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jhu.Graywulf.Security
+namespace Jhu.Graywulf.Web.Security
 {
     /// <summary>
     /// Implements functionality to manage authenticator and

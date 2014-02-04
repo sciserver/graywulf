@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Jhu.Graywulf.Security;
+using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.UI.Jobs

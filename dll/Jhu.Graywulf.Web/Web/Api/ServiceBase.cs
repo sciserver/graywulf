@@ -7,7 +7,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
-using Jhu.Graywulf.Security;
+using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Api

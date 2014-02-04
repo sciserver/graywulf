@@ -6,7 +6,7 @@ using DotNetOpenAuth.OpenId.RelyingParty;
 using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Security
+namespace Jhu.Graywulf.Web.Security
 {
     /// <summary>
     /// Implements OpenID authentication.
@@ -185,7 +185,7 @@ namespace Jhu.Graywulf.Security
 
             if (fetch.Attributes.Contains(WellKnownAttributes.Contact.Email))
             {
-                identity.User.Name = Util.EmailFormatter.ToUsername(fetch.Attributes[WellKnownAttributes.Contact.Email].Values[0]);
+                identity.User.Name = Jhu.Graywulf.Util.EmailFormatter.ToUsername(fetch.Attributes[WellKnownAttributes.Contact.Email].Values[0]);
             }
 
             identity.User.Title = fetch.Attributes.Contains(WellKnownAttributes.Name.Prefix) ? fetch.Attributes[WellKnownAttributes.Name.Prefix].Values[0] : "";

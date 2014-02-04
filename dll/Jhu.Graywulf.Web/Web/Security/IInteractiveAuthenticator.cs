@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Security
+namespace Jhu.Graywulf.Web.Security
 {
     /// <summary>
     /// When implemented in derived classes, perfoms authentication

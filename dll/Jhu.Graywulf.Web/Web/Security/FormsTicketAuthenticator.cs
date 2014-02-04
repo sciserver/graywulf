@@ -5,7 +5,7 @@ using System.Text;
 using System.Web;
 using System.Web.Security;
 
-namespace Jhu.Graywulf.Security
+namespace Jhu.Graywulf.Web.Security
 {
     /// <summary>
     /// Authenticates request based on a FormsAuthenticationTicket

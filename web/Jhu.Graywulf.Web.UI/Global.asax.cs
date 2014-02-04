@@ -7,7 +7,7 @@ using System.Web.SessionState;
 using System.Web.Routing;
 using System.ServiceModel;
 using System.ServiceModel.Activation;
-using Jhu.Graywulf.Security;
+using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Web;
 using Jhu.Graywulf.Web.Api;
 using Jhu.Graywulf.Registry;

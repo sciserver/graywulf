@@ -5,7 +5,7 @@ using System.Text;
 using System.Web;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Security
+namespace Jhu.Graywulf.Web.Security
 {
     /// <summary>
     /// Implements a generic authentication scheme for Graywulf

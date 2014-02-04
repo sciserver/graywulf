@@ -5,7 +5,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.Security;
-using Jhu.Graywulf.Security;
+using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web

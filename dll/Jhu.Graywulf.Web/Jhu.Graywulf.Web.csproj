@@ -79,16 +79,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Security\AuthenticationModuleBase.cs" />
-    <Compile Include="Security\AuthenticatorFactory.cs" />
-    <Compile Include="Security\Constants.cs" />
-    <Compile Include="Security\FormsTicketAuthenticator.cs" />
-    <Compile Include="Security\IInteractiveAuthenticator.cs" />
-    <Compile Include="Security\IRequestAuthenticator.cs" />
-    <Compile Include="Security\GraywulfIdentity.cs" />
-    <Compile Include="Security\GraywulfPrincipal.cs" />
-    <Compile Include="Security\OpenIDAuthenticator.cs" />
-    <Compile Include="Security\WebAuthenticationModule.cs" />
     <Compile Include="Web\Api\Enum.cs" />
     <Compile Include="Web\Api\ExportJob.cs" />
     <Compile Include="Web\Api\ImportJob.cs" />
@@ -96,7 +86,6 @@
     <Compile Include="Web\Api\JobFactory.cs" />
     <Compile Include="Web\Api\JobService.cs" />
     <Compile Include="Web\Api\QueryJob.cs" />
-    <Compile Include="Security\RestAuthenticationModule.cs" />
     <Compile Include="Web\Api\RestErrorHandler.cs" />
     <Compile Include="Web\Api\RestOperationBehavior.cs" />
     <Compile Include="Web\Api\RestOperationInvoker.cs" />
@@ -177,6 +166,17 @@
     <Compile Include="Web\Controls\ToolbarElement.cs" />
     <Compile Include="Web\Controls\ToolbarButton.cs" />
     <Compile Include="Web\Controls\ToolbarSpan.cs" />
+    <Compile Include="Web\Security\AuthenticationModuleBase.cs" />
+    <Compile Include="Web\Security\AuthenticatorFactory.cs" />
+    <Compile Include="Web\Security\Constants.cs" />
+    <Compile Include="Web\Security\FormsTicketAuthenticator.cs" />
+    <Compile Include="Web\Security\GraywulfIdentity.cs" />
+    <Compile Include="Web\Security\GraywulfPrincipal.cs" />
+    <Compile Include="Web\Security\IInteractiveAuthenticator.cs" />
+    <Compile Include="Web\Security\IRequestAuthenticator.cs" />
+    <Compile Include="Web\Security\OpenIDAuthenticator.cs" />
+    <Compile Include="Web\Security\RestAuthenticationModule.cs" />
+    <Compile Include="Web\Security\WebAuthenticationModule.cs" />
     <Compile Include="Web\UserControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
