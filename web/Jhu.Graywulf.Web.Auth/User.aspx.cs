@@ -91,7 +91,7 @@ namespace Jhu.Graywulf.Web.Auth
             else if (TemporaryPrincipal != null)
             {
                 // Create a user object based on the temporary user generated
-                // based on the OpenID etc. used at sing in.
+                // based on the OpenID etc. used at sign in.
                 var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
                 user = new Registry.User(identity.User);
                 user.ParentReference.Value = RegistryContext.Domain;

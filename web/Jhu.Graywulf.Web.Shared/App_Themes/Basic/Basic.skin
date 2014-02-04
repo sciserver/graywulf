@@ -46,5 +46,6 @@
 <jgwc:Form runat="server" SkinID="ActivateSuccess" ImageUrl="Icons/activatesuccess.png" />
 <jgwc:Form runat="server" SkinID="RequestReset" ImageUrl="Icons/resetpassword.png" />
 <jgwc:Form runat="server" SkinID="ChangePassword" ImageUrl="Icons/resetpassword.png" />
+<jgwc:Form runat="server" SkinID="Api" ImageUrl="Icons/api.png" />
 
 <%-- Column width --%>

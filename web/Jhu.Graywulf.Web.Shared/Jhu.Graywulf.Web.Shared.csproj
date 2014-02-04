@@ -62,6 +62,9 @@
     <Content Include="App_Themes\Basic\Css\syntaxhighlighter.css" />
     <Content Include="App_Themes\Basic\Css\tabs.css" />
     <Content Include="App_Themes\Basic\Css\toolbar.css" />
+    <Content Include="App_Themes\Basic\Icons\activatesuccess.png" />
+    <Content Include="App_Themes\Basic\Icons\activateuser.png" />
+    <Content Include="App_Themes\Basic\Icons\api.png" />
     <Content Include="App_Themes\Basic\Icons\canceljob.png" />
     <Content Include="App_Themes\Basic\Icons\droptable.png" />
     <Content Include="App_Themes\Basic\Icons\email.png" />
@@ -72,7 +75,11 @@
     <Content Include="App_Themes\Basic\Icons\job.png" />
     <Content Include="App_Themes\Basic\Icons\mydb.png" />
     <Content Include="App_Themes\Basic\Icons\renametable.png" />
+    <Content Include="App_Themes\Basic\Icons\resetpassword.png" />
     <Content Include="App_Themes\Basic\Icons\schemabrowser.png" />
+    <Content Include="App_Themes\Basic\Icons\signin.png" />
+    <Content Include="App_Themes\Basic\Icons\signout.png" />
+    <Content Include="App_Themes\Basic\Icons\user.png" />
     <Content Include="App_Themes\Basic\Icons\userstatus.png" />
     <Content Include="App_Themes\Basic\Icons\welcome.png" />
     <Content Include="Templates\ActivationEmail.xml" />
@@ -94,7 +101,6 @@
   <ItemGroup>
     <Content Include="App_Themes\Basic\Basic.skin" />
     <Content Include="App_Masters\Basic.master" />
-    <None Include="App_Themes\Basic\Icons\Thumbs.db" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
