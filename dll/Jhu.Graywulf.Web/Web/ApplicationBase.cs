@@ -59,24 +59,9 @@ namespace Jhu.Graywulf.Web
             get { return ((GraywulfIdentity)User.Identity).User; }
         }
 
-        /// <summary>
-        /// Initializes the application events.
-        /// </summary>
-        public override void Init()
-        {
-            base.Init();
-
-            this.PostAcquireRequestState += new EventHandler(ApplicationBase_PostAcquireRequestState);
-        }
-
         protected virtual void Application_Start(object sender, EventArgs e)
         {
             HostingEnvironment.RegisterVirtualPathProvider(new EmbeddedVirtualPathProvider());
-        }
-
-        void ApplicationBase_PostAcquireRequestState(object sender, EventArgs e)
-        {
-            IdentifyUser();
         }
 
         protected virtual void Session_Start(object sender, EventArgs e)
@@ -106,65 +91,14 @@ namespace Jhu.Graywulf.Web
         #region User managemenet functions
 
         /// <summary>
-        /// Checks if the authenticated user appears for the first time,
-        /// and if so, raises an event. Also checks if the user signed out.
-        /// </summary>
-        private void IdentifyUser()
-        {
-            var session = HttpContext.Current.Session;
-
-            if (session != null)
-            {
-                // Get the saved principal from the session
-                var sessionPrincipal = (GraywulfPrincipal)session[Constants.SessionPrincipal];
-
-                // If the current request is authenticated by Graywulf, and this is the
-                // first time we see the user, we need to load details from the registry
-                if (Request.IsAuthenticated && User is GraywulfPrincipal)
-                {
-                    if (sessionPrincipal != null)
-                    {
-                        // Make sure that the known user is the same as the one
-                        // just being authenticated
-                        if (!sessionPrincipal.Identity.CompareByIdentifier((GraywulfIdentity)User.Identity))
-                        {
-                            // This is someone we haven't seen
-                            OnUserSignedOut();
-                            session.Abandon();
-                            sessionPrincipal = null;
-                        }
-                    }
-
-                    if (sessionPrincipal == null)
-                    {
-                        // A new user has just arrived.
-                        using (Registry.Context context = CreateRegistryContext())
-                        {
-                            ((GraywulfIdentity)User.Identity).LoadUser(context.Domain);
-                        }
-
-                        session[Constants.SessionPrincipal] = User;
-                        OnUserSignedIn((GraywulfIdentity)User.Identity);
-                    }
-                }
-                else if (!Request.IsAuthenticated && sessionPrincipal != null)
-                {
-                    // A user left
-                    OnUserSignedOut();
-                    session.Abandon();
-                }
-            }
-        }
-
-        /// <summary>
         /// Called when a user signs in
         /// </summary>
-        protected abstract void OnUserSignedIn(GraywulfIdentity identity);
+        internal protected abstract void OnUserSignedIn(GraywulfIdentity identity);
 
         /// <summary>
         /// Called when a user sings out
         /// </summary>
-        protected abstract void OnUserSignedOut();
+        internal protected abstract void OnUserSignedOut();
 
         #endregion
     }

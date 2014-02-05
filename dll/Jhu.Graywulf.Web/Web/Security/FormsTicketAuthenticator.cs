@@ -8,10 +8,11 @@ using System.Web.Security;
 namespace Jhu.Graywulf.Web.Security
 {
     /// <summary>
-    /// Authenticates request based on a FormsAuthenticationTicket
+    /// Authenticates requests based on a FormsAuthenticationTicket
     /// </summary>
     /// <remarks>
-    /// This is used by WCF services
+    /// This is used by WCF services to accept and process the same
+    /// tickets that FormsAuthentication uses.
     /// </remarks>
     public class FormsTicketAuthenticator : IRequestAuthenticator
     {
@@ -56,20 +57,65 @@ namespace Jhu.Graywulf.Web.Security
 
         public GraywulfPrincipal Authenticate()
         {
-            var cookie = HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
+            GraywulfPrincipal user = null;
 
+            var cookie = HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
             if (cookie != null)
             {
-                var ticket = FormsAuthentication.Decrypt(cookie.Value);
+                var tOld = FormsAuthentication.Decrypt(cookie.Value);
 
-                // TODO: validate ticket here
+                if ((tOld != null) && !tOld.Expired)
+                {
+                    var ticket = tOld;
+                    if (FormsAuthentication.SlidingExpiration)
+                    {
+                        ticket = FormsAuthentication.RenewTicketIfOld(tOld);
+                    }
 
-                return GraywulfPrincipal.Create(ticket);
+                    user = GraywulfPrincipal.Create(ticket);
+
+                    if (!ticket.CookiePath.Equals("/"))
+                    {
+                        cookie = HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
+                        if (cookie != null)
+                        {
+                            cookie.Path = ticket.CookiePath;
+                        }
+                    }
+
+                    if (ticket != tOld)
+                    {
+                        string cookieValue = FormsAuthentication.Encrypt(ticket);
+
+                        if (cookie != null)
+                        {
+                            cookie = HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
+                        }
+                        if (cookie == null)
+                        {
+                            cookie = new HttpCookie(FormsAuthentication.FormsCookieName, cookieValue)
+                            {
+                                Path = ticket.CookiePath
+                            };
+                        }
+                        if (ticket.IsPersistent)
+                        {
+                            cookie.Expires = ticket.Expiration;
+                        }
+                        cookie.Value = cookieValue;
+                        cookie.Secure = FormsAuthentication.RequireSSL;
+                        cookie.HttpOnly = true;
+                        if (FormsAuthentication.CookieDomain != null)
+                        {
+                            cookie.Domain = FormsAuthentication.CookieDomain;
+                        }
+                        HttpContext.Current.Response.Cookies.Remove(cookie.Name);
+                        HttpContext.Current.Response.Cookies.Add(cookie);
+                    }
+                }
             }
-            else
-            {
-                return null;
-            }
+
+            return user;
         }
     }
 }

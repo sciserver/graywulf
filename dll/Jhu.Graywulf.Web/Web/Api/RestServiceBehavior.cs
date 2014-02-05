@@ -45,7 +45,9 @@ namespace Jhu.Graywulf.Web.Api
 
             var rob = new RestOperationBehavior();
             var reh = new RestErrorHandler();
+
             var ram = new Security.RestAuthenticationModule();
+            ram.Init();
 
             // Automatically add custom operation behavior to all operations
             foreach (var ep in serviceDescription.Endpoints)
@@ -73,6 +75,10 @@ namespace Jhu.Graywulf.Web.Api
                 cd.ErrorHandlers.Add(reh);
 
 
+                // We use an endpoint behavior to authenticate REST requests.
+                // Normaly an authentication manager would be used but this
+                // approach is more similar to web page authentication and
+                // almost the same code can be reused.
                 foreach (EndpointDispatcher ep in cd.Endpoints)
                 {
                     ep.DispatchRuntime.MessageInspectors.Add(ram);

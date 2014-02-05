@@ -37,6 +37,7 @@ namespace Jhu.Graywulf.Web.Security
 
         public IInteractiveAuthenticator[] CreateInteractiveAuthenticators()
         {
+            // TODO: remove hardcoding and move these into settings
             return new[] 
             {
                 new OpenIDAuthenticator()
