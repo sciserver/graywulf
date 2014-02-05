@@ -30,7 +30,7 @@
     </div>
     <div class="TabFrame dock-fill dock-scroll">
         <jgwc:MultiSelectGridView runat="server" ID="TableList" AllowPaging="true" PageSize="25" AutoGenerateColumns="false"
-            SelectionMode="Multiple" DataKeyNames="UniqueKey">
+            SelectionMode="Multiple" DataKeyNames="UniqueKey" OnPageIndexChanging="TableList_PageIndexChanging">
             <Columns>
                 <jgwc:SelectionField ItemStyle-Width="24px" />
                 <asp:TemplateField HeaderText="Name" ItemStyle-Width="300px" ItemStyle-HorizontalAlign="Left">

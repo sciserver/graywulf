@@ -33,6 +33,12 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             args.IsValid = TableList.SelectedDataKeys.Count == 1;
         }
 
+        protected void TableList_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            TableList.PageIndex = e.NewPageIndex;
+            TableList.DataBind();
+        }
+
         protected void Button_Command(object sender, CommandEventArgs e)
         {
             if (IsValid)
