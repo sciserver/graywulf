@@ -11,6 +11,7 @@ namespace Jhu.Graywulf.Web.Security
     /// <summary>
     /// Implements an identity for Graywulf authentication schemes.
     /// </summary>
+    [Serializable]
     public class GraywulfIdentity : IIdentity
     {
         private string protocol;
