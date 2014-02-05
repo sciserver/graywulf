@@ -114,12 +114,16 @@ namespace Jhu.Graywulf.Web.Security
                             httpContext.Session.Abandon();
                             sessionPrincipal = null;
                         }
+                        else
+                        {
+                            HttpContext.Current.User = sessionPrincipal;
+                        }
                     }
 
                     if (sessionPrincipal == null)
                     {
                         // A new user has just arrived, load info from the registry
-                        using (Registry.Context registryContext = httpApplication.CreateRegistryContext())
+                        using (var registryContext = httpApplication.CreateRegistryContext())
                         {
                             ((GraywulfIdentity)httpContext.User.Identity).LoadUser(registryContext.Domain);
                         }
