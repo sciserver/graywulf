@@ -1,6 +1,6 @@
 ﻿Type.registerNamespace("Graywulf");
 
-Graywulf.CodeMirror = function (element, indentUnit, lineNumbers, matchBrackets, mode, theme) {
+Graywulf.CodeMirror = function (element, indentUnit, lineNumbers, matchBrackets, mode, theme, width, height) {
     Graywulf.CodeMirror.initializeBase(this, [element]);
 
     this._codeMirror = null;
@@ -10,6 +10,8 @@ Graywulf.CodeMirror = function (element, indentUnit, lineNumbers, matchBrackets,
     this._matchBrackets = matchBrackets;
     this._mode = mode;
     this._theme = theme;
+    this._width = width;
+    this._height = height;
 }
 
 Graywulf.CodeMirror.prototype = {
@@ -33,6 +35,14 @@ Graywulf.CodeMirror.prototype = {
                 }));
 
         this.loadSelection();
+
+        var cm = this._codeMirror;
+        cm.setSize(this._width, this._height);
+
+        Sys.Application.add_load(function () {
+            cm.refresh();
+        });
+
     },
 
     dispose: function () {
@@ -109,6 +119,22 @@ Graywulf.CodeMirror.prototype = {
 
     set_Theme: function (value) {
         this._theme = value;
+    },
+
+    get_Width: function () {
+        return this._width;
+    },
+
+    set_Width: function (value) {
+        this._width = value;
+    },
+
+    get_Height: function () {
+        return this._height;
+    },
+
+    set_Height: function (value) {
+        this._height = value;
     },
 
     onBeforeSubmit: function () {

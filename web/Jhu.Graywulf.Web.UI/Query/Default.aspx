@@ -55,8 +55,8 @@
                     </tr>
                 </table>
             </div>
-            <div class="dock-fill" style="border: 1px solid #000000" id="EditorDiv">
-                <jgwc:CodeMirror runat="server" ID="Query" Mode="text/x-sql" Theme="default" />
+            <div class="dock-fill dock-container" style="border: 1px solid #000000" id="EditorDiv">
+                <jgwc:CodeMirror runat="server" ID="Query" Mode="text/x-sql" Theme="default" CssClass="dock-fill" Width="100%" Height="100%" />
             </div>
         </ContentTemplate>
     </asp:UpdatePanel>

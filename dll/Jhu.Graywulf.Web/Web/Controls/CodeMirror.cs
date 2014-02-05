@@ -99,8 +99,6 @@ namespace Jhu.Graywulf.Web.Controls
 
         protected override void OnInit(EventArgs e)
         {
-
-
             base.OnInit(e);
         }
 
@@ -156,6 +154,8 @@ $find('{0}${1}').onBeforeSubmit.call($find('{0}${1}'));
             descriptor.AddProperty("MatchBrackets", this.MatchBrackets);
             descriptor.AddProperty("Mode", this.Mode);
             descriptor.AddProperty("Theme", this.Theme);
+            descriptor.AddProperty("Width", this.Width.ToString());
+            descriptor.AddProperty("Height", this.Height.ToString());
 
             yield return descriptor;
         }
