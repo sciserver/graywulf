@@ -14,6 +14,8 @@ namespace Jhu.Graywulf.Web.UI
     {
         protected void Page_Load()
         {
+            Checks.Routines.Add(new IdentityCheck());
+
             Checks.Routines.Add(new DatabaseCheck(Jhu.Graywulf.Registry.AppSettings.ConnectionString));
             Checks.Routines.Add(new DatabaseCheck(Jhu.Graywulf.Logging.AppSettings.ConnectionString));
 

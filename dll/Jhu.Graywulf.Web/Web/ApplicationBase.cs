@@ -131,17 +131,21 @@ namespace Jhu.Graywulf.Web
                             // This is someone we haven't seen
                             OnUserSignedOut();
                             session.Abandon();
+                            sessionPrincipal = null;
                         }
                     }
 
-                    // A new user has just arrived.
-                    using (Registry.Context context = CreateRegistryContext())
+                    if (sessionPrincipal == null)
                     {
-                        ((GraywulfIdentity)User.Identity).LoadUser(context.Domain);
-                    }
+                        // A new user has just arrived.
+                        using (Registry.Context context = CreateRegistryContext())
+                        {
+                            ((GraywulfIdentity)User.Identity).LoadUser(context.Domain);
+                        }
 
-                    session[Constants.SessionPrincipal] = User;
-                    OnUserSignedIn((GraywulfIdentity)User.Identity);
+                        session[Constants.SessionPrincipal] = User;
+                        OnUserSignedIn((GraywulfIdentity)User.Identity);
+                    }
                 }
                 else if (!Request.IsAuthenticated && sessionPrincipal != null)
                 {

@@ -43,6 +43,8 @@ namespace Jhu.Graywulf.Web.Check
 
             page.Response.Output.WriteLine("<pre>");
 
+            page.Response.Output.WriteLine("Web server version is IIS{0}", Util.IIS.MajorVersion);
+
             page.Response.Output.WriteLine("Executing {0} tests under the account {1}\\{2} on {3}",
                 routines.Count,
                 Environment.UserDomainName,

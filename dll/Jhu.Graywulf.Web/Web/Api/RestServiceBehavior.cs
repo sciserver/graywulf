@@ -27,6 +27,9 @@ namespace Jhu.Graywulf.Web.Api
             // turn on help
             foreach (var ep in endpoints)
             {
+                var whbind = (WebHttpBinding)ep.Binding;
+                whbind.Security.Transport.ClientCredentialType = HttpClientCredentialType.None;
+
                 var whb = ep.Behaviors.Find<WebHttpBehavior>();
 
                 if (whb != null)

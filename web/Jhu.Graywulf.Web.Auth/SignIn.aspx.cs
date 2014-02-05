@@ -197,7 +197,6 @@ namespace Jhu.Graywulf.Web.Auth
             }
             else
             {
-                
                 FormsAuthentication.RedirectFromLoginPage(user.GetFullyQualifiedName(), Remember.Checked);
             }
         }

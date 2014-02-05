@@ -107,6 +107,7 @@
     <Compile Include="Web\Check\EmailCheck.cs" />
     <Compile Include="Web\Check\EntityCheck.cs" />
     <Compile Include="Web\Check\AssemblyCheck.cs" />
+    <Compile Include="Web\Check\IdentityCheck.cs" />
     <Compile Include="Web\Check\UrlCheck.cs" />
     <Compile Include="Web\Constants.cs" />
     <Compile Include="Web\Controls\BoundField.cs" />
@@ -187,6 +188,7 @@
     <Compile Include="Web\Util\DocumentationFormatter.cs" />
     <Compile Include="Web\Util\EmailTemplateUtility.cs" />
     <Compile Include="Web\Util\EmailSender.cs" />
+    <Compile Include="Web\Util\IIS.cs" />
     <Compile Include="Web\Util\JQuery.cs" />
     <Compile Include="Web\Util\UrlFormatter.cs" />
   </ItemGroup>

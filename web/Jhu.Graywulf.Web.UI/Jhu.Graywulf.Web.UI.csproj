@@ -741,9 +741,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Api\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Scripts\CodeMirror\mode\livescript\livescript.ls" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Scripts\CodeMirror\keymap\lib\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <ProjectExtensions>
