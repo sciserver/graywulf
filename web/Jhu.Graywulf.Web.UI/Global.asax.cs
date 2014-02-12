@@ -53,6 +53,7 @@ namespace Jhu.Graywulf.Web.UI
 
                 if (mydb == null)
                 {
+                    identity.User.Context = context;
                     var udii = new UserDatabaseInstanceInstaller(identity.User);
                     var udi = udii.GenerateUserDatabaseInstance(context.Federation.MyDBDatabaseVersion);
 
