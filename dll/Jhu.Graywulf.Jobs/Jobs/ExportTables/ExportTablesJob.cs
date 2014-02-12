@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                     {
                         var gwds = (GraywulfDataset)parameters.Sources[i].Dataset;
                         gwds.Context = context;
-                        gwds.DatabaseInstance.Value.GetConnectionString();
+                        gwds.DatabaseInstanceReference.Value.GetConnectionString();
                     }
                 }
             }

@@ -607,7 +607,7 @@ ORDER BY Number";
 
         private void ResolveParentReference(Entity entity)
         {
-            entity.ParentReference.ResolveNameReference();
+            entity.ParentReference.LoadEntity();
         }
 
         /// <summary>
@@ -622,7 +622,7 @@ ORDER BY Number";
             {
                 if (!r.IsEmpty)
                 {
-                    r.ResolveNameReference();
+                    r.LoadEntity();
                 }
             }
 

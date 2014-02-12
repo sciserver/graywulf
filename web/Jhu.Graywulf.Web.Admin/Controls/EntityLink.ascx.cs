@@ -14,12 +14,12 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Admin.Controls
 {
-    public partial class EntityLink : UserControlBase
+    public partial class EntityLink : UserControlBase, IContextObject
     {
-        private EntityProperty<Entity> entityReference;
+        private EntityReference<Entity> entityReference;
         private string expression;
 
-        public EntityProperty<Entity> EntityReference
+        public EntityReference<Entity> EntityReference
         {
             get { return entityReference; }
         }
@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
 
         private void InitializeMembers()
         {
-            this.entityReference = new EntityProperty<Entity>();
+            this.entityReference = new EntityReference<Entity>(this);
             this.expression = null;
         }
 
@@ -45,7 +45,6 @@ namespace Jhu.Graywulf.Web.Admin.Controls
         {
             if (!entityReference.IsEmpty)
             {
-                entityReference.Context = RegistryContext;
                 Entity entity = entityReference.Value;
 
                 Image.ImageUrl = String.Format("~/Icons/Small/{0}.gif", entity.EntityType);

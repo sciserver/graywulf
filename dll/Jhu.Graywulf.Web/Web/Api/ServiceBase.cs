@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Web.Api
                 if (HttpContext.Current.User.Identity is GraywulfIdentity)
                 {
                     var identity = (GraywulfIdentity)HttpContext.User.Identity;
-                    identity.UserProperty.Context = RegistryContext;
+                    identity.User.Context = RegistryContext;
                     return identity.User;
                 }
                 else

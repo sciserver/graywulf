@@ -94,10 +94,10 @@ namespace Jhu.Graywulf.Jobs.Query
             query.QueryTimeout = settings.QueryTimeout;
 
             // Add MyDB as custom source
-            var mydbds = new GraywulfDataset();
+            var mydbds = new GraywulfDataset(Context);
             mydbds.Name = settings.DefaultDatasetName;
             mydbds.DefaultSchemaName = settings.DefaultSchemaName;
-            mydbds.DatabaseInstance.Value = federation.MyDBDatabaseVersion.GetUserDatabaseInstance(user);
+            mydbds.DatabaseInstanceReference.Value = federation.MyDBDatabaseVersion.GetUserDatabaseInstance(user);
             mydbds.CacheSchemaConnectionString();
             mydbds.IsMutable = true;
             query.CustomDatasets.Add(mydbds);
@@ -114,17 +114,17 @@ namespace Jhu.Graywulf.Jobs.Query
                 TableInitializationOptions.Drop | TableInitializationOptions.Create);
 
             // Set up temporary database
-            var tempds = new GraywulfDataset();
+            var tempds = new GraywulfDataset(Context);
             tempds.Name = Registry.Constants.TempDbName;
             tempds.IsOnLinkedServer = false;
-            tempds.DatabaseVersion.Value = federation.TempDatabaseVersion;
+            tempds.DatabaseVersionReference.Value = federation.TempDatabaseVersion;
             query.TemporaryDataset = tempds;
 
             // Set up code database
-            var codeds = new GraywulfDataset();
+            var codeds = new GraywulfDataset(Context);
             codeds.Name = Registry.Constants.CodeDbName;
             codeds.IsOnLinkedServer = false;
-            codeds.DatabaseVersion.Value = federation.CodeDatabaseVersion;
+            codeds.DatabaseVersionReference.Value = federation.CodeDatabaseVersion;
             query.CodeDataset = codeds;
         }
 

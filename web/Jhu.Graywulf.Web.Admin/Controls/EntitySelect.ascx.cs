@@ -10,16 +10,16 @@ namespace Jhu.Graywulf.Web.Admin.Controls
 {
     public partial class EntitySelect : System.Web.UI.UserControl
     {
-        private EntityProperty<Entity> parentEntityProperty;
-        private EntityProperty<Entity> selectedEntityProperty;
+        private EntityReference<Entity> parentEntityReference;
+        private EntityReference<Entity> selectedEntityReference;
         private EntityType[] childEntityTypes;
 
         public Entity ParentEntity
         {
-            get { return parentEntityProperty.Value; }
+            get { return parentEntityReference.Value; }
             set
             {
-                parentEntityProperty.Value = value;
+                parentEntityReference.Value = value;
                 RefreshForm();
             }
         }
@@ -40,19 +40,19 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             {
                 if (!String.IsNullOrWhiteSpace(entityList.SelectedValue))
                 {
-                    selectedEntityProperty.Guid = Guid.Parse(entityList.SelectedValue);
+                    selectedEntityReference.Guid = Guid.Parse(entityList.SelectedValue);
                 }
                 else
                 {
-                    selectedEntityProperty.Value = null;
+                    selectedEntityReference.Value = null;
                 }
 
-                return selectedEntityProperty.Value;
+                return selectedEntityReference.Value;
             }
             set
             {
-                selectedEntityProperty.Value = value;
-                entityList.SelectedValue = selectedEntityProperty.Guid.ToString();
+                selectedEntityReference.Value = value;
+                entityList.SelectedValue = selectedEntityReference.Guid.ToString();
             }
         }
 
@@ -69,8 +69,8 @@ namespace Jhu.Graywulf.Web.Admin.Controls
         {
             base.OnInit(e);
 
-            this.parentEntityProperty = new EntityProperty<Entity>(((PageBase)Page).RegistryContext);
-            this.selectedEntityProperty = new EntityProperty<Entity>(((PageBase)Page).RegistryContext);
+            this.parentEntityReference = new EntityReference<Entity>(((PageBase)Page).RegistryContext);
+            this.selectedEntityReference = new EntityReference<Entity>(((PageBase)Page).RegistryContext);
             this.childEntityTypes = null;
         }
 
@@ -79,7 +79,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             entityList.Items.Clear();
             entityList.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
 
-            if (!parentEntityProperty.IsEmpty && childEntityTypes != null)
+            if (!parentEntityReference.IsEmpty && childEntityTypes != null)
             {
                 RefreshListRecursively(ParentEntity, ParentEntity.Name, 0);
             }

@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 namespace Jhu.Graywulf.Web
 {
-    public abstract class UserControlBase : UserControl
+    public abstract class UserControlBase : UserControl, Registry.IContextObject
     {
         public string ReturnUrl
         {
@@ -19,6 +19,10 @@ namespace Jhu.Graywulf.Web
             get { return ((PageBase)Page).RegistryContext; }
         }
 
-        
+        Registry.Context Registry.IContextObject.Context
+        {
+            get { return ((PageBase)Page).RegistryContext; }
+            set { throw new InvalidOperationException(); }
+        }
     }
 }

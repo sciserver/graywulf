@@ -29,11 +29,8 @@ namespace Jhu.Graywulf.Registry
 
         bool IsEmpty { get; }
 
-        /// <summary>
-        /// Resolves the entity by its fully qualified name and loads it from the database.
-        /// </summary>
-        void ResolveNameReference();
-
         IEntityReference Clone();
+
+        void LoadEntity();
     }
 }

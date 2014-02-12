@@ -111,9 +111,9 @@ namespace Jhu.Graywulf.Registry
                 UserName = userName,
             };
 
-            context.ClusterProperty.Name = clusterName;
-            context.DomainProperty.Name = domainName;
-            context.FederationProperty.Name = federationName;
+            context.ClusterReference.Name = clusterName;
+            context.DomainReference.Name = domainName;
+            context.FederationReference.Name = federationName;
 
             return context;
         }

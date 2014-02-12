@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Web.Security
                 IsAuthenticated = true,
             };
 
-            identity.UserProperty.Name = formsIdentity.Name;
+            identity.UserReference.Name = formsIdentity.Name;
             return new GraywulfPrincipal(identity);
         }
 
@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Web.Security
                 IsAuthenticated = true,
             };
 
-            identity.UserProperty.Name = ticket.Name;
+            identity.UserReference.Name = ticket.Name;
             return new GraywulfPrincipal(identity);
         }
 

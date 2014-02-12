@@ -12,49 +12,45 @@ namespace Jhu.Graywulf.Schema
 {
     [Serializable]
     [DataContract(Namespace = "")]
-    public class GraywulfDataset : Schema.SqlServer.SqlServerDataset, ICloneable
+    public class GraywulfDataset : Schema.SqlServer.SqlServerDataset, IContextObject, ICloneable
     {
         [NonSerialized]
         private Context context;
 
         [NonSerialized]
-        private EntityProperty<DatabaseDefinition> databaseDefinition;
+        private EntityReference<DatabaseDefinition> databaseDefinitionReference;
 
         [NonSerialized]
-        private EntityProperty<DatabaseVersion> databaseVersion;
+        private EntityReference<DatabaseVersion> databaseVersionReference;
 
         [NonSerialized]
-        private EntityProperty<DatabaseInstance> databaseInstance;
+        private EntityReference<DatabaseInstance> databaseInstanceReference;
 
         public Context Context
         {
             get { return context; }
-            set
-            {
-                context = value;
-                UpdateContext();
-            }
+            set { context = value; }
         }
 
         [DataMember]
-        public EntityProperty<DatabaseDefinition> DatabaseDefinition
+        public EntityReference<DatabaseDefinition> DatabaseDefinitionReference
         {
-            get { return databaseDefinition; }
-            set { databaseDefinition = value; }
+            get { return databaseDefinitionReference; }
+            set { databaseDefinitionReference = value; }
         }
 
         [DataMember]
-        public EntityProperty<DatabaseVersion> DatabaseVersion
+        public EntityReference<DatabaseVersion> DatabaseVersionReference
         {
-            get { return databaseVersion; }
-            set { databaseVersion = value; }
+            get { return databaseVersionReference; }
+            set { databaseVersionReference = value; }
         }
 
         [DataMember]
-        public EntityProperty<DatabaseInstance> DatabaseInstance
+        public EntityReference<DatabaseInstance> DatabaseInstanceReference
         {
-            get { return databaseInstance; }
-            set { databaseInstance = value; }
+            get { return databaseInstanceReference; }
+            set { databaseInstanceReference = value; }
         }
 
         [IgnoreDataMember]
@@ -78,19 +74,23 @@ namespace Jhu.Graywulf.Schema
         [IgnoreDataMember]
         public bool IsSpecificInstanceRequired
         {
-            get { return !databaseInstance.IsEmpty; }
+            get { return !databaseInstanceReference.IsEmpty; }
         }
 
-        public GraywulfDataset()
+        public GraywulfDataset(Context context)
             : base()
         {
             InitializeMembers(new StreamingContext());
+
+            this.context = context;
         }
 
-        public GraywulfDataset(DatasetBase old)
+        public GraywulfDataset(Context context, DatasetBase old)
             : base(old)
         {
             InitializeMembers(new StreamingContext());
+
+            this.context = context;
         }
 
         public GraywulfDataset(GraywulfDataset old)
@@ -104,40 +104,41 @@ namespace Jhu.Graywulf.Schema
         {
             this.context = null;
 
-            this.databaseDefinition = new EntityProperty<DatabaseDefinition>();
-            this.databaseVersion = new EntityProperty<DatabaseVersion>();
-            this.databaseInstance = new EntityProperty<DatabaseInstance>();
+            this.databaseDefinitionReference = new EntityReference<DatabaseDefinition>(this);
+            this.databaseVersionReference = new EntityReference<DatabaseVersion>(this);
+            this.databaseInstanceReference = new EntityReference<DatabaseInstance>(this);
+        }
+
+        [OnDeserialized]
+        private void UpdateMembers(StreamingContext context)
+        {
+            this.databaseDefinitionReference.ReferencingObject = this;
+            this.databaseVersionReference.ReferencingObject = this;
+            this.databaseInstanceReference.ReferencingObject = this;
         }
 
         private void CopyMembers(GraywulfDataset old)
         {
             this.context = old.context;
 
-            this.databaseDefinition = new EntityProperty<DatabaseDefinition>(old.databaseDefinition);
-            this.databaseVersion = new EntityProperty<DatabaseVersion>(old.databaseVersion);
-            this.databaseInstance = new EntityProperty<DatabaseInstance>(old.databaseInstance);
-        }
-
-        private void UpdateContext()
-        {
-            this.databaseDefinition.Context = context;
-            this.databaseVersion.Context = context;
-            this.databaseInstance.Context = context;
+            this.databaseDefinitionReference = new EntityReference<DatabaseDefinition>(this, old.databaseDefinitionReference);
+            this.databaseVersionReference = new EntityReference<DatabaseVersion>(this, old.databaseVersionReference);
+            this.databaseInstanceReference = new EntityReference<DatabaseInstance>(this, old.databaseInstanceReference);
         }
 
         public void CacheSchemaConnectionString()
         {
-            if (!databaseInstance.IsEmpty)
+            if (!databaseInstanceReference.IsEmpty)
             {
-                base.ConnectionString = databaseInstance.Value.GetConnectionString().ConnectionString;
+                base.ConnectionString = databaseInstanceReference.Value.GetConnectionString().ConnectionString;
             }
-            else if (!databaseVersion.IsEmpty)
+            else if (!databaseVersionReference.IsEmpty)
             {
-                base.ConnectionString = databaseVersion.Value.DatabaseDefinition.GetConnectionString().ConnectionString;
+                base.ConnectionString = databaseVersionReference.Value.DatabaseDefinition.GetConnectionString().ConnectionString;
             }
             else
             {
-                base.ConnectionString = databaseDefinition.Value.GetConnectionString().ConnectionString;
+                base.ConnectionString = databaseDefinitionReference.Value.GetConnectionString().ConnectionString;
             }
         }
     }

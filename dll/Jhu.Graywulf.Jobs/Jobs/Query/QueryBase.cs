@@ -210,7 +210,6 @@ namespace Jhu.Graywulf.Jobs.Query
             if (context != null)
             {
                 this.Context = context;
-                UpdateContext();
             }
 
             base.InitializeQueryObject(context, scheduler, forceReinitialize);
@@ -244,7 +243,7 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 var gds = (GraywulfDataset)ds;
                 var dd = new DatabaseDefinition(context);
-                dd.Guid = gds.DatabaseDefinition.Guid;
+                dd.Guid = gds.DatabaseDefinitionReference.Guid;
                 dd.Load();
 
                 // Get a server from the scheduler
@@ -330,12 +329,12 @@ namespace Jhu.Graywulf.Jobs.Query
                         // Datasets that are mirrored and can be on any server
                         var reqds = (from ds in dss.Values
                                      where !ds.IsSpecificInstanceRequired
-                                     select ds.DatabaseDefinition.Guid).ToArray();
+                                     select ds.DatabaseDefinitionReference.Guid).ToArray();
 
                         // Datasets that are only available at a specific server instance
                         var spds = (from ds in dss.Values
-                                    where ds.IsSpecificInstanceRequired && !ds.DatabaseInstance.IsEmpty
-                                    select ds.DatabaseInstance.Guid).ToArray();
+                                    where ds.IsSpecificInstanceRequired && !ds.DatabaseInstanceReference.IsEmpty
+                                    select ds.DatabaseInstanceReference.Guid).ToArray();
 
 
                         var si = new ServerInstance(context);

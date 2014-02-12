@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.Jobs.Query
                             // Assign new server instance
                             var si = new ServerInstance(context);
                             si.Guid = scheduler.GetNextServerInstance(
-                                dss.Values.Where(x => !x.IsSpecificInstanceRequired).Select(x => x.DatabaseDefinition.Guid).ToArray(),
+                                dss.Values.Where(x => !x.IsSpecificInstanceRequired).Select(x => x.DatabaseDefinitionReference.Guid).ToArray(),
                                 queryPartition.Query.SourceDatabaseVersionName,
                                 null);
                             si.Load();

@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Jobs.Query
     /// </remarks>
     [Serializable]
     [DataContract(Namespace = "")]
-    public abstract class QueryObject : ICancelableTask, ICloneable
+    public abstract class QueryObject : IContextObject, ICancelableTask, ICloneable
     {
         #region Member variables
 
@@ -79,23 +79,23 @@ namespace Jhu.Graywulf.Jobs.Query
         /// table names appear.
         /// </summary>
         private SqlServerDataset defaultDataset;
-        
+
         /// <summary>
         /// Dataset to store temporary tables during query execution.
         /// </summary>
         private SqlServerDataset temporaryDataset;
-        
+
         /// <summary>
         /// Dataset to be used to find functions by default.
         /// </summary>
         private SqlServerDataset codeDataset;
-        
+
         /// <summary>
         /// A list of custom datasets, i.e. those that are not
         /// configured centrally, for example MyDB
         /// </summary>
         private List<DatasetBase> customDatasets;
-      
+
         /// <summary>
         /// Query execution mode, either single server or Graywulf cluster
         /// </summary>
@@ -142,23 +142,23 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <summary>
         /// Holds a reference to the federation registry object.
         /// </summary>
-        private EntityProperty<Federation> federationReference;
+        private EntityReference<Federation> federationReference;
 
         /// <summary>
         /// Holds a reference to the code database registry object.
         /// </summary>
-        private EntityProperty<DatabaseInstance> codeDatabaseInstanceReference;
+        private EntityReference<DatabaseInstance> codeDatabaseInstanceReference;
 
         /// <summary>
         /// Holds a reference to temporary database registry object.
         /// </summary>
-        private EntityProperty<DatabaseInstance> temporaryDatabaseInstanceReference;
+        private EntityReference<DatabaseInstance> temporaryDatabaseInstanceReference;
 
         /// <summary>
         /// Hold a reference to the server instance that was assigned
         /// by the scheduler to a given partition of the query.
         /// </summary>
-        private EntityProperty<ServerInstance> assignedServerInstanceReference;
+        private EntityReference<ServerInstance> assignedServerInstanceReference;
 
         #endregion
         #region Properties
@@ -182,11 +182,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public Context Context
         {
             get { return context; }
-            set
-            {
-                context = value;
-                UpdateContext();
-            }
+            set { context = value; }
         }
 
         /// <summary>
@@ -221,7 +217,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Gets or sets the Federation.
         /// </summary>
         [DataMember]
-        public EntityProperty<Federation> FederationReference
+        public EntityReference<Federation> FederationReference
         {
             get { return federationReference; }
             set { federationReference = value; }
@@ -319,7 +315,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Gets or sets the reference to the assigned server instance registry object.
         /// </summary>
         [IgnoreDataMember]
-        public EntityProperty<ServerInstance> AssignedServerInstanceReference
+        public EntityReference<ServerInstance> AssignedServerInstanceReference
         {
             get { return assignedServerInstanceReference; }
             set { assignedServerInstanceReference = value; }
@@ -349,7 +345,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Gets a reference to the temporary database instance registry object.
         /// </summary>
         [IgnoreDataMember]
-        protected EntityProperty<DatabaseInstance> TemporaryDatabaseInstanceReference
+        protected EntityReference<DatabaseInstance> TemporaryDatabaseInstanceReference
         {
             get { return temporaryDatabaseInstanceReference; }
         }
@@ -376,7 +372,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Gets a reference to the code database instance registry object.
         /// </summary>
         [IgnoreDataMember]
-        protected EntityProperty<DatabaseInstance> CodeDatabaseInstanceReference
+        protected EntityReference<DatabaseInstance> CodeDatabaseInstanceReference
         {
             get { return codeDatabaseInstanceReference; }
         }
@@ -412,7 +408,7 @@ namespace Jhu.Graywulf.Jobs.Query
             this.queryFactoryTypeName = null;
             this.queryFactory = new Lazy<QueryFactory>(() => (QueryFactory)Activator.CreateInstance(Type.GetType(queryFactoryTypeName)), false);
 
-            this.federationReference = new EntityProperty<Federation>();
+            this.federationReference = new EntityReference<Federation>(this);
 
             this.queryString = null;
 
@@ -426,16 +422,25 @@ namespace Jhu.Graywulf.Jobs.Query
             this.isCanceled = false;
             this.cancelableTasks = new Dictionary<string, ICancelableTask>();
 
-            this.assignedServerInstanceReference = new EntityProperty<ServerInstance>();
+            this.assignedServerInstanceReference = new EntityReference<ServerInstance>(this);
             this.selectStatement = null;
             this.isInterpretFinished = false;
 
-            this.temporaryDatabaseInstanceReference = new EntityProperty<DatabaseInstance>();
+            this.temporaryDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this);
 
             this.temporaryTables = new ConcurrentDictionary<string, Table>(SchemaManager.Comparer);
             this.temporaryViews = new ConcurrentDictionary<string, View>(SchemaManager.Comparer);
 
-            this.codeDatabaseInstanceReference = new EntityProperty<DatabaseInstance>();
+            this.codeDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this);
+        }
+
+        [OnDeserialized]
+        private void UpdateMembers(StreamingContext context)
+        {
+            this.federationReference.ReferencingObject = this;
+            this.assignedServerInstanceReference.ReferencingObject = this;
+            this.temporaryDatabaseInstanceReference.ReferencingObject = this;
+            this.codeDatabaseInstanceReference.ReferencingObject = this;
         }
 
         private void CopyMembers(QueryObject old)
@@ -448,7 +453,7 @@ namespace Jhu.Graywulf.Jobs.Query
             this.queryFactoryTypeName = old.queryFactoryTypeName;
             this.queryFactory = new Lazy<QueryFactory>(() => (QueryFactory)Activator.CreateInstance(Type.GetType(queryFactoryTypeName)), false);
 
-            this.federationReference = new EntityProperty<Registry.Federation>(old.federationReference);
+            this.federationReference = new EntityReference<Registry.Federation>(this, old.federationReference);
 
             this.queryString = old.queryString;
 
@@ -462,16 +467,16 @@ namespace Jhu.Graywulf.Jobs.Query
             this.isCanceled = false;
             this.cancelableTasks = new Dictionary<string, ICancelableTask>();
 
-            this.assignedServerInstanceReference = new EntityProperty<ServerInstance>(old.assignedServerInstanceReference);
+            this.assignedServerInstanceReference = new EntityReference<ServerInstance>(this, old.assignedServerInstanceReference);
             this.selectStatement = null;
             this.isInterpretFinished = false;
 
-            this.temporaryDatabaseInstanceReference = new EntityProperty<DatabaseInstance>(old.temporaryDatabaseInstanceReference);
+            this.temporaryDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this, old.temporaryDatabaseInstanceReference);
 
             this.temporaryTables = new ConcurrentDictionary<string, Table>(old.temporaryTables, SchemaManager.Comparer);
             this.temporaryViews = new ConcurrentDictionary<string, View>(old.temporaryViews, SchemaManager.Comparer);
 
-            this.codeDatabaseInstanceReference = new EntityProperty<DatabaseInstance>(old.codeDatabaseInstanceReference);
+            this.codeDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this, old.codeDatabaseInstanceReference);
         }
 
         #endregion
@@ -494,29 +499,6 @@ namespace Jhu.Graywulf.Jobs.Query
                     return Jhu.Graywulf.Registry.ContextManager.Instance.CreateContext(activity, activityContext, connectionMode, transactionMode);
                 default:
                     throw new NotImplementedException();
-            }
-        }
-
-        /// <summary>
-        /// Updates the registry context of registry entity references.
-        /// </summary>
-        protected virtual void UpdateContext()
-        {
-            federationReference.Context = context;
-
-            if (assignedServerInstanceReference != null)
-            {
-                assignedServerInstanceReference.Context = context;
-            }
-
-            if (temporaryDatabaseInstanceReference != null)
-            {
-                temporaryDatabaseInstanceReference.Context = Context;
-            }
-
-            if (codeDatabaseInstanceReference != null)
-            {
-                codeDatabaseInstanceReference.Context = Context;
             }
         }
 
@@ -732,7 +714,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             nr.DefaultTableDatasetName = defaultDataset.Name;
             nr.DefaultFunctionDatasetName = codeDataset.Name;
-            
+
             return nr;
         }
 
@@ -798,13 +780,13 @@ namespace Jhu.Graywulf.Jobs.Query
                     DatabaseInstance di;
                     if (gwds.IsSpecificInstanceRequired)
                     {
-                        di = gwds.DatabaseInstance.Value;
+                        di = gwds.DatabaseInstanceReference.Value;
                     }
                     else
                     {
                         // Find appropriate database instance
                         di = new DatabaseInstance(Context);
-                        di.Guid = scheduler.GetDatabaseInstances(serverInstance, gwds.DatabaseDefinition.Guid, databaseVersion)[0];
+                        di.Guid = scheduler.GetDatabaseInstances(serverInstance, gwds.DatabaseDefinitionReference.Guid, databaseVersion)[0];
                         di.Load();
                     }
 
@@ -949,7 +931,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         #endregion
         #region Generic SQL functions with cancel support
-        
+
         /// <summary>
         /// Executes a long SQL command in cancelable mode.
         /// </summary>

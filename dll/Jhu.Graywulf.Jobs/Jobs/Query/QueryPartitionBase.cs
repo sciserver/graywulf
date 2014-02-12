@@ -126,12 +126,12 @@ namespace Jhu.Graywulf.Jobs.Query
 
         #endregion
 
-        protected void LoadSystemDatabaseInstance(EntityProperty<DatabaseInstance> databaseInstance, GraywulfDataset dataset, bool forceReinitialize)
+        protected void LoadSystemDatabaseInstance(EntityReference<DatabaseInstance> databaseInstance, GraywulfDataset dataset, bool forceReinitialize)
         {
             if (!AssignedServerInstanceReference.IsEmpty && (databaseInstance.IsEmpty || forceReinitialize))
             {
                 dataset.Context = Context;
-                var dd = dataset.DatabaseVersion.Value.DatabaseDefinition;
+                var dd = dataset.DatabaseVersionReference.Value.DatabaseDefinition;
 
                 dd.LoadDatabaseInstances(false);
                 foreach (var di in dd.DatabaseInstances.Values)

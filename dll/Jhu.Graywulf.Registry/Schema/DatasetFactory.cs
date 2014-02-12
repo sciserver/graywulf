@@ -15,9 +15,9 @@ namespace Jhu.Graywulf.Schema
                 throw new SchemaException(String.Format(ExceptionMessages.AccessDeniedToDataset, dd.Name));
             }
 
-            GraywulfDataset ds = new GraywulfDataset();
+            GraywulfDataset ds = new GraywulfDataset(dd.Context);
             ds.Name = dd.Name;
-            ds.DatabaseDefinition.Value = dd;
+            ds.DatabaseDefinitionReference.Value = dd;
             ds.IsCacheable = true;
 
             ds.CacheSchemaConnectionString();

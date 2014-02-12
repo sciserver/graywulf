@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Registry\AppSettings.cs" />
+    <Compile Include="Registry\IContextObject.cs" />
     <Compile Include="Registry\JobDefinitionParameter.cs" />
     <Compile Include="Registry\JobInstanceParameter.cs" />
     <Compile Include="Registry\UserGroupMembership.cs" />
@@ -123,9 +124,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Registry\EntityNotFoundException.cs" />
-    <Compile Include="Registry\EntityProperty.cs" />
     <Compile Include="Registry\EntityReference.cs" />
-    <Compile Include="Registry\EntityReferenceBase.cs" />
     <Compile Include="Registry\Enum.cs" />
     <Compile Include="Registry\ExceptionMessages.Designer.cs">
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
@@ -159,7 +158,6 @@
     <Compile Include="Registry\MachineRole.cs" />
     <Compile Include="Registry\MachineRole.io.cs" />
     <Compile Include="Registry\Parameter.cs" />
-    <Compile Include="Registry\ParentEntityReference.cs" />
     <Compile Include="Registry\Partition.cs" />
     <Compile Include="Registry\Partition.io.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

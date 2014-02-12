@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
 
             if (Request.IsAuthenticated)
             {
-                var clusterGuid = ((PageBase)Page).RegistryContext.ClusterProperty.Guid;
+                var clusterGuid = ((PageBase)Page).RegistryContext.ClusterReference.Guid;
 
                 Cluster.NavigateUrl = Jhu.Graywulf.Web.Admin.Cluster.ClusterDetails.GetUrl(clusterGuid);
                 Domain.NavigateUrl = Jhu.Graywulf.Web.Admin.Domain.ClusterDetails.GetUrl(clusterGuid);

@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Web.Security
         private string authorityUri;
         private string identifier;
         private bool isAuthenticated;
-        private EntityProperty<User> userProperty;
+        private EntityReference<User> userReference;
 
         /// <summary>
         /// Gets the name of the authentication type
@@ -85,9 +85,9 @@ namespace Jhu.Graywulf.Web.Security
         /// Gets or sets an object holding a reference to
         /// the registry user object.
         /// </summary>
-        public EntityProperty<User> UserProperty
+        public EntityReference<User> UserReference
         {
-            get { return userProperty; }
+            get { return userReference; }
         }
 
         /// <summary>
@@ -97,13 +97,13 @@ namespace Jhu.Graywulf.Web.Security
         {
             get
             {
-                if (userProperty.IsEmpty)
+                if (userReference.IsEmpty)
                 {
                     return null;
                 }
                 else
                 {
-                    return EntityFactory.GetName(userProperty.Name);
+                    return EntityFactory.GetName(userReference.Name);
                 }
             }
         }
@@ -113,8 +113,8 @@ namespace Jhu.Graywulf.Web.Security
         /// </summary>
         public User User
         {
-            get { return userProperty.Value; }
-            set { userProperty.Value = value; }
+            get { return userReference.Value; }
+            set { userReference.Value = value; }
         }
 
         public GraywulfIdentity()
@@ -134,7 +134,7 @@ namespace Jhu.Graywulf.Web.Security
             this.authorityName = String.Empty;
             this.authorityUri = String.Empty;
             this.identifier = String.Empty;
-            this.userProperty = new EntityProperty<User>();
+            this.userReference = new EntityReference<User>(null);
         }
 
         private void CopyMembers(GraywulfIdentity old)
@@ -143,7 +143,7 @@ namespace Jhu.Graywulf.Web.Security
             this.authorityName = old.authorityName;
             this.authorityUri = old.authorityUri;
             this.identifier = old.identifier;
-            this.userProperty = new EntityProperty<User>(old.userProperty);
+            this.userReference = new EntityReference<User>(null, old.userReference);
         }
 
         /// <summary>
@@ -178,14 +178,14 @@ namespace Jhu.Graywulf.Web.Security
                     switch (protocol)
                     {
                         case Constants.ProtocolNameForms:
-                            userProperty.Value = uf.LoadUser(identifier);
+                            userReference.Value = uf.LoadUser(identifier);
                             break;
                         case Constants.ProtocolNameWindows:
                             // TODO: implement NTLM auth
                             throw new NotImplementedException();
                         default:
                             // All other cases use lookup by protocol name
-                            userProperty.Value = uf.FindUserByIdentity(domain, protocol, authorityUri, identifier);
+                            userReference.Value = uf.FindUserByIdentity(domain, protocol, authorityUri, identifier);
                             break;
                     }
 

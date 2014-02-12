@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Registry
     /// Represents an object context that is used for managing database connection and transaction,
     /// SMTP server connection and workflow activity context.
     /// </summary>
-    public class Context : IDisposable
+    public class Context : IContextObject, IDisposable
     {
         #region Member Variables
 
@@ -46,9 +46,9 @@ namespace Jhu.Graywulf.Registry
         private CodeActivityContext activityContext;
         private int eventOrder;
 
-        private EntityProperty<Cluster> clusterProperty;
-        private EntityProperty<Domain> domainProperty;
-        private EntityProperty<Federation> federationProperty;
+        private EntityReference<Cluster> clusterReference;
+        private EntityReference<Domain> domainReference;
+        private EntityReference<Federation> federationReference;
 
         #endregion
         #region Member Access Properties
@@ -140,6 +140,12 @@ namespace Jhu.Graywulf.Registry
             set { transactionMode = value; }
         }
 
+        Context IContextObject.Context
+        {
+            get { return this; }
+            set { throw new InvalidOperationException(); }
+        }
+
         /// <summary>
         /// Gets the database connection associated with this context.
         /// </summary>
@@ -166,34 +172,34 @@ namespace Jhu.Graywulf.Registry
             internal set { this.databaseTransaction = value; }
         }
 
-        public EntityProperty<Cluster> ClusterProperty
+        public EntityReference<Cluster> ClusterReference
         {
-            get { return clusterProperty; }
+            get { return clusterReference; }
         }
 
         public Cluster Cluster
         {
-            get { return clusterProperty.Value; }
+            get { return clusterReference.Value; }
         }
 
-        public EntityProperty<Domain> DomainProperty
+        public EntityReference<Domain> DomainReference
         {
-            get { return domainProperty; }
+            get { return domainReference; }
         }
 
         public Domain Domain
         {
-            get { return domainProperty.Value; }
+            get { return domainReference.Value; }
         }
 
-        public EntityProperty<Federation> FederationProperty
+        public EntityReference<Federation> FederationReference
         {
-            get { return federationProperty; }
+            get { return federationReference; }
         }
 
         public Federation Federation
         {
-            get { return federationProperty.Value; }
+            get { return federationReference.Value; }
         }
 
         #endregion
@@ -266,9 +272,9 @@ namespace Jhu.Graywulf.Registry
             this.activity = null;
             this.eventOrder = 0;
 
-            this.clusterProperty = new EntityProperty<Cluster>(this);
-            this.domainProperty = new EntityProperty<Domain>(this);
-            this.federationProperty = new EntityProperty<Federation>(this);
+            this.clusterReference = new EntityReference<Cluster>(this);
+            this.domainReference = new EntityReference<Domain>(this);
+            this.federationReference = new EntityReference<Federation>(this);
         }
 
         #endregion

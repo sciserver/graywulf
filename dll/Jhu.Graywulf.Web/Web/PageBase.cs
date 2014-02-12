@@ -10,7 +10,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web
 {
-    public class PageBase : Page
+    public class PageBase : Page, IContextObject
     {
         private Context registryContext;
 
@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.Web
                 if (User.Identity is GraywulfIdentity)
                 {
                     var identity = (GraywulfIdentity)User.Identity;
-                    identity.UserProperty.Context = RegistryContext;
+                    identity.User.Context = RegistryContext;
                     return identity.User;
                 }
                 else
@@ -74,6 +74,12 @@ namespace Jhu.Graywulf.Web
 
                 return registryContext;
             }
+        }
+
+        Context IContextObject.Context
+        {
+            get { return registryContext; }
+            set { throw new InvalidOperationException(); }
         }
 
         #region Initializer functions
@@ -105,7 +111,7 @@ namespace Jhu.Graywulf.Web
 
         protected bool IsAuthenticatedUser(Guid userGuid)
         {
-            return userGuid != ((GraywulfIdentity)User.Identity).UserProperty.Guid;
+            return userGuid != ((GraywulfIdentity)User.Identity).UserReference.Guid;
         }
 
         protected Logging.Event LogError(Exception ex)

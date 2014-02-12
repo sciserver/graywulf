@@ -9,7 +9,7 @@ namespace Jhu.Graywulf.Registry
     /// <summary>
     /// Acts as the base class of all object requiring a context.
     /// </summary>
-    public abstract class ContextObject
+    public abstract class ContextObject : IContextObject
     {
         #region Member Variables
 

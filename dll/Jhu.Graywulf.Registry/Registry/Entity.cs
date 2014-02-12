@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Registry
         // --- Background storage for properties ---
         private Guid guid;
         private long concurrencyVersion;
-        private ParentEntityReference<Entity> parentReference;
+        private EntityReference<Entity> parentReference;
         private EntityType entityTypeInternal;
         private int number;
         private string name;
@@ -166,7 +166,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets a reference object to the parent of the entity.
         /// </summary>
         [XmlIgnore]
-        public ParentEntityReference<Entity> ParentReference
+        public EntityReference<Entity> ParentReference
         {
             get { return parentReference; }
         }
@@ -528,7 +528,7 @@ namespace Jhu.Graywulf.Registry
 
             this.guid = Guid.Empty;
             this.concurrencyVersion = 0;
-            this.parentReference = new ParentEntityReference<Entity>(this);
+            this.parentReference = new EntityReference<Entity>(this);
             this.entityTypeInternal = EntityType.Unknown;
             this.number = 0;
             this.name = string.Empty;
@@ -566,7 +566,7 @@ namespace Jhu.Graywulf.Registry
         {
             this.guid = old.guid;
             this.concurrencyVersion = old.concurrencyVersion;
-            this.parentReference = new ParentEntityReference<Entity>(old.parentReference);
+            this.parentReference = new EntityReference<Entity>(this, old.parentReference);
             this.EntityType = old.EntityType;   // always use property!
             this.number = old.number;
             this.name = old.name;

@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Web
                 if (session[Constants.SessionPrincipal] != null)
                 {
                     var sessionPrincipal = (GraywulfPrincipal)session[Constants.SessionPrincipal];
-                    var userProperty = ((GraywulfIdentity)sessionPrincipal.Identity).UserProperty;
+                    var userProperty = ((GraywulfIdentity)sessionPrincipal.Identity).UserReference;
                     
                     context.UserGuid = userProperty.Guid;
                     context.UserName = userProperty.Name;
@@ -34,17 +34,17 @@ namespace Jhu.Graywulf.Web
 
                 if (session[Constants.SessionClusterGuid] != null)
                 {
-                    context.ClusterProperty.Guid = (Guid)session[Constants.SessionClusterGuid];
+                    context.ClusterReference.Guid = (Guid)session[Constants.SessionClusterGuid];
                 }
 
                 if (session[Constants.SessionDomainGuid] != null)
                 {
-                    context.DomainProperty.Guid = (Guid)session[Constants.SessionDomainGuid];
+                    context.DomainReference.Guid = (Guid)session[Constants.SessionDomainGuid];
                 }
 
                 if (session[Constants.SessionFederationGuid] != null)
                 {
-                    context.FederationProperty.Guid = (Guid)session[Constants.SessionFederationGuid];
+                    context.FederationReference.Guid = (Guid)session[Constants.SessionFederationGuid];
                 }
             }
 
