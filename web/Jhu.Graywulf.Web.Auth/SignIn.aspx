@@ -10,14 +10,21 @@
                 </p>
             </asp:Panel>
             <asp:Panel runat="server" ID="UnknownIdentityIntroPanel">
-                <p style="color:Red">
-                    The identifier
-                    <asp:Label runat="server" ID="Identifier" /></p>
-                is not recognized.
+                <p>
+                    The
+                    <asp:Label runat="server" ID="AuthorityName"></asp:Label>
+                    <asp:Label runat="server" ID="Identifier" ForeColor="Red" />
+                    is not recognized.</p>
                 <ul>
-                    <li>Register now and associate account with the identifier.</li>
-                    <li>Sign in with an existing username and password to associate your account with the
-                        identifier.</li>
+                    <li>
+                        <asp:HyperLink runat="server" ID="RegisterLink2">register now</asp:HyperLink>
+                        and associate the identifier with the new account, or</li>
+                    <li>
+                        <asp:LinkButton runat="server" ID="CancelIdentifier" OnClick="CancelIdentifier_Click"
+                            CausesValidation="false">cancel using</asp:LinkButton>
+                        the indetifier, or</li>
+                    <li>sign in below with an existing username and password to associate the identifier
+                        with your account.</li>
                 </ul>
             </asp:Panel>
             <table class="FormTable">

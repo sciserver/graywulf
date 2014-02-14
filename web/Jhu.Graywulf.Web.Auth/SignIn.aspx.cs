@@ -24,7 +24,6 @@ namespace Jhu.Graywulf.Web.Auth
         {
             // Try all authentication methods.
             Authenticate();
-
             UpdateForm();
         }
 
@@ -57,6 +56,12 @@ namespace Jhu.Graywulf.Web.Auth
             Response.Redirect(Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl));
         }
 
+        protected void CancelIdentifier_Click(object sender, EventArgs e)
+        {
+            TemporaryPrincipal = null;
+            UpdateForm();
+        }
+
         void AuthenticatorButton_Click(object sender, EventArgs e)
         {
             var key = ((IButtonControl)sender).CommandArgument;
@@ -69,7 +74,7 @@ namespace Jhu.Graywulf.Web.Auth
 
         private IInteractiveAuthenticator CreateAuthenticator(string key)
         {
-            var af = new AuthenticatorFactory();
+            var af = AuthenticatorFactory.Create(null);
             var parts = key.Split('|');
             var a = af.CreateInteractiveAuthenticator(parts[0], parts[1]);
 
@@ -93,7 +98,14 @@ namespace Jhu.Graywulf.Web.Auth
             else
             {
                 var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
+
+                var af = AuthenticatorFactory.Create(null);
+                var auth = af.CreateInteractiveAuthenticator(identity.Protocol, identity.AuthorityUri);
+
+                AuthorityName.Text = auth.DisplayName;
                 Identifier.Text = identity.Identifier;
+                
+                RegisterLink2.NavigateUrl = Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl);
             }
 
             SignInForm.Text = String.Format("Welcome to {0}", Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle]);
@@ -105,7 +117,7 @@ namespace Jhu.Graywulf.Web.Auth
 
         private void CreateAuthenticatorButtons()
         {
-            var af = new AuthenticatorFactory();
+            var af = AuthenticatorFactory.Create(null);
             var aus = af.CreateInteractiveAuthenticators();
 
             Authenticators.Controls.Add(new LiteralControl("<ul>"));

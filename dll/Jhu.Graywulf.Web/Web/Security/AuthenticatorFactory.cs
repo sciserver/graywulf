@@ -35,6 +35,15 @@ namespace Jhu.Graywulf.Web.Security
             return (AuthenticatorFactory)Activator.CreateInstance(type, true);
         }
 
+        protected AuthenticatorFactory()
+        {
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
+        {
+        }
+
         public IInteractiveAuthenticator[] CreateInteractiveAuthenticators()
         {
             // TODO: remove hardcoding and move these into settings

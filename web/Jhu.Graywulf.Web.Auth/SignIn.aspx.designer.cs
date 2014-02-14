@@ -40,6 +40,15 @@ namespace Jhu.Graywulf.Web.Auth {
         protected global::System.Web.UI.WebControls.Panel UnknownIdentityIntroPanel;
         
         /// <summary>
+        /// AuthorityName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label AuthorityName;
+        
+        /// <summary>
         /// Identifier control.
         /// </summary>
         /// <remarks>
@@ -47,6 +56,24 @@ namespace Jhu.Graywulf.Web.Auth {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label Identifier;
+        
+        /// <summary>
+        /// RegisterLink2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink RegisterLink2;
+        
+        /// <summary>
+        /// CancelIdentifier control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton CancelIdentifier;
         
         /// <summary>
         /// UsernameLabel control.

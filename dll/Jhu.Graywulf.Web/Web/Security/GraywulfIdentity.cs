@@ -17,6 +17,7 @@ namespace Jhu.Graywulf.Web.Security
         private string protocol;
         private string authorityName;
         private string authorityUri;
+        private string authorityDisplayName;
         private string identifier;
         private bool isAuthenticated;
         private EntityReference<User> userReference;
