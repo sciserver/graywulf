@@ -7,6 +7,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
+using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Api
 {
@@ -45,9 +46,12 @@ namespace Jhu.Graywulf.Web.Api
 
             var rob = new RestOperationBehavior();
             var reh = new RestErrorHandler();
-
             var ram = new Security.RestAuthenticationModule();
-            ram.Init();
+
+            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            {
+                ram.Init(context.Domain.AuthenticatorFactory);
+            }
 
             // Automatically add custom operation behavior to all operations
             foreach (var ep in serviceDescription.Endpoints)

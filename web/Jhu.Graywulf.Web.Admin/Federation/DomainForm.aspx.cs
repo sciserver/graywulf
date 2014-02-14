@@ -25,6 +25,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
             RefreshStandardUserGroupList();
 
+            AuthenticatorFactory.Text = Item.AuthenticatorFactory;
             ShortTitle.Text = Item.ShortTitle;
             LongTitle.Text = Item.LongTitle;
             Email.Text = Item.Email;
@@ -42,6 +43,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.OnSaveForm();
 
+            Item.AuthenticatorFactory = AuthenticatorFactory.Text;
             Item.ShortTitle = ShortTitle.Text;
             Item.LongTitle = LongTitle.Text;
             Item.Email = Email.Text;
@@ -54,8 +56,9 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             if (newentity)
             {
-                var conf = new DomainInstaller(Item);
-                conf.GenerateDefaultChildren();
+                var i = new DomainInstaller(Item);
+                i.GenerateDefaultSettings();
+                i.GenerateDefaultChildren();
             }
         }
 

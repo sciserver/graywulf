@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.Web.Auth
 
         private IInteractiveAuthenticator CreateAuthenticator(string key)
         {
-            var af = AuthenticatorFactory.Create(null);
+            var af = AuthenticatorFactory.Create(RegistryContext.Domain.AuthenticatorFactory);
             var parts = key.Split('|');
             var a = af.CreateInteractiveAuthenticator(parts[0], parts[1]);
 
@@ -99,7 +99,7 @@ namespace Jhu.Graywulf.Web.Auth
             {
                 var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
 
-                var af = AuthenticatorFactory.Create(null);
+                var af = AuthenticatorFactory.Create(RegistryContext.Domain.AuthenticatorFactory);
                 var auth = af.CreateInteractiveAuthenticator(identity.Protocol, identity.AuthorityUri);
 
                 AuthorityName.Text = auth.DisplayName;
@@ -117,7 +117,7 @@ namespace Jhu.Graywulf.Web.Auth
 
         private void CreateAuthenticatorButtons()
         {
-            var af = AuthenticatorFactory.Create(null);
+            var af = AuthenticatorFactory.Create(RegistryContext.Domain.AuthenticatorFactory);
             var aus = af.CreateInteractiveAuthenticators();
 
             Authenticators.Controls.Add(new LiteralControl("<ul>"));

@@ -24,6 +24,7 @@ namespace Jhu.Graywulf.Registry
         #region Member Variables
 
         // --- Background storage for properties ---
+        private string authenticatorFactory;
         private string shortTitle;
         private string longTitle;
         private string email;
@@ -43,6 +44,13 @@ namespace Jhu.Graywulf.Registry
         public override EntityGroup EntityGroup
         {
             get { return EntityGroup.Domain; }
+        }
+
+        [DBColumn(Size = 1024)]
+        public string AuthenticatorFactory
+        {
+            get { return authenticatorFactory; }
+            set { authenticatorFactory = value; }
         }
 
         [DBColumn(Size = 50)]
@@ -191,6 +199,7 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
+            this.authenticatorFactory = String.Empty;
             this.shortTitle = String.Empty;
             this.longTitle = String.Empty;
             this.email = String.Empty;
@@ -204,6 +213,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="old">A <b>Domain</b> object to create the deep copy from.</param>
         private void CopyMembers(Domain old)
         {
+            this.authenticatorFactory = old.authenticatorFactory;
             this.shortTitle = old.shortTitle;
             this.longTitle = old.longTitle;
             this.email = old.email;

@@ -16,6 +16,11 @@ namespace Jhu.Graywulf.Install
             this.domain = domain;
         }
 
+        public void GenerateDefaultSettings()
+        {
+            domain.AuthenticatorFactory = typeof(Jhu.Graywulf.Web.Security.AuthenticatorFactory).AssemblyQualifiedName;
+        }
+
         public void GenerateDefaultChildren()
         {
             // Create standard user group

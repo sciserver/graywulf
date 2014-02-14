@@ -43,6 +43,14 @@
                 <asp:TextBox ID="Disclaimer" runat="server" />
             </td>
         </tr>
+        <tr>
+            <td class="FormLabel">
+                <asp:Label ID="AuthenticatorFactoryLabel" runat="server" Text="Authenticator Factory:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:TextBox ID="AuthenticatorFactory" runat="server" />
+            </td>
+        </tr>
         <tr runat="server" id="StandardUserGroupRow">
             <td class="FormLabel">
                 <asp:Label ID="StandardUserGroupLabel" runat="server" Text="Standard User Group:"></asp:Label>

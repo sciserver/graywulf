@@ -8,6 +8,7 @@ using System.ServiceModel.Configuration;
 using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Channels;
 using System.Web;
+using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
 {
@@ -17,6 +18,9 @@ namespace Jhu.Graywulf.Web.Security
     /// </summary>
     class RestAuthenticationModule : Security.AuthenticationModuleBase, IDispatchMessageInspector, IParameterInspector
     {
+        private string authenticatorFactory;
+
+        // TODO: use this to cache authenticated identities
         private ConcurrentDictionary<string, GraywulfPrincipal> principalCache;
         
         public RestAuthenticationModule()
@@ -29,11 +33,11 @@ namespace Jhu.Graywulf.Web.Security
             this.principalCache = new ConcurrentDictionary<string, GraywulfPrincipal>(StringComparer.InvariantCultureIgnoreCase);
         }
 
-        public void Init()
+        public void Init(string authenticatorFactory)
         {
             // Create authenticators
             // TODO: add factory type name here
-            var af = AuthenticatorFactory.Create(null);
+            var af = AuthenticatorFactory.Create(authenticatorFactory);
             RegisterRequestAuthenticators(af.CreateRestRequestAuthenticators());
         }
 
