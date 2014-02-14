@@ -52,6 +52,7 @@ namespace Jhu.Graywulf.Web.Auth
 
             UserLink.NavigateUrl = Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl);
             SignInLink.NavigateUrl = Jhu.Graywulf.Web.Auth.SignIn.GetUrl(ReturnUrl);
+            SignInLink2.NavigateUrl = Jhu.Graywulf.Web.Auth.SignIn.GetUrl(ReturnUrl);
         }
 
         protected void Activate_Click(object sender, EventArgs e)

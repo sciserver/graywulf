@@ -92,5 +92,14 @@ namespace Jhu.Graywulf.Web.Auth {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::Jhu.Graywulf.Web.Controls.Form SuccessForm;
+        
+        /// <summary>
+        /// SignInLink2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink SignInLink2;
     }
 }

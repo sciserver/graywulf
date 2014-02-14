@@ -15,7 +15,7 @@
                         to registration</asp:HyperLink>.</li>
                 <li>If you have already activated your account,
                     <asp:HyperLink runat="server" ID="SignInLink">
-                        go to log in</asp:HyperLink>.</li>
+                        proceed to sign in</asp:HyperLink>.</li>
             </ul>
             <table class="FormTable">
                 <tr>
@@ -42,7 +42,8 @@
         Visible="false">
         <FormTemplate>
             <p>
-                Activation successful. Please, proceed to sign in.</p>
+                Activation successful. Please, proceed to
+                <asp:HyperLink runat="server" ID="SignInLink2">sign in</asp:HyperLink>.</p>
         </FormTemplate>
         <ButtonsTemplate>
             <asp:Button runat="server" CssClass="FormButton" Text="Sign in" OnClick="SignIn_Click" />
