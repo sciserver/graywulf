@@ -33,24 +33,16 @@ namespace Jhu.Graywulf.Web.Security
         public void Init(HttpApplication application)
         {
             // Create authenticators
-
-            AuthenticatorFactory af;
-
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 // The admin interface doesn't have a domain associated with, this
                 // special case has to be handled here
                 if (context.Domain != null)
                 {
-                    af = AuthenticatorFactory.Create(context.Domain.AuthenticatorFactory);
-                }
-                else
-                {
-                    af = AuthenticatorFactory.Create(null);
+                    var af = AuthenticatorFactory.Create(context.Domain);
+                    RegisterRequestAuthenticators(af.CreateRestRequestAuthenticators());
                 }
             }
-            
-            RegisterRequestAuthenticators(af.CreateRestRequestAuthenticators());
 
             // Wire up request events
             // --- Call all authenticators in this one

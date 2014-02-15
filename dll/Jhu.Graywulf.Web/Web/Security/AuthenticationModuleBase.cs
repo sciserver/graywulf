@@ -37,14 +37,17 @@ namespace Jhu.Graywulf.Web.Security
         {
             // If user is not authenticated yet, try to authenticate them now using
             // various types of authenticators
-
-            // Try each authentication protocol
-            for (int i = 0; context.User == null && i < requestAuthenticators.Length; i++)
+            
+            if (requestAuthenticators != null)
             {
-                var user = requestAuthenticators[i].Authenticate();
-                if (user != null)
+                // Try each authentication protocol
+                for (int i = 0; context.User == null && i < requestAuthenticators.Length; i++)
                 {
-                    context.User = user;
+                    var user = requestAuthenticators[i].Authenticate();
+                    if (user != null)
+                    {
+                        context.User = user;
+                    }
                 }
             }
         }

@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.Web.Api
 
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                ram.Init(context.Domain.AuthenticatorFactory);
+                ram.Init(context.Domain);
             }
 
             // Automatically add custom operation behavior to all operations

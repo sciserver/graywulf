@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 using DotNetOpenAuth.OpenId.RelyingParty;
 using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 using Jhu.Graywulf.Registry;
@@ -21,6 +22,7 @@ namespace Jhu.Graywulf.Web.Security
         /// <summary>
         /// Gets or sets the name of the authority
         /// </summary>
+        [XmlElement]
         public string AuthorityName
         {
             get { return authorityName; }
@@ -30,6 +32,7 @@ namespace Jhu.Graywulf.Web.Security
         /// <summary>
         /// Gets or sets the URI uniquely identifying the authority
         /// </summary>
+        [XmlElement]
         public string AuthorityUri
         {
             get { return authorityUri; }
@@ -39,6 +42,7 @@ namespace Jhu.Graywulf.Web.Security
         /// <summary>
         /// Gets or sets the display name of the authority
         /// </summary>
+        [XmlElement]
         public string DisplayName
         {
             get { return displayName; }
@@ -46,20 +50,22 @@ namespace Jhu.Graywulf.Web.Security
         }
 
         /// <summary>
-        /// Gets the name of the authentication protocol.
-        /// </summary>
-        public string Protocol
-        {
-            get { return Constants.ProtocolNameOpenID; }
-        }
-
-        /// <summary>
         /// Gets or set the discovery URL of the authority.
         /// </summary>
+        [XmlElement]
         public string DiscoveryUrl
         {
             get { return discoveryUrl; }
             set { discoveryUrl = value; }
+        }
+
+        /// <summary>
+        /// Gets the name of the authentication protocol.
+        /// </summary>
+        [XmlIgnore]
+        public string Protocol
+        {
+            get { return Constants.ProtocolNameOpenID; }
         }
 
         public OpenIDAuthenticator()

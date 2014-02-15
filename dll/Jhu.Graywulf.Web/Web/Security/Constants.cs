@@ -17,5 +17,7 @@ namespace Jhu.Graywulf.Web.Security
         public const string ProtocolNameKeystone = "Keystone";
 
         public const string UserRole = "User";
+
+        public const string SettingsOpenID = "OpenIDAuthenticators";
     }
 }

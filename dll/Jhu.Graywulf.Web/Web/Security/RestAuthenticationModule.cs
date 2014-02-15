@@ -33,11 +33,10 @@ namespace Jhu.Graywulf.Web.Security
             this.principalCache = new ConcurrentDictionary<string, GraywulfPrincipal>(StringComparer.InvariantCultureIgnoreCase);
         }
 
-        public void Init(string authenticatorFactory)
+        public void Init(Domain domain)
         {
             // Create authenticators
-            // TODO: add factory type name here
-            var af = AuthenticatorFactory.Create(authenticatorFactory);
+            var af = AuthenticatorFactory.Create(domain);
             RegisterRequestAuthenticators(af.CreateRestRequestAuthenticators());
         }
 

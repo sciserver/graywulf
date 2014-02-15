@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
+using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
 {
@@ -11,19 +13,21 @@ namespace Jhu.Graywulf.Web.Security
     /// </summary>
     public class AuthenticatorFactory
     {
+        private Domain domain;
+
         /// <summary>
         /// Creates an authenticator factory class from the
         /// type name.
         /// </summary>
         /// <param name="typename"></param>
         /// <returns></returns>
-        public static AuthenticatorFactory Create(string typename)
+        public static AuthenticatorFactory Create(Domain domain)
         {
             Type type = null;
 
-            if (typename != null)
+            if (!String.IsNullOrWhiteSpace(domain.AuthenticatorFactory))
             {
-                type = Type.GetType(typename);
+                type = Type.GetType(domain.AuthenticatorFactory);
             }
 
             // If config is incorrect, fall back to known types.
@@ -32,38 +36,36 @@ namespace Jhu.Graywulf.Web.Security
                 type = typeof(AuthenticatorFactory);
             }
 
-            return (AuthenticatorFactory)Activator.CreateInstance(type, true);
+            return (AuthenticatorFactory)Activator.CreateInstance(
+                type,
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                null,
+                new object[] { domain },
+                null);
         }
 
-        protected AuthenticatorFactory()
+        protected AuthenticatorFactory(Domain domain)
         {
             InitializeMembers();
+
+            this.domain = domain;
         }
 
         private void InitializeMembers()
         {
+            this.domain = null;
         }
 
         public IInteractiveAuthenticator[] CreateInteractiveAuthenticators()
         {
-            // TODO: remove hardcoding and move these into settings
-            return new[] 
+            var res = new List<IInteractiveAuthenticator>();
+
+            if (domain.Settings.ContainsKey(Constants.SettingsOpenID))
             {
-                new OpenIDAuthenticator()
-                {
-                    AuthorityName = "VOID",
-                    AuthorityUri="https://sso.usvao.org/openid/provider",
-                    DisplayName = "VO OpenID",
-                    DiscoveryUrl = "https://sso.usvao.org/openid/provider_id"
-                },
-                new OpenIDAuthenticator()
-                {
-                    AuthorityName = "Google",
-                    AuthorityUri="https://www.google.com/accounts/o8/ud",
-                    DisplayName = "GoogleID",
-                    DiscoveryUrl="https://www.google.com/accounts/o8/id"
-                }
-            };
+                res.AddRange((OpenIDAuthenticator[])domain.Settings[Constants.SettingsOpenID].Value);
+            }
+
+            return res.ToArray();
         }
 
         // TODO: delete this and add logic to somewhere else

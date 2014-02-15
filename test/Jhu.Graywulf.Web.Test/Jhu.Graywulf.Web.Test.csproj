@@ -47,17 +47,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\OpenIDSettingsTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry\Jhu.Graywulf.Registry.csproj">
+      <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
+      <Name>Jhu.Graywulf.Registry</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
       <Project>{E9D182CF-746E-4E40-B01C-74A32FB70749}</Project>
       <Name>Jhu.Graywulf.Web</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

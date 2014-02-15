@@ -48,7 +48,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Format\AppSettings.cs" />
     <Compile Include="Format\BitConverterBase.cs" />
     <Compile Include="Format\Constants.cs" />
     <Compile Include="Format\DataFileBase.cs" />
@@ -69,7 +68,6 @@
     <Compile Include="Format\SwapBitConverter.cs" />
     <Compile Include="Format\TextDataFileBase.cs" />
     <Compile Include="Format\TextDataFileBlockBase.cs" />
-    <Compile Include="IO\AppSettings.cs" />
     <Compile Include="IO\BufferedTextReader.cs" />
     <Compile Include="IO\Constants.cs" />
     <Compile Include="IO\DetachedStream.cs" />
