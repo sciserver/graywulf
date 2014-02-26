@@ -382,14 +382,12 @@ namespace Jhu.Graywulf.Registry
                 throw new InvalidOperationException();
             }
 
-            if (databaseTransaction == null)
+            if (databaseTransaction != null)
             {
-                throw new InvalidOperationException();
+                databaseTransaction.Commit();
+                databaseTransaction.Dispose();
+                databaseTransaction = null;
             }
-
-            databaseTransaction.Commit();
-            databaseTransaction.Dispose();
-            databaseTransaction = null;
         }
 
         /// <summary>
@@ -402,14 +400,12 @@ namespace Jhu.Graywulf.Registry
                 throw new InvalidOperationException();
             }
 
-            if (databaseTransaction == null)
+            if (databaseTransaction != null)
             {
-                throw new InvalidOperationException();
+                databaseTransaction.Rollback();
+                databaseTransaction.Dispose();
+                databaseTransaction = null;
             }
-
-            databaseTransaction.Rollback();
-            databaseTransaction.Dispose();
-            databaseTransaction = null;
         }
 
         #region Command Creation Functions
