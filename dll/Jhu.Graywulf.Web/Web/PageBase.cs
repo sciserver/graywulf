@@ -98,12 +98,8 @@ namespace Jhu.Graywulf.Web
         {
             if (registryContext != null)
             {
-                if (registryContext.DatabaseTransaction != null)
-                {
-                    registryContext.CommitTransaction();
-                }
-
                 registryContext.Dispose();
+                registryContext = null;
             }
 
             base.OnUnload(e);
