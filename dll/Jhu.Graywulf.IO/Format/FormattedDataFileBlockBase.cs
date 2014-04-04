@@ -112,6 +112,8 @@ namespace Jhu.Graywulf.Format
             {
                 Type type;
                 int size, rank;
+
+                // TODO: doesn't work if parts[i] is empty
                 if (!GetBestColumnTypeEstimate(parts[i], out type, out size, out rank))
                 {
                     cols[i].DataType.IsNullable = true;
@@ -120,6 +122,7 @@ namespace Jhu.Graywulf.Format
                 if (cols[i].DataType == null || colranks[i] < rank)
                 {
                     cols[i].DataType = DataType.Create(type, (short)size);
+                    colranks[i] = rank;
                 }
 
                 // Make column longer if necessary
@@ -664,7 +667,7 @@ namespace Jhu.Graywulf.Format
 
             // Last case: it's a string
             type = typeof(string);
-            size = value.Length;
+            size = Math.Max(value.Length, 50);
             return true;
         }
 

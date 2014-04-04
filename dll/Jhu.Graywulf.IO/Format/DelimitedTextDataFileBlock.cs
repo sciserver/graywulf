@@ -107,6 +107,8 @@ namespace Jhu.Graywulf.Format
 
             while (true)
             {
+                // TODO: make sure line length is limited, so no invalid
+                // file is read into memory entirely
                 line = File.BufferedReader.ReadLine();
 
                 if (line == null)
@@ -148,7 +150,11 @@ namespace Jhu.Graywulf.Format
                     }
                     if (!inquote && ci == line.Length || line[ci] == File.Separator)
                     {
-                        res.Add(part);
+                        if (!(File.SkipEmpty && String.IsNullOrEmpty(part)))
+                        {
+                            res.Add(part);
+                        }
+
                         part = String.Empty;
 
                         if (ci == line.Length)  // Outside a quote and end of line reached

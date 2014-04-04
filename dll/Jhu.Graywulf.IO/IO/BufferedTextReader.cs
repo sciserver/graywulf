@@ -75,6 +75,9 @@ namespace Jhu.Graywulf.IO
         /// 
         public string ReadLine()
         {
+            // TODO: make sure line length is limited, so no invalid
+            // file is read into memory entirely
+
             // See if there are lines in the buffer (prefetched for column detection)
             // If so, use lines in buffer, otherwise read from the stream
             if (lineBuffer != null && lineCounter < lineBuffer.Count)

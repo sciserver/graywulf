@@ -7,6 +7,7 @@ using System.IO;
 using System.Globalization;
 using System.Xml;
 using System.Runtime.Serialization;
+using System.ComponentModel;
 using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
@@ -26,6 +27,9 @@ namespace Jhu.Graywulf.Format
 
         [NonSerialized]
         private char separator;
+
+        [NonSerialized]
+        private bool skipEmpty;
 
         #region Properties
 
@@ -67,6 +71,14 @@ namespace Jhu.Graywulf.Format
         {
             get { return separator; }
             set { separator = value; }
+        }
+
+        [DataMember]
+        [DefaultValue(false)]
+        public bool SkipEmpty
+        {
+            get { return skipEmpty; }
+            set { skipEmpty = value; }
         }
 
         #endregion
@@ -146,6 +158,7 @@ namespace Jhu.Graywulf.Format
             this.comment = '#';
             this.quote = '"';
             this.separator = ',';
+            this.skipEmpty = false;
         }
 
         private void CopyMembers(DelimitedTextDataFile old)
@@ -155,6 +168,7 @@ namespace Jhu.Graywulf.Format
             this.comment = old.comment;
             this.quote = old.quote;
             this.separator = old.separator;
+            this.skipEmpty = old.skipEmpty;
         }
 
         public override object Clone()
