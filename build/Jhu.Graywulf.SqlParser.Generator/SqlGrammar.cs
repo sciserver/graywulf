@@ -7,7 +7,7 @@ using Jhu.Graywulf.ParserLib;
 namespace Jhu.Graywulf.SqlParser.Generator
 {
     [Grammar(Namespace = "Jhu.Graywulf.SqlParser", ParserName = "SqlParser",
-        Comparer = "StringComparer.InvariantCultureIgnoreCase", RootToken = "SelectStatement")]
+        Comparer = "StringComparer.InvariantCultureIgnoreCase", RootToken = "Statement")]
     public class SqlGrammar : Grammar
     {
 
@@ -295,20 +295,38 @@ namespace Jhu.Graywulf.SqlParser.Generator
 
         #endregion
         #region Select statement and query expressions (combinations of selects)
+        
+        public static Expression<Rule> Statement = () =>
+            Sequence
+            (
+                May(CommentOrWhitespace),
+                SeparatedStatement,
+                May(Sequence(May(CommentOrWhitespace), SeparatedStatement, May(CommentOrWhitespace))),
+                May(CommentOrWhitespace)
+            );
 
+        public static Expression<Rule> SeparatedStatement = () =>
+            Sequence
+            (
+                Must(
+                    SelectStatement,
+                    InsertStatement,
+                    DeclareStatement,
+                    DeleteStatement,
+                    DropTableStatement,
+                    DropViewStatement,
+                    CreateViewStatement,
+                    SetStatement,
+                    TruncateTableStatement
+                )
+                //Semicolon    //use it if you require semicolon at the and of a query
+            );
         public static Expression<Rule> SelectStatement = () =>
             Sequence
             (
-                DeclareStatement
-            );
-        public static Expression<Rule> SelectStatement2 = () =>
-            Sequence
-            (
-                May(CommentOrWhitespace),   // remove this when wrapped in generic statement grammar
                 QueryExpression,
                 May(CommentOrWhitespace),
-                May(OrderByClause),
-                May(CommentOrWhitespace)   // remove this when wrapped in generic statement grammar
+                May(OrderByClause)
             );
 
         public static Expression<Rule> QueryExpression = () =>
@@ -333,6 +351,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Rule> QuerySpecification = () =>
             Sequence
             (
+                May(Sequence((WithClause), CommentOrWhitespace)),
                 Keyword("SELECT"),
                 May(Sequence(CommentOrWhitespace, Must(Keyword("ALL"), CommentOrWhitespace, Keyword("DISTINCT")))),
                 May(Sequence(CommentOrWhitespace, TopExpression)),
@@ -791,7 +810,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Rule> DeleteStatement = () =>
             Sequence
             (
-                May(Sequence(May(CommentOrWhitespace), WithStatement)),
+                May(Sequence(May(CommentOrWhitespace), WithClause)),
                 May(CommentOrWhitespace),
                 Keyword("DELETE"),
                 May(Sequence(CommentOrWhitespace, TopExpression)),
@@ -806,11 +825,11 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Rule> UpdateStatement = () =>
             Sequence
             (
-                May(Sequence(May(CommentOrWhitespace), WithStatement)),
+                May(Sequence(May(CommentOrWhitespace), WithClause)),
                 May(CommentOrWhitespace),
                 Keyword("UPDATE"),
                 May(Sequence(CommentOrWhitespace, TopExpression)),
-                Must(Sequence(CommentOrWhitespace, Must(TableOrViewName, TableAlias), May(Sequence(May(CommentOrWhitespace), WithStatement)))),    // or rowset function limited or table_variable
+                Must(Sequence(CommentOrWhitespace, Must(TableOrViewName, TableAlias), May(Sequence(May(CommentOrWhitespace), WithClause)))),    // or rowset function limited or table_variable
                 CommentOrWhitespace, Keyword("SET"),
                 SetExpression,
                 May(Sequence(CommentOrWhitespace, FromClause)),
@@ -881,9 +900,9 @@ namespace Jhu.Graywulf.SqlParser.Generator
             );
 
         #endregion
-        #region With statement
+        #region With Clause
 
-        public static Expression<Rule> WithStatement = () =>
+        public static Expression<Rule> WithClause = () =>
             Sequence
             (
                 May(CommentOrWhitespace),
@@ -909,8 +928,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
                May(CommentOrWhitespace),
                BracketOpen,
                May(CommentOrWhitespace),
-               SelectStatement2,
-               //Sequence(QuerySpecification,May(Sequence(May(CommentOrWhitespace), QueryOperator, May(CommentOrWhitespace), QueryExpression))),
+               SelectStatement,
                May(CommentOrWhitespace),
                BracketClose
            );
@@ -921,13 +939,13 @@ namespace Jhu.Graywulf.SqlParser.Generator
             Sequence
             (
                 May(CommentOrWhitespace),
-                May(Sequence((WithStatement), CommentOrWhitespace)),
+                May(Sequence((WithClause), CommentOrWhitespace)),
                 Keyword("INSERT"),
                 CommentOrWhitespace,
                 May(TopExpression),
                 May(Sequence(Keyword("INTO"), CommentOrWhitespace)),
 
-                Sequence(TableOrViewName, May(CommentOrWhitespace), May(WithStatement)),
+                Sequence(TableOrViewName, May(CommentOrWhitespace), May(TableHintClause)),
 
                 May
                 (
@@ -947,7 +965,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 Must(
                     Sequence(Keyword("DEFAULT"), CommentOrWhitespace, Keyword("VALUES")),
                     Sequence(Keyword("VALUES"), ListColumnValueList),
-                    SelectStatement2                                                            //NEED TO MODIFY TO SELECTSTATMENT FROM SELECTSTATEMENT2
+                    SelectStatement
                 )
             );
 
@@ -1119,7 +1137,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
 
         #endregion
         #region Partition By Clause
-        //perfect
+        //value_expression can be a column expression, scalar subquery, scalar function, or user-defined variable.
         public static Expression<Rule> PartitionByClause = () =>
             Sequence
             (
@@ -1196,7 +1214,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 CommentOrWhitespace,
                 Keyword("AS"),
                 CommentOrWhitespace,
-                SelectStatement2,                                                                                                                               //  need to change to SelectStatement from SelectStatement2 
+                SelectStatement,
                 May(Sequence(May(CommentOrWhitespace), Keyword("WITH"), CommentOrWhitespace, Keyword("CHECK"), CommentOrWhitespace, Keyword("OPTION")))
             );
         public static Expression<Rule> ViewAttribute = () =>
@@ -1297,8 +1315,8 @@ namespace Jhu.Graywulf.SqlParser.Generator
             Must
             (
                 Variable,
-                SimpleTerm,
                 PrefixTerm,
+                SimpleTerm,
                 GenerationTerm,
                 GenericProximityTerm,
                 CustonProximityTerm,
@@ -1306,14 +1324,17 @@ namespace Jhu.Graywulf.SqlParser.Generator
             )
         );
         public static Expression<Rule> SimpleTerm = () =>
-        Sequence
+        Must
         (
-
+            StringConstant
+            
         );
         public static Expression<Rule> PrefixTerm = () =>
-        Sequence
+        Must
         (
+            Sequence(StringConstant,Mul)
 
+        
         );
         public static Expression<Rule> GenerationTerm = () =>
         Sequence
