@@ -55,11 +55,10 @@ namespace Jhu.Graywulf.Web.UI
                 {
                     identity.User.Context = context;
                     var udii = new UserDatabaseInstanceInstaller(identity.User);
-                    var udi = udii.GenerateUserDatabaseInstance(context.Federation.MyDBDatabaseVersion);
-
-                    mydb = udi.DatabaseInstance;
-                    mydb.Deploy();
+                    var udi = udii.CreateUserDatabaseInstance(context.Federation.MyDBDatabaseVersion);
                 }
+
+                context.CommitTransaction();
             }
         }
 

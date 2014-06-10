@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
-        private DiagnosticMessage TestSqlConnection()
+        public DiagnosticMessage TestSqlConnection()
         {
             DiagnosticMessage msg = new DiagnosticMessage()
             {

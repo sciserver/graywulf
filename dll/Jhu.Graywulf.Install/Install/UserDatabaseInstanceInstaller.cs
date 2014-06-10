@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Install
             this.user = user;
         }
 
-        public UserDatabaseInstance GenerateUserDatabaseInstance(DatabaseVersion databaseVersion)
+        public UserDatabaseInstance CreateUserDatabaseInstance(DatabaseVersion databaseVersion)
         {
             // TODO: this part probably needs some optimization
 
@@ -81,12 +81,15 @@ namespace Jhu.Graywulf.Install
             // Add user database mapping
             var udi = new UserDatabaseInstance(databaseVersion)
             {
-                Name = String.Format("{0}_{1}_", user.Name, di.DatabaseDefinition.Federation.Name, di.DatabaseDefinition.Name),
+                Name = String.Format("{0}_{1}_{2}", user.Name, di.DatabaseDefinition.Federation.Name, di.DatabaseDefinition.Name),
                 User = user,
                 DatabaseInstance = di,
             };
 
             udi.Save();
+
+            var mydb = udi.DatabaseInstance;
+            mydb.Deploy();
 
             return udi;
         }

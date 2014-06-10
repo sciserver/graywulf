@@ -34,8 +34,6 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
-
-
         private void Discover(smo::Database smodb, List<Entity> update, List<Entity> delete, List<Entity> create)
         {
             InitializeDiscovery(update, delete, create);

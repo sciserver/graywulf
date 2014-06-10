@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.Web.Auth
 
         private void CreateUser()
         {
-            user.Name = Username.Text;
+            user.Name = Username.Text.Trim();
             user.SetPassword(Password.Text);
             user.GenerateActivationCode();
 

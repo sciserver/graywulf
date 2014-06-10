@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Web.Controls
             {
                 selectedDataKeys = new HashSet<string>();
             }
-            else
+            else     // TODO: only when visible
             {
                 switch (SelectionMode)
                 {
@@ -137,6 +137,7 @@ namespace Jhu.Graywulf.Web.Controls
 
             base.OnPreRender(e);
 
+            // TODO: only when selectedDataKeys != null 
             foreach (GridViewRow row in Rows)
             {
                 var key = GetKey(DataKeys[row.RowIndex]);
