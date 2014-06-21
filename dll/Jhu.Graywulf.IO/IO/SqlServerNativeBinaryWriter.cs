@@ -8,21 +8,29 @@ using Jhu.Graywulf.Format;
 namespace Jhu.Graywulf.IO
 {
 
+    /// <summary>
+    /// Implements functions to write SQL Server native binary files for bulk import data.
+    /// </summary>
     /// <remarks>
-    /// bcp native format follows the ODBC standard representation of numbers
+    /// The BCP native format follows the ODBC standard representation of numbers.
     /// http://stackoverflow.com/questions/2099919/what-are-the-binary-storage-formats-for-sqflt8-sqlmoney-and-other-native-sql-da
     /// http://technet.microsoft.com/en-us/library/bb677301.aspx
     /// </remarks>
     public class SqlServerNativeBinaryWriter : IDisposable
     {
+        #region Private constants
+
         private readonly DateTime epoch0001 = new DateTime(1, 1, 1);
         private readonly DateTime epoch1900 = new DateTime(1900, 1, 1);
 
+        #endregion
+        #region Private member variables
+
         private BinaryWriter writer;
         private Encoding encoding;
-        private BitConverterBase bitConverter;
         private byte[] buffer;
 
+        #endregion
         #region Constructors and initializers
 
         public SqlServerNativeBinaryWriter(Stream baseStream)
@@ -36,7 +44,6 @@ namespace Jhu.Graywulf.IO
         {
             this.writer = null;
             this.encoding = Encoding.Default;
-            this.bitConverter = new StraightBitConverter();
             this.buffer = new byte[0x10000];
         }
 
@@ -507,9 +514,8 @@ namespace Jhu.Graywulf.IO
 
             var dt = (DateTime)value;
             var days = (int)(dt - epoch0001).TotalDays;
-            bitConverter.GetBytes(days, buffer, 0);
-
-            writer.Write(buffer, 0, 3);
+            
+            writer.Write(BitConverter.GetBytes(days), 0, 3);
         }
 
         public void WriteNullableSqlDate(object value)
@@ -592,12 +598,10 @@ namespace Jhu.Graywulf.IO
             var secs = (long)(dt.TimeOfDay.TotalSeconds * 1e7);
 
             // time part
-            bitConverter.GetBytes(secs, buffer, 0);
-            writer.Write(buffer, 0, 5);
+            writer.Write(BitConverter.GetBytes(secs), 0, 5);
 
             // date part
-            bitConverter.GetBytes(days, buffer, 0);
-            writer.Write(buffer, 0, 3);
+            writer.Write(BitConverter.GetBytes(days), 0, 3);
         }
 
         public void WriteNullableSqlDateTime2(object value)
@@ -631,12 +635,10 @@ namespace Jhu.Graywulf.IO
             var zone = (short)dt.Offset.TotalMinutes;
 
             // time part
-            bitConverter.GetBytes(secs, buffer, 0);
-            writer.Write(buffer, 0, 5);
+            writer.Write(BitConverter.GetBytes(secs), 0, 5);
 
             // date part
-            bitConverter.GetBytes(days, buffer, 0);
-            writer.Write(buffer, 0, 3);
+            writer.Write(BitConverter.GetBytes(days), 0, 3);
 
             // offset part
             writer.Write(zone);
@@ -664,8 +666,7 @@ namespace Jhu.Graywulf.IO
             var t = (TimeSpan)value;
             var secs = (long)(t.TotalSeconds * 1e7);
 
-            bitConverter.GetBytes(secs, buffer, 0);
-            writer.Write(buffer, 0, 5);
+            writer.Write(BitConverter.GetBytes(secs), 0, 5);
         }
 
         public void WriteNullableSqlTime(object value)
