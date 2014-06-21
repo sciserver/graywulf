@@ -10,15 +10,34 @@ using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
 {
+    /// <summary>
+    /// Implements core functions to read and write data file blocks.
+    /// A data file blocks corresponds to tables.
+    /// </summary>
     [Serializable]
     [DataContract(Namespace="")]
     public abstract class DataFileBlockBase : ICloneable
     {
+        #region Private member variables
+
+        /// <summary>
+        /// Holds a reference to the underlying file
+        /// </summary>
+        /// <remarks>
+        /// This value is set by the constructor when a new data file block
+        /// is created based on a data file.
+        /// </remarks>
         [NonSerialized]
         protected DataFileBase file;
 
+        /// <summary>
+        /// Collection of table columns
+        /// </summary>
         [NonSerialized]
         private List<Column> columns;
+
+        #endregion
+        #region Properties
 
         /// <summary>
         /// Gets the collection containing columns of the data file
@@ -29,6 +48,10 @@ namespace Jhu.Graywulf.Format
             get { return columns; }
         }
 
+        /// <summary>
+        /// Gets the collection of data file columns for XML serialization.
+        /// Do not use.
+        /// </summary>
         [DataMember(Name="Columns")]
         [XmlArray]
         private Column[] Columns_ForXml
@@ -37,7 +60,8 @@ namespace Jhu.Graywulf.Format
             set { columns = new List<Schema.Column>(value); }
         }
 
-        #region Constructors and initializer
+        #endregion
+        #region Constructors and initializers
 
         protected DataFileBlockBase()
         {
@@ -65,13 +89,7 @@ namespace Jhu.Graywulf.Format
         private void CopyMembers(DataFileBlockBase old)
         {
             this.file = old.file;
-
-            // Deep copy columns
-            this.columns = new List<Column>();
-            foreach (var c in old.columns)
-            {
-                this.columns.Add((Column)c.Clone());
-            }
+            this.columns = new List<Column>(Util.DeepCloner.CloneCollection(old.columns));
         }
 
         public abstract object Clone();
@@ -80,7 +98,7 @@ namespace Jhu.Graywulf.Format
         #region Column functions
 
         /// <summary>
-        /// Generates a column list from a data reader.
+        /// Detects the columns from a data reader.
         /// </summary>
         /// <param name="dr"></param>
         internal void DetectColumns(IDataReader dr)
@@ -132,7 +150,7 @@ namespace Jhu.Graywulf.Format
         /// Called by the framework after columns are created.
         /// </summary>
         /// <remarks>
-        /// This function can be used the wire up parsing and serializer delegates.
+        /// Use this function to wire up parser and serializer delegates.
         /// </remarks>
         protected abstract void OnColumnsCreated();
 
