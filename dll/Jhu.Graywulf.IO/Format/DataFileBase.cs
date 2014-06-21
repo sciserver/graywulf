@@ -63,7 +63,8 @@ namespace Jhu.Graywulf.Format
         private bool generateIdentityColumn;
 
         /// <summary>
-        /// Stores the block of the file, as they are read from the input
+        /// Stores the blocks of the file, as they are read from the input
+        /// or added programatically when writing the file.
         /// </summary>
         [NonSerialized]
         private List<DataFileBlockBase> blocks;
@@ -271,12 +272,15 @@ namespace Jhu.Graywulf.Format
             this.generateIdentityColumn = old.generateIdentityColumn;
 
             // Deep copy of blocks
+            /* TODO: delete old code
+            // TODO: use util class, fix double clone issue
             this.blocks = new List<DataFileBlockBase>();
             foreach (var b in old.blocks)
             {
                 var nb = (DataFileBlockBase)b.Clone();
                 this.blocks.Add((DataFileBlockBase)b.Clone());
-            }
+            }*/
+            this.blocks = new List<DataFileBlockBase>(Util.DeepCloner.CloneCollection(old.blocks));
 
             this.blockCounter = -1;
         }

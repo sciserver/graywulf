@@ -65,12 +65,12 @@ namespace Jhu.Graywulf.Format
 
         protected DataFileBlockBase()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         public DataFileBlockBase(DataFileBase file)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
 
             this.file = file;
         }
@@ -80,7 +80,8 @@ namespace Jhu.Graywulf.Format
             CopyMembers(old);
         }
 
-        private void InitializeMembers()
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
         {
             this.file = null;
             this.columns = new List<Column>();
