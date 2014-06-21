@@ -48,7 +48,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Format\BitConverterBase.cs" />
     <Compile Include="Format\Constants.cs" />
     <Compile Include="Format\DataFileBase.cs" />
     <Compile Include="Format\DataFileBlockBase.cs" />
@@ -64,8 +63,6 @@
     <Compile Include="Format\FormattedDataFileBlockBase.cs" />
     <Compile Include="Format\SqlServerNativeDataFile.cs" />
     <Compile Include="Format\SqlServerNativeDataFileBlock.cs" />
-    <Compile Include="Format\StraightBitConverter.cs" />
-    <Compile Include="Format\SwapBitConverter.cs" />
     <Compile Include="Format\TextDataFileBase.cs" />
     <Compile Include="Format\TextDataFileBlockBase.cs" />
     <Compile Include="IO\BufferedTextReader.cs" />

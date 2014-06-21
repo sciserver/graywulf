@@ -53,8 +53,6 @@
     <Compile Include="Format\FileFormatFactoryTest.cs" />
     <Compile Include="Format\SerializationTest.cs" />
     <Compile Include="Format\SqlServerNativeDataFileWriterTest.cs" />
-    <Compile Include="Format\StraightBitConverterTest.cs" />
-    <Compile Include="Format\SwapBitConverterTest.cs" />
     <Compile Include="IO\StreamFactoryTest.cs" />
     <Compile Include="IO\Tasks\FileCopyTest.cs" />
     <Compile Include="IO\Tasks\SerializationTest.cs" />
