@@ -96,10 +96,11 @@ namespace Jhu.Graywulf.Format
         {
             GetExtensionWithoutCompression(uri, out filename, out extension, out compression);
 
-            // FInd file format with the appropriate extensions
+            // Find file format with the appropriate extensions
             FileFormatDescription format = null;
             foreach (var f in GetFileFormatDescriptions())
             {
+                // TODO: add support for additional extensions
                 if (StringComparer.InvariantCultureIgnoreCase.Compare(extension, f.Value.DefaultExtension) == 0)
                 {
                     format = f.Value;
