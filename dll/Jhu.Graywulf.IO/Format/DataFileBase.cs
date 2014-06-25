@@ -308,7 +308,7 @@ namespace Jhu.Graywulf.Format
         {
             if (ownsBaseStream && baseStream != null)
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException();  // TODO
             }
         }
 
@@ -329,7 +329,7 @@ namespace Jhu.Graywulf.Format
                     OpenForWrite();
                     break;
                 default:
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException();  // TODO
             }
         }
 

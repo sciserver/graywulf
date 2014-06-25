@@ -861,12 +861,8 @@ namespace Jhu.Graywulf.Schema
                     break;
                 case System.Data.SqlDbType.Structured:
                     throw new NotImplementedException();
-                //dt = DataType.SqlStructured;
-                //break;
                 case System.Data.SqlDbType.Udt:
                     throw new NotImplementedException();
-                //dt = DataType.SqlUdt;
-                //break;
                 default:
                     throw new NotImplementedException();
             }
@@ -893,7 +889,7 @@ namespace Jhu.Graywulf.Schema
             {
                 return DataType.Boolean;
             }
-            if (type == typeof(SByte))
+            else if (type == typeof(SByte))
             {
                 return DataType.SByte;
             }
