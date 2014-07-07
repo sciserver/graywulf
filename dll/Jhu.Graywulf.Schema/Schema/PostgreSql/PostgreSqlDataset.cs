@@ -197,7 +197,8 @@ WHERE routine_type IN ({0}) AND
             }
 
             sql = String.Format(sql, GetObjectTypeIdListString(Schema.Constants.DatabaseObjectTypes[typeof(T)]));
-            using (NpgsqlConnection cn = OpenConnection())
+            
+            using (NpgsqlConnection cn = OpenConnectionInternal())
             {
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, cn))
                 {
@@ -260,7 +261,7 @@ WHERE table_type IN ({0}) AND table_schema NOT IN ('information_schema', 'pg_cat
 
             sql = String.Format(sql, GetObjectTypeIdListString(Schema.Constants.DatabaseObjectTypes[typeof(T)]));
 
-            using (NpgsqlConnection cn = OpenConnection())
+            using (NpgsqlConnection cn = OpenConnectionInternal())
             {
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sql, cn))
                 {
@@ -319,7 +320,7 @@ SELECT ordinal_position,
 FROM information_schema.columns
 WHERE table_catalog ILIKE @databaseName AND table_name ILIKE @tableName AND table_schema ILIKE @schemaName;";
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new NpgsqlCommand(sql, cn))
                 {
@@ -367,7 +368,7 @@ SELECT indexname, indexdef
 FROM pg_catalog.pg_indexes 
 WHERE schemaname ILIKE @schemaName AND tablename ILIKE @objectName;";
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new NpgsqlCommand(sql, cn))
                 {
@@ -419,7 +420,8 @@ SELECT
 FROM information_schema.key_column_usage  kcu 
 INNER JOIN information_schema.columns c ON kcu.table_name = c.table_name AND kcu.column_name=c.column_name
 WHERE constraint_catalog ILIKE @databaseName AND constraint_schema ILIKE @schemaName AND kcu.table_name ILIKE @objectName AND constraint_name ILIKE @indexName;";
-            using (var cn = OpenConnection())
+            
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new NpgsqlCommand(sql, cn))
                 {
@@ -477,7 +479,7 @@ FROM information_schema.parameters p
 INNER JOIN information_schema.routines r ON r.specific_catalog = p.specific_catalog AND r.specific_schema = p.specific_schema AND r.specific_name = p.specific_name
 WHERE p.specific_catalog ILIKE @databaseName AND p.specific_schema ILIKE @schemaName AND r.routine_name = @objectName";
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new NpgsqlCommand(sql, cn))
                 {
@@ -547,7 +549,8 @@ LEFT JOIN pg_attribute a ON a.attrelid = c.oid
 LEFT JOIN pg_namespace d ON d.oid = c.relnamespace        
 WHERE c.relname = @objectName AND d.nspname= @schemaName
 ;";
-            using (var cn = OpenConnection())
+
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new NpgsqlCommand(sql, cn))
                 {
@@ -604,7 +607,7 @@ WHERE nspname = @schemaName and proname= @objectName;";
                 v.Metadata = new VariableMetadata();
             }
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new NpgsqlCommand(sql, cn))
                 {
@@ -644,7 +647,7 @@ WHERE nspname = @schemaName and proname= @objectName;";
                 v.Metadata = new VariableMetadata();
             }
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new NpgsqlCommand(sql, cn))
                 {
@@ -768,21 +771,6 @@ WHERE nspname = @schemaName and proname= @objectName;";
             // *** TODO: implement
             // Where to get metadata from? Registry?
             return new DatasetMetadata();
-        }
-
-        /// <summary>
-        /// Opens a connection to the Npgsql database
-        /// </summary>
-        /// <returns></returns>
-        protected NpgsqlConnection OpenConnection()
-        {
-
-            NpgsqlConnectionStringBuilder csb = new NpgsqlConnectionStringBuilder(ConnectionString);
-            csb.Enlist = false;
-
-            NpgsqlConnection cn = new NpgsqlConnection(csb.ConnectionString);
-            cn.Open();
-            return cn;
         }
 
         public override string GetSpecializedConnectionString(string connectionString, bool integratedSecurity, string username, string password, bool enlist)
@@ -918,6 +906,25 @@ WHERE nspname = @schemaName and proname= @objectName;";
         }
 
         #endregion
+
+        private NpgsqlConnection OpenConnectionInternal()
+        {
+            var csb = new NpgsqlConnectionStringBuilder(ConnectionString);
+            csb.Enlist = false;
+
+            var cn = new NpgsqlConnection(csb.ConnectionString);
+            cn.Open();
+            return cn;
+        }
+
+        /// <summary>
+        /// Opens a connection to the Npgsql database
+        /// </summary>
+        /// <returns></returns>
+        public override  IDbConnection OpenConnection()
+        {
+            return OpenConnectionInternal();
+        }
     }
 }
 

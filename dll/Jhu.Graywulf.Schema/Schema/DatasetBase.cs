@@ -740,8 +740,8 @@ namespace Jhu.Graywulf.Schema
         }
 
         #endregion
-
-
+        
+        public abstract IDbConnection OpenConnection();
 
         public SmartCommand CreateCommand()
         {
@@ -768,18 +768,6 @@ namespace Jhu.Graywulf.Schema
             cmd.Transaction = transaction;
 
             return cmd;
-        }
-
-        public IDbConnection OpenConnection()
-        {
-            var dbf = DbProviderFactories.GetFactory(this.ProviderName);
-
-            var cn = dbf.CreateConnection();
-
-            cn.ConnectionString = this.ConnectionString;
-            cn.Open();
-
-            return cn;
         }
     }
 }

@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.Scheduler
         public static void RunSanityCheck()
         {
             // Test persistence service connection
-            using (SqlConnection cn = new SqlConnection(PersistenceConnectionString))
+            using (var cn = new SqlConnection(PersistenceConnectionString))
             {
                 cn.Open();
             }
@@ -63,9 +63,9 @@ namespace Jhu.Graywulf.Scheduler
             ts = AppDomainIdle;
 
             // Test cluster registry settings
-            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                EntityFactory ef = new EntityFactory(context);
+                var ef = new EntityFactory(context);
                 ef.LoadEntity<Registry.Cluster>(Registry.AppSettings.ClusterName);
             }
         }

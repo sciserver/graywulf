@@ -175,7 +175,7 @@ WHERE routine_schema LIKE @databaseName AND routine_name LIKE @objectName AND ro
             }
 
             sql = String.Format(sql, GetObjectTypeIdListString(Schema.Constants.DatabaseObjectTypes[typeof(T)]));
-            using (MySqlConnection cn = OpenConnection())
+            using (MySqlConnection cn = OpenConnectionInternal())
             {
                 using (MySqlCommand cmd = new MySqlCommand(sql, cn))
                 {
@@ -233,7 +233,7 @@ WHERE table_schema LIKE @databaseName AND table_type IN({0})";
 
             sql = String.Format(sql, GetObjectTypeIdListString(Schema.Constants.DatabaseObjectTypes[typeof(T)]));
 
-            using (MySqlConnection cn = OpenConnection())
+            using (MySqlConnection cn = OpenConnectionInternal())
             {
                 using (MySqlCommand cmd = new MySqlCommand(sql, cn))
                 {
@@ -292,7 +292,7 @@ SELECT ordinal_position,
 FROM information_schema.columns
 WHERE table_schema LIKE @databaseName AND table_name LIKE @tableName;";
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new MySqlCommand(sql, cn))
                 {
@@ -336,7 +336,7 @@ FROM information_schema.statistics s
 WHERE s.table_schema LIKE @databaseName AND s.table_name LIKE @objectName
 GROUP BY 1;";
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new MySqlCommand(sql, cn))
                 {
@@ -388,7 +388,7 @@ FROM information_schema.key_column_usage kcu
 INNER JOIN information_schema.columns c ON kcu.table_schema = c.table_schema AND kcu.table_name = c.table_name AND kcu.column_name = c.column_name
 INNER JOIN information_schema.tables t ON kcu.table_schema = t.table_schema AND kcu.table_name = t.table_name
 WHERE t.table_schema LIKE @databaseName AND kcu.table_name LIKE @tableName AND kcu.constraint_name LIKE @indexName;";
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new MySqlCommand(sql, cn))
                 {
@@ -445,7 +445,7 @@ WHERE p.specific_schema LIKE @databaseName AND p.specific_name = @objectName
 ORDER BY 1;";
 
             sql = String.Format(sql, DatabaseObjectType.Table);
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new MySqlCommand(sql, cn))
                 {
@@ -512,7 +512,7 @@ SELECT routine_comment comment
 FROM information_schema.routines r
 WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;";
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new MySqlCommand(sql, cn))
                 {
@@ -572,7 +572,7 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
                 v.Metadata = new VariableMetadata();
             }
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new MySqlCommand(sql, cn))
                 {
@@ -691,20 +691,6 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
             return new DatasetMetadata();
         }
 
-        /// <summary>
-        /// Opens a connection to the MySQL database
-        /// </summary>
-        /// <returns></returns>
-        protected MySqlConnection OpenConnection()
-        {
-            var csb = new MySqlConnectionStringBuilder(ConnectionString);
-            csb.AutoEnlist = false;
-
-            var cn = new MySqlConnection(csb.ConnectionString);
-            cn.Open();
-            return cn;
-        }
-
         public override string GetSpecializedConnectionString(string connectionString, bool integratedSecurity, string username, string password, bool enlist)
         {
             var csb = new MySqlConnectionStringBuilder(connectionString);
@@ -806,5 +792,24 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
         }
 
         #endregion
+
+        private MySqlConnection OpenConnectionInternal()
+        {
+            var csb = new MySqlConnectionStringBuilder(ConnectionString);
+            csb.AutoEnlist = false;
+
+            var cn = new MySqlConnection(csb.ConnectionString);
+            cn.Open();
+            return cn;
+        }
+
+        /// <summary>
+        /// Opens a connection to the MySQL database
+        /// </summary>
+        /// <returns></returns>
+        public override IDbConnection OpenConnection()
+        {
+            return OpenConnectionInternal();
+        }
     }
 }

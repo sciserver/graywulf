@@ -65,12 +65,9 @@ namespace Jhu.Graywulf.Web.UI.Query
 
             string sql = codegen.GenerateSelectStarQuery(q.Destination.GetTable(), 100);
 
-            using (var cn = new SqlConnection())
+            using (var cn = FederationContext.MyDBDataset.OpenConnection())
             {
-                cn.ConnectionString = FederationContext.MyDBDataset.ConnectionString;
-                cn.Open();
-
-                using (var cmd = cn.CreateCommand())
+                using (var cmd = FederationContext.MyDBDataset.CreateCommand())
                 {
                     cmd.CommandText = sql;
                     cmd.CommandType = CommandType.Text;
@@ -85,6 +82,7 @@ namespace Jhu.Graywulf.Web.UI.Query
 
         private void RenderTable(IDataReader dr)
         {
+            // TODO: merge this with peek.aspx
             var output = Response.Output;
 
             output.WriteLine("<table border=\"1\" cellspacing=\"0\" style=\"border-collapse:collapse\">");

@@ -318,7 +318,7 @@ WHERE o.type IN ({0}) AND
 
             sql = String.Format(sql, GetObjectTypeIdListString(obj.ObjectType));
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
@@ -359,7 +359,7 @@ WHERE o.type IN ({0}) AND
                 @"SELECT OBJECT_ID('{0}')",
                 GetObjectFullyResolvedName(databaseObject));
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
@@ -386,7 +386,7 @@ WHERE o.type IN ({0})
 
             sql = String.Format(sql, GetObjectTypeIdListString(Schema.Constants.DatabaseObjectTypes[typeof(T)]));
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
@@ -426,7 +426,7 @@ INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
 WHERE s.name = @schemaName AND o.name = @objectName
 ORDER BY c.column_id";
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
@@ -473,7 +473,7 @@ INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
 WHERE i.type IN (1, 2) AND
 s.name = @schemaName AND o.name = @objectName";
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
@@ -518,7 +518,7 @@ INNER JOIN sys.types t ON t.user_type_id = c.user_type_id
 WHERE i.name = @indexName
 ORDER BY ic.key_ordinal";
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
@@ -567,7 +567,7 @@ INNER JOIN sys.types t ON t.user_type_id = p.user_type_id
 WHERE s.name = @schemaName AND o.name = @objectName
 ORDER BY p.parameter_id";
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
@@ -622,7 +622,7 @@ WHERE p.class = 1 -- OBJECT_OR_COLUMN
     AND p.name LIKE 'meta.%'
 ORDER BY p.name";
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
@@ -712,7 +712,7 @@ ORDER BY c.name, p.name";
                 v.Metadata = new VariableMetadata();
             }
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
@@ -792,7 +792,7 @@ FROM sys.database_files f
 WHERE f.type = 1
 ";
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
@@ -860,7 +860,7 @@ INNER JOIN sys.partitions p	ON p.object_id = i.object_id AND p.index_id = i.inde
 WHERE s.name = @schemaName AND o.name = @objectName
 ";
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
@@ -920,7 +920,7 @@ WHERE s.name = @schemaName AND o.name = @objectName
                     QuoteIdentifier(obj.ObjectName));
             }
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
@@ -949,7 +949,7 @@ END",
                 Constants.SqlServerObjectTypeNames[obj.ObjectType],
                 GetObjectFullyResolvedName(obj));
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
@@ -996,7 +996,7 @@ END",
                 GetObjectFullyResolvedName(table),
                 cols.ToString());
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
@@ -1016,23 +1016,13 @@ END",
                 "TRUNCATE TABLE {0}",
                 GetObjectFullyResolvedName(table));
 
-            using (var cn = OpenConnection())
+            using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
                     cmd.ExecuteNonQuery();
                 }
             }
-        }
-
-        protected SqlConnection OpenConnection()
-        {
-            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(ConnectionString);
-            csb.Enlist = false;
-
-            SqlConnection cn = new SqlConnection(csb.ConnectionString);
-            cn.Open();
-            return cn;
         }
 
         private string GetObjectTypeIdListString(DatabaseObjectType objectType)
@@ -1224,6 +1214,21 @@ END",
         }
 
         #endregion
+
+        private SqlConnection OpenConnectionInternal()
+        {
+            var csb = new SqlConnectionStringBuilder(ConnectionString);
+            csb.Enlist = false;
+
+            var cn = new SqlConnection(csb.ConnectionString);
+            cn.Open();
+            return cn;
+        }
+
+        public override IDbConnection OpenConnection()
+        {
+            return OpenConnectionInternal();
+        }
 
     }
 }
