@@ -7,25 +7,24 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using Jhu.Graywulf.IO;
+using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Format;
 
 namespace Jhu.Graywulf.Format
 {
     [TestClass]
-    public class SqlServerNativeDataFileWriterTest
+    public class SqlServerNativeDataFileWriterTest : Jhu.Graywulf.Test.TestClassBase
     {
         [TestMethod]
         public void SimpleWriterTest()
         {
-            var uri = new Uri("SqlServerNativeDataFileWriterTest_SimpleWriterTest.dat.zip", UriKind.Relative);
+            var uri = GetTestFilename(".dat.zip");
 
             using (var nat = new SqlServerNativeDataFile(uri, DataFileMode.Write))
             {
-                using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.IOTestConnectionString))
+                using (var cn = IOTestDataset.OpenConnection())
                 {
-                    cn.Open();
-
-                    using (var cmd = new SqlCommand("SELECT * FROM SampleData_NumericTypes", cn))
+                    using (var cmd = IOTestDataset.CreateCommand("SELECT * FROM SampleData_NumericTypes", cn))
                     {
                         using (var dr = cmd.ExecuteReader())
                         {
@@ -39,15 +38,13 @@ namespace Jhu.Graywulf.Format
         [TestMethod]
         public void SimpleWriterNullsTest()
         {
-            var uri = new Uri("SqlServerNativeDataFileWriterTest_SimpleWriterNullsTest.dat.zip", UriKind.Relative);
+            var uri = GetTestFilename(".dat.zip");
 
             using (var nat = new SqlServerNativeDataFile(uri, DataFileMode.Write))
             {
-                using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.IOTestConnectionString))
+                using (var cn = IOTestDataset.OpenConnection())
                 {
-                    cn.Open();
-
-                    using (var cmd = new SqlCommand("SELECT * FROM SampleData_NumericTypes_Null", cn))
+                    using (var cmd = IOTestDataset.CreateCommand("SELECT * FROM SampleData_NumericTypes_Null", cn))
                     {
                         using (var dr = cmd.ExecuteReader())
                         {
@@ -61,15 +58,13 @@ namespace Jhu.Graywulf.Format
         [TestMethod]
         public void SimpleWriterAllTypesTest()
         {
-            var uri = new Uri("SqlServerNativeDataFileWriterTest_SimpleWriterAllTypesTest.dat.zip", UriKind.Relative);
+            var uri = GetTestFilename(".dat.zip");
 
             using (var nat = new SqlServerNativeDataFile(uri, DataFileMode.Write))
             {
-                using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.IOTestConnectionString))
+                using (var cn = IOTestDataset.OpenConnection())
                 {
-                    cn.Open();
-
-                    using (var cmd = new SqlCommand("SELECT * FROM SampleData_AllTypes", cn))
+                    using (var cmd = IOTestDataset.CreateCommand("SELECT * FROM SampleData_AllTypes", cn))
                     {
                         using (var dr = cmd.ExecuteReader())
                         {
@@ -83,15 +78,13 @@ namespace Jhu.Graywulf.Format
         [TestMethod]
         public void SimpleWriterAllTypesNullableTest()
         {
-            var uri = new Uri("SqlServerNativeDataFileWriterTest_SimpleWriterAllTypesNullableTest.dat.zip", UriKind.Relative);
+            var uri = GetTestFilename(".dat.zip");
 
             using (var nat = new SqlServerNativeDataFile(uri, DataFileMode.Write))
             {
-                using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.IOTestConnectionString))
+                using (var cn = IOTestDataset.OpenConnection())
                 {
-                    cn.Open();
-
-                    using (var cmd = new SqlCommand("SELECT * FROM SampleData_AllTypes_Nullable", cn))
+                    using (var cmd = IOTestDataset.CreateCommand("SELECT * FROM SampleData_AllTypes_Nullable", cn))
                     {
                         using (var dr = cmd.ExecuteReader())
                         {

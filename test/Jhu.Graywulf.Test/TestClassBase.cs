@@ -6,13 +6,21 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Test
 {
     public abstract class TestClassBase
     {
+        private SqlServerDataset ioTestDataset = new SqlServerDataset("Test", Jhu.Graywulf.Test.AppSettings.IOTestConnectionString);
+
+        protected SqlServerDataset IOTestDataset
+        {
+            get { return ioTestDataset; }
+        }
 
         #region Scheduler functions
 
@@ -36,7 +44,7 @@ namespace Jhu.Graywulf.Test
         {
             // TODO: throw exception on logon failure
             var ef = new EntityFactory(context);
-            
+
             //var c = ef.LoadEntity<Cluster>(Cluster.AppSettings.ClusterName);
             var d = ef.LoadEntity<Domain>(Registry.AppSettings.DomainName);
 
@@ -200,6 +208,35 @@ namespace Jhu.Graywulf.Test
                     cmd.ExecuteNonQuery();
                 }
             }
+        }
+
+        protected Uri GetTestFilename(string extension)
+        {
+            var fn = GetTestClassName() + "_" + GetTestMethodName() + extension;
+            return new Uri(fn, UriKind.Relative);
+        }
+
+        protected string GetTestClassName()
+        {
+            return GetType().Name;
+        }
+
+        protected string GetTestMethodName()
+        {
+            var stackTrace = new System.Diagnostics.StackTrace();
+
+            foreach (var stackFrame in stackTrace.GetFrames())
+            {
+                var methodBase = stackFrame.GetMethod();
+                var attributes = methodBase.GetCustomAttributes(typeof(TestMethodAttribute), false);
+
+                if (attributes.Length >= 1)
+                {
+                    return methodBase.Name;
+                }
+            }
+
+            return "Not called from a test method";
         }
     }
 }

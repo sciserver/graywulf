@@ -12,7 +12,7 @@ using Jhu.Graywulf.IO;
 namespace Jhu.Graywulf.Format
 {
     [TestClass]
-    public class DelimitedTextDataFileTest
+    public class DelimitedTextDataFileTest : Jhu.Graywulf.Test.TestClassBase
     {
         #region Reader tests
 
@@ -306,11 +306,9 @@ testline
         {
             var w = new StringWriter();
 
-            using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.IOTestConnectionString))
+            using (var cn = IOTestDataset.OpenConnection())
             {
-                cn.Open();
-
-                using (var cmd = new SqlCommand("SELECT SampleData.* FROM SampleData", cn))
+                using (var cmd = IOTestDataset.CreateCommand("SELECT SampleData.* FROM SampleData", cn))
                 {
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -333,11 +331,9 @@ testline
         {
             var w = new StringWriter();
 
-            using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.IOTestConnectionString))
+            using (var cn = IOTestDataset.OpenConnection())
             {
-                cn.Open();
-
-                using (var cmd = new SqlCommand("SELECT * FROM SampleData_AllTypes", cn))
+                using (var cmd = IOTestDataset.CreateCommand("SELECT * FROM SampleData_AllTypes", cn))
                 {
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -358,15 +354,13 @@ testline
         [TestMethod]
         public void CompressedWriterTest()
         {
-            var uri = new Uri("DelimitedTextDataFileTest_CompressedWriterTest.csv.gz", UriKind.Relative);
+            var uri = GetTestFilename(".csv.gz");
 
             using (var csv = new DelimitedTextDataFile(uri, DataFileMode.Write))
             {
-                using (var cn = new SqlConnection(Jhu.Graywulf.Test.AppSettings.IOTestConnectionString))
+                using (var cn = IOTestDataset.OpenConnection())
                 {
-                    cn.Open();
-
-                    using (var cmd = new SqlCommand("SELECT SampleData.* FROM SampleData", cn))
+                    using (var cmd = IOTestDataset.CreateCommand("SELECT SampleData.* FROM SampleData", cn))
                     {
                         using (var dr = cmd.ExecuteReader())
                         {

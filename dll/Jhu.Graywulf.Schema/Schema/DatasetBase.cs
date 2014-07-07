@@ -745,8 +745,29 @@ namespace Jhu.Graywulf.Schema
 
         public SmartCommand CreateCommand()
         {
+            return CreateCommand(null, null, null);
+        }
+
+        public SmartCommand CreateCommand(string commandText)
+        {
+            return CreateCommand(commandText, null, null);
+        }
+
+        public SmartCommand CreateCommand(string commandText, IDbConnection connection)
+        {
+            return CreateCommand(commandText, connection, null);
+        }
+
+        public SmartCommand CreateCommand(string commandText, IDbConnection connection, IDbTransaction transaction)
+        {
             var dbf = DbProviderFactories.GetFactory(this.ProviderName);
-            return new SmartCommand(this, dbf.CreateCommand());
+            var cmd = new SmartCommand(this, dbf.CreateCommand());
+
+            cmd.CommandText = commandText;
+            cmd.Connection = connection;
+            cmd.Transaction = transaction;
+
+            return cmd;
         }
 
         public IDbConnection OpenConnection()
