@@ -143,79 +143,6 @@ namespace Jhu.Graywulf.Schema.MySql
         }
 
         #endregion
-        #region Type conversion function
-
-        protected override DataType GetTypeFromProviderSpecificName(string name)
-        {
-            switch (name.ToLowerInvariant().Trim())
-            {
-                case Constants.TypeNameTinyInt:
-                    return DataType.SqlTinyInt;
-                case Constants.TypeNameSmallInt:
-                    return DataType.SqlSmallInt;
-                case Constants.TypeNameInt:
-                    return DataType.SqlInt;
-                case Constants.TypeNameMediumInt:
-                    return DataType.SqlBigInt;
-                case Constants.TypeNameBigInt:
-                    return DataType.SqlBigInt;
-                case Constants.TypeNameFloat:
-                    return DataType.SqlFloat;
-                case Constants.TypeNameDouble:
-                    return DataType.SqlReal;
-                case Constants.TypeNameDecimal:
-                    return DataType.SqlDecimal;
-                case Constants.TypeNameDate:
-                    return DataType.SqlDate;
-                case Constants.TypeNameYear:
-                    return DataType.SqlTinyInt;
-                case Constants.TypeNameTime:
-                    return DataType.SqlTime;
-                case Constants.TypeNameDateTime:
-                    return DataType.SqlDateTime;
-                case Constants.TypeNameTimestamp:
-                    return DataType.SqlTimestamp;
-                case Constants.TypeNameTinyText:
-                    return DataType.SqlText;
-                case Constants.TypeNameText:
-                    return DataType.SqlText;
-                case Constants.TypeNameMediumText:
-                    return DataType.SqlText;
-                case Constants.TypeNameLongText:
-                    return DataType.SqlText;
-                case Constants.TypeNameTinyBlob:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameBlob:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameMediumBlob:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameLongBlob:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameBit:
-                    return DataType.SqlBit;
-                case Constants.TypeNameSet:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameEnum:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameBinary:
-                    return DataType.SqlBinary;
-                case Constants.TypeNameVarBinary:
-                    return DataType.SqlVarBinary;
-                case Constants.TypeNameGeometry:
-                    return DataType.SqlNVarChar;
-                case Constants.TypeNameChar:
-                    return DataType.SqlChar;
-                case Constants.TypeNameVarChar:
-                    return DataType.SqlVarChar;
-                case Constants.TypeNameXml:
-                    return DataType.SqlXml;
-
-                default:
-                    return DataType.Unknown;
-            }
-        }
-
-        #endregion
 
         /// <summary>
         /// Loads the schema of a database object belonging to the dataset.
@@ -382,7 +309,7 @@ WHERE table_schema LIKE @databaseName AND table_name LIKE @tableName;";
                                 Name = dr.GetString(1),
                             };
 
-                            cd.DataType = GetTypeFromProviderSpecificName(
+                            cd.DataType = CreateDataType(
                                 dr.GetString(2),
                                 dr.GetInt64(3) > Int32.MaxValue ? Int32.MaxValue : Convert.ToInt32(dr.GetInt64(3)),
                                 Convert.ToByte(dr.GetValue(4)),
@@ -484,7 +411,7 @@ WHERE t.table_schema LIKE @databaseName AND kcu.table_name LIKE @tableName AND k
                                 IsIdentity = dr.IsDBNull(7) ? false : true
                             };
 
-                            ic.DataType = GetTypeFromProviderSpecificName(
+                            ic.DataType = CreateDataType(
                                 dr.GetString(3),
                                 dr.GetInt64(4) > Int32.MaxValue ? Int32.MaxValue : Convert.ToInt32(dr.GetInt64(4)),
                                 Convert.ToByte(dr.GetValue(5)),
@@ -560,7 +487,7 @@ ORDER BY 1;";
                                 DefaultValue = null,
                             };
 
-                            par.DataType = GetTypeFromProviderSpecificName(
+                            par.DataType = CreateDataType(
                                 dr.GetString(3),
                                 Convert.ToInt32(dr.GetValue(4)),
                                 Convert.ToByte(dr.GetValue(5)),
@@ -789,5 +716,95 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
             return csb.ConnectionString;
         }
 
+        #region Type conversion functions
+
+        /// <summary>
+        /// Creates a data type based on a schema table row
+        /// </summary>
+        /// <param name="dr"></param>
+        /// <returns></returns>
+        protected override DataType CreateDataType(DataRow dr)
+        {
+            Type type;
+            string name;
+            int length;
+            byte precision, scale;
+            bool isNullable;
+
+            GetDataTypeDetails(dr, out type, out name, out length, out precision, out scale, out isNullable);
+
+            return CreateDataType(name, length, scale, precision, isNullable);
+        }
+
+        protected override DataType CreateDataType(string name)
+        {
+            switch (name.ToLowerInvariant().Trim())
+            {
+                case Constants.TypeNameTinyInt:
+                    return DataTypes.SqlTinyInt;
+                case Constants.TypeNameSmallInt:
+                    return DataTypes.SqlSmallInt;
+                case Constants.TypeNameInt:
+                    return DataTypes.SqlInt;
+                case Constants.TypeNameMediumInt:
+                    return DataTypes.SqlBigInt;
+                case Constants.TypeNameBigInt:
+                    return DataTypes.SqlBigInt;
+                case Constants.TypeNameFloat:
+                    return DataTypes.SqlFloat;
+                case Constants.TypeNameDouble:
+                    return DataTypes.SqlReal;
+                case Constants.TypeNameDecimal:
+                    return DataTypes.SqlDecimal;
+                case Constants.TypeNameDate:
+                    return DataTypes.SqlDate;
+                case Constants.TypeNameYear:
+                    return DataTypes.SqlTinyInt;
+                case Constants.TypeNameTime:
+                    return DataTypes.SqlTime;
+                case Constants.TypeNameDateTime:
+                    return DataTypes.SqlDateTime;
+                case Constants.TypeNameTimestamp:
+                    return DataTypes.SqlTimestamp;
+                case Constants.TypeNameTinyText:
+                    return DataTypes.SqlText;
+                case Constants.TypeNameText:
+                    return DataTypes.SqlText;
+                case Constants.TypeNameMediumText:
+                    return DataTypes.SqlText;
+                case Constants.TypeNameLongText:
+                    return DataTypes.SqlText;
+                case Constants.TypeNameTinyBlob:
+                    return DataTypes.SqlNVarChar;
+                case Constants.TypeNameBlob:
+                    return DataTypes.SqlNVarChar;
+                case Constants.TypeNameMediumBlob:
+                    return DataTypes.SqlNVarChar;
+                case Constants.TypeNameLongBlob:
+                    return DataTypes.SqlNVarChar;
+                case Constants.TypeNameBit:
+                    return DataTypes.SqlBit;
+                case Constants.TypeNameSet:
+                    return DataTypes.SqlNVarChar;
+                case Constants.TypeNameEnum:
+                    return DataTypes.SqlNVarChar;
+                case Constants.TypeNameBinary:
+                    return DataTypes.SqlBinary;
+                case Constants.TypeNameVarBinary:
+                    return DataTypes.SqlVarBinary;
+                case Constants.TypeNameGeometry:
+                    return DataTypes.SqlNVarChar;
+                case Constants.TypeNameChar:
+                    return DataTypes.SqlChar;
+                case Constants.TypeNameVarChar:
+                    return DataTypes.SqlVarChar;
+                case Constants.TypeNameXml:
+                    return DataTypes.SqlXml;
+                default:
+                    return base.CreateDataType(name);
+            }
+        }
+
+        #endregion
     }
 }

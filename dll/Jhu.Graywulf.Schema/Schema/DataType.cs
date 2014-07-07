@@ -12,869 +12,11 @@ namespace Jhu.Graywulf.Schema
     [DataContract(Namespace = "")]
     public class DataType : ICloneable
     {
-
-        #region Static properties to directly create types
-
-        public static DataType Unknown
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameUnknown
-                };
-            }
-        }
-
-        public static DataType SqlTinyInt
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameTinyInt,
-                    Type = typeof(Byte),
-                    SqlDbType = System.Data.SqlDbType.TinyInt,
-                    ByteSize = sizeof(Byte),
-                    Scale = 0,
-                    Precision = 3
-                };
-            }
-        }
-
-        public static DataType SqlSmallInt
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameSmallInt,
-                    Type = typeof(Int16),
-                    SqlDbType = System.Data.SqlDbType.SmallInt,
-                    ByteSize = sizeof(Int16),
-                    Scale = 0,
-                    Precision = 5,
-                };
-            }
-        }
-
-        public static DataType SqlInt
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameInt,
-                    Type = typeof(Int32),
-                    SqlDbType = System.Data.SqlDbType.Int,
-                    ByteSize = sizeof(Int32),
-                    Scale = 0,
-                    Precision = 10
-                };
-            }
-        }
-
-        public static DataType SqlBigInt
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameBigInt,
-                    Type = typeof(Int64),
-                    SqlDbType = System.Data.SqlDbType.BigInt,
-                    ByteSize = sizeof(Int64),
-                    Scale = 0,
-                    Precision = 19
-                };
-            }
-        }
-
-        public static DataType SqlBit
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameBit,
-                    Type = typeof(Boolean),
-                    SqlDbType = System.Data.SqlDbType.Bit,
-                    ByteSize = 1,   // well, sort of...
-                    Scale = 0,
-                    Precision = 1,
-                };
-            }
-        }
-
-        public static DataType SqlDecimal
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameDecimal,
-                    Type = typeof(Decimal),
-                    SqlDbType = System.Data.SqlDbType.Decimal,
-                    ByteSize = sizeof(Decimal),
-                    Scale = 0,      // default value
-                    Precision = 18, // default value
-                };
-            }
-        }
-
-        public static DataType SqlSmallMoney
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameSmallMoney,
-                    Type = typeof(Decimal),
-                    SqlDbType = System.Data.SqlDbType.SmallMoney,
-                    ByteSize = sizeof(Decimal),
-                    Scale = 4,
-                    Precision = 10
-                };
-            }
-        }
-
-        public static DataType SqlMoney
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameMoney,
-                    Type = typeof(Decimal),
-                    SqlDbType = System.Data.SqlDbType.Money,
-                    ByteSize = sizeof(Decimal),
-                    Scale = 4,
-                    Precision = 19
-                };
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <remarks>
-        /// Alias to decimal
-        /// </remarks>
-        public static DataType SqlNumeric
-        {
-            get
-            {
-                return SqlDecimal;
-            }
-        }
-
-        public static DataType SqlReal
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameReal,
-                    Type = typeof(Single),
-                    SqlDbType = System.Data.SqlDbType.Real,
-                    ByteSize = sizeof(Single),
-                    Scale = 0,
-                    Precision = 24
-                };
-            }
-        }
-
-        public static DataType SqlFloat
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameFloat,
-                    Type = typeof(Double),
-                    SqlDbType = System.Data.SqlDbType.Float,
-                    ByteSize = sizeof(Double),
-                    Scale = 0,
-                    Precision = 53,
-                };
-            }
-        }
-
-        public static DataType SqlDate
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameDate,
-                    Type = typeof(DateTime),
-                    SqlDbType = System.Data.SqlDbType.Date,
-                    ByteSize = 8,
-                    Scale = 0,
-                    Precision = 10,
-                };
-            }
-        }
-
-        public static DataType SqlTime
-        {
-            // The equivalent of SqlTime is TimeSpan
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameTime,
-                    Type = typeof(TimeSpan),
-                    SqlDbType = System.Data.SqlDbType.Time,
-                    ByteSize = 8,
-                    Scale = 7,
-                    Precision = 16
-                };
-            }
-        }
-
-        public static DataType SqlSmallDateTime
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameSmallDateTime,
-                    Type = typeof(DateTime),
-                    SqlDbType = System.Data.SqlDbType.SmallDateTime,
-                    ByteSize = 8
-                };
-            }
-        }
-
-        public static DataType SqlDateTime
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameDateTime,
-                    Type = typeof(DateTime),
-                    SqlDbType = System.Data.SqlDbType.DateTime,
-                    ByteSize = 8,
-                    Scale = 3,
-                    Precision = 23
-                };
-            }
-        }
-
-        public static DataType SqlDateTime2
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameDateTime2,
-                    Type = typeof(DateTime),
-                    SqlDbType = System.Data.SqlDbType.DateTime2,
-                    ByteSize = 8
-                };
-            }
-        }
-
-        public static DataType SqlDateTimeOffset
-        {
-            // This is not a TimeSpan but a time with a time zone offset!
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameDateTimeOffset,
-                    Type = typeof(DateTimeOffset),
-                    SqlDbType = System.Data.SqlDbType.DateTimeOffset,
-                    ByteSize = 8,
-                    Scale = 7,
-                    Precision = 34
-                };
-            }
-        }
-
-        public static DataType SqlChar
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameChar,
-                    Type = typeof(String),
-                    SqlDbType = System.Data.SqlDbType.Char,
-                    ByteSize = 1,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = 1,
-                    MaxLength = 8000,
-                    IsVarLength = false
-                };
-            }
-        }
-
-        public static DataType SqlVarChar
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameVarChar,
-                    Type = typeof(String),
-                    SqlDbType = System.Data.SqlDbType.VarChar,
-                    ByteSize = 1,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = 1,
-                    MaxLength = 8000,
-                    IsVarLength = true
-                };
-            }
-        }
-
-        public static DataType SqlVarCharMax
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameVarChar,
-                    Type = typeof(String),
-                    SqlDbType = System.Data.SqlDbType.VarChar,
-                    ByteSize = 1,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = -1,
-                    MaxLength = -1,
-                    IsVarLength = true
-                };
-            }
-        }
-
-        public static DataType SqlText
-        {
-            // This differs from varchar(max) in internal representations
-            // and must be serialized differently into the native format
-
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameText,
-                    Type = typeof(String),
-                    SqlDbType = System.Data.SqlDbType.Text,
-                    ByteSize = 1,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = -1,
-                    MaxLength = -1,
-                    IsVarLength = true
-                };
-            }
-        }
-
-        public static DataType SqlNChar
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameNChar,
-                    Type = typeof(String),
-                    SqlDbType = System.Data.SqlDbType.NChar,
-                    ByteSize = 2,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = 1,
-                    MaxLength = 4000,
-                    IsVarLength = false
-                };
-            }
-        }
-
-        public static DataType SqlNVarChar
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameNVarChar,
-                    Type = typeof(String),
-                    SqlDbType = System.Data.SqlDbType.NVarChar,
-                    ByteSize = 2,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = 1,
-                    MaxLength = 4000,
-                    IsVarLength = true
-                };
-            }
-        }
-
-        public static DataType SqlNVarCharMax
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameNVarChar,
-                    Type = typeof(String),
-                    SqlDbType = System.Data.SqlDbType.NVarChar,
-                    ByteSize = 2,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = -1,
-                    MaxLength = -1,
-                    IsVarLength = true
-                };
-            }
-        }
-
-        public static DataType SqlNText
-        {
-            // This is stored differently than nvarchar(max) and prefix is
-            // different for native serialization
-
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameNText,
-                    Type = typeof(String),
-                    SqlDbType = System.Data.SqlDbType.NText,
-                    ByteSize = 2,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = -1,
-                    MaxLength = -1,
-                    IsVarLength = true
-                };
-            }
-        }
-
-        public static DataType SqlXml
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public static DataType SqlBinary
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameBinary,
-                    Type = typeof(Byte[]),
-                    SqlDbType = System.Data.SqlDbType.Binary,
-                    ByteSize = 1,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = 1,
-                    MaxLength = 8000,
-                    IsVarLength = false
-                };
-            }
-        }
-
-        public static DataType SqlVarBinary
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameVarBinary,
-                    Type = typeof(Byte[]),
-                    SqlDbType = System.Data.SqlDbType.VarBinary,
-                    ByteSize = 1,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = 1,
-                    MaxLength = 8000,
-                    IsVarLength = true
-                };
-            }
-        }
-
-        public static DataType SqlVarBinaryMax
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameVarBinary,
-                    Type = typeof(Byte[]),
-                    SqlDbType = System.Data.SqlDbType.VarBinary,
-                    ByteSize = 1,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = -1,
-                    MaxLength = -1,
-                    IsVarLength = true
-                };
-            }
-        }
-
-        public static DataType SqlImage
-        {
-            // This is different internally from varbinary(max)
-            // It has a shorter prefix in native format.
-
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameImage,
-                    Type = typeof(Byte[]),
-                    SqlDbType = System.Data.SqlDbType.Image,
-                    ByteSize = 1,
-                    Scale = 0,
-                    Precision = 0,
-                    Length = -1,
-                    MaxLength = -1,
-                    IsVarLength = true
-                };
-            }
-        }
-
-        public static DataType SqlVariant
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public static DataType SqlTimestamp
-        {
-            // SQL timestamp columns is byte[8]
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameTimestamp,
-                    Type = typeof(Byte[]),
-                    SqlDbType = System.Data.SqlDbType.Timestamp,
-                    ByteSize = 8,
-                    Scale = 0,
-                    Precision = 0
-                };
-            }
-        }
-
-        public static DataType SqlUniqueIdentifier
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = SqlServer.Constants.TypeNameUniqueIdentifier,
-                    Type = typeof(Guid),
-                    SqlDbType = System.Data.SqlDbType.UniqueIdentifier,
-                    ByteSize = 16,
-                    Scale = 0,
-                    Precision = 0
-                };
-            }
-        }
-
-        // TODO: missing: cursor, hierarchyid, table
-
-        // --- .Net types
-
-        public static DataType Boolean
-        {
-            get
-            {
-                return SqlBit;
-            }
-        }
-
-        public static DataType SByte
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = null,
-                    Type = typeof(SByte),
-                    SqlDbType = null,
-                    ByteSize = 1,
-                    Scale = 0,
-                    Precision = 3
-                };
-
-            }
-        }
-
-        public static DataType Byte
-        {
-            get
-            {
-                return SqlTinyInt;
-            }
-        }
-
-        public static DataType Int16
-        {
-            get
-            {
-                return SqlSmallInt;
-            }
-        }
-
-        public static DataType UInt16
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = null,
-                    Type = typeof(UInt16),
-                    SqlDbType = null,
-                    ByteSize = sizeof(UInt16),
-                    Scale = 0,
-                    Precision = 5,
-                };
-            }
-        }
-
-        public static DataType Int32
-        {
-            get
-            {
-                return SqlInt;
-            }
-        }
-
-        public static DataType UInt32
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = null,
-                    Type = typeof(UInt32),
-                    SqlDbType = null,
-                    ByteSize = sizeof(UInt32),
-                    Scale = 0,
-                    Precision = 10
-                };
-            }
-        }
-
-        public static DataType Int64
-        {
-            get
-            {
-                return SqlBigInt;
-            }
-        }
-
-        public static DataType UInt64
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = null,
-                    Type = typeof(UInt64),
-                    SqlDbType = null,
-                    ByteSize = sizeof(UInt64),
-                    Scale = 0,
-                    Precision = 19
-                };
-            }
-        }
-
-        public static DataType Single
-        {
-            get { return SqlReal; }
-        }
-
-        public static DataType Double
-        {
-            get { return SqlFloat; }
-        }
-
-        public static DataType Decimal
-        {
-            get { return SqlMoney; }
-        }
-
-        public static DataType DateTime
-        {
-            get { return SqlDateTime2; }
-        }
-
-        public static DataType DateTimeOffset
-        {
-            get { return SqlDateTimeOffset; }
-        }
-
-        public static DataType Guid
-        {
-            get { return SqlUniqueIdentifier; }
-        }
-
-        public static DataType SingleComplex
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = null,
-                    Type = typeof(SingleComplex),
-                    SqlDbType = null,
-                    ByteSize = 8,
-                    Scale = 0,
-                    Precision = 24
-                };
-            }
-        }
-
-        public static DataType DoubleComplex
-        {
-            get
-            {
-                return new DataType()
-                {
-                    Name = null,
-                    Type = typeof(DoubleComplex),
-                    SqlDbType = null,
-                    ByteSize = 16,
-                    Scale = 0,
-                    Precision = 53,
-                };
-            }
-        }
-
-        public static DataType Char
-        {
-            get { return SqlNChar; }
-        }
-
-        public static DataType String
-        {
-            get { return SqlNVarChar; }
-        }
-
-        #endregion
         #region Static functions to create types
 
-        public static DataType Create(SqlDbType type, int length, byte precision, byte scale, bool isNullable)
+        public static DataType Create(Type type, int length)
         {
-            DataType dt;
-
-            switch (type)
-            {
-                case System.Data.SqlDbType.Bit:
-                    dt = DataType.SqlBit;
-                    break;
-                case System.Data.SqlDbType.TinyInt:
-                    dt = DataType.SqlTinyInt;
-                    break;
-                case System.Data.SqlDbType.SmallInt:
-                    dt = DataType.SqlSmallInt;
-                    break;
-                case System.Data.SqlDbType.Int:
-                    dt = DataType.SqlInt;
-                    break;
-                case System.Data.SqlDbType.BigInt:
-                    dt = DataType.SqlBigInt;
-                    break;
-                case System.Data.SqlDbType.Real:
-                    dt = DataType.SqlReal;
-                    break;
-                case System.Data.SqlDbType.Float:
-                    dt = DataType.SqlFloat;
-                    break;
-                case System.Data.SqlDbType.Image:
-                    dt = DataType.SqlImage;
-                    break;
-                case System.Data.SqlDbType.Binary:
-                    dt = DataType.SqlBinary;
-                    break;
-                case System.Data.SqlDbType.VarBinary:
-                    dt = DataType.SqlVarBinary;
-                    break;
-                case System.Data.SqlDbType.Text:
-                    dt = DataType.SqlText;
-                    break;
-                case System.Data.SqlDbType.Char:
-                    dt = DataType.SqlChar;
-                    break;
-                case System.Data.SqlDbType.VarChar:
-                    dt = DataType.SqlVarChar;
-                    break;
-                case System.Data.SqlDbType.NText:
-                    dt = DataType.SqlNText;
-                    break;
-                case System.Data.SqlDbType.NChar:
-                    dt = DataType.SqlNChar;
-                    break;
-                case System.Data.SqlDbType.NVarChar:
-                    dt = DataType.SqlNVarChar;
-                    break;
-                case System.Data.SqlDbType.Date:
-                    dt = DataType.SqlDate;
-                    break;
-                case System.Data.SqlDbType.DateTime:
-                    dt = DataType.SqlDateTime;
-                    break;
-                case System.Data.SqlDbType.DateTime2:
-                    dt = DataType.SqlDateTime2;
-                    break;
-                case System.Data.SqlDbType.DateTimeOffset:
-                    dt = DataType.SqlDateTimeOffset;
-                    break;
-                case System.Data.SqlDbType.SmallDateTime:
-                    dt = DataType.SqlSmallDateTime;
-                    break;
-                case System.Data.SqlDbType.Time:
-                    dt = DataType.SqlTime;
-                    break;
-                case System.Data.SqlDbType.Timestamp:
-                    dt = DataType.SqlTimestamp;
-                    break;
-                case System.Data.SqlDbType.Decimal:
-                    dt = DataType.SqlDecimal;
-                    dt.Precision = precision;
-                    dt.Scale = scale;
-                    break;
-                case System.Data.SqlDbType.SmallMoney:
-                    dt = DataType.SqlSmallMoney;
-                    break;
-                case System.Data.SqlDbType.Money:
-                    dt = DataType.SqlMoney;
-                    break;
-                case System.Data.SqlDbType.UniqueIdentifier:
-                    dt = DataType.SqlUniqueIdentifier;
-                    break;
-                case System.Data.SqlDbType.Variant:
-                    dt = DataType.SqlVariant;
-                    break;
-                case System.Data.SqlDbType.Xml:
-                    dt = DataType.SqlXml;
-                    break;
-                case System.Data.SqlDbType.Structured:
-                    throw new NotImplementedException();
-                case System.Data.SqlDbType.Udt:
-                    throw new NotImplementedException();
-                default:
-                    throw new NotImplementedException();
-            }
-
-            if (dt.HasLength)
-            {
-                dt.Length = length;
-            }
-
-            dt.IsNullable = isNullable;
-
-            return dt;
+            return Create(type, length, 0, 0, false);
         }
 
         /// <summary>
@@ -883,92 +25,108 @@ namespace Jhu.Graywulf.Schema
         /// <param name="type"></param>
         /// <param name="length"></param>
         /// <returns></returns>
-        public static DataType Create(Type type, int length)
+        public static DataType Create(Type type, int length, byte precision, byte scale, bool isNullable)
         {
+            DataType dt;
+
             if (type == typeof(Boolean))
             {
-                return DataType.Boolean;
+                dt = DataTypes.Boolean;
             }
             else if (type == typeof(SByte))
             {
-                return DataType.SByte;
+                dt = DataTypes.SByte;
             }
             else if (type == typeof(Byte))
             {
-                return DataType.Byte;
+                dt = DataTypes.Byte;
             }
             else if (type == typeof(Int16))
             {
-                return DataType.Int16;
+                dt = DataTypes.Int16;
             }
             else if (type == typeof(UInt16))
             {
-                return DataType.UInt16;
+                dt = DataTypes.UInt16;
             }
             else if (type == typeof(Int32))
             {
-                return DataType.Int32;
+                dt = DataTypes.Int32;
             }
             else if (type == typeof(UInt32))
             {
-                return DataType.UInt32;
+                dt = DataTypes.UInt32;
             }
             else if (type == typeof(Int64))
             {
-                return DataType.Int64;
+                dt = DataTypes.Int64;
             }
             else if (type == typeof(UInt64))
             {
-                return DataType.UInt64;
+                dt = DataTypes.UInt64;
             }
             else if (type == typeof(Single))
             {
-                return DataType.Single;
+                dt = DataTypes.Single;
             }
             else if (type == typeof(Double))
             {
-                return DataType.Double;
+                dt = DataTypes.Double;
             }
             else if (type == typeof(Decimal))
             {
-                return DataType.Decimal;
+                dt = DataTypes.Decimal;
             }
             else if (type == typeof(DateTime))
             {
-                return DataType.DateTime;
+                dt = DataTypes.DateTime;
             }
             else if (type == typeof(Guid))
             {
-                return DataType.Guid;
+                dt = DataTypes.Guid;
             }
             else if (type == typeof(char))
             {
-                return DataType.Char;
+                dt = DataTypes.Char;
             }
             else if (type == typeof(char[]))
             {
-                var dt = DataType.String;
-                dt.Length = length;
-                return dt;
+                dt = DataTypes.String;
             }
             else if (type == typeof(string))
             {
-                var dt = DataType.SqlNVarChar;
-                dt.Length = length;
-                return dt;
+                dt = DataTypes.SqlNVarChar;
             }
             else if (type == typeof(byte[]))
             {
-                var dt = DataType.SqlVarBinary;
-                dt.Length = length;
-                return dt;
+                dt = DataTypes.SqlVarBinary;
             }
             else
             {
                 throw new NotImplementedException();
             }
+
+            if (dt.HasLength)
+            {
+                dt.Length = length;
+            }
+
+            if (dt.HasPrecision)
+            {
+                dt.Precision = precision;
+            }
+
+            if (dt.HasScale)
+            {
+                dt.Scale = scale;
+            }
+
+            dt.IsNullable = isNullable;
+
+            return dt;
         }
 
+        /* TODO: delete
         public static DataType Create(DataRow dr)
         {
             // Get .Net type and other parameters
@@ -994,7 +152,7 @@ namespace Jhu.Graywulf.Schema
             }
 
             return dt;
-        }
+        }*/
 
         #endregion
         #region Private variables for property storage
@@ -1087,7 +245,7 @@ namespace Jhu.Graywulf.Schema
         public string Name
         {
             get { return name; }
-            private set { name = value; }
+            internal set { name = value; }
         }
 
         /// <summary>
@@ -1123,7 +281,7 @@ namespace Jhu.Graywulf.Schema
         public Type Type
         {
             get { return type; }
-            private set { type = value; }
+            internal set { type = value; }
         }
 
         [DataMember]
@@ -1140,7 +298,7 @@ namespace Jhu.Graywulf.Schema
         public SqlDbType? SqlDbType
         {
             get { return sqlDbType; }
-            private set { sqlDbType = value; }
+            internal set { sqlDbType = value; }
         }
 
         /// <summary>
@@ -1150,7 +308,7 @@ namespace Jhu.Graywulf.Schema
         public int ByteSize
         {
             get { return byteSize; }
-            private set { byteSize = value; }
+            internal set { byteSize = value; }
         }
 
         /// <summary>
@@ -1199,7 +357,7 @@ namespace Jhu.Graywulf.Schema
         public int MaxLength
         {
             get { return maxLength; }
-            private set { maxLength = value; }
+            internal set { maxLength = value; }
         }
 
         /// <summary>
@@ -1209,7 +367,7 @@ namespace Jhu.Graywulf.Schema
         public bool IsVarLength
         {
             get { return isVarLength; }
-            private set { isVarLength = value; }
+            internal set { isVarLength = value; }
         }
 
         /// <summary>
@@ -1306,6 +464,42 @@ namespace Jhu.Graywulf.Schema
                         return true;
                     default:
                         throw new NotImplementedException();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets if the precision of the data type can be set
+        /// </summary>
+        [IgnoreDataMember]
+        public bool HasPrecision
+        {
+            get
+            {
+                switch (sqlDbType)
+                {
+                    case System.Data.SqlDbType.Decimal:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets if the scale of the data type can be set
+        /// </summary>
+        [IgnoreDataMember]
+        public bool HasScale
+        {
+            get
+            {
+                switch (sqlDbType)
+                {
+                    case System.Data.SqlDbType.Decimal:
+                        return true;
+                    default:
+                        return false;
                 }
             }
         }
@@ -1413,12 +607,12 @@ namespace Jhu.Graywulf.Schema
         #endregion
         #region Constructors and initializers
 
-        protected DataType()
+        internal DataType()
         {
             InitializeMembers();
         }
 
-        public DataType(DataType old)
+        internal DataType(DataType old)
         {
             CopyMembers(old);
         }

@@ -101,7 +101,7 @@ namespace Jhu.Graywulf.SqlParser
             this.tableReference = null;
 
             this.columnName = null;
-            this.dataType = DataType.Unknown;
+            this.dataType = DataTypes.Unknown;
             this.columnAlias = null;
 
             this.isStar = false;

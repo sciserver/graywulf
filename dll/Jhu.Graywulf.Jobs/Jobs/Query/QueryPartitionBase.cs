@@ -490,7 +490,7 @@ namespace Jhu.Graywulf.Jobs.Query
                                 var source = GetOutputSourceQuery();
 
                                 var table = query.Destination.GetTable();
-                                table.Initialize(source.GetSchemaTable(), query.Destination.Options);
+                                table.Initialize(source.GetColumns(), query.Destination.Options);
                             }
 
                             query.IsDestinationTableInitialized = true;

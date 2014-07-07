@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using Jhu.Graywulf.Schema;
 
@@ -223,76 +224,81 @@ namespace Jhu.Graywulf.Schema.SqlServer
         #endregion
         #region Type conversion function
 
+        // TODO: delete
+
+        /*
         protected override DataType GetTypeFromProviderSpecificName(string name)
         {
             switch (name.ToLowerInvariant().Trim())
             {
                 case Constants.TypeNameTinyInt:
-                    return DataType.SqlTinyInt;
+                    return DataTypes.SqlTinyInt;
                 case Constants.TypeNameSmallInt:
-                    return DataType.SqlSmallInt;
+                    return DataTypes.SqlSmallInt;
                 case Constants.TypeNameInt:
-                    return DataType.SqlInt;
+                    return DataTypes.SqlInt;
                 case Constants.TypeNameBigInt:
-                    return DataType.SqlBigInt;
+                    return DataTypes.SqlBigInt;
                 case Constants.TypeNameBit:
-                    return DataType.SqlBit;
+                    return DataTypes.SqlBit;
                 case Constants.TypeNameDecimal:
-                    return DataType.SqlDecimal;
+                    return DataTypes.SqlDecimal;
                 case Constants.TypeNameSmallMoney:
-                    return DataType.SqlSmallMoney;
+                    return DataTypes.SqlSmallMoney;
                 case Constants.TypeNameMoney:
-                    return DataType.SqlMoney;
+                    return DataTypes.SqlMoney;
                 case Constants.TypeNameNumeric:
-                    return DataType.SqlNumeric;
+                    return DataTypes.SqlNumeric;
                 case Constants.TypeNameReal:
-                    return DataType.SqlReal;
+                    return DataTypes.SqlReal;
                 case Constants.TypeNameFloat:
-                    return DataType.SqlFloat;
+                    return DataTypes.SqlFloat;
                 case Constants.TypeNameDate:
-                    return DataType.SqlDate;
+                    return DataTypes.SqlDate;
                 case Constants.TypeNameTime:
-                    return DataType.SqlTime;
+                    return DataTypes.SqlTime;
                 case Constants.TypeNameSmallDateTime:
-                    return DataType.SqlSmallDateTime;
+                    return DataTypes.SqlSmallDateTime;
                 case Constants.TypeNameDateTime:
-                    return DataType.SqlDateTime;
+                    return DataTypes.SqlDateTime;
                 case Constants.TypeNameDateTime2:
-                    return DataType.SqlDateTime2;
+                    return DataTypes.SqlDateTime2;
                 case Constants.TypeNameDateTimeOffset:
-                    return DataType.SqlDateTimeOffset;
+                    return DataTypes.SqlDateTimeOffset;
                 case Constants.TypeNameChar:
-                    return DataType.SqlChar;
+                    return DataTypes.SqlChar;
                 case Constants.TypeNameVarChar:
-                    return DataType.SqlVarChar;
+                    return DataTypes.SqlVarChar;
                 case Constants.TypeNameText:
-                    return DataType.SqlText;
+                    return DataTypes.SqlText;
                 case Constants.TypeNameNChar:
-                    return DataType.SqlNChar;
+                    return DataTypes.SqlNChar;
                 case Constants.TypeNameNVarChar:
-                    return DataType.SqlNVarChar;
+                    return DataTypes.SqlNVarChar;
                 case Constants.TypeNameNText:
-                    return DataType.SqlNText;
+                    return DataTypes.SqlNText;
                 case Constants.TypeNameXml:
-                    return DataType.SqlXml;
+                    return DataTypes.SqlXml;
                 case Constants.TypeNameBinary:
-                    return DataType.SqlBinary;
+                    return DataTypes.SqlBinary;
                 case Constants.TypeNameVarBinary:
-                    return DataType.SqlVarBinary;
+                    return DataTypes.SqlVarBinary;
                 case Constants.TypeNameImage:
-                    return DataType.SqlImage;
+                    return DataTypes.SqlImage;
                 case Constants.TypeNameSqlVariant:
-                    return DataType.SqlVariant;
+                    return DataTypes.SqlVariant;
                 case Constants.TypeNameTimestamp:
-                    return DataType.SqlTimestamp;
+                    return DataTypes.SqlTimestamp;
                 case Constants.TypeNameUniqueIdentifier:
-                    return DataType.SqlUniqueIdentifier;
+                    return DataTypes.SqlUniqueIdentifier;
                 default:
                     throw new ArgumentOutOfRangeException("name");
             }
         }
+        */
 
         #endregion
+        #region Schema objects
 
         /// <summary>
         /// Loads the schema of a database object belonging to the dataset.
@@ -438,7 +444,7 @@ ORDER BY c.column_id";
                                 IsIdentity = dr.GetBoolean(7)
                             };
 
-                            cd.DataType = GetTypeFromProviderSpecificName(
+                            cd.DataType = CreateDataType(
                                 dr.GetString(2),
                                 Convert.ToInt32(dr.GetValue(3)),
                                 Convert.ToByte(dr.GetValue(4)),
@@ -531,7 +537,7 @@ ORDER BY ic.key_ordinal";
                                 IsIdentity = dr.GetBoolean(8),
                             };
 
-                            ic.DataType = GetTypeFromProviderSpecificName(
+                            ic.DataType = CreateDataType(
                                 dr.GetString(4),
                                 Convert.ToInt32(dr.GetValue(5)),
                                 Convert.ToByte(dr.GetValue(6)),
@@ -584,7 +590,7 @@ ORDER BY p.parameter_id";
                                 DefaultValue = dr.IsDBNull(8) ? null : dr.GetValue(8),
                             };
 
-                            par.DataType = GetTypeFromProviderSpecificName(
+                            par.DataType = CreateDataType(
                                 dr.GetString(3),
                                 Convert.ToInt32(dr.GetValue(4)),
                                 Convert.ToByte(dr.GetValue(5)),
@@ -597,7 +603,7 @@ ORDER BY p.parameter_id";
                 }
             }
         }
-
+        #endregion
         #region Metadata
 
         /// <summary>
@@ -954,6 +960,8 @@ END",
 
         internal override void CreateTable(Table table)
         {
+            // TODO: move to codegen
+
             if (!IsMutable)
             {
                 throw new InvalidOperationException();
@@ -1052,6 +1060,170 @@ END",
 
             return csb.ConnectionString;
         }
+
+        #region Data type mapping functions
+
+        /// <summary>
+        /// Creates a data type based on a schema table row
+        /// </summary>
+        /// <param name="dr"></param>
+        /// <returns></returns>
+        protected override DataType CreateDataType(DataRow dr)
+        {
+            Type type;
+            string name;
+            int length;
+            byte precision, scale;
+            bool isNullable;
+
+            GetDataTypeDetails(dr, out type, out name, out length, out precision, out scale, out isNullable);
+
+            return CreateDataType(name, length, scale, precision, isNullable);
+        }
+
+        protected override DataType CreateDataType(string name)
+        {
+            SqlDbType sqltype;
+            if (Enum.TryParse<SqlDbType>(name, true, out sqltype))
+            {
+                // This can be interpreted as a SQL Server type
+                return CreateDataType(sqltype);
+            }
+            else
+            {
+                return base.CreateDataType(name);
+            }
+        }
+
+        private DataType CreateDataType(SqlDbType type)
+        {
+            DataType dt;
+
+            switch (type)
+            {
+                case System.Data.SqlDbType.Bit:
+                    dt = DataTypes.SqlBit;
+                    break;
+                case System.Data.SqlDbType.TinyInt:
+                    dt = DataTypes.SqlTinyInt;
+                    break;
+                case System.Data.SqlDbType.SmallInt:
+                    dt = DataTypes.SqlSmallInt;
+                    break;
+                case System.Data.SqlDbType.Int:
+                    dt = DataTypes.SqlInt;
+                    break;
+                case System.Data.SqlDbType.BigInt:
+                    dt = DataTypes.SqlBigInt;
+                    break;
+                case System.Data.SqlDbType.Real:
+                    dt = DataTypes.SqlReal;
+                    break;
+                case System.Data.SqlDbType.Float:
+                    dt = DataTypes.SqlFloat;
+                    break;
+                case System.Data.SqlDbType.Image:
+                    dt = DataTypes.SqlImage;
+                    break;
+                case System.Data.SqlDbType.Binary:
+                    dt = DataTypes.SqlBinary;
+                    break;
+                case System.Data.SqlDbType.VarBinary:
+                    dt = DataTypes.SqlVarBinary;
+                    break;
+                case System.Data.SqlDbType.Text:
+                    dt = DataTypes.SqlText;
+                    break;
+                case System.Data.SqlDbType.Char:
+                    dt = DataTypes.SqlChar;
+                    break;
+                case System.Data.SqlDbType.VarChar:
+                    dt = DataTypes.SqlVarChar;
+                    break;
+                case System.Data.SqlDbType.NText:
+                    dt = DataTypes.SqlNText;
+                    break;
+                case System.Data.SqlDbType.NChar:
+                    dt = DataTypes.SqlNChar;
+                    break;
+                case System.Data.SqlDbType.NVarChar:
+                    dt = DataTypes.SqlNVarChar;
+                    break;
+                case System.Data.SqlDbType.Date:
+                    dt = DataTypes.SqlDate;
+                    break;
+                case System.Data.SqlDbType.DateTime:
+                    dt = DataTypes.SqlDateTime;
+                    break;
+                case System.Data.SqlDbType.DateTime2:
+                    dt = DataTypes.SqlDateTime2;
+                    break;
+                case System.Data.SqlDbType.DateTimeOffset:
+                    dt = DataTypes.SqlDateTimeOffset;
+                    break;
+                case System.Data.SqlDbType.SmallDateTime:
+                    dt = DataTypes.SqlSmallDateTime;
+                    break;
+                case System.Data.SqlDbType.Time:
+                    dt = DataTypes.SqlTime;
+                    break;
+                case System.Data.SqlDbType.Timestamp:
+                    dt = DataTypes.SqlTimestamp;
+                    break;
+                case System.Data.SqlDbType.Decimal:
+                    dt = DataTypes.SqlDecimal;
+                    break;
+                case System.Data.SqlDbType.SmallMoney:
+                    dt = DataTypes.SqlSmallMoney;
+                    break;
+                case System.Data.SqlDbType.Money:
+                    dt = DataTypes.SqlMoney;
+                    break;
+                case System.Data.SqlDbType.UniqueIdentifier:
+                    dt = DataTypes.SqlUniqueIdentifier;
+                    break;
+                case System.Data.SqlDbType.Variant:
+                    dt = DataTypes.SqlVariant;
+                    break;
+                case System.Data.SqlDbType.Xml:
+                    dt = DataTypes.SqlXml;
+                    break;
+                case System.Data.SqlDbType.Structured:
+                    throw new NotImplementedException();
+                case System.Data.SqlDbType.Udt:
+                    throw new NotImplementedException();
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return dt;
+        }
+
+        public DataType CreateDataType(SqlDbType type, int length, byte precision, byte scale, bool isNullable)
+        {
+            var dt = CreateDataType(type);
+
+            if (dt.HasLength)
+            {
+                dt.Length = length;
+            }
+
+            if (dt.HasPrecision)
+            {
+                dt.Precision = precision;
+            }
+
+            if (dt.HasScale)
+            {
+                dt.Scale = scale;
+            }
+
+            dt.IsNullable = isNullable;
+
+            return dt;
+        }
+
+        #endregion
 
     }
 }

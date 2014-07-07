@@ -171,7 +171,7 @@ WHERE ID = 1";
             Assert.AreEqual("SELECT [Graywulf_Schema_Test].[dbo].[Book].[ID], [Graywulf_Schema_Test].[dbo].[Book].[Title] FROM [Graywulf_Schema_Test].[dbo].[Book] WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 1", res[1]);
         }
 
-
+        /* TODO: rewrite this
         [TestMethod]
         public void GenerateCreateDestinationTableQueryTest()
         {
@@ -213,6 +213,6 @@ WHERE ID = 1";
 [char] char(1)  NULL,
 [datetime] datetime  NULL,
 [guid] uniqueidentifier  NULL)", res);
-        }
+        }*/
     }
 }

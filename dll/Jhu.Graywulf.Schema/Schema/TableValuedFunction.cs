@@ -115,37 +115,5 @@ namespace Jhu.Graywulf.Schema
         }
 
         #endregion
-
-        /// <summary>
-        /// Loads all columns belonging to a table or view
-        /// </summary>
-        /// <returns></returns>
-        private ConcurrentDictionary<string, Column> LoadColumns()
-        {
-            if (Dataset != null)
-            {
-                return new ConcurrentDictionary<string, Column>(Dataset.LoadColumns(this), SchemaManager.Comparer);
-            }
-            else
-            {
-                return new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
-            }
-        }
-
-        /// <summary>
-        /// Loads all parameters belonging to a function or stored procedure
-        /// </summary>
-        /// <returns></returns>
-        private ConcurrentDictionary<string, Parameter> LoadParameters()
-        {
-            if (Dataset != null)
-            {
-                return new ConcurrentDictionary<string, Parameter>(Dataset.LoadParameters(this), SchemaManager.Comparer);
-            }
-            else
-            {
-                return new ConcurrentDictionary<string, Parameter>(SchemaManager.Comparer);
-            }
-        }
     }
 }

@@ -9,23 +9,50 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
+    /// <summary>
+    /// Represents a query, with associated data source and metadata,
+    /// that can be used as a source of a data copy operation.
+    /// </summary>
     [Serializable]
     public class SourceTableQuery : ICloneable
     {
+        #region Private member variables
+
         private DatasetBase dataset;
         private string query;
+        private List<Column> columns;
 
+        #endregion
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the dataset on which this query can be executed.
+        /// </summary>
         public DatasetBase Dataset
         {
             get { return dataset; }
             set { dataset = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the text of the query.
+        /// </summary>
         public string Query
         {
             get { return query; }
             set { query = value; }
         }
+
+        /// <summary>
+        /// Gets a list of columns with associated metadata.
+        /// </summary>
+        public IList<Column> Columns
+        {
+            get { return columns; }
+        }
+
+        #endregion
+        #region Constructors and initializers
 
         public SourceTableQuery()
         {
@@ -41,12 +68,14 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             this.dataset = null;
             this.query = null;
+            this.columns = null;
         }
 
         private void CopyMembers(SourceTableQuery old)
         {
             this.dataset = Util.DeepCloner.CloneObject(old.dataset);
             this.query = old.query;
+            this.columns = null;
         }
 
         public object Clone()
@@ -54,21 +83,24 @@ namespace Jhu.Graywulf.IO.Tasks
             return new SourceTableQuery(this);
         }
 
+        #endregion
+
+        /// <summary>
+        /// Opens a connection to the underlying dataset.
+        /// </summary>
+        /// <returns></returns>
         internal IDbConnection OpenConnection()
         {
-            var dbf = DbProviderFactories.GetFactory(dataset.ProviderName);
-            var cn = dbf.CreateConnection();
-
-            cn.ConnectionString = dataset.ConnectionString;
-            cn.Open();
-
-            return cn;
+            return dataset.OpenConnection();
         }
 
-        internal IDbCommand CreateCommand()
+        /// <summary>
+        /// Creates a database command that can be used to execute the query.
+        /// </summary>
+        /// <returns></returns>
+        internal ISmartCommand CreateCommand()
         {
-            var dbf = DbProviderFactories.GetFactory(dataset.ProviderName);
-            var cmd = dbf.CreateCommand();
+            var cmd = dataset.CreateCommand();
 
             cmd.CommandText = query;
             cmd.CommandType = CommandType.Text;
@@ -76,7 +108,7 @@ namespace Jhu.Graywulf.IO.Tasks
             return cmd;
         }
 
-        public DataTable GetSchemaTable()
+        private void DetectColumns()
         {
             using (var cn = OpenConnection())
             {
@@ -85,12 +117,27 @@ namespace Jhu.Graywulf.IO.Tasks
                     cmd.Connection = cn;
                     cmd.CommandText = query;
 
-                    using (var dr = cmd.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo))
+                    using (var dr = new SmartDataReader(
+                        dataset, 
+                        cmd.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo)))
                     {
-                        return dr.GetSchemaTable();
+                        CreateColumns(dr.GetColumns());
                     }
                 }
             }
+        }
+
+        private void CreateColumns(IList<Column> columns)
+        {
+            columns.Clear();
+
+            this.columns.AddRange(columns);
+        }
+
+        public IList<Column> GetColumns()
+        {
+            // *** TODO
+            throw new NotImplementedException();
         }
     }
 }

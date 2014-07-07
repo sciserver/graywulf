@@ -36,6 +36,12 @@ namespace Jhu.Graywulf.Format
         [NonSerialized]
         private List<Column> columns;
 
+        /// <summary>
+        /// Number of rows
+        /// </summary>
+        [NonSerialized]
+        private long rowCount;
+
         #endregion
         #region Properties
 
@@ -54,10 +60,18 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         [DataMember(Name="Columns")]
         [XmlArray]
-        private Column[] Columns_ForXml
+        public Column[] Columns_ForXml
         {
             get { return columns.ToArray(); }
             set { columns = new List<Schema.Column>(value); }
+        }
+
+        /// <summary>
+        /// Gets the number of rows in the file block
+        /// </summary>
+        public long RowCount
+        {
+            get { return rowCount; }
         }
 
         #endregion
@@ -85,12 +99,14 @@ namespace Jhu.Graywulf.Format
         {
             this.file = null;
             this.columns = new List<Column>();
+            this.rowCount = -1;
         }
 
         private void CopyMembers(DataFileBlockBase old)
         {
             this.file = old.file;
             this.columns = new List<Column>(Util.DeepCloner.CloneCollection(old.columns));
+            this.rowCount = old.rowCount;
         }
 
         public abstract object Clone();
@@ -102,42 +118,35 @@ namespace Jhu.Graywulf.Format
         /// Detects the columns from a data reader.
         /// </summary>
         /// <param name="dr"></param>
-        internal void DetectColumns(IDataReader dr)
+        internal void DetectColumns(ISmartDataReader dr)
         {
-            var dt = dr.GetSchemaTable();
-            Column[] cols;
+            var cols = dr.GetColumns();
 
-            if (this.Columns.Count == dt.Rows.Count)
+            // See if predefined columns can be used
+            if (this.Columns.Count == cols.Count)
             {
-                cols = Columns.ToArray();
-
                 // *** TODO verify type mismatch, or update types
                 // keep column name and format
+
+                throw new NotImplementedException();
             }
             else
             {
-                cols = new Column[dt.Rows.Count];
-
-                for (int i = 0; i < dt.Rows.Count; i++)
-                {
-                    cols[i] = Column.Create(dt.Rows[i]);
-                }
+                CreateColumns(cols);
             }
-
-            CreateColumns(cols);
         }
 
         /// <summary>
         /// Call this function to set column list from derived classes
         /// </summary>
         /// <param name="columns"></param>
-        protected void CreateColumns(Column[] columns)
+        protected void CreateColumns(IList<Column> columns)
         {
             this.columns.Clear();
 
             if (file.FileMode == DataFileMode.Read && file.GenerateIdentityColumn)
             {
-                var col = new Column("__ID", DataType.SqlBigInt);  // *** TODO
+                var col = new Column("__ID", DataTypes.SqlBigInt);  // *** TODO
                 col.IsIdentity = true;
                 this.columns.Add(col);
             }
@@ -181,7 +190,7 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Write functions
 
-        internal void Write(IDataReader dr)
+        internal void Write(ISmartDataReader dr)
         {
             var values = new object[dr.FieldCount];
 

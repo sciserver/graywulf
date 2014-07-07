@@ -4,19 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.Common;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Format
 {
-    public class FileCommand : IDbCommand, IDisposable
+    public class FileCommand : ISmartCommand, IDisposable
     {
+        #region Private member variables
+
         private DataFileBase file;
         private FileDataReader dataReader;
 
-        public DataFileBase File
-        {
-            get { return file; }
-            set { file = value; }
-        }
+        #endregion
+        #region IDbCommand properties
 
         public string CommandText { get; set; }
 
@@ -29,6 +29,23 @@ namespace Jhu.Graywulf.Format
         public IDbTransaction Transaction { get; set; }
 
         public UpdateRowSource UpdatedRowSource { get; set; }
+
+        public IDataParameterCollection Parameters
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
+        #region Properties
+
+        public DataFileBase File
+        {
+            get { return file; }
+            set { file = value; }
+        }
+
+        #endregion
+        #region Constructors and initializers
 
         public FileCommand()
         {
@@ -48,6 +65,23 @@ namespace Jhu.Graywulf.Format
             this.dataReader = null;
         }
 
+        public void Dispose()
+        {
+            if (dataReader != null)
+            {
+                dataReader.Dispose();
+                dataReader = null;
+            }
+        }
+
+        #endregion
+        #region IDbCommand functions
+
+        public void Prepare()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Cancel()
         {
             // TODO: send cancel signal to the data reader to
@@ -65,15 +99,9 @@ namespace Jhu.Graywulf.Format
             throw new NotImplementedException();
         }
 
-        public FileDataReader ExecuteReader()
+        public object ExecuteScalar()
         {
-            return ExecuteReader(CommandBehavior.Default);
-        }
-
-        public FileDataReader ExecuteReader(CommandBehavior behavior)
-        {
-            dataReader = new FileDataReader(file);
-            return dataReader;
+            throw new NotImplementedException();
         }
 
         IDataReader IDbCommand.ExecuteReader()
@@ -86,28 +114,37 @@ namespace Jhu.Graywulf.Format
             return ExecuteReader(behavior);
         }
 
-        public object ExecuteScalar()
+        #endregion
+
+        public IList<Column> GetColumns()
         {
-            throw new NotImplementedException();
+            return file.CurrentBlock.Columns;
         }
 
-        public IDataParameterCollection Parameters
+        public long GetRowCount()
         {
-            get { throw new NotImplementedException(); }
+            return file.CurrentBlock.RowCount;
         }
 
-        public void Prepare()
+        public FileDataReader ExecuteReader()
         {
-            throw new NotImplementedException();
+            return ExecuteReader(CommandBehavior.Default);
         }
 
-        public void Dispose()
+        public FileDataReader ExecuteReader(CommandBehavior behavior)
         {
-            if (dataReader != null)
-            {
-                dataReader.Dispose();
-                dataReader = null;
-            }
+            dataReader = new FileDataReader(file);
+            return dataReader;
+        }
+
+        ISmartDataReader ISmartCommand.ExecuteReader()
+        {
+            return this.ExecuteReader();
+        }
+
+        ISmartDataReader ISmartCommand.ExecuteReader(CommandBehavior behavior)
+        {
+            return this.ExecuteReader(behavior);
         }
     }
 }

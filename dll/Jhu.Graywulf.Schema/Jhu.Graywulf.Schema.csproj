@@ -65,6 +65,7 @@
     <Compile Include="Schema\DatasetMetadata.cs" />
     <Compile Include="Schema\DatasetStatistics.cs" />
     <Compile Include="Schema\DataType.cs" />
+    <Compile Include="Schema\DataTypes.cs" />
     <Compile Include="Schema\DoubleComplex.cs" />
     <Compile Include="Schema\IIndexes.cs" />
     <Compile Include="Schema\IndexColumn.cs" />
@@ -74,6 +75,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DatabaseObjectNames.resx</DependentUpon>
     </Compile>
+    <Compile Include="Schema\ISmartCommand.cs" />
+    <Compile Include="Schema\SmartCommand.cs" />
+    <Compile Include="Schema\ISmartDataReader.cs" />
     <Compile Include="Schema\MySql\Constants.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -84,6 +88,7 @@
     <Compile Include="Schema\PostgreSql\PostgreSqlDataset.cs" />
     <Compile Include="Schema\SchemaManager.cs" />
     <Compile Include="Schema\SingleComplex.cs" />
+    <Compile Include="Schema\SmartDataReader.cs" />
     <Compile Include="Schema\SqlServer\Constants.cs" />
     <Compile Include="Schema\SqlServer\SqlServerDataset.cs" />
     <Compile Include="Schema\SqlServer\SqlServerSchemaManager.cs">

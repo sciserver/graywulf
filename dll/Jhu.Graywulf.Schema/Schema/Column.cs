@@ -69,12 +69,12 @@ namespace Jhu.Graywulf.Schema
             this.DataType = type;
         }
 
-        public Column(string name, Type type, short size)
+        public Column(string name, Type type, short length)
         {
             InitializeMembers();
 
             this.Name = name;
-            this.DataType = DataType.Create(type, size);
+            this.DataType = DataType.Create(type, length);
         }
 
         /// <summary>
@@ -96,13 +96,14 @@ namespace Jhu.Graywulf.Schema
             CopyMembers(old);
         }
 
+        /* TODO: delete
         public static Column Create(DataRow dr)
         {
             var column = new Column();
             column.CopyFromSchemaTableRow(dr);
 
             return column;
-        }
+        }*/
 
         /// <summary>
         /// Initializes member variables
@@ -168,6 +169,7 @@ namespace Jhu.Graywulf.Schema
             dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = this.DataType.Name;
         }
 
+        /* TODO: delete
         public void CopyFromSchemaTableRow(DataRow dr)
         {
             this.ID = (int)dr[SchemaTableColumn.ColumnOrdinal];
@@ -178,5 +180,6 @@ namespace Jhu.Graywulf.Schema
 
             this.DataType = DataType.Create(dr);
         }
+         * */
     }
 }

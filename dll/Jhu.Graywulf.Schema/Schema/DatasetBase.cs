@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Components;
@@ -397,27 +398,6 @@ namespace Jhu.Graywulf.Schema
         }
 
         #endregion
-        #region Type conversion function
-
-        protected abstract DataType GetTypeFromProviderSpecificName(string name);
-
-        protected DataType GetTypeFromProviderSpecificName(string name, int size, byte scale, byte precision, bool nullable)
-        {
-            var t = GetTypeFromProviderSpecificName(name);
-
-            if (t.HasLength)
-            {
-                t.Length = size;
-            }
-
-            t.Scale = scale;
-            t.Precision = precision;
-            t.IsNullable = nullable;
-
-            return t;
-        }
-
-        #endregion
         #region Object loading functions
 
         public DatabaseObject GetObject(string databaseName, string schemaName, string objectName)
@@ -636,5 +616,149 @@ namespace Jhu.Graywulf.Schema
         }
 
         public abstract string GetSpecializedConnectionString(string connectionString, bool integratedSecurity, string username, string password, bool enlist);
+
+        #region Column and data type mapping functions
+
+        /// <summary>
+        /// Gets data type details from a schema table row.
+        /// </summary>
+        /// <param name="dr"></param>
+        /// <param name="type"></param>
+        /// <param name="name"></param>
+        /// <param name="length"></param>
+        /// <param name="precision"></param>
+        /// <param name="scale"></param>
+        /// <param name="isNullable"></param>
+        protected void GetDataTypeDetails(DataRow dr, out Type type, out string name, out int length, out byte precision, out byte scale, out bool isNullable)
+        {
+            // Get .Net type and other parameters
+            type = (Type)dr[SchemaTableColumn.DataType];
+            name = (string)dr["DataTypeName"];
+            length = Convert.ToInt32(dr[SchemaTableColumn.ColumnSize]);
+            precision = Convert.ToByte(dr[SchemaTableColumn.NumericPrecision]);
+            scale = Convert.ToByte(dr[SchemaTableColumn.NumericScale]);
+            isNullable = Convert.ToBoolean(dr[SchemaTableColumn.AllowDBNull]);
+        }
+
+        /// <summary>
+        /// Creates a data type based on a schema table row
+        /// </summary>
+        /// <param name="dr"></param>
+        /// <returns></returns>
+        protected virtual DataType CreateDataType(DataRow dr)
+        {
+            // This is just a fall-back implementation that uses .Net types.
+            // As not all .Net types are supported by the database servers,
+            // specific dataset types override this function
+
+            Type type;
+            string name; 
+            int length; 
+            byte precision, scale;
+            bool isNullable;
+
+            GetDataTypeDetails(dr, out type, out name, out length, out precision, out scale, out isNullable);
+
+            return DataType.Create(type, length, precision, scale, isNullable);
+        }
+
+        /// <summary>
+        /// Creates a data type based on its name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        protected virtual DataType CreateDataType(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal DataType CreateDataType(string name, int length, byte scale, byte precision, bool isNullable)
+        {
+            var dt = CreateDataType(name);
+
+            if (dt.HasLength)
+            {
+                dt.Length = length;
+            }
+
+            if (dt.HasScale)
+            {
+                dt.Scale = scale;
+            }
+
+            if (dt.HasPrecision)
+            {
+                dt.Precision = precision;
+            }
+
+            dt.IsNullable = isNullable;
+
+            return dt;
+        }
+
+        /// <summary>
+        /// Returns a schema column describing the resultset
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        internal IList<Column> CreateColumns(IDataReader reader)
+        {
+            // TODO: modify to accept command instead of data reader?
+
+            var columns = new List<Column>();
+            var st = reader.GetSchemaTable();
+
+            for (int i = 0; i < st.Rows.Count; i++)
+            {
+                var dr = st.Rows[i];
+
+                columns.Add(CreateColumn(dr));
+            }
+
+            return columns;
+        }
+
+        /// <summary>
+        /// Returns a schema column based on a schema table row
+        /// </summary>
+        /// <param name="dr"></param>
+        /// <returns></returns>
+        internal virtual Column CreateColumn(DataRow dr)
+        {
+            var column = new Column()
+            {
+                ID = (int)dr[SchemaTableColumn.ColumnOrdinal],
+                Name = (string)dr[SchemaTableColumn.ColumnName],
+                IsIdentity = dr[SchemaTableColumn.IsUnique] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.IsUnique],  //
+                IsKey = dr[SchemaTableColumn.IsKey] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.IsKey],  //
+                IsHidden = dr[SchemaTableOptionalColumn.IsHidden] == DBNull.Value ? false : (bool)dr[SchemaTableOptionalColumn.IsHidden],
+
+                DataType = CreateDataType(dr),
+            };
+
+            return column;
+        }
+
+        #endregion
+
+
+
+        public SmartCommand CreateCommand()
+        {
+            var dbf = DbProviderFactories.GetFactory(this.ProviderName);
+            return new SmartCommand(this, dbf.CreateCommand());
+        }
+
+        public IDbConnection OpenConnection()
+        {
+            var dbf = DbProviderFactories.GetFactory(this.ProviderName);
+
+            var cn = dbf.CreateConnection();
+
+            cn.ConnectionString = this.ConnectionString;
+            cn.Open();
+
+            return cn;
+        }
     }
 }

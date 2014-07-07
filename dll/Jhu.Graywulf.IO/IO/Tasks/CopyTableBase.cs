@@ -137,20 +137,21 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
-        protected void ImportTable(IDbCommand cmd, DestinationTable destination)
+        protected void ImportTable(ISmartCommand cmd, DestinationTable destination)
         {
+            // Run bulk insert wrapped into a cancelable task
             var guid = Guid.NewGuid();
             var ccmd = new CancelableDbCommand(cmd);
             RegisterCancelable(guid, ccmd);
 
             ccmd.ExecuteReader(dr =>
             {
-                // TODO: Add multiple results logic
-
+                // Create destination table first
                 // TODO: Add table naming logic here, maybe...
                 var table = destination.GetTable();
+                table.Initialize(((SmartDataReader)dr).GetColumns(), destination.Options);
 
-                table.Initialize(dr.GetSchemaTable(), destination.Options);
+                // TODO: Add multiple results logic, maybe
                 ExecuteBulkCopy(dr, table);
             });
 
@@ -176,7 +177,7 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
-        private void WriteTable(IDbCommand cmd, DataFileBase destination)
+        private void WriteTable(ISmartCommand cmd, DataFileBase destination)
         {
             // Wrap command into a cancellable task
             var guid = Guid.NewGuid();
@@ -186,7 +187,7 @@ namespace Jhu.Graywulf.IO.Tasks
             // Pass data reader to the file formatter
             ccmd.ExecuteReader(dr =>
             {
-                destination.WriteFromDataReader(dr);
+                destination.WriteFromDataReader((SmartDataReader)dr);
             });
 
             UnregisterCancelable(guid);
@@ -205,13 +206,16 @@ namespace Jhu.Graywulf.IO.Tasks
             bulkCopyFinishedEvent = new AutoResetEvent(false);
 
             // Initialize bulk copy
-            var sbc = new System.Data.SqlClient.SqlBulkCopy(destination.Dataset.ConnectionString);
-            sbc.DestinationTableName = cg.GetResolvedTableName(destination);
-            sbc.BatchSize = batchSize;
-            sbc.BulkCopyTimeout = timeout;
+            var sbc = new System.Data.SqlClient.SqlBulkCopy(destination.Dataset.ConnectionString)
+            {
+                DestinationTableName = cg.GetResolvedTableName(destination),
+                BatchSize = batchSize,
+                BulkCopyTimeout = timeout,
+                //EnableStreaming = true
+                NotifyAfter = batchSize
+            };
 
             // Initialize events
-            sbc.NotifyAfter = batchSize;
             sbc.SqlRowsCopied += delegate(object sender, SqlRowsCopiedEventArgs e)
             {
                 //RowsAffected = e.RowsCopied;  // TODO: delete if not used

@@ -597,7 +597,7 @@ namespace Jhu.Graywulf.Format
         /// results set of a data reader.
         /// </summary>
         /// <param name="dr"></param>
-        private void WriteNextBlock(IDataReader dr)
+        private void WriteNextBlock(ISmartDataReader dr)
         {
             blockCounter++;
 
@@ -644,7 +644,7 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region DataReader and Writer functions
 
-        public void WriteFromDataReader(IDataReader dr)
+        public void WriteFromDataReader(ISmartDataReader dr)
         {
             OnWriteHeader();
 

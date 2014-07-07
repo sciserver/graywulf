@@ -8,47 +8,101 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Format
 {
-    public class FileDataReader : IDataReader
+    public class FileDataReader : ISmartDataReader
     {
-        private DataFileBase parent;
+        #region Private member variables
+
+        private DataFileBase file;
+
         private Dictionary<string, int> columnIndex;
-        private int blockCounter;
-        private long rowCounter;
         private object[] rowValues;
         private int[] isIdentity;
 
+        private int blockCounter;
+        private long rowCounter;
+
+        #endregion
+        #region IDataReader properties
+
+        public int Depth
+        {
+            get
+            {
+                // No hierarchical data sets are supported
+                return 0;
+            }
+        }
+
+        public bool IsClosed
+        {
+            get { return file.IsClosed; }
+        }
+
+        public int RecordsAffected
+        {
+            get { return -1; }
+        }
+
+        public object this[string name]
+        {
+            get { return rowValues[columnIndex[name]]; }
+        }
+
+        public object this[int i]
+        {
+            get { return rowValues[i]; }
+        }
+
+        public int FieldCount
+        {
+            get { return file.CurrentBlock.Columns.Count; }
+        }
+
+        #endregion
         #region Constructors and initializers
 
-        internal FileDataReader(DataFileBase parent)
+        internal FileDataReader(DataFileBase file)
         {
             InizializeMembers();
 
-            this.parent = parent;
+            this.file = file;
 
             NextResult();
         }
 
         private void InizializeMembers()
         {
-            this.parent = null;
+            this.file = null;
+
             this.columnIndex = null;
-            this.blockCounter = -1;
-            this.rowCounter = -1;
             this.rowValues = null;
             this.isIdentity = null;
+
+            this.blockCounter = -1;
+            this.rowCounter = -1;
         }
 
         public void Dispose()
         {
-            this.parent = null;
+            this.file = null;
             this.columnIndex = null;
         }
 
         #endregion
+        #region IDataReader functions
 
-        public int RecordsAffected
+        public bool NextResult()
         {
-            get { return -1; }
+            if (file.ReadNextBlock() != null)
+            {
+                blockCounter++;
+                return true;
+            }
+            else
+            {
+                blockCounter = -1;
+                return false;
+            }
         }
 
         /// <summary>
@@ -62,7 +116,7 @@ namespace Jhu.Graywulf.Format
                 InitializeColumns();
             }
 
-            if (parent.CurrentBlock.OnReadNextRow(rowValues))
+            if (file.CurrentBlock.OnReadNextRow(rowValues))
             {
                 rowCounter++;
 
@@ -71,72 +125,22 @@ namespace Jhu.Graywulf.Format
                 {
                     rowValues[i] = rowCounter + 1;  // identity values start from 1, usually
                 }
-                
+
                 return true;
             }
             else
             {
                 return false;
             }
-        }
-
-        /*
-        public bool Read(XmlReader reader)
-        {
-            if (columnIndex == null)
-            {
-                BuildColumnIndex();
-            }
-
-            return parent.Read(reader);
-        }*/
-
-        public bool NextResult()
-        {
-            if (parent.ReadNextBlock() != null)
-            {
-                blockCounter++;
-                return true;
-            }
-            else
-            {
-                blockCounter = -1;
-                return false;
-            }
-        }
-
-        public bool IsClosed
-        {
-            get { return parent.IsClosed; }
         }
 
         public void Close()
         {
-            parent.Close();
+            file.Close();
         }
 
-        #region Column functions
-
-        private void InitializeColumns()
-        {
-            var colc = parent.CurrentBlock.Columns.Count;
-            var ids = new List<int>();
-
-            columnIndex = new Dictionary<string, int>();
-            rowValues = new object[colc];
-
-            for (int i = 0; i < colc; i++)
-            {
-                columnIndex.Add(parent.CurrentBlock.Columns[i].Name, i);
-
-                if (parent.CurrentBlock.Columns[i].IsIdentity)
-                {
-                    ids.Add(i);
-                }
-            }
-
-            isIdentity = ids.ToArray();
-        }
+        #endregion
+        #region IDataReader schema functions
 
         public DataTable GetSchemaTable()
         {
@@ -165,7 +169,7 @@ namespace Jhu.Graywulf.Format
 
             // Add column ID
             int q = 0;
-            foreach (var col in parent.CurrentBlock.Columns)
+            foreach (var col in file.CurrentBlock.Columns)
             {
                 AddSchemaTableColumn(dt, col, q++);
             }
@@ -202,41 +206,40 @@ namespace Jhu.Graywulf.Format
         }
 
         #endregion
-        #region Simple column accessors
-
-        public int FieldCount
-        {
-            get { return parent.CurrentBlock.Columns.Count; }
-        }
-
-        public object this[string name]
-        {
-            get { return rowValues[columnIndex[name]]; }
-        }
-
-        public object this[int i]
-        {
-            get { return rowValues[i]; }
-        }
+        #region Field functions
 
         public string GetDataTypeName(int i)
         {
-            return parent.CurrentBlock.Columns[i].DataType.Name;
+            return file.CurrentBlock.Columns[i].DataType.Name;
         }
 
         public Type GetFieldType(int i)
         {
-            return parent.CurrentBlock.Columns[i].DataType.Type;
+            return file.CurrentBlock.Columns[i].DataType.Type;
         }
 
         public string GetName(int i)
         {
-            return parent.CurrentBlock.Columns[i].Name;
+            return file.CurrentBlock.Columns[i].Name;
         }
 
         public int GetOrdinal(string name)
         {
             return columnIndex[name];
+        }
+
+        public bool IsDBNull(int i)
+        {
+            return rowValues[i] == null;
+        }
+
+        #endregion
+        #region Field accessors
+
+        public IDataReader GetData(int i)
+        {
+            // This is supposed to be used with hierarchical data
+            throw new NotImplementedException();
         }
 
         public object GetValue(int i)
@@ -254,13 +257,20 @@ namespace Jhu.Graywulf.Format
             return rowValues.Length;
         }
 
-        public bool IsDBNull(int i)
+        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
         {
-            return rowValues[i] == null;
+            // TODO: implement
+            throw new NotImplementedException();
+        }
+
+        public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
+        {
+            // TODO: implement
+            throw new NotImplementedException();
         }
 
         #endregion
-        #region Strongly type column accessors
+        #region Strongly type field accessors
 
         public bool GetBoolean(int i)
         {
@@ -323,38 +333,38 @@ namespace Jhu.Graywulf.Format
         }
 
         #endregion
-        #region Blob column accessors
-
-        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
+        
+       
+        private void InitializeColumns()
         {
-            // TODO: implement
-            throw new NotImplementedException();
-        }
+            var colc = file.CurrentBlock.Columns.Count;
+            var ids = new List<int>();
 
-        public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
-        {
-            // TODO: implement
-            throw new NotImplementedException();
-        }
+            columnIndex = new Dictionary<string, int>();
+            rowValues = new object[colc];
 
-        #endregion
-        #region Hierarchical data functions
-
-        public int Depth
-        {
-            get
+            for (int i = 0; i < colc; i++)
             {
-                // No hierarchical data sets are supported
-                return 0;
+                columnIndex.Add(file.CurrentBlock.Columns[i].Name, i);
+
+                if (file.CurrentBlock.Columns[i].IsIdentity)
+                {
+                    ids.Add(i);
+                }
             }
+
+            isIdentity = ids.ToArray();
         }
 
-        public IDataReader GetData(int i)
+        public IList<Column> GetColumns()
         {
-            // This is supposed to be used with hierarchical data
-            throw new NotImplementedException();
+            return file.CurrentBlock.Columns;
         }
 
-        #endregion
+        public long GetRowCount()
+        {
+            return file.CurrentBlock.RowCount;
+        }
+
     }
 }

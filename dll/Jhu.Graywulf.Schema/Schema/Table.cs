@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
@@ -89,14 +90,19 @@ namespace Jhu.Graywulf.Schema
             return new Table(this);
         }
 
-        public void Initialize(DataTable schemaTable, TableInitializationOptions options)
+        public void Initialize(IList<Column> columns, TableInitializationOptions options)
         {
             if ((options & TableInitializationOptions.Drop) != 0)
             {
                 Drop();
             }
 
-            LoadColumnsFromSchemaTable(schemaTable);
+            // Copy columns
+            Columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
+            for (int i = 0; i < columns.Count; i++)
+            {
+                Columns.TryAdd(columns[i].Name, (Column)columns[i].Clone());
+            }
 
             if ((options & TableInitializationOptions.Append) != 0)
             {
@@ -162,6 +168,7 @@ namespace Jhu.Graywulf.Schema
             return true;
         }
 
+        /* TODO: delete
         public void LoadColumnsFromSchemaTable(DataTable schemaTable)
         {
             Columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
@@ -173,5 +180,6 @@ namespace Jhu.Graywulf.Schema
                 Columns.TryAdd(c.Name, c);
             }
         }
+         * */
     }
 }

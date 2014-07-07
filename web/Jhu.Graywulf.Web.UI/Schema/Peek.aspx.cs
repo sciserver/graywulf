@@ -23,6 +23,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
         {
         }
 
+        /* TODO: delete?
         private void GetServerSettings(schema::DatasetBase ds, out string connectionString, out DbProviderFactory dbf)
         {           
             EntityFactory ef = new EntityFactory(RegistryContext);
@@ -63,7 +64,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
             {
                 throw new InvalidOperationException();
             }
-        }
+        }*/
 
         protected void RenderTable()
         {
@@ -76,14 +77,9 @@ namespace Jhu.Graywulf.Web.UI.Schema
             DbProviderFactory dbf;
             string cstr;
 
-            GetServerSettings(tableOrView.Dataset, out cstr, out dbf);
-
-            using (var cn = dbf.CreateConnection())
+            using (var cn = tableOrView.Dataset.OpenConnection())
             {
-                cn.ConnectionString = tableOrView.Dataset.ConnectionString;
-                cn.Open();
-
-                using (var cmd = cn.CreateCommand())
+                using (var cmd = new SmartCommand(tableOrView.Dataset, cn.CreateCommand()))
                 {
                     cmd.CommandText = sql;
                     cmd.CommandType = CommandType.Text;
@@ -96,21 +92,21 @@ namespace Jhu.Graywulf.Web.UI.Schema
             }
         }
 
-        private void RenderTable(TextWriter writer, IDataReader dr)
+        private void RenderTable(TextWriter writer, ISmartDataReader dr)
         {
-            var schemaTable = dr.GetSchemaTable();
-
             writer.WriteLine("<table border=\"1\" cellspacing=\"0\" style=\"border-collapse:collapse\">");
 
             // header
             writer.WriteLine("<tr>");
 
-            for (int i = 0; i < dr.FieldCount; i++)
-            {
-                var column = new Column();
-                column.CopyFromSchemaTableRow(schemaTable.Rows[i]);
+            var columns = dr.GetColumns();
 
-                writer.WriteLine("<td class=\"header\" nowrap>{0}<br />{1}</td>", column.Name, column.DataType.NameWithLength);
+            for (int i = 0; i < columns.Count; i++)
+            {
+                writer.WriteLine(
+                    "<td class=\"header\" nowrap>{0}<br />{1}</td>",
+                    columns[i].Name,
+                    columns[i].DataType.NameWithLength);
             }
 
             writer.WriteLine("</tr>");
