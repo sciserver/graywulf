@@ -7,7 +7,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.SqlParser;
-using Jhu.Graywulf.SqlParser.SqlCodeGen;
+using Jhu.Graywulf.SqlCodeGen.SqlServer;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 

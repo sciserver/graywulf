@@ -6,8 +6,9 @@ using System.IO;
 using System.Data;
 using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.SqlParser;
 
-namespace Jhu.Graywulf.SqlParser.SqlCodeGen
+namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 {
     public class SqlServerCodeGenerator : SqlCodeGeneratorBase
     {

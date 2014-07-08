@@ -127,13 +127,9 @@
       <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
       <Name>Jhu.Graywulf.Registry</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
-      <Project>{60920E0C-F7A1-47CE-85F6-7E6E3085FCF1}</Project>
-      <Name>Jhu.Graywulf.Schema</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.SqlParser\Jhu.Graywulf.SqlParser.csproj">
-      <Project>{4DFC8F4C-C2FB-4AFB-B838-45A56F19FEAF}</Project>
-      <Name>Jhu.Graywulf.SqlParser</Name>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Sql\Jhu.Graywulf.Sql.csproj">
+      <Project>{AADA04EE-F578-4628-8AE0-D423BB94C738}</Project>
+      <Name>Jhu.Graywulf.Sql</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

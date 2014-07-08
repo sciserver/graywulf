@@ -17,7 +17,7 @@ using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.SqlParser;
-using Jhu.Graywulf.SqlParser.SqlCodeGen;
+using Jhu.Graywulf.SqlCodeGen.SqlServer;
 using Jhu.Graywulf.RemoteService;
 
 namespace Jhu.Graywulf.Jobs.Query

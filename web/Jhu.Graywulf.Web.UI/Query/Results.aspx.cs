@@ -7,7 +7,7 @@ using System.Linq;
 using System.Web;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.SqlParser.SqlCodeGen;
+using Jhu.Graywulf.SqlCodeGen.SqlServer;
 using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.Jobs.Query;
 

@@ -13,6 +13,8 @@ namespace Jhu.Graywulf.Schema
         private DatasetBase dataset;
         private IDbCommand command;
 
+        private bool isRowCountingOn;
+
         #endregion
         #region IDbCommand properties
 
@@ -68,6 +70,12 @@ namespace Jhu.Graywulf.Schema
         public IDbCommand Command
         {
             get { return command; }
+        }
+
+        public bool IsRowCountingOn
+        {
+            get { return isRowCountingOn; }
+            set { isRowCountingOn = value; }
         }
 
         #endregion
@@ -127,16 +135,6 @@ namespace Jhu.Graywulf.Schema
         }
 
         #endregion
-
-        public IList<Column> GetColumns()
-        {
-            throw new NotImplementedException();
-        }
-
-        public long GetRowCount()
-        {
-            throw new NotImplementedException();
-        }
 
         public ISmartDataReader ExecuteReader()
         {

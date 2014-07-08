@@ -15,6 +15,8 @@ namespace Jhu.Graywulf.Format
         private DataFileBase file;
         private FileDataReader dataReader;
 
+        private bool isRowCountingOn;
+
         #endregion
         #region IDbCommand properties
 
@@ -44,6 +46,12 @@ namespace Jhu.Graywulf.Format
             set { file = value; }
         }
 
+        public bool IsRowCountingOn
+        {
+            get { return isRowCountingOn; }
+            set { isRowCountingOn = value; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -63,6 +71,8 @@ namespace Jhu.Graywulf.Format
         {
             this.file = null;
             this.dataReader = null;
+
+            this.isRowCountingOn = false;
         }
 
         public void Dispose()
@@ -115,16 +125,6 @@ namespace Jhu.Graywulf.Format
         }
 
         #endregion
-
-        public IList<Column> GetColumns()
-        {
-            return file.CurrentBlock.Columns;
-        }
-
-        public long GetRowCount()
-        {
-            return file.CurrentBlock.RowCount;
-        }
 
         public FileDataReader ExecuteReader()
         {

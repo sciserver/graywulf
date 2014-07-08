@@ -8,7 +8,7 @@ using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
-using Jhu.Graywulf.SqlParser.SqlCodeGen;
+using Jhu.Graywulf.SqlCodeGen;
 
 namespace Jhu.Graywulf.SqlCodeGen.Test
 {
@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.SqlCodeGen.Test
             var ss = CreateSelect(query);
             var w = new StringWriter();
 
-            var cg = new MySqlCodeGenerator();
+            var cg = new MySql.MySqlCodeGenerator();
             cg.ResolveNames = resolved;
             cg.Execute(w, ss);
 
@@ -111,7 +111,7 @@ FROM `Graywulf_Schema_Test`.`Book` `b1`, `Graywulf_Schema_Test`.`Book` `b2`", re
 
         private string[] GenerateMostRestrictiveTableQueryTestHelper(string sql, bool includePrimaryKey, int top)
         {
-            var cg = new MySqlCodeGenerator();
+            var cg = new MySql.MySqlCodeGenerator();
             cg.ResolveNames = true;
 
             var ss = CreateSelect(sql);

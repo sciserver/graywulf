@@ -8,8 +8,8 @@ namespace Jhu.Graywulf.Schema
 {
     public interface ISmartCommand : IDbCommand
     {
-        IList<Column> GetColumns();
-        long GetRowCount();
+        bool IsRowCountingOn { get; set; }
+
         new ISmartDataReader ExecuteReader();
         new ISmartDataReader ExecuteReader(CommandBehavior behavior);
     }

@@ -7,7 +7,7 @@ using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.SqlParser;
 
-namespace Jhu.Graywulf.SqlParser.SqlCodeGen
+namespace Jhu.Graywulf.SqlCodeGen
 {
     public abstract class SqlCodeGeneratorBase : CodeGenerator
     {

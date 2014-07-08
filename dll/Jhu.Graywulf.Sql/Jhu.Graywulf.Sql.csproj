@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{60920E0C-F7A1-47CE-85F6-7E6E3085FCF1}</ProjectGuid>
+    <ProjectGuid>{AADA04EE-F578-4628-8AE0-D423BB94C738}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Jhu.Graywulf</RootNamespace>
-    <AssemblyName>Jhu.Graywulf.Schema</AssemblyName>
+    <AssemblyName>Jhu.Graywulf.Sql</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -118,6 +118,76 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Schema\SchemaException.cs" />
     <Compile Include="Schema\Table.cs" />
+    <Compile Include="SqlCodeGen\MySql\MySqlCodeGenerator.cs" />
+    <Compile Include="SqlCodeGen\PostgreSql\PostgreSqlCodeGenerator.cs" />
+    <Compile Include="SqlCodeGen\SqlCodeGeneratorBase.cs" />
+    <Compile Include="SqlCodeGen\SqlCodeGeneratorFactory.cs" />
+    <Compile Include="SqlCodeGen\SqlServer\SqlServerCodeGenerator.cs" />
+    <Compile Include="SqlParser\ColumnExpression.cs" />
+    <Compile Include="SqlParser\ColumnIdentifier.cs" />
+    <Compile Include="SqlParser\ColumnName.cs" />
+    <Compile Include="SqlParser\ColumnReference.cs" />
+    <Compile Include="SqlParser\Comma.cs" />
+    <Compile Include="SqlParser\CommentOrWhitespace.cs" />
+    <Compile Include="SqlParser\ComputedTableSource.cs" />
+    <Compile Include="SqlParser\DatabaseObjectReference.cs" />
+    <Compile Include="SqlParser\Dot.cs" />
+    <Compile Include="SqlParser\Enum.cs" />
+    <Compile Include="SqlParser\ExceptionMessages.Designer.cs" />
+    <Compile Include="SqlParser\Expression.cs" />
+    <Compile Include="SqlParser\FunctionCall.cs" />
+    <Compile Include="SqlParser\FunctionIdentifier.cs" />
+    <Compile Include="SqlParser\FunctionReference.cs" />
+    <Compile Include="SqlParser\FunctionTableSource.cs" />
+    <Compile Include="SqlParser\IColumnReference.cs" />
+    <Compile Include="SqlParser\Identifier.cs" />
+    <Compile Include="SqlParser\IFunctionReference.cs" />
+    <Compile Include="SqlParser\IntoClause.cs" />
+    <Compile Include="SqlParser\ITableReference.cs" />
+    <Compile Include="SqlParser\ITableSource.cs" />
+    <Compile Include="SqlParser\LogicalExpressions\BinaryExpression.cs" />
+    <Compile Include="SqlParser\LogicalExpressions\Brackets.cs" />
+    <Compile Include="SqlParser\LogicalExpressions\CnfConverter.cs" />
+    <Compile Include="SqlParser\LogicalExpressions\DnfConverter.cs" />
+    <Compile Include="SqlParser\LogicalExpressions\Expression.cs" />
+    <Compile Include="SqlParser\LogicalExpressions\ExpressionVisitor.cs" />
+    <Compile Include="SqlParser\LogicalExpressions\NfConverter.cs" />
+    <Compile Include="SqlParser\LogicalExpressions\OperatorAnd.cs" />
+    <Compile Include="SqlParser\LogicalExpressions\OperatorNot.cs" />
+    <Compile Include="SqlParser\LogicalExpressions\OperatorOr.cs" />
+    <Compile Include="SqlParser\LogicalExpressions\Predicate.cs" />
+    <Compile Include="SqlParser\LogicalExpressions\UnaryExpression.cs" />
+    <Compile Include="SqlParser\LogicalNot.cs" />
+    <Compile Include="SqlParser\LogicalOperator.cs" />
+    <Compile Include="SqlParser\NameResolverException.cs" />
+    <Compile Include="SqlParser\NodeExtensions.cs" />
+    <Compile Include="SqlParser\Predicate.cs" />
+    <Compile Include="SqlParser\QueryExpression.cs" />
+    <Compile Include="SqlParser\QuerySpecification.cs" />
+    <Compile Include="SqlParser\SearchCondition.cs" />
+    <Compile Include="SqlParser\SearchConditionBrackets.cs" />
+    <Compile Include="SqlParser\SearchConditionNormalizer.cs" />
+    <Compile Include="SqlParser\SearchConditionReference.cs" />
+    <Compile Include="SqlParser\SelectList.cs" />
+    <Compile Include="SqlParser\SelectStatement.cs" />
+    <Compile Include="SqlParser\SimpleTableSource.cs" />
+    <Compile Include="SqlParser\SqlNameResolver.cs" />
+    <Compile Include="SqlParser\SqlParser.cs" />
+    <Compile Include="SqlParser\SqlValidator.cs" />
+    <Compile Include="SqlParser\Subquery.cs" />
+    <Compile Include="SqlParser\SubqueryTableSource.cs" />
+    <Compile Include="SqlParser\TableAlias.cs" />
+    <Compile Include="SqlParser\TableName.cs" />
+    <Compile Include="SqlParser\TableOrViewName.cs" />
+    <Compile Include="SqlParser\TableReference.cs" />
+    <Compile Include="SqlParser\TableSource.cs" />
+    <Compile Include="SqlParser\TableStatistics.cs" />
+    <Compile Include="SqlParser\TableValuedFunctionCall.cs" />
+    <Compile Include="SqlParser\Util.cs" />
+    <Compile Include="SqlParser\ValidatorException.cs" />
+    <Compile Include="SqlParser\VariableTableSource.cs" />
+    <Compile Include="SqlParser\WhereClause.cs" />
+    <Compile Include="SqlParser\Whitespace.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Schema\DatabaseObjectNames.resx">
@@ -128,11 +198,16 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="SqlParser\ExceptionMessages.resx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.ParserLib\Jhu.Graywulf.ParserLib.csproj">
+      <Project>{4039B7D0-F8E5-49D8-A770-133DBED2EA75}</Project>
+      <Name>Jhu.Graywulf.ParserLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +220,10 @@ copy $(TargetDir)$(TargetName).pdb $(SolutionDir)$(OutDir)
 copy $(TargetDir)MySql.Data.dll $(SolutionDir)$(OutDir)
 copy $(TargetDir)Npgsql.dll $(SolutionDir)$(OutDir)
 copy $(TargetDir)Mono.Security.dll $(SolutionDir)$(OutDir)</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>cd $(ProjectDir)\..\..\build\Jhu.Graywulf.SqlParser.Generator\$(OutDir)
+gwsqlpgen.exe generate -o ..\..\..\..\dll\Jhu.Graywulf.Sql\SqlParser\SqlParser.cs</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

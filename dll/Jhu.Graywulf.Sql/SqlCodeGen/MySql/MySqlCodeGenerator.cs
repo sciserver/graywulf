@@ -5,8 +5,9 @@ using System.Text;
 using System.IO;
 using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.SqlParser;
 
-namespace Jhu.Graywulf.SqlParser.SqlCodeGen
+namespace Jhu.Graywulf.SqlCodeGen.MySql
 {
     public class MySqlCodeGenerator : SqlCodeGeneratorBase
     {

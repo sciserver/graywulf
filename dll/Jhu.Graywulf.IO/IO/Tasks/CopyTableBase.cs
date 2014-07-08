@@ -10,7 +10,7 @@ using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Tasks;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.SqlParser.SqlCodeGen;
+using Jhu.Graywulf.SqlCodeGen.SqlServer;
 using Jhu.Graywulf.Format;
 
 namespace Jhu.Graywulf.IO.Tasks

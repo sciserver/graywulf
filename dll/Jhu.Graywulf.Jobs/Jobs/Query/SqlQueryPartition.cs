@@ -10,7 +10,7 @@ using Jhu.Graywulf.IO;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.SqlParser;
-using Jhu.Graywulf.SqlParser.SqlCodeGen;
+using Jhu.Graywulf.SqlCodeGen.SqlServer;
 
 namespace Jhu.Graywulf.Jobs.Query
 {

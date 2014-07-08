@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Schema;
 
-namespace Jhu.Graywulf.SqlParser.SqlCodeGen
+namespace Jhu.Graywulf.SqlCodeGen
 {
     public class SqlCodeGeneratorFactory
     {
@@ -12,15 +12,15 @@ namespace Jhu.Graywulf.SqlParser.SqlCodeGen
         {
             if (t == typeof(Schema.SqlServer.SqlServerDataset) || t.IsSubclassOf(typeof(Schema.SqlServer.SqlServerDataset)))
             {
-                return new SqlServerCodeGenerator();
+                return new SqlServer.SqlServerCodeGenerator();
             }
             else if (t == typeof(Schema.MySql.MySqlDataset) || t.IsSubclassOf(typeof(Schema.MySql.MySqlDataset)))
             {
-                return new MySqlCodeGenerator();
+                return new MySql.MySqlCodeGenerator();
             }
             else
             {
-                return new PostgreSqlCodeGenerator();
+                return new PostgreSql.PostgreSqlCodeGenerator();
             }
         }
 
