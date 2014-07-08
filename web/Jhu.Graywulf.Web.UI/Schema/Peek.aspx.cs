@@ -9,6 +9,7 @@ using schema = Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.SqlCodeGen;
 using Jhu.Graywulf.ParserLib;
+using Jhu.Graywulf.Data;
 
 namespace Jhu.Graywulf.Web.UI.Schema
 {

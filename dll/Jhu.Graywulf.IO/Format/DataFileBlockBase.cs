@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.IO;
+using Jhu.Graywulf.Data;
 
 namespace Jhu.Graywulf.Format
 {

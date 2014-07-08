@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.Common;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Data;
 
 namespace Jhu.Graywulf.IO.Tasks
 {

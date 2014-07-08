@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.Common;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Data;
 
 namespace Jhu.Graywulf.Format
 {

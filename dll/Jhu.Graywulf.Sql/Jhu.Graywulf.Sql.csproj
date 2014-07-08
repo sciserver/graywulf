@@ -54,6 +54,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\ISmartCommand.cs" />
+    <Compile Include="Data\ISmartDataReader.cs" />
+    <Compile Include="Data\SmartCommand.cs" />
+    <Compile Include="Data\SmartDataReader.cs" />
     <Compile Include="Schema\AllObjectsLoadingEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -75,9 +79,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DatabaseObjectNames.resx</DependentUpon>
     </Compile>
-    <Compile Include="Schema\ISmartCommand.cs" />
-    <Compile Include="Schema\SmartCommand.cs" />
-    <Compile Include="Schema\ISmartDataReader.cs" />
     <Compile Include="Schema\MySql\Constants.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -88,7 +89,6 @@
     <Compile Include="Schema\PostgreSql\PostgreSqlDataset.cs" />
     <Compile Include="Schema\SchemaManager.cs" />
     <Compile Include="Schema\SingleComplex.cs" />
-    <Compile Include="Schema\SmartDataReader.cs" />
     <Compile Include="Schema\SqlServer\Constants.cs" />
     <Compile Include="Schema\SqlServer\SqlServerDataset.cs" />
     <Compile Include="Schema\SqlServer\SqlServerSchemaManager.cs">

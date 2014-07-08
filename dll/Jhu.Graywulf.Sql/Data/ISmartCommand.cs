@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 
-namespace Jhu.Graywulf.Schema
+namespace Jhu.Graywulf.Data
 {
     public interface ISmartCommand : IDbCommand
     {
