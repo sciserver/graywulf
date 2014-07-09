@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Data
         private DatasetBase dataset;
         private IDbCommand command;
 
-        private bool isRowCountingOn;
+        private bool recordsCounted;
 
         #endregion
         #region IDbCommand properties
@@ -73,10 +73,10 @@ namespace Jhu.Graywulf.Data
             get { return command; }
         }
 
-        public bool IsRowCountingOn
+        public bool RecordsCounted
         {
-            get { return isRowCountingOn; }
-            set { isRowCountingOn = value; }
+            get { return recordsCounted; }
+            set { recordsCounted = value; }
         }
 
         #endregion
@@ -86,6 +86,8 @@ namespace Jhu.Graywulf.Data
         {
             this.dataset = dataset;
             this.command = command;
+
+            this.recordsCounted = false;
         }
 
         public void Dispose()
@@ -145,6 +147,40 @@ namespace Jhu.Graywulf.Data
         public ISmartDataReader ExecuteReader(CommandBehavior behavior)
         {
             return new SmartDataReader(dataset, command.ExecuteReader(behavior));
+        }
+
+        /// <summary>
+        /// Wraps the query into a SELECT COUNT(*) FROM (...) query and
+        /// the number of records is counted.
+        /// </summary>
+        private IList<long> CountResults()
+        {
+            // TODO: this only works with single SELECTs now
+            var cg = dataset.CreateCodeGenerator();
+            var sql = cg.GenerateCountStarQuery(command.CommandText);
+
+            // Save command text for later
+            var original = command.CommandText;
+
+            // Change command to run count query instead
+            command.CommandText = sql;
+
+            var recordCounts = new List<long>();
+
+            using (var dr = command.ExecuteReader())
+            {
+                do
+                {
+                    dr.Read();
+                    recordCounts.Add((dr.GetInt32(0)));
+                }
+                while (dr.NextResult());
+            }
+
+            // Change back command text to original query
+            command.CommandText = original;
+
+            return recordCounts;
         }
     }
 }

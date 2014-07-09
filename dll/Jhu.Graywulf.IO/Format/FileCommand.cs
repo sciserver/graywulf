@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.Format
             set { file = value; }
         }
 
-        public bool IsRowCountingOn
+        public bool RecordsCounted
         {
             get { return isRowCountingOn; }
             set { isRowCountingOn = value; }

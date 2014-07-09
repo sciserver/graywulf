@@ -8,7 +8,7 @@ namespace Jhu.Graywulf.Data
 {
     public interface ISmartCommand : IDbCommand
     {
-        bool IsRowCountingOn { get; set; }
+        bool RecordsCounted { get; set; }
 
         new ISmartDataReader ExecuteReader();
         new ISmartDataReader ExecuteReader(CommandBehavior behavior);

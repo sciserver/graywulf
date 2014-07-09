@@ -1215,6 +1215,11 @@ END",
 
         #endregion
 
+        public override SqlCodeGen.SqlCodeGeneratorBase CreateCodeGenerator()
+        {
+            return new SqlCodeGen.SqlServer.SqlServerCodeGenerator();
+        }
+
         private SqlConnection OpenConnectionInternal()
         {
             var csb = new SqlConnectionStringBuilder(ConnectionString);

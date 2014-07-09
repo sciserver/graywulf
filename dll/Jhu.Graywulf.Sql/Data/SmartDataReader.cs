@@ -14,6 +14,9 @@ namespace Jhu.Graywulf.Data
         private DatasetBase dataset;
         private IDataReader dataReader;
 
+        private int resultsetCounter;
+        private IList<long> recordCounts;
+
         #endregion
         #region IDataReader properties
 
@@ -55,13 +58,46 @@ namespace Jhu.Graywulf.Data
             get { return dataset; }
         }
 
+        public long RecordCount
+        {
+            get
+            {
+                if (recordCounts != null)
+                {
+                    return recordCounts[resultsetCounter];
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+        }
+
         #endregion
         #region Constructors and initializers
 
         public SmartDataReader(DatasetBase dataset, IDataReader dataReader)
+            : this(dataset, dataReader, null)
         {
+            // Overload
+        }
+
+        public SmartDataReader(DatasetBase dataset, IDataReader dataReader, IList<long> recordCounts)
+        {
+            InitializeMembers();
+
             this.dataset = dataset;
             this.dataReader = dataReader;
+            this.recordCounts = recordCounts;
+        }
+
+        private void InitializeMembers()
+        {
+            this.dataReader = null;
+            this.dataReader = null;
+
+            this.resultsetCounter = 0;
+            this.recordCounts = null;
         }
 
         public void Dispose()
@@ -78,6 +114,7 @@ namespace Jhu.Graywulf.Data
 
         public bool NextResult()
         {
+            resultsetCounter++;
             return dataReader.NextResult();
         }
 
@@ -221,16 +258,9 @@ namespace Jhu.Graywulf.Data
         #endregion
 
 
-
-
         public IList<Column> GetColumns()
         {
             return dataset.CreateColumns(dataReader);
-        }
-
-        public long GetRowCount()
-        {
-            return -1;
         }
     }
 }

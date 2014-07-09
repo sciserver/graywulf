@@ -740,6 +740,8 @@ namespace Jhu.Graywulf.Schema
         }
 
         #endregion
+
+        public abstract SqlCodeGen.SqlCodeGeneratorBase CreateCodeGenerator();
         
         public abstract IDbConnection OpenConnection();
 

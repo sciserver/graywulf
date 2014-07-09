@@ -8,8 +8,9 @@ using Jhu.Graywulf.Schema;
 namespace Jhu.Graywulf.Data
 {
     public interface ISmartDataReader : IDataReader
-    {        
+    {
+        long RecordCount { get; }
+
         IList<Column> GetColumns();
-        long GetRowCount();
     }
 }

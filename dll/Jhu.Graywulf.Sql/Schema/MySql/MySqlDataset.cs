@@ -793,6 +793,11 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
 
         #endregion
 
+        public override SqlCodeGen.SqlCodeGeneratorBase CreateCodeGenerator()
+        {
+            return new SqlCodeGen.MySql.MySqlCodeGenerator();
+        }
+
         private MySqlConnection OpenConnectionInternal()
         {
             var csb = new MySqlConnectionStringBuilder(ConnectionString);

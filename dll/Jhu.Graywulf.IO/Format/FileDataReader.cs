@@ -60,6 +60,17 @@ namespace Jhu.Graywulf.Format
         }
 
         #endregion
+        #region Properties
+
+        public long RecordCount
+        {
+            get
+            {
+                return file.CurrentBlock.RecordCount;
+            }
+        }
+
+        #endregion
         #region Constructors and initializers
 
         internal FileDataReader(DataFileBase file)
@@ -360,11 +371,6 @@ namespace Jhu.Graywulf.Format
         public IList<Column> GetColumns()
         {
             return file.CurrentBlock.Columns;
-        }
-
-        public long GetRowCount()
-        {
-            return file.CurrentBlock.RowCount;
         }
 
     }

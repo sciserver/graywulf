@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Format
         /// Number of rows
         /// </summary>
         [NonSerialized]
-        private long rowCount;
+        private long recordCount;
 
         #endregion
         #region Properties
@@ -70,9 +70,9 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Gets the number of rows in the file block
         /// </summary>
-        public long RowCount
+        public long RecordCount
         {
-            get { return rowCount; }
+            get { return recordCount; }
         }
 
         #endregion
@@ -100,14 +100,14 @@ namespace Jhu.Graywulf.Format
         {
             this.file = null;
             this.columns = new List<Column>();
-            this.rowCount = -1;
+            this.recordCount = -1;
         }
 
         private void CopyMembers(DataFileBlockBase old)
         {
             this.file = old.file;
             this.columns = new List<Column>(Util.DeepCloner.CloneCollection(old.columns));
-            this.rowCount = old.rowCount;
+            this.recordCount = old.recordCount;
         }
 
         public abstract object Clone();

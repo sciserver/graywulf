@@ -317,6 +317,16 @@ namespace Jhu.Graywulf.SqlCodeGen
 
         public abstract string GenerateMostRestrictiveTableQuery(TableReference table, bool includePrimaryKey, int top);
 
+        public virtual string GenerateCountStarQuery(string subquery)
+        {
+            // TODO: modify to parse query first into separate SELECTS
+            // remove ending ; etc
+
+            // Use count_big maybe?
+
+            return String.Format("SELECT COUNT(*) FROM ({0}) __countstar");
+        }
+
         #endregion
     }
 }

@@ -907,6 +907,11 @@ WHERE nspname = @schemaName and proname= @objectName;";
 
         #endregion
 
+        public override SqlCodeGen.SqlCodeGeneratorBase CreateCodeGenerator()
+        {
+            return new SqlCodeGen.PostgreSql.PostgreSqlCodeGenerator();
+        }
+
         private NpgsqlConnection OpenConnectionInternal()
         {
             var csb = new NpgsqlConnectionStringBuilder(ConnectionString);
