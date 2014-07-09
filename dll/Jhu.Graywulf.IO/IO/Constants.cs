@@ -8,6 +8,9 @@ namespace Jhu.Graywulf.IO
 {
     public static class Constants
     {
+        public const int DefaultBulkInsertBatchSize = 0;
+        public const int DefaultBulkInsertTimeout = 1000;   // in sec
+
         public const string FileExtensionBz2 = ".bz2";
         public const string FileExtensionGz = ".gz";
         public const string FileExtensionZip = ".zip";

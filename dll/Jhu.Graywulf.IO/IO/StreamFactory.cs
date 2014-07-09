@@ -45,6 +45,8 @@ namespace Jhu.Graywulf.IO
 
         #endregion
 
+        // TODO: add logic to handle user credentials
+
         private Uri uri;
         private DataFileMode mode;
         private DataFileCompression compression;

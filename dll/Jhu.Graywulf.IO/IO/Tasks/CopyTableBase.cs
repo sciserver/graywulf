@@ -53,41 +53,74 @@ namespace Jhu.Graywulf.IO.Tasks
         }
     }
 
+    /// <summary>
+    /// Implements core functions to copy tables to/from files and databases.
+    /// </summary>
     public abstract class CopyTableBase : RemoteServiceBase, ICopyTableBase, ICloneable, IDisposable
     {
+        #region Private member variables
+
         private int batchSize;
         private int timeout;
         private string fileFormatFactoryType;
         private string streamFactoryType;
 
+        /// <summary>
+        /// When set to true, informs the class that the executing bulk copy operation
+        /// is to be cancelled.
+        /// </summary>
         [NonSerialized]
-        private bool isBulkCopyCanceled;
+        private bool isBulkCopyCancelRequested;
+
+        /// <summary>
+        /// Synchronizes the class to the end of the bulk copy operation.
+        /// </summary>
         [NonSerialized]
         private EventWaitHandle bulkCopyFinishedEvent;
 
+        #endregion
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the batch size of bulk insert operations.
+        /// </summary>
         public int BatchSize
         {
             get { return batchSize; }
             set { batchSize = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the timeout of bulk insert operations.
+        /// </summary>
         public int Timeout
         {
             get { return timeout; }
             set { timeout = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the file format factory to use when creating output files
+        /// or opening input files.
+        /// </summary>
         public string FileFormatFactoryType
         {
             get { return fileFormatFactoryType; }
             set { fileFormatFactoryType = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the stream factory to use when opening input and output
+        /// streams to read and write files.
+        /// </summary>
         public string StreamFactoryType
         {
             get { return streamFactoryType; }
             set { streamFactoryType = value; }
         }
+
+        #endregion
+        #region Constructors and initializers
 
         protected CopyTableBase()
         {
@@ -101,8 +134,8 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void InitializeMembers()
         {
-            this.batchSize = 10000;
-            this.timeout = 1000;    // *** TODO: use constant or setting
+            this.batchSize = Constants.DefaultBulkInsertBatchSize;
+            this.timeout = Constants.DefaultBulkInsertTimeout;
             this.fileFormatFactoryType = null;
             this.streamFactoryType = null;
         }
@@ -119,26 +152,47 @@ namespace Jhu.Graywulf.IO.Tasks
 
         public abstract void Dispose();
 
+        #endregion
+
+        /// <summary>
+        /// Returns an instantiated file format factory object.
+        /// </summary>
+        /// <returns></returns>
         protected FileFormatFactory GetFileFormatFactory()
         {
             return FileFormatFactory.Create(fileFormatFactoryType);
         }
 
+        /// <summary>
+        /// Returns an instantiated stream factory object.
+        /// </summary>
+        /// <returns></returns>
         protected StreamFactory GetStreamFactory()
         {
             return StreamFactory.Create(streamFactoryType);
         }
 
-        protected void ReadTable(DataFileBase source, DestinationTable destination)
+        /// <summary>
+        /// Copies recordsets from a file into destination tables.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        protected void CopyFromFile(DataFileBase source, DestinationTable destination)
         {
             // Import the file by wrapping it into a dummy command
             using (var cmd = new FileCommand(source))
             {
-                ImportTable(cmd, destination);
+                CopyFromCommand(cmd, destination);
             }
         }
 
-        protected void ImportTable(ISmartCommand cmd, DestinationTable destination)
+        /// <summary>
+        /// Copies recordsets by executing a command and stores results
+        /// in destination tables.
+        /// </summary>
+        /// <param name="cmd"></param>
+        /// <param name="destination"></param>
+        protected void CopyFromCommand(ISmartCommand cmd, DestinationTable destination)
         {
             // Run bulk insert wrapped into a cancelable task
             var guid = Guid.NewGuid();
@@ -159,7 +213,12 @@ namespace Jhu.Graywulf.IO.Tasks
             UnregisterCancelable(guid);
         }
 
-        protected void WriteTable(SourceTableQuery source, DataFileBase destination)
+        /// <summary>
+        /// Copies the results of a query into a file.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        protected void CopyToFile(SourceTableQuery source, DataFileBase destination)
         {
             // Create command that reads the table
             using (var cmd = source.CreateCommand())
@@ -172,13 +231,18 @@ namespace Jhu.Graywulf.IO.Tasks
                         cmd.Transaction = tn;
                         cmd.CommandTimeout = Timeout;
 
-                        WriteTable(cmd, destination);
+                        CopyToFile(cmd, destination);
                     }
                 }
             }
         }
 
-        private void WriteTable(ISmartCommand cmd, DataFileBase destination)
+        /// <summary>
+        /// Copies the resultsets of a command into files.
+        /// </summary>
+        /// <param name="cmd"></param>
+        /// <param name="destination"></param>
+        private void CopyToFile(ISmartCommand cmd, DataFileBase destination)
         {
             // Wrap command into a cancellable task
             var guid = Guid.NewGuid();
@@ -200,27 +264,33 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <param name="dr"></param>
         protected void ExecuteBulkCopy(IDataReader dr, Table destination)
         {
+            // Bulk insert is a tricky animal. To get best performance, batch size
+            // has to be set to zero and table locking has to be set on. This prevents
+            // writing the data into the transaction log prior to copying it to
+            // the table. The database recovery model needs to be set to simple.            
+            
             // TODO: it can only import the first resultset from dr
             var cg = new SqlServerCodeGenerator();
 
-            isBulkCopyCanceled = false;
+            isBulkCopyCancelRequested = false;
             bulkCopyFinishedEvent = new AutoResetEvent(false);
 
+            var sbo = System.Data.SqlClient.SqlBulkCopyOptions.TableLock;
+
             // Initialize bulk copy
-            var sbc = new System.Data.SqlClient.SqlBulkCopy(destination.Dataset.ConnectionString)
+            var sbc = new System.Data.SqlClient.SqlBulkCopy(destination.Dataset.ConnectionString, sbo)
             {
                 DestinationTableName = cg.GetResolvedTableName(destination),
                 BatchSize = batchSize,
                 BulkCopyTimeout = timeout,
-                //EnableStreaming = true
+                //EnableStreaming = true    // TODO: add, new in .net 4.5
                 NotifyAfter = batchSize
             };
 
             // Initialize events
             sbc.SqlRowsCopied += delegate(object sender, SqlRowsCopiedEventArgs e)
             {
-                //RowsAffected = e.RowsCopied;  // TODO: delete if not used
-                e.Abort = isBulkCopyCanceled;
+                e.Abort = isBulkCopyCancelRequested;
             };
 
             try
@@ -234,13 +304,14 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         /// <summary>
-        /// Cancels the bulk insert operation
+        /// Send a cancel request to the bulk copy operation via isBulkCopyCancelRequested
+        /// and synchronizes execution to the end of the bulk copy.
         /// </summary>
         public override void Cancel()
         {
             if (bulkCopyFinishedEvent != null)
             {
-                isBulkCopyCanceled = true;
+                isBulkCopyCancelRequested = true;
                 bulkCopyFinishedEvent.WaitOne();
             }
 

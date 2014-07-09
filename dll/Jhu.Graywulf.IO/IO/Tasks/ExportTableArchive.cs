@@ -35,25 +35,43 @@ namespace Jhu.Graywulf.IO.Tasks
         }
     }
 
+    /// <summary>
+    /// Implements functions to export a set of tables into a set of files, all wrapped
+    /// into a single archive.
+    /// </summary>
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
     public class ExportTableArchive : CopyTableArchiveBase, IExportTableArchive, ICloneable, IDisposable
     {
+        #region Private member variables
+
         private SourceTableQuery[] sources;
         private DataFileBase[] destinations;
 
+        #endregion
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the sources of the export operation.
+        /// </summary>
         public SourceTableQuery[] Sources
         {
             get { return sources; }
             set { sources = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the destination files of the export operation.
+        /// </summary>
         public DataFileBase[] Destinations
         {
             get { return destinations; }
             set { destinations = value; }
         }
+
+        #endregion
+        #region Constructors and initializers
 
         public ExportTableArchive()
         {
@@ -82,11 +100,19 @@ namespace Jhu.Graywulf.IO.Tasks
             return new ExportTableArchive(this);
         }
 
+        #endregion
+
+        /// <summary>
+        /// Opens the archive file for writing.
+        /// </summary>
         public override void Open()
         {
             Open(DataFileMode.Write, DataFileArchival.Automatic);
         }
 
+        /// <summary>
+        /// Executes the table export operation
+        /// </summary>
         protected override void OnExecute()
         {
             if (BaseStream == null)
@@ -117,13 +143,25 @@ namespace Jhu.Graywulf.IO.Tasks
 
             // Write individual tables into the archive
 
-
+            // TODO: add logic to handle multiple resultsets
+            // certain types of files can hold multiple resultsets but many
+            // of them can contain only one, so iterating through the resultsets
+            // has to happen here and conditionally, inside the file writer
+            // function: DataFileBase.WriteFromDataReader
+            
+            // Iterate through all source queries
             for (int i = 0; i < sources.Length; i++)
             {
                 try
                 {
+                    // Open the destination file that will be written into the archive
+                    // and copy the table into the file
+
+                    // TODO: figure out whether destination table supports multiple resultsets
+                    // or new files need to be created for every single resultset
+
                     destinations[i].Open(BaseStream, DataFileMode.Write);
-                    WriteTable(sources[i], destinations[i]);
+                    CopyToFile(sources[i], destinations[i]);
                 }
                 finally
                 {

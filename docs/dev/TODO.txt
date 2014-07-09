@@ -208,3 +208,44 @@ mac
    Check log file generation in mapper (must go to separate disk volumes)
    Scheduler breaks if no clr enabled in admin db
    SchemaSource server?
+
+
+
+Unhandled Exception: System.Data.SqlClient.SqlException: The app domain with specified version id (525) was unloaded due
+ to memory pressure and could not be found.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInA
+ction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectio
+nLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, B
+ulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOption
+sString)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean
+ returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean re
+turnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, String methodName, Boo
+lean sendToPipe, Int32 timeout, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at Jhu.Graywulf.Registry.QueueInstance.GetNextJobInstance() in C:\Data0\dobos\project\graywulf\dll\Jhu.Graywulf.Regis
+try\Registry\QueueInstance.io.cs:line 31
+   at Jhu.Graywulf.Scheduler.QueueManager.PollNewJobs() in C:\Data0\dobos\project\graywulf\exe\Jhu.Graywulf.Scheduler\Qu
+eueManager.cs:line 475
+   at Jhu.Graywulf.Scheduler.QueueManager.Poll() in C:\Data0\dobos\project\graywulf\exe\Jhu.Graywulf.Scheduler\QueueMana
+ger.cs:line 358
+   at Jhu.Graywulf.Scheduler.QueueManager.Poller() in C:\Data0\dobos\project\graywulf\exe\Jhu.Graywulf.Scheduler\QueueMa
+nager.cs:line 343
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object
+state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, B
+oolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.ThreadHelper.ThreadStart()
+PS Microsoft.PowerShell.Core\FileSystem::\\blackhole\data\Raid6_2\Graywulf\GWCode\RemoteService> .\gwscheduler.exe
+Graywulf scheduler is starting...
+2014.07.09. 16:16:31 : Jhu.Graywulf.Scheduler.Start : Closed
+2014.07.09. 16:16:31 : Jhu.Graywulf.Scheduler.LoadRegistry : Closed
+2014.07.09. 16:16:32 : Jhu.Graywulf.Scheduler.QueueManager.ProcessInterruptedJobs[Executing] : Closed
+2014.07.09. 16:16:32 : Jhu.Graywulf.Scheduler.StartPoller : Closed
+                                  done.

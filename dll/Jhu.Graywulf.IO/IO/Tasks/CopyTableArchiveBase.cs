@@ -35,26 +35,48 @@ namespace Jhu.Graywulf.IO.Tasks
         void Close();
     }
 
+    /// <summary>
+    /// Extends core table copy functionality with function to read and write tables
+    /// from/to archive files containing multiple files.
+    /// </summary>
     public abstract class CopyTableArchiveBase : CopyTableBase, ICopyTableArchiveBase, ICloneable, IDisposable
     {
+        #region Private member variables
+
         private Uri uri;
 
         [NonSerialized]
         private Stream baseStream;
 
+        /// <summary>
+        /// If true, the base stream has been opened by this class and will be disposed
+        /// when the class itself is disposed
+        /// </summary>
         [NonSerialized]
         private bool ownsBaseStream;
 
+        #endregion
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the URI pointing to the archive, either source or destination
+        /// </summary>
         public Uri Uri
         {
             get { return uri; }
             set { uri = value; }
         }
 
+        /// <summary>
+        /// Gets the base stream that reads and writes the archive, not its contents
+        /// </summary>
         protected Stream BaseStream
         {
             get { return baseStream; }
         }
+
+        #endregion
+        #region Constructors and initializers
 
         public CopyTableArchiveBase()
         {
@@ -86,6 +108,11 @@ namespace Jhu.Graywulf.IO.Tasks
             Close();
         }
 
+        #endregion
+
+        /// <summary>
+        /// Makes sure that the base stream is not open.
+        /// </summary>
         protected void EnsureNotOpen()
         {
             if (ownsBaseStream && baseStream != null)
@@ -94,8 +121,16 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
+        /// <summary>
+        /// When overriden is derived classes, opens the archive pointed by the URI.
+        /// </summary>
         public abstract void Open();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileMode"></param>
+        /// <param name="archival"></param>
         protected void Open(DataFileMode fileMode, DataFileArchival archival)
         {
             EnsureNotOpen();
@@ -110,6 +145,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 sf.Uri = uri;
                 sf.Mode = fileMode;
                 sf.Archival = archival;
+
                 // TODO: add authentication options here
 
                 baseStream = sf.Open();
@@ -117,10 +153,14 @@ namespace Jhu.Graywulf.IO.Tasks
             }
             else
             {
-                // Do nothing
+                // Do nothing, open stream is passed from outside
             }
         }
 
+        /// <summary>
+        /// Opens the archive by taking an already opened stream from outside.
+        /// </summary>
+        /// <param name="stream"></param>
         public void Open(Stream stream)
         {
             if (stream == null)
@@ -135,6 +175,10 @@ namespace Jhu.Graywulf.IO.Tasks
             Open();
         }
 
+        /// <summary>
+        /// Opens the archive pointed by the URI.
+        /// </summary>
+        /// <param name="uri"></param>
         public void Open(Uri uri)
         {
             if (uri == null)
@@ -149,6 +193,9 @@ namespace Jhu.Graywulf.IO.Tasks
             Open();
         }
 
+        /// <summary>
+        /// Closes the archive.
+        /// </summary>
         public void Close()
         {
             if (ownsBaseStream && baseStream != null)

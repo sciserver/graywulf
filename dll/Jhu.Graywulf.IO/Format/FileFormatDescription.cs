@@ -58,6 +58,19 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         private bool isCompressed;
 
+        /// <summary>
+        /// If true, the number of records is known before enumerating the
+        /// records during read, for example, the number of records is
+        /// in the header.
+        /// </summary>
+        private bool knowsRecordCount;
+
+        /// <summary>
+        /// If true, the number of records has to be known prior to enumerating
+        /// the records, for example, to write it into the file header.
+        /// </summary>
+        private bool requiresRecordCount;
+
         public Type Type
         {
             get { return type; }
@@ -123,6 +136,18 @@ namespace Jhu.Graywulf.Format
         {
             get { return isCompressed; }
             set { isCompressed = value; }
+        }
+
+        public bool KnowsRecordCount
+        {
+            get { return knowsRecordCount; }
+            set { knowsRecordCount = value; }
+        }
+
+        public bool RequiresRecordCount
+        {
+            get { return requiresRecordCount; }
+            set { requiresRecordCount = value; }
         }
 
         public FileFormatDescription()

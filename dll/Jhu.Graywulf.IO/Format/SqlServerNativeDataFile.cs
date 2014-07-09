@@ -39,6 +39,8 @@ namespace Jhu.Graywulf.Format
                     CanHoldMultipleDatasets = false,
                     RequiresArchive = true,
                     IsCompressed = false,
+                    KnowsRecordCount = false,
+                    RequiresRecordCount = false,
                 };
             }
         }

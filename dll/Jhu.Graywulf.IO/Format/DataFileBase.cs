@@ -107,6 +107,7 @@ namespace Jhu.Graywulf.Format
         [DataMember]
         public string StreamFactoryType
         {
+            // TODO: modify from typename to actual stream factory class
             get { return streamFactoryType; }
             set { streamFactoryType = value; }
         }
@@ -645,10 +646,22 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region DataReader and Writer functions
 
+        /// <summary>
+        /// Writes the resultsets from a data reader into a file.
+        /// </summary>
+        /// <param name="dr"></param>
         public void WriteFromDataReader(ISmartDataReader dr)
         {
+            // TODO: Right now, we do not support headers that require the number of
+            // resultsets. Because we want to stream everything, figuring out the
+            // number of resultsets has to go into the smart data reader.
+
+            // Write file header
             OnWriteHeader();
 
+            // Iterate through the 
+
+            // TODO: what if file does not support multiple blocks?
             do
             {
                 WriteNextBlock(dr);

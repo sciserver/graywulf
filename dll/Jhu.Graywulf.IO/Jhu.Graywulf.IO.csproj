@@ -92,7 +92,6 @@
     <Compile Include="IO\Tasks\ImportTable.cs" />
     <Compile Include="IO\Tasks\ImportTableArchive.cs" />
     <Compile Include="IO\Tasks\SourceTableQuery.cs" />
-    <Compile Include="IO\Tasks\Enum.cs" />
     <Compile Include="IO\Tasks\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

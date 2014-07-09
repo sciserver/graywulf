@@ -35,6 +35,10 @@ namespace Jhu.Graywulf.IO.Tasks
         }
     }
 
+    /// <summary>
+    /// Implements functions to copy the results of a query into a table,
+    /// possibly on another server.
+    /// </summary>
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
@@ -109,7 +113,7 @@ namespace Jhu.Graywulf.IO.Tasks
                         cmd.Transaction = tn;
                         cmd.CommandTimeout = Timeout;
 
-                        ImportTable(cmd, destination);
+                        CopyFromCommand(cmd, destination);
                     }
                 }
             }

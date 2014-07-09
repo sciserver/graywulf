@@ -34,25 +34,43 @@ namespace Jhu.Graywulf.IO.Tasks
         }
     }
 
+    /// <summary>
+    /// Extends basic table copy functionality to import the tables from a file
+    /// into database tables.
+    /// </summary>
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.PerSession,
         IncludeExceptionDetailInFaults = true)]
     public class ImportTable : CopyTableBase, IImportTable, ICloneable, IDisposable
     {
+        #region Private member variables
+
         private DataFileBase source;
         private DestinationTable destination;
 
+        #endregion
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the data source (data file).
+        /// </summary>
         public DataFileBase Source
         {
             get { return source; }
             set { source = value; }
         }
 
+        /// <summary>
+        /// Gets or set the destination (database table).
+        /// </summary>
         public DestinationTable Destination
         {
             get { return destination; }
             set { destination = value; }
         }
+
+        #endregion
+        #region Constructors and initializers
 
         public ImportTable()
         {
@@ -85,6 +103,11 @@ namespace Jhu.Graywulf.IO.Tasks
         {
         }
 
+        #endregion
+
+        /// <summary>
+        /// Executes the copy operation.
+        /// </summary>
         protected override void OnExecute()
         {
             if (source == null)
@@ -99,10 +122,15 @@ namespace Jhu.Graywulf.IO.Tasks
 
             try
             {
+                // Make sure file is in read mode and uses the right
+                // stream factory to open the URI
+
+                // TODO: add authentication options here
+
                 source.FileMode = DataFileMode.Read;
                 source.StreamFactoryType = StreamFactoryType;
                 source.Open();
-                ReadTable(source, destination);
+                CopyFromFile(source, destination);
             }
             finally
             {

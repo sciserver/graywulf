@@ -109,6 +109,7 @@ namespace Jhu.Graywulf.IO.Tasks
             return cmd;
         }
 
+        // TODO: this should go into the smart data reader
         private void DetectColumns()
         {
             using (var cn = OpenConnection())
@@ -128,6 +129,7 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
+        // TODO: goes into smart data reader
         private void CreateColumns(IList<Column> columns)
         {
             columns.Clear();
@@ -135,6 +137,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.columns.AddRange(columns);
         }
 
+        // TODO: goes into smart data reader
         public IList<Column> GetColumns()
         {
             // *** TODO

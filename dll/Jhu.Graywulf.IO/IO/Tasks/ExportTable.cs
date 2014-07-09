@@ -43,20 +43,34 @@ namespace Jhu.Graywulf.IO.Tasks
         IncludeExceptionDetailInFaults = true)]
     public class ExportTable : CopyTableBase, IExportTable, ICloneable, IDisposable
     {
+        #region Private member variables
+
         private SourceTableQuery source;
         private DataFileBase destination;
 
+        #endregion
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the source query of the export operation.
+        /// </summary>
         public SourceTableQuery Source
         {
             get { return source; }
             set { source = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the destination file of the export operation.
+        /// </summary>
         public DataFileBase Destination
         {
             get { return destination; }
             set { destination = value; }
         }
+
+        #endregion
+        #region Constructors and initializers
 
         public ExportTable()
         {
@@ -89,6 +103,11 @@ namespace Jhu.Graywulf.IO.Tasks
         {
         }
 
+        #endregion
+
+        /// <summary>
+        /// Executes the table export operation
+        /// </summary>
         protected override void OnExecute()
         {
             if (source == null)
@@ -103,10 +122,12 @@ namespace Jhu.Graywulf.IO.Tasks
 
             try
             {
+                // TODO: add user access logic here
+
                 destination.FileMode = DataFileMode.Write;
                 destination.StreamFactoryType = StreamFactoryType;
                 destination.Open();
-                WriteTable(source, destination);
+                CopyToFile(source, destination);
             }
             finally
             {

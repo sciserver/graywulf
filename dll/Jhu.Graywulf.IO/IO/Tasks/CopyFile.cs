@@ -171,18 +171,6 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 throw new Exception(String.Format(ExceptionMessages.FileCopyFailed, cproc.ExitCode));
             }
-
-            // rename destination file if file names differ
-            // **** TODO: test this
-            /* delete
-            if (StringComparer.InvariantCultureIgnoreCase.Compare(Path.GetDirectoryName(source), Path.GetDirectoryName(destination)) != 0 &&
-                StringComparer.InvariantCultureIgnoreCase.Compare(Path.GetFileName(source), Path.GetFileName(destination)) != 0)
-            {
-                string from = Path.Combine(Path.GetDirectoryName(destination), Path.GetFileName(source));
-                Console.WriteLine("{0} -> {1}", from, source);
-
-                File.Move(from, destination);
-            }*/
         }
     }
 }

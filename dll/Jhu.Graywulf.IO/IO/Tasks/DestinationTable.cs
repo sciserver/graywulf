@@ -7,9 +7,16 @@ using Jhu.Graywulf.Schema.SqlServer;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
+    /// <summary>
+    /// Represents the destination of a table copy operation.
+    /// </summary>
     [Serializable]
     public class DestinationTable
     {
+        // TODO: figure out automatic table naming when importing
+        // multiple tables from archives etc.
+
+        #region Private member variables
 
         private SqlServerDataset dataset;
         private string databaseName;
@@ -17,35 +24,58 @@ namespace Jhu.Graywulf.IO.Tasks
         private string tableName;
         private TableInitializationOptions options;
 
+        #endregion
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the destination dataset.
+        /// </summary>
         public SqlServerDataset Dataset
         {
             get { return dataset; }
             set { dataset = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the name of the destination database.
+        /// </summary>
         public string DatabaseName
         {
             get { return databaseName; }
             set { databaseName = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the schema name of the destination table.
+        /// </summary>
         public string SchemaName
         {
             get { return schemaName; }
             set { schemaName = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the name of the destination table.
+        /// </summary>
         public string TableName
         {
+            // TODO: modify this to table name pattern to support multi-table imports.
+
             get { return tableName; }
             set { tableName = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the destination table initialization method.
+        /// </summary>
         public TableInitializationOptions Options
         {
             get { return options; }
             set { options = value; }
         }
+
+        #endregion
+        #region Constructors and initializers
 
         public DestinationTable()
         {
@@ -96,8 +126,13 @@ namespace Jhu.Graywulf.IO.Tasks
             this.options = old.options;
         }
 
+        #endregion
+
         public Table GetTable()
         {
+            // TODO: this needs to be modified for multi-table imports
+            // to generate table name automatically
+
             return new Table(dataset)
             {
                 DatabaseName = this.databaseName,
