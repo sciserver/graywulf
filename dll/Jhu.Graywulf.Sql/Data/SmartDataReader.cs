@@ -263,7 +263,8 @@ namespace Jhu.Graywulf.Data
                 propertiesList[resultsetCounter] = new RecordsetProperties();
             }
 
-            propertiesList[resultsetCounter].Columns = dataset.DetectColumns(dataReader);
+            propertiesList[resultsetCounter].Columns.Clear();
+            propertiesList[resultsetCounter].Columns.AddRange(dataset.DetectColumns(dataReader));
 
             // TODO: detect additional properties
         }
