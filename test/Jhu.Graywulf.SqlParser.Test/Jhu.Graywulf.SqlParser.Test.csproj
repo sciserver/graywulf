@@ -50,8 +50,6 @@
     <Compile Include="SqlParser\ArithmeticOperatorTest.cs" />
     <Compile Include="SqlParser\BitwiseOperatorTest.cs" />
     <Compile Include="SqlParser\CnfConverterTest.cs" />
-    <Compile Include="SqlParser\CodeGen\MySqlCodeGeneratorTest.cs" />
-    <Compile Include="SqlParser\CodeGen\SqlServerCodeGeneratorTest.cs" />
     <Compile Include="SqlParser\ColumnIdentifierTest.cs" />
     <Compile Include="SqlParser\CommentOrWhitespaceTest.cs" />
     <Compile Include="SqlParser\TableValuedFunctionTest.cs" />
