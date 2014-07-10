@@ -10,21 +10,10 @@ namespace Jhu.Graywulf.Data
     {
         #region Private member variables
 
-        private string name;
-        private DatasetMetadata metadata;
-
         #endregion
         #region Properties
 
-        public string Name
-        {
-            get { return name; }
-        }
 
-        public DatasetMetadata Metadata
-        {
-            get { return metadata; }
-        }
 
         #endregion
         #region Constructors and initializers
@@ -41,8 +30,7 @@ namespace Jhu.Graywulf.Data
 
         private void InitializeMembers()
         {
-            this.name = null;
-            this.metadata = null;
+            
         }
 
         private void CopyMembers(BatchProperties old)

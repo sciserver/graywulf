@@ -7,13 +7,18 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Data
 {
+    /// <summary>
+    /// Wraps an ordinary DbCommand and implements additional functionality
+    /// to count records and query resultset properties.
+    /// </summary>
     public class SmartCommand : ISmartCommand
     {
         #region Private member variables
 
         private DatasetBase dataset;
         private IDbCommand command;
-        private BatchProperties properties;
+        private string name;
+        private DatasetMetadata metadata;
         private bool recordsCounted;
 
         #endregion
@@ -73,9 +78,14 @@ namespace Jhu.Graywulf.Data
             get { return command; }
         }
 
-        public BatchProperties Properties
+        public string Name
         {
-            get { return properties; }
+            get { return name; }
+        }
+
+        public DatasetMetadata Metadata
+        {
+            get { return metadata; }
         }
 
         public bool RecordsCounted
@@ -91,7 +101,8 @@ namespace Jhu.Graywulf.Data
         {
             this.dataset = dataset;
             this.command = command;
-            this.properties = new BatchProperties();
+            this.name = null;
+            this.metadata = null;
             this.recordsCounted = false;
         }
 
@@ -134,58 +145,82 @@ namespace Jhu.Graywulf.Data
 
         IDataReader IDbCommand.ExecuteReader()
         {
-            return new SmartDataReader(dataset, command.ExecuteReader());
+            return ExecuteReaderInternal(CommandBehavior.Default);
         }
 
         IDataReader IDbCommand.ExecuteReader(CommandBehavior behavior)
         {
-            return new SmartDataReader(dataset, command.ExecuteReader(behavior));
+            return ExecuteReaderInternal(behavior);
         }
 
         #endregion
 
         public ISmartDataReader ExecuteReader()
         {
-            return new SmartDataReader(dataset, command.ExecuteReader());
+            return ExecuteReaderInternal(CommandBehavior.Default);
         }
 
         public ISmartDataReader ExecuteReader(CommandBehavior behavior)
         {
-            return new SmartDataReader(dataset, command.ExecuteReader(behavior));
+            return ExecuteReaderInternal(behavior);
+        }
+
+        private ISmartDataReader ExecuteReaderInternal(CommandBehavior behavior)
+        {
+            List<long> recordCounts = null;
+
+            // If record counting is on, first execute a query to find the
+            // number of records that will be returned.
+            if (recordsCounted)
+            {
+                recordCounts = CountResults();
+            }
+
+            // Execute query and wrap into a smart data reader
+            return new SmartDataReader(dataset, command.ExecuteReader(behavior), recordCounts);
         }
 
         /// <summary>
         /// Wraps the query into a SELECT COUNT(*) FROM (...) query and
         /// the number of records is counted.
         /// </summary>
-        private IList<long> CountResults()
+        private List<long> CountResults()
         {
             // TODO: this only works with single SELECTs now
+            // and can count only records from query, SPs don't work
+
             var cg = dataset.CreateCodeGenerator();
             var sql = cg.GenerateCountStarQuery(command.CommandText);
 
-            // Save command text for later
-            var original = command.CommandText;
+            var res = new List<long>();
 
-            // Change command to run count query instead
-            command.CommandText = sql;
-
-            var recordCounts = new List<long>();
-
-            using (var dr = command.ExecuteReader())
+            using (var cmd = command.Connection.CreateCommand())
             {
-                do
+                // Copy parameters
+                for (int i = 0; i < command.Parameters.Count; i++)
                 {
-                    dr.Read();
-                    recordCounts.Add((dr.GetInt32(0)));
+                    cmd.Parameters.Add(command.Parameters[i]);
                 }
-                while (dr.NextResult());
+
+                cmd.CommandText = sql;
+                cmd.CommandTimeout = command.CommandTimeout;
+                cmd.CommandType = command.CommandType;
+
+                cmd.Connection = command.Connection;
+                cmd.Transaction = command.Transaction;
+
+                using (var dr = command.ExecuteReader())
+                {
+                    do
+                    {
+                        dr.Read();
+                        res.Add(dr.GetInt64(0));
+                    }
+                    while (dr.NextResult());
+                }
             }
 
-            // Change back command text to original query
-            command.CommandText = original;
-
-            return recordCounts;
+            return res;
         }
     }
 }

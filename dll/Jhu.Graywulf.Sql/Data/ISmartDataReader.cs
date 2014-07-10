@@ -9,6 +9,9 @@ namespace Jhu.Graywulf.Data
 {
     public interface ISmartDataReader : IDataReader
     {
-        RecordsetProperties Properties { get; }
+        string Name { get; }
+        long RecordCount { get; }
+        DatabaseObjectMetadata Metadata { get; }
+        List<Column> Columns { get; }
     }
 }

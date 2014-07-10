@@ -206,9 +206,9 @@ namespace Jhu.Graywulf.IO.Tasks
                     var sdr = (ISmartDataReader)dr;
 
                     // Create destination table first
-                    var table = destination.GetTable(cmd.Properties.Name, sdr.Properties.Name, sdr.Properties.Metadata);
-                    // TODO: pass all metadata here, not just columns
-                    table.Initialize(sdr.Properties.Columns, destination.Options);
+                    // TODO: merge these two function calls somehow and set name and columns in same step
+                    var table = destination.GetTable(cmd.Name, sdr.Name, sdr.Metadata);
+                    table.Initialize(sdr.Columns, destination.Options);
 
                     ExecuteBulkCopy(dr, table);
                 }

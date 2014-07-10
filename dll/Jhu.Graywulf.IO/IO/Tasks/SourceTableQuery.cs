@@ -109,7 +109,7 @@ namespace Jhu.Graywulf.IO.Tasks
                     using (var dr = cmd.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo))
                     {
                         // TODO: test this
-                        return dr.Properties.Columns;
+                        return dr.Columns;
                     }
                 }
             }

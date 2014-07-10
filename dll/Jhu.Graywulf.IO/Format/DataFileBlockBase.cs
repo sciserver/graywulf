@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Format
     /// A data file blocks corresponds to tables.
     /// </summary>
     [Serializable]
-    [DataContract(Namespace="")]
+    [DataContract(Namespace = "")]
     public abstract class DataFileBlockBase : ICloneable
     {
         #region Private member variables
@@ -31,16 +31,36 @@ namespace Jhu.Graywulf.Format
         [NonSerialized]
         protected DataFileBase file;
 
+        private string name;
+        private long recordCount;
+        private DatabaseObjectMetadata metadata;
+
         /// <summary>
         /// Collection of table columns
         /// </summary>
         [NonSerialized]
         private List<Column> columns;
 
-        private RecordsetProperties properties;
-
         #endregion
         #region Properties
+
+        public string Name
+        {
+            get { return name; }
+            protected set { name = value; }
+        }
+
+        public long RecordCount
+        {
+            get { return recordCount; }
+            protected set { recordCount = value; }
+        }
+
+        public DatabaseObjectMetadata Metadata
+        {
+            get { return metadata; }
+            protected set { metadata = value; }
+        }
 
         /// <summary>
         /// Gets the collection containing columns of the data file
@@ -55,18 +75,12 @@ namespace Jhu.Graywulf.Format
         /// Gets the collection of data file columns for XML serialization.
         /// Do not use.
         /// </summary>
-        [DataMember(Name="Columns")]
+        [DataMember(Name = "Columns")]
         [XmlArray]
         public Column[] Columns_ForXml
         {
             get { return columns.ToArray(); }
             set { columns = new List<Schema.Column>(value); }
-        }
-
-        public RecordsetProperties Properties
-        {
-            get { return properties; }
-            internal set { properties = value; }
         }
 
         #endregion
@@ -93,15 +107,38 @@ namespace Jhu.Graywulf.Format
         private void InitializeMembers(StreamingContext context)
         {
             this.file = null;
+            this.name = null;
+            this.recordCount = -1;
+            this.metadata = null;
             this.columns = new List<Column>();
-            this.properties = new RecordsetProperties();
         }
 
         private void CopyMembers(DataFileBlockBase old)
         {
             this.file = old.file;
+            this.name = old.name;
+            this.recordCount = old.recordCount;
+            this.metadata = Util.DeepCloner.CloneObject(old.metadata);
             this.columns = new List<Column>(Util.DeepCloner.CloneCollection(old.columns));
-            this.properties = Util.DeepCloner.CloneObject(old.properties);
+        }
+
+        internal void SetProperties(ISmartDataReader dr)
+        {
+            this.name = dr.Name;
+            this.recordCount = dr.RecordCount;
+            this.metadata = Util.DeepCloner.CloneObject(dr.Metadata);
+
+            // File blocks can predefine columns when writing files. If columns are
+            // not predefined, simply create new columns based on the data reader. If there
+            // are columns already defined, use them but compare with reality first.
+            if (this.columns == null || this.columns.Count == 0)
+            {
+                CreateColumns(dr.Columns);
+            }
+            else
+            {
+                VerifyColumns(dr.Columns);
+            }
         }
 
         public abstract object Clone();
@@ -110,34 +147,10 @@ namespace Jhu.Graywulf.Format
         #region Column functions
 
         /// <summary>
-        /// When writing the file, detects the columns from the data reader
-        /// providing the data to be written.
-        /// </summary>
-        /// <param name="dr"></param>
-        internal void DetectColumns(ISmartDataReader dr)
-        {
-            // TODO: test this
-            var cols = dr.Properties.Columns;
-
-            // See if predefined columns can be used
-            if (this.Columns.Count == cols.Count)
-            {
-                // *** TODO verify type mismatch, or update types
-                // keep column name and format
-
-                throw new NotImplementedException();
-            }
-            else
-            {
-                CreateColumns(cols);
-            }
-        }
-
-        /// <summary>
         /// Call this function to set column list from derived classes
         /// </summary>
-        /// <param name="columns"></param>
-        protected void CreateColumns(IList<Column> columns)
+        /// <param name="dataReaderColumns"></param>
+        protected void CreateColumns(IList<Column> dataReaderColumns)
         {
             this.columns.Clear();
 
@@ -148,9 +161,32 @@ namespace Jhu.Graywulf.Format
                 this.columns.Add(col);
             }
 
-            this.columns.AddRange(columns);
+            this.columns.AddRange(dataReaderColumns);
 
             OnColumnsCreated();
+        }
+
+        /// <summary>
+        /// When writing the file, detects the columns from the data reader
+        /// providing the data to be written.
+        /// </summary>
+        /// <param name="dr"></param>
+        internal void VerifyColumns(IList<Column> dataReaderColumns)
+        {
+            throw new NotImplementedException();
+
+            /* TODO: old code, fix
+            // See if predefined columns can be used
+            if (this.columns.Count == dataReaderColumns.Count)
+            {
+                // *** TODO verify type mismatch, or update types
+                // keep column name and format
+                throw new NotImplementedException();
+            }
+            else
+            {
+                CreateColumns(cols);
+            }*/
         }
 
         /// <summary>

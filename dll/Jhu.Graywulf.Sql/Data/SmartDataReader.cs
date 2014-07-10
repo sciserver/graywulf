@@ -14,7 +14,10 @@ namespace Jhu.Graywulf.Data
         private DatasetBase dataset;
         private IDataReader dataReader;
         private int resultsetCounter;
-        private List<RecordsetProperties> propertiesList;
+        private List<long> recordCounts;
+        private string name;
+        private DatabaseObjectMetadata metadata;
+        private List<Column> columns;
 
         #endregion
         #region IDataReader properties
@@ -57,37 +60,73 @@ namespace Jhu.Graywulf.Data
             get { return dataset; }
         }
 
-        public RecordsetProperties Properties
+        public string Name
         {
-            get { return propertiesList[resultsetCounter]; }
+            get
+            {
+                if (name == null)
+                {
+                    LoadProperties();
+                }
+
+                return name;
+            }
+            internal set { name = value; }
+        }
+
+        public long RecordCount
+        {
+            get
+            {
+                if (recordCounts != null)
+                {
+                    return recordCounts[resultsetCounter];
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+        }
+
+        public DatabaseObjectMetadata Metadata
+        {
+            get
+            {
+                if (metadata == null)
+                {
+                    LoadProperties();
+                }
+
+                return metadata;
+            }
+        }
+
+        public List<Column> Columns
+        {
+            get
+            {
+                if (columns == null)
+                {
+                    LoadProperties();
+                }
+
+                return columns;
+            }
         }
 
         #endregion
         #region Constructors and initializers
 
-        public SmartDataReader(DatasetBase dataset, IDataReader dataReader)
-            : this(dataset, dataReader, null)
-        {
-            // Overload
-        }
-
         // TODO: rewrite this to get rowcount only from smart command
         // the rest needs to be figured out by this class (with the help of the dataset class)
-        internal SmartDataReader(DatasetBase dataset, IDataReader dataReader, IList<long> recordCounts)
+        internal SmartDataReader(DatasetBase dataset, IDataReader dataReader, List<long> recordCounts)
         {
             InitializeMembers();
 
             this.dataset = dataset;
             this.dataReader = dataReader;
-
-            if (recordCounts != null)
-            {
-                for (int i = 0; i < recordCounts.Count; i++)
-                {
-                    propertiesList[i] = new RecordsetProperties();
-                    propertiesList[i].RecordCount = recordCounts[i];
-                }
-            }
+            this.recordCounts = recordCounts;
         }
 
         private void InitializeMembers()
@@ -95,7 +134,10 @@ namespace Jhu.Graywulf.Data
             this.dataReader = null;
             this.dataReader = null;
             this.resultsetCounter = 0;
-            this.propertiesList = new List<RecordsetProperties>();
+            this.recordCounts = null;
+            this.name = null;
+            this.metadata = null;
+            this.columns = null;
         }
 
         public void Dispose()
@@ -112,7 +154,13 @@ namespace Jhu.Graywulf.Data
 
         public bool NextResult()
         {
+
+            name = null;
+            metadata = null;
+            columns = null;
+
             resultsetCounter++;
+
             return dataReader.NextResult();
         }
 
@@ -255,16 +303,13 @@ namespace Jhu.Graywulf.Data
 
         #endregion
 
-        // TODO: find it's place, possibly in dataset? or move to RecordsetProperties?
-        private void DetectProperties()
+        /// <summary>
+        /// Loads the properties of the recordset from the schema table and additional
+        /// database metadata.
+        /// </summary>
+        private void LoadProperties()
         {
-            if (propertiesList[resultsetCounter] == null)
-            {
-                propertiesList[resultsetCounter] = new RecordsetProperties();
-            }
-
-            propertiesList[resultsetCounter].Columns.Clear();
-            propertiesList[resultsetCounter].Columns.AddRange(dataset.DetectColumns(dataReader));
+            columns = dataset.DetectColumns(dataReader);
 
             // TODO: detect additional properties
         }

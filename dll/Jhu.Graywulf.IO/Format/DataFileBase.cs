@@ -63,7 +63,8 @@ namespace Jhu.Graywulf.Format
         [NonSerialized]
         private bool generateIdentityColumn;
 
-        private BatchProperties properties;
+        private string name;
+        private DatasetMetadata metadata;
 
         /// <summary>
         /// Stores the blocks of the file, as they are read from the input
@@ -156,9 +157,14 @@ namespace Jhu.Graywulf.Format
             set { generateIdentityColumn = value; }
         }
 
-        public BatchProperties Properties
+        public string Name
         {
-            get { return properties; }
+            get { return name; }
+        }
+
+        public DatasetMetadata Metadata
+        {
+            get { return metadata; }
         }
 
         /// <summary>
@@ -266,7 +272,8 @@ namespace Jhu.Graywulf.Format
             this.fileMode = DataFileMode.Unknown;
             this.uri = null;
             this.generateIdentityColumn = false;
-            this.properties = new BatchProperties();
+            this.name = null;
+            this.metadata = null;
 
             this.blocks = new List<DataFileBlockBase>();
             this.blockCounter = -1;
@@ -280,7 +287,8 @@ namespace Jhu.Graywulf.Format
             this.fileMode = old.fileMode;
             this.uri = old.uri;
             this.generateIdentityColumn = old.generateIdentityColumn;
-            this.properties = Util.DeepCloner.CloneObject(old.properties);
+            this.name = old.name;
+            this.metadata = Util.DeepCloner.CloneObject(old.metadata);
 
             this.blocks = new List<DataFileBlockBase>(Util.DeepCloner.CloneCollection(old.blocks));
 
@@ -625,8 +633,7 @@ namespace Jhu.Graywulf.Format
             // write contents into the file.
             if (nextBlock != null)
             {
-                nextBlock.Properties = dr.Properties;
-                nextBlock.DetectColumns(dr);
+                nextBlock.SetProperties(dr);                
                 nextBlock.Write(dr);
             }
         }
@@ -649,8 +656,6 @@ namespace Jhu.Graywulf.Format
 
         public void WriteFromDataCommand(ISmartCommand cmd)
         {
-            this.properties = cmd.Properties;
-
             using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
             {
                 WriteFromDataReader(dr, true);

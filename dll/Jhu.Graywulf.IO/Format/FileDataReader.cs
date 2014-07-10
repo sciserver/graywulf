@@ -62,9 +62,24 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Properties
 
-        public RecordsetProperties Properties
+        public string Name
         {
-            get { return file.CurrentBlock.Properties; }
+            get { return file.CurrentBlock.Name; }
+        }
+
+        public long RecordCount
+        {
+            get { return file.CurrentBlock.RecordCount; }
+        }
+
+        public DatabaseObjectMetadata Metadata
+        {
+            get { return file.CurrentBlock.Metadata; }
+        }
+
+        public List<Column> Columns
+        {
+            get { return file.CurrentBlock.Columns; }
         }
 
         #endregion

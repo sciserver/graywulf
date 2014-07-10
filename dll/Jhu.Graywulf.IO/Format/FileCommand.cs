@@ -15,8 +15,9 @@ namespace Jhu.Graywulf.Format
 
         private DataFileBase file;
         private FileDataReader dataReader;
-
-        private bool isRowCountingOn;
+        private string name;
+        private DatasetMetadata metadata;
+        private bool recordsCounted;
 
         #endregion
         #region IDbCommand properties
@@ -47,15 +48,20 @@ namespace Jhu.Graywulf.Format
             set { file = value; }
         }
 
-        public BatchProperties Properties
+        public string Name
         {
-            get { return file.Properties; }
+            get { return name; }
+        }
+
+        public DatasetMetadata Metadata
+        {
+            get { return metadata; }
         }
 
         public bool RecordsCounted
         {
-            get { return isRowCountingOn; }
-            set { isRowCountingOn = value; }
+            get { return recordsCounted; }
+            set { recordsCounted = value; }
         }
 
         #endregion
@@ -77,8 +83,9 @@ namespace Jhu.Graywulf.Format
         {
             this.file = null;
             this.dataReader = null;
-
-            this.isRowCountingOn = false;
+            this.name = null;
+            this.metadata = null;
+            this.recordsCounted = false;
         }
 
         public void Dispose()
