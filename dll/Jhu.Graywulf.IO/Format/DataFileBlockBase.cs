@@ -37,11 +37,7 @@ namespace Jhu.Graywulf.Format
         [NonSerialized]
         private List<Column> columns;
 
-        /// <summary>
-        /// Number of rows
-        /// </summary>
-        [NonSerialized]
-        private long recordCount;
+        private RecordsetProperties properties;
 
         #endregion
         #region Properties
@@ -67,12 +63,10 @@ namespace Jhu.Graywulf.Format
             set { columns = new List<Schema.Column>(value); }
         }
 
-        /// <summary>
-        /// Gets the number of rows in the file block
-        /// </summary>
-        public long RecordCount
+        public RecordsetProperties Properties
         {
-            get { return recordCount; }
+            get { return properties; }
+            internal set { properties = value; }
         }
 
         #endregion
@@ -100,14 +94,14 @@ namespace Jhu.Graywulf.Format
         {
             this.file = null;
             this.columns = new List<Column>();
-            this.recordCount = -1;
+            this.properties = new RecordsetProperties();
         }
 
         private void CopyMembers(DataFileBlockBase old)
         {
             this.file = old.file;
             this.columns = new List<Column>(Util.DeepCloner.CloneCollection(old.columns));
-            this.recordCount = old.recordCount;
+            this.properties = Util.DeepCloner.CloneObject(old.properties);
         }
 
         public abstract object Clone();
@@ -116,12 +110,14 @@ namespace Jhu.Graywulf.Format
         #region Column functions
 
         /// <summary>
-        /// Detects the columns from a data reader.
+        /// When writing the file, detects the columns from the data reader
+        /// providing the data to be written.
         /// </summary>
         /// <param name="dr"></param>
         internal void DetectColumns(ISmartDataReader dr)
         {
-            var cols = dr.GetColumns();
+            // TODO: test this
+            var cols = dr.Properties.Columns;
 
             // See if predefined columns can be used
             if (this.Columns.Count == cols.Count)

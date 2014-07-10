@@ -201,13 +201,18 @@ namespace Jhu.Graywulf.IO.Tasks
 
             ccmd.ExecuteReader(dr =>
             {
-                // Create destination table first
-                // TODO: Add table naming logic here, maybe...
-                var table = destination.GetTable();
-                table.Initialize(((SmartDataReader)dr).GetColumns(), destination.Options);
+                do
+                {
+                    var sdr = (ISmartDataReader)dr;
 
-                // TODO: Add multiple results logic, maybe
-                ExecuteBulkCopy(dr, table);
+                    // Create destination table first
+                    var table = destination.GetTable(cmd.Properties.Name, sdr.Properties.Name, sdr.Properties.Metadata);
+                    // TODO: pass all metadata here, not just columns
+                    table.Initialize(sdr.Properties.Columns, destination.Options);
+
+                    ExecuteBulkCopy(dr, table);
+                }
+                while (dr.NextResult());
             });
 
             UnregisterCancelable(guid);

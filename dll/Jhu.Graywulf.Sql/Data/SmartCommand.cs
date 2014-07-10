@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Data
 
         private DatasetBase dataset;
         private IDbCommand command;
-
+        private BatchProperties properties;
         private bool recordsCounted;
 
         #endregion
@@ -73,6 +73,11 @@ namespace Jhu.Graywulf.Data
             get { return command; }
         }
 
+        public BatchProperties Properties
+        {
+            get { return properties; }
+        }
+
         public bool RecordsCounted
         {
             get { return recordsCounted; }
@@ -86,7 +91,7 @@ namespace Jhu.Graywulf.Data
         {
             this.dataset = dataset;
             this.command = command;
-
+            this.properties = new BatchProperties();
             this.recordsCounted = false;
         }
 

@@ -8,6 +8,7 @@ namespace Jhu.Graywulf.Data
 {
     public interface ISmartCommand : IDbCommand
     {
+        BatchProperties Properties { get; }
         bool RecordsCounted { get; set; }
 
         new ISmartDataReader ExecuteReader();

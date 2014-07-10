@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Format
     /// Provides basic support for file-based DataReader implementations.
     /// </summary>
     [Serializable]
-    [DataContract(Namespace="")]
+    [DataContract(Namespace = "")]
     public abstract class DataFileBase : IDisposable, ICloneable
     {
         #region Private member variables
@@ -62,6 +62,8 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         [NonSerialized]
         private bool generateIdentityColumn;
+
+        private BatchProperties properties;
 
         /// <summary>
         /// Stores the blocks of the file, as they are read from the input
@@ -154,6 +156,11 @@ namespace Jhu.Graywulf.Format
             set { generateIdentityColumn = value; }
         }
 
+        public BatchProperties Properties
+        {
+            get { return properties; }
+        }
+
         /// <summary>
         /// Gets a collection of data file blocks.
         /// </summary>
@@ -170,7 +177,7 @@ namespace Jhu.Graywulf.Format
             get { return blocks; }
         }
 
-        [DataMember(Name="Blocks")]
+        [DataMember(Name = "Blocks")]
         private DataFileBlockBase[] Blocks_ForXml
         {
             get { return blocks.ToArray(); }
@@ -259,6 +266,7 @@ namespace Jhu.Graywulf.Format
             this.fileMode = DataFileMode.Unknown;
             this.uri = null;
             this.generateIdentityColumn = false;
+            this.properties = new BatchProperties();
 
             this.blocks = new List<DataFileBlockBase>();
             this.blockCounter = -1;
@@ -272,16 +280,8 @@ namespace Jhu.Graywulf.Format
             this.fileMode = old.fileMode;
             this.uri = old.uri;
             this.generateIdentityColumn = old.generateIdentityColumn;
+            this.properties = Util.DeepCloner.CloneObject(old.properties);
 
-            // Deep copy of blocks
-            /* TODO: delete old code
-            // TODO: use util class, fix double clone issue
-            this.blocks = new List<DataFileBlockBase>();
-            foreach (var b in old.blocks)
-            {
-                var nb = (DataFileBlockBase)b.Clone();
-                this.blocks.Add((DataFileBlockBase)b.Clone());
-            }*/
             this.blocks = new List<DataFileBlockBase>(Util.DeepCloner.CloneCollection(old.blocks));
 
             this.blockCounter = -1;
@@ -609,12 +609,12 @@ namespace Jhu.Graywulf.Format
             // them, otherwise create a new one automatically.
             if (blockCounter < blocks.Count)
             {
-                nextBlock = OnWriteNextBlock(blocks[blockCounter], dr);
+                nextBlock = OnCreateNextBlock(blocks[blockCounter]);
             }
             else
             {
                 // Create a new block automatically, if collection is not predefined
-                nextBlock = OnWriteNextBlock(null, dr);
+                nextBlock = OnCreateNextBlock(null);
                 if (nextBlock != null)
                 {
                     blocks.Add(nextBlock);
@@ -625,6 +625,7 @@ namespace Jhu.Graywulf.Format
             // write contents into the file.
             if (nextBlock != null)
             {
+                nextBlock.Properties = dr.Properties;
                 nextBlock.DetectColumns(dr);
                 nextBlock.Write(dr);
             }
@@ -641,32 +642,44 @@ namespace Jhu.Graywulf.Format
         /// <param name="block"></param>
         /// <param name="dr"></param>
         /// <returns></returns>
-        protected abstract DataFileBlockBase OnWriteNextBlock(DataFileBlockBase block, IDataReader dr);
+        protected abstract DataFileBlockBase OnCreateNextBlock(DataFileBlockBase block);
 
         #endregion
         #region DataReader and Writer functions
+
+        public void WriteFromDataCommand(ISmartCommand cmd)
+        {
+            this.properties = cmd.Properties;
+
+            using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
+            {
+                WriteFromDataReader(dr, true);
+            }
+        }
+
+        public void WriteFromDataReader(ISmartDataReader dr)
+        {
+            WriteFromDataReader(dr, false);
+        }
 
         /// <summary>
         /// Writes the resultsets from a data reader into a file.
         /// </summary>
         /// <param name="dr"></param>
-        public void WriteFromDataReader(ISmartDataReader dr)
+        private void WriteFromDataReader(ISmartDataReader dr, bool multiple)
         {
-            // TODO: Right now, we do not support headers that require the number of
-            // resultsets. Because we want to stream everything, figuring out the
-            // number of resultsets has to go into the smart data reader.
+            if (multiple && !this.Description.CanHoldMultipleDatasets)
+            {
+                throw new InvalidOperationException("File can hold a single table only.");    // TODO
+            }
 
-            // Write file header
             OnWriteHeader();
 
-            // Iterate through the 
-
-            // TODO: what if file does not support multiple blocks?
             do
             {
                 WriteNextBlock(dr);
             }
-            while (dr.NextResult());
+            while (multiple && dr.NextResult());
 
             OnWriteFooter();
         }

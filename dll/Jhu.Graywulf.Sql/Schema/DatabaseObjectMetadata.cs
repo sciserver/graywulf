@@ -8,7 +8,7 @@ namespace Jhu.Graywulf.Schema
 {
     [Serializable]
     [DataContract(Namespace="")]
-    public class DatabaseObjectMetadata
+    public class DatabaseObjectMetadata : ICloneable
     {
         [NonSerialized]
         private string summary;
@@ -62,6 +62,11 @@ namespace Jhu.Graywulf.Schema
             this.summary = old.summary;
             this.remarks = old.remarks;
             this.example = old.example;
+        }
+
+        public object Clone()
+        {
+            return new DatabaseObjectMetadata(this);
         }
     }
 }

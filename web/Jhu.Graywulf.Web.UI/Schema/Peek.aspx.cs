@@ -100,7 +100,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
             // header
             writer.WriteLine("<tr>");
 
-            var columns = dr.GetColumns();
+            var columns = dr.Properties.Columns;
 
             for (int i = 0; i < columns.Count; i++)
             {

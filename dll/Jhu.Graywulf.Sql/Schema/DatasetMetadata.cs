@@ -8,7 +8,7 @@ namespace Jhu.Graywulf.Schema
 {
     [Serializable]
     [DataContract(Namespace = "")]
-    public class DatasetMetadata
+    public class DatasetMetadata : ICloneable
     {
         [NonSerialized]
         private string summary;
@@ -50,6 +50,11 @@ namespace Jhu.Graywulf.Schema
         {
             this.summary = old.summary;
             this.remarks = old.remarks;
+        }
+
+        public object Clone()
+        {
+            return new DatasetMetadata(this);
         }
     }
 }

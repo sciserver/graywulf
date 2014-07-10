@@ -62,12 +62,9 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Properties
 
-        public long RecordCount
+        public RecordsetProperties Properties
         {
-            get
-            {
-                return file.CurrentBlock.RecordCount;
-            }
+            get { return file.CurrentBlock.Properties; }
         }
 
         #endregion
@@ -367,11 +364,5 @@ namespace Jhu.Graywulf.Format
 
             isIdentity = ids.ToArray();
         }
-
-        public IList<Column> GetColumns()
-        {
-            return file.CurrentBlock.Columns;
-        }
-
     }
 }

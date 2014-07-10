@@ -701,7 +701,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        internal IList<Column> CreateColumns(IDataReader reader)
+        internal List<Column> DetectColumns(IDataReader reader)
         {
             // TODO: modify to accept command instead of data reader?
 

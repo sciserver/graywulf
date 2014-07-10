@@ -54,8 +54,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\BatchProperties.cs" />
     <Compile Include="Data\ISmartCommand.cs" />
     <Compile Include="Data\ISmartDataReader.cs" />
+    <Compile Include="Data\RecordsetProperties.cs" />
     <Compile Include="Data\SmartCommand.cs" />
     <Compile Include="Data\SmartDataReader.cs" />
     <Compile Include="Schema\AllObjectsLoadingEventArgs.cs">

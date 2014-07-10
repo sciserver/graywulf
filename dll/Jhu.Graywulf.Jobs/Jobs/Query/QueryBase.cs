@@ -195,7 +195,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 if (into.TableReference.DatabaseObjectName != null)
                 {
-                    this.destination.TableName = into.TableReference.DatabaseObjectName;
+                    this.destination.TableNameTemplate = into.TableReference.DatabaseObjectName;
                 }
 
                 // remove into clause from query

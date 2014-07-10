@@ -21,7 +21,6 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private DatasetBase dataset;
         private string query;
-        private List<Column> columns;
 
         #endregion
         #region Properties
@@ -44,14 +43,6 @@ namespace Jhu.Graywulf.IO.Tasks
             set { query = value; }
         }
 
-        /// <summary>
-        /// Gets a list of columns with associated metadata.
-        /// </summary>
-        public IList<Column> Columns
-        {
-            get { return columns; }
-        }
-
         #endregion
         #region Constructors and initializers
 
@@ -69,14 +60,12 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             this.dataset = null;
             this.query = null;
-            this.columns = null;
         }
 
         private void CopyMembers(SourceTableQuery old)
         {
             this.dataset = Util.DeepCloner.CloneObject(old.dataset);
             this.query = old.query;
-            this.columns = null;
         }
 
         public object Clone()
@@ -109,39 +98,21 @@ namespace Jhu.Graywulf.IO.Tasks
             return cmd;
         }
 
-        // TODO: this should go into the smart data reader
-        private void DetectColumns()
+        public IList<Column> GetColumns()
         {
             using (var cn = OpenConnection())
             {
-                using (var cmd = cn.CreateCommand())
+                using (var cmd = CreateCommand())
                 {
                     cmd.Connection = cn;
-                    cmd.CommandText = query;
 
-                    using (var dr = new SmartDataReader(
-                        dataset, 
-                        cmd.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo)))
+                    using (var dr = cmd.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo))
                     {
-                        CreateColumns(dr.GetColumns());
+                        // TODO: test this
+                        return dr.Properties.Columns;
                     }
                 }
             }
-        }
-
-        // TODO: goes into smart data reader
-        private void CreateColumns(IList<Column> columns)
-        {
-            columns.Clear();
-
-            this.columns.AddRange(columns);
-        }
-
-        // TODO: goes into smart data reader
-        public IList<Column> GetColumns()
-        {
-            // *** TODO
-            throw new NotImplementedException();
         }
     }
 }

@@ -215,7 +215,7 @@ namespace Jhu.Graywulf.Format
         /// <param name="dr"></param>
         /// <returns></returns>
         /// If next block
-        protected override DataFileBlockBase OnWriteNextBlock(DataFileBlockBase block, IDataReader dr)
+        protected override DataFileBlockBase OnCreateNextBlock(DataFileBlockBase block)
         {
             if (!isFirstBlock)
             {

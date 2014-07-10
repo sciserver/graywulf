@@ -6,6 +6,7 @@ using System.IO;
 using System.Globalization;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Data;
 using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
@@ -307,7 +308,7 @@ namespace Jhu.Graywulf.Format
 
         protected override void OnWriteHeader()
         {
-            // Header is written by the first block
+            // No file header, header is written by the first block
         }
 
         protected override void OnWriteFooter()

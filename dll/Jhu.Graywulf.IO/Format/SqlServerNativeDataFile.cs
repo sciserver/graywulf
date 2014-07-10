@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Globalization;
 using System.Runtime.Serialization;
+using Jhu.Graywulf.Data;
 using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
@@ -151,7 +152,7 @@ namespace Jhu.Graywulf.Format
             // Do nothing
         }
 
-        protected override DataFileBlockBase OnWriteNextBlock(DataFileBlockBase block, System.Data.IDataReader dr)
+        protected override DataFileBlockBase OnCreateNextBlock(DataFileBlockBase block)
         {
             return block ?? new SqlServerNativeDataFileBlock(this);
         }

@@ -13,9 +13,8 @@ namespace Jhu.Graywulf.Data
 
         private DatasetBase dataset;
         private IDataReader dataReader;
-
         private int resultsetCounter;
-        private IList<long> recordCounts;
+        private List<RecordsetProperties> propertiesList;
 
         #endregion
         #region IDataReader properties
@@ -58,19 +57,9 @@ namespace Jhu.Graywulf.Data
             get { return dataset; }
         }
 
-        public long RecordCount
+        public RecordsetProperties Properties
         {
-            get
-            {
-                if (recordCounts != null)
-                {
-                    return recordCounts[resultsetCounter];
-                }
-                else
-                {
-                    return -1;
-                }
-            }
+            get { return propertiesList[resultsetCounter]; }
         }
 
         #endregion
@@ -82,22 +71,31 @@ namespace Jhu.Graywulf.Data
             // Overload
         }
 
-        public SmartDataReader(DatasetBase dataset, IDataReader dataReader, IList<long> recordCounts)
+        // TODO: rewrite this to get rowcount only from smart command
+        // the rest needs to be figured out by this class (with the help of the dataset class)
+        internal SmartDataReader(DatasetBase dataset, IDataReader dataReader, IList<long> recordCounts)
         {
             InitializeMembers();
 
             this.dataset = dataset;
             this.dataReader = dataReader;
-            this.recordCounts = recordCounts;
+
+            if (recordCounts != null)
+            {
+                for (int i = 0; i < recordCounts.Count; i++)
+                {
+                    propertiesList[i] = new RecordsetProperties();
+                    propertiesList[i].RecordCount = recordCounts[i];
+                }
+            }
         }
 
         private void InitializeMembers()
         {
             this.dataReader = null;
             this.dataReader = null;
-
             this.resultsetCounter = 0;
-            this.recordCounts = null;
+            this.propertiesList = new List<RecordsetProperties>();
         }
 
         public void Dispose()
@@ -257,10 +255,17 @@ namespace Jhu.Graywulf.Data
 
         #endregion
 
-
-        public IList<Column> GetColumns()
+        // TODO: find it's place, possibly in dataset? or move to RecordsetProperties?
+        private void DetectProperties()
         {
-            return dataset.CreateColumns(dataReader);
+            if (propertiesList[resultsetCounter] == null)
+            {
+                propertiesList[resultsetCounter] = new RecordsetProperties();
+            }
+
+            propertiesList[resultsetCounter].Columns = dataset.DetectColumns(dataReader);
+
+            // TODO: detect additional properties
         }
     }
 }

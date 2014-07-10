@@ -47,6 +47,11 @@ namespace Jhu.Graywulf.Format
             set { file = value; }
         }
 
+        public BatchProperties Properties
+        {
+            get { return file.Properties; }
+        }
+
         public bool RecordsCounted
         {
             get { return isRowCountingOn; }
