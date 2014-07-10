@@ -66,7 +66,7 @@ namespace Jhu.Graywulf.Data
             {
                 if (name == null)
                 {
-                    LoadProperties();
+                    LoadMetadata();
                 }
 
                 return name;
@@ -95,7 +95,7 @@ namespace Jhu.Graywulf.Data
             {
                 if (metadata == null)
                 {
-                    LoadProperties();
+                    LoadMetadata();
                 }
 
                 return metadata;
@@ -108,7 +108,7 @@ namespace Jhu.Graywulf.Data
             {
                 if (columns == null)
                 {
-                    LoadProperties();
+                    LoadColumns();
                 }
 
                 return columns;
@@ -307,10 +307,13 @@ namespace Jhu.Graywulf.Data
         /// Loads the properties of the recordset from the schema table and additional
         /// database metadata.
         /// </summary>
-        private void LoadProperties()
+        private void LoadColumns()
         {
             columns = dataset.DetectColumns(dataReader);
+        }
 
+        private void LoadMetadata()
+        {
             // TODO: detect additional properties
         }
     }

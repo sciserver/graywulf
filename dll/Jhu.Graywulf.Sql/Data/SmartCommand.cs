@@ -176,6 +176,9 @@ namespace Jhu.Graywulf.Data
                 recordCounts = CountResults();
             }
 
+            // TODO: figure out resultset name and metadata here, then pass it
+            // to the data reader for further processing
+
             // Execute query and wrap into a smart data reader
             return new SmartDataReader(dataset, command.ExecuteReader(behavior), recordCounts);
         }
@@ -209,7 +212,7 @@ namespace Jhu.Graywulf.Data
                 cmd.Connection = command.Connection;
                 cmd.Transaction = command.Transaction;
 
-                using (var dr = command.ExecuteReader())
+                using (var dr = cmd.ExecuteReader())
                 {
                     do
                     {

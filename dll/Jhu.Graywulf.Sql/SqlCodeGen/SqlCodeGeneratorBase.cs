@@ -324,7 +324,7 @@ namespace Jhu.Graywulf.SqlCodeGen
 
             // Use count_big maybe?
 
-            return String.Format("SELECT COUNT(*) FROM ({0}) __countstar");
+            return String.Format("SELECT CAST(COUNT(*) AS bigint) FROM ({0}) __countstar", subquery);
         }
 
         #endregion
