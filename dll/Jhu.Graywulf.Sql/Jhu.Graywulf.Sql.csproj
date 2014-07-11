@@ -60,6 +60,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Data\SmartDataReader.cs" />
+    <Compile Include="Data\TypeMapping.cs" />
     <Compile Include="Schema\AllObjectsLoadingEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -13,5 +13,6 @@ namespace Jhu.Graywulf.Data
         long RecordCount { get; }
         DatabaseObjectMetadata Metadata { get; }
         List<Column> Columns { get; }
+        List<TypeMapping> TypeMappings { get; }
     }
 }

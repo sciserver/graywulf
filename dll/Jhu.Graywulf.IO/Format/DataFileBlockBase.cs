@@ -41,6 +41,12 @@ namespace Jhu.Graywulf.Format
         [NonSerialized]
         private List<Column> columns;
 
+        /// <summary>
+        /// Collection of type mappings
+        /// </summary>
+        [NonSerialized]
+        private List<TypeMapping> columnTypeMappings;
+
         #endregion
         #region Properties
 
@@ -83,6 +89,12 @@ namespace Jhu.Graywulf.Format
             set { columns = new List<Schema.Column>(value); }
         }
 
+        [IgnoreDataMember]
+        public List<TypeMapping> ColumnTypeMappings
+        {
+            get { return columnTypeMappings; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -111,6 +123,7 @@ namespace Jhu.Graywulf.Format
             this.recordCount = -1;
             this.metadata = null;
             this.columns = new List<Column>();
+            this.columnTypeMappings = new List<TypeMapping>();
         }
 
         private void CopyMembers(DataFileBlockBase old)
@@ -120,6 +133,7 @@ namespace Jhu.Graywulf.Format
             this.recordCount = old.recordCount;
             this.metadata = Util.DeepCloner.CloneObject(old.metadata);
             this.columns = new List<Column>(Util.DeepCloner.CloneCollection(old.columns));
+            this.columnTypeMappings = new List<TypeMapping>(Util.DeepCloner.CloneCollection(old.columnTypeMappings));
         }
 
         internal void SetProperties(ISmartDataReader dr)
@@ -159,9 +173,15 @@ namespace Jhu.Graywulf.Format
                 var col = new Column("__ID", DataTypes.SqlBigInt);  // *** TODO
                 col.IsIdentity = true;
                 this.columns.Add(col);
+
+                this.columnTypeMappings.Add(null);
             }
 
-            this.columns.AddRange(dataReaderColumns);
+            foreach (var c in dataReaderColumns)
+            {
+                this.columns.Add(c);
+                this.columnTypeMappings.Add(null);
+            }
 
             OnColumnsCreated();
         }
@@ -230,6 +250,12 @@ namespace Jhu.Graywulf.Format
 
         internal void Write(ISmartDataReader dr)
         {
+            // Apply type mappings to the data reader
+
+            // TODO: create function on dr to do this
+            dr.TypeMappings.Clear();
+            dr.TypeMappings.AddRange(columnTypeMappings);
+
             // Certain data files store the number of data rows in the header.
             // This prevents streaming of query results directly into the file
             // because we don't know the number of rows without enumerating the

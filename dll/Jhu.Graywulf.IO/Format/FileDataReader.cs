@@ -22,6 +22,8 @@ namespace Jhu.Graywulf.Format
         private int blockCounter;
         private long rowCounter;
 
+        private List<TypeMapping> typeMappings;
+
         #endregion
         #region IDataReader properties
 
@@ -80,6 +82,14 @@ namespace Jhu.Graywulf.Format
         public List<Column> Columns
         {
             get { return file.CurrentBlock.Columns; }
+        }
+
+        public List<TypeMapping> TypeMappings
+        {
+            get
+            {
+                return typeMappings;
+            }
         }
 
         #endregion
@@ -268,14 +278,32 @@ namespace Jhu.Graywulf.Format
 
         public object GetValue(int i)
         {
-            return rowValues[i];
+            var value = rowValues[i];
+
+            if (value != null && value != DBNull.Value && typeMappings[i] != null)
+            {
+                return typeMappings[i].Mapping(rowValues[i]);
+            }
+            else
+            {
+                return value;
+            }
         }
 
         public int GetValues(object[] values)
         {
             for (int i = 0; i < rowValues.Length; i++)
             {
-                values[i] = rowValues[i];
+                var value = rowValues[i];
+
+                if (value != null && value != DBNull.Value && typeMappings[i] != null)
+                {
+                    values[i] = typeMappings[i].Mapping(value);
+                }
+                else
+                {
+                    values[i] = value;
+                }
             }
 
             return rowValues.Length;
@@ -357,8 +385,8 @@ namespace Jhu.Graywulf.Format
         }
 
         #endregion
-        
-       
+
+
         private void InitializeColumns()
         {
             var colc = file.CurrentBlock.Columns.Count;
@@ -366,6 +394,7 @@ namespace Jhu.Graywulf.Format
 
             columnIndex = new Dictionary<string, int>();
             rowValues = new object[colc];
+            typeMappings = new List<TypeMapping>();
 
             for (int i = 0; i < colc; i++)
             {
@@ -375,6 +404,8 @@ namespace Jhu.Graywulf.Format
                 {
                     ids.Add(i);
                 }
+
+                typeMappings.Add(file.CurrentBlock.ColumnTypeMappings[i]);
             }
 
             isIdentity = ids.ToArray();

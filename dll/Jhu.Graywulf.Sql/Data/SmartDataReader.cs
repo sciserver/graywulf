@@ -18,6 +18,7 @@ namespace Jhu.Graywulf.Data
         private string name;
         private DatabaseObjectMetadata metadata;
         private List<Column> columns;
+        private List<TypeMapping> typeMappings;
 
         #endregion
         #region IDataReader properties
@@ -115,6 +116,19 @@ namespace Jhu.Graywulf.Data
             }
         }
 
+        public List<TypeMapping> TypeMappings
+        {
+            get
+            {
+                if (typeMappings == null)
+                {
+                    LoadColumns();
+                }
+
+                return typeMappings;
+            }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -138,6 +152,7 @@ namespace Jhu.Graywulf.Data
             this.name = null;
             this.metadata = null;
             this.columns = null;
+            this.typeMappings = null;
         }
 
         public void Dispose()
@@ -220,12 +235,33 @@ namespace Jhu.Graywulf.Data
 
         public object GetValue(int i)
         {
-            return dataReader.GetValue(i);
+            var value = dataReader.GetValue(i);
+
+            if (value != null && value != DBNull.Value && typeMappings[i] != null)
+            {
+                return typeMappings[i].Mapping(value);
+            }
+            else
+            {
+                return value;
+            }
         }
 
         public int GetValues(object[] values)
         {
-            return dataReader.GetValues(values);
+            var res = dataReader.GetValues(values);
+
+            for (int i = 0; i < res; i++)
+            {
+                var value = values[i];
+
+                if (value != null && value != DBNull.Value && typeMappings[i] != null)
+                {
+                    values[i] = typeMappings[i].Mapping(value);
+                }
+            }
+
+            return res;
         }
 
         public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
@@ -310,6 +346,12 @@ namespace Jhu.Graywulf.Data
         private void LoadColumns()
         {
             columns = dataset.DetectColumns(dataReader);
+            typeMappings = new List<TypeMapping>();
+
+            for (int i = 0; i < columns.Count; i++)
+            {
+                typeMappings.Add(null);
+            }
         }
 
         private void LoadMetadata()
