@@ -200,10 +200,14 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Read functions
 
+        /// <summary>
+        /// When implemented in derived classes, reads the header of the file
+        /// block and extracts columns and metadata.
+        /// </summary>
         protected internal abstract void OnReadHeader();
 
         /// <summary>
-        /// When overriden in derived classes, reads the next data row from
+        /// When implemented in derived classes, reads the next data row from
         /// the data file
         /// </summary>
         /// <param name="values"></param>
@@ -211,7 +215,8 @@ namespace Jhu.Graywulf.Format
         protected internal abstract bool OnReadNextRow(object[] values);
 
         /// <summary>
-        /// When overriden in a derived class, reads all remaining data rows.
+        /// When implemented in a derived class, reads all remaining data rows
+        /// and advanced the file to the begining of the next file block.
         /// </summary>
         protected internal abstract void OnReadToFinish();
 
@@ -225,23 +230,81 @@ namespace Jhu.Graywulf.Format
 
         internal void Write(ISmartDataReader dr)
         {
-            var values = new object[dr.FieldCount];
+            // Certain data files store the number of data rows in the header.
+            // This prevents streaming of query results directly into the file
+            // because we don't know the number of rows without enumerating the
+            // entire resultset. There are two solutions: either count the records
+            // before streaming down the data form the server, or buffer the results
+            // into memory, count the rows, write the header and then stream the rows
+            // out into the file. Buffering rows is obviously very expensive.
 
-            OnWriteHeader();
+            // SmartCommand and SmartDataReader support counting rows before query
+            // execution by running a COUNT(*) query first and the number of columns
+            // is stored in the RecordCount property by the function SetProperties.
+            // If the rows are counted, the value of the RecordCount property should be
+            // larger than -1. If the value is -1 the resultset needs to be buffered
+            // first.
 
-            while (dr.Read())
+            if (recordCount == -1 && file.Description.RequiresRecordCount)
             {
-                dr.GetValues(values);
-                OnWriteNextRow(values);
+                // Buffering required
+                var buffer = new List<object[]>();
+
+                while (dr.Read())
+                {
+                    var values = new object[dr.FieldCount];
+
+                    dr.GetValues(values);
+
+                    buffer.Add(values);
+                }
+
+                recordCount = buffer.Count;
+
+                // Now that the number of rows in known, the header can be written
+                OnWriteHeader();
+
+                // Stream out rows from the buffer
+                foreach (var values in buffer)
+                {
+                    OnWriteNextRow(values);
+                }
+            }
+            else
+            {
+                // We already know the number of rows, or the number of rows
+                // is not needed to write the header
+                OnWriteHeader();
+
+                // Stream out data directly from the data reader.
+                var values = new object[dr.FieldCount];
+                while (dr.Read())
+                {
+                    dr.GetValues(values);
+                    OnWriteNextRow(values);
+                }
             }
 
             OnWriteFooter();
         }
 
+        /// <summary>
+        /// When implemented in derived classes, writes the header of the file
+        /// block.
+        /// </summary>
         protected abstract void OnWriteHeader();
 
+        /// <summary>
+        /// When implemented in derived classes, writes the next data row into
+        /// the file block.
+        /// </summary>
+        /// <param name="values"></param>
         protected abstract void OnWriteNextRow(object[] values);
 
+        /// <summary>
+        /// When implemented in derived classes, writes the footer of the
+        /// file block.
+        /// </summary>
         protected abstract void OnWriteFooter();
 
         #endregion
