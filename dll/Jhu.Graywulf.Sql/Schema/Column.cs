@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Schema
     /// Reflects a table or view column
     /// </summary>
     [Serializable]
-    [DataContract(Namespace="")]
+    [DataContract(Namespace = "")]
     public class Column : Variable, ICloneable
     {
         [NonSerialized]
@@ -92,18 +92,10 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="old"></param>
         public Column(Column old)
+            : base(old)
         {
             CopyMembers(old);
         }
-
-        /* TODO: delete
-        public static Column Create(DataRow dr)
-        {
-            var column = new Column();
-            column.CopyFromSchemaTableRow(dr);
-
-            return column;
-        }*/
 
         /// <summary>
         /// Initializes member variables
