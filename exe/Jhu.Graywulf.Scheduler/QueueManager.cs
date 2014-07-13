@@ -36,7 +36,21 @@ namespace Jhu.Graywulf.Scheduler
         #endregion
         #region Property storage
 
+        /// <summary>
+        /// If true, process is running in interactive mode, otherwise
+        /// it's a Windows service
+        /// </summary>
         private bool interactive;
+
+        /// <summary>
+        /// Polling period
+        /// </summary>
+        private TimeSpan pollingInterval;
+
+        /// <summary>
+        /// AppDomain idle interval
+        /// </summary>
+        private TimeSpan appDomainIdleTime;
 
         #endregion
         #region Private member varibles
@@ -65,7 +79,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <summary>
         /// If true, requests the poller to stop
         /// </summary>
-        private bool pollerStop;
+        private bool pollerStopRequested;
 
         /// <summary>
         /// Used by the poller thread to signal to end of polling
@@ -73,17 +87,7 @@ namespace Jhu.Graywulf.Scheduler
         private AutoResetEvent pollerStopEvent;
 
         /// <summary>
-        /// Polling period
-        /// </summary>
-        private TimeSpan pollingInterval;
-
-        /// <summary>
-        /// AppDomain idle interval
-        /// </summary>
-        private TimeSpan appDomainIdle;
-
-        /// <summary>
-        /// Support logging
+        /// Supports logging, counts events
         /// </summary>
         private int eventOrder;
 
@@ -92,7 +96,14 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         private Guid contextGuid;
 
+        /// <summary>
+        /// Cached cluster information
+        /// </summary>
         private Cluster cluster;
+
+        /// <summary>
+        /// Task scheduler
+        /// </summary>
         private Scheduler scheduler;
 
         #endregion
@@ -101,21 +112,48 @@ namespace Jhu.Graywulf.Scheduler
         /// <summary>
         /// Gets the value determining if the scheduler is running in interactive (command-line) mode.
         /// </summary>
-        internal bool Interactive
+        public bool Interactive
         {
             get { return interactive; }
         }
 
+        /// <summary>
+        /// Gets or sets the interval between two polling events.
+        /// </summary>
+        public TimeSpan PollingInterval
+        {
+            get { return pollingInterval; }
+            set { pollingInterval = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the period of time after which an idle AppDomain gets unloaded.
+        /// </summary>
+        public TimeSpan AppDomainIdleTime
+        {
+            get { return appDomainIdleTime; }
+            set { appDomainIdleTime = value; }
+        }
+
+        /// <summary>
+        /// Gets a dictionary of the running jobs.
+        /// </summary>
         public Dictionary<Guid, Job> RunningJobs
         {
             get { return runningJobs; }
         }
 
+        /// <summary>
+        /// Gets a cached version of the cluster configuration
+        /// </summary>
         public Cluster Cluster
         {
             get { return cluster; }
         }
 
+        /// <summary>
+        /// Gets a reference to the task scheduler.
+        /// </summary>
         public Scheduler Scheduler
         {
             get { return scheduler; }
@@ -136,10 +174,10 @@ namespace Jhu.Graywulf.Scheduler
             this.appDomains = null;
             this.runningJobs = null;
 
-            this.pollerStop = false;
+            this.pollerStopRequested = false;
             this.pollerThread = null;
             this.pollingInterval = AppSettings.PollingInterval;
-            this.appDomainIdle = AppSettings.AppDomainIdle;
+            this.appDomainIdleTime = AppSettings.AppDomainIdle;
 
             this.eventOrder = 0;
             this.contextGuid = Guid.Empty;
@@ -294,7 +332,7 @@ namespace Jhu.Graywulf.Scheduler
             if (pollerThread == null)
             {
                 pollerStopEvent = new AutoResetEvent(false);
-                pollerStop = false;
+                pollerStopRequested = false;
 
                 pollerThread = new Thread(new ThreadStart(Poller));
                 pollerThread.Name = "Graywulf Scheduler Poller";
@@ -318,7 +356,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             if (pollerThread != null)
             {
-                pollerStop = true;
+                pollerStopRequested = true;
                 pollerStopEvent.WaitOne();
                 pollerThread = null;
             }
@@ -335,7 +373,7 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         private void Poller()
         {
-            while (!pollerStop)
+            while (!pollerStopRequested)
             {
                 Poll();
                 Thread.Sleep(pollingInterval);
@@ -784,8 +822,6 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         private void UnloadOldAppdomains()
         {
-            // Move this into the AppDomainManager
-#if false
             lock (runningJobs)
             {
                 // Find app domains with no running jobs
@@ -805,7 +841,7 @@ namespace Jhu.Graywulf.Scheduler
                     var adh = appDomains[id];
 
                     // Unload if idle for more than a minute
-                    if ((DateTime.Now - adh.LastTimeActive) > appDomainIdle)
+                    if ((DateTime.Now - adh.LastTimeActive) > appDomainIdleTime)
                     {
                         // This shutdown should happen quickly
                         adh.Stop(AppSettings.AppDomainShutdownTimeout, interactive);
@@ -814,7 +850,6 @@ namespace Jhu.Graywulf.Scheduler
                     }
                 }
             }
-#endif
         }
 
         /// <summary>
@@ -835,8 +870,6 @@ namespace Jhu.Graywulf.Scheduler
         }
 
         #endregion
-
-
         #region Logging functions
 
         /// <summary>
