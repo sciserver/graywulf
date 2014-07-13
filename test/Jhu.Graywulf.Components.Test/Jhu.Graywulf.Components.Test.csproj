@@ -9,7 +9,7 @@
     <ProjectGuid>{CFB7B2D2-C676-4378-8C4D-D3640C40D0A0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Jhu.Graywulf.Components.Test</RootNamespace>
+    <RootNamespace>Jhu.Graywulf</RootNamespace>
     <AssemblyName>Jhu.Graywulf.Components.Test</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -56,6 +56,7 @@
     <Compile Include="Components\CacheableParameterHelper.cs" />
     <Compile Include="Components\CachedLazyDictionaryTest.cs" />
     <Compile Include="Components\LazyDictionaryTest.cs" />
+    <Compile Include="Components\ObjectPoolTest.cs" />
     <Compile Include="GenericParameterHelper.cs">
       <SubType>Code</SubType>
     </Compile>
