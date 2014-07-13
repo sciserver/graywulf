@@ -186,17 +186,35 @@ namespace Jhu.Graywulf.Scheduler
             this.scheduler = null;
         }
 
-        private void InitializeCluster(string clusterName)
-        {
-            this.cluster = new Cluster();
-            this.cluster.Load(clusterName);
-
-            QueueManager.Instance.LogEvent(new Event("Jhu.Graywulf.Scheduler.LoadRegistry", Guid.Empty));
-        }
-
         private void InitializeScheduler()
         {
             this.scheduler = new Scheduler(this);
+        }
+
+        #endregion
+        #region Cluster configuration caching functions
+
+        /// <summary>
+        /// Initializes cluster settings
+        /// </summary>
+        /// <param name="clusterName"></param>
+        private void InitializeCluster(string clusterName)
+        {
+            this.cluster = LoadCluster(clusterName);
+        }
+
+        /// <summary>
+        /// Loads the configuration of the entire cluster from the database.
+        /// </summary>
+        /// <returns></returns>
+        private Cluster LoadCluster(string clusterName)
+        {
+            var cluster = new Cluster();
+            cluster.Load(clusterName);
+
+            LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.LoadCluster", Guid.Empty));
+
+            return cluster;
         }
 
         #endregion
@@ -217,12 +235,15 @@ namespace Jhu.Graywulf.Scheduler
             this.contextGuid = Guid.NewGuid();
 
             // Initialize logger
+            Logger.Instance.Writers.Add(new SqlLogWriter());
+
             if (interactive)
             {
-                Jhu.Graywulf.Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.StreamLogWriter(Console.Out));
+                Logger.Instance.Writers.Add(new StreamLogWriter(Console.Out));
             }
 
-            Event e = new Event("Jhu.Graywulf.Scheduler.Start", Guid.Empty);
+            // Log starting event
+            Event e = new Event("Jhu.Graywulf.Scheduler.QueueManager.Start", Guid.Empty);
             e.UserData.Add("MachineName", Environment.MachineName);
             e.UserData.Add("UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName));
             LogEvent(e);
@@ -278,7 +299,11 @@ namespace Jhu.Graywulf.Scheduler
 
             StopAppDomains(timeout);
 
-            LogEvent(new Event("Jhu.Graywulf.Scheduler.Stop", Guid.Empty));
+            // Log stop event
+            var e = new Event("Jhu.Graywulf.Scheduler.QueueManager.Stop", Guid.Empty);
+            e.UserData.Add("MachineName", Environment.MachineName);
+            e.UserData.Add("UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName));
+            LogEvent(e);
         }
 
         /// <summary>
@@ -303,7 +328,11 @@ namespace Jhu.Graywulf.Scheduler
             // Wait for all jobs to complete
             StopAppDomains(timeout);
 
-            LogEvent(new Event("Jhu.Graywulf.Scheduler.Kill", Guid.Empty));
+            // Log stop event
+            var e = new Event("Jhu.Graywulf.Scheduler.QueueManager.Kill", Guid.Empty);
+            e.UserData.Add("MachineName", Environment.MachineName);
+            e.UserData.Add("UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName));
+            LogEvent(e);
         }
 
         private void StopAppDomains(TimeSpan timeout)
@@ -343,7 +372,7 @@ namespace Jhu.Graywulf.Scheduler
                 throw new InvalidOperationException(ExceptionMessages.PollerHasAlreadyStarted);
             }
 
-            LogEvent(new Event("Jhu.Graywulf.Scheduler.StartPoller", Guid.Empty));
+            LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.StartPoller", Guid.Empty));
         }
 
         /// <summary>
@@ -365,7 +394,7 @@ namespace Jhu.Graywulf.Scheduler
                 throw new InvalidOperationException(ExceptionMessages.PollerHasNotStarted);
             }
 
-            LogEvent(new Event("Jhu.Graywulf.Scheduler.StopPoller", Guid.Empty));
+            LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.StopPoller", Guid.Empty));
         }
 
         /// <summary>
@@ -390,7 +419,11 @@ namespace Jhu.Graywulf.Scheduler
         {
             UnloadOldAppdomains();
             ProcessTimedOutJobs();
-            PollNewJobs();
+
+            new DelayedRetryLoop(5).Execute(
+                PollNewJobs,
+                ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Poll[PollNewJobs]", ex)));
+
             PollCancellingJobs();
         }
 
@@ -439,7 +472,7 @@ namespace Jhu.Graywulf.Scheduler
                     JobExecutionState.Persisting |
                     JobExecutionState.Cancelling |
                     JobExecutionState.Starting;
-             
+
                 foreach (var j in jf.FindJobInstances())
                 {
                     // Locking must be handled
@@ -876,7 +909,7 @@ namespace Jhu.Graywulf.Scheduler
         /// Logs scheduler events
         /// </summary>
         /// <param name="e"></param>
-        public void LogEvent(Event e)
+        private void LogEvent(Event e)
         {
             e.UserGuid = Guid.Empty;
             e.EventSource = EventSource.Scheduler;

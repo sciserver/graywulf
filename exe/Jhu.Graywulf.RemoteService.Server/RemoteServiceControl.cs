@@ -58,6 +58,7 @@ namespace Jhu.Graywulf.RemoteService.Server
 
             var contract = Type.GetType(contractType);
 
+            // TODO: need to remove synchronization here
             lock (RemoteService.SyncRoot)
             {
                 if (RemoteService.RegisteredEndpoints.ContainsKey(contract.FullName))
@@ -76,6 +77,7 @@ namespace Jhu.Graywulf.RemoteService.Server
         {
             EnsureRoleAccess();
 
+            // TODO: remove synchronization if possible
             lock (RemoteService.SyncRoot)
             {
                 return RemoteService.RegisteredServiceHosts.Keys.ToArray();

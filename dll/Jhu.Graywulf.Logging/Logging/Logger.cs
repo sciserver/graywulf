@@ -22,21 +22,11 @@ namespace Jhu.Graywulf.Logging
         public Logger()
         {
             InitializeMembers();
-            InitializeWriters();
         }
 
         private void InitializeMembers()
         {
             this.writers = new List<LogWriter>();
-        }
-
-        private void InitializeWriters()
-        {
-            if (AppSettings.ConnectionString != null)
-            {
-                SqlLogWriter sqlwriter = new SqlLogWriter();
-                writers.Add(sqlwriter);
-            }
         }
 
         public void LogEvent(Event e)

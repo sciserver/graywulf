@@ -13,6 +13,9 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
+            // Initialize logger
+            Jhu.Graywulf.Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.SqlLogWriter());
+
             List<Type> verbs = new List<Type>() { typeof(CreateDb), typeof(CreateSchema), typeof(CreateCluster), typeof(CreateAdmin), typeof(Export), typeof(Import) };
 
             Verb v = null;

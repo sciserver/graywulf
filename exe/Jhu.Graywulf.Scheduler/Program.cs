@@ -10,12 +10,15 @@ namespace Jhu.Graywulf.Scheduler
 {
     public class Program
     {
-        //private static EventWaitHandle eh = new AutoResetEvent(false);   
-
+        /// <summary>
+        /// Program entry point
+        /// </summary>
+        /// <param name="args"></param>
         public static void Main(string[] args)
         {
             AppSettings.RunSanityCheck();
 
+            // Switch between interactive (command-line) and service modes.
             if (Environment.UserInteractive)
             {
                 Console.WriteLine("Graywulf scheduler is starting...");
@@ -49,24 +52,36 @@ namespace Jhu.Graywulf.Scheduler
             }
         }
 
-        public static void StartDebug()
+        /// <summary>
+        /// Stars the scheduler in debug mode, used for testing.
+        /// </summary>
+        internal static void StartDebug()
         {
             AppSettings.RunSanityCheck();
 
             QueueManager.Instance.Start(Jhu.Graywulf.Registry.AppSettings.ClusterName, false);
         }
 
-        public static void StopDebug()
+        /// <summary>
+        /// Stops the scheduler when run in debug mode, used for testing.
+        /// </summary>
+        internal static void StopDebug()
         {
             QueueManager.Instance.Stop(TimeSpan.FromHours(1.5));
         }
 
-        public static void DrainStopDebug()
+        /// <summary>
+        /// Drain-stops the scheduler when run in debug mode, used for testing.
+        /// </summary>
+        internal static void DrainStopDebug()
         {
             QueueManager.Instance.DrainStop(TimeSpan.FromMinutes(1.5));
         }
 
-        public static void KillDebug()
+        /// <summary>
+        /// Kills the scheduler when run in debug mode, used for testing.
+        /// </summary>
+        internal static void KillDebug()
         {
             QueueManager.Instance.Kill(TimeSpan.FromSeconds(20));
         }

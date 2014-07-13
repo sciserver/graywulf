@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.RemoteService.Server
         private static RemoteService service;
 
         static void Main(string[] args)
-        {
+        {           
             if (Environment.UserInteractive)
             {
                 // Run in command-prompt

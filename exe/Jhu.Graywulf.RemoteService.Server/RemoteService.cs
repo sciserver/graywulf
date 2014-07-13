@@ -8,6 +8,7 @@ using System.ServiceProcess;
 using System.Text;
 using System.ServiceModel;
 using System.ServiceModel.Description;
+using Jhu.Graywulf.Logging;
 
 namespace Jhu.Graywulf.RemoteService.Server
 {
@@ -15,6 +16,7 @@ namespace Jhu.Graywulf.RemoteService.Server
     public partial class RemoteService : ServiceBase
     {
         private static object syncRoot;
+        private static int eventOrder;
 
         private static ServiceHost controlServiceHost;
         private static ServiceEndpoint controlEndpoint;
@@ -51,6 +53,15 @@ namespace Jhu.Graywulf.RemoteService.Server
 
         protected override void OnStart(string[] args)
         {
+            // Initialize logger
+            Jhu.Graywulf.Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.SqlLogWriter());
+
+            // Log starting event
+            var e = new Event("Jhu.Graywulf.RemoteService.Server.RemoteService.OnStart", Guid.Empty);
+            e.UserData.Add("MachineName", Environment.MachineName);
+            e.UserData.Add("UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName));
+            LogEvent(e);
+
             // Initialize WCF service
             controlServiceHost = new ServiceHost(
                 typeof(RemoteServiceControl),
@@ -76,6 +87,12 @@ namespace Jhu.Graywulf.RemoteService.Server
 
             registeredServiceHosts.Clear();
             registeredEndpoints.Clear();
+
+            // Log stop event
+            var e = new Event("Jhu.Graywulf.RemoteService.Server.RemoteService.OnStop", Guid.Empty);
+            e.UserData.Add("MachineName", Environment.MachineName);
+            e.UserData.Add("UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName));
+            LogEvent(e);
         }
 
         #region Functions to support command-line execution
@@ -172,6 +189,23 @@ namespace Jhu.Graywulf.RemoteService.Server
 
                 return endpoint.Address.Uri;
             }
+        }
+
+        /// <summary>
+        /// Logs scheduler events
+        /// </summary>
+        /// <param name="e"></param>
+        static private void LogEvent(Event e)
+        {
+            e.UserGuid = Guid.Empty;
+            e.EventSource = EventSource.RemoteService;
+            e.ExecutionStatus = ExecutionStatus.Closed;
+
+            e.JobGuid = Guid.Empty;
+            e.ContextGuid = Guid.Empty;
+            e.EventOrder = ++eventOrder;
+
+            Logger.Instance.LogEvent(e);
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Jhu.Graywulf.Logging
         WebUI = 64,
         WebAdmin = 128,
         WebService = 256,
+        RemoteService = 512,
         All = 0xFFFFFFFF,
     }
 

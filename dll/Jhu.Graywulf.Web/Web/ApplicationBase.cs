@@ -7,6 +7,7 @@ using System.Web.Hosting;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Components;
+using Jhu.Graywulf.Logging;
 
 namespace Jhu.Graywulf.Web
 {
@@ -62,6 +63,8 @@ namespace Jhu.Graywulf.Web
         protected virtual void Application_Start(object sender, EventArgs e)
         {
             HostingEnvironment.RegisterVirtualPathProvider(new EmbeddedVirtualPathProvider());
+
+            Logger.Instance.Writers.Add(new SqlLogWriter());
         }
 
         protected virtual void Session_Start(object sender, EventArgs e)

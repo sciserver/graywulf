@@ -175,6 +175,17 @@ namespace Jhu.Graywulf.Logging
             this.entityGuid = entityGuid;
         }
 
+        public Event(string operation, Exception ex)
+        {
+            InitializeMembers();
+
+            this.eventSeverity = Logging.EventSeverity.Error;
+            this.exception = ex;
+            this.exceptionType = ex.GetType().FullName;
+            this.message = ex.Message;
+            this.stackTrace = ex.StackTrace;
+        }
+
         private void InitializeMembers()
         {
             this.eventId = 0;
