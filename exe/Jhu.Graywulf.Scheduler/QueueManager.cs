@@ -200,6 +200,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="clusterName"></param>
         private void InitializeCluster(string clusterName)
         {
+            // TODO: wrap this into retry logic once recurring cluster loading is implemented
             this.cluster = LoadCluster(clusterName);
         }
 
@@ -253,7 +254,9 @@ namespace Jhu.Graywulf.Scheduler
             InitializeCluster(clusterName);
             InitializeScheduler();
 
-            ProcessInterruptedJobs();
+            new DelayedRetryLoop(5).Execute(
+                ProcessInterruptedJobs,
+                ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Start[ProcessInterruptedJobs]", ex)));
 
             StartPoller();
         }
@@ -293,7 +296,9 @@ namespace Jhu.Graywulf.Scheduler
 
                 foreach (var job in jobs)
                 {
-                    PersistJob(job);
+                    new DelayedRetryLoop(5).Execute(
+                        () => { PersistJob(job); },
+                        ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Stop[PersistJob]", ex)));
                 }
             }
 
@@ -322,7 +327,9 @@ namespace Jhu.Graywulf.Scheduler
 
             foreach (var job in jobs)
             {
-                CancelOrTimeOutJob(job, false);
+                new DelayedRetryLoop(5).Execute(
+                    () => { CancelOrTimeOutJob(job, false); },
+                    ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Kill[CancelOrTimeOutJob]", ex)));
             }
 
             // Wait for all jobs to complete
@@ -404,7 +411,19 @@ namespace Jhu.Graywulf.Scheduler
         {
             while (!pollerStopRequested)
             {
-                Poll();
+                // Polling might fail, but wrap it into retry logic so it keeps trying
+                // on errors. This is to prevent the scheduler from stopping when the
+                // connection to the database is lost intermittently.
+                var pollRetry = new DelayedRetryLoop()
+                {
+                    InitialDelay = 1000,
+                    MaxDelay = 30000,
+                    DelayMultiplier = 1.5,
+                    MaxRetries = -1
+                };
+
+                pollRetry.Execute(Poll);
+
                 Thread.Sleep(pollingInterval);
             }
 
@@ -418,13 +437,18 @@ namespace Jhu.Graywulf.Scheduler
         private void Poll()
         {
             UnloadOldAppdomains();
-            ProcessTimedOutJobs();
+
+            new DelayedRetryLoop(5).Execute(
+                ProcessTimedOutJobs,
+                ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Poll[ProcessTimedOutJobs]", ex)));
 
             new DelayedRetryLoop(5).Execute(
                 PollNewJobs,
                 ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Poll[PollNewJobs]", ex)));
 
-            PollCancellingJobs();
+            new DelayedRetryLoop(5).Execute(
+                PollCancellingJobs,
+                ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Poll[PollCancellingJobs]", ex)));
         }
 
         /// <summary>
@@ -447,7 +471,9 @@ namespace Jhu.Graywulf.Scheduler
 
             foreach (var job in temp)
             {
-                CancelOrTimeOutJob(job, true);
+                new DelayedRetryLoop(5).Execute(
+                    () => { CancelOrTimeOutJob(job, true); },
+                    ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.ProcessTimedOutJobs[CancelOrTimeOutJob]", ex)));
             }
         }
 
@@ -589,7 +615,9 @@ namespace Jhu.Graywulf.Scheduler
 
             foreach (var job in temp)
             {
-                StartOrResumeJob(job);
+                new DelayedRetryLoop(5).Execute(
+                    () => { StartOrResumeJob(job); },
+                    ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.PollNewJobs[StartOrResumeJob]", ex)));
             }
         }
 
@@ -624,7 +652,9 @@ namespace Jhu.Graywulf.Scheduler
             // This is to be done outside the registry context
             foreach (var job in temp)
             {
-                CancelOrTimeOutJob(job, false);
+                new DelayedRetryLoop(5).Execute(
+                    () => { CancelOrTimeOutJob(job, false); },
+                    ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.PollCancellingJobs[CancelOrTimeOutJob]", ex)));
             }
         }
 
@@ -724,8 +754,6 @@ namespace Jhu.Graywulf.Scheduler
                 job.Status = JobStatus.Cancelled;
                 appDomains[job.AppDomainID].CancelJob(job);
             }
-
-
         }
 
         private void PersistJob(Job job)
@@ -899,7 +927,9 @@ namespace Jhu.Graywulf.Scheduler
                 job = runningJobs[e.InstanceId];
             }
 
-            FinishJob(job, e);
+            new DelayedRetryLoop(5).Execute(
+                () => { FinishJob(job, e); },
+                ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.adh_WorkflowEvent[FinishJob]", ex)));
         }
 
         #endregion

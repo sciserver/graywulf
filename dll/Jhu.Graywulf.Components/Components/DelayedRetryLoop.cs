@@ -85,7 +85,7 @@ namespace Jhu.Graywulf.Components
         {
             retries++;
 
-            if (retries < maxRetries)
+            if (maxRetries == -1 || retries < maxRetries)
             {
                 Thread.Sleep(currentDelay);
                 currentDelay = Math.Min(maxDelay, (int)(delayMultiplier * currentDelay));
