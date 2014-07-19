@@ -7,9 +7,9 @@ using Newtonsoft.Json;
 namespace Jhu.Graywulf.Keystone
 {
     [JsonObject(MemberSerialization.OptIn)]
-    internal class UserResponse
+    internal class TrustResponse
     {
-        [JsonProperty("user")]
-        public User User { get; set; }
+        [JsonProperty("trust")]
+        public Trust Trust { get; set; }
     }
 }

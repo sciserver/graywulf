@@ -252,6 +252,18 @@ namespace Jhu.Graywulf.Keystone
         }
 
         #endregion
+        #region Trusts
+
+        public Trust CreateTrust(Trust trust)
+        {
+            var req = TrustRequest.CreateMessage(trust);
+            var res = SendRequest<TrustRequest, TrustResponse>(
+                HttpMethod.Post, "/v3/OS-TRUST/trusts", req);
+
+            return res.Body.Trust;
+        }
+
+        #endregion
         #region Specialized request functions
 
         private RestHeaderCollection PreprocessHeaders(RestHeaderCollection headers)

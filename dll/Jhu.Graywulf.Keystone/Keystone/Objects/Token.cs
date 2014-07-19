@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace Jhu.Graywulf.Keystone
 {
@@ -38,5 +37,8 @@ namespace Jhu.Graywulf.Keystone
         // https://github.com/openstack/identity-api/blob/master/v3/src/markdown/identity-api-v3.md#tokens
 
         // TODO: add bind if necessary
+
+        [JsonProperty("OS-TRUST:trust")]
+        public Trust Trust { get; set; }
     }
 }

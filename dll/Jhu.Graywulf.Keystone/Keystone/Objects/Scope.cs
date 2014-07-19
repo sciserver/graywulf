@@ -14,5 +14,8 @@ namespace Jhu.Graywulf.Keystone
 
         [JsonProperty("project")]
         public Project Project { get; set; }
+
+        [JsonProperty("OS-TRUST:trust")]
+        public Trust Trust { get; set; }
     }
 }

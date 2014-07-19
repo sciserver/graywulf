@@ -45,6 +45,8 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Keystone\KeystoneTestBase.cs" />
+    <Compile Include="Keystone\TrustTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Keystone\KeystoneClientTest.cs" />
   </ItemGroup>

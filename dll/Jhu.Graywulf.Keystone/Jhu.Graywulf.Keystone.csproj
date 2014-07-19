@@ -56,7 +56,9 @@
     <Compile Include="Keystone\Objects\Region.cs" />
     <Compile Include="Keystone\Objects\Scope.cs" />
     <Compile Include="Keystone\Objects\Version.cs" />
+    <Compile Include="Keystone\Requests\TrustRequest.cs" />
     <Compile Include="Keystone\Requests\UserRequest.cs" />
+    <Compile Include="Keystone\Responses\TrustResponse.cs" />
     <Compile Include="Keystone\Responses\UserResponse.cs" />
     <Compile Include="Keystone\Responses\ListResponse.cs" />
     <Compile Include="Keystone\Responses\UserListResponse.cs" />

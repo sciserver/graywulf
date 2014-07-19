@@ -1,0 +1,71 @@
+These notes cover Keystone and MySQL installation on Ubuntu.
+
+
+THIS IS A GOOD ONE:
+http://www.ubuntu.com/sites/www.ubuntu.com/files/active/Ubuntu_Keystone_WP_WEB_AW.pdf
+
+
+apt-get install mysql-server
+
+modify /etc/mysql/my.cnf to listen on appropriate ip address
+
+grant remote access to root from mysql prompt:
+grant all privileges on *.* to root@'%' identified by 'password';
+
+
+create database
+http://docs.openstack.org/grizzly/openstack-compute/install/yum/content/install-keystone.html
+
+CREATE DATABASE keystone;
+
+GRANT ALL ON keystone.* TO 'keystone'@'%' IDENTIFIED BY 'almafa';
+GRANT ALL ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY 'almafa';
+
+
+
+
+apt-get install python-mysqldb
+
+http://docs.openstack.org/icehouse/install-guide/install/apt-debian/content/keystone-install.html
+
+apt-get install keystone
+
+
+http://docs.openstack.org/developer/keystone/configuration.html#step-1-configure-keystone-conf
+
+
+prevent other process from using port
+sysctl -w 'sys.net.ipv4.ip_local_reserved_ports=35357'
+
+
+in keystone.conf add mysql connection string
+connection = mysql://keystone:almafa@localhost/keystone
+
+
+
+Create empty database:
+keystone-manage db_sync
+
+
+generate a token for admin:
+
+openssl rand -hex 10
+
+add this token to keystone.conf under admin_token=...
+
+create file with
+
+export OS_USERNAME=admin
+export OS_PASSWORD=almafa
+export OS_TENANT_NAME=admin
+export OS_AUTH_URL=http://controller:35357/v2.0
+export SERVICE_ENDPOINT=http://$KEYSTONE_IP:35357/v2.0/
+export SERVICE_TOKEN=admin_token
+
+source the file above
+
+
+Create a new user
+
+
+http://www.hastexo.com/resources/docs/installing-openstack-essex-4-ubuntu-1204-precise-pangolin/step-3-install-and-configur
