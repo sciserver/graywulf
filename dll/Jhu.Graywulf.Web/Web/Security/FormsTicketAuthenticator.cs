@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Web.Security
     {
         public string Protocol
         {
-            get { return "Forms Authentication"; }
+            get { return Constants.ProtocolNameForms; }
         }
 
         public string AuthorityName

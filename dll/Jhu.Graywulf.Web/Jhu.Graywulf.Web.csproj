@@ -40,6 +40,15 @@
     <Reference Include="DotNetOpenAuth.OpenId.RelyingParty">
       <HintPath>..\..\..\skyquery\packages\DotNetOpenAuth.OpenId.RelyingParty.4.3.4.13329\lib\net40-full\DotNetOpenAuth.OpenId.RelyingParty.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\skyquery\packages\Newtonsoft.Json.5.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="openstacknet">
+      <HintPath>..\..\..\skyquery\packages\openstack.net.1.3.2.1\lib\net40\openstacknet.dll</HintPath>
+    </Reference>
+    <Reference Include="SimpleRESTServices">
+      <HintPath>..\..\..\skyquery\packages\SimpleRESTServices.1.3.0.1\lib\net40\SimpleRESTServices.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -176,6 +185,7 @@
     <Compile Include="Web\Controls\ToolbarElement.cs" />
     <Compile Include="Web\Controls\ToolbarButton.cs" />
     <Compile Include="Web\Controls\ToolbarSpan.cs" />
+    <Compile Include="Web\Security\KeystoneSettings.cs" />
     <Compile Include="Web\Security\AuthenticationModuleBase.cs" />
     <Compile Include="Web\Security\AuthenticatorFactory.cs" />
     <Compile Include="Web\Security\Constants.cs" />
@@ -184,6 +194,7 @@
     <Compile Include="Web\Security\GraywulfPrincipal.cs" />
     <Compile Include="Web\Security\IInteractiveAuthenticator.cs" />
     <Compile Include="Web\Security\IRequestAuthenticator.cs" />
+    <Compile Include="Web\Security\KeystoneAuthenticator.cs" />
     <Compile Include="Web\Security\OpenIDAuthenticator.cs" />
     <Compile Include="Web\Security\RestAuthenticationModule.cs" />
     <Compile Include="Web\Security\WebAuthenticationModule.cs" />

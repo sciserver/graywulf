@@ -4,7 +4,7 @@
 <%@ Register Src="~/Controls/Menu.ascx" TagPrefix="jgwac" TagName="Menu" %>
 <%@ Register Src="~/Controls/Footer.ascx" TagPrefix="jgwac" TagName="Footer" %>
 <asp:Content runat="server" ContentPlaceHolderID="head">
-    <link rel="stylesheet" href="../Scripts/CodeMirror/lib/codemirror.css">
+    <link rel="stylesheet" href="../Scripts/CodeMirror/lib/codemirror.css" />
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="userStatus">
     <jgwac:UserStatus ID="UserStatus" runat="server" />

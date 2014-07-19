@@ -10,13 +10,8 @@ namespace Jhu.Graywulf.Web.Security
     /// When implemented in derived classes, perfoms authentication
     /// that requires user interaction
     /// </summary>
-    public interface IInteractiveAuthenticator
+    public interface IInteractiveAuthenticator : IRequestAuthenticator
     {
-        string Protocol { get; }
-        string AuthorityName { get; set;  }
-        string AuthorityUri { get; set; }
-        string DisplayName { get; set; }
-        GraywulfPrincipal Authenticate();
         void RedirectToLoginPage();
     }
 }

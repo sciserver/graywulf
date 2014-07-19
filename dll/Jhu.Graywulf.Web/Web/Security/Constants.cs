@@ -19,5 +19,7 @@ namespace Jhu.Graywulf.Web.Security
         public const string UserRole = "User";
 
         public const string SettingsOpenID = "OpenIDAuthenticators";
+
+
     }
 }

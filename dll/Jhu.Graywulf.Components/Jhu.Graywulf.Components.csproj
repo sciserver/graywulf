@@ -72,6 +72,7 @@
     <Compile Include="Components\ObjectPoolItem.cs" />
     <Compile Include="Copyright.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\ConfigurationReader.cs" />
     <Compile Include="Util\DeepCloner.cs" />
     <Compile Include="Util\EmailFormatter.cs" />
     <Compile Include="Util\UriConverter.cs" />
