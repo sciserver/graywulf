@@ -9,6 +9,7 @@ using net.openstack.Providers.Rackspace;
 
 namespace Jhu.Graywulf.Web.Security
 {
+#if false
     public class KeystoneAuthenticator : IInteractiveAuthenticator
     {
         private string authorityName;
@@ -92,4 +93,5 @@ namespace Jhu.Graywulf.Web.Security
             throw new NotImplementedException();
         }
     }
+#endif
 }
