@@ -3,14 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Jhu.Graywulf.Keystone
 {
     [JsonObject(MemberSerialization.OptIn)]
     public class Trust : Entity
     {
-        [JsonProperty("expires_at")]
-        public DateTime ExpiresAt { get; set; }
+        private DateTime expiresAt;
+
+        [JsonProperty("expires_at", ItemConverterType=typeof(IsoDateTimeConverter))]
+        public DateTime ExpiresAt
+        {
+            get { return expiresAt; }
+            set { expiresAt = value.ToUniversalTime(); }
+        }
 
         [JsonProperty("project_id")]
         public string ProjectID { get; set; }

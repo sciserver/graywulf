@@ -51,8 +51,18 @@ namespace Jhu.Graywulf.Keystone
             };
         }
 
-        public static AuthRequest Create(Token token)
+        public static AuthRequest Create(Token token, Trust trust)
         {
+            Scope scope = null;
+
+            if (trust != null)
+            {
+                scope = new Scope()
+                {
+                    Trust = trust,
+                };
+            }
+
             return new AuthRequest()
             {
                 Auth = new Auth()
@@ -61,7 +71,8 @@ namespace Jhu.Graywulf.Keystone
                     {
                         Methods = new[] { "token" },
                         Token = token
-                    }
+                    },
+                    Scope = scope
                 }
             };
         }
@@ -71,9 +82,9 @@ namespace Jhu.Graywulf.Keystone
             return new RestMessage<AuthRequest>(Create(domain, username, password, scopeDomain, scopeProject));
         }
 
-        public static RestMessage<AuthRequest> CreateMessage(Token token)
+        public static RestMessage<AuthRequest> CreateMessage(Token token, Trust trust)
         {
-            return new RestMessage<AuthRequest>(Create(token));
+            return new RestMessage<AuthRequest>(Create(token, trust));
         }
     }
 }

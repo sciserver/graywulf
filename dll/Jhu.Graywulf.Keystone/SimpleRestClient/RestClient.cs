@@ -73,7 +73,8 @@ namespace Jhu.Graywulf.SimpleRestClient
         /// <returns></returns>
         protected virtual RestMessage<R> SendRequest<T, R>(HttpMethod method, string path, RestMessage<T> message)
         {
-            var response = SendRequestInternal(method, path, SerializeJson(message.Body), message.Headers);
+            var reqbody = SerializeJson(message.Body);
+            var response = SendRequestInternal(method, path, reqbody, message.Headers);
             var resheaders = ReadResponseHeaders(response);
             var resbody = ReadResponseBody(response);
 

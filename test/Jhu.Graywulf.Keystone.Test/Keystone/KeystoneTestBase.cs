@@ -9,15 +9,19 @@ namespace Jhu.Graywulf.Keystone
     {
         private Uri baseUri = new Uri("http://192.168.170.50:5000");
         private string adminAuthToken = "e5b19f25f5d55a995a16";
+        private KeystoneClient client;
 
         protected KeystoneClient Client
         {
             get
             {
-                return new KeystoneClient(baseUri)
+                if (client == null)
                 {
-                    AdminAuthToken = adminAuthToken
-                };
+                    client = new KeystoneClient(baseUri);
+                    client.AdminAuthToken = adminAuthToken;
+                }
+
+                return client;
             }
         }
 

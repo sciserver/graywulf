@@ -20,6 +20,7 @@ namespace Jhu.Graywulf.Keystone
         #region Private member variables
 
         private string adminAuthToken;
+        private string userAuthToken;
 
         #endregion
         #region Properties
@@ -28,6 +29,12 @@ namespace Jhu.Graywulf.Keystone
         {
             get { return adminAuthToken; }
             set { adminAuthToken = value; }
+        }
+
+        public string UserAuthToken
+        {
+            get { return userAuthToken; }
+            set { userAuthToken = value; }
         }
 
         #endregion
@@ -44,19 +51,24 @@ namespace Jhu.Graywulf.Keystone
         public Version GetVersion()
         {
             var res = SendRequest<VersionResponse>(
-                HttpMethod.Get, "/v3");
+                HttpMethod.Get, "/v3", adminAuthToken);
 
             return res.Body.Version;
         }
 
         #endregion
-        #region Single user manipulation
+        #region Domain manipulation
+
+
+
+        #endregion
+        #region User manipulation
 
         public User CreateUser(User user)
         {
             var req = UserRequest.CreateMessage(user);
             var res = SendRequest<UserRequest, UserResponse>(
-                HttpMethod.Post, "/v3/users", req);
+                HttpMethod.Post, "/v3/users", req, adminAuthToken);
 
             return res.Body.User;
         }
@@ -64,7 +76,7 @@ namespace Jhu.Graywulf.Keystone
         public User GetUser(string id)
         {
             var res = SendRequest<UserResponse>(
-                HttpMethod.Get, String.Format("/v3/users/{0}", id));
+                HttpMethod.Get, String.Format("/v3/users/{0}", id), adminAuthToken);
 
             return res.Body.User;
         }
@@ -82,14 +94,14 @@ namespace Jhu.Graywulf.Keystone
         {
             var req = UserRequest.CreateMessage(user);
             var res = SendRequest<UserRequest, UserResponse>(
-                HttpMethod.Patch, String.Format("/v3/users/{0}", user.ID), req);
+                HttpMethod.Patch, String.Format("/v3/users/{0}", user.ID), req, adminAuthToken);
 
             return res.Body.User;
         }
 
         public void DeleteUser(string id)
         {
-            SendRequest(HttpMethod.Delete, String.Format("/v3/users/{0}", id));
+            SendRequest(HttpMethod.Delete, String.Format("/v3/users/{0}", id), adminAuthToken);
         }
 
         public void ChangePassword(string id, string oldPassword, string newPassword)
@@ -103,7 +115,7 @@ namespace Jhu.Graywulf.Keystone
             var req = UserRequest.CreateMessage(user);
 
             SendRequest<UserRequest>(
-                HttpMethod.Post, String.Format("/v3/users/{0}/password", id), req);
+                HttpMethod.Post, String.Format("/v3/users/{0}/password", id), req, adminAuthToken);
         }
 
         #endregion
@@ -112,8 +124,7 @@ namespace Jhu.Graywulf.Keystone
         public User[] ListUsers()
         {
             var res = SendRequest<UserListResponse>(
-                HttpMethod.Get,
-                "/v3/users");
+                HttpMethod.Get, "/v3/users", adminAuthToken);
 
             return res.Body.Users;
         }
@@ -169,8 +180,7 @@ namespace Jhu.Graywulf.Keystone
             }
 
             var res = SendRequest<UserListResponse>(
-                HttpMethod.Get,
-                "/v3/users" + query);
+                HttpMethod.Get, "/v3/users" + query, adminAuthToken);
 
             return res.Body.Users;
         }
@@ -199,9 +209,7 @@ namespace Jhu.Graywulf.Keystone
         {
             var req = AuthRequest.CreateMessage(domain, username, password, null, null);
             var resMessage = SendRequest<AuthRequest, AuthResponse>(
-                HttpMethod.Post,
-                "/v3/auth/tokens",
-                req);
+                HttpMethod.Post, "/v3/auth/tokens", req);
 
             var authResponse = resMessage.Body;
 
@@ -213,11 +221,14 @@ namespace Jhu.Graywulf.Keystone
 
         public Token Authenticate(Token token)
         {
-            var req = AuthRequest.CreateMessage(token);
+            return Authenticate(token, null);
+        }
+
+        public Token Authenticate(Token token, Trust trust)
+        {
+            var req = AuthRequest.CreateMessage(token, trust);
             var resMessage = SendRequest<AuthRequest, AuthResponse>(
-                HttpMethod.Post,
-                "/v3/auth/tokens",
-                req);
+                HttpMethod.Post, "/v3/auth/tokens", req);
 
             var authResponse = resMessage.Body;
 
@@ -233,9 +244,7 @@ namespace Jhu.Graywulf.Keystone
             headers.Add(new RestHeader(Constants.KeystoneXSubjectTokenHeader, token.ID));
 
             var resMessage = SendRequest(
-                HttpMethod.Head,
-                "/v3/auth/tokens",
-                headers);
+                HttpMethod.Head, "/v3/auth/tokens", headers, adminAuthToken);
 
             return true;
         }
@@ -246,9 +255,7 @@ namespace Jhu.Graywulf.Keystone
             headers.Add(new RestHeader(Constants.KeystoneXSubjectTokenHeader, token.ID));
 
             var resMessage = SendRequest(
-                HttpMethod.Delete,
-                "/v3/auth/tokens",
-                headers);
+                HttpMethod.Delete, "/v3/auth/tokens", headers, adminAuthToken);
         }
 
         #endregion
@@ -258,7 +265,7 @@ namespace Jhu.Graywulf.Keystone
         {
             var req = TrustRequest.CreateMessage(trust);
             var res = SendRequest<TrustRequest, TrustResponse>(
-                HttpMethod.Post, "/v3/OS-TRUST/trusts", req);
+                HttpMethod.Post, "/v3/OS-TRUST/trusts", req, userAuthToken);
 
             return res.Body.Trust;
         }
@@ -266,35 +273,35 @@ namespace Jhu.Graywulf.Keystone
         #endregion
         #region Specialized request functions
 
-        private RestHeaderCollection PreprocessHeaders(RestHeaderCollection headers)
+        private RestHeaderCollection PreprocessHeaders(RestHeaderCollection headers, string authToken)
         {
             if (headers == null)
             {
                 headers = new RestHeaderCollection();
             }
 
-            headers.Set(new RestHeader(Constants.KeystoneXAuthTokenHeader, adminAuthToken));
+            headers.Set(new RestHeader(Constants.KeystoneXAuthTokenHeader, authToken));
 
             return headers;
         }
 
-        private RestMessage<T> PreprocessHeaders<T>(RestMessage<T> message)
+        private RestMessage<T> PreprocessHeaders<T>(RestMessage<T> message, string authToken)
         {
-            message.Headers = PreprocessHeaders(message.Headers);
+            message.Headers = PreprocessHeaders(message.Headers, authToken);
 
             return message;
         }
 
-        private RestHeaderCollection SendRequest(HttpMethod method, string path)
+        private RestHeaderCollection SendRequest(HttpMethod method, string path, string authToken)
         {
-            return SendRequest(method, path, (RestHeaderCollection)null);
+            return SendRequest(method, path, (RestHeaderCollection)null, authToken);
         }
 
-        protected override RestHeaderCollection SendRequest(HttpMethod method, string path, RestHeaderCollection headers)
+        protected RestHeaderCollection SendRequest(HttpMethod method, string path, RestHeaderCollection headers, string authToken)
         {
             try
             {
-                return base.SendRequest(method, path, PreprocessHeaders(headers));
+                return base.SendRequest(method, path, PreprocessHeaders(headers, authToken));
             }
             catch (RestException ex)
             {
@@ -302,16 +309,16 @@ namespace Jhu.Graywulf.Keystone
             }
         }
 
-        private RestMessage<R> SendRequest<R>(HttpMethod method, string path)
+        private RestMessage<R> SendRequest<R>(HttpMethod method, string path, string authToken)
         {
-            return SendRequest<R>(method, path, (RestHeaderCollection)null);
+            return SendRequest<R>(method, path, (RestHeaderCollection)null, authToken);
         }
 
-        protected override RestMessage<R> SendRequest<R>(HttpMethod method, string path, RestHeaderCollection headers)
+        protected RestMessage<R> SendRequest<R>(HttpMethod method, string path, RestHeaderCollection headers, string authToken)
         {
             try
             {
-                return base.SendRequest<R>(method, path, PreprocessHeaders(headers));
+                return base.SendRequest<R>(method, path, PreprocessHeaders(headers, authToken));
             }
             catch (RestException ex)
             {
@@ -319,11 +326,11 @@ namespace Jhu.Graywulf.Keystone
             }
         }
 
-        protected override RestHeaderCollection SendRequest<T>(HttpMethod method, string path, RestMessage<T> message)
+        protected RestHeaderCollection SendRequest<T>(HttpMethod method, string path, RestMessage<T> message, string authToken)
         {
             try
             {
-                return base.SendRequest<T>(method, path, PreprocessHeaders(message));
+                return base.SendRequest<T>(method, path, PreprocessHeaders(message, authToken));
             }
             catch (RestException ex)
             {
@@ -331,11 +338,11 @@ namespace Jhu.Graywulf.Keystone
             }
         }
 
-        protected override RestMessage<U> SendRequest<T, U>(HttpMethod method, string path, RestMessage<T> message)
+        protected RestMessage<U> SendRequest<T, U>(HttpMethod method, string path, RestMessage<T> message, string authToken)
         {
             try
             {
-                return base.SendRequest<T, U>(method, path, PreprocessHeaders(message));
+                return base.SendRequest<T, U>(method, path, PreprocessHeaders(message, authToken));
             }
             catch (RestException ex)
             {
