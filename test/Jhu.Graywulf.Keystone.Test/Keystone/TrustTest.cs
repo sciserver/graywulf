@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.Keystone
             };
 
             Client.UserAuthToken = token1.ID;
-            trust = Client.CreateTrust(trust);
+            trust = Client.Create(trust);
 
             // Try to impersonate user with trust
             var token2 = Client.Authenticate("default", "test2", "alma");

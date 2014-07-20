@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Keystone
         #endregion
         #region Domain manipulation
 
-        public Domain CreateDomain(Domain domain)
+        public Domain Create(Domain domain)
         {
             var req = DomainRequest.CreateMessage(domain);
             var res = SendRequest<DomainRequest, DomainResponse>(
@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Keystone
             return res.Body.Domain;
         }
 
-        public Domain UpdateDomain(Domain domain)
+        public Domain Update(Domain domain)
         {
             var req = DomainRequest.CreateMessage(domain);
             var res = SendRequest<DomainRequest, DomainResponse>(
@@ -77,18 +77,17 @@ namespace Jhu.Graywulf.Keystone
             return res.Body.Domain;
         }
 
-        public void DeleteDomain(string id)
+        public void Delete(Domain domain)
         {
             // Domain needs to be deleted first
-            var domain = GetDomainByID(id);
             domain.Enabled = false;
-            UpdateDomain(domain);
+            Update(domain);
 
             // Now it can be deleted
-            SendRequest(HttpMethod.Delete, String.Format("/v3/domains/{0}", id), adminAuthToken);
+            SendRequest(HttpMethod.Delete, String.Format("/v3/domains/{0}", domain.ID), adminAuthToken);
         }
 
-        public Domain GetDomainByID(string id)
+        public Domain GetDomain(string id)
         {
             var res = SendRequest<DomainResponse>(
                 HttpMethod.Get, String.Format("/v3/domains/{0}", id), adminAuthToken);
@@ -107,7 +106,7 @@ namespace Jhu.Graywulf.Keystone
         #endregion
         #region Project manipulation
 
-        public Project CreateProject(Project project)
+        public Project Create(Project project)
         {
             var req = ProjectRequest.CreateMessage(project);
             var res = SendRequest<ProjectRequest, ProjectResponse>(
@@ -116,7 +115,7 @@ namespace Jhu.Graywulf.Keystone
             return res.Body.Project;
         }
 
-        public Project UpdateProject(Project project)
+        public Project Update(Project project)
         {
             var req = ProjectRequest.CreateMessage(project);
             var res = SendRequest<ProjectRequest, ProjectResponse>(
@@ -125,13 +124,13 @@ namespace Jhu.Graywulf.Keystone
             return res.Body.Project;
         }
 
-        public void DeleteProject(string id)
+        public void Delete(Project project)
         {
             // Now it can be deleted
-            SendRequest(HttpMethod.Delete, String.Format("/v3/projects/{0}", id), adminAuthToken);
+            SendRequest(HttpMethod.Delete, String.Format("/v3/projects/{0}", project.ID), adminAuthToken);
         }
 
-        public Project GetProjectByID(string id)
+        public Project GetProject(string id)
         {
             var res = SendRequest<ProjectResponse>(
                 HttpMethod.Get, String.Format("/v3/projects/{0}", id), adminAuthToken);
@@ -158,7 +157,7 @@ namespace Jhu.Graywulf.Keystone
         #endregion
         #region Role manipulation
 
-        public Role CreateRole(Role project)
+        public Role Create(Role project)
         {
             var req = RoleRequest.CreateMessage(project);
             var res = SendRequest<RoleRequest, RoleResponse>(
@@ -167,7 +166,7 @@ namespace Jhu.Graywulf.Keystone
             return res.Body.Role;
         }
 
-        public Role UpdateRole(Role project)
+        public Role Update(Role project)
         {
             var req = RoleRequest.CreateMessage(project);
             var res = SendRequest<RoleRequest, RoleResponse>(
@@ -176,13 +175,13 @@ namespace Jhu.Graywulf.Keystone
             return res.Body.Role;
         }
 
-        public void DeleteRole(string id)
+        public void Delete(Role role)
         {
             // Now it can be deleted
-            SendRequest(HttpMethod.Delete, String.Format("/v3/roles/{0}", id), adminAuthToken);
+            SendRequest(HttpMethod.Delete, String.Format("/v3/roles/{0}", role.ID), adminAuthToken);
         }
 
-        public Role GetRoleByID(string id)
+        public Role GetRole(string id)
         {
             var res = SendRequest<RoleResponse>(
                 HttpMethod.Get, String.Format("/v3/roles/{0}", id), adminAuthToken);
@@ -212,7 +211,7 @@ namespace Jhu.Graywulf.Keystone
         #endregion
         #region User manipulation
 
-        public User CreateUser(User user)
+        public User Create(User user)
         {
             var req = UserRequest.CreateMessage(user);
             var res = SendRequest<UserRequest, UserResponse>(
@@ -221,7 +220,7 @@ namespace Jhu.Graywulf.Keystone
             return res.Body.User;
         }
 
-        public User UpdateUser(User user)
+        public User Update(User user)
         {
             var req = UserRequest.CreateMessage(user);
             var res = SendRequest<UserRequest, UserResponse>(
@@ -230,9 +229,9 @@ namespace Jhu.Graywulf.Keystone
             return res.Body.User;
         }
 
-        public void DeleteUser(string id)
+        public void Delete(User user)
         {
-            SendRequest(HttpMethod.Delete, String.Format("/v3/users/{0}", id), adminAuthToken);
+            SendRequest(HttpMethod.Delete, String.Format("/v3/users/{0}", user.ID), adminAuthToken);
         }
 
         public void ChangePassword(string id, string oldPassword, string newPassword)
@@ -249,7 +248,7 @@ namespace Jhu.Graywulf.Keystone
                 HttpMethod.Post, String.Format("/v3/users/{0}/password", id), req, adminAuthToken);
         }
 
-        public User GetUserByID(string id)
+        public User GetUser(string id)
         {
             var res = SendRequest<UserResponse>(
                 HttpMethod.Get, String.Format("/v3/users/{0}", id), adminAuthToken);
@@ -263,7 +262,7 @@ namespace Jhu.Graywulf.Keystone
             // it to get user id
             token = Authenticate(token);
 
-            return GetUserByID(token.User.ID);
+            return GetUser(token.User.ID);
         }
 
         public User[] ListUsers()
@@ -309,6 +308,8 @@ namespace Jhu.Graywulf.Keystone
 
         public void ListRolesOfUserOnDomain(string domainID, string userID, string roleID)
         {
+            // TODO
+            throw new NotImplementedException();
         }
 
         public void GrantRoleToUserOnProject(string projectID, string userID, string roleID)
@@ -337,6 +338,8 @@ namespace Jhu.Graywulf.Keystone
 
         public void ListRolesOfUserOnProject(string projectID, string userID, string roleID)
         {
+            // TODO
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -415,7 +418,7 @@ namespace Jhu.Graywulf.Keystone
         #endregion
         #region Trusts
 
-        public Trust CreateTrust(Trust trust)
+        public Trust Create(Trust trust)
         {
             var req = TrustRequest.CreateMessage(trust);
             var res = SendRequest<TrustRequest, TrustResponse>(
@@ -423,6 +426,27 @@ namespace Jhu.Graywulf.Keystone
 
             return res.Body.Trust;
         }
+
+        public void Delete(Trust trust)
+        {
+            // TODO: 
+            throw new NotImplementedException();
+        }
+
+        public Trust GetTrust(string id)
+        {
+            // TODO: 
+            throw new NotImplementedException();
+        }
+
+        public Trust[] ListTrusts()
+        {
+            // TODO: 
+            throw new NotImplementedException();
+        }
+
+        // role delegate by task
+        // get role delegated by task
 
         #endregion
         #region Specialized request functions

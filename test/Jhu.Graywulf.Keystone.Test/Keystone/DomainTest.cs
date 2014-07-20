@@ -18,24 +18,24 @@ namespace Jhu.Graywulf.Keystone
             var domain = CreateTestDomain();
 
             // Get the domain by id
-            domain = Client.GetDomainByID(domain.ID);
+            domain = Client.GetDomain(domain.ID);
 
             // Rename it to something else
             domain.Name = "test_domain2";
-            domain = Client.UpdateDomain(domain);
+            domain = Client.Update(domain);
 
             // Disable it
             domain.Enabled = false;
-            domain = Client.UpdateDomain(domain);
+            domain = Client.Update(domain);
             Assert.IsFalse(domain.Enabled.Value);
 
             // Enable it again
             domain.Enabled = true;
-            domain = Client.UpdateDomain(domain);
+            domain = Client.Update(domain);
             Assert.IsTrue(domain.Enabled.Value);
 
             // Delete domain
-            Client.DeleteDomain(domain.ID);
+            Client.Delete(domain);
 
             PurgeTestEntities();
         }

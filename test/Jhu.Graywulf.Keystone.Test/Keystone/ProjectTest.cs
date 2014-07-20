@@ -18,24 +18,24 @@ namespace Jhu.Graywulf.Keystone
             var project = CreateTestProject();
 
             // Get the project by id
-            project = Client.GetProjectByID(project.ID);
+            project = Client.GetProject(project.ID);
 
             // Rename it to something else
             project.Name = "test_project2";
-            project = Client.UpdateProject(project);
+            project = Client.Update(project);
 
             // Disable it
             project.Enabled = false;
-            project = Client.UpdateProject(project);
+            project = Client.Update(project);
             Assert.IsFalse(project.Enabled.Value);
 
             // Enable it again
             project.Enabled = true;
-            project = Client.UpdateProject(project);
+            project = Client.Update(project);
             Assert.IsTrue(project.Enabled.Value);
 
             // Delete project
-            Client.DeleteProject(project.ID);
+            Client.Delete(project);
 
             PurgeTestEntities();
         }

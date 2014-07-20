@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Keystone
             {
                 if (domains[i].Name.StartsWith("test"))
                 {
-                    Client.DeleteDomain(domains[i].ID);
+                    Client.Delete(domains[i]);
                 }
             }
 
@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Keystone
             {
                 if (projects[i].Name.StartsWith("test"))
                 {
-                    Client.DeleteProject(projects[i].ID);
+                    Client.Delete(projects[i]);
                 }
             }
 
@@ -50,14 +50,14 @@ namespace Jhu.Graywulf.Keystone
             {
                 if (roles[i].Name.StartsWith("test"))
                 {
-                    Client.DeleteRole(roles[i].ID);
+                    Client.Delete(roles[i]);
                 }
             }
 
             var users = Client.FindUsers("test*", false, false);
             for (int i = 0; i < users.Length; i++)
             {
-                Client.DeleteUser(users[i].ID);
+                Client.Delete(users[i]);
             }
         }
 
@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.Keystone
                 Description = "test domain"
             };
 
-            return Client.CreateDomain(domain);
+            return Client.Create(domain);
         }
 
         protected Project CreateTestProject()
@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Keystone
                 Description = "test project",
             };
 
-            return Client.CreateProject(project);
+            return Client.Create(project);
         }
 
         protected Role CreateTestRole()
@@ -91,7 +91,7 @@ namespace Jhu.Graywulf.Keystone
                 Description = "test role",
             };
 
-            return Client.CreateRole(role);
+            return Client.Create(role);
         }
 
         protected User CreateTestUser(string name)
@@ -104,7 +104,7 @@ namespace Jhu.Graywulf.Keystone
                 Password = "alma",
             };
 
-            return Client.CreateUser(user);
+            return Client.Create(user);
         }
     }
 }

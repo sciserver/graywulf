@@ -36,16 +36,16 @@ namespace Jhu.Graywulf.Keystone
             Assert.IsTrue(nuser.Enabled.Value);
 
             // Retreive test user by id
-            nuser = Client.GetUserByID(nuser.ID);
+            nuser = Client.GetUser(nuser.ID);
 
             // Rename test user
             nuser.Name = "test2";
-            nuser = Client.UpdateUser(nuser);
+            nuser = Client.Update(nuser);
 
             // Change password
             Client.ChangePassword(nuser.ID, "alma", "korte");
 
-            Client.DeleteUser(nuser.ID);
+            Client.Delete(nuser);
         }
 
         [TestMethod]

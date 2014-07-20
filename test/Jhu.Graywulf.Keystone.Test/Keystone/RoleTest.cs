@@ -18,14 +18,14 @@ namespace Jhu.Graywulf.Keystone
             var role = CreateTestRole();
 
             // Get the role by id
-            role = Client.GetRoleByID(role.ID);
+            role = Client.GetRole(role.ID);
 
             // Rename it to something else
             role.Name = "test_role2";
-            role = Client.UpdateRole(role);
+            role = Client.Update(role);
 
             // Delete project
-            Client.DeleteRole(role.ID);
+            Client.Delete(role);
 
             PurgeTestEntities();
         }
