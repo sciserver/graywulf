@@ -282,61 +282,61 @@ namespace Jhu.Graywulf.Keystone
             return res.Body.Users;
         }
 
-        public void GrantRoleToUserOnDomain(string domainID, string userID, string roleID)
+        public void GrantRole(Domain domain, User user, Role role)
         {
             SendRequest(
                 HttpMethod.Put,
-                String.Format("/v3/domains/{0}/users/{1}/roles/{2}", domainID, userID, roleID),
+                String.Format("/v3/domains/{0}/users/{1}/roles/{2}", domain.ID, user.ID, role.ID),
                 adminAuthToken);
         }
 
-        public void RevokeRoleFromUserOnDomain(string domainID, string userID, string roleID)
+        public void RevokeRole(Domain domain, User user, Role role)
         {
             SendRequest(
                 HttpMethod.Delete,
-                String.Format("/v3/domains/{0}/users/{1}/roles/{2}", domainID, userID, roleID),
+                String.Format("/v3/domains/{0}/users/{1}/roles/{2}", domain.ID, user.ID, role.ID),
                 adminAuthToken);
         }
 
-        public void CheckRoleOfUserOnDomain(string domainID, string userID, string roleID)
+        public void CheckRole(Domain domain, User user, Role role)
         {
             SendRequest(
                 HttpMethod.Head,
-                String.Format("/v3/domains/{0}/users/{1}/roles/{2}", domainID, userID, roleID),
+                String.Format("/v3/domains/{0}/users/{1}/roles/{2}", domain.ID, user.ID, role.ID),
                 adminAuthToken);
         }
 
-        public void ListRolesOfUserOnDomain(string domainID, string userID, string roleID)
+        public Role[] ListRoles(Domain domain, User user)
         {
             // TODO
             throw new NotImplementedException();
         }
 
-        public void GrantRoleToUserOnProject(string projectID, string userID, string roleID)
+        public void GrantRole(Project project, User user, Role role)
         {
             SendRequest(
                 HttpMethod.Put,
-                String.Format("/v3/projects/{0}/users/{1}/roles/{2}", projectID, userID, roleID),
+                String.Format("/v3/projects/{0}/users/{1}/roles/{2}", project.ID, user.ID, role.ID),
                 adminAuthToken);
         }
 
-        public void RevokeRoleFromUserOnProject(string projectID, string userID, string roleID)
+        public void RevokeRole(Project project, User user, Role role)
         {
             SendRequest(
                 HttpMethod.Delete,
-                String.Format("/v3/projects/{0}/users/{1}/roles/{2}", projectID, userID, roleID),
+                String.Format("/v3/projects/{0}/users/{1}/roles/{2}", project.ID, user.ID, role.ID),
                 adminAuthToken);
         }
 
-        public void CheckRoleOfUserOnProject(string projectID, string userID, string roleID)
+        public void CheckRole(Project project, User user, Role role)
         {
             SendRequest(
                 HttpMethod.Head,
-                String.Format("/v3/projects/{0}/users/{1}/roles/{2}", projectID, userID, roleID),
+                String.Format("/v3/projects/{0}/users/{1}/roles/{2}", project.ID, user.ID, role.ID),
                 adminAuthToken);
         }
 
-        public void ListRolesOfUserOnProject(string projectID, string userID, string roleID)
+        public void ListRoles(Project project, User user)
         {
             // TODO
             throw new NotImplementedException();

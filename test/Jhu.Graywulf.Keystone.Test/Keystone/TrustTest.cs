@@ -24,8 +24,8 @@ namespace Jhu.Graywulf.Keystone
             var user2 = CreateTestUser("test2");
 
             // Associate users with project via the role
-            Client.GrantRoleToUserOnProject(project.ID, user1.ID, role.ID);
-            Client.GrantRoleToUserOnProject(project.ID, user2.ID, role.ID);
+            Client.GrantRole(project, user1, role);
+            Client.GrantRole(project, user2, role);
 
             // Create token for user1
             var token1 = Client.Authenticate("default", "test1", "alma");

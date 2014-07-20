@@ -116,16 +116,17 @@ namespace Jhu.Graywulf.Keystone
         {
             PurgeTestEntities();
 
+            var domain = Client.GetDomain("default");
             var role = CreateTestRole();
             var user = CreateTestUser("test");
 
-            Client.GrantRoleToUserOnDomain("default", user.ID, role.ID);
-            Client.CheckRoleOfUserOnDomain("default", user.ID, role.ID);
+            Client.GrantRole(domain, user, role);
+            Client.CheckRole(domain, user, role);
 
-            Client.RevokeRoleFromUserOnDomain("default", user.ID, role.ID);
+            Client.RevokeRole(domain, user, role);
             try
             {
-                Client.CheckRoleOfUserOnDomain("default", user.ID, role.ID);
+                Client.CheckRole(domain, user, role);
                 Assert.Fail();
             }
             catch (KeystoneException)
@@ -144,13 +145,13 @@ namespace Jhu.Graywulf.Keystone
             var role = CreateTestRole();
             var user = CreateTestUser("test");
 
-            Client.GrantRoleToUserOnProject(project.ID, user.ID, role.ID);
-            Client.CheckRoleOfUserOnProject(project.ID, user.ID, role.ID);
+            Client.GrantRole(project, user, role);
+            Client.CheckRole(project, user, role);
 
-            Client.RevokeRoleFromUserOnProject(project.ID, user.ID, role.ID);
+            Client.RevokeRole(project, user, role);
             try
             {
-                Client.CheckRoleOfUserOnProject(project.ID, user.ID, role.ID);
+                Client.CheckRole(project, user, role);
                 Assert.Fail();
             }
             catch (KeystoneException)
