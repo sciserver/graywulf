@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Keystone
     /// accessible from the test machine and an admin token.
     /// </remarks>
     [TestClass]
-    public class KeystoneClientTest : KeystoneTestBase
+    public class UserTest : KeystoneTestBase
     {
         [TestMethod]
         public void GetVersionTest()
@@ -29,14 +29,14 @@ namespace Jhu.Graywulf.Keystone
         public void ManipulateUserTest()
         {
             // Purge test users
-            PurgeTestUsers();
+            PurgeTestEntities();
 
             // Create a new test user
             var nuser = CreateTestUser("test");
             Assert.IsTrue(nuser.Enabled.Value);
 
             // Retreive test user by id
-            nuser = Client.GetUser(nuser.ID);
+            nuser = Client.GetUserByID(nuser.ID);
 
             // Rename test user
             nuser.Name = "test2";
@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.Keystone
         [TestMethod]
         public void FindUsersTest()
         {
-            PurgeTestUsers();
+            PurgeTestEntities();
 
             CreateTestUser("test1");
             CreateTestUser("test2");
@@ -72,13 +72,13 @@ namespace Jhu.Graywulf.Keystone
             users = Client.ListUsers();
             Assert.IsTrue(users.Length > 0);
 
-            PurgeTestUsers();
+            PurgeTestEntities();
         }
 
         [TestMethod]
         public void AuthenticationTest()
         {
-            PurgeTestUsers();
+            PurgeTestEntities();
 
             CreateTestUser("test");
 
@@ -108,7 +108,56 @@ namespace Jhu.Graywulf.Keystone
             {
             }
 
-            PurgeTestUsers();
+            PurgeTestEntities();
+        }
+
+        [TestMethod]
+        public void RolesOnDomainTest()
+        {
+            PurgeTestEntities();
+
+            var role = CreateTestRole();
+            var user = CreateTestUser("test");
+
+            Client.GrantRoleToUserOnDomain("default", user.ID, role.ID);
+            Client.CheckRoleOfUserOnDomain("default", user.ID, role.ID);
+
+            Client.RevokeRoleFromUserOnDomain("default", user.ID, role.ID);
+            try
+            {
+                Client.CheckRoleOfUserOnDomain("default", user.ID, role.ID);
+                Assert.Fail();
+            }
+            catch (KeystoneException)
+            {
+            }
+
+            PurgeTestEntities();
+        }
+
+        [TestMethod]
+        public void RolesOnProjectTest()
+        {
+            PurgeTestEntities();
+
+            var project = CreateTestProject();
+            var role = CreateTestRole();
+            var user = CreateTestUser("test");
+
+            Client.GrantRoleToUserOnProject(project.ID, user.ID, role.ID);
+            Client.CheckRoleOfUserOnProject(project.ID, user.ID, role.ID);
+
+            Client.RevokeRoleFromUserOnProject(project.ID, user.ID, role.ID);
+            try
+            {
+                Client.CheckRoleOfUserOnProject(project.ID, user.ID, role.ID);
+                Assert.Fail();
+            }
+            catch (KeystoneException)
+            {
+            }
+
+            PurgeTestEntities();
         }
     }
 }

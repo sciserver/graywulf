@@ -59,7 +59,155 @@ namespace Jhu.Graywulf.Keystone
         #endregion
         #region Domain manipulation
 
+        public Domain CreateDomain(Domain domain)
+        {
+            var req = DomainRequest.CreateMessage(domain);
+            var res = SendRequest<DomainRequest, DomainResponse>(
+                HttpMethod.Post, "/v3/domains", req, adminAuthToken);
 
+            return res.Body.Domain;
+        }
+
+        public Domain UpdateDomain(Domain domain)
+        {
+            var req = DomainRequest.CreateMessage(domain);
+            var res = SendRequest<DomainRequest, DomainResponse>(
+                HttpMethod.Patch, String.Format("/v3/domains/{0}", domain.ID), req, adminAuthToken);
+
+            return res.Body.Domain;
+        }
+
+        public void DeleteDomain(string id)
+        {
+            // Domain needs to be deleted first
+            var domain = GetDomainByID(id);
+            domain.Enabled = false;
+            UpdateDomain(domain);
+
+            // Now it can be deleted
+            SendRequest(HttpMethod.Delete, String.Format("/v3/domains/{0}", id), adminAuthToken);
+        }
+
+        public Domain GetDomainByID(string id)
+        {
+            var res = SendRequest<DomainResponse>(
+                HttpMethod.Get, String.Format("/v3/domains/{0}", id), adminAuthToken);
+
+            return res.Body.Domain;
+        }
+
+        public Domain[] ListDomains()
+        {
+            var res = SendRequest<DomainListResponse>(
+                HttpMethod.Get, "/v3/domains", adminAuthToken);
+
+            return res.Body.Domains;
+        }
+
+        #endregion
+        #region Project manipulation
+
+        public Project CreateProject(Project project)
+        {
+            var req = ProjectRequest.CreateMessage(project);
+            var res = SendRequest<ProjectRequest, ProjectResponse>(
+                HttpMethod.Post, "/v3/projects", req, adminAuthToken);
+
+            return res.Body.Project;
+        }
+
+        public Project UpdateProject(Project project)
+        {
+            var req = ProjectRequest.CreateMessage(project);
+            var res = SendRequest<ProjectRequest, ProjectResponse>(
+                HttpMethod.Patch, String.Format("/v3/projects/{0}", project.ID), req, adminAuthToken);
+
+            return res.Body.Project;
+        }
+
+        public void DeleteProject(string id)
+        {
+            // Now it can be deleted
+            SendRequest(HttpMethod.Delete, String.Format("/v3/projects/{0}", id), adminAuthToken);
+        }
+
+        public Project GetProjectByID(string id)
+        {
+            var res = SendRequest<ProjectResponse>(
+                HttpMethod.Get, String.Format("/v3/projects/{0}", id), adminAuthToken);
+
+            return res.Body.Project;
+        }
+
+        public Project[] ListProjects()
+        {
+            var res = SendRequest<ProjectListResponse>(
+                HttpMethod.Get, "/v3/projects", adminAuthToken);
+
+            return res.Body.Projects;
+        }
+
+        public Project[] ListProjects(string domainID)
+        {
+            var res = SendRequest<ProjectListResponse>(
+                HttpMethod.Get, String.Format("/v3/domains/{0}/projects", domainID), adminAuthToken);
+
+            return res.Body.Projects;
+        }
+
+        #endregion
+        #region Role manipulation
+
+        public Role CreateRole(Role project)
+        {
+            var req = RoleRequest.CreateMessage(project);
+            var res = SendRequest<RoleRequest, RoleResponse>(
+                HttpMethod.Post, "/v3/roles", req, adminAuthToken);
+
+            return res.Body.Role;
+        }
+
+        public Role UpdateRole(Role project)
+        {
+            var req = RoleRequest.CreateMessage(project);
+            var res = SendRequest<RoleRequest, RoleResponse>(
+                HttpMethod.Patch, String.Format("/v3/roles/{0}", project.ID), req, adminAuthToken);
+
+            return res.Body.Role;
+        }
+
+        public void DeleteRole(string id)
+        {
+            // Now it can be deleted
+            SendRequest(HttpMethod.Delete, String.Format("/v3/roles/{0}", id), adminAuthToken);
+        }
+
+        public Role GetRoleByID(string id)
+        {
+            var res = SendRequest<RoleResponse>(
+                HttpMethod.Get, String.Format("/v3/roles/{0}", id), adminAuthToken);
+
+            return res.Body.Role;
+        }
+
+        public Role[] ListRoles()
+        {
+            var res = SendRequest<RoleListResponse>(
+                HttpMethod.Get, "/v3/roles", adminAuthToken);
+
+            return res.Body.Roles;
+        }
+
+        public Role[] ListRole(string domainID)
+        {
+            var res = SendRequest<RoleListResponse>(
+                HttpMethod.Get, String.Format("/v3/domains/{0}/roles", domainID), adminAuthToken);
+
+            return res.Body.Roles;
+        }
+
+        #endregion
+        #region Group manipulation
 
         #endregion
         #region User manipulation
@@ -71,23 +219,6 @@ namespace Jhu.Graywulf.Keystone
                 HttpMethod.Post, "/v3/users", req, adminAuthToken);
 
             return res.Body.User;
-        }
-
-        public User GetUser(string id)
-        {
-            var res = SendRequest<UserResponse>(
-                HttpMethod.Get, String.Format("/v3/users/{0}", id), adminAuthToken);
-
-            return res.Body.User;
-        }
-
-        public User GetUser(Token token)
-        {
-            // Token might not contain user info, so authenticate with
-            // it to get user id
-            token = Authenticate(token);
-
-            return GetUser(token.User.ID);
         }
 
         public User UpdateUser(User user)
@@ -118,8 +249,22 @@ namespace Jhu.Graywulf.Keystone
                 HttpMethod.Post, String.Format("/v3/users/{0}/password", id), req, adminAuthToken);
         }
 
-        #endregion
-        #region User search
+        public User GetUserByID(string id)
+        {
+            var res = SendRequest<UserResponse>(
+                HttpMethod.Get, String.Format("/v3/users/{0}", id), adminAuthToken);
+
+            return res.Body.User;
+        }
+
+        public User GetUser(Token token)
+        {
+            // Token might not contain user info, so authenticate with
+            // it to get user id
+            token = Authenticate(token);
+
+            return GetUserByID(token.User.ID);
+        }
 
         public User[] ListUsers()
         {
@@ -131,58 +276,67 @@ namespace Jhu.Graywulf.Keystone
 
         public User[] FindUsers(string name, bool enabledOnly, bool caseInsensitive)
         {
-            // Build query string
-            var query = "";
-
-            if (name != null)
-            {
-                name = name.Trim();
-
-                query += "&name";
-
-                // Check if wildcard is used
-                string method = null;
-                var startstar = name.StartsWith("*");
-                var endstar = name.EndsWith("*");
-
-                if (startstar && endstar)
-                {
-                    method = "contains";
-                }
-                else if (startstar)
-                {
-                    method = "endswith";
-                }
-                else if (endstar)
-                {
-                    method = "startswith";
-                }
-
-                // Check if case insensitive
-                string caseis = caseInsensitive ? "i" : "";
-
-                if (method != null)
-                {
-                    query += "_" + caseis + method;
-                }
-
-                query += "=" + UrlEncode(name.Trim('*'));
-            }
-
-            if (enabledOnly)
-            {
-                query += "&enabled";
-            }
-
-            if (query != "")
-            {
-                query = "?" + query.Substring(1);
-            }
-
+            var query = BuildSearchQueryString(name, enabledOnly, caseInsensitive);
             var res = SendRequest<UserListResponse>(
                 HttpMethod.Get, "/v3/users" + query, adminAuthToken);
 
             return res.Body.Users;
+        }
+
+        public void GrantRoleToUserOnDomain(string domainID, string userID, string roleID)
+        {
+            SendRequest(
+                HttpMethod.Put,
+                String.Format("/v3/domains/{0}/users/{1}/roles/{2}", domainID, userID, roleID),
+                adminAuthToken);
+        }
+
+        public void RevokeRoleFromUserOnDomain(string domainID, string userID, string roleID)
+        {
+            SendRequest(
+                HttpMethod.Delete,
+                String.Format("/v3/domains/{0}/users/{1}/roles/{2}", domainID, userID, roleID),
+                adminAuthToken);
+        }
+
+        public void CheckRoleOfUserOnDomain(string domainID, string userID, string roleID)
+        {
+            SendRequest(
+                HttpMethod.Head,
+                String.Format("/v3/domains/{0}/users/{1}/roles/{2}", domainID, userID, roleID),
+                adminAuthToken);
+        }
+
+        public void ListRolesOfUserOnDomain(string domainID, string userID, string roleID)
+        {
+        }
+
+        public void GrantRoleToUserOnProject(string projectID, string userID, string roleID)
+        {
+            SendRequest(
+                HttpMethod.Put,
+                String.Format("/v3/projects/{0}/users/{1}/roles/{2}", projectID, userID, roleID),
+                adminAuthToken);
+        }
+
+        public void RevokeRoleFromUserOnProject(string projectID, string userID, string roleID)
+        {
+            SendRequest(
+                HttpMethod.Delete,
+                String.Format("/v3/projects/{0}/users/{1}/roles/{2}", projectID, userID, roleID),
+                adminAuthToken);
+        }
+
+        public void CheckRoleOfUserOnProject(string projectID, string userID, string roleID)
+        {
+            SendRequest(
+                HttpMethod.Head,
+                String.Format("/v3/projects/{0}/users/{1}/roles/{2}", projectID, userID, roleID),
+                adminAuthToken);
+        }
+
+        public void ListRolesOfUserOnProject(string projectID, string userID, string roleID)
+        {
         }
 
         #endregion
@@ -272,6 +426,59 @@ namespace Jhu.Graywulf.Keystone
 
         #endregion
         #region Specialized request functions
+
+        private string BuildSearchQueryString(string name, bool enabledOnly, bool caseInsensitive)
+        {
+            // Build query string
+            var query = "";
+
+            if (name != null)
+            {
+                name = name.Trim();
+
+                query += "&name";
+
+                // Check if wildcard is used
+                string method = null;
+                var startstar = name.StartsWith("*");
+                var endstar = name.EndsWith("*");
+
+                if (startstar && endstar)
+                {
+                    method = "contains";
+                }
+                else if (startstar)
+                {
+                    method = "endswith";
+                }
+                else if (endstar)
+                {
+                    method = "startswith";
+                }
+
+                // Check if case insensitive
+                string caseis = caseInsensitive ? "i" : "";
+
+                if (method != null)
+                {
+                    query += "_" + caseis + method;
+                }
+
+                query += "=" + UrlEncode(name.Trim('*'));
+            }
+
+            if (enabledOnly)
+            {
+                query += "&enabled";
+            }
+
+            if (query != "")
+            {
+                query = "?" + query.Substring(1);
+            }
+
+            return query;
+        }
 
         private RestHeaderCollection PreprocessHeaders(RestHeaderCollection headers, string authToken)
         {

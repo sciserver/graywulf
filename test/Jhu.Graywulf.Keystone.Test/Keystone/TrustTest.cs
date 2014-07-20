@@ -13,14 +13,21 @@ namespace Jhu.Graywulf.Keystone
         public void CreateTrustTest()
         {
             // Purge test users
-            PurgeTestUsers();
+            PurgeTestEntities();
+
+            // Create a project and a role
+            var role = CreateTestRole();
+            var project = CreateTestProject();
 
             // Create new users
             var user1 = CreateTestUser("test1");
             var user2 = CreateTestUser("test2");
 
-            // Create token for user1
+            // Associate users with project via the role
+            Client.GrantRoleToUserOnProject(project.ID, user1.ID, role.ID);
+            Client.GrantRoleToUserOnProject(project.ID, user2.ID, role.ID);
 
+            // Create token for user1
             var token1 = Client.Authenticate("default", "test1", "alma");
 
             // Make user1 trust user2
@@ -30,11 +37,12 @@ namespace Jhu.Graywulf.Keystone
                 Impersonation = true,
                 TrustorUserID = user1.ID,
                 TrusteeUserID = user2.ID,
-                RemainingUses = 5
+                RemainingUses = 5,
+                ProjectID = project.ID,
+                Roles = new [] { role }
             };
 
             Client.UserAuthToken = token1.ID;
-
             trust = Client.CreateTrust(trust);
 
             // Try to impersonate user with trust

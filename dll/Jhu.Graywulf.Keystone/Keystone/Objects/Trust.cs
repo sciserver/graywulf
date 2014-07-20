@@ -22,6 +22,9 @@ namespace Jhu.Graywulf.Keystone
         [JsonProperty("project_id")]
         public string ProjectID { get; set; }
 
+        [JsonProperty("roles")]
+        public Role[] Roles { get; set; }
+
         [JsonProperty("trustor_user_id")]
         public string TrustorUserID { get; set; }
 
