@@ -236,7 +236,7 @@ namespace Jhu.Graywulf.Jobs.Query
             // Assign a database server to the query
             // TODO: maybe make this function generic
             // TODO: check this part to use appropriate server and database
-            var sm = GetSchemaManager(false);
+            var sm = GetSchemaManager();
             var ds = sm.Datasets[tr.DatasetName];
 
             if (ds is GraywulfDataset && !((GraywulfDataset)ds).IsSpecificInstanceRequired)

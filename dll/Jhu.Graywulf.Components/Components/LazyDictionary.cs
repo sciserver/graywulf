@@ -7,6 +7,12 @@ using System.Text;
 
 namespace Jhu.Graywulf.Components
 {
+    /// <summary>
+    /// Implements a dictionary that can load items on demand by firing
+    /// and event.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     [SerializableAttribute]
     public class LazyDictionary<TKey, TValue>
         : IDictionary<TKey, TValue>,
@@ -16,12 +22,19 @@ namespace Jhu.Graywulf.Components
         ICollection,
         IEnumerable
     {
-        protected ConcurrentDictionary<TKey, TValue> localStore;
+        private ConcurrentDictionary<TKey, TValue> localStore;
+        private bool isAllLoaded;
 
         public event EventHandler<LazyItemLoadingEventArgs<TKey, TValue>> ItemLoading;
+        public event EventHandler<AllItemsLoadingEventArgs<TKey, TValue>> AllItemsLoading;
         public event EventHandler<LazyItemAddedEventArgs<TKey, TValue>> ItemAdded;
         public event EventHandler<LazyItemUpdatedEventArgs<TKey, TValue>> ItemUpdated;
         public event EventHandler<LazyItemRemovedEventArgs<TKey, TValue>> ItemRemoved;
+
+        public bool IsAllLoaded
+        {
+            get { return isAllLoaded; }
+        }
 
         #region Wrapped properties
 
@@ -86,6 +99,8 @@ namespace Jhu.Graywulf.Components
 
         private void InitializeMembers()
         {
+            this.isAllLoaded = false;
+
             ItemLoading = null;
             ItemAdded = null;
             ItemUpdated = null;
@@ -277,6 +292,11 @@ namespace Jhu.Graywulf.Components
             return TryRemoveInternal(key, out value);
         }
 
+        public bool LoadAll()
+        {
+            return TryLoadAllInternal();
+        }
+
         #region Internal logic
 
         private bool TryGetValueInternal(TKey key, out TValue value)
@@ -300,6 +320,29 @@ namespace Jhu.Graywulf.Components
                 {
                     return true;
                 }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Raises an event to load all items.
+        /// </summary>
+        /// <returns></returns>
+        private bool TryLoadAllInternal()
+        {
+            IEnumerable<KeyValuePair<TKey, TValue>> items;
+            
+            if (OnAllItemsLoading(out items) && items != null)
+            {
+                foreach (var item in items)
+                {
+                    this[item.Key] = item.Value;
+                }
+
+                isAllLoaded = true;
+
+                return true;
             }
 
             return false;
@@ -374,7 +417,6 @@ namespace Jhu.Graywulf.Components
         }
 
         #endregion
-
         #region Events
 
         /// <summary>
@@ -387,12 +429,7 @@ namespace Jhu.Graywulf.Components
         /// </remarks>
         protected virtual bool OnItemLoading(TKey key, out TValue value)
         {
-            if (ItemLoading == null)
-            {
-                value = default(TValue);
-                return false;
-            }
-            else
+            if (ItemLoading != null)
             {
                 var e = new LazyItemLoadingEventArgs<TKey, TValue>()
                 {
@@ -412,12 +449,43 @@ namespace Jhu.Graywulf.Components
                     value = e.Value;
                     return true;
                 }
-                else
+            }
+
+            value = default(TValue);
+            return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Called internally when all items are needed.
+        /// </remarks>
+        protected virtual bool OnAllItemsLoading(out IEnumerable<KeyValuePair<TKey, TValue>> items)
+        {
+            if (AllItemsLoading != null)
+            {
+                var e = new AllItemsLoadingEventArgs<TKey, TValue>();
+
+                // Call event handler
+                AllItemsLoading(this, e);
+
+                if (e.IsCancelled)
                 {
-                    value = default(TValue);
-                    return false;
+                    throw new OperationCanceledException();
+                }
+
+                if (e.Items != null)
+                {
+                    items = e.Items;
+                    return true;
                 }
             }
+
+            items = null;
+            return false;
         }
 
         /// <summary>
@@ -488,9 +556,6 @@ namespace Jhu.Graywulf.Components
         }
 
         #endregion
-
-
-
         #region IDictionary<TKey,TValue> Members
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
@@ -513,7 +578,6 @@ namespace Jhu.Graywulf.Components
         }
 
         #endregion
-
         #region ICollection<KeyValuePair<TKey,TValue>> Members
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
@@ -551,7 +615,6 @@ namespace Jhu.Graywulf.Components
         }
 
         #endregion
-
         #region IEnumerable Members
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -560,7 +623,6 @@ namespace Jhu.Graywulf.Components
         }
 
         #endregion
-
         #region IDictionary Members
 
         void IDictionary.Add(object key, object value)
@@ -651,7 +713,6 @@ namespace Jhu.Graywulf.Components
         }
 
         #endregion
-
         #region ICollection Members
 
         void ICollection.CopyTo(Array array, int index)

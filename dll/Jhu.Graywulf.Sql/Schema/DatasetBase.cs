@@ -287,19 +287,19 @@ namespace Jhu.Graywulf.Schema
         private void InitializeEventHandlers()
         {
             tables.ItemLoading += OnObjectLoading<Table>;
-            tables.AllObjectsLoading += OnAllObjectLoading<Table>;
+            tables.AllItemsLoading += OnAllObjectLoading<Table>;
 
             views.ItemLoading += OnObjectLoading<View>;
-            views.AllObjectsLoading += OnAllObjectLoading<View>;
+            views.AllItemsLoading += OnAllObjectLoading<View>;
 
             tableValuedFunctions.ItemLoading += OnObjectLoading<TableValuedFunction>;
-            tableValuedFunctions.AllObjectsLoading += OnAllObjectLoading<TableValuedFunction>;
+            tableValuedFunctions.AllItemsLoading += OnAllObjectLoading<TableValuedFunction>;
 
             scalarFunctions.ItemLoading += OnObjectLoading<ScalarFunction>;
-            scalarFunctions.AllObjectsLoading += OnAllObjectLoading<ScalarFunction>;
+            scalarFunctions.AllItemsLoading += OnAllObjectLoading<ScalarFunction>;
 
             storedProcedures.ItemLoading += OnObjectLoading<StoredProcedure>;
-            storedProcedures.AllObjectsLoading += OnAllObjectLoading<StoredProcedure>;
+            storedProcedures.AllItemsLoading += OnAllObjectLoading<StoredProcedure>;
         }
 
         /// <summary>
@@ -457,10 +457,11 @@ namespace Jhu.Graywulf.Schema
             }
         }
 
-        private void OnAllObjectLoading<T>(object sender, AllObjectsLoadingEventArgs<string, T> e)
+        private void OnAllObjectLoading<T>(object sender, AllItemsLoadingEventArgs<string, T> e)
             where T : DatabaseObject, new()
         {
-            e.Collection = LoadAllObjects<T>(e.DatabaseName);
+            e.Items = LoadAllObjects<T>();
+            e.IsCancelled = false;
         }
 
         /// <summary>
@@ -479,7 +480,7 @@ namespace Jhu.Graywulf.Schema
         /// <typeparam name="T"></typeparam>
         /// <param name="databaseName"></param>
         /// <returns></returns>
-        protected abstract IEnumerable<KeyValuePair<string, T>> LoadAllObjects<T>(string databaseName)
+        protected abstract IEnumerable<KeyValuePair<string, T>> LoadAllObjects<T>()
             where T : DatabaseObject, new();
 
         /// <summary>

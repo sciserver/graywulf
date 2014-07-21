@@ -52,14 +52,6 @@ namespace Jhu.Graywulf.Schema
             datasetCache = new Cache<string, DatasetBase>(Comparer);
         }
 
-        /// <summary>
-        /// Clears the schema cache.
-        /// </summary>
-        public static void ClearCache()
-        {
-            datasetCache.Clear();
-        }
-
         #endregion
 
 
@@ -69,7 +61,7 @@ namespace Jhu.Graywulf.Schema
         /// <remarks>
         /// Caches are managed through this specialized collection class.
         /// </remarks>
-        protected DatasetCollection datasets;
+        protected LazyDictionary<string, DatasetBase> datasets;
 
         /// <summary>
         /// Gets the collection of datasets
@@ -78,7 +70,7 @@ namespace Jhu.Graywulf.Schema
         /// Through this property, the schema manager provides lazy-loading
         /// and caching of dataset schemas.
         /// </remarks>
-        public DatasetCollection Datasets
+        public LazyDictionary<string, DatasetBase> Datasets
         {
             get { return datasets; }
         }
@@ -96,11 +88,11 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         private void InitializeMembers()
         {
-            this.datasets = new DatasetCollection(this, datasetCache);
+            this.datasets = new LazyDictionary<string, DatasetBase>();
 
             this.datasets.ItemAdded += OnDatasetAdded;
             this.datasets.ItemLoading += OnDatasetLoading;
-            this.datasets.AllObjectsLoading += OnAllDatasetsLoading;
+            this.datasets.AllItemsLoading += OnAllDatasetsLoading;
         }
 
         /// <summary>
@@ -145,10 +137,10 @@ namespace Jhu.Graywulf.Schema
             throw new NotImplementedException();
         }
 
-        private void OnAllDatasetsLoading(object sender, AllObjectsLoadingEventArgs<string, DatasetBase> e)
+        private void OnAllDatasetsLoading(object sender, AllItemsLoadingEventArgs<string, DatasetBase> e)
         {
-            e.Collection = LoadAllDatasets();
-            e.Cancel = false;
+            e.Items = LoadAllDatasets();
+            e.IsCancelled = false;
         }
 
         /// <summary>

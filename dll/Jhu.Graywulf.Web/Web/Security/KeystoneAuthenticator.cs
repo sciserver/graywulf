@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using Jhu.Graywulf.Keystone;
 
 namespace Jhu.Graywulf.Web.Security
 {
@@ -66,6 +67,8 @@ namespace Jhu.Graywulf.Web.Security
 
         public GraywulfPrincipal Authenticate()
         {
+            var client = new KeystoneClient();
+
             /*
             var identityProvider = new CloudIdentityProvider(KeystoneSettings.Uri);
             var identity = new CloudIdentity()

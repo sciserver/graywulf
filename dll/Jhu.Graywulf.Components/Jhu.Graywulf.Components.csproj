@@ -52,13 +52,14 @@
     <Compile Include="CommandLineParser\ParameterAttribute.cs" />
     <Compile Include="CommandLineParser\PartialStringComparer.cs" />
     <Compile Include="CommandLineParser\VerbAttribute.cs" />
+    <Compile Include="Components\AllItemsLoadingEventArgs.cs" />
     <Compile Include="Components\AppDomainHelper.cs" />
     <Compile Include="Components\AppDomainManager.cs" />
     <Compile Include="Components\AppSettings.cs" />
     <Compile Include="Components\AssemblyNameComparer.cs" />
+    <Compile Include="Components\CacheItem.cs" />
     <Compile Include="Components\DelayedRetryLoop.cs" />
     <Compile Include="Components\Cache.cs" />
-    <Compile Include="Components\CachedLazyDictionary.cs" />
     <Compile Include="Components\DefaultDateTimeAttribute.cs" />
     <Compile Include="Components\ICacheable.cs" />
     <Compile Include="Components\LazyDictionary.cs" />

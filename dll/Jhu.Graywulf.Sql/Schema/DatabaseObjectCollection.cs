@@ -23,10 +23,6 @@ namespace Jhu.Graywulf.Schema
             /// </summary>
             private DatasetBase dataset;
 
-            private bool isAllLoaded;
-
-            public event EventHandler<AllObjectsLoadingEventArgs<string, T>> AllObjectsLoading;
-
             /// <summary>
             /// Gets a database objects by its three part name
             /// </summary>
@@ -61,11 +57,6 @@ namespace Jhu.Graywulf.Schema
                 return ContainsKey(key);
             }
 
-            public bool IsAllLoaded
-            {
-                get { return isAllLoaded; }
-            }
-
             /// <summary>
             /// Creates a new collection for database objects
             /// </summary>
@@ -84,27 +75,6 @@ namespace Jhu.Graywulf.Schema
             private void InitializeMembers()
             {
                 this.dataset = null;
-                this.isAllLoaded = false;
-            }
-
-            public void LoadAll()
-            {
-                if (!isAllLoaded && AllObjectsLoading != null)
-                {
-                    AllObjectsLoadingEventArgs<string, T> e = new AllObjectsLoadingEventArgs<string, T>();
-
-                    AllObjectsLoading(this, e);
-
-                    if (!e.Cancel)
-                    {
-                        foreach (var ds in e.Collection)
-                        {
-                            this[ds.Key] = ds.Value;
-                        }
-                    }
-
-                    this.isAllLoaded = true;
-                }
             }
         }
     }

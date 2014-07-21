@@ -569,7 +569,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </remarks>
         public Dictionary<string, GraywulfDataset> FindRequiredDatasets()
         {
-            var sc = GetSchemaManager(false);
+            var sc = GetSchemaManager();
 
             // Collect list of required databases
             var ds = new Dictionary<string, GraywulfDataset>(SchemaManager.Comparer);
@@ -661,14 +661,9 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="clearCache"></param>
         /// <returns></returns>
-        protected virtual SchemaManager GetSchemaManager(bool clearCache)
+        protected virtual SchemaManager GetSchemaManager()
         {
             var sc = CreateSchemaManager();
-
-            if (clearCache)
-            {
-                SchemaManager.ClearCache();
-            }
 
             // Add custom dataset defined by code
             foreach (var ds in customDatasets)
@@ -710,7 +705,7 @@ namespace Jhu.Graywulf.Jobs.Query
         protected virtual SqlNameResolver CreateNameResolver(bool forceReinitialize)
         {
             var nr = queryFactory.Value.CreateNameResolver();
-            nr.SchemaManager = GetSchemaManager(forceReinitialize);
+            nr.SchemaManager = GetSchemaManager();
 
             nr.DefaultTableDatasetName = defaultDataset.Name;
             nr.DefaultFunctionDatasetName = codeDataset.Name;
@@ -764,7 +759,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </remarks>
         protected void SubstituteDatabaseName(TableReference tr, Guid serverInstance, string databaseVersion)
         {
-            SchemaManager sc = GetSchemaManager(false);
+            SchemaManager sc = GetSchemaManager();
 
             if (!tr.IsSubquery && !tr.IsComputed)
             {
@@ -818,7 +813,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     }
                     break;
                 case ExecutionMode.Graywulf:
-                    var sm = GetSchemaManager(false);
+                    var sm = GetSchemaManager();
 
                     // Replace remote table references with temp table references
                     foreach (TableReference tr in SelectStatement.EnumerateSourceTableReferences(true))
