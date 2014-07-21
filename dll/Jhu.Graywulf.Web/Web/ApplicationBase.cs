@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Web
                 {
                     var sessionPrincipal = (GraywulfPrincipal)session[Constants.SessionPrincipal];
                     var userProperty = ((GraywulfIdentity)sessionPrincipal.Identity).UserReference;
-                    
+
                     context.UserGuid = userProperty.Guid;
                     context.UserName = userProperty.Name;
                 }
@@ -69,6 +69,14 @@ namespace Jhu.Graywulf.Web
 
         protected virtual void Session_Start(object sender, EventArgs e)
         {
+            // Load all datasets at start to be able to display from schema browser
+            // Datasets will be cached internally
+
+            using (var registryContext = CreateRegistryContext())
+            {
+                var schemaManager = new Jhu.Graywulf.Schema.GraywulfSchemaManager(registryContext, Jhu.Graywulf.Registry.AppSettings.FederationName);
+                schemaManager.Datasets.LoadAll();
+            }
         }
 
         protected virtual void Session_End(object sender, EventArgs e)

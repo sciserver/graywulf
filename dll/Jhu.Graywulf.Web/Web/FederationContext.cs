@@ -101,12 +101,6 @@ namespace Jhu.Graywulf.Web
                 {
                     schemaManager = new GraywulfSchemaManager(registryContext, Jhu.Graywulf.Registry.AppSettings.FederationName);
 
-                    // Load datasets from the federation
-                    if (schemaManager.Datasets.IsEmpty)
-                    {
-                        schemaManager.Datasets.LoadAll();
-                    }
-
                     // Add custom datasets (MYDB)
                     var mydb = MyDBDatabaseInstance;
 

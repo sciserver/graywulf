@@ -67,6 +67,8 @@ namespace Jhu.Graywulf.Schema
                 var gwds = (GraywulfDataset)ds;
                 gwds.Context = Context;
             }
+
+            base.OnDatasetAdded(datasetName, ds);
         }
 
         /// <summary>

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Components
 {
-    public class CacheItem<T>
+    internal class CacheItem<T>
     {
         private T value;
         private DateTime expiresAt;

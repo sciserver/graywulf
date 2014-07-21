@@ -23,6 +23,9 @@ namespace Jhu.Graywulf.Web.UI.Schema
         {
             if (!IsPostBack)
             {
+                // Load all datasets and refresh cache by getting all items in list
+                FederationContext.SchemaManager.Datasets.LoadAll();
+
                 DatabaseObject dbobj = null;
 
                 var dbobjid = (string)Request.QueryString["objid"] ?? SelectedSchemaObject;

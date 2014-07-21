@@ -465,7 +465,7 @@ namespace Jhu.Graywulf.Components
         /// </remarks>
         protected virtual bool OnAllItemsLoading(out IEnumerable<KeyValuePair<TKey, TValue>> items)
         {
-            if (AllItemsLoading != null)
+            if (!isAllLoaded && AllItemsLoading != null)
             {
                 var e = new AllItemsLoadingEventArgs<TKey, TValue>();
 
@@ -480,6 +480,7 @@ namespace Jhu.Graywulf.Components
                 if (e.Items != null)
                 {
                     items = e.Items;
+                    isAllLoaded = true;
                     return true;
                 }
             }

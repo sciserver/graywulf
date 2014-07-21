@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Schema
     /// </remarks>
     public partial class SchemaManager
     {
-        #region Static members
+        #region Static cache implementation
 
         /// <summary>
         /// This comparer can be changed to provide case sensitivity
@@ -50,10 +50,10 @@ namespace Jhu.Graywulf.Schema
         static SchemaManager()
         {
             datasetCache = new Cache<string, DatasetBase>(Comparer);
+            datasetCache.DefaultLifetime = new TimeSpan(0, 20, 0);
         }
 
         #endregion
-
 
         /// <summary>
         /// Provides access to the datasets managable by the schema manager.
@@ -90,6 +90,16 @@ namespace Jhu.Graywulf.Schema
         {
             this.datasets = new LazyDictionary<string, DatasetBase>();
 
+            // Load all datasets from the cache as a start
+            foreach (var key in datasetCache.Keys)
+            {
+                DatasetBase dataset;
+                if (datasetCache.TryGetValue(key, out dataset))
+                {
+                    this.datasets.TryAdd(key, dataset);
+                }
+            }
+
             this.datasets.ItemAdded += OnDatasetAdded;
             this.datasets.ItemLoading += OnDatasetLoading;
             this.datasets.AllItemsLoading += OnAllDatasetsLoading;
@@ -102,6 +112,12 @@ namespace Jhu.Graywulf.Schema
         /// <param name="ds"></param>
         private void OnDatasetAdded(object sender, LazyItemAddedEventArgs<string, DatasetBase> e)
         {
+            // Add dataset to cache
+            if (e.Value.IsCacheable)
+            {
+                datasetCache.TryAdd(e.Key, e.Value);
+            }
+
             OnDatasetAdded(e.Key, e.Value);
         }
 
@@ -121,14 +137,27 @@ namespace Jhu.Graywulf.Schema
         /// </remarks>
         private void OnDatasetLoading(object sender, LazyItemLoadingEventArgs<string, DatasetBase> e)
         {
-            try
+            DatasetBase dataset;
+
+            // Try to load the dataset from the cache first
+            if (datasetCache.TryGetValue(e.Key, out dataset))
             {
-                e.Value = LoadDataset(e.Key);
+                // It's in the cache, great
+                e.Value = dataset;
                 e.IsFound = true;
             }
-            catch (Exception)
+            else
             {
-                e.IsFound = false;
+                // No cache hit, load it from the database
+                try
+                {
+                    e.Value = LoadDataset(e.Key);
+                    e.IsFound = true;
+                }
+                catch (Exception)
+                {
+                    e.IsFound = false;
+                }
             }
         }
 

@@ -22,6 +22,7 @@ namespace Jhu.Graywulf.Components
         protected Timer collectionTimer;
 
         private TimeSpan defaultLifetime;
+        private bool autoExtendLifetime;
         private TimeSpan collectionInterval;
 
         #endregion
@@ -33,6 +34,12 @@ namespace Jhu.Graywulf.Components
             set { defaultLifetime = value; }
         }
 
+        public bool AutoExtendLifetime
+        {
+            get { return autoExtendLifetime; }
+            set { autoExtendLifetime = value; }
+        }
+
         public TimeSpan CollectionInterval
         {
             get { return collectionInterval; }
@@ -41,6 +48,16 @@ namespace Jhu.Graywulf.Components
                 collectionInterval = value;
                 StartTimer();
             }
+        }
+
+        public IEnumerable<TKey> Keys
+        {
+            get { return cache.Keys; }
+        }
+
+        public IEnumerable<TValue> Values
+        {
+            get { return cache.Values.Select(i => i.Value); }
         }
 
         public int Count
@@ -71,6 +88,7 @@ namespace Jhu.Graywulf.Components
         private void InitializeMembers()
         {
             this.defaultLifetime = new TimeSpan(0, 5, 0);
+            this.autoExtendLifetime = true;
             this.collectionInterval = new TimeSpan(0, 5, 0);
 
             // Create the timer but don't start it
@@ -139,9 +157,19 @@ namespace Jhu.Graywulf.Components
         /// <returns></returns>
         public bool TryAdd(TKey key, TValue value, TimeSpan lifetime)
         {
-            var expiresAt = DateTime.Now.Add(lifetime);
-            var item = new CacheItem<TValue>(value, expiresAt);
-            return cache.TryAdd(key, item);
+            // Check if item is already in the cache. This test will also
+            // cause the expiration time to extend.
+
+            CacheItem<TValue> olditem;
+            if (!cache.TryGetValue(key, out olditem))
+            {
+                var expiresAt = DateTime.Now.Add(lifetime);
+                var item = new CacheItem<TValue>(value, expiresAt);
+
+                return cache.TryAdd(key, item);
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -171,8 +199,16 @@ namespace Jhu.Graywulf.Components
             // Only non-expired items are returned
             if (cache.TryGetValue(key, out item))
             {
-                if (item.ExpiresAt > DateTime.Now)
+                var now = DateTime.Now;
+
+                if (item.ExpiresAt > now)
                 {
+                    // Extend lifetime of object on a cache hit
+                    if (autoExtendLifetime)
+                    {
+                        item.ExpiresAt = now.Add(defaultLifetime);
+                    }
+
                     value = item.Value;
                     return true;
                 }
