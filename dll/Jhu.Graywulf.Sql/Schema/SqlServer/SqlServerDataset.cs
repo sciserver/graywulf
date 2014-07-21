@@ -374,7 +374,7 @@ WHERE o.type IN ({0}) AND
         /// <typeparam name="T"></typeparam>
         /// <param name="databaseName"></param>
         /// <returns></returns>
-        protected override IEnumerable<KeyValuePair<string, T>> LoadAllObjects<T>(string databaseName)
+        protected override IEnumerable<KeyValuePair<string, T>> LoadAllObjects<T>()
         {
             var sql = @"
 SELECT s.name, o.name, o.type

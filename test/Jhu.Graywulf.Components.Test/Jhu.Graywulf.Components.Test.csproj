@@ -54,7 +54,7 @@
     <Compile Include="CommandLineParser\Program.cs" />
     <Compile Include="CommandLineParser\RunParameters.cs" />
     <Compile Include="Components\CacheableParameterHelper.cs" />
-    <Compile Include="Components\CachedLazyDictionaryTest.cs" />
+    <Compile Include="Components\CacheTest.cs" />
     <Compile Include="Components\LazyDictionaryTest.cs" />
     <Compile Include="Components\ObjectPoolTest.cs" />
     <Compile Include="GenericParameterHelper.cs">

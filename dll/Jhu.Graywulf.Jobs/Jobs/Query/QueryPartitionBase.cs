@@ -320,7 +320,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             if (ExecutionMode == ExecutionMode.Graywulf /*&& query.CacheRemoteTables*/)
             {
-                SchemaManager sc = GetSchemaManager(false);
+                SchemaManager sc = GetSchemaManager();
 
                 foreach (var tr in this.SelectStatement.EnumerateSourceTableReferences(true))
                 {
@@ -345,7 +345,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public SourceTableQuery PrepareCopyRemoteTable(TableReference table)
         {
             // -- Load schema
-            var sm = this.GetSchemaManager(false);
+            var sm = this.GetSchemaManager();
             var ds = sm.Datasets[table.DatasetName];
 
             // Graywulf dataset has to be converted to prevent registry access

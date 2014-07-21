@@ -20,6 +20,7 @@ namespace Jhu.Graywulf.Web.Security
 
         public const string SettingsOpenID = "OpenIDAuthenticators";
 
-
+        public const string KeystoneAuthTokenHeader = "X-Keystone-Auth-Token";
+        public const string KeystoneAuthTokenCookie = "X-Keystone-Auth-Token";
     }
 }

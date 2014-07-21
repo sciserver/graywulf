@@ -244,7 +244,7 @@ WHERE routine_type IN ({0}) AND
         /// Loads all objects of a certain kind
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        protected override IEnumerable<KeyValuePair<string, T>> LoadAllObjects<T>(string databaseName)
+        protected override IEnumerable<KeyValuePair<string, T>> LoadAllObjects<T>()
         {
             string sql = @"
 SELECT routine_name, routine_type, routine_schema
