@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         [Serializable]
         public class DatabaseObjectCollection<T> : LazyDictionary<string, T>
-            where T : DatabaseObject, ICacheable, new()
+            where T : DatabaseObject, new()
         {
             /// <summary>
             /// Parent dataset

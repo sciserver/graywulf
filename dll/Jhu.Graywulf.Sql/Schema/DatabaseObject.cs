@@ -14,12 +14,9 @@ namespace Jhu.Graywulf.Schema
     /// </summary>
     [Serializable]
     [DataContract(Namespace = "")]
-    public class DatabaseObject : ICacheable, ICloneable
+    public class DatabaseObject : ICloneable
     {
         #region Private members
-
-        [NonSerialized]
-        private long cachedVersion;
 
         [NonSerialized]
         private DatabaseObjectType objectType;
@@ -38,27 +35,6 @@ namespace Jhu.Graywulf.Schema
 
         [NonSerialized]
         private LazyProperty<DatabaseObjectMetadata> metadata;
-
-        #endregion
-        #region ICacheable implementation
-
-        /// <summary>
-        /// Reserved for caching logic
-        /// </summary>
-        [IgnoreDataMember]
-        public long CachedVersion
-        {
-            get { return cachedVersion; }
-        }
-
-        /// <summary>
-        /// Gets if the object is to be cached or discarded after use
-        /// </summary>
-        [IgnoreDataMember]
-        public bool IsCacheable
-        {
-            get { return true; }
-        }
 
         #endregion
         #region Properties
@@ -231,7 +207,6 @@ namespace Jhu.Graywulf.Schema
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.cachedVersion = DateTime.Now.Ticks;
             this.objectType = DatabaseObjectType.Unknown;
             this.dataset = null;
             this.databaseName = null;
@@ -247,7 +222,6 @@ namespace Jhu.Graywulf.Schema
         /// <param name="old"></param>
         private void CopyMembers(DatabaseObject old)
         {
-            this.cachedVersion = DateTime.Now.Ticks;
             this.objectType = old.objectType;
             this.dataset = old.dataset;
             this.databaseName = old.databaseName;
@@ -287,14 +261,6 @@ namespace Jhu.Graywulf.Schema
             return dataset.GetObjectFullyResolvedName(this);
         }
          * */
-
-        /// <summary>
-        /// Touches the object so it won't get dropped from the cache.
-        /// </summary>
-        public void Touch()
-        {
-            cachedVersion = DateTime.Now.Ticks;
-        }
 
         public void Rename(string objectName)
         {

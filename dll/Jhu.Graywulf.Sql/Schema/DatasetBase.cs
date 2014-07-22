@@ -26,12 +26,9 @@ namespace Jhu.Graywulf.Schema
     /// </remarks>
     [Serializable]
     [DataContract(Namespace = "")]
-    public abstract partial class DatasetBase : ICloneable, ICacheable, IDatasetSafe
+    public abstract partial class DatasetBase : ICloneable, IDatasetSafe
     {
         #region Property storage member variables
-
-        [NonSerialized]
-        private long cachedVersion;
 
         [NonSerialized]
         private bool isCacheable;
@@ -71,15 +68,6 @@ namespace Jhu.Graywulf.Schema
 
         #endregion
         #region Properties
-
-        /// <summary>
-        /// Reserved for caching logic
-        /// </summary>
-        [IgnoreDataMember]
-        public long CachedVersion
-        {
-            get { return cachedVersion; }
-        }
 
         /// <summary>
         /// Gets or sets if description of this dataset is to be cached or
@@ -237,8 +225,6 @@ namespace Jhu.Graywulf.Schema
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.cachedVersion = DateTime.Now.Ticks;
-
             this.isCacheable = false;
             this.name = String.Empty;
             this.defaultSchemaName = String.Empty;
@@ -263,8 +249,6 @@ namespace Jhu.Graywulf.Schema
         /// <param name="old"></param>
         private void CopyMembers(DatasetBase old)
         {
-            this.cachedVersion = DateTime.Now.Ticks;
-
             this.isCacheable = old.isCacheable;
             this.name = old.name;
             this.defaultSchemaName = old.defaultSchemaName;
@@ -426,14 +410,6 @@ namespace Jhu.Graywulf.Schema
             {
                 return null;
             }
-        }
-
-        /// <summary>
-        /// Touches the object so it won't get dropped from the cache.
-        /// </summary>
-        public void Touch()
-        {
-            cachedVersion = DateTime.Now.Ticks;
         }
 
         private void OnObjectLoading<T>(object sender, LazyItemLoadingEventArgs<string, T> e)
