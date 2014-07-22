@@ -39,10 +39,11 @@ namespace Jhu.Graywulf.Web.Auth
             try
             {
                 var uu = new UserFactory(RegistryContext);
-                var user = uu.FindUserByEmail(RegistryContext.Domain, args.Value);
+                var user = IdentityProvider.GetUserByEmail(args.Value);
 
                 user.GenerateActivationCode();
-                user.Save();
+
+                IdentityProvider.ModifyUser(user);
 
                 Util.EmailSender.Send(user, File.ReadAllText(MapPath("~/Templates/RequestResetEmail.xml")), BaseUrl);
 

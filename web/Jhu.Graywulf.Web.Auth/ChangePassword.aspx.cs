@@ -17,26 +17,17 @@ namespace Jhu.Graywulf.Web.Auth
 
         protected void Page_Load(object sender, EventArgs e)
         {
-
             if (RegistryUser != null)
             {
+                // Change password mode
                 OldPasswordRow.Visible = true;
                 user = RegistryUser;
             }
             else
             {
+                // Reset password mode
                 OldPasswordRow.Visible = false;
-
-                // Load user
-                try
-                {
-                    var uu = new UserFactory(RegistryContext);
-                    user = uu.FindUserByActivationCode(RegistryContext.Domain, Request.QueryString["code"]);
-                }
-                catch (EntityNotFoundException)
-                {
-                    throw new Registry.SecurityException("Access denied");
-                }
+                user = IdentityProvider.GetUserByActivationCode(Request.QueryString["code"]);
             }
         }
 
@@ -44,13 +35,17 @@ namespace Jhu.Graywulf.Web.Auth
         {
             if (RegistryUser != null)
             {
-                var uu = new UserFactory(RegistryContext);
-                args.IsValid = uu.LoginUser(RegistryContext.Domain, user.Name, OldPassword.Text) != null;
+                try
+                {
+                    user = IdentityProvider.VerifyPassword(user.Name, OldPassword.Text);
+                    args.IsValid = true;
+                }
+                catch (Exception)
+                {
+                }
             }
-            else
-            {
-                args.IsValid = false;
-            }
+
+            args.IsValid = false;
         }
 
         protected void ConfirmPasswordValidator_ServerValidate(object source, ServerValidateEventArgs args)
@@ -62,9 +57,14 @@ namespace Jhu.Graywulf.Web.Auth
         {
             if (IsValid)
             {
-                user.SetPassword(Password.Text);
-                user.ActivationCode = string.Empty;
-                user.Save();
+                if (RegistryUser != null)
+                {
+                    IdentityProvider.ChangePassword(user, OldPassword.Text, Password.Text);
+                }
+                else
+                {
+                    IdentityProvider.ResetPassword(user, Password.Text);
+                }
 
                 ChangePasswordForm.Visible = false;
                 SuccessForm.Visible = true;

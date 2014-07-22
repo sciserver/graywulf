@@ -19,17 +19,12 @@ namespace Jhu.Graywulf.Registry
 
         #region User authentication
 
-        public User LoginUser(Domain domain, string nameOrEmail, string password)
-        {
-            return LoginUserInternal(domain, nameOrEmail, password);
-        }
-
         /// <summary>
         /// Authenticate user
         /// </summary>
         /// <param name="userName"></param>
         /// <param name="password"></param>
-        private User LoginUserInternal(Entity parent, string nameOrEmail, string password)
+        public User LoginUser(Domain domain, string nameOrEmail, string password)
         {
             var user = new User(Context);
 
@@ -38,7 +33,7 @@ namespace Jhu.Graywulf.Registry
 
             using (var cmd = Context.CreateStoredProcedureCommand(sql))
             {
-                cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parent.Guid;
+                cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = domain.Guid;
                 cmd.Parameters.Add("@NameOrEmail", SqlDbType.NVarChar, 50).Value = nameOrEmail;
 
                 using (var dr = cmd.ExecuteReader())
@@ -94,7 +89,7 @@ namespace Jhu.Graywulf.Registry
             using (var cmd = Context.CreateStoredProcedureCommand(sql))
             {
                 cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = domain.Guid;                
-                cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 128).Value = email;
+                cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 128).Value = email.Trim();
                 cmd.Parameters.Add("RETVAL", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
 
                 cmd.ExecuteNonQuery();
@@ -117,7 +112,7 @@ namespace Jhu.Graywulf.Registry
             using (var cmd = Context.CreateStoredProcedureCommand(sql))
             {
                 cmd.Parameters.Add("@DomainGuid", SqlDbType.UniqueIdentifier).Value = parent.Guid;
-                cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 128).Value = email;
+                cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 128).Value = email.Trim();
 
                 using (var dr = cmd.ExecuteReader())
                 {
@@ -141,10 +136,10 @@ namespace Jhu.Graywulf.Registry
         /// <param name="code"></param>
         private User FindUserByActivationCodeInternal(Entity parent, string code)
         {
+            User user = null;
+
             if (code != null && code != String.Empty)
             {
-                var user = new User(Context);
-
                 var sql = "spFindUser_byDomainActivationCode";
 
                 using (var cmd = Context.CreateStoredProcedureCommand(sql))
@@ -154,18 +149,18 @@ namespace Jhu.Graywulf.Registry
 
                     using (var dr = cmd.ExecuteReader())
                     {
-                        dr.Read();
-                        user.LoadFromDataReader(dr);
+                        if (dr.Read())
+                        {
+                            user = new User(Context);
+                            user.LoadFromDataReader(dr);
+                        }
+
                         dr.Close();
                     }
                 }
+            }
 
-                return user;
-            }
-            else
-            {
-                return null;
-            }
+            return user;
         }
 
         public User LoadUser(Guid guid)

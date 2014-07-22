@@ -62,12 +62,18 @@ namespace Jhu.Graywulf.Web.Auth
         private void CreateUser()
         {
             user.Name = Username.Text.Trim();
-            user.SetPassword(Password.Text);
-            user.GenerateActivationCode();
+            IdentityProvider.CreateUser(user);
+            IdentityProvider.ResetPassword(user, Password.Text);
 
-            user.Save();
-
-            user.MakeMemberOf(RegistryContext.Domain.StandardUserGroup.Guid);
+            // Set user activity status
+            if (IdentityProvider.IsActivationRequired)
+            {
+                IdentityProvider.DeactivateUser(user);
+            }
+            else
+            {
+                IdentityProvider.ActivateUser(user);
+            }
 
             // If user signed in with a temporary identity
             if (TemporaryPrincipal != null)
@@ -78,6 +84,11 @@ namespace Jhu.Graywulf.Web.Auth
             }
 
             Util.EmailSender.Send(user, File.ReadAllText(MapPath("~/templates/ActivationEmail.xml")), BaseUrl);
+        }
+
+        private void ModifyUser()
+        {
+            IdentityProvider.ModifyUser(user);
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -99,6 +110,7 @@ namespace Jhu.Graywulf.Web.Auth
             }
             else
             {
+                // Must be under the current domain!
                 user = new Registry.User(RegistryContext.Domain);
             }
 
@@ -119,8 +131,7 @@ namespace Jhu.Graywulf.Web.Auth
         {
             if (RegistryUser == null)
             {
-                EntityFactory ef = new EntityFactory(RegistryContext);
-                args.IsValid = !ef.CheckEntityDuplicate(EntityType.User, Guid.Empty, RegistryContext.Domain.Guid, args.Value);
+                args.IsValid = !IdentityProvider.IsNameExisting(args.Value);
             }
         }
 
@@ -128,8 +139,7 @@ namespace Jhu.Graywulf.Web.Auth
         {
             if (RegistryUser == null)
             {
-                var ef = new UserFactory(RegistryContext);
-                args.IsValid = !ef.CheckEmailDuplicate(RegistryContext.Domain, args.Value.Trim());
+                args.IsValid = !IdentityProvider.IsEmailExisting(args.Value);
             }
         }
 
@@ -147,8 +157,7 @@ namespace Jhu.Graywulf.Web.Auth
                 }
                 else
                 {
-                    // update user
-                    user.Save();
+                    ModifyUser();
 
                     UserForm.Visible = false;
                     SuccessForm.Visible = true;

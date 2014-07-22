@@ -22,12 +22,8 @@ namespace Jhu.Graywulf.Web.Auth
         {
             try
             {
-                var uu = new UserFactory(RegistryContext);
-                user = uu.FindUserByActivationCode(RegistryContext.Domain, code);
-
-                user.ActivationCode = string.Empty;
-                user.DeploymentState = DeploymentState.Deployed;
-                user.Save();
+                user = IdentityProvider.GetUserByActivationCode(code);
+                IdentityProvider.ActivateUser(user);
 
                 return true;
             }

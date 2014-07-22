@@ -473,7 +473,7 @@ namespace Jhu.Graywulf.Registry
             this.timeZone = 0;
             this.integrated = false;
             this.ntlmUser = String.Empty;
-            this.passwordHash = null;
+            this.passwordHash = new byte[0];
             this.activationCode = String.Empty;
         }
 
