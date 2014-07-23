@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using System.Web;
 using DotNetOpenAuth.OpenId.RelyingParty;
 using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 using Jhu.Graywulf.Registry;
@@ -12,41 +13,23 @@ namespace Jhu.Graywulf.Web.Security
     /// <summary>
     /// Implements OpenID authentication.
     /// </summary>
-    public class OpenIDAuthenticator : IInteractiveAuthenticator
+    public class OpenIDAuthenticator : Authenticator
     {
-        private string authorityName;
-        private string authorityUri;
-        private string displayName;
+        #region Private member variables
+
         private string discoveryUrl;
 
-        /// <summary>
-        /// Gets or sets the name of the authority
-        /// </summary>
-        [XmlElement]
-        public string AuthorityName
+        #endregion
+        #region Properties
+
+        public override string ProtocolName
         {
-            get { return authorityName; }
-            set { authorityName = value; }
+            get { return Constants.ProtocolNameOpenID; }
         }
 
-        /// <summary>
-        /// Gets or sets the URI uniquely identifying the authority
-        /// </summary>
-        [XmlElement]
-        public string AuthorityUri
+        public override bool IsInteractive
         {
-            get { return authorityUri; }
-            set { authorityUri = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the display name of the authority
-        /// </summary>
-        [XmlElement]
-        public string DisplayName
-        {
-            get { return displayName; }
-            set { displayName = value; }
+            get { return true; }
         }
 
         /// <summary>
@@ -59,14 +42,8 @@ namespace Jhu.Graywulf.Web.Security
             set { discoveryUrl = value; }
         }
 
-        /// <summary>
-        /// Gets the name of the authentication protocol.
-        /// </summary>
-        [XmlIgnore]
-        public string Protocol
-        {
-            get { return Constants.ProtocolNameOpenID; }
-        }
+        #endregion
+        #region Constructors and initializers
 
         public OpenIDAuthenticator()
         {
@@ -75,17 +52,16 @@ namespace Jhu.Graywulf.Web.Security
 
         private void InitializeMembers()
         {
-            this.authorityName = null;
-            this.authorityUri = null;
-            this.displayName = null;
             this.discoveryUrl = null;
         }
+
+        #endregion
 
         /// <summary>
         /// Authenicates a user based on the information in the HTTP request.
         /// </summary>
         /// <returns></returns>
-        public GraywulfPrincipal Authenticate()
+        public override GraywulfPrincipal Authenticate(HttpContext httpContext)
         {
             // Get OpenID provider's response from the http context
             using (var openid = new OpenIdRelyingParty())
@@ -119,7 +95,7 @@ namespace Jhu.Graywulf.Web.Security
         /// <summary>
         /// Redirects the browser to the sign in page of the OpenID authority.
         /// </summary>
-        public void RedirectToLoginPage()
+        public override void RedirectToLoginPage()
         {
             using (var openid = new OpenIdRelyingParty())
             {
@@ -179,7 +155,7 @@ namespace Jhu.Graywulf.Web.Security
         {
             var identity = new GraywulfIdentity()
             {
-                Protocol = this.Protocol,
+                Protocol = this.ProtocolName,
                 AuthorityName = this.AuthorityName,
                 AuthorityUri = response.Provider.Uri.ToString(),
                 Identifier = response.ClaimedIdentifier,

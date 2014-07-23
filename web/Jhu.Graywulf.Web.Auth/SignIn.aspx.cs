@@ -72,11 +72,11 @@ namespace Jhu.Graywulf.Web.Auth
             a.RedirectToLoginPage();
         }
 
-        private IInteractiveAuthenticator CreateAuthenticator(string key)
+        private Authenticator CreateAuthenticator(string key)
         {
             var parts = key.Split('|');
             var af = AuthenticatorFactory.Create(RegistryContext.Domain);
-            var a = af.CreateInteractiveAuthenticator(parts[0], parts[1]);
+            var a = af.GetInteractiveAuthenticator(parts[0], parts[1]);
 
             return a;
         }
@@ -100,7 +100,7 @@ namespace Jhu.Graywulf.Web.Auth
                 var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
 
                 var af = AuthenticatorFactory.Create(RegistryContext.Domain);
-                var auth = af.CreateInteractiveAuthenticator(identity.Protocol, identity.AuthorityUri);
+                var auth = af.GetInteractiveAuthenticator(identity.Protocol, identity.AuthorityUri);
 
                 AuthorityName.Text = auth.DisplayName;
                 Identifier.Text = identity.Identifier;
@@ -118,17 +118,17 @@ namespace Jhu.Graywulf.Web.Auth
         private void CreateAuthenticatorButtons()
         {
             var af = AuthenticatorFactory.Create(RegistryContext.Domain);
-            var aus = af.CreateInteractiveAuthenticators();
 
             Authenticators.Controls.Add(new LiteralControl("<ul>"));
-            for (int i = 0; i < aus.Length; i++)
+
+            foreach (var au in af.GetInteractiveAuthenticators())
             {
                 var b = new LinkButton()
                 {
                     CausesValidation = false,
-                    Text = aus[i].DisplayName,
-                    ToolTip = String.Format("Log on using {0}.", aus[i].DisplayName),
-                    CommandArgument = String.Format("{0}|{1}", aus[i].Protocol, aus[i].AuthorityUri)
+                    Text = au.DisplayName,
+                    ToolTip = String.Format("Log on using {0}.", au.DisplayName),
+                    CommandArgument = String.Format("{0}|{1}", au.ProtocolName, au.AuthorityUrl)
                 };
 
                 b.Click += new EventHandler(AuthenticatorButton_Click);
@@ -137,6 +137,7 @@ namespace Jhu.Graywulf.Web.Auth
                 Authenticators.Controls.Add(b);
                 Authenticators.Controls.Add(new LiteralControl("</li>"));
             }
+
             Authenticators.Controls.Add(new LiteralControl("</ul>"));
 
             // Focus on the 'sign in' button
@@ -153,7 +154,7 @@ namespace Jhu.Graywulf.Web.Auth
 
                 Session[Constants.SessionAuthenticator] = null;
 
-                var principal = a.Authenticate();
+                var principal = a.Authenticate(HttpContext.Current);
                 if (principal != null)
                 {
                     var identity = (GraywulfIdentity)principal.Identity;

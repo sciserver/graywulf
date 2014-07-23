@@ -3,55 +3,62 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using System.Web;
+using System.Web.Security;
+using Jhu.Graywulf.Components;
+using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Keystone;
 
 namespace Jhu.Graywulf.Web.Security
 {
-#if false
-    public class KeystoneAuthenticator : IInteractiveAuthenticator
+
+    /// <summary>
+    /// Implements functions to authenticate an HTTP request based on
+    /// a Keystone token in the header
+    /// </summary>
+    public class KeystoneAuthenticator : Authenticator
     {
-        private string authorityName;
-        private string authorityUri;
-        private string displayName;
+        #region Static cache implementation
 
-        /// <summary>
-        /// Gets or sets the name of the authority
-        /// </summary>
-        [XmlElement]
-        public string AuthorityName
+        private static readonly Cache<string, Token> tokenCache;
+
+        static KeystoneAuthenticator()
         {
-            get { return authorityName; }
-            set { authorityName = value; }
+            tokenCache = new Cache<string, Token>(StringComparer.InvariantCultureIgnoreCase)
+            {
+                AutoExtendLifetime = false,
+                CollectionInterval = new TimeSpan(0, 1, 0),     // one minute
+                DefaultLifetime = new TimeSpan(0, 20, 0),       // twenty minutes
+            };
         }
 
-        /// <summary>
-        /// Gets or sets the URI uniquely identifying the authority
-        /// </summary>
-        [XmlElement]
-        public string AuthorityUri
-        {
-            get { return authorityUri; }
-            set { authorityUri = value; }
-        }
+        #endregion
+        #region Private member variables
 
-        /// <summary>
-        /// Gets or sets the display name of the authority
-        /// </summary>
-        [XmlElement]
-        public string DisplayName
-        {
-            get { return displayName; }
-            set { displayName = value; }
-        }
+        private string graywulfDomainPrefix;
+        private string adminToken;
 
-        /// <summary>
-        /// Gets the name of the authentication protocol.
-        /// </summary>
-        [XmlIgnore]
-        public string Protocol
+        #endregion
+        #region Properties
+
+        public override string ProtocolName
         {
             get { return Constants.ProtocolNameKeystone; }
         }
+
+        public override bool IsInteractive
+        {
+            get { return false; }
+        }
+
+        public string AdminToken
+        {
+            get { return adminToken; }
+            set { adminToken = value; }
+        }
+
+        #endregion
+        #region Constructors and initializers
 
         public KeystoneAuthenticator()
         {
@@ -60,38 +67,75 @@ namespace Jhu.Graywulf.Web.Security
 
         private void InitializeMembers()
         {
-            this.authorityName = null;
-            this.authorityUri = null;
-            this.displayName = null;
+            AuthorityName = Constants.AuthorityNameKeystone;
         }
 
-        public GraywulfPrincipal Authenticate()
+        #endregion
+
+        public override void Initialize(Registry.Domain domain)
         {
-            var client = new KeystoneClient();
+            base.Initialize(domain);
 
-            /*
-            var identityProvider = new CloudIdentityProvider(KeystoneSettings.Uri);
-            var identity = new CloudIdentity()
-            {
-                //TenantName = ConfigurationManager.AppSettings["Keystone.AdminTenant"],
-                Username = KeystoneSettings.AdminUser,
-                Password = KeystoneSettings.AdminPassword,
-            };
+            // Save domain name, it will be used to prefix user names
+            var name = domain.GetFullyQualifiedName();
+            var idx = name.IndexOf(':');
 
-            UserAccess userAccess = identityProvider.ValidateToken(token, null, identity);
-            
-            bool isUser = userAccess.User.Roles.Any(item => item.Name == "user");
-            
-            if (!isUser)
+            graywulfDomainPrefix = name.Substring(idx + 1);
+        }
+
+        public override GraywulfPrincipal Authenticate(HttpContext httpContext)
+        {
+            // Keystone tokens (in the simplest case) do not carry any detailed
+            // information about the identity of the user. For this reason,
+            // every token needs to be validated by calling the Keystone service.
+            // To avoid doing this, we need to cache tokens.
+
+            GraywulfPrincipal principal = null;
+
+            // Look for a token in the request headers
+            var tokenID = httpContext.Request.Headers.Get(Constants.KeystoneAuthTokenHeader);
+
+            if (tokenID != null)
             {
-                throw new NotAuthorizedException("You do not have the permission to access CasJobs service.");
+                Token token;
+
+                // Check if the resolved token is already in the cache
+                if (!tokenCache.TryGetValue(tokenID, out token))
+                {
+                    // Need to validate token against Keystone
+
+                    // TODO...
+                }
+
+                // Create a GraywulfPrincipal based on the tokne
+                principal = CreatePrincipal(token);
             }
 
-            return userAccess;
-            */
+            return principal;
+        }
 
-            throw new NotImplementedException();
+        private KeystoneClient CreateClient()
+        {
+            return new KeystoneClient(new Uri(AuthorityUrl))
+            {
+                AdminAuthToken = adminToken,
+            };
+        }
+
+        private GraywulfPrincipal CreatePrincipal(Token token)
+        {
+            var name = String.Format("{0}:{1}.{2}",
+                EntityType.User, graywulfDomainPrefix, token.User.Name);
+
+            var identity = new GraywulfIdentity()
+            {
+                Protocol = Constants.ProtocolNameKeystone,
+                Identifier = token.User.Name,
+                IsAuthenticated = true,
+            };
+
+            identity.UserReference.Name = token.User.Name;
+            return new GraywulfPrincipal(identity);
         }
     }
-#endif
 }

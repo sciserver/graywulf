@@ -39,8 +39,10 @@ namespace Jhu.Graywulf.Web.Security
                 // special case has to be handled here
                 if (context.Domain != null)
                 {
+                    // Initialize authenticators            
+
                     var af = AuthenticatorFactory.Create(context.Domain);
-                    RegisterRequestAuthenticators(af.CreateRestRequestAuthenticators());
+                    RegisterAuthenticators(af.GetRestRequestAuthenticators());
                 }
             }
 
@@ -66,7 +68,7 @@ namespace Jhu.Graywulf.Web.Security
         private void OnAuthenticateRequest(object sender, EventArgs e)
         {
             var context = ((HttpApplication)sender).Context;
-            CallRequestAuthenticators(context);
+            CallAuthenticators(context);
         }
 
         private void OnPostAuthenticateRequest(object sender, EventArgs e)

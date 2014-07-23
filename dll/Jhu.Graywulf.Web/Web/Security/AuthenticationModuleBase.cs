@@ -18,35 +18,35 @@ namespace Jhu.Graywulf.Web.Security
     /// </remarks>
     public abstract class AuthenticationModuleBase
     {
-        private IRequestAuthenticator[] requestAuthenticators;
+        private Authenticator[] authenticators;
 
         /// <summary>
         /// Registeres request authenticators
         /// </summary>
         /// <param name="authenticators"></param>
-        protected void RegisterRequestAuthenticators(IRequestAuthenticator[] authenticators)
+        protected void RegisterAuthenticators(IEnumerable<Authenticator> authenticators)
         {
-            requestAuthenticators = authenticators;
+            this.authenticators = authenticators.ToArray();
         }
 
         /// <summary>
         /// Calls all registered request authenticators
         /// </summary>
         /// <param name="context"></param>
-        protected void CallRequestAuthenticators(HttpContext context)
+        protected void CallAuthenticators(HttpContext httpContext)
         {
             // If user is not authenticated yet, try to authenticate them now using
             // various types of authenticators
             
-            if (requestAuthenticators != null)
+            if (authenticators != null)
             {
                 // Try each authentication protocol
-                for (int i = 0; context.User == null && i < requestAuthenticators.Length; i++)
+                for (int i = 0; httpContext.User == null && i < authenticators.Length; i++)
                 {
-                    var user = requestAuthenticators[i].Authenticate();
+                    var user = authenticators[i].Authenticate(httpContext);
                     if (user != null)
                     {
-                        context.User = user;
+                        httpContext.User = user;
                     }
                 }
             }

@@ -13,7 +13,13 @@ namespace Jhu.Graywulf.Web.Security
     /// </summary>
     public class AuthenticatorFactory
     {
-        private Domain domain;
+        private static readonly object syncRoot = new object();
+        private static bool initialized;
+        
+        private static List<Authenticator> allAuthenticators;
+        private static List<Authenticator> webInteractiveAuthenticators;
+        private static List<Authenticator> webRequestAuthenticators;
+        private static List<Authenticator> restRequestAuthenticators;
 
         /// <summary>
         /// Creates an authenticator factory class from the
@@ -36,61 +42,83 @@ namespace Jhu.Graywulf.Web.Security
                 type = typeof(AuthenticatorFactory);
             }
 
+            if (!initialized)
+            {
+                lock (syncRoot)
+                {
+                    LoadAuthenticators(domain);
+                    initialized = true;
+                }
+            }
+
             return (AuthenticatorFactory)Activator.CreateInstance(
                 type,
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                 null,
-                new object[] { domain },
+                null,
                 null);
         }
 
-        protected AuthenticatorFactory(Domain domain)
+        private static void LoadAuthenticators(Domain domain)
         {
-            InitializeMembers();
+            // Load authenticators from settings
+            allAuthenticators = new List<Authenticator>(
+                (Authenticator[])domain.Settings[Constants.SettingsAuthenticators].Value);
 
-            this.domain = domain;
-        }
-
-        private void InitializeMembers()
-        {
-            this.domain = null;
-        }
-
-        public IInteractiveAuthenticator[] CreateInteractiveAuthenticators()
-        {
-            var res = new List<IInteractiveAuthenticator>();
-
-            if (domain.Settings.ContainsKey(Constants.SettingsOpenID))
+            // Initialize all authenticators
+            foreach (var a in allAuthenticators)
             {
-                res.AddRange((OpenIDAuthenticator[])domain.Settings[Constants.SettingsOpenID].Value);
+                a.Initialize(domain);
             }
 
-            return res.ToArray();
+            // Sort authenticators by type
+            webInteractiveAuthenticators = new List<Authenticator>(
+                allAuthenticators.Where(i => i.IsInteractive));
+
+            webRequestAuthenticators = new List<Authenticator>(
+                allAuthenticators.Where(i => !i.IsInteractive).ToArray());
+
+            restRequestAuthenticators = new List<Authenticator>(
+                allAuthenticators.Where(i => !i.IsInteractive).ToArray());
+        }
+
+        protected AuthenticatorFactory()
+        {
+        }
+
+        public virtual IEnumerable<Authenticator> GetInteractiveAuthenticators()
+        {
+            return webInteractiveAuthenticators;
         }
 
         // TODO: delete this and add logic to somewhere else
-        public IInteractiveAuthenticator CreateInteractiveAuthenticator(string protocol, string authority)
+        public Authenticator GetInteractiveAuthenticator(string protocol, string authority)
         {
-            var q = from a in CreateInteractiveAuthenticators()
-                    where
-                        StringComparer.InvariantCultureIgnoreCase.Compare(a.Protocol, protocol) == 0 &&
-                        StringComparer.InvariantCultureIgnoreCase.Compare(a.AuthorityUri, authority) == 0
-                    select a;
-
-            return q.FirstOrDefault();
-        }
-
-        public IRequestAuthenticator[] CreateWebRequestAuthenticators()
-        {
-            return new IRequestAuthenticator[0];
-        }
-
-        public IRequestAuthenticator[] CreateRestRequestAuthenticators()
-        {
-            return new IRequestAuthenticator[]
+            foreach (var a in GetInteractiveAuthenticators())
             {
-                new FormsTicketAuthenticator()
-            };
+                if (StringComparer.InvariantCultureIgnoreCase.Compare(a.ProtocolName, protocol) == 0 &&
+                        StringComparer.InvariantCultureIgnoreCase.Compare(a.AuthorityUrl, authority) == 0)
+                {
+                    return a;
+                }
+            }
+
+            return null;
+        }
+
+        public virtual IEnumerable<Authenticator> GetWebRequestAuthenticators()
+        {
+            return webRequestAuthenticators;
+        }
+
+        public virtual IEnumerable<Authenticator> GetRestRequestAuthenticators()
+        {
+            yield return new FormsTicketAuthenticator();
+
+            foreach (var a in restRequestAuthenticators)
+            {
+                yield return a;
+            }
         }
 
     }

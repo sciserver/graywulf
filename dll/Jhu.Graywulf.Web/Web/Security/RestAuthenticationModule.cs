@@ -18,8 +18,6 @@ namespace Jhu.Graywulf.Web.Security
     /// </summary>
     class RestAuthenticationModule : Security.AuthenticationModuleBase, IDispatchMessageInspector, IParameterInspector
     {
-        private string authenticatorFactory;
-
         // TODO: use this to cache authenticated identities
         private ConcurrentDictionary<string, GraywulfPrincipal> principalCache;
         
@@ -37,7 +35,7 @@ namespace Jhu.Graywulf.Web.Security
         {
             // Create authenticators
             var af = AuthenticatorFactory.Create(domain);
-            RegisterRequestAuthenticators(af.CreateRestRequestAuthenticators());
+            RegisterAuthenticators(af.GetRestRequestAuthenticators());
         }
 
         /// <summary>
@@ -52,7 +50,7 @@ namespace Jhu.Graywulf.Web.Security
             var httpContext = HttpContext.Current;
             var httpApplication = (ApplicationBase)HttpContext.Current.ApplicationInstance;
 
-            CallRequestAuthenticators(httpContext);
+            CallAuthenticators(httpContext);
             
             // Based on the results of the authentication, create a graywulf
             // used

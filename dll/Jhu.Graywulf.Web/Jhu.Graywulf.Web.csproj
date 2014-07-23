@@ -171,6 +171,7 @@
     <Compile Include="Web\Controls\ToolbarElement.cs" />
     <Compile Include="Web\Controls\ToolbarButton.cs" />
     <Compile Include="Web\Controls\ToolbarSpan.cs" />
+    <Compile Include="Web\Security\Authenticator.cs" />
     <Compile Include="Web\Security\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -180,17 +181,16 @@
     <Compile Include="Web\Security\IdentityProviderBase.cs" />
     <Compile Include="Web\Security\IdentityProviderException.cs" />
     <Compile Include="Web\Security\KeystoneIdentityProvider.cs" />
-    <Compile Include="Web\Security\KeystoneSettings.cs" />
     <Compile Include="Web\Security\AuthenticationModuleBase.cs" />
     <Compile Include="Web\Security\AuthenticatorFactory.cs" />
     <Compile Include="Web\Security\Constants.cs" />
     <Compile Include="Web\Security\FormsTicketAuthenticator.cs" />
     <Compile Include="Web\Security\GraywulfIdentity.cs" />
     <Compile Include="Web\Security\GraywulfPrincipal.cs" />
-    <Compile Include="Web\Security\IInteractiveAuthenticator.cs" />
-    <Compile Include="Web\Security\IRequestAuthenticator.cs" />
     <Compile Include="Web\Security\KeystoneAuthenticator.cs" />
-    <Compile Include="Web\Security\OpenIDAuthenticator.cs" />
+    <Compile Include="Web\Security\OpenIDAuthenticator.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Web\Security\RestAuthenticationModule.cs" />
     <Compile Include="Web\Security\WebAuthenticationModule.cs" />
     <Compile Include="Web\UserControlBase.cs">

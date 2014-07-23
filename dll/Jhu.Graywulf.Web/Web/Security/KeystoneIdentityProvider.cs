@@ -87,7 +87,7 @@ namespace Jhu.Graywulf.Web.Security
 
         private void InitializeMembers()
         {
-            this.authorityName = Constants.KeystoneDefaultAuthorityName;
+            this.authorityName = Constants.AuthorityNameKeystone;
             this.keystoneBaseUri = new Uri(Constants.KeystoneDefaultUri);
             this.keystoneAdminToken = null;
         }

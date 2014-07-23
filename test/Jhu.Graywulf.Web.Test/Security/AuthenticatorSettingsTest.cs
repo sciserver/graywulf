@@ -9,7 +9,7 @@ using Jhu.Graywulf.Web.Security;
 namespace Jhu.Graywulf.Web.Test.Security
 {
     [TestClass]
-    public class OpenIDSettingsTest
+    public class AuthenticatorSettingsTest
     {
         [TestMethod]
         public void SerializeSettingsTest()
@@ -17,14 +17,20 @@ namespace Jhu.Graywulf.Web.Test.Security
             var oid = new OpenIDAuthenticator()
                 {
                     AuthorityName = "Google",
-                    AuthorityUri = "https://www.google.com/accounts/o8/ud",
+                    AuthorityUrl = "https://www.google.com/accounts/o8/ud",
                     DisplayName = "GoogleID",
                     DiscoveryUrl = "https://www.google.com/accounts/o8/id"
                 };
 
-            var p = new Parameter();
+            var ks = new KeystoneAuthenticator()
+            {
+                AuthorityName = "Keystone",
+                AuthorityUrl = "http://localhost:5000",
+                DisplayName = "Keystone",
+            };
 
-            p.Value = new OpenIDAuthenticator[] { oid };
+            var p = new Parameter();
+            p.Value = new Authenticator[] { oid };
         }
     }
 }

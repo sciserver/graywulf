@@ -14,83 +14,89 @@ namespace Jhu.Graywulf.Web.Security
     /// This is used by WCF services to accept and process the same
     /// tickets that FormsAuthentication uses.
     /// </remarks>
-    public class FormsTicketAuthenticator : IRequestAuthenticator
+    public class FormsTicketAuthenticator : Authenticator
     {
-        public string Protocol
+        #region Properties
+
+        public override string ProtocolName
         {
             get { return Constants.ProtocolNameForms; }
         }
 
-        public string AuthorityName
+        public override bool IsInteractive
         {
-            get { return "Graywulf"; }
+            get { return false; }
         }
 
-        public string AuthorityUri
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public string DisplayName
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
+        #endregion
+        #region Constructors and initializers
 
         public FormsTicketAuthenticator()
         {
+            InitializeMembers();
             FormsAuthentication.Initialize();
         }
 
-        public GraywulfPrincipal Authenticate()
+        private void InitializeMembers()
         {
-            GraywulfPrincipal user = null;
+            AuthorityName = Constants.AuthorityNameGraywulf;
+        }
 
-            var cookie = HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
+        #endregion
+
+        public override GraywulfPrincipal Authenticate(HttpContext httpContext)
+        {
+            // The logic implemented here is based on the .Net reference source
+            // original class: FormAuthenticationModule
+
+            // Since the tickets are encrypted, we can trust the information
+            // inside, and take the name of the user from the ticket
+            // directly. This saves us from looking into the database at every
+            // single request.
+
+            GraywulfPrincipal principal = null;
+
+            // Get the forms authentication cookie from the request
+            var cookie = httpContext.Request.Cookies[FormsAuthentication.FormsCookieName];
             if (cookie != null)
             {
-                var tOld = FormsAuthentication.Decrypt(cookie.Value);
-
-                if ((tOld != null) && !tOld.Expired)
+                // Decrypt the token and check whether it's already expired
+                var oldToken = FormsAuthentication.Decrypt(cookie.Value);
+                if (oldToken != null && !oldToken.Expired)
                 {
-                    var ticket = tOld;
+                    // The token hasn't expired yet
+
+                    // Read the ticket from the token and renew it if sliding expiration is turned on
+                    var ticket = oldToken;
                     if (FormsAuthentication.SlidingExpiration)
                     {
-                        ticket = FormsAuthentication.RenewTicketIfOld(tOld);
+                        ticket = FormsAuthentication.RenewTicketIfOld(oldToken);
                     }
 
-                    user = GraywulfPrincipal.Create(ticket);
+                    // Create a GraywulfPrincipal based on the ticket.
+                    principal = GraywulfPrincipal.Create(ticket);
 
+                    // Set special cookie path, if necessary
                     if (!ticket.CookiePath.Equals("/"))
                     {
-                        cookie = HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
+                        cookie = httpContext.Request.Cookies[FormsAuthentication.FormsCookieName];
                         if (cookie != null)
                         {
                             cookie.Path = ticket.CookiePath;
                         }
                     }
 
-                    if (ticket != tOld)
+                    // If the ticket has been renewed, it has to be encryted and sent to the client
+                    if (ticket != oldToken)
                     {
+                        // Encryp ticket into a new cookie
                         string cookieValue = FormsAuthentication.Encrypt(ticket);
 
                         if (cookie != null)
                         {
-                            cookie = HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
+                            cookie = httpContext.Request.Cookies[FormsAuthentication.FormsCookieName];
                         }
+
                         if (cookie == null)
                         {
                             cookie = new HttpCookie(FormsAuthentication.FormsCookieName, cookieValue)
@@ -98,24 +104,33 @@ namespace Jhu.Graywulf.Web.Security
                                 Path = ticket.CookiePath
                             };
                         }
+
+                        // If the ticket is persistent (survives browser sessions) an expiration
+                        // date is set. Otherwise the browser will not save the cookie across
+                        // sessions
                         if (ticket.IsPersistent)
                         {
                             cookie.Expires = ticket.Expiration;
                         }
+
+                        // Set additional cookie options
                         cookie.Value = cookieValue;
                         cookie.Secure = FormsAuthentication.RequireSSL;
                         cookie.HttpOnly = true;
+
                         if (FormsAuthentication.CookieDomain != null)
                         {
                             cookie.Domain = FormsAuthentication.CookieDomain;
                         }
-                        HttpContext.Current.Response.Cookies.Remove(cookie.Name);
-                        HttpContext.Current.Response.Cookies.Add(cookie);
+
+                        // Remove old cookie and set new one
+                        httpContext.Response.Cookies.Remove(cookie.Name);
+                        httpContext.Response.Cookies.Add(cookie);
                     }
                 }
             }
 
-            return user;
+            return principal;
         }
     }
 }
