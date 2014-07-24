@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml.Serialization;
 using System.Web;
 using System.Web.Security;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Keystone;
@@ -37,8 +38,16 @@ namespace Jhu.Graywulf.Web.Security
 
         private string graywulfDomainPrefix;
 
+        private string adminDomain;
+        private string adminProject;
+        private string adminUserName;
+        private string adminPassword;
         private string adminToken;
         private string domain;
+        private string authTokenParameter;
+        private string authTokenHeader;
+
+        private DateTime adminTokenExpiresAt;
 
         #endregion
         #region Properties
@@ -57,6 +66,49 @@ namespace Jhu.Graywulf.Web.Security
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Keytone domain of the admin users used
+        /// to access the identity service.
+        /// </summary>
+        public string AdminDomain
+        {
+            get { return adminDomain; }
+            set { adminDomain = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the user name of the project/tenant name of
+        /// the admin.
+        /// </summary>
+        public string AdminProject
+        {
+            get { return adminProject; }
+            set { adminProject = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the user name of the administrator having
+        /// rights to manage the identity service.
+        /// </summary>
+        public string AdminUserName
+        {
+            get { return adminUserName; }
+            set { adminUserName = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the password of the administrator having
+        /// rights to manage the identity service.
+        /// </summary>
+        public string AdminPassword
+        {
+            get { return adminPassword; }
+            set { adminPassword = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the admin token used to manage the identity service.
+        /// </summary>
         public string AdminToken
         {
             get { return adminToken; }
@@ -72,21 +124,49 @@ namespace Jhu.Graywulf.Web.Security
             set { domain = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the name of the parameter used to convey the
+        /// authentication token.
+        /// </summary>
+        public string AuthTokenParameter
+        {
+            get { return authTokenParameter; }
+            set { authTokenParameter = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the header used to convey the
+        /// authentication token.
+        /// </summary>
+        public string AuthTokenHeader
+        {
+            get { return authTokenHeader; }
+            set { authTokenHeader = value; }
+        }
+
         #endregion
         #region Constructors and initializers
 
         public KeystoneAuthenticator()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
-        private void InitializeMembers()
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
         {
             AuthorityName = Constants.AuthorityNameKeystone;
 
             this.graywulfDomainPrefix = null;
+            this.adminProject = null;
+            this.adminUserName = null;
+            this.adminPassword = null;
             this.adminToken = null;
-            this.domain = "default";
+            this.domain = Constants.KeystoneDefaultUri;
+            this.authTokenParameter = Constants.KeystoneDefaultAuthTokenParameter;
+            this.authTokenHeader = Constants.KeystoneDefaultAuthTokenHeader;
+
+            this.adminTokenExpiresAt = DateTime.MinValue;
         }
 
         #endregion
@@ -112,13 +192,12 @@ namespace Jhu.Graywulf.Web.Security
             GraywulfPrincipal principal = null;
 
             // Look for a token in the request headers
-            var tokenID = httpContext.Request.Headers.Get(Constants.KeystoneAuthTokenHeader);   
-            // TODO: use custom property
+            var tokenID = httpContext.Request.Headers.Get(authTokenHeader);
 
             if (tokenID == null)
             {
                 // Try to take header from the query string
-                tokenID = httpContext.Request.QueryString["token"]; // TODO: use custom property
+                tokenID = httpContext.Request[authTokenParameter];
             }
 
             if (tokenID != null)
@@ -129,11 +208,7 @@ namespace Jhu.Graywulf.Web.Security
                 if (!tokenCache.TryGetValue(tokenID, out token))
                 {
                     // Need to validate token against Keystone
-
-                    var ksclient = new KeystoneClient(new Uri(AuthorityUrl))
-                    {
-                        AdminAuthToken = adminToken,
-                    };
+                    var ksclient = CreateClient();
 
                     token = new Token()
                     {
@@ -159,10 +234,35 @@ namespace Jhu.Graywulf.Web.Security
 
         private KeystoneClient CreateClient()
         {
-            return new KeystoneClient(new Uri(AuthorityUrl))
+            var ksclient = new KeystoneClient(new Uri(AuthorityUrl));
+
+            // If using password authentication, make sure we have a valid admin token
+            // Leave e 30 second margin to perform all keystone-related operations with an
+            // already existing token
+            if (!String.IsNullOrWhiteSpace(adminPassword) && (DateTime.Now - adminTokenExpiresAt).TotalSeconds > -30)
             {
-                AdminAuthToken = adminToken,
-            };
+                lock (this)
+                {
+                    var project = new Keystone.Project()
+                    {
+                        Domain = new Keystone.Domain()
+                        {
+                            Name = adminDomain
+                        },
+                        Name = adminProject
+                    };
+
+                    var token = ksclient.Authenticate(adminDomain, adminUserName, adminPassword, project);
+
+                    adminToken = token.ID;
+                    adminTokenExpiresAt = token.ExpiresAt;
+                }
+            }
+
+            // Set the valid admin token
+            ksclient.AdminAuthToken = adminToken;
+
+            return ksclient;
         }
 
         private GraywulfPrincipal CreatePrincipal(Token token)
@@ -181,10 +281,10 @@ namespace Jhu.Graywulf.Web.Security
             // in Keystone
             identity.User.Comments = token.User.Description ?? String.Empty;
             identity.User.Email = token.User.Email ?? String.Empty;
-            
+
             // TODO: fill in additional information based on user data
             // in the keystone token
-                        
+
             return new GraywulfPrincipal(identity);
         }
     }

@@ -24,6 +24,8 @@ namespace Jhu.Graywulf.Web.Security
         public const string SettingsAuthenticators = "Authenticators";
 
         public const string KeystoneDefaultUri = "http://localhost:5000/";
-        public const string KeystoneAuthTokenHeader = "X-Keystone-Auth-Token";
+        public const string KeystoneDefaultDomain= "default";
+        public const string KeystoneDefaultAuthTokenParameter = "token";
+        public const string KeystoneDefaultAuthTokenHeader = "X-Subject-Token";
     }
 }
