@@ -94,6 +94,12 @@ namespace Jhu.Graywulf.Web.Security
             var httpContext = HttpContext.Current;
             var httpApplication = (ApplicationBase)HttpContext.Current.ApplicationInstance;
 
+            // User is not recognized
+            if (!(httpContext.User is GraywulfPrincipal))
+            {
+                throw new Jhu.Graywulf.Registry.SecurityException(ExceptionMessages.AccessDenied);
+            }
+            
             // TODO
             // REST services do not use a session but we don't want to load the user
             // every single time from the session so do some caching here.

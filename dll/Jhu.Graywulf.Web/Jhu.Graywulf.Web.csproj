@@ -81,6 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Web\Api\DataService.cs" />
     <Compile Include="Web\Api\Enum.cs" />
     <Compile Include="Web\Api\ExportJob.cs" />
     <Compile Include="Web\Api\ImportJob.cs" />
@@ -94,7 +95,7 @@
     <Compile Include="Web\Api\RestServiceBehavior.cs" />
     <Compile Include="Web\Api\SchemaService.cs" />
     <Compile Include="Web\Api\ServiceBase.cs" />
-    <Compile Include="Web\Api\TablesService.cs" />
+    <Compile Include="Web\Api\Table.cs" />
     <Compile Include="Web\ApplicationBase.cs" />
     <Compile Include="Web\Captcha.aspx.cs">
       <DependentUpon>Captcha.aspx</DependentUpon>

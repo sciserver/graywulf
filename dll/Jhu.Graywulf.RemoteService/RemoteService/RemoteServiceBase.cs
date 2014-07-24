@@ -31,6 +31,8 @@ namespace Jhu.Graywulf.RemoteService
         [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
         public override void Execute()
         {
+            // Modify remote service to do check access when called from service only
+            // add wcf handler to check roles instead of doing it from here
             EnsureRoleAccess();
             base.Execute();
         }
