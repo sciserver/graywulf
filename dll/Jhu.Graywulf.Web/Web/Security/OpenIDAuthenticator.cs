@@ -173,6 +173,8 @@ namespace Jhu.Graywulf.Web.Security
             identity.AuthorityUri = response.Provider.Uri.ToString();
             identity.Identifier = response.ClaimedIdentifier;
 
+            identity.User = new User();
+
             // Fill in user details
             // TODO: how to generate user name from OpenID?
             identity.User.Name = fetch.Attributes.Contains(WellKnownAttributes.Contact.Email) ? Jhu.Graywulf.Util.EmailFormatter.ToUsername(fetch.Attributes[WellKnownAttributes.Contact.Email].Values[0]) : "";

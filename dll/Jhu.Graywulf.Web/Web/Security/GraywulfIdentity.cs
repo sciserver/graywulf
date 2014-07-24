@@ -234,6 +234,7 @@ namespace Jhu.Graywulf.Web.Security
                     throw new SecurityException(ExceptionMessages.AccessDenied);
                 }
 
+                this.isAuthenticated = true;
                 this.userReference.Value = user;
             }
         }
