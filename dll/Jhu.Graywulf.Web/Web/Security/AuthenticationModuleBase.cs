@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Security.Principal;
+using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
 {
@@ -37,7 +38,7 @@ namespace Jhu.Graywulf.Web.Security
         {
             // If user is not authenticated yet, try to authenticate them now using
             // various types of authenticators
-            
+
             if (authenticators != null)
             {
                 // Try each authentication protocol
@@ -64,30 +65,26 @@ namespace Jhu.Graywulf.Web.Security
             {
                 var identity = principal.Identity;
 
-                if (identity is GraywulfIdentity)
-                {
-                    // Nothing to do here
-                    return (GraywulfPrincipal)principal;
-                }
-                else if (identity is System.Security.Principal.GenericIdentity)
+                if (identity is System.Security.Principal.GenericIdentity)
                 {
                     // By default, identity is a generic identity with
                     // IsAuthorized = false, so let this be
                     return null;
+                }
+                else if (identity is GraywulfIdentity)
+                {
+                    // Nothing to do here
+                    return (GraywulfPrincipal)principal;
+                }
+                else if (identity is System.Web.Security.FormsIdentity)
+                {
+                    return CreatePrincipal((System.Web.Security.FormsIdentity)identity);
                 }
                 else if (identity is System.Security.Principal.WindowsIdentity)
                 {
                     throw new NotImplementedException();
                 }
                 else if (identity is System.Web.Security.PassportIdentity)
-                {
-                    throw new NotImplementedException();
-                }
-                else if (identity is System.Web.Security.FormsIdentity)
-                {
-                    return GraywulfPrincipal.Create((System.Web.Security.FormsIdentity)identity);
-                }
-                else if (identity is System.Security.Principal.GenericIdentity)
                 {
                     throw new NotImplementedException();
                 }
@@ -101,5 +98,86 @@ namespace Jhu.Graywulf.Web.Security
                 return null;
             }
         }
+
+        /// <summary>
+        /// Creates a Graywulf principal based on the user name stored in the
+        /// forms identity.
+        /// </summary>
+        /// <param name="formsIdentity"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// FormsIdentity is always automatically accepted as master authority.
+        /// </remarks>
+        protected GraywulfPrincipal CreatePrincipal(System.Web.Security.FormsIdentity formsIdentity)
+        {
+            var identity = new GraywulfIdentity()
+            {
+                Protocol = Constants.ProtocolNameForms,
+                Identifier = formsIdentity.Name,
+                IsAuthenticated = true,
+                IsMasterAuthority = true,
+            };
+
+            identity.UserReference.Name = formsIdentity.Name;
+
+            return new GraywulfPrincipal(identity);
+        }       
+
+#if false // TODO: old code, delete
+        /// <summary>
+        /// Loads the user from the graywulf registry
+        /// </summary>
+        /// <param name="identity"></param>
+        /// <remarks>
+        /// If the identity is not found, it will be marked as non-authenticated
+        /// </remarks>
+        protected void LoadUser(GraywulfPrincipal principal)
+        {
+            using (var registryContext = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            {
+                var uf = new UserFactory(registryContext);
+
+                try
+                {
+                    switch (principal.Identity.Protocol)
+                    {
+                        case Constants.ProtocolNameForms:
+                            userReference.Value = uf.LoadUser(identifier);
+                            break;
+                        case Constants.ProtocolNameWindows:
+                            // TODO: implement NTLM auth
+                            throw new NotImplementedException();
+                        default:
+                            // All other cases use lookup by protocol name
+                            userReference.Value = uf.FindUserByIdentity(registryContext.Domain, protocol, authorityUri, identifier);
+                            break;
+                    }
+
+                    IsAuthenticated = true;
+                }
+                catch (EntityNotFoundException)
+                {
+                    isAuthenticated = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Loads a user from the Graywulf database based on information found in the
+        /// authentication ticket.
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// The function first tries to load the user by identity then -- if the authority
+        /// is in master mode -- it tries to load the user by name. If the user exists but
+        /// not associated by the master, an identity entry is automatically created. If
+        /// the user doesn't exist if is created automatically.
+        /// </remarks>
+        private User LoadUserByIdentity()
+        {
+            //
+            throw new NotImplementedException();
+        }
+#endif
     }
 }

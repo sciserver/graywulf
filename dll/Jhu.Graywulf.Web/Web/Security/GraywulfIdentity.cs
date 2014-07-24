@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Web.Security
         private string protocol;
         private string authorityName;
         private string authorityUri;
-        private string authorityDisplayName;
+        private bool isMasterAuthority;
         private string identifier;
         private bool isAuthenticated;
         private EntityReference<User> userReference;
@@ -61,6 +61,15 @@ namespace Jhu.Graywulf.Web.Security
         {
             get { return authorityUri; }
             set { authorityUri = value; }
+        }
+
+        /// <summary>
+        /// Gets whether the user was identified by a master authority.
+        /// </summary>
+        public bool IsMasterAuthority
+        {
+            get { return isMasterAuthority; }
+            internal set { isMasterAuthority = value; }
         }
 
         /// <summary>
@@ -118,7 +127,7 @@ namespace Jhu.Graywulf.Web.Security
             set { userReference.Value = value; }
         }
 
-        public GraywulfIdentity()
+        internal GraywulfIdentity()
         {
             InitializeMembers(new StreamingContext());
         }
@@ -135,6 +144,7 @@ namespace Jhu.Graywulf.Web.Security
             this.authorityName = String.Empty;
             this.authorityUri = String.Empty;
             this.identifier = String.Empty;
+            this.isAuthenticated = false;
             this.userReference = new EntityReference<User>(null);
         }
 
@@ -144,6 +154,7 @@ namespace Jhu.Graywulf.Web.Security
             this.authorityName = old.authorityName;
             this.authorityUri = old.authorityUri;
             this.identifier = old.identifier;
+            this.isAuthenticated = old.isAuthenticated;
             this.userReference = new EntityReference<User>(null, old.userReference);
         }
 
@@ -160,43 +171,125 @@ namespace Jhu.Graywulf.Web.Security
                 StringComparer.InvariantCultureIgnoreCase.Compare(this.identifier, other.identifier) == 0;
         }
 
-
         /// <summary>
-        /// Loads the user from the graywulf registry
+        /// Loads user from the Graywulf registry based on the identity
         /// </summary>
-        /// <param name="identity"></param>
-        /// <remarks>
-        /// If the identity is not found, it will be marked as non-authenticated
-        /// </remarks>
-        public void LoadUser(Domain domain)
+        public void LoadUser()
         {
+            // If the user is authenticated by a generic authority then we should
+            // be able to find it by a registered identity in the Graywulf registry.
+            // If the authenticator, on the other hand, is a master authority,
+            // that case we either load the user by name or by identity. If the user
+            // is not found in the registry then we create it.
+
+            // The only special case is when the user is authenticated by an ASP.NET
+            // forms authentication ticket. In this case we trust the user name within
+            // the ticket (as it was previously issued by us) so we simply load the
+            // user by name
+          
             using (var registryContext = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                var uf = new UserFactory(registryContext);
+                User user = null;
 
-                try
+                if (this.Protocol == Constants.ProtocolNameForms)
                 {
-                    switch (protocol)
+                    user = LoadUserByName(registryContext, this.Identifier);
+                }
+                else if (this.IsMasterAuthority)
+                {
+                    // If the user ahs been authenticated by a master authority
+                    // we try to find it first, then we create a new user if
+                    // necessary
+
+                    user = LoadUserByIdentity(registryContext);
+
+                    if (user == null)
                     {
-                        case Constants.ProtocolNameForms:
-                            userReference.Value = uf.LoadUser(identifier);
-                            break;
-                        case Constants.ProtocolNameWindows:
-                            // TODO: implement NTLM auth
-                            throw new NotImplementedException();
-                        default:
-                            // All other cases use lookup by protocol name
-                            userReference.Value = uf.FindUserByIdentity(domain, protocol, authorityUri, identifier);
-                            break;
-                    }
+                        // No user found by identity, try to load by name
+                        user = LoadUserByName(registryContext);
 
-                    IsAuthenticated = true;
+                        // If the user is still not found, create an entirely new user
+                        if (user == null)
+                        {
+                            user = CreateUser(registryContext);
+                        }
+
+                        // Now we have a user but no identifier is associated with it
+                        // Simply create a new identity in the Graywulf registry
+
+                        var uid = CreateUserIdentity(user);
+                        uid.Save();
+                    }
                 }
-                catch (EntityNotFoundException)
+                else
                 {
-                    isAuthenticated = false;
+                    // If the user was authenticated by a non-master authority
+                    // we simply look it up by identifier
+
+                    user = LoadUserByIdentity(registryContext);
                 }
+
+                if (user == null)
+                {
+                    throw new SecurityException(ExceptionMessages.AccessDenied);
+                }
+
+                this.userReference.Value = user;
             }
+        }
+
+        private User LoadUserByName(Context registryContext)
+        {
+            // Use name from the temporary user created by the authenticator
+            var name = this.User.Name;
+
+            // Prefix name with domain name
+            name = EntityFactory.CombineName(registryContext.Domain.GetFullyQualifiedName(), name);
+
+            // Try to load user
+            return LoadUserByName(registryContext, name);
+        }
+
+        private User LoadUserByName(Context registryContext, string name)
+        {
+            var ef = new EntityFactory(registryContext);
+
+            try
+            {
+                return ef.LoadEntity<User>(name);
+            }
+            catch (EntityNotFoundException)
+            {
+                return null;
+            }
+        }
+
+        private User LoadUserByIdentity(Context registryContext)
+        {
+            var uf = new UserFactory(registryContext);
+
+            try
+            {
+                return uf.FindUserByIdentity(
+                    registryContext.Domain,
+                    this.Protocol,
+                    this.AuthorityUri,
+                    this.Identifier);
+            }
+            catch (EntityNotFoundException)
+            {
+                return null;
+            }
+        }
+
+        private User CreateUser(Context registryContext)
+        {
+            // TODO: this needs testing here
+
+            this.User.Context = registryContext;
+            this.User.Save();
+
+            return this.User;
         }
 
         /// <summary>
@@ -206,13 +299,15 @@ namespace Jhu.Graywulf.Web.Security
         /// <returns></returns>
         public UserIdentity CreateUserIdentity(User user)
         {
-            return new UserIdentity(user)
+            var uid = new UserIdentity(user)
             {
-                Name = String.Format("{0}_{1}", AuthorityName, user.Name),
-                Protocol = Protocol,
-                Authority = AuthorityUri,
-                Identifier = Identifier
+                Name = String.Format("{0}_{1}", this.AuthorityName, user.Name),
+                Protocol = this.Protocol,
+                Authority = this.AuthorityUri,
+                Identifier = this.Identifier
             };
+
+            return uid;
         }
     }
 }

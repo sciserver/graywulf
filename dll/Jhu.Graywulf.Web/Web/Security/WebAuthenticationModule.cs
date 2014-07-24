@@ -73,12 +73,12 @@ namespace Jhu.Graywulf.Web.Security
 
         private void OnPostAuthenticateRequest(object sender, EventArgs e)
         {
-            var context = ((HttpApplication)sender).Context;
-            var user = DispatchIdentityType(context.User);
+            var httpContext = ((HttpApplication)sender).Context;
+            var principal = DispatchIdentityType(httpContext.User);
 
-            if (user != null)
+            if (principal != null)
             {
-                context.User = user;
+                httpContext.User = principal;
             }
         }
 
@@ -134,7 +134,7 @@ namespace Jhu.Graywulf.Web.Security
                         // A new user has just arrived, load info from the registry
                         using (var registryContext = httpApplication.CreateRegistryContext())
                         {
-                            ((GraywulfIdentity)httpContext.User.Identity).LoadUser(registryContext.Domain);
+                            ((GraywulfIdentity)httpContext.User.Identity).LoadUser();
                         }
 
                         httpContext.Session[Web.Constants.SessionPrincipal] = httpContext.User;

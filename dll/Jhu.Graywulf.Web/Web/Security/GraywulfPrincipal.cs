@@ -12,38 +12,6 @@ namespace Jhu.Graywulf.Web.Security
     /// </summary>
     public class GraywulfPrincipal : IPrincipal
     {
-        /// <summary>
-        /// Creates a graywulf principal based on the guid stored in the
-        /// forms authentication token.
-        /// </summary>
-        /// <param name="identity"></param>
-        /// <returns></returns>
-        public static GraywulfPrincipal Create(System.Web.Security.FormsIdentity formsIdentity)
-        {
-            var identity = new GraywulfIdentity()
-            {
-                Protocol = Constants.ProtocolNameForms,
-                Identifier = formsIdentity.Name,
-                IsAuthenticated = true,
-            };
-
-            identity.UserReference.Name = formsIdentity.Name;
-            return new GraywulfPrincipal(identity);
-        }
-
-        public static GraywulfPrincipal Create(System.Web.Security.FormsAuthenticationTicket ticket)
-        {
-            var identity = new GraywulfIdentity()
-            {
-                Protocol = Constants.ProtocolNameForms,
-                Identifier = ticket.Name,
-                IsAuthenticated = true,
-            };
-
-            identity.UserReference.Name = ticket.Name;
-            return new GraywulfPrincipal(identity);
-        }
-
         private HashSet<string> roles;
         private GraywulfIdentity identity;
 

@@ -77,6 +77,11 @@ namespace Jhu.Graywulf.Registry
             return name;
         }
 
+        public static string CombineName(string parentName, string name)
+        {
+            return parentName + "." + name;
+        }
+
         public static string GetName(string name)
         {
             var idx = name.LastIndexOf('.');

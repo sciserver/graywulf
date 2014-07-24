@@ -53,32 +53,20 @@ namespace Jhu.Graywulf.Web.Security
             CallAuthenticators(httpContext);
             
             // Based on the results of the authentication, create a graywulf
-            // used
-            var user = DispatchIdentityType(httpContext.User);
+            // uses
+            var principal = DispatchIdentityType(httpContext.User);
 
-            if (user != null)
+            if (principal != null)
             {
-                // TODO
-                // REST services do not use a session but we don't want to load the user
-                // every single time from the session so do some caching here.
-                // The problem is, however, that we don't want to keep the user in the cache
-                // for ever, so some cache expiration should be done
-                using (Registry.Context registryContext = httpApplication.CreateRegistryContext())
-                {
-                    user.Identity.LoadUser(registryContext.Domain);
-                }
-
-                // TODO
-                // Also, we have to be able to detect users who just arrived so the appropriate
-                // event can be raised. Now simply rise the event every time
-                httpApplication.OnUserSignedIn(user.Identity);
-
                 // TODO
                 // Since there is no session, there's no way to raise the other event
                 // that signals when a user is leaving
-                
-                System.Threading.Thread.CurrentPrincipal = user;
+
+                httpContext.User = principal;
+                System.Threading.Thread.CurrentPrincipal = principal;
             }
+
+            IdentifyUser();
             
             return null;
         }
@@ -99,6 +87,26 @@ namespace Jhu.Graywulf.Web.Security
         public void AfterCall(string operationName, object[] outputs, object returnValue, object correlationState)
         {
             // Required by the interface, not used.
+        }
+
+        private void IdentifyUser()
+        {
+            var httpContext = HttpContext.Current;
+            var httpApplication = (ApplicationBase)HttpContext.Current.ApplicationInstance;
+
+            // TODO
+            // REST services do not use a session but we don't want to load the user
+            // every single time from the session so do some caching here.
+            // The problem is, however, that we don't want to keep the user in the cache
+            // for ever, so some cache expiration should be done
+
+            var principal = (GraywulfPrincipal)httpContext.User;
+            principal.Identity.LoadUser();
+
+            // TODO
+            // Also, we have to be able to detect users who just arrived so the appropriate
+            // event can be raised. Now simply rise the event every time
+            httpApplication.OnUserSignedIn(principal.Identity);
         }
     }
 }

@@ -158,7 +158,9 @@ namespace Jhu.Graywulf.Web.Auth
                 if (principal != null)
                 {
                     var identity = (GraywulfIdentity)principal.Identity;
-                    identity.LoadUser(RegistryContext.Domain);
+                    
+                    identity.LoadUser();
+                    
                     if (identity.IsAuthenticated)
                     {
                         RedirectAuthenticatedUser(identity.User);
@@ -171,7 +173,7 @@ namespace Jhu.Graywulf.Web.Auth
                         // authority
 
                         // TODO: we may trust certain identity services, so users coming
-                        // from them could automatically registered without beging
+                        // from them could automatically registered without being
                         // sent to the user form.
 
                         TemporaryPrincipal = principal;

@@ -27,9 +27,19 @@ namespace Jhu.Graywulf.Web.Security
             get { return Constants.ProtocolNameOpenID; }
         }
 
-        public override bool IsInteractive
+        public override bool IsWebInteractive
         {
             get { return true; }
+        }
+
+        public override bool IsWebRequest
+        {
+            get { return false; }
+        }
+
+        public override bool IsRestRequest
+        {
+            get { return false; }
         }
 
         /// <summary>
@@ -147,29 +157,25 @@ namespace Jhu.Graywulf.Web.Security
         /// <param name="response"></param>
         /// <returns></returns>
         /// <remarks>
-        /// The function also creates and initializer a registry user object by
-        /// filling in the available information. The user is not save to the
+        /// The function also creates and initializes a registry user object by
+        /// filling in the available information. The user is not saved to the
         /// registry.
         /// </remarks>
         private GraywulfPrincipal CreatePrincipal(IAuthenticationResponse response)
         {
-            var identity = new GraywulfIdentity()
-            {
-                Protocol = this.ProtocolName,
-                AuthorityName = this.AuthorityName,
-                AuthorityUri = response.Provider.Uri.ToString(),
-                Identifier = response.ClaimedIdentifier,
-                IsAuthenticated = false,
-                User = new User()
-            };
+            var principal = base.CreatePrincipal();
+            var identity = principal.Identity;
 
+            // Read response from OpenID provider
             var fetch = response.GetExtension<FetchResponse>();
 
-            if (fetch.Attributes.Contains(WellKnownAttributes.Contact.Email))
-            {
-                identity.User.Name = Jhu.Graywulf.Util.EmailFormatter.ToUsername(fetch.Attributes[WellKnownAttributes.Contact.Email].Values[0]);
-            }
+            // Fill in identity details based on the response
+            identity.AuthorityUri = response.Provider.Uri.ToString();
+            identity.Identifier = response.ClaimedIdentifier;
 
+            // Fill in user details
+            // TODO: how to generate user name from OpenID?
+            identity.User.Name = fetch.Attributes.Contains(WellKnownAttributes.Contact.Email) ? Jhu.Graywulf.Util.EmailFormatter.ToUsername(fetch.Attributes[WellKnownAttributes.Contact.Email].Values[0]) : "";
             identity.User.Title = fetch.Attributes.Contains(WellKnownAttributes.Name.Prefix) ? fetch.Attributes[WellKnownAttributes.Name.Prefix].Values[0] : "";
             identity.User.FirstName = fetch.Attributes.Contains(WellKnownAttributes.Name.First) ? fetch.Attributes[WellKnownAttributes.Name.First].Values[0] : "";
             identity.User.MiddleName = fetch.Attributes.Contains(WellKnownAttributes.Name.Middle) ? fetch.Attributes[WellKnownAttributes.Name.Middle].Values[0] : "";
@@ -189,7 +195,7 @@ namespace Jhu.Graywulf.Web.Security
             identity.User.HomePhone = fetch.Attributes.Contains(WellKnownAttributes.Contact.Phone.Home) ? fetch.Attributes[WellKnownAttributes.Contact.Phone.Home].Values[0] : "";
             identity.User.CellPhone = fetch.Attributes.Contains(WellKnownAttributes.Contact.Phone.Mobile) ? fetch.Attributes[WellKnownAttributes.Contact.Phone.Mobile].Values[0] : "";
 
-            return new GraywulfPrincipal(identity);
+            return principal;
         }
     }
 }

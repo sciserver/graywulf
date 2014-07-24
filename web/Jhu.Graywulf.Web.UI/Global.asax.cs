@@ -46,6 +46,7 @@ namespace Jhu.Graywulf.Web.UI
 
         protected override void OnUserSignedIn(GraywulfIdentity identity)
         {
+            // TODO: context cannot be created if no user is set
             using (var context = CreateRegistryContext())
             {
                 // Check if user's myDB exists, if not, create

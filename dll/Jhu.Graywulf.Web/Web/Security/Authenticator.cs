@@ -18,6 +18,7 @@ namespace Jhu.Graywulf.Web.Security
 
         private string authorityName;
         private string authorityUrl;
+        private bool isMasterAuthority;
         private string displayName;
 
         #endregion
@@ -28,7 +29,17 @@ namespace Jhu.Graywulf.Web.Security
         /// </summary>
         public abstract string ProtocolName { get; }
 
-        public abstract bool IsInteractive { get; }
+        /// <summary>
+        /// Gets the value indicating whether the authenticator support
+        /// interactive authentication for web pages.
+        /// </summary>
+        public abstract bool IsWebInteractive { get; }
+
+        /// <summary>
+        /// Gets the value indicating whether
+        /// </summary>
+        public abstract bool IsWebRequest { get; }
+        public abstract bool IsRestRequest { get; }
 
         /// <summary>
         /// Gets the name of the authentication authority.
@@ -48,6 +59,16 @@ namespace Jhu.Graywulf.Web.Security
         {
             get { return authorityUrl; }
             set { authorityUrl = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets if the authenticator is accepter as a master authority
+        /// </summary>
+        [XmlElement]
+        public bool IsMasterAuthority
+        {
+            get { return isMasterAuthority; }
+            set { isMasterAuthority = value; }
         }
 
         /// <summary>
@@ -72,6 +93,7 @@ namespace Jhu.Graywulf.Web.Security
         {
             this.authorityName = null;
             this.authorityUrl = null;
+            this.isMasterAuthority = false;
             this.displayName = null;
         }
 
@@ -88,9 +110,27 @@ namespace Jhu.Graywulf.Web.Security
         /// <returns></returns>
         public abstract GraywulfPrincipal Authenticate(HttpContext httpContext);
 
+        /// <summary>
+        /// Create a Graywulf principal with a pre-initialized identity
+        /// </summary>
+        /// <returns></returns>
+        protected virtual GraywulfPrincipal CreatePrincipal()
+        {
+            var identity = new GraywulfIdentity()
+            {
+                Protocol = ProtocolName,
+                AuthorityName = authorityName,
+                AuthorityUri = authorityUrl,
+                IsMasterAuthority = isMasterAuthority,
+                IsAuthenticated = false,
+            };
+
+            return new GraywulfPrincipal(identity);
+        }
+
         public virtual void RedirectToLoginPage()
         {
-            if (!IsInteractive)
+            if (!IsWebInteractive)
             {
                 throw new InvalidOperationException();
             }

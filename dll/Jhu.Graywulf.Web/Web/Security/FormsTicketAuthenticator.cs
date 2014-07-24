@@ -23,9 +23,19 @@ namespace Jhu.Graywulf.Web.Security
             get { return Constants.ProtocolNameForms; }
         }
 
-        public override bool IsInteractive
+        public override bool IsWebInteractive
         {
             get { return false; }
+        }
+
+        public override bool IsWebRequest
+        {
+            get { return false; }
+        }
+
+        public override bool IsRestRequest
+        {
+            get { return true; }
         }
 
         #endregion
@@ -74,7 +84,7 @@ namespace Jhu.Graywulf.Web.Security
                     }
 
                     // Create a GraywulfPrincipal based on the ticket.
-                    principal = GraywulfPrincipal.Create(ticket);
+                    principal = CreatePrincipal(ticket);
 
                     // Set special cookie path, if necessary
                     if (!ticket.CookiePath.Equals("/"))
@@ -130,6 +140,30 @@ namespace Jhu.Graywulf.Web.Security
                 }
             }
 
+            return principal;
+        }
+
+        /// <summary>
+        /// Creates a Graywulf principal based on the user name stored in the
+        /// forms authentication ticket.
+        /// </summary>
+        /// <param name="ticket"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// A FormsAuthenticationTicket is always automatically accepted as from
+        /// a master authority.
+        /// </remarks>
+        private GraywulfPrincipal CreatePrincipal(FormsAuthenticationTicket ticket)
+        {
+            var principal = base.CreatePrincipal();
+            var identity = principal.Identity;
+
+            identity.Identifier = ticket.Name;
+            identity.IsAuthenticated = true;
+            identity.IsMasterAuthority = true;
+
+            identity.UserReference.Name = ticket.Name;
+            
             return principal;
         }
     }

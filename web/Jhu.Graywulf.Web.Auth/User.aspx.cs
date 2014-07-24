@@ -79,8 +79,8 @@ namespace Jhu.Graywulf.Web.Auth
             if (TemporaryPrincipal != null)
             {
                 var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
-                var ui = identity.CreateUserIdentity(user);
-                ui.Save();
+                var uid = identity.CreateUserIdentity(user);
+                uid.Save();
             }
 
             Util.EmailSender.Send(user, File.ReadAllText(MapPath("~/templates/ActivationEmail.xml")), BaseUrl);

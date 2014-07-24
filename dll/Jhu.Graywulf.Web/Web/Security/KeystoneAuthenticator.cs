@@ -36,7 +36,9 @@ namespace Jhu.Graywulf.Web.Security
         #region Private member variables
 
         private string graywulfDomainPrefix;
+
         private string adminToken;
+        private string domain;
 
         #endregion
         #region Properties
@@ -46,15 +48,34 @@ namespace Jhu.Graywulf.Web.Security
             get { return Constants.ProtocolNameKeystone; }
         }
 
-        public override bool IsInteractive
+        public override bool IsWebInteractive
         {
-            get { return false; }
+            get { return true; }
+        }
+
+        public override bool IsWebRequest
+        {
+            get { return true; }
+        }
+
+        public override bool IsRestRequest
+        {
+            get { return true; }
         }
 
         public string AdminToken
         {
             get { return adminToken; }
             set { adminToken = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the Keystone domain in which users reside.
+        /// </summary>
+        public string Domain
+        {
+            get { return domain; }
+            set { domain = value; }
         }
 
         #endregion
@@ -68,6 +89,10 @@ namespace Jhu.Graywulf.Web.Security
         private void InitializeMembers()
         {
             AuthorityName = Constants.AuthorityNameKeystone;
+
+            this.graywulfDomainPrefix = null;
+            this.adminToken = null;
+            this.domain = "default";
         }
 
         #endregion
@@ -93,7 +118,14 @@ namespace Jhu.Graywulf.Web.Security
             GraywulfPrincipal principal = null;
 
             // Look for a token in the request headers
-            var tokenID = httpContext.Request.Headers.Get(Constants.KeystoneAuthTokenHeader);
+            var tokenID = httpContext.Request.Headers.Get(Constants.KeystoneAuthTokenHeader);   
+            // TODO: use custom property
+
+            if (tokenID == null)
+            {
+                // Try to take header from the query string
+                tokenID = httpContext.Request.QueryString["token"]; // TODO: use custom property
+            }
 
             if (tokenID != null)
             {
@@ -104,10 +136,27 @@ namespace Jhu.Graywulf.Web.Security
                 {
                     // Need to validate token against Keystone
 
-                    // TODO...
+                    var ksclient = new KeystoneClient(new Uri(AuthorityUrl))
+                    {
+                        AdminAuthToken = adminToken,
+                    };
+
+                    token = new Token()
+                    {
+                        ID = tokenID
+                    };
+
+                    // Keystone doesn't return the user along with
+                    // the token, so let's retrieve it now.
+
+                    // TODO: this part might need modifications
+                    // if we also accept trusts
+                    token.User = ksclient.GetUser(token);
+
+                    tokenCache.TryAdd(token.ID, token);
                 }
 
-                // Create a GraywulfPrincipal based on the tokne
+                // Create a GraywulfPrincipal based on the token
                 principal = CreatePrincipal(token);
             }
 
@@ -124,17 +173,18 @@ namespace Jhu.Graywulf.Web.Security
 
         private GraywulfPrincipal CreatePrincipal(Token token)
         {
-            var name = String.Format("{0}:{1}.{2}",
-                EntityType.User, graywulfDomainPrefix, token.User.Name);
+            var principal = base.CreatePrincipal();
+            var identity = principal.Identity;
 
-            var identity = new GraywulfIdentity()
-            {
-                Protocol = Constants.ProtocolNameKeystone,
-                Identifier = token.User.Name,
-                IsAuthenticated = true,
-            };
+            identity.Identifier = token.User.ID;
 
-            identity.UserReference.Name = token.User.Name;
+            identity.User.Name = token.User.Name;
+            identity.User.Comments = token.User.Description;
+            identity.User.Email = token.User.Email;
+            
+            // TODO: fill in additional information based on user data
+            // in the keystone token
+                        
             return new GraywulfPrincipal(identity);
         }
     }
