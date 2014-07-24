@@ -245,7 +245,7 @@ namespace Jhu.Graywulf.Web.Security
             var name = this.User.Name;
 
             // Prefix name with domain name
-            name = EntityFactory.CombineName(registryContext.Domain.GetFullyQualifiedName(), name);
+            name = EntityFactory.CombineName(EntityType.User, registryContext.Domain.GetFullyQualifiedName(), name);
 
             // Try to load user
             return LoadUserByName(registryContext, name);
@@ -286,11 +286,13 @@ namespace Jhu.Graywulf.Web.Security
         private User CreateUser(Context registryContext)
         {
             // TODO: this needs testing here
+            var user = this.User;
 
-            this.User.Context = registryContext;
-            this.User.Save();
+            user.Context = registryContext;
+            user.ParentReference.Value = registryContext.Domain;
+            user.Save();
 
-            return this.User;
+            return user;
         }
 
         /// <summary>

@@ -48,19 +48,13 @@ namespace Jhu.Graywulf.Web.Security
             get { return Constants.ProtocolNameKeystone; }
         }
 
-        public override bool IsWebInteractive
+        public override AuthenticatorProtocolType ProtocolType
         {
-            get { return true; }
-        }
-
-        public override bool IsWebRequest
-        {
-            get { return true; }
-        }
-
-        public override bool IsRestRequest
-        {
-            get { return true; }
+            get
+            {
+                return AuthenticatorProtocolType.WebRequest |
+                       AuthenticatorProtocolType.RestRequest;
+            }
         }
 
         public string AdminToken
@@ -178,9 +172,15 @@ namespace Jhu.Graywulf.Web.Security
 
             identity.Identifier = token.User.ID;
 
+            identity.User = new Registry.User();
+
             identity.User.Name = token.User.Name;
-            identity.User.Comments = token.User.Description;
-            identity.User.Email = token.User.Email;
+
+            // Accept users without the following parameters set but
+            // this is not a good practice in general to leave them null 
+            // in Keystone
+            identity.User.Comments = token.User.Description ?? String.Empty;
+            identity.User.Email = token.User.Email ?? String.Empty;
             
             // TODO: fill in additional information based on user data
             // in the keystone token

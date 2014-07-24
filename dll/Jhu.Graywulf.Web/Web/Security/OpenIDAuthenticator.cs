@@ -27,19 +27,9 @@ namespace Jhu.Graywulf.Web.Security
             get { return Constants.ProtocolNameOpenID; }
         }
 
-        public override bool IsWebInteractive
+        public override AuthenticatorProtocolType ProtocolType
         {
-            get { return true; }
-        }
-
-        public override bool IsWebRequest
-        {
-            get { return false; }
-        }
-
-        public override bool IsRestRequest
-        {
-            get { return false; }
+            get { return AuthenticatorProtocolType.WebInteractive; }
         }
 
         /// <summary>

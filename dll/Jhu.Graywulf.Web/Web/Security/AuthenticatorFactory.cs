@@ -73,13 +73,13 @@ namespace Jhu.Graywulf.Web.Security
 
             // Sort authenticators by type
             webInteractiveAuthenticators = new List<Authenticator>(
-                allAuthenticators.Where(i => i.IsWebInteractive));
+                allAuthenticators.Where(i => (i.ProtocolType & AuthenticatorProtocolType.WebInteractive) != 0));
 
             webRequestAuthenticators = new List<Authenticator>(
-                allAuthenticators.Where(i => i.IsWebRequest));
+                allAuthenticators.Where(i => (i.ProtocolType & AuthenticatorProtocolType.WebRequest) != 0));
 
             restRequestAuthenticators = new List<Authenticator>(
-                allAuthenticators.Where(i => i.IsRestRequest));
+                allAuthenticators.Where(i => (i.ProtocolType & AuthenticatorProtocolType.RestRequest) != 0));
         }
 
         protected AuthenticatorFactory()

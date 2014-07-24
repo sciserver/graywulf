@@ -172,6 +172,7 @@
     <Compile Include="Web\Controls\ToolbarButton.cs" />
     <Compile Include="Web\Controls\ToolbarSpan.cs" />
     <Compile Include="Web\Security\Authenticator.cs" />
+    <Compile Include="Web\Security\Enum.cs" />
     <Compile Include="Web\Security\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -23,19 +23,9 @@ namespace Jhu.Graywulf.Web.Security
             get { return Constants.ProtocolNameForms; }
         }
 
-        public override bool IsWebInteractive
+        public override AuthenticatorProtocolType ProtocolType
         {
-            get { return false; }
-        }
-
-        public override bool IsWebRequest
-        {
-            get { return false; }
-        }
-
-        public override bool IsRestRequest
-        {
-            get { return true; }
+            get { return AuthenticatorProtocolType.RestRequest; }
         }
 
         #endregion

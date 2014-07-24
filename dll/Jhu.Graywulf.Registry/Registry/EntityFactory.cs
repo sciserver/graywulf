@@ -77,9 +77,11 @@ namespace Jhu.Graywulf.Registry
             return name;
         }
 
-        public static string CombineName(string parentName, string name)
+        public static string CombineName(EntityType entityType, string parentName, string name)
         {
-            return parentName + "." + name;
+            var idx = parentName.IndexOf(':');
+
+            return entityType.ToString() + ":" + parentName.Substring(idx + 1) + "." + name;
         }
 
         public static string GetName(string name)
@@ -582,29 +584,29 @@ ORDER BY Number";
 
             foreach (var entity in registry.Entities)
             {
-                    Console.Error.Write("Resolving references of {0}... ", entity.Name);
+                Console.Error.Write("Resolving references of {0}... ", entity.Name);
 
-                    try
-                    {
-                        entity.IsDeserializing = false;     // Allows saving entity references
-                        ResolveNameReferences(entity);
-                        entity.Save();
+                try
+                {
+                    entity.IsDeserializing = false;     // Allows saving entity references
+                    ResolveNameReferences(entity);
+                    entity.Save();
 
-                        Console.Error.WriteLine("done.");
-                    }
-                    catch (DuplicateNameException)
+                    Console.Error.WriteLine("done.");
+                }
+                catch (DuplicateNameException)
+                {
+                    if (!ignoreDuplicates)
                     {
-                        if (!ignoreDuplicates)
-                        {
-                            throw;
-                        }
-                        Console.Error.WriteLine("ignored duplicate.");
-                    }
-                    catch (Exception)
-                    {
-                        Console.Error.WriteLine("failed.");
                         throw;
                     }
+                    Console.Error.WriteLine("ignored duplicate.");
+                }
+                catch (Exception)
+                {
+                    Console.Error.WriteLine("failed.");
+                    throw;
+                }
             }
 
             return registry.Entities;

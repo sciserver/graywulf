@@ -121,63 +121,6 @@ namespace Jhu.Graywulf.Web.Security
             identity.UserReference.Name = formsIdentity.Name;
 
             return new GraywulfPrincipal(identity);
-        }       
-
-#if false // TODO: old code, delete
-        /// <summary>
-        /// Loads the user from the graywulf registry
-        /// </summary>
-        /// <param name="identity"></param>
-        /// <remarks>
-        /// If the identity is not found, it will be marked as non-authenticated
-        /// </remarks>
-        protected void LoadUser(GraywulfPrincipal principal)
-        {
-            using (var registryContext = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
-            {
-                var uf = new UserFactory(registryContext);
-
-                try
-                {
-                    switch (principal.Identity.Protocol)
-                    {
-                        case Constants.ProtocolNameForms:
-                            userReference.Value = uf.LoadUser(identifier);
-                            break;
-                        case Constants.ProtocolNameWindows:
-                            // TODO: implement NTLM auth
-                            throw new NotImplementedException();
-                        default:
-                            // All other cases use lookup by protocol name
-                            userReference.Value = uf.FindUserByIdentity(registryContext.Domain, protocol, authorityUri, identifier);
-                            break;
-                    }
-
-                    IsAuthenticated = true;
-                }
-                catch (EntityNotFoundException)
-                {
-                    isAuthenticated = false;
-                }
-            }
         }
-
-        /// <summary>
-        /// Loads a user from the Graywulf database based on information found in the
-        /// authentication ticket.
-        /// </summary>
-        /// <returns></returns>
-        /// <remarks>
-        /// The function first tries to load the user by identity then -- if the authority
-        /// is in master mode -- it tries to load the user by name. If the user exists but
-        /// not associated by the master, an identity entry is automatically created. If
-        /// the user doesn't exist if is created automatically.
-        /// </remarks>
-        private User LoadUserByIdentity()
-        {
-            //
-            throw new NotImplementedException();
-        }
-#endif
     }
 }

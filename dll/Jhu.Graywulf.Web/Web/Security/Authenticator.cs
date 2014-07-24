@@ -29,17 +29,7 @@ namespace Jhu.Graywulf.Web.Security
         /// </summary>
         public abstract string ProtocolName { get; }
 
-        /// <summary>
-        /// Gets the value indicating whether the authenticator support
-        /// interactive authentication for web pages.
-        /// </summary>
-        public abstract bool IsWebInteractive { get; }
-
-        /// <summary>
-        /// Gets the value indicating whether
-        /// </summary>
-        public abstract bool IsWebRequest { get; }
-        public abstract bool IsRestRequest { get; }
+        public abstract AuthenticatorProtocolType ProtocolType { get; }
 
         /// <summary>
         /// Gets the name of the authentication authority.
@@ -122,7 +112,7 @@ namespace Jhu.Graywulf.Web.Security
                 AuthorityName = authorityName,
                 AuthorityUri = authorityUrl,
                 IsMasterAuthority = isMasterAuthority,
-                IsAuthenticated = false,
+                IsAuthenticated = true,
             };
 
             return new GraywulfPrincipal(identity);
@@ -130,7 +120,7 @@ namespace Jhu.Graywulf.Web.Security
 
         public virtual void RedirectToLoginPage()
         {
-            if (!IsWebInteractive)
+            if ((ProtocolType & AuthenticatorProtocolType.WebInteractive) == 0)
             {
                 throw new InvalidOperationException();
             }
