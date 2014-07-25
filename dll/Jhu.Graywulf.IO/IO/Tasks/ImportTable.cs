@@ -13,7 +13,7 @@ using Jhu.Graywulf.Schema;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
-    [RemoteServiceClass(typeof(ImportTable))]
+    [RemoteService(typeof(ImportTable))]
     [NetDataContract]
     public interface IImportTable : ICopyTableBase
     {

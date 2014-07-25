@@ -49,10 +49,12 @@
     <Compile Include="RemoteService\Constants.cs" />
     <Compile Include="RemoteService\IRemoteService.cs" />
     <Compile Include="RemoteService\IRemoteServiceControl.cs" />
+    <Compile Include="RemoteService\LimitedAccessOperationAttribute.cs" />
+    <Compile Include="RemoteService\LimitedAccessOperationInvoker.cs" />
     <Compile Include="RemoteService\NetDataContractAttribute.cs" />
     <Compile Include="RemoteService\NetDataContractSerializerOperationBehavior.cs" />
+    <Compile Include="RemoteService\RemoteServiceAttribute.cs" />
     <Compile Include="RemoteService\RemoteServiceBase.cs" />
-    <Compile Include="RemoteService\RemoteServiceClassAttribute.cs" />
     <Compile Include="RemoteService\RemoteServiceHelper.cs" />
     <Compile Include="Tasks\CancelableDbCommand.cs">
       <SubType>Code</SubType>

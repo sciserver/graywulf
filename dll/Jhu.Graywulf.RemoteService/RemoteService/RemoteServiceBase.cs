@@ -17,11 +17,6 @@ namespace Jhu.Graywulf.RemoteService
         IncludeExceptionDetailInFaults = true)]
     public abstract class RemoteServiceBase : CancelableTask, IRemoteService
     {
-        protected void EnsureRoleAccess()
-        {
-            RemoteServiceHelper.EnsureRoleAccess();
-        }
-
         public override bool IsCanceled
         {
             [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
@@ -29,32 +24,30 @@ namespace Jhu.Graywulf.RemoteService
         }
 
         [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation]
         public override void Execute()
         {
             // Modify remote service to do check access when called from service only
             // add wcf handler to check roles instead of doing it from here
-            EnsureRoleAccess();
             base.Execute();
         }
 
         [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation]
         public override void BeginExecute()
         {
-            EnsureRoleAccess();
             base.BeginExecute();
         }
 
         [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
         public override void EndExecute()
         {
-            EnsureRoleAccess();
             base.EndExecute();
         }
 
         [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
         public override void Cancel()
         {
-            EnsureRoleAccess();
             base.Cancel();
         }
     }

@@ -14,7 +14,7 @@ using Jhu.Graywulf.Format;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
-    [RemoteServiceClass(typeof(ExportTable))]
+    [RemoteService(typeof(ExportTable))]
     [NetDataContract]
     public interface IExportTable : ICopyTableBase
     {

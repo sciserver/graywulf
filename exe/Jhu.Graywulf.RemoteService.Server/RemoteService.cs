@@ -109,86 +109,25 @@ namespace Jhu.Graywulf.RemoteService.Server
 
         #endregion
 
+        /// <summary>
+        /// Registers a new service host and endpoint for a contract type
+        /// </summary>
+        /// <param name="contract"></param>
+        /// <returns></returns>
         public static Uri RegisterService(Type contract)
         {
-            // See if contractType is decorated with the RemoteServiceClassAttribute
-            var attr = contract.GetCustomAttributes(typeof(RemoteServiceClassAttribute), false);
+            ServiceHost host;
+            ServiceEndpoint endpoint;
 
-            if (attr == null || attr.Length != 1)
-            {
-                // TODO
-                throw new InvalidOperationException("Contracts must be decorated with the RemoteServiceClassAttribute for automatic service registration.");
-            }
-
-            var serviceType = ((RemoteServiceClassAttribute)attr[0]).Type.AssemblyQualifiedName;
-
-            // Attempt to load type
-            var service = Type.GetType(serviceType);
-
-            if (!service.IsSubclassOf(typeof(RemoteServiceBase)))
-            {
-                // TODO
-                throw new InvalidOperationException("Service class must derive from Jhu.Graywulf.RemoteService.RemoteServiceBase");
-            }
-
-            if (service == null || contract == null)
-            {
-                throw new Exception("Type not found.");    // TODO
-            }
-
-            // Everything is OK, initialize service
+            var uri = RemoteServiceHelper.CreateService(contract, out host, out endpoint);
 
             lock (syncRoot)
             {
-                var host = new ServiceHost(
-                    service,
-                    RemoteServiceHelper.CreateEndpointUri(RemoteServiceHelper.GetFullyQualifiedDnsName(), ""));
-
-                // Turn on detailed debug info
-                var sdb = host.Description.Behaviors.Find<ServiceDebugBehavior>();
-                if (sdb == null)
-                {
-                    sdb = new ServiceDebugBehavior();
-                    host.Description.Behaviors.Add(sdb);
-                }
-                sdb.IncludeExceptionDetailInFaults = true;
-
-                // Turn on impersonation
-                /*
-                var sab = host.Description.Behaviors.Find<ServiceAuthorizationBehavior>();
-                if (sab == null)
-                {
-                    sab = new ServiceAuthorizationBehavior();
-                    host.Description.Behaviors.Add(sab);
-                }
-                sab.ImpersonateCallerForAllOperations = true;
-                */
-
-                // Unthrottle service to increase throughput
-                // Service is behind a firewall, no DOS attacks will happen
-                // TODO: copy these settings to the control endpoint
-                var tb = host.Description.Behaviors.Find<ServiceThrottlingBehavior>();
-                if (tb == null)
-                {
-                    tb = new ServiceThrottlingBehavior();
-                    host.Description.Behaviors.Add(tb);
-                }
-                tb.MaxConcurrentCalls = 1024;
-                tb.MaxConcurrentInstances = Int32.MaxValue;
-                tb.MaxConcurrentSessions = 1024;
-
-                var endpoint = host.AddServiceEndpoint(
-                    contract,
-                    RemoteServiceHelper.CreateNetTcpBinding(),
-                    RemoteServiceHelper.CreateEndpointUri(RemoteServiceHelper.GetFullyQualifiedDnsName(), service.FullName));
-                
-                host.Open();
-
                 registeredServiceHosts.Add(contract.FullName, host);
                 registeredEndpoints.Add(contract.FullName, endpoint);
-
-                return endpoint.Address.Uri;
             }
+
+            return uri;
         }
 
         /// <summary>

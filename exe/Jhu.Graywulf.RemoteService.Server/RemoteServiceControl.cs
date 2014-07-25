@@ -10,29 +10,26 @@ using Jhu.Graywulf.RemoteService;
 
 namespace Jhu.Graywulf.RemoteService.Server
 {
+    /// <summary>
+    /// Implements the remote service control interface to dynamically
+    /// invoke remote functions.
+    /// </summary>
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.Single,
         IncludeExceptionDetailInFaults = true)]
     class RemoteServiceControl : IRemoteServiceControl
     {
-        private void EnsureRoleAccess()
-        {
-            RemoteServiceHelper.EnsureRoleAccess();
-        }
-
         [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation]
         public string Hello()
         {
-            EnsureRoleAccess();
-
             return GetType().Assembly.FullName;
         }
 
         [OperationBehavior(Impersonation = ImpersonationOption.Required)]
+        [LimitedAccessOperation]
         public void WhoAmI(out string name, out bool isAuthenticated, out string authenticationType)
         {
-            EnsureRoleAccess();
-
             // Switch to windows principal
             var id = WindowsIdentity.GetCurrent();
 
@@ -52,10 +49,9 @@ namespace Jhu.Graywulf.RemoteService.Server
         }
 
         [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation]
         public Uri GetServiceEndpointUri(string contractType)
         {
-            EnsureRoleAccess();
-
             var contract = Type.GetType(contractType);
 
             // TODO: need to remove synchronization here
@@ -73,10 +69,9 @@ namespace Jhu.Graywulf.RemoteService.Server
         }
 
         [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+        [LimitedAccessOperation]
         public string[] QueryRegisteredServices()
         {
-            EnsureRoleAccess();
-
             // TODO: remove synchronization if possible
             lock (RemoteService.SyncRoot)
             {

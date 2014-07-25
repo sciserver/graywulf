@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ServiceModel.Description;
 
 namespace Jhu.Graywulf.RemoteService
 {
@@ -10,15 +11,15 @@ namespace Jhu.Graywulf.RemoteService
     /// to service contracts
     /// </summary>
     [AttributeUsage(AttributeTargets.Interface)]
-    public class RemoteServiceClassAttribute : Attribute
+    public class RemoteServiceAttribute : Attribute
     {
         public Type Type { get; set; }
 
-        public RemoteServiceClassAttribute()
+        public RemoteServiceAttribute()
         {
         }
 
-        public RemoteServiceClassAttribute(Type type)
+        public RemoteServiceAttribute(Type type)
         {
             Type = type;
         }
