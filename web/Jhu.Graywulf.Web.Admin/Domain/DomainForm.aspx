@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="Jhu.Graywulf.Web.Admin.Federation.DomainForm" MasterPageFile="~/EntityForm.master"
+﻿<%@ Page Language="C#" Inherits="Jhu.Graywulf.Web.Admin.Domain.DomainForm" MasterPageFile="~/EntityForm.master"
     CodeBehind="DomainForm.aspx.cs" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="FormDetails">

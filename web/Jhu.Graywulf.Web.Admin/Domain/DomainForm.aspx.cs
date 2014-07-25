@@ -13,7 +13,7 @@ using System.Xml.Linq;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Install;
 
-namespace Jhu.Graywulf.Web.Admin.Federation
+namespace Jhu.Graywulf.Web.Admin.Domain
 {
     public partial class DomainForm : EntityFormPageBase<Registry.Domain>
     {

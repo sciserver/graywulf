@@ -133,6 +133,7 @@
     <Content Include="Docs\images\vao.png" />
     <Content Include="Domain\AddUserGroupMember.aspx" />
     <Content Include="Domain\ClusterDetails.aspx" />
+    <Content Include="Domain\DomainForm.aspx" />
     <Content Include="Domain\UserIdentityDetails.aspx" />
     <Content Include="Domain\UserIdentityForm.aspx" />
     <Content Include="Domain\Default.aspx" />
@@ -152,7 +153,6 @@
     <Content Include="Federation\DeploymentPackageDetails.aspx" />
     <Content Include="Federation\DeploymentPackageForm.aspx" />
     <Content Include="Federation\DomainDetails.aspx" />
-    <Content Include="Federation\DomainForm.aspx" />
     <Content Include="Federation\FederationDetails.aspx" />
     <Content Include="Federation\FederationForm.aspx" />
     <Content Include="Federation\FileGroupDetails.aspx" />
@@ -799,6 +799,13 @@
     <Compile Include="Domain\ClusterDetails.aspx.designer.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Domain\DomainForm.aspx.cs">
+      <DependentUpon>DomainForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\DomainForm.aspx.designer.cs">
+      <DependentUpon>DomainForm.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Domain\UserIdentityDetails.aspx.cs">
       <DependentUpon>UserIdentityDetails.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -960,13 +967,6 @@
     </Compile>
     <Compile Include="Federation\DomainDetails.aspx.designer.cs">
       <DependentUpon>DomainDetails.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Federation\DomainForm.aspx.cs">
-      <DependentUpon>DomainForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Federation\DomainForm.aspx.designer.cs">
-      <DependentUpon>DomainForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\FederationDetails.aspx.cs">
       <DependentUpon>FederationDetails.aspx</DependentUpon>
