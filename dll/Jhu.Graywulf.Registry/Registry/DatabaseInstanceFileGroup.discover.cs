@@ -28,13 +28,16 @@ namespace Jhu.Graywulf.Registry
         internal void DiscoverFileGroup(smo::FileGroup smofg, List<Entity> update, List<Entity> delete, List<Entity> create)
         {
             InitializeDiscovery(update, delete, create);
-            
-            DiscoverDatabaseDefinitionFileGroup();
 
             if (smofg != null)
             {
                 LoadFromSmo(smofg);
+            }
 
+            DiscoverDatabaseDefinitionFileGroup();
+
+            if (smofg != null)
+            {
                 // Query database definition for filegroups
                 // --- add files
                 foreach (var smofile in smofg.Files.Cast<smo::DataFile>())
@@ -63,7 +66,11 @@ namespace Jhu.Graywulf.Registry
         {
             InitializeDiscovery(update, delete, create);
 
-            LoadFromSmo(smodb);
+            if (smodb != null)
+            {
+                LoadFromSmo(smodb);
+                smodb.Discover();
+            }
 
             DiscoverDatabaseDefinitionFileGroup();
 
@@ -73,6 +80,7 @@ namespace Jhu.Graywulf.Registry
                 if (file == null)
                 {
                     file = new DatabaseInstanceFile(this);
+                    file.LoadFromSmo(smofile);
                 }
 
                 file.DiscoverLogFile(smofile, update, delete, create);
