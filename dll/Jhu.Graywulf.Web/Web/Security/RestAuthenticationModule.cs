@@ -114,19 +114,22 @@ namespace Jhu.Graywulf.Web.Security
 
             var principal = (GraywulfPrincipal)httpContext.User;
 
-            if (!principalCache.TryGetValue(principal.Identity.Name, out principal))
+            GraywulfPrincipal cachedPrincipal;
+            if (!principalCache.TryGetValue(principal.Identity.Name, out cachedPrincipal))
             {
                 // User not found in cache, need to load from database
                 principal.Identity.LoadUser();
 
                 principalCache.TryAdd(principal.Identity.Name, principal);
 
+                cachedPrincipal = principal;
+
                 // Also, we have to be able to detect users who just arrived so the appropriate
                 // event can be raised. Now simply rise the event every time
                 httpApplication.OnUserSignedIn(principal.Identity);
             }
 
-            httpContext.User = principal;           
+            httpContext.User = cachedPrincipal;
         }
     }
 }
