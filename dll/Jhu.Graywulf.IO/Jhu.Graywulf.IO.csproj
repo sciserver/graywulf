@@ -66,6 +66,7 @@
     <Compile Include="Format\SqlServerNativeDataFileBlock.cs" />
     <Compile Include="Format\TextDataFileBase.cs" />
     <Compile Include="Format\TextDataFileBlockBase.cs" />
+    <Compile Include="IO\AdapterStream.cs" />
     <Compile Include="IO\BufferedTextReader.cs" />
     <Compile Include="IO\Constants.cs" />
     <Compile Include="IO\DetachedStream.cs" />

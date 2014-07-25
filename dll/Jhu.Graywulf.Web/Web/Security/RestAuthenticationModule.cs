@@ -8,6 +8,7 @@ using System.ServiceModel.Configuration;
 using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Channels;
 using System.Web;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
@@ -19,7 +20,7 @@ namespace Jhu.Graywulf.Web.Security
     class RestAuthenticationModule : Security.AuthenticationModuleBase, IDispatchMessageInspector, IParameterInspector
     {
         // TODO: use this to cache authenticated identities
-        private ConcurrentDictionary<string, GraywulfPrincipal> principalCache;
+        private Cache<string, GraywulfPrincipal> principalCache;
         
         public RestAuthenticationModule()
         {
@@ -28,7 +29,12 @@ namespace Jhu.Graywulf.Web.Security
 
         private void InitializeMembers()
         {
-            this.principalCache = new ConcurrentDictionary<string, GraywulfPrincipal>(StringComparer.InvariantCultureIgnoreCase);
+            this.principalCache = new Cache<string, GraywulfPrincipal>()
+            {
+                AutoExtendLifetime = true,
+                CollectionInterval = new TimeSpan(0, 1, 0),     // one minute
+                DefaultLifetime = new TimeSpan(0, 20, 0),       // twenty minutes
+            };
         }
 
         public void Init(Domain domain)
@@ -107,12 +113,20 @@ namespace Jhu.Graywulf.Web.Security
             // for ever, so some cache expiration should be done
 
             var principal = (GraywulfPrincipal)httpContext.User;
-            principal.Identity.LoadUser();
 
-            // TODO
-            // Also, we have to be able to detect users who just arrived so the appropriate
-            // event can be raised. Now simply rise the event every time
-            httpApplication.OnUserSignedIn(principal.Identity);
+            if (!principalCache.TryGetValue(principal.Identity.Name, out principal))
+            {
+                // User not found in cache, need to load from database
+                principal.Identity.LoadUser();
+
+                principalCache.TryAdd(principal.Identity.Name, principal);
+
+                // Also, we have to be able to detect users who just arrived so the appropriate
+                // event can be raised. Now simply rise the event every time
+                httpApplication.OnUserSignedIn(principal.Identity);
+            }
+
+            httpContext.User = principal;           
         }
     }
 }

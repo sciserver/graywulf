@@ -30,6 +30,7 @@ namespace Jhu.Graywulf.Web.Api
             {
                 var whbind = (WebHttpBinding)ep.Binding;
                 whbind.Security.Transport.ClientCredentialType = HttpClientCredentialType.None;
+                whbind.TransferMode = TransferMode.Streamed;
 
                 var whb = ep.Behaviors.Find<WebHttpBehavior>();
 

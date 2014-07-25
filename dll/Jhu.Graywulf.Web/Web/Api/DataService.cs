@@ -6,6 +6,7 @@ using System.ServiceModel;
 using System.ServiceModel.Activation;
 using System.ServiceModel.Web;
 using System.ServiceModel.Security;
+using System.ServiceModel.Channels;
 using System.Web.Routing;
 using System.Security.Permissions;
 using System.IO;
@@ -68,28 +69,29 @@ namespace Jhu.Graywulf.Web.Api
             var codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(table.Dataset);
             var sql = codegen.GenerateSelectStarQuery(table, 100);
 
-            // Create source
-            var source = new SourceTableQuery()
-            {
-                Dataset = mydb,
-                Query = sql
-            };
+            //HttpContext.Response.AddHeader("Content-Type", "test/plain");
+            WebOperationContext.Current.OutgoingResponse.ContentType = "text/plain";
 
-            // Create destination
-            var stream = new MemoryStream();
-            var destination = new DelimitedTextDataFile(stream, DataFileMode.Write);
+            return new AdapterStream(stream =>
+                {
+                    // Create source
+                    var source = new SourceTableQuery()
+                    {
+                        Dataset = mydb,
+                        Query = sql
+                    };
 
-            var export = new ExportTable()
-            {
-                Source = source,
-                Destination = destination
-            };
+                    // Create destination
+                    var destination = new DelimitedTextDataFile(stream, DataFileMode.Write);
 
-            HttpContext.Response.AddHeader("Content-Type", "application/octet-stream");
+                    var export = new ExportTable()
+                    {
+                        Source = source,
+                        Destination = destination
+                    };
 
-            export.Execute();
-
-            return null;
+                    export.Execute();
+                });
         }
     }
 }
