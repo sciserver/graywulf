@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using System.IO;
 using System.Activities;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Registry

@@ -7,9 +7,8 @@ using System.Xml.Serialization;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.IO;
-using Jhu.Graywulf.RemoteService;
 
-namespace Jhu.Graywulf.Registry
+namespace Jhu.Graywulf.Components
 {
     /// <summary>
     /// Implements a base class for any entity parameter that is
@@ -22,8 +21,6 @@ namespace Jhu.Graywulf.Registry
     /// are not known by the framework.
     /// </remarks>
     [Serializable]
-    [XmlInclude(typeof(JobDefinitionParameter))]
-    [XmlInclude(typeof(JobInstanceParameter))]
     public class Parameter : ICloneable
     {
         private string name;

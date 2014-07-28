@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
 using System.Xml.Serialization;
 using System.ComponentModel;
+using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Registry
 {

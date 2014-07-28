@@ -7,6 +7,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.RemoteService;
 
 namespace Jhu.Graywulf.Registry

@@ -8,6 +8,7 @@ using System.Reflection;
 using System.IO;
 using System.Configuration;
 using System.ComponentModel;
+using Jhu.Graywulf.Components;
 using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Registry

@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
-namespace Jhu.Graywulf.Registry
+namespace Jhu.Graywulf.Components
 {
     [Serializable]
     public class ParameterCollection : Dictionary<string, Parameter>

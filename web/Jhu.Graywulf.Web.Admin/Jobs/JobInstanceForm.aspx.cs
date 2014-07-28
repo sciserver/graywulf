@@ -11,13 +11,14 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using System.Reflection;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Admin.Jobs
 {
     public partial class JobInstanceForm : EntityFormPageBase<JobInstance>
     {
-        protected Registry.ParameterCollection parameters;
+        protected Components.ParameterCollection parameters;
 
         protected override void OnUpdateForm()
         {
