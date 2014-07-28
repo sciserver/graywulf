@@ -81,6 +81,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Web\Api\AcceptHeaderParser.cs" />
+    <Compile Include="Web\Api\AcceptMimeType.cs" />
     <Compile Include="Web\Api\DataService.cs" />
     <Compile Include="Web\Api\Enum.cs" />
     <Compile Include="Web\Api\ExportJob.cs" />
