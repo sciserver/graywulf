@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Format
                 return new FileFormatDescription()
                 {
                     DisplayName = FileFormatNames.Jhu_Graywulf_Format_SqlServerNativeDataFile,
-                    MimeType = Constants.MimeTypeBcp,
+                    DefaultMimeType = Constants.MimeTypeBcp,
                     DefaultExtension = Constants.FileExtensionBcp,
                     CanRead = true,
                     CanWrite = true,

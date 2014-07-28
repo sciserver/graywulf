@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         {
         }
 
-        public ExportTablesParameters CreateParameters(Federation federation, TableOrView[] sources, Uri uri, string format, string queueName, string comments)
+        public ExportTablesParameters CreateParameters(Federation federation, TableOrView[] sources, Uri uri, string fileFormatType, string queueName, string comments)
         {
             // Create destination files
             // One file per source
@@ -49,7 +49,8 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             {
                 var ff = FileFormatFactory.Create(federation.FileFormatFactory);
 
-                var destination = ff.CreateFile(sources[i].ObjectName + format);
+                // TODO use file extensions instead of type!
+                var destination = ff.CreateFile(sources[i].ObjectName + fileFormatType);
 
                 // special initialization in case of a text file
                 if (destination is TextDataFileBase)

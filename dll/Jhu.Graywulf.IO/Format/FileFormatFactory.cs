@@ -36,10 +36,132 @@ namespace Jhu.Graywulf.Format
         }
 
         #endregion
+        #region Private member variables
+
+        private Dictionary<Type, FileFormatDescription> fileFormats;
+        private Dictionary<string, Type> fileFormatsByExtension;
+        private Dictionary<string, Type> fileFormatsByMimeType;
+        private bool isFileFormatsLoaded;
+
+        #endregion
         #region Constructors and initializers
 
         protected FileFormatFactory()
         {
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
+        {
+            this.fileFormats = new Dictionary<Type, FileFormatDescription>();
+            this.fileFormatsByExtension = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
+            this.fileFormatsByMimeType = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
+            this.isFileFormatsLoaded = false;
+        }
+
+        #endregion
+
+        #region File formats
+
+        private void LoadFileFormats()
+        {
+            foreach (var mapping in OnFileFormatsLoading())
+            {
+                if (!fileFormats.ContainsKey(mapping.Type))
+                {
+                    fileFormats.Add(mapping.Type, LoadFileFormat(mapping.Type));
+                }
+
+                if (!fileFormatsByExtension.ContainsKey(mapping.Extension))
+                {
+                    fileFormatsByExtension.Add(mapping.Extension, mapping.Type);
+                }
+
+                if (!fileFormatsByMimeType.ContainsKey(mapping.MimeType))
+                {
+                    fileFormatsByExtension.Add(mapping.MimeType, mapping.Type);
+                }
+            }
+
+            isFileFormatsLoaded = true;
+        }
+
+        /// <summary>
+        /// When overriden in derived classes, collects supported file types in
+        /// a collection.
+        /// </summary>
+        /// <param name="fileTypes"></param>
+        protected virtual IEnumerable<FileFormatMapping> OnFileFormatsLoading()
+        {
+            yield return new FileFormatMapping
+            {
+                Extension = Constants.FileExtensionCsv,
+                MimeType = Constants.MimeTypeCsv,
+                Type = typeof(DelimitedTextDataFile)
+            };
+
+            yield return new FileFormatMapping
+            {
+                Extension = Constants.FileExtensionBcp,
+                MimeType = Constants.MimeTypeBcp,
+                Type = typeof(SqlServerNativeDataFile)
+            };
+        }
+
+        /// <summary>
+        /// Initializes a file object descriptios based on file type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private FileFormatDescription LoadFileFormat(Type type)
+        {
+            var f = (DataFileBase)Activator.CreateInstance(type, true);
+
+            var fd = f.Description;
+            fd.Type = type;
+
+            return fd;
+        }
+
+        private void EnsureFileFormatsLoaded()
+        {
+            if (!isFileFormatsLoaded)
+            {
+                LoadFileFormats();
+            }
+        }
+
+        #endregion
+        #region File format description access functions
+
+        public FileFormatDescription GetFileFormat(Uri uri, out string filename, out string extension, out DataFileCompression compression)
+        {
+            GetExtensionWithoutCompression(uri, out filename, out extension, out compression);
+            return GetFileFormatFromExtension(extension);
+        }
+
+        public FileFormatDescription GetFileFormat(Type type)
+        {
+            EnsureFileFormatsLoaded();
+            return fileFormats[type];
+        }
+
+        public FileFormatDescription GetFileFormatFromExtension(string extension)
+        {
+            EnsureFileFormatsLoaded();
+            return fileFormats[fileFormatsByExtension[extension]];
+        }
+
+        public FileFormatDescription GetFileFormatFromMimeType(string mimeType)
+        {
+            EnsureFileFormatsLoaded();
+            return fileFormats[fileFormatsByMimeType[mimeType]];
+        }
+
+        public IEnumerable<FileFormatDescription> EnumerateFileFormatDescriptions()
+        {
+            EnsureFileFormatsLoaded();
+            return fileFormats.Values;
         }
 
         #endregion
@@ -68,81 +190,6 @@ namespace Jhu.Graywulf.Format
         }
 
         /// <summary>
-        /// Initializes a file object descriptios based on file type.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        private FileFormatDescription GetFileFormatDescription(Type type)
-        {
-            var f = (DataFileBase)Activator.CreateInstance(type, true);
-            
-            var fd = f.Description;
-            fd.Type = type;
-
-            return fd;
-        }
-
-        /// <summary>
-        /// Returns an initialized file format descriptor.
-        /// </summary>
-        /// <param name="typeName"></param>
-        /// <returns></returns>
-        public FileFormatDescription GetFileFormatDescription(string typeName)
-        {
-            return GetFileFormatDescriptions()[typeName];
-        }
-
-        public FileFormatDescription GetFileFormatDescription(Uri uri, out string filename, out string extension, out DataFileCompression compression)
-        {
-            GetExtensionWithoutCompression(uri, out filename, out extension, out compression);
-
-            // Find file format with the appropriate extensions
-            FileFormatDescription format = null;
-            foreach (var f in GetFileFormatDescriptions())
-            {
-                // TODO: add support for additional extensions
-                if (StringComparer.InvariantCultureIgnoreCase.Compare(extension, f.Value.DefaultExtension) == 0)
-                {
-                    format = f.Value;
-                    break;
-                }
-            }
-
-            return format;
-        }
-
-        /// <summary>
-        /// When overriden in derived classes, collects supported file types in
-        /// a collection.
-        /// </summary>
-        /// <param name="fileTypes"></param>
-        protected virtual void OnCreateFileFormatDescriptions(HashSet<Type> fileTypes)
-        {
-            fileTypes.Add(typeof(DelimitedTextDataFile));
-            fileTypes.Add(typeof(SqlServerNativeDataFile));
-        }
-
-        /// <summary>
-        /// Returns a list of supported file formats.
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, FileFormatDescription> GetFileFormatDescriptions()
-        {
-            // Gather file types
-            var fileTypes = new HashSet<Type>();
-            OnCreateFileFormatDescriptions(fileTypes);
-
-            // Return them as a dictionary keys by typenames.
-            var res = new Dictionary<string, FileFormatDescription>();
-            foreach (var t in fileTypes)
-            {
-                res.Add(t.FullName, GetFileFormatDescription(t));
-            }
-
-            return res;
-        }
-
-        /// <summary>
         /// Returns a file object based on the format description.
         /// </summary>
         /// <param name="format"></param>
@@ -160,7 +207,7 @@ namespace Jhu.Graywulf.Format
             string filename, extension;
             DataFileCompression compression;
 
-            var ffd = GetFileFormatDescription(uri, out filename, out extension, out compression);
+            var ffd = GetFileFormat(uri, out filename, out extension, out compression);
             var format = CreateFile(ffd);
 
             format.Uri = uri;

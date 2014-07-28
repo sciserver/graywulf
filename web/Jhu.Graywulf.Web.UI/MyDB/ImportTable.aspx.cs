@@ -18,13 +18,13 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (!IsPostBack)
             {
-                var dfs = FederationContext.FileFormatFactory.GetFileFormatDescriptions();
+                var dfs = FederationContext.FileFormatFactory.EnumerateFileFormatDescriptions();
 
                 foreach (var df in dfs)
                 {
-                    if (df.Value.CanRead)
+                    if (df.CanRead)
                     {
-                        var li = new ListItem(df.Value.DisplayName, df.Key);
+                        var li = new ListItem(df.DisplayName, df.DefaultExtension);
                         FileFormat.Items.Add(li);
                     }
                 }
@@ -92,7 +92,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             DataFileCompression compression;
 
             // Determine file format
-            var format = FederationContext.FileFormatFactory.GetFileFormatDescription(
+            var format = FederationContext.FileFormatFactory.GetFileFormat(
                 GetUploadedFileUri(),
                 out filename,
                 out extension,
@@ -140,7 +140,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         protected void RefreshForm()
         {
-            var format = FederationContext.FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
+            var format = FederationContext.FileFormatFactory.GetFileFormatFromExtension(FileFormat.SelectedValue);
 
             DetectColumnNamesRow.Visible = format.CanDetectColumnNames;
             CompressedRow.Visible = !format.IsCompressed;

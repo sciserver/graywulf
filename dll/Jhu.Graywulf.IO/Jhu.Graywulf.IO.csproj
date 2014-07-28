@@ -58,7 +58,10 @@
     <Compile Include="Format\FileDataReader.cs" />
     <Compile Include="Format\FileFormatDescription.cs" />
     <Compile Include="Format\FileFormatException.cs" />
-    <Compile Include="Format\FileFormatFactory.cs" />
+    <Compile Include="Format\FileFormatFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Format\FileFormatMapping.cs" />
     <Compile Include="Format\FileFormatNames.Designer.cs" />
     <Compile Include="Format\FormattedDataFileBase.cs" />
     <Compile Include="Format\FormattedDataFileBlockBase.cs" />

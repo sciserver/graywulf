@@ -69,27 +69,41 @@ namespace Jhu.Graywulf.Web.Api
             var codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(table.Dataset);
             var sql = codegen.GenerateSelectStarQuery(table, 100);
 
-            //HttpContext.Response.AddHeader("Content-Type", "test/plain");
-            WebOperationContext.Current.OutgoingResponse.ContentType = "text/plain";
+            // Create source
+            var source = new SourceTableQuery()
+            {
+                Dataset = mydb,
+                Query = sql
+            };
+
+            // Figure out output type from request header
+            string mimeType;
+            var accept = WebOperationContext.Current.IncomingRequest.Accept;
+
+            if (accept != null)
+            {
+                mimeType = accept;
+            }
+            else
+            {
+                mimeType = "text/plain";
+            }
+
+            // Create destination
+            var ff = FileFormatFactory.Create(FederationContext.Federation.FileFormatFactory);
+            var destination = ff.CreateFile(ff.GetFileFormatFromMimeType(mimeType));
+
+            var export = new ExportTable()
+            {
+                Source = source,
+                Destination = destination
+            };
+
+            WebOperationContext.Current.OutgoingResponse.ContentType = mimeType;
 
             return new AdapterStream(stream =>
                 {
-                    // Create source
-                    var source = new SourceTableQuery()
-                    {
-                        Dataset = mydb,
-                        Query = sql
-                    };
-
-                    // Create destination
-                    var destination = new DelimitedTextDataFile(stream, DataFileMode.Write);
-
-                    var export = new ExportTable()
-                    {
-                        Source = source,
-                        Destination = destination
-                    };
-
+                    destination.Open(stream, DataFileMode.Write);
                     export.Execute();
                 });
         }

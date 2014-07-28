@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Web.Api
     public class ExportJob : Job
     {
         private string[] tables;
-        private string format;
+        private string fileFormatType;
         private Uri uri;
 
         [DataMember]
@@ -35,10 +35,10 @@ namespace Jhu.Graywulf.Web.Api
         }
 
         [DataMember]
-        public string Format
+        public string FileFormatType
         {
-            get { return format; }
-            set { format = value; }
+            get { return fileFormatType; }
+            set { fileFormatType = value; }
         }
 
         [DataMember]
@@ -96,7 +96,7 @@ namespace Jhu.Graywulf.Web.Api
         private void InitializeMembers()
         {
             this.tables = null;
-            this.format = null;
+            this.fileFormatType = null;
             this.uri = null;
         }
 
@@ -111,7 +111,7 @@ namespace Jhu.Graywulf.Web.Api
                 xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Jobs.Constants.JobParameterExport].XmlValue);
 
                 this.tables = new string[] { "xxx" };
-                this.format = GetAttribute(xml, "/ExportTablesParameters/Destinations/DataFileBase", "z:Type");
+                this.fileFormatType = GetAttribute(xml, "/ExportTablesParameters/Destinations/DataFileBase", "z:Type");
                 this.uri = new Uri(GetXmlInnerText(xml, "ExportTablesParameters/Uri"));
 
                 // TODO:
@@ -143,7 +143,7 @@ namespace Jhu.Graywulf.Web.Api
                 ts[i] = context.MyDBDataset.Tables[tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName];
             }
 
-            return ef.CreateParameters(context.Federation, ts, uri, format, GetQueueName(context), Comments);
+            return ef.CreateParameters(context.Federation, ts, uri, fileFormatType, GetQueueName(context), Comments);
         }
 
         private string GetTableName(TableOrView table)
