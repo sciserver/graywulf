@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Jhu.Graywulf.Web.Api
+namespace Jhu.Graywulf.Components
 {
     [TestClass]
     public class AcceptHeaderParserTest

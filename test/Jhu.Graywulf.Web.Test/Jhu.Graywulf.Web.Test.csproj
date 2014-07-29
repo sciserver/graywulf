@@ -54,7 +54,6 @@
     <Compile Include="Security\AuthenticatorSettingsTest.cs" />
     <Compile Include="Security\GraywulfIdentityProviderTest.cs" />
     <Compile Include="Security\KeystoneIdentityProviderTest.cs" />
-    <Compile Include="Web\Api\AcceptHeaderParserTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\keystone-client\src\Jhu.Graywulf.Keystone\Jhu.Graywulf.Keystone.csproj">
