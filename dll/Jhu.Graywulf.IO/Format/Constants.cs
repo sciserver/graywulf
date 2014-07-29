@@ -8,12 +8,14 @@ namespace Jhu.Graywulf.Format
 {
     public static class Constants
     {
+        public const string FileExtensionTxt = ".txt";
         public const string FileExtensionCsv = ".csv";
         public const string FileExtensionBcp = ".bcp";
         public const string FileExtensionXml = ".xml";
         public const string FileExtensionHtm = ".htm";
         public const string FileExtensionHtml = ".html";
 
+        public const string MimeTypePlainText = "text/plain";
         public const string MimeTypeCsv = "text/csv";
         public const string MimeTypeBcp = "application/octet-stream";
         public const string MimeTypeXml = "application/xml";

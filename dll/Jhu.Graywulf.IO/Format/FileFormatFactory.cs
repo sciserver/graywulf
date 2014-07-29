@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.IO;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Format
@@ -79,7 +80,7 @@ namespace Jhu.Graywulf.Format
 
                 if (!fileFormatsByMimeType.ContainsKey(mapping.MimeType))
                 {
-                    fileFormatsByExtension.Add(mapping.MimeType, mapping.Type);
+                    fileFormatsByMimeType.Add(mapping.MimeType, mapping.Type);
                 }
             }
 
@@ -93,6 +94,13 @@ namespace Jhu.Graywulf.Format
         /// <param name="fileTypes"></param>
         protected virtual IEnumerable<FileFormatMapping> OnFileFormatsLoading()
         {
+            yield return new FileFormatMapping
+            {
+                Extension = Constants.FileExtensionTxt,
+                MimeType = Constants.MimeTypePlainText,
+                Type = typeof(DelimitedTextDataFile)
+            };
+
             yield return new FileFormatMapping
             {
                 Extension = Constants.FileExtensionCsv,
@@ -143,26 +151,119 @@ namespace Jhu.Graywulf.Format
 
         public FileFormatDescription GetFileFormat(Uri uri, out string filename, out string extension, out DataFileCompression compression)
         {
+            FileFormatDescription format;
+            if (!TryGetFileFormat(uri, out filename, out extension, out compression, out format))
+            {
+                throw CreateFileFormatUnknownException();
+            }
+
+            return format;
+        }
+
+        public bool TryGetFileFormat(Uri uri, out string filename, out string extension, out DataFileCompression compression, out FileFormatDescription format)
+        {
             GetExtensionWithoutCompression(uri, out filename, out extension, out compression);
-            return GetFileFormatFromExtension(extension);
+            return TryGetFileFormatFromExtension(extension, out format);
         }
 
         public FileFormatDescription GetFileFormat(Type type)
         {
+            FileFormatDescription format;
+            if (!TryGetFileFormat(type, out format))
+            {
+                throw CreateFileFormatUnknownException();
+            }
+
+            return format;
+        }
+
+        public bool TryGetFileFormat(Type type, out FileFormatDescription format)
+        {
             EnsureFileFormatsLoaded();
-            return fileFormats[type];
+            return fileFormats.TryGetValue(type, out format);
         }
 
         public FileFormatDescription GetFileFormatFromExtension(string extension)
         {
+            FileFormatDescription format;
+            if (!TryGetFileFormatFromExtension(extension, out format))
+            {
+                throw CreateFileFormatUnknownException();
+            }
+
+            return format;
+        }
+
+        public bool TryGetFileFormatFromExtension(string extension, out FileFormatDescription format)
+        {
             EnsureFileFormatsLoaded();
-            return fileFormats[fileFormatsByExtension[extension]];
+
+            Type type;
+            if (fileFormatsByExtension.TryGetValue(extension, out type))
+            {
+                format = fileFormats[type];
+                return true;
+            }
+
+            format = null;
+            return false;
         }
 
         public FileFormatDescription GetFileFormatFromMimeType(string mimeType)
         {
+            FileFormatDescription format;
+            if (!TryGetFileFormatFromMimeType(mimeType, out format))
+            {
+                throw CreateFileFormatUnknownException();
+            }
+
+            return format;
+        }
+
+        public bool TryGetFileFormatFromMimeType(string mimeType, out FileFormatDescription format)
+        {
+            // TODO: implement * and other wild-cards
+
             EnsureFileFormatsLoaded();
-            return fileFormats[fileFormatsByMimeType[mimeType]];
+
+            Type type;
+            if (fileFormatsByMimeType.TryGetValue(mimeType, out type))
+            {
+                format = fileFormats[type];
+                return true;
+            }
+
+            format = null;
+            return false;
+        }
+
+        public FileFormatDescription GetFileFromFromAcceptHeader(string acceptHeader)
+        {
+            FileFormatDescription format;
+            if (!TryGetFileFromFromAcceptHeader(acceptHeader, out format))
+            {
+                throw CreateFileFormatUnknownException();
+            }
+
+            return format;
+        }
+
+        public bool TryGetFileFromFromAcceptHeader(string acceptHeader, out FileFormatDescription format)
+        {
+            // Parse accept header
+            var mimes = AcceptHeaderParser.Parse(acceptHeader);
+
+            // Try to find best matching mime type
+            for (int i = 0; i < mimes.Length; i++)
+            {
+                if (TryGetFileFormatFromMimeType(mimes[i].MimeType, out format))
+                {
+                    return true;
+                }
+            }
+
+            // Fall back to plain text
+            return TryGetFileFormatFromMimeType("text/plain", out format);
         }
 
         public IEnumerable<FileFormatDescription> EnumerateFileFormatDescriptions()
@@ -214,7 +315,12 @@ namespace Jhu.Graywulf.Format
             string filename, extension;
             DataFileCompression compression;
 
-            var ffd = GetFileFormat(uri, out filename, out extension, out compression);
+            FileFormatDescription ffd;
+            if (!TryGetFileFormat(uri, out filename, out extension, out compression, out ffd))
+            {
+                throw CreateFileFormatUnknownException();
+            }
+
             var format = CreateFile(ffd);
 
             format.Uri = uri;
@@ -225,6 +331,11 @@ namespace Jhu.Graywulf.Format
         public DataFileBase CreateFile(string filename)
         {
             return CreateFile(Util.UriConverter.FromFilePath(filename));
+        }
+
+        private FileFormatException CreateFileFormatUnknownException()
+        {
+            return new FileFormatException("Unknown file format.");  // *** TODO
         }
     }
 }

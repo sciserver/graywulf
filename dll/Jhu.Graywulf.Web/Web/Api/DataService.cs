@@ -22,12 +22,16 @@ namespace Jhu.Graywulf.Web.Api
     public interface IDataService
     {
         [OperationContract]
-        [WebGet(UriTemplate = "MYDB/tables")]
-        Table[] ListTables();
+        [WebGet(UriTemplate = "/")]
+        Dataset[] ListDatasets();
 
         [OperationContract]
-        [WebGet(UriTemplate = "MYDB/tables/{tableName}")]
-        Stream GetTable(string tableName);
+        [WebGet(UriTemplate = "/{datasetName}/tables")]
+        Table[] ListTables(string datasetName);
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/{datasetName}/tables/{tableName}?top={top}")]
+        Stream GetTable(string datasetName, string tableName, string top);
     }
 
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
@@ -36,16 +40,25 @@ namespace Jhu.Graywulf.Web.Api
     [RestServiceBehavior]
     public class DataService : ServiceBase, IDataService
     {
-        public Table[] ListTables()
+        public Dataset[] ListDatasets()
         {
-            var mydb = FederationContext.MyDBDataset;
+            return new[]
+                {
+                new Dataset()
+            {
+                Name = "test"
+            }};
+        }
 
-            mydb.Tables.LoadAll();
+        public Table[] ListTables(string datasetName)
+        {
+            var dataset = FederationContext.SchemaManager.Datasets[datasetName];
+            dataset.Tables.LoadAll();
 
-            var tables = new Table[mydb.Tables.Count];
+            var tables = new Table[dataset.Tables.Count];
 
             int q = 0;
-            foreach (var t in mydb.Tables.Values)
+            foreach (var t in dataset.Tables.Values)
             {
                 tables[q] = new Table()
                 {
@@ -57,41 +70,34 @@ namespace Jhu.Graywulf.Web.Api
             return tables;
         }
 
-        public Stream GetTable(string tableName)
+        public Stream GetTable(string datasetName, string tableName, string top)
         {
             // Get table from the schema
             var parts = tableName.Split('.');
 
-            var mydb = FederationContext.MyDBDataset;
-            var table = mydb.Tables[mydb.DatabaseName, parts[0], parts[1]];
-
-            // Build a query to export everything
-            var codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(table.Dataset);
-            var sql = codegen.GenerateSelectStarQuery(table, 100);
+            var dataset = FederationContext.SchemaManager.Datasets[datasetName];
+            var table = dataset.Tables[dataset.DatabaseName, parts[0], parts[1]];
 
             // Create source
+
+            // -- Build a query to export everything
+            var codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(table.Dataset);
+            var sql = codegen.GenerateSelectStarQuery(
+                table,
+                top == null ? 0 : int.Parse(top));
+
             var source = new SourceTableQuery()
             {
-                Dataset = mydb,
+                Dataset = dataset,
                 Query = sql
             };
 
-            // Figure out output type from request header
-            string mimeType;
-            var accept = WebOperationContext.Current.IncomingRequest.Accept;
-
-            if (accept != null)
-            {
-                mimeType = accept;
-            }
-            else
-            {
-                mimeType = "text/plain";
-            }
-
             // Create destination
+
+            // -- Figure out output type from request header
+            var accept = WebOperationContext.Current.IncomingRequest.Accept;
             var ff = FileFormatFactory.Create(FederationContext.Federation.FileFormatFactory);
-            var destination = ff.CreateFile(ff.GetFileFormatFromMimeType(mimeType));
+            var destination = ff.CreateFile(ff.GetFileFromFromAcceptHeader(accept));
 
             var export = new ExportTable()
             {
@@ -99,8 +105,10 @@ namespace Jhu.Graywulf.Web.Api
                 Destination = destination
             };
 
-            WebOperationContext.Current.OutgoingResponse.ContentType = mimeType;
+            // Set content type based on output file format
+            WebOperationContext.Current.OutgoingResponse.ContentType = destination.Description.DefaultMimeType;
 
+            // Stream out results
             return new AdapterStream(stream =>
                 {
                     destination.Open(stream, DataFileMode.Write);
