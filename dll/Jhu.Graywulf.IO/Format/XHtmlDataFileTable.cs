@@ -86,6 +86,7 @@ namespace Jhu.Graywulf.Format
         {
             File.XmlWriter.WriteStartElement(Constants.HtmlKeywordTable);
             File.XmlWriter.WriteStartElement(Constants.HtmlKeywordTHead);
+            
             File.XmlWriter.WriteStartElement(Constants.HtmlKeywordTR);
 
             // Write columns
@@ -95,6 +96,16 @@ namespace Jhu.Graywulf.Format
             }
 
             File.XmlWriter.WriteEndElement();   // tr
+            File.XmlWriter.WriteStartElement(Constants.HtmlKeywordTR);
+
+            // Write columns
+            for (int i = 0; i < Columns.Count; i++)
+            {
+                File.XmlWriter.WriteElementString(Constants.HtmlKeywordTH, Columns[i].DataType.NameWithLength);
+            }
+
+            File.XmlWriter.WriteEndElement();   // tr
+            
             File.XmlWriter.WriteEndElement();   // thead
 
             File.XmlWriter.WriteStartElement(Constants.HtmlKeywordTBody);

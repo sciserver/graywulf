@@ -53,6 +53,11 @@
     <Compile Include="Format\XHtmlDataFile.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Format\XHtmlDataFileResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>XHtmlDataFileResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Format\XHtmlDataFileTable.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -141,6 +146,11 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>FileFormatNames.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Format\XHtmlDataFileResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>XHtmlDataFileResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="IO\Tasks\ExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
@@ -148,6 +158,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Format\Resources\XHtmlDataFileStyle.css" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

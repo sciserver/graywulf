@@ -23,6 +23,8 @@ namespace Jhu.Graywulf.Format
         public const string MimeTypeXHtml = "application/xhtml+xml";
 
         public const string HtmlKeywordHtml = "html";
+        public const string HtmlKeywordHead = "head";
+        public const string HtmlKeywordStyle = "style";
         public const string HtmlKeywordBody = "body";
         public const string HtmlKeywordTable = "table";
         public const string HtmlKeywordTHead = "thead";

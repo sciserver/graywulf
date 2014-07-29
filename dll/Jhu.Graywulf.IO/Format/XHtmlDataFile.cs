@@ -190,6 +190,11 @@ namespace Jhu.Graywulf.Format
         {
             XmlWriter.WriteStartElement(Constants.HtmlKeywordHtml);
             XmlWriter.WriteStartElement(Constants.HtmlKeywordBody);
+            XmlWriter.WriteStartElement(Constants.HtmlKeywordHead);
+
+            XmlWriter.WriteElementString(Constants.HtmlKeywordStyle, XHtmlDataFileResources.XHtmlDataFileStyle);
+            
+            XmlWriter.WriteEndElement();    // head
         }
 
         /// <summary>
@@ -211,8 +216,8 @@ namespace Jhu.Graywulf.Format
         /// </remarks>
         protected override void OnWriteFooter()
         {
-            XmlWriter.WriteEndElement();    // finish body
-            XmlWriter.WriteEndElement();    // finish html
+            XmlWriter.WriteEndElement();    // body
+            XmlWriter.WriteEndElement();    // html
         }
     }
 }
