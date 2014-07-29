@@ -248,6 +248,8 @@ namespace Jhu.Graywulf.Format
 
         public bool TryGetFileFromFromAcceptHeader(string acceptHeader, out FileFormatDescription format)
         {
+            EnsureFileFormatsLoaded();
+
             // Parse accept header
             var acceptedMimes = AcceptHeaderParser.Parse(acceptHeader);
 
