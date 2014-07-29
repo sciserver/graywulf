@@ -108,7 +108,6 @@ namespace Jhu.Graywulf.Web
                     {
                         ConnectionString = mydb.GetConnectionString().ConnectionString,
                         Name = mydb.DatabaseDefinition.Name,
-                        DefaultSchemaName = "dbo",    // **** TODO?
                         IsCacheable = false,
                         IsMutable = true,
                     };

@@ -88,7 +88,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         private void InitializeMembers()
         {
-            this.datasets = new LazyDictionary<string, DatasetBase>();
+            this.datasets = new LazyDictionary<string, DatasetBase>(SchemaManager.Comparer);
 
             // Load all datasets from the cache as a start
             foreach (var key in datasetCache.Keys)
