@@ -40,7 +40,6 @@ namespace Jhu.Graywulf.Web.UI
             RouteTable.Routes.Add(new ServiceRoute("Api/Jobs/", new WebServiceHostFactory(), typeof(Jhu.Graywulf.Web.Api.JobsService)));
             RouteTable.Routes.Add(new ServiceRoute("Api/Data/", new WebServiceHostFactory(), typeof(Jhu.Graywulf.Web.Api.DataService)));
             RouteTable.Routes.Add(new ServiceRoute("Api/Schema/", new WebServiceHostFactory(), typeof(Jhu.Graywulf.Web.Api.SchemaService)));
-            
         }
 
 

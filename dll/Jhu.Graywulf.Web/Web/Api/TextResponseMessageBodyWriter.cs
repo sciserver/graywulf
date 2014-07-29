@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Web.Api
         }
 
         public TextResponseMessageBodyWriter(object value, Encoding encoding)
-            : base(true)
+            : base(false)
         {
             this.encoding = encoding;
             this.value = value;

@@ -33,12 +33,12 @@ namespace Jhu.Graywulf.Web.Api
 
         [OperationContract]
         [WebGet(UriTemplate = "/{datasetName}/tables/{tableName}?top={top}")]
-        Stream GetTable(string datasetName, string tableName, string top);
+        Message GetTable(string datasetName, string tableName, string top);
     }
 
-    [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
+    [AspNetCompatibilityRequirements(RequirementsMode=AspNetCompatibilityRequirementsMode.Allowed)]
     [RestServiceBehavior]
     public class DataService : ServiceBase, IDataService
     {
@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Web.Api
             return res;
         }
 
-        public Stream GetTable(string datasetName, string tableName, string top)
+        public Message GetTable(string datasetName, string tableName, string top)
         {
             // Get table from the schema
             var parts = tableName.Split('.');
@@ -111,14 +111,15 @@ namespace Jhu.Graywulf.Web.Api
             };
 
             // Set content type based on output file format
-            WebOperationContext.Current.OutgoingResponse.ContentType = destination.Description.DefaultMimeType;
-
-            // Stream out results
-            return new AdapterStream(stream =>
+            var message = WebOperationContext.Current.CreateStreamResponse(
+                stream =>
                 {
-                    destination.Open(stream, DataFileMode.Write);
+                    export.Destination.Open(stream, DataFileMode.Write);
                     export.Execute();
-                });
+                },
+                destination.Description.DefaultMimeType);
+
+            return message;
         }
     }
 }
