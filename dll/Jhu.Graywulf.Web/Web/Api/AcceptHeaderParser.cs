@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Web.Api
             Quality,
         }
 
-        private static readonly Regex AcceptHeaderRegex = new Regex(@"(([a-z-\*]+)(?:/([a-z-\*]+))?)(?:\s*;\s*(q|level)\s*=\s*([0-9\.]+))?(?:\s*;\s*(q|level)\s*=\s*([0-9\.]+))?");
+        private static readonly Regex AcceptHeaderRegex = new Regex(@"(([a-z-\.\+\*]+)(?:/([a-z-\.\+\*]+))?)(?:\s*;\s*(q|level)\s*=\s*([0-9\.]+))?(?:\s*;\s*(q|level)\s*=\s*([0-9\.]+))?");
 
         public static AcceptMimeType[] Parse(string value)
         {
@@ -25,7 +25,11 @@ namespace Jhu.Graywulf.Web.Api
             for (int i = 0; i < parts.Length; i++)
             {
                 res[i] = GetMimeType(parts[i]);
+                res[i].Index = i;
             }
+
+            // Sort results by quality in a descending order
+            Array.Sort(res);
 
             return res;
         }
