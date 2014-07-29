@@ -106,6 +106,13 @@ namespace Jhu.Graywulf.Format
                 MimeType = Constants.MimeTypeBcp,
                 Type = typeof(SqlServerNativeDataFile)
             };
+
+            yield return new FileFormatMapping
+            {
+                Extension = Constants.FileExtensionHtml,
+                MimeType = Constants.MimeTypeHtml,
+                Type = typeof(XHtmlDataFile)
+            };
         }
 
         /// <summary>

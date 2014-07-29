@@ -50,6 +50,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Format\Constants.cs" />
+    <Compile Include="Format\XHtmlDataFile.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Format\XHtmlDataFileTable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Format\XmlDataFile.cs" />
     <Compile Include="Format\DataFileBase.cs" />
     <Compile Include="Format\DataFileBlockBase.cs" />
     <Compile Include="Format\DelimitedTextDataFile.cs" />
@@ -62,13 +69,20 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Format\FileFormatMapping.cs" />
-    <Compile Include="Format\FileFormatNames.Designer.cs" />
+    <Compile Include="Format\FileFormatNames.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FileFormatNames.resx</DependentUpon>
+    </Compile>
     <Compile Include="Format\FormattedDataFileBase.cs" />
     <Compile Include="Format\FormattedDataFileBlockBase.cs" />
     <Compile Include="Format\SqlServerNativeDataFile.cs" />
     <Compile Include="Format\SqlServerNativeDataFileBlock.cs" />
     <Compile Include="Format\TextDataFileBase.cs" />
     <Compile Include="Format\TextDataFileBlockBase.cs" />
+    <Compile Include="Format\XmlDataFileBlock.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="IO\AdapterStream.cs" />
     <Compile Include="IO\BufferedTextReader.cs" />
     <Compile Include="IO\Constants.cs" />
@@ -123,7 +137,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Format\FileFormatNames.resx" />
+    <EmbeddedResource Include="Format\FileFormatNames.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileFormatNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="IO\Tasks\ExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
