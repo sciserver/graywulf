@@ -222,8 +222,6 @@ namespace Jhu.Graywulf.Format
 
         public bool TryGetFileFormatFromMimeType(string mimeType, out FileFormatDescription format)
         {
-            // TODO: implement * and other wild-cards
-
             EnsureFileFormatsLoaded();
 
             Type type;
@@ -251,19 +249,25 @@ namespace Jhu.Graywulf.Format
         public bool TryGetFileFromFromAcceptHeader(string acceptHeader, out FileFormatDescription format)
         {
             // Parse accept header
-            var mimes = AcceptHeaderParser.Parse(acceptHeader);
+            var acceptedMimes = AcceptHeaderParser.Parse(acceptHeader);
 
-            // Try to find best matching mime type
-            for (int i = 0; i < mimes.Length; i++)
+            // Because we want to match patterns, look-up by mime type is not a way to go.
+            // Loop over each item instead.
+
+            for (int i = 0; i < acceptedMimes.Length; i++)
             {
-                if (TryGetFileFormatFromMimeType(mimes[i].MimeType, out format))
+                foreach (var fileMime in fileFormatsByMimeType.Keys)
                 {
-                    return true;
+                    if (acceptedMimes[i].IsMatching(fileMime))
+                    {
+                        format = fileFormats[fileFormatsByMimeType[fileMime]];
+                        return true;
+                    }
                 }
             }
 
             // Fall back to plain text
-            return TryGetFileFormatFromMimeType("text/plain", out format);
+            return TryGetFileFormatFromMimeType(Constants.MimeTypePlainText, out format);
         }
 
         public IEnumerable<FileFormatDescription> EnumerateFileFormatDescriptions()

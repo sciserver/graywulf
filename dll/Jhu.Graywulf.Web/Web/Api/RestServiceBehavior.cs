@@ -28,9 +28,13 @@ namespace Jhu.Graywulf.Web.Api
             // turn on help
             foreach (var ep in endpoints)
             {
+                var whep = (WebHttpEndpoint)ep;
+                whep.AutomaticFormatSelectionEnabled = true;
+
                 var whbind = (WebHttpBinding)ep.Binding;
                 whbind.Security.Transport.ClientCredentialType = HttpClientCredentialType.None;
                 whbind.TransferMode = TransferMode.Streamed;
+                
 
                 var whb = ep.Behaviors.Find<WebHttpBehavior>();
 

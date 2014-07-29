@@ -90,6 +90,17 @@ namespace Jhu.Graywulf.Components
 
         #endregion
 
+        /// <summary>
+        /// Returns true if the pattern matches the passed mime type
+        /// </summary>
+        /// <param name="mimeType"></param>
+        /// <returns></returns>
+        public bool IsMatching(string mimeType)
+        {
+            // TODO: add logic to handle wild-cards
+            return StringComparer.InvariantCultureIgnoreCase.Compare(this.mimeType, mimeType) == 0;
+        }
+
         public int CompareTo(object obj)
         {
             var other = (AcceptMimeType)obj;

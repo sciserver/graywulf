@@ -22,12 +22,14 @@ namespace Jhu.Graywulf.Web.Api
     public interface IDataService
     {
         [OperationContract]
+        [DynamicResponseFormat]
         [WebGet(UriTemplate = "/")]
         Dataset[] ListDatasets();
 
         [OperationContract]
+        [DynamicResponseFormat]
         [WebGet(UriTemplate = "/{datasetName}/tables")]
-        Table[] ListTables(string datasetName);
+        TableList ListTables(string datasetName);
 
         [OperationContract]
         [WebGet(UriTemplate = "/{datasetName}/tables/{tableName}?top={top}")]
@@ -50,24 +52,27 @@ namespace Jhu.Graywulf.Web.Api
             }};
         }
 
-        public Table[] ListTables(string datasetName)
+        public TableList ListTables(string datasetName)
         {
             var dataset = FederationContext.SchemaManager.Datasets[datasetName];
             dataset.Tables.LoadAll();
 
-            var tables = new Table[dataset.Tables.Count];
+            var res = new TableList()
+            {
+                Tables = new Table[dataset.Tables.Count]
+            };
 
             int q = 0;
             foreach (var t in dataset.Tables.Values)
             {
-                tables[q] = new Table()
+                res.Tables[q] = new Table()
                 {
                     Name = t.DisplayName,
                 };
                 q++;
             }
 
-            return tables;
+            return res;
         }
 
         public Stream GetTable(string datasetName, string tableName, string top)
@@ -95,7 +100,7 @@ namespace Jhu.Graywulf.Web.Api
             // Create destination
 
             // -- Figure out output type from request header
-            var accept = WebOperationContext.Current.IncomingRequest.Accept;
+            var accept = WebOperationContext.Current.IncomingRequest.Accept ?? WebOperationContext.Current.IncomingRequest.ContentType;
             var ff = FileFormatFactory.Create(FederationContext.Federation.FileFormatFactory);
             var destination = ff.CreateFile(ff.GetFileFromFromAcceptHeader(accept));
 
