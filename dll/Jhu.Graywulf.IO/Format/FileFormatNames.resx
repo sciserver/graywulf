@@ -117,10 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Jhu.Graywulf.Format.DelimitedTextDataFile" xml:space="preserve">
+  <data name="DelimitedTextDataFile" xml:space="preserve">
     <value>CSV (delimited text file)</value>
   </data>
-  <data name="Jhu.Graywulf.Format.SqlServerNativeDataFile" xml:space="preserve">
+  <data name="SqlServerNativeDataFile" xml:space="preserve">
     <value>SQL Server native format</value>
+  </data>
+  <data name="XHtmlDataFile" xml:space="preserve">
+    <value>XHTML file</value>
+  </data>
+  <data name="XmlDataFile" xml:space="preserve">
+    <value>XML file</value>
   </data>
 </root>
