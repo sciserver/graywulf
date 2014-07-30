@@ -235,10 +235,10 @@ namespace Jhu.Graywulf.Format
             return false;
         }
 
-        public FileFormatDescription GetFileFromFromAcceptHeader(string acceptHeader)
+        public FileFormatDescription GetFileFromFromAcceptHeader(System.Collections.ObjectModel.Collection<System.Net.Mime.ContentType> accept)
         {
             FileFormatDescription format;
-            if (!TryGetFileFromFromAcceptHeader(acceptHeader, out format))
+            if (!TryGetFileFromFromAcceptHeader(accept, out format))
             {
                 throw CreateFileFormatUnknownException();
             }
@@ -246,21 +246,17 @@ namespace Jhu.Graywulf.Format
             return format;
         }
 
-        public bool TryGetFileFromFromAcceptHeader(string acceptHeader, out FileFormatDescription format)
+        public bool TryGetFileFromFromAcceptHeader(System.Collections.ObjectModel.Collection<System.Net.Mime.ContentType> accept, out FileFormatDescription format)
         {
             EnsureFileFormatsLoaded();
 
-            // Parse accept header
-            var acceptedMimes = AcceptHeaderParser.Parse(acceptHeader);
-
             // Because we want to match patterns, look-up by mime type is not a way to go.
             // Loop over each item instead.
-
-            for (int i = 0; i < acceptedMimes.Length; i++)
+            for (int i = 0; i < accept.Count; i++)
             {
                 foreach (var fileMime in fileFormatsByMimeType.Keys)
                 {
-                    if (acceptedMimes[i].IsMatching(fileMime))
+                    if (Util.MediaTypeComparer.Compare(accept[i].MediaType, fileMime))
                     {
                         format = fileFormats[fileFormatsByMimeType[fileMime]];
                         return true;

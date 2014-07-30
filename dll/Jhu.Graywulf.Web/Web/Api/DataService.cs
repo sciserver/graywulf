@@ -100,7 +100,7 @@ namespace Jhu.Graywulf.Web.Api
             // Create destination
 
             // -- Figure out output type from request header
-            var accept = WebOperationContext.Current.IncomingRequest.Accept ?? WebOperationContext.Current.IncomingRequest.ContentType;
+            var accept = WebOperationContext.Current.IncomingRequest.GetAcceptHeaderElements();
             var ff = FileFormatFactory.Create(FederationContext.Federation.FileFormatFactory);
             var destination = ff.CreateFile(ff.GetFileFromFromAcceptHeader(accept));
 

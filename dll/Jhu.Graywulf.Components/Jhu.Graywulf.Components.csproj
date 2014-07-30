@@ -53,8 +53,6 @@
     <Compile Include="CommandLineParser\ParameterAttribute.cs" />
     <Compile Include="CommandLineParser\PartialStringComparer.cs" />
     <Compile Include="CommandLineParser\VerbAttribute.cs" />
-    <Compile Include="Components\AcceptHeaderParser.cs" />
-    <Compile Include="Components\AcceptMimeType.cs" />
     <Compile Include="Components\AllItemsLoadingEventArgs.cs" />
     <Compile Include="Components\AppDomainHelper.cs" />
     <Compile Include="Components\AppDomainManager.cs" />
@@ -80,6 +78,7 @@
     <Compile Include="Util\ConfigurationReader.cs" />
     <Compile Include="Util\DeepCloner.cs" />
     <Compile Include="Util\EmailFormatter.cs" />
+    <Compile Include="Util\MediaTypeComparer.cs" />
     <Compile Include="Util\UriConverter.cs" />
   </ItemGroup>
   <ItemGroup>

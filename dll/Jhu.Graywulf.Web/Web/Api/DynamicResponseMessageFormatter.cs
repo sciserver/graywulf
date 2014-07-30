@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Net;
 using System.ServiceModel.Channels;
 using System.ServiceModel;
-using System.Net;
 using System.ServiceModel.Dispatcher;
+using System.ServiceModel.Web;
 using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Web.Api
@@ -38,18 +39,18 @@ namespace Jhu.Graywulf.Web.Api
             var acceptHeader = prop.Headers[HttpRequestHeader.Accept] ?? prop.Headers[HttpRequestHeader.ContentType];
 
             // Parse accept header
-            var acceptedMimes = AcceptHeaderParser.Parse(acceptHeader);
+            var accept = WebOperationContext.Current.IncomingRequest.GetAcceptHeaderElements();
 
             // Because we want to match patterns, look-up by mime type is not a way to go.
             // Loop over each item instead.
 
             IDispatchMessageFormatter formatter = null;
-            
-            for (int i = 0; i < acceptedMimes.Length; i++)
+
+            for (int i = 0; i < accept.Count; i++)
             {
                 foreach (var formatMime in formatters.Keys)
                 {
-                    if (acceptedMimes[i].IsMatching(formatMime))
+                    if (Jhu.Graywulf.Util.MediaTypeComparer.Compare(accept[i].MediaType, formatMime))
                     {
                         formatter = formatters[formatMime];
                         break;
