@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
@@ -98,7 +99,7 @@ namespace Jhu.Graywulf.Web.Security
         /// and if succeeds, returns a principal identifying the user.
         /// </summary>
         /// <returns></returns>
-        public abstract GraywulfPrincipal Authenticate(HttpContext httpContext);
+        public abstract GraywulfPrincipal Authenticate(AuthenticationRequest request);
 
         /// <summary>
         /// Create a Graywulf principal with a pre-initialized identity

@@ -23,7 +23,9 @@ namespace Jhu.Graywulf.Web
             var session = HttpContext.Current.Session;
             if (session != null)
             {
-
+                // TODO: user info in context might be correct already and no
+                // need to load from session. Test this, however, with the admin interface
+                // before deleting this code
                 if (session[Constants.SessionPrincipal] != null)
                 {
                     var sessionPrincipal = (GraywulfPrincipal)session[Constants.SessionPrincipal];
@@ -33,6 +35,7 @@ namespace Jhu.Graywulf.Web
                     context.UserName = userProperty.Name;
                 }
 
+                // TODO: These are only used by the admin interface, consider removing them:
                 if (session[Constants.SessionClusterGuid] != null)
                 {
                     context.ClusterReference.Guid = (Guid)session[Constants.SessionClusterGuid];

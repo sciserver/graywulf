@@ -154,7 +154,7 @@ namespace Jhu.Graywulf.Web.Auth
 
                 Session[Constants.SessionAuthenticator] = null;
 
-                var principal = a.Authenticate(HttpContext.Current);
+                var principal = a.Authenticate(new AuthenticationRequest(HttpContext.Current.Request));
                 if (principal != null)
                 {
                     var identity = (GraywulfIdentity)principal.Identity;

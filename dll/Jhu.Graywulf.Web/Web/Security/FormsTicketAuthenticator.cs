@@ -44,7 +44,7 @@ namespace Jhu.Graywulf.Web.Security
 
         #endregion
 
-        public override GraywulfPrincipal Authenticate(HttpContext httpContext)
+        public override GraywulfPrincipal Authenticate(AuthenticationRequest request)
         {
             // The logic implemented here is based on the .Net reference source
             // original class: FormAuthenticationModule
@@ -57,7 +57,7 @@ namespace Jhu.Graywulf.Web.Security
             GraywulfPrincipal principal = null;
 
             // Get the forms authentication cookie from the request
-            var cookie = httpContext.Request.Cookies[FormsAuthentication.FormsCookieName];
+            var cookie = request.Cookies[FormsAuthentication.FormsCookieName];
             if (cookie != null)
             {
                 // Decrypt the token and check whether it's already expired
@@ -65,21 +65,21 @@ namespace Jhu.Graywulf.Web.Security
                 if (oldToken != null && !oldToken.Expired)
                 {
                     // The token hasn't expired yet
+                    // Create a GraywulfPrincipal based on the ticket.
+                    principal = CreatePrincipal(oldToken);
 
+#if false // TODO: this is ticket renewal logic. It is removed because no way to send cookies back now.
                     // Read the ticket from the token and renew it if sliding expiration is turned on
                     var ticket = oldToken;
                     if (FormsAuthentication.SlidingExpiration)
                     {
                         ticket = FormsAuthentication.RenewTicketIfOld(oldToken);
-                    }
-
-                    // Create a GraywulfPrincipal based on the ticket.
-                    principal = CreatePrincipal(ticket);
+                    }                  
 
                     // Set special cookie path, if necessary
                     if (!ticket.CookiePath.Equals("/"))
                     {
-                        cookie = httpContext.Request.Cookies[FormsAuthentication.FormsCookieName];
+                        cookie = request.Cookies[FormsAuthentication.FormsCookieName];
                         if (cookie != null)
                         {
                             cookie.Path = ticket.CookiePath;
@@ -94,7 +94,7 @@ namespace Jhu.Graywulf.Web.Security
 
                         if (cookie != null)
                         {
-                            cookie = httpContext.Request.Cookies[FormsAuthentication.FormsCookieName];
+                            cookie = request.Cookies[FormsAuthentication.FormsCookieName];
                         }
 
                         if (cookie == null)
@@ -124,9 +124,13 @@ namespace Jhu.Graywulf.Web.Security
                         }
 
                         // Remove old cookie and set new one
+                        // TODO: this doesn't work with web services, so it is removed temporarily
+                        /*
                         httpContext.Response.Cookies.Remove(cookie.Name);
                         httpContext.Response.Cookies.Add(cookie);
+                         * */
                     }
+#endif
                 }
             }
 

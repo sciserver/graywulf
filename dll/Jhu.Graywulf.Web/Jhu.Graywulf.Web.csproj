@@ -101,6 +101,7 @@
     <Compile Include="Web\Api\RestServiceBehavior.cs" />
     <Compile Include="Web\Api\SchemaService.cs" />
     <Compile Include="Web\Api\ServiceBase.cs" />
+    <Compile Include="Web\Api\TestService.cs" />
     <Compile Include="Web\Api\TextResponseMessageBodyWriter.cs" />
     <Compile Include="Web\Api\TextResponseMessageFormatter.cs" />
     <Compile Include="Web\ApplicationBase.cs" />
@@ -200,6 +201,7 @@
     <Compile Include="Web\Security\OpenIDAuthenticator.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Web\Security\AuthenticationRequest.cs" />
     <Compile Include="Web\Security\RestAuthenticationModule.cs" />
     <Compile Include="Web\Security\WebAuthenticationModule.cs" />
     <Compile Include="Web\UserControlBase.cs">

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
@@ -61,7 +62,7 @@ namespace Jhu.Graywulf.Web.Security
         /// Authenicates a user based on the information in the HTTP request.
         /// </summary>
         /// <returns></returns>
-        public override GraywulfPrincipal Authenticate(HttpContext httpContext)
+        public override GraywulfPrincipal Authenticate(AuthenticationRequest request)
         {
             // Get OpenID provider's response from the http context
             using (var openid = new OpenIdRelyingParty())

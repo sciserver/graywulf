@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
@@ -182,7 +183,7 @@ namespace Jhu.Graywulf.Web.Security
             graywulfDomainPrefix = name.Substring(idx + 1);
         }
 
-        public override GraywulfPrincipal Authenticate(HttpContext httpContext)
+        public override GraywulfPrincipal Authenticate(AuthenticationRequest request)
         {
             // Keystone tokens (in the simplest case) do not carry any detailed
             // information about the identity of the user. For this reason,
@@ -192,12 +193,12 @@ namespace Jhu.Graywulf.Web.Security
             GraywulfPrincipal principal = null;
 
             // Look for a token in the request headers
-            var tokenID = httpContext.Request.Headers.Get(authTokenHeader);
+            var tokenID = request.Headers[authTokenHeader];
 
             if (tokenID == null)
             {
                 // Try to take header from the query string
-                tokenID = httpContext.Request[authTokenParameter];
+                tokenID = request.QueryString[authTokenParameter];
             }
 
             if (tokenID != null)

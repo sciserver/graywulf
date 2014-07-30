@@ -27,5 +27,7 @@ namespace Jhu.Graywulf.Web.Security
         public const string KeystoneDefaultDomain= "default";
         public const string KeystoneDefaultAuthTokenParameter = "token";
         public const string KeystoneDefaultAuthTokenHeader = "X-Subject-Token";
+
+        public const string HttpHeaderCookie = "Cookie";
     }
 }

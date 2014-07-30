@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.ServiceModel.Channels;
@@ -38,33 +39,23 @@ namespace Jhu.Graywulf.Web.Api
         /// <param name="fault"></param>
         public void ProvideFault(Exception error, System.ServiceModel.Channels.MessageVersion version, ref System.ServiceModel.Channels.Message fault)
         {
-            // log error
-            
-
-            // wrap exception so the framework doesn't choke on it
-            var wfe = new WebFaultException<Exception>(error, System.Net.HttpStatusCode.InternalServerError);
-
-            fault = System.ServiceModel.Channels.Message.CreateMessage(
-                version,
-                wfe.CreateMessageFault(),
-                "http://"
-            );
-
-            var response = WebOperationContext.Current.OutgoingResponse;
-
+            HttpStatusCode statusCode;
             if (error is System.Security.SecurityException)
             {
-                response.StatusCode = System.Net.HttpStatusCode.Forbidden;
+                statusCode = System.Net.HttpStatusCode.Forbidden;
             }
             else
             {
-                response.StatusCode = System.Net.HttpStatusCode.InternalServerError;
+                statusCode = System.Net.HttpStatusCode.InternalServerError;
             }
 
-            response.SuppressEntityBody = true;
+            fault = WebOperationContext.Current.CreateTextResponse(error.Message);
+
+            var response = WebOperationContext.Current.OutgoingResponse;
+
+            response.SuppressEntityBody = false;
+            response.StatusCode = statusCode;
             response.StatusDescription = error.Message;
-            response.ContentType = "text/plain";
-            HttpContext.Current.Response.Write(error.Message);
         }
     }
 }

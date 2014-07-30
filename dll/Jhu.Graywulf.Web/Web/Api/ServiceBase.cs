@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using System.ServiceModel.Web;
 using System.ServiceModel;
@@ -17,9 +18,13 @@ namespace Jhu.Graywulf.Web.Api
         private Context registryContext;
         private FederationContext federationContext;
 
-        protected HttpContext HttpContext
+        protected string AppRelativePath
         {
-            get { return HttpContext.Current; }
+            get
+            {
+                return VirtualPathUtility.ToAppRelative(
+                    System.ServiceModel.OperationContext.Current.RequestContext.RequestMessage.Headers.To.PathAndQuery);
+            }
         }
 
         /// <summary>
@@ -29,9 +34,9 @@ namespace Jhu.Graywulf.Web.Api
         {
             get
             {
-                if (HttpContext.Current.User.Identity is GraywulfIdentity)
+                if (Thread.CurrentPrincipal is GraywulfPrincipal)
                 {
-                    var identity = (GraywulfIdentity)HttpContext.User.Identity;
+                    var identity = (GraywulfIdentity)Thread.CurrentPrincipal.Identity;
                     identity.User.Context = RegistryContext;
                     return identity.User;
                 }
@@ -51,8 +56,7 @@ namespace Jhu.Graywulf.Web.Api
             {
                 if (registryContext == null)
                 {
-                    var application = (ApplicationBase)HttpContext.ApplicationInstance;
-                    registryContext = application.CreateRegistryContext();
+                    registryContext = CreateRegistryContext();
                 }
 
                 return registryContext;
@@ -90,6 +94,15 @@ namespace Jhu.Graywulf.Web.Api
             }
         }
 
+        /// <summary>
+        /// Gets an initialized registry context.
+        /// </summary>
+        public Context CreateRegistryContext()
+        {
+            var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.ManualCommit);
+            return context;
+        }
+
         internal void OnBeforeInvoke()
         {
         }
@@ -99,7 +112,7 @@ namespace Jhu.Graywulf.Web.Api
         /// </summary>
         /// <param name="invoker"></param>
         internal void OnAfterInvoke()
-        {         
+        {
         }
 
         internal void OnError(string operationName, Exception ex)
@@ -117,7 +130,7 @@ namespace Jhu.Graywulf.Web.Api
         private Logging.Event LogError(string operationName, Exception ex)
         {
             var error = Logging.Logger.Instance.LogException(
-                HttpContext.Current.Request.AppRelativeCurrentExecutionFilePath,
+                AppRelativePath,
                 Logging.EventSource.WebService,
                 registryContext == null ? Guid.Empty : registryContext.UserGuid,
                 registryContext == null ? Guid.Empty : registryContext.ContextGuid,

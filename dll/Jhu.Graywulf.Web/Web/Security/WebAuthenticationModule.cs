@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
@@ -14,7 +15,8 @@ namespace Jhu.Graywulf.Web.Security
     /// <remarks>
     /// This class implements an HTTP module that inspects each request coming from
     /// the web browser and calls a set of authenticators to attempt to authenticate
-    /// the user based on request parameters or cookies.
+    /// the user based on request parameters or cookies. The authenticated user's
+    /// details are cached in the session.
     /// </remarks>
     public class WebAuthenticationModule : AuthenticationModuleBase, IHttpModule
     {
@@ -22,8 +24,13 @@ namespace Jhu.Graywulf.Web.Security
         {
         }
 
+        public override void Dispose()
+        {
+            base.Dispose();
+        }
+
         /// <summary>
-        /// Initialize the authentication module events.
+        /// Initialize the authentication module by loading authenticators and setting events.
         /// </summary>
         /// <param name="application"></param>
         /// <remarks>
@@ -32,7 +39,7 @@ namespace Jhu.Graywulf.Web.Security
         /// </remarks>
         public void Init(HttpApplication application)
         {
-            // Create authenticators
+            // Load authenticators from the registry
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 // The admin interface doesn't have a domain associated with, this
@@ -42,11 +49,12 @@ namespace Jhu.Graywulf.Web.Security
                     // Initialize authenticators            
 
                     var af = AuthenticatorFactory.Create(context.Domain);
-                    RegisterAuthenticators(af.GetRestRequestAuthenticators());
+                    RegisterAuthenticators(af.GetWebRequestAuthenticators());
                 }
             }
 
             // Wire up request events
+
             // --- Call all authenticators in this one
             application.AuthenticateRequest += new EventHandler(OnAuthenticateRequest);
             // --- Associate identity with graywulf user
@@ -55,25 +63,14 @@ namespace Jhu.Graywulf.Web.Security
             application.PostAcquireRequestState += new EventHandler(OnPostAcquireRequestState);
         }
 
-        public void Dispose()
-        {
-        }
-
-        /// <summary>
-        /// Tries to authenticate the request with all authenticators.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /// <remarks></remarks>
         private void OnAuthenticateRequest(object sender, EventArgs e)
         {
-            var context = ((HttpApplication)sender).Context;
-            CallAuthenticators(context);
+            Authenticate(new AuthenticationRequest(HttpContext.Current.Request));
         }
 
         private void OnPostAuthenticateRequest(object sender, EventArgs e)
         {
-            var httpContext = ((HttpApplication)sender).Context;
+            var httpContext = HttpContext.Current;
             var principal = DispatchIdentityType(httpContext.User);
 
             if (principal != null)
@@ -85,6 +82,15 @@ namespace Jhu.Graywulf.Web.Security
         private void OnPostAcquireRequestState(object sender, EventArgs e)
         {
             IdentifyUser();
+        }
+
+        protected override void OnAuthenticated(GraywulfPrincipal principal)
+        {
+            HttpContext.Current.User = principal;
+        }
+
+        protected override void OnAuthenticationFailed()
+        {
         }
 
         /// <summary>

@@ -285,6 +285,8 @@
     <Compile Include="Util\QueryEditorUtil.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Api\Test.svc" />
+    <Content Include="Api\Data.svc" />
     <Content Include="Api\Default.aspx" />
     <Content Include="App_Themes\Basic\Css\codemirror.css" />
     <Content Include="App_Themes\Basic\Css\docs.css" />

@@ -17,12 +17,28 @@ namespace Jhu.Graywulf.Web.Security
     /// web page request based on the HTTP request header and for another
     /// 
     /// </remarks>
-    public abstract class AuthenticationModuleBase
+    public abstract class AuthenticationModuleBase : IDisposable
     {
         private Authenticator[] authenticators;
 
+        #region Constructors and initializers
+
+        protected AuthenticationModuleBase()
+        {
+        }
+
+        private void InitializeMembers()
+        {
+        }
+
+        public virtual void Dispose()
+        {
+        }
+
+        #endregion
+
         /// <summary>
-        /// Registeres request authenticators
+        /// Registers request authenticators.
         /// </summary>
         /// <param name="authenticators"></param>
         protected void RegisterAuthenticators(IEnumerable<Authenticator> authenticators)
@@ -34,30 +50,40 @@ namespace Jhu.Graywulf.Web.Security
         /// Calls all registered request authenticators
         /// </summary>
         /// <param name="context"></param>
-        protected void CallAuthenticators(HttpContext httpContext)
+        protected virtual void Authenticate(AuthenticationRequest request)
         {
             // If user is not authenticated yet, try to authenticate them now using
             // various types of authenticators
 
             if (authenticators != null)
             {
+                GraywulfPrincipal principal = null;
+
                 // Try each authentication protocol
-                for (int i = 0; httpContext.User == null && i < authenticators.Length; i++)
+                for (int i = 0; principal == null && i < authenticators.Length; i++)
                 {
-                    var user = authenticators[i].Authenticate(httpContext);
-                    if (user != null)
-                    {
-                        httpContext.User = user;
-                    }
+                    principal = authenticators[i].Authenticate(request);
+                }
+
+                if (principal != null)
+                {
+                    OnAuthenticated(principal);
+                    return;
                 }
             }
+
+            OnAuthenticationFailed();
         }
+
+        protected abstract void OnAuthenticated(GraywulfPrincipal principal);
+
+        protected abstract void OnAuthenticationFailed();
 
         /// <summary>
         /// Converts indentities into Graywulf identity.
         /// </summary>
         /// <param name="context"></param>
-        protected GraywulfPrincipal DispatchIdentityType(IPrincipal principal)
+        protected virtual GraywulfPrincipal DispatchIdentityType(IPrincipal principal)
         {
             // The request is processed now. If the user has been authenticated but
             // the principal is not a Graywulf principal, it has to be replaced now
@@ -108,7 +134,7 @@ namespace Jhu.Graywulf.Web.Security
         /// <remarks>
         /// FormsIdentity is always automatically accepted as master authority.
         /// </remarks>
-        protected GraywulfPrincipal CreatePrincipal(System.Web.Security.FormsIdentity formsIdentity)
+        private GraywulfPrincipal CreatePrincipal(System.Web.Security.FormsIdentity formsIdentity)
         {
             var identity = new GraywulfIdentity()
             {
