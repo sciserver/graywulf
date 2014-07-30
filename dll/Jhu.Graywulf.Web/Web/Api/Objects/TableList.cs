@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ServiceModel;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace Jhu.Graywulf.Web.Api
 {
-    [DataContract]
+    [DataContract(Name="tableList")]
     public class TableList
     {
-        [DataMember(Name="tables")]
+        [DataMember(Name = "tables")]
         public Table[] Tables { get; set; }
     }
 }

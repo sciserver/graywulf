@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace Jhu.Graywulf.Web.Api
 {
-    [DataContract]
+    [DataContract(Name = "datasetList")]
     public class DatasetList
     {
-        [DataMember(Name="datasets")]
-        public Dataset[] Dataset { get; set; }
+        [DataMember(Name = "datasets")]
+        public Dataset[] Datasets { get; set; }
     }
 }

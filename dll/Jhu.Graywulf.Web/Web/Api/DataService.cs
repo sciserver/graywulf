@@ -10,6 +10,8 @@ using System.ServiceModel.Channels;
 using System.Web.Routing;
 using System.Security.Permissions;
 using System.IO;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.SqlCodeGen;
 using Jhu.Graywulf.Format;
@@ -24,7 +26,7 @@ namespace Jhu.Graywulf.Web.Api
         [OperationContract]
         [DynamicResponseFormat]
         [WebGet(UriTemplate = "/")]
-        Dataset[] ListDatasets();
+        DatasetList ListDatasets();
 
         [OperationContract]
         [DynamicResponseFormat]
@@ -38,18 +40,16 @@ namespace Jhu.Graywulf.Web.Api
 
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
-    [AspNetCompatibilityRequirements(RequirementsMode=AspNetCompatibilityRequirementsMode.Allowed)]
+    [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     [RestServiceBehavior]
     public class DataService : ServiceBase, IDataService
     {
-        public Dataset[] ListDatasets()
+        public DatasetList ListDatasets()
         {
-            return new[]
-                {
-                new Dataset()
+            return new DatasetList()
             {
-                Name = "test"
-            }};
+                Datasets = FederationContext.SchemaManager.Datasets.Values.Select(d => new Dataset(d)).ToArray()
+            };
         }
 
         public TableList ListTables(string datasetName)
@@ -57,22 +57,10 @@ namespace Jhu.Graywulf.Web.Api
             var dataset = FederationContext.SchemaManager.Datasets[datasetName];
             dataset.Tables.LoadAll();
 
-            var res = new TableList()
+            return new TableList()
             {
-                Tables = new Table[dataset.Tables.Count]
+                Tables = dataset.Tables.Values.Select(t => new Table(t)).ToArray(),
             };
-
-            int q = 0;
-            foreach (var t in dataset.Tables.Values)
-            {
-                res.Tables[q] = new Table()
-                {
-                    Name = t.DisplayName,
-                };
-                q++;
-            }
-
-            return res;
         }
 
         public Message GetTable(string datasetName, string tableName, string top)
