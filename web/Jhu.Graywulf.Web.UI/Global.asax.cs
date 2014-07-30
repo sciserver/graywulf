@@ -29,19 +29,6 @@ namespace Jhu.Graywulf.Web.UI
                 Application[Jhu.Graywulf.Web.Constants.ApplicationLongTitle] = federation.LongTitle;
                 Application[Jhu.Graywulf.Web.Constants.ApplicationCopyright] = federation.Copyright;
             }
-
-            // Add service routes here
-            // TODO: move these from here into a service factory,
-            // so applications can get their own services registered,
-            // for example SkyQuery:Tap
-            
-            /*
-            RouteTable.Routes.Ignore("{resource}.axd/{*pathInfo}");
-
-            RouteTable.Routes.Add(new ServiceRoute("Api/Jobs/", new WebServiceHostFactory(), typeof(Jhu.Graywulf.Web.Api.JobsService)));
-            RouteTable.Routes.Add(new ServiceRoute("Api/Data/", new WebServiceHostFactory(), typeof(Jhu.Graywulf.Web.Api.DataService)));
-            RouteTable.Routes.Add(new ServiceRoute("Api/Schema/", new WebServiceHostFactory(), typeof(Jhu.Graywulf.Web.Api.SchemaService)));
-             * */
         }
 
 
