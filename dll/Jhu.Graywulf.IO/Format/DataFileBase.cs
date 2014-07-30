@@ -22,6 +22,9 @@ namespace Jhu.Graywulf.Format
     {
         #region Private member variables
 
+        [NonSerialized]
+        private FileFormatDescription description;
+
         /// <summary>
         /// Base stream to read from/write to
         /// </summary>
@@ -91,7 +94,11 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Returns file format description.
         /// </summary>
-        public abstract FileFormatDescription Description { get; }
+        public FileFormatDescription Description
+        {
+            get { return description; }
+            protected set { description = value; }
+        }
 
         /// <summary>
         /// Gets the stream that can be used to read data
@@ -265,6 +272,8 @@ namespace Jhu.Graywulf.Format
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
+            this.description = null;
+
             this.baseStream = null;
             this.ownsBaseStream = false;
             this.streamFactoryType = null;
@@ -281,8 +290,11 @@ namespace Jhu.Graywulf.Format
 
         private void CopyMembers(DataFileBase old)
         {
+            this.description = Util.DeepCloner.CloneObject(old.description);
+
             this.baseStream = null;
             this.ownsBaseStream = false;
+            this.streamFactoryType = old.streamFactoryType;
 
             this.fileMode = old.fileMode;
             this.uri = old.uri;
@@ -633,7 +645,7 @@ namespace Jhu.Graywulf.Format
             // write contents into the file.
             if (nextBlock != null)
             {
-                nextBlock.SetProperties(dr);                
+                nextBlock.SetProperties(dr);
                 nextBlock.Write(dr);
             }
         }

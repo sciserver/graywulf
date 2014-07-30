@@ -29,27 +29,6 @@ namespace Jhu.Graywulf.Format
 
         #region Properties
 
-        public override FileFormatDescription Description
-        {
-            get
-            {
-                return new FileFormatDescription()
-                    {
-                        DisplayName = FileFormatNames.DelimitedTextDataFile,
-                        DefaultMimeType = Constants.MimeTypeCsv,
-                        DefaultExtension = Constants.FileExtensionCsv,
-                        CanRead = true,
-                        CanWrite = true,
-                        CanDetectColumnNames = true,
-                        CanHoldMultipleDatasets = false,
-                        RequiresArchive = false,
-                        IsCompressed = false,
-                        KnowsRecordCount = false,
-                        RequiresRecordCount = false,
-                    };
-            }
-        }
-
         [DataMember]
         public char Comment
         {
@@ -143,6 +122,21 @@ namespace Jhu.Graywulf.Format
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
+            Description = new FileFormatDescription()
+            {
+                DisplayName = FileFormatNames.CsvFile,
+                MimeType = Constants.MimeTypeCsv,
+                Extension = Constants.FileExtensionCsv,
+                CanRead = true,
+                CanWrite = true,
+                CanDetectColumnNames = true,
+                CanHoldMultipleDatasets = false,
+                RequiresArchive = false,
+                IsCompressed = false,
+                KnowsRecordCount = false,
+                RequiresRecordCount = false,
+            };
+
             this.isFirstBlock = true;
 
             this.comment = '#';

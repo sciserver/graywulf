@@ -9,6 +9,6 @@ namespace Jhu.Graywulf.Format
     {
         public string Extension { get; set; }
         public string MimeType { get; set; }
-        public Type Type { get; set; }
+        public DataFileBase Prototype { get; set; }
     }
 }

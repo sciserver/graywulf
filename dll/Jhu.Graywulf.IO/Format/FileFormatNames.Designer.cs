@@ -61,11 +61,20 @@ namespace Jhu.Graywulf.Format {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to TXT (tabulated text file).
+        /// </summary>
+        internal static string AsciiFile {
+            get {
+                return ResourceManager.GetString("AsciiFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CSV (delimited text file).
         /// </summary>
-        internal static string DelimitedTextDataFile {
+        internal static string CsvFile {
             get {
-                return ResourceManager.GetString("DelimitedTextDataFile", resourceCulture);
+                return ResourceManager.GetString("CsvFile", resourceCulture);
             }
         }
         

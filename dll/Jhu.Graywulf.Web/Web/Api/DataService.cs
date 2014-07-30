@@ -102,7 +102,7 @@ namespace Jhu.Graywulf.Web.Api
             // -- Figure out output type from request header
             var accept = WebOperationContext.Current.IncomingRequest.GetAcceptHeaderElements();
             var ff = FileFormatFactory.Create(FederationContext.Federation.FileFormatFactory);
-            var destination = ff.CreateFile(ff.GetFileFromFromAcceptHeader(accept));
+            var destination = ff.CreateFileFromAcceptHeader(accept);
 
             var export = new ExportTable()
             {
@@ -117,7 +117,7 @@ namespace Jhu.Graywulf.Web.Api
                     export.Destination.Open(stream, DataFileMode.Write);
                     export.Execute();
                 },
-                destination.Description.DefaultMimeType);
+                destination.Description.MimeType);
 
             return message;
         }

@@ -39,9 +39,9 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Private member variables
 
-        private Dictionary<Type, FileFormatDescription> fileFormats;
-        private Dictionary<string, Type> fileFormatsByExtension;
-        private Dictionary<string, Type> fileFormatsByMimeType;
+        private List<DataFileBase> prototypes;
+        private Dictionary<string, int> filesByExtension;
+        private Dictionary<string, int> filesByMimeType;
         private bool isFileFormatsLoaded;
 
         #endregion
@@ -54,9 +54,9 @@ namespace Jhu.Graywulf.Format
 
         private void InitializeMembers()
         {
-            this.fileFormats = new Dictionary<Type, FileFormatDescription>();
-            this.fileFormatsByExtension = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
-            this.fileFormatsByMimeType = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
+            this.prototypes = new List<DataFileBase>();
+            this.filesByExtension = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+            this.filesByMimeType = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
             this.isFileFormatsLoaded = false;
         }
 
@@ -66,21 +66,24 @@ namespace Jhu.Graywulf.Format
 
         private void LoadFileFormats()
         {
-            foreach (var mapping in OnFileFormatsLoading())
+            prototypes.Clear();
+            filesByExtension.Clear();
+            filesByMimeType.Clear();
+
+            foreach (var file in OnFilesLoading())
             {
-                if (!fileFormats.ContainsKey(mapping.Type))
+                prototypes.Add(file);
+
+                var idx = prototypes.Count - 1;
+
+                if (!filesByExtension.ContainsKey(file.Description.Extension))
                 {
-                    fileFormats.Add(mapping.Type, LoadFileFormat(mapping.Type));
+                    filesByExtension.Add(file.Description.Extension, idx);
                 }
 
-                if (!fileFormatsByExtension.ContainsKey(mapping.Extension))
+                if (!filesByMimeType.ContainsKey(file.Description.MimeType))
                 {
-                    fileFormatsByExtension.Add(mapping.Extension, mapping.Type);
-                }
-
-                if (!fileFormatsByMimeType.ContainsKey(mapping.MimeType))
-                {
-                    fileFormatsByMimeType.Add(mapping.MimeType, mapping.Type);
+                    filesByMimeType.Add(file.Description.MimeType, idx);
                 }
             }
 
@@ -92,50 +95,35 @@ namespace Jhu.Graywulf.Format
         /// a collection.
         /// </summary>
         /// <param name="fileTypes"></param>
-        protected virtual IEnumerable<FileFormatMapping> OnFileFormatsLoading()
+        protected virtual IEnumerable<DataFileBase> OnFilesLoading()
         {
-            yield return new FileFormatMapping
+            DataFileBase file;
+
+            // -- Plain TXT file
+            file = new DelimitedTextDataFile()
             {
-                Extension = Constants.FileExtensionTxt,
-                MimeType = Constants.MimeTypePlainText,
-                Type = typeof(DelimitedTextDataFile)
+                Separator = '\t',
             };
+            file.Description.MimeType = Constants.MimeTypePlainText;
+            file.Description.Extension = Constants.FileExtensionTxt;
+            file.Description.DisplayName = FileFormatNames.AsciiFile;
+            yield return file;
 
-            yield return new FileFormatMapping
+            // -- CSV file
+            file = new DelimitedTextDataFile()
             {
-                Extension = Constants.FileExtensionCsv,
-                MimeType = Constants.MimeTypeCsv,
-                Type = typeof(DelimitedTextDataFile)
+                Separator = ',',
             };
+            file.Description.MimeType = Constants.MimeTypeCsv;
+            file.Description.Extension = Constants.FileExtensionCsv;
+            file.Description.DisplayName = FileFormatNames.CsvFile;
+            yield return file;
 
-            yield return new FileFormatMapping
-            {
-                Extension = Constants.FileExtensionBcp,
-                MimeType = Constants.MimeTypeBcp,
-                Type = typeof(SqlServerNativeDataFile)
-            };
+            // -- XML file
+            yield return new XHtmlDataFile();
 
-            yield return new FileFormatMapping
-            {
-                Extension = Constants.FileExtensionHtml,
-                MimeType = Constants.MimeTypeHtml,
-                Type = typeof(XHtmlDataFile)
-            };
-        }
-
-        /// <summary>
-        /// Initializes a file object descriptios based on file type.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        private FileFormatDescription LoadFileFormat(Type type)
-        {
-            var f = (DataFileBase)Activator.CreateInstance(type, true);
-
-            var fd = f.Description;
-            fd.Type = type;
-
-            return fd;
+            // -- SQL Server BCP file
+            yield return new SqlServerNativeDataFile();
         }
 
         private void EnsureFileFormatsLoaded()
@@ -149,104 +137,92 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region File format description access functions
 
-        public FileFormatDescription GetFileFormat(Uri uri, out string filename, out string extension, out DataFileCompression compression)
+        public DataFileBase CreateFile(Uri uri, out string filename, out string extension, out DataFileCompression compression)
         {
-            FileFormatDescription format;
-            if (!TryGetFileFormat(uri, out filename, out extension, out compression, out format))
+            DataFileBase file;
+            if (!TryCreateFile(uri, out filename, out extension, out compression, out file))
             {
                 throw CreateFileFormatUnknownException();
             }
 
-            return format;
+            return file;
         }
 
-        public bool TryGetFileFormat(Uri uri, out string filename, out string extension, out DataFileCompression compression, out FileFormatDescription format)
+        public bool TryCreateFile(Uri uri, out string filename, out string extension, out DataFileCompression compression, out DataFileBase file)
         {
             GetExtensionWithoutCompression(uri, out filename, out extension, out compression);
-            return TryGetFileFormatFromExtension(extension, out format);
+
+            var res = TryCreateFileFromExtension(extension, out file);
+
+            file.Uri = uri;
+
+            return res;
         }
 
-        public FileFormatDescription GetFileFormat(Type type)
+        public DataFileBase CreateFileFromExtension(string extension)
         {
-            FileFormatDescription format;
-            if (!TryGetFileFormat(type, out format))
+            DataFileBase file;
+            if (!TryCreateFileFromExtension(extension, out file))
             {
                 throw CreateFileFormatUnknownException();
             }
 
-            return format;
+            return file;
         }
 
-        public bool TryGetFileFormat(Type type, out FileFormatDescription format)
-        {
-            EnsureFileFormatsLoaded();
-            return fileFormats.TryGetValue(type, out format);
-        }
-
-        public FileFormatDescription GetFileFormatFromExtension(string extension)
-        {
-            FileFormatDescription format;
-            if (!TryGetFileFormatFromExtension(extension, out format))
-            {
-                throw CreateFileFormatUnknownException();
-            }
-
-            return format;
-        }
-
-        public bool TryGetFileFormatFromExtension(string extension, out FileFormatDescription format)
+        public bool TryCreateFileFromExtension(string extension, out DataFileBase file)
         {
             EnsureFileFormatsLoaded();
 
-            Type type;
-            if (fileFormatsByExtension.TryGetValue(extension, out type))
+            int idx;
+            if (filesByExtension.TryGetValue(extension, out idx))
             {
-                format = fileFormats[type];
+                file = (DataFileBase)prototypes[idx].Clone();
                 return true;
             }
 
-            format = null;
+            file = null;
             return false;
         }
 
-        public FileFormatDescription GetFileFormatFromMimeType(string mimeType)
+        public DataFileBase CreateFileFromMimeType(string mimeType)
         {
-            FileFormatDescription format;
-            if (!TryGetFileFormatFromMimeType(mimeType, out format))
+            DataFileBase file;
+            if (!TryCreateFileFromMimeType(mimeType, out file))
             {
                 throw CreateFileFormatUnknownException();
             }
 
-            return format;
+            return file;
         }
 
-        public bool TryGetFileFormatFromMimeType(string mimeType, out FileFormatDescription format)
+        public bool TryCreateFileFromMimeType(string mimeType, out DataFileBase file)
         {
             EnsureFileFormatsLoaded();
 
-            Type type;
-            if (fileFormatsByMimeType.TryGetValue(mimeType, out type))
+            int idx;
+            if (filesByMimeType.TryGetValue(mimeType, out idx))
             {
-                format = fileFormats[type];
+                file = (DataFileBase)prototypes[idx].Clone();
                 return true;
             }
 
-            format = null;
+            file = null;
             return false;
         }
 
-        public FileFormatDescription GetFileFromFromAcceptHeader(System.Collections.ObjectModel.Collection<System.Net.Mime.ContentType> accept)
+        public DataFileBase CreateFileFromAcceptHeader(System.Collections.ObjectModel.Collection<System.Net.Mime.ContentType> accept)
         {
-            FileFormatDescription format;
-            if (!TryGetFileFromFromAcceptHeader(accept, out format))
+            DataFileBase file;
+            if (!TryCreateFileFromAcceptHeader(accept, out file))
             {
                 throw CreateFileFormatUnknownException();
             }
 
-            return format;
+            return file;
         }
 
-        public bool TryGetFileFromFromAcceptHeader(System.Collections.ObjectModel.Collection<System.Net.Mime.ContentType> accept, out FileFormatDescription format)
+        public bool TryCreateFileFromAcceptHeader(System.Collections.ObjectModel.Collection<System.Net.Mime.ContentType> accept, out DataFileBase file)
         {
             EnsureFileFormatsLoaded();
 
@@ -254,24 +230,24 @@ namespace Jhu.Graywulf.Format
             // Loop over each item instead.
             for (int i = 0; i < accept.Count; i++)
             {
-                foreach (var fileMime in fileFormatsByMimeType.Keys)
+                foreach (var fileMime in filesByMimeType.Keys)
                 {
                     if (Util.MediaTypeComparer.Compare(accept[i].MediaType, fileMime))
                     {
-                        format = fileFormats[fileFormatsByMimeType[fileMime]];
+                        file = (DataFileBase)prototypes[filesByMimeType[fileMime]].Clone();
                         return true;
                     }
                 }
             }
 
             // Fall back to plain text
-            return TryGetFileFormatFromMimeType(Constants.MimeTypePlainText, out format);
+            return TryCreateFileFromMimeType(Constants.MimeTypePlainText, out file);
         }
 
         public IEnumerable<FileFormatDescription> EnumerateFileFormatDescriptions()
         {
             EnsureFileFormatsLoaded();
-            return fileFormats.Values;
+            return prototypes.Select(f => f.Description);
         }
 
         #endregion
@@ -317,17 +293,14 @@ namespace Jhu.Graywulf.Format
             string filename, extension;
             DataFileCompression compression;
 
-            FileFormatDescription ffd;
-            if (!TryGetFileFormat(uri, out filename, out extension, out compression, out ffd))
+            DataFileBase file;
+            if (!TryCreateFile(uri, out filename, out extension, out compression, out file))
             {
                 throw CreateFileFormatUnknownException();
             }
 
-            var format = CreateFile(ffd);
-
-            format.Uri = uri;
-
-            return format;
+            file.Uri = uri;
+            return file;
         }
 
         public DataFileBase CreateFile(string filename)

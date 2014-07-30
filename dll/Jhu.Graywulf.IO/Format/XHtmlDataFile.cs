@@ -18,33 +18,6 @@ namespace Jhu.Graywulf.Format
     [Serializable]
     public class XHtmlDataFile : XmlDataFile, IDisposable, ICloneable
     {
-        #region Properties
-
-        /// <summary>
-        /// Returns the description of the file format
-        /// </summary>
-        public override FileFormatDescription Description
-        {
-            get
-            {
-                return new FileFormatDescription()
-                {
-                    DisplayName = FileFormatNames.XHtmlDataFile,
-                    DefaultMimeType = Constants.MimeTypeHtml,
-                    DefaultExtension = Constants.FileExtensionHtml,
-                    CanRead = false,
-                    CanWrite = true,
-                    CanDetectColumnNames = false,
-                    CanHoldMultipleDatasets = true,
-                    RequiresArchive = false,
-                    IsCompressed = false,
-                    KnowsRecordCount = false,
-                    RequiresRecordCount = false,
-                };
-            }
-        }
-
-        #endregion
         #region Constructors and initializers
 
         /// <summary>
@@ -142,6 +115,20 @@ namespace Jhu.Graywulf.Format
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
+            Description = new FileFormatDescription()
+            {
+                DisplayName = FileFormatNames.XHtmlDataFile,
+                MimeType = Constants.MimeTypeHtml,
+                Extension = Constants.FileExtensionHtml,
+                CanRead = false,
+                CanWrite = true,
+                CanDetectColumnNames = false,
+                CanHoldMultipleDatasets = true,
+                RequiresArchive = false,
+                IsCompressed = false,
+                KnowsRecordCount = false,
+                RequiresRecordCount = false,
+            };
         }
 
         private void CopyMembers(XHtmlDataFile old)
