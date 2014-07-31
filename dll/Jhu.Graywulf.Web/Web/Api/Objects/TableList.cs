@@ -13,5 +13,14 @@ namespace Jhu.Graywulf.Web.Api
     {
         [DataMember(Name = "tables")]
         public Table[] Tables { get; set; }
+
+        public TableList()
+        {
+        }
+
+        public TableList(IEnumerable<Jhu.Graywulf.Schema.Table> tables)
+        {
+            this.Tables = tables.Select(t => new Table(t)).ToArray();
+        }
     }
 }

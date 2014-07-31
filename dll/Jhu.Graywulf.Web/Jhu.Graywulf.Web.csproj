@@ -81,27 +81,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Web\Api\DataService.cs" />
     <Compile Include="Web\Api\DynamicResponseFormatAttribute.cs" />
     <Compile Include="Web\Api\DynamicResponseMessageFormatter.cs" />
     <Compile Include="Web\Api\Enum.cs" />
-    <Compile Include="Web\Api\ExportJob.cs" />
-    <Compile Include="Web\Api\ImportJob.cs" />
-    <Compile Include="Web\Api\Job.cs" />
     <Compile Include="Web\Api\JobFactory.cs" />
-    <Compile Include="Web\Api\JobsService.cs" />
+    <Compile Include="Web\Api\Objects\Column.cs" />
+    <Compile Include="Web\Api\Objects\ColumnList.cs" />
     <Compile Include="Web\Api\Objects\DatasetList.cs" />
     <Compile Include="Web\Api\Objects\Dataset.cs" />
+    <Compile Include="Web\Api\Objects\ExportJob.cs" />
+    <Compile Include="Web\Api\Objects\ImportJob.cs" />
+    <Compile Include="Web\Api\Objects\Job.cs" />
+    <Compile Include="Web\Api\Objects\QueryJob.cs" />
     <Compile Include="Web\Api\Objects\Table.cs" />
-    <Compile Include="Web\Api\QueryJob.cs" />
     <Compile Include="Web\Api\Objects\TableList.cs" />
     <Compile Include="Web\Api\RestErrorHandler.cs" />
     <Compile Include="Web\Api\RestOperationBehavior.cs" />
     <Compile Include="Web\Api\RestOperationInvoker.cs" />
     <Compile Include="Web\Api\RestServiceBehavior.cs" />
-    <Compile Include="Web\Api\SchemaService.cs" />
     <Compile Include="Web\Api\ServiceBase.cs" />
-    <Compile Include="Web\Api\TestService.cs" />
+    <Compile Include="Web\Api\Services\DataService.cs" />
+    <Compile Include="Web\Api\Services\JobsService.cs" />
+    <Compile Include="Web\Api\Services\SchemaService.cs" />
+    <Compile Include="Web\Api\Services\TestService.cs" />
     <Compile Include="Web\Api\TextResponseMessageBodyWriter.cs" />
     <Compile Include="Web\Api\TextResponseMessageFormatter.cs" />
     <Compile Include="Web\ApplicationBase.cs" />

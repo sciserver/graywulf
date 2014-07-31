@@ -13,9 +13,13 @@ namespace Jhu.Graywulf.Web.Api
         [DataMember(Name="name")]
         public string Name { get; set; }
 
+        [DataMember(Name = "columns")]
+        public Column[] Columns { get; set; }
+
         public Table(Jhu.Graywulf.Schema.Table table)
         {
             this.Name = table.DisplayName;
+            this.Columns = table.Columns.Values.Select(c => new Column(c)).ToArray();
         }
     }
 }

@@ -12,5 +12,14 @@ namespace Jhu.Graywulf.Web.Api
     {
         [DataMember(Name = "datasets")]
         public Dataset[] Datasets { get; set; }
+
+        public DatasetList()
+        {
+        }
+
+        public DatasetList(IEnumerable<Jhu.Graywulf.Schema.DatasetBase> datasets)
+        {
+            this.Datasets = datasets.Select(ds => new Dataset(ds)).ToArray();
+        }
     }
 }

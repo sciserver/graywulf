@@ -42,11 +42,15 @@ namespace Jhu.Graywulf.Web.Api
             HttpStatusCode statusCode;
             if (error is System.Security.SecurityException)
             {
-                statusCode = System.Net.HttpStatusCode.Forbidden;
+                statusCode = HttpStatusCode.Forbidden;
+            }
+            if (error is KeyNotFoundException)
+            {
+                statusCode = HttpStatusCode.NotFound;
             }
             else
             {
-                statusCode = System.Net.HttpStatusCode.InternalServerError;
+                statusCode = HttpStatusCode.InternalServerError;
             }
 
             fault = WebOperationContext.Current.CreateTextResponse(error.Message);
