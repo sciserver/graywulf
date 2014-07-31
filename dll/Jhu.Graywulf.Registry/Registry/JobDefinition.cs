@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.Registry
         }
 
         [XmlArray("Parameters")]
-        [XmlArrayItem(typeof(JobDefinitionParameter))]
+        [XmlArrayItem(typeof(Parameter))]
         [DefaultValue(null)]
         public Parameter[] Parameters_ForXml
         {
@@ -182,7 +182,7 @@ namespace Jhu.Graywulf.Registry
             // Create a copy to release proxy objects.
             foreach (var par in rh.GetParameters().Values)
             {
-                parameters.Add(par.Name, new JobDefinitionParameter((JobDefinitionParameter)par));
+                parameters.Add(par.Name, new Parameter(par));
             }
         }
 
@@ -200,9 +200,9 @@ namespace Jhu.Graywulf.Registry
 
             // Create workflow parameters
             var rh = JobReflectionHelper.CreateInstance(this.workflowTypeName);
-            foreach (JobDefinitionParameter par in rh.GetParameters().Values)
+            foreach (Parameter par in rh.GetParameters().Values)
             {
-                job.Parameters.Add(par.Name, new JobInstanceParameter()
+                job.Parameters.Add(par.Name, new Parameter()
                     {
                         Name = par.Name,
                         Direction = par.Direction,

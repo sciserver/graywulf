@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
-namespace Jhu.Graywulf.Registry
+namespace Jhu.Graywulf.Components
 {
     [Flags]
-    public enum JobParameterDirection : byte
+    public enum ParameterDirection : byte
     {
         Unknown = 0,
         In = 1,

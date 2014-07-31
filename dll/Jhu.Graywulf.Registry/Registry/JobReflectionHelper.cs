@@ -73,26 +73,26 @@ namespace Jhu.Graywulf.Registry
 
                     if (!excluded.Contains(pinfo.Name))
                     {
-                        JobParameterDirection dir;
+                        ParameterDirection dir;
 
                         if (gt == typeof(System.Activities.InArgument<>))
                         {
-                            dir = JobParameterDirection.In;
+                            dir = ParameterDirection.In;
                         }
                         else if (gt == typeof(System.Activities.InOutArgument<>))
                         {
-                            dir = JobParameterDirection.InOut;
+                            dir = ParameterDirection.InOut;
                         }
                         else if (gt == typeof(System.Activities.OutArgument<>))
                         {
-                            dir = JobParameterDirection.Out;
+                            dir = ParameterDirection.Out;
                         }
                         else
                         {
                             continue;
                         }
 
-                        var par = new JobDefinitionParameter()
+                        var par = new Parameter()
                         {
                             Name = pinfo.Name,
                             TypeName = pinfo.PropertyType.GetGenericArguments()[0].AssemblyQualifiedName,

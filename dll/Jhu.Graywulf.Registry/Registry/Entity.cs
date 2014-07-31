@@ -432,8 +432,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         [XmlArray("Settings")]
         [XmlArrayItem(typeof(Parameter))]
-        [XmlArrayItem(typeof(JobDefinitionParameter))]
-        [XmlArrayItem(typeof(JobInstanceParameter))]
         [DefaultValue(null)]
         public Parameter[] Settings_ForXml
         {

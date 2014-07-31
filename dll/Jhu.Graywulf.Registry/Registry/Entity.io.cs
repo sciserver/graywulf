@@ -8,7 +8,6 @@ using System.IO;
 using System.Xml.Serialization;
 using System.Reflection;
 using System.Linq.Expressions;
-using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -16,12 +15,12 @@ namespace Jhu.Graywulf.Registry
     {
         #region Generic entity IO helper
 
-        private static readonly LazyDictionary<Type, DBHelper> DBHelpers;
+        private static readonly Components.LazyDictionary<Type, DBHelper> DBHelpers;
 
         static Entity()
         {
-            DBHelpers = new LazyDictionary<Type, DBHelper>();
-            DBHelpers.ItemLoading += delegate(object sender, LazyItemLoadingEventArgs<Type, DBHelper> e)
+            DBHelpers = new Components.LazyDictionary<Type, DBHelper>();
+            DBHelpers.ItemLoading += delegate(object sender, Components.LazyItemLoadingEventArgs<Type, DBHelper> e)
             {
                 e.Value = new DBHelper(e.Key);
                 e.IsFound = true;

@@ -181,7 +181,7 @@ namespace Jhu.Graywulf.Registry
         }
 
         [XmlArray("Parameters")]
-        [XmlArrayItem(typeof(JobInstanceParameter))]
+        [XmlArrayItem(typeof(Parameter))]
         [DefaultValue(null)]
         public Parameter[] Parameters_ForXml
         {
