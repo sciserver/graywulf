@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             RegistryContext.TransactionMode = Registry.TransactionMode.DirtyRead;
             var jf = new JobFactory(RegistryContext);
             jf.JobDefinitionGuids.Clear();
-            jf.JobDefinitionGuids.UnionWith(JobFactory.ExportJobDefinitionGuids);
+            jf.JobDefinitionGuids.UnionWith(JobFactory.SelectJobDefinitions(JobType.Export).Select(jd => jd.Guid));
 
             e.ObjectInstance = jf;
         }

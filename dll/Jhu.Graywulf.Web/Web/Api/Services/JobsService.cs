@@ -28,18 +28,13 @@ namespace Jhu.Graywulf.Web.Api
 
         [OperationContract]
         [DynamicResponseFormat]
-        [WebGet(UriTemplate = "/queues/{queue}/jobs")]
-        JobList ListJobs(string queue);
-
-        [OperationContract]
-        [DynamicResponseFormat]
         [WebGet(UriTemplate = "/queues/{queue}/jobs?type={type}")]
-        JobList ListJobsByType(string queue, string type);
+        JobList ListJobs(string queue, string type);
 
         [OperationContract]
         [DynamicResponseFormat]
-        [WebGet(UriTemplate = "/queues/{queue}/jobs/{guid}")]
-        Job GetJob(string queue, string guid);
+        [WebGet(UriTemplate = "/queues/all/jobs/{guid}")]
+        Job GetJob(string guid);
 
         [OperationContract]
         [DynamicResponseFormat]
@@ -63,7 +58,11 @@ namespace Jhu.Graywulf.Web.Api
             {
                 if (jobFactory == null)
                 {
-                    jobFactory = new JobFactory(RegistryContext);
+                    // Make sure that searches are always limited to the current user
+                    jobFactory = new JobFactory(RegistryContext)
+                    {
+                        UserGuid = RegistryContext.UserGuid
+                    };
                 }
 
                 return jobFactory;
@@ -95,12 +94,45 @@ namespace Jhu.Graywulf.Web.Api
             return new Queue(JobFactory.GetQueueInstance(queue));
         }
 
-        public JobList ListJobs(string queue)
+        public JobList ListJobs(string queue, string type)
         {
-            if (Entity.StringComparer.Compare(queue, "any") != 0)
+            JobQueue jobQueue;
+            if (!Enum.TryParse<JobQueue>(queue, true, out jobQueue))
             {
-                // If a specific queue is to be returned, set the appropriate guid
-                JobFactory.QueueInstanceGuid.Add(JobFactory.GetQueueInstance(queue).Guid);
+                throw new ResourceNotFoundException();
+            }
+
+            switch (jobQueue)
+            {
+                case JobQueue.All:
+                    // No need to change job factory settings
+                    break;
+                case JobQueue.Quick:
+                case JobQueue.Long:
+                    JobFactory.QueueInstanceGuids.Add(JobFactory.GetQueueInstance(queue).Guid);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            JobType jobType = JobType.All;
+            if (type != null && !Enum.TryParse<JobType>(type, true, out jobType))
+            {
+                throw new ResourceNotFoundException();
+            }
+
+            switch (jobType)
+            {
+                case JobType.All:
+                    // No need to change job factory settings
+                    break;
+                case JobType.Export:
+                case JobType.Import:
+                case JobType.Query:
+                    JobFactory.JobDefinitionGuids.UnionWith(JobFactory.SelectJobDefinitions(jobType).Select(jd => jd.Guid));
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
             
             // TODO: add options like: top, date limits, etc.
@@ -108,12 +140,7 @@ namespace Jhu.Graywulf.Web.Api
             return new JobList(JobFactory.SelectJobs(-1, -1));
         }
 
-        public JobList ListJobsByType(string queue, string type)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Job GetJob(string queue, string guid)
+        public Job GetJob(string guid)
         {
             throw new NotImplementedException();
         }
@@ -122,16 +149,5 @@ namespace Jhu.Graywulf.Web.Api
         {
             throw new NotImplementedException();
         }
-
-#if false
-        public IEnumerable<QueryJob> GetQueryJobs(string queue)
-        {
-            var jf = new JobFactory(RegistryContext);
-
-            jf.JobDefinitionGuids.UnionWith(JobFactory.QueryJobDefinitionGuids);
-
-            return jf.SelectJobs(-1, -1).Where(j => j is QueryJob).Cast<QueryJob>();
-        }
-#endif
     }
 }

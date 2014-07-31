@@ -5,12 +5,14 @@ using System.Text;
 
 namespace Jhu.Graywulf.Web.Api
 {
-    public enum JobType
+    [Flags]
+    public enum JobType : int
     {
-        Unknown,
-        Query,
-        Export,
-        Import
+        Unknown = 0,
+        Query = 1,
+        Export = 2,
+        Import = 4,
+        All = Query | Export | Import,
     }
 
     public enum JobStatus
@@ -24,11 +26,12 @@ namespace Jhu.Graywulf.Web.Api
         TimedOut,
     }
 
-    public enum JobQueue
+    [Flags]
+    public enum JobQueue : int
     {
-        Unknown,
-        Any,
-        Quick,
-        Long
+        Unknown = 0,
+        Quick = 1,
+        Long = 2,
+        All = Quick | Long
     }
 }

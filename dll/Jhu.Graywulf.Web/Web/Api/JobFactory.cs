@@ -27,18 +27,9 @@ namespace Jhu.Graywulf.Web.Api
         private static ConcurrentDictionary<string, QueueInstance> queueInstances;
 
         private static bool jobDefinitionsLoaded = false;
-        private static ConcurrentDictionary<Guid, string> queryJobDefinitions;
-        private static ConcurrentDictionary<Guid, string> exportJobDefinitions;
-
-        public static IEnumerable<Guid> QueryJobDefinitionGuids
-        {
-            get { return new HashSet<Guid>(queryJobDefinitions.Keys); }
-        }
-
-        public static IEnumerable<Guid> ExportJobDefinitionGuids
-        {
-            get { return new HashSet<Guid>(exportJobDefinitions.Keys); }
-        }
+        private static ConcurrentDictionary<string, JobDefinition> queryJobDefinitions;
+        private static ConcurrentDictionary<string, JobDefinition> exportJobDefinitions;
+        private static ConcurrentDictionary<string, JobDefinition> importJobDefinitions;
 
         #endregion
 
@@ -50,7 +41,7 @@ namespace Jhu.Graywulf.Web.Api
             set { jobFactory.UserGuid = value; }
         }
 
-        public HashSet<Guid> QueueInstanceGuid
+        public HashSet<Guid> QueueInstanceGuids
         {
             get { return jobFactory.QueueInstanceGuids; }
         }
@@ -109,8 +100,9 @@ namespace Jhu.Graywulf.Web.Api
             {
                 if (!jobDefinitionsLoaded)
                 {
-                    queryJobDefinitions = new ConcurrentDictionary<Guid, string>();
-                    exportJobDefinitions = new ConcurrentDictionary<Guid, string>();
+                    queryJobDefinitions = new ConcurrentDictionary<string, JobDefinition>();
+                    exportJobDefinitions = new ConcurrentDictionary<string, JobDefinition>();
+                    importJobDefinitions = new ConcurrentDictionary<string, JobDefinition>();
 
                     var ef = new EntityFactory(Context);
                     var f = ef.LoadEntity<Federation>(Jhu.Graywulf.Registry.AppSettings.FederationName);
@@ -123,12 +115,13 @@ namespace Jhu.Graywulf.Web.Api
                         var rh = JobReflectionHelper.CreateInstance(jd.WorkflowTypeName);
                         if (rh.HasInterface(typeof(Jhu.Graywulf.Jobs.Query.IQueryJob).ToString()))
                         {
-                            queryJobDefinitions.TryAdd(jd.Guid, jd.WorkflowTypeName);
+                            queryJobDefinitions.TryAdd(jd.Name, jd);
                         }
                         else if (rh.HasInterface(typeof(Jhu.Graywulf.Jobs.ExportTables.IExportTablesJob).ToString()))
                         {
-                            exportJobDefinitions.TryAdd(jd.Guid, jd.WorkflowTypeName);
+                            exportJobDefinitions.TryAdd(jd.Name, jd);
                         }
+                        // TODO: add more jobs here, especially import!
                     }
 
                     jobDefinitionsLoaded = true;
@@ -144,6 +137,55 @@ namespace Jhu.Graywulf.Web.Api
         public QueueInstance GetQueueInstance(string name)
         {
             return queueInstances[name];
+        }
+
+        public static IEnumerable<JobDefinition> SelectJobDefinitions(JobType type)
+        {
+            if ((type & JobType.Query) != 0)
+            {
+                foreach (var jd in queryJobDefinitions.Values)
+                {
+                    yield return jd;
+                }
+            }
+
+            if ((type & JobType.Export) != 0)
+            {
+                foreach (var jd in exportJobDefinitions.Values)
+                {
+                    yield return jd;
+                }
+            }
+
+            if ((type & JobType.Import) != 0)
+            {
+                foreach (var jd in importJobDefinitions.Values)
+                {
+                    yield return jd;
+                }
+            }
+        }
+
+        public static JobDefinition GetJobDefinition(string name)
+        {
+            JobDefinition jd;
+
+            if (queryJobDefinitions.TryGetValue(name, out jd))
+            {
+                return jd;
+            }
+            else if (exportJobDefinitions.TryGetValue(name, out jd))
+            {
+                return jd;
+            }
+            else if (importJobDefinitions.TryGetValue(name, out jd))
+            {
+                return jd;
+            }
+            else
+            {
+                throw new KeyNotFoundException();       // TODO
+            }
         }
 
         public int CountJobs()
@@ -174,7 +216,7 @@ namespace Jhu.Graywulf.Web.Api
 
             try
             {
-                var jdguid = jobInstance.JobDefinitionReference.Guid;
+                var jdguid = jobInstance.JobDefinitionReference.Name;
 
                 if (queryJobDefinitions.ContainsKey(jdguid))
                 {

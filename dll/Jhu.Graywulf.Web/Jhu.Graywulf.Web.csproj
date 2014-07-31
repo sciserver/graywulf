@@ -99,6 +99,7 @@
     <Compile Include="Web\Api\Objects\QueryJob.cs" />
     <Compile Include="Web\Api\Objects\Table.cs" />
     <Compile Include="Web\Api\Objects\TableList.cs" />
+    <Compile Include="Web\Api\ResourceNotFoundException.cs" />
     <Compile Include="Web\Api\RestErrorHandler.cs" />
     <Compile Include="Web\Api\RestOperationBehavior.cs" />
     <Compile Include="Web\Api\RestOperationInvoker.cs" />
