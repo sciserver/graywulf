@@ -31,10 +31,26 @@ namespace Jhu.Graywulf.Web.Api
                 var whep = (WebHttpEndpoint)ep;
                 whep.AutomaticFormatSelectionEnabled = true;
 
-                var whbind = (WebHttpBinding)ep.Binding;
-                whbind.Security.Transport.ClientCredentialType = HttpClientCredentialType.None;
-                whbind.TransferMode = TransferMode.Streamed;
-                
+                if (ep.Binding is WebHttpBinding)
+                {
+                    var whbind = (WebHttpBinding)ep.Binding;
+                    whbind.Security.Transport.ClientCredentialType = HttpClientCredentialType.None;
+                    whbind.TransferMode = TransferMode.Streamed;
+                    whbind.MaxReceivedMessageSize = 0x40000000;     // 1 GB
+                }
+                else if (ep.Binding is CustomBinding)
+                {
+                    var cubind = (CustomBinding)ep.Binding;
+                    var htbe = cubind.Elements.Find<HttpTransportBindingElement>();
+                    htbe.TransferMode = TransferMode.Streamed;
+                    htbe.MaxReceivedMessageSize = 0x40000000;     // 1 GB
+                    
+                    // TODO: delete these, not used
+                    //cubind.Elements.Find<WebMessageEncodingBindingElement>().m
+
+                    //var whs = new WebHttpSecurity();
+                    //whs.Transport.ClientCredentialType = HttpClientCredentialType.None;
+                }
 
                 var whb = ep.Behaviors.Find<WebHttpBehavior>();
 

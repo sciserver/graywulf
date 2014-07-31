@@ -122,7 +122,14 @@ namespace Jhu.Graywulf.IO
         {
             if (this.baseStream != null)
             {
-                this.baseStream.Flush();
+                try
+                {
+                    this.baseStream.Flush();
+                }
+                catch (Exception)
+                {
+                }
+
                 this.baseStream = null;
             }
 
