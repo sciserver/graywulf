@@ -63,8 +63,6 @@
   <ItemGroup>
     <Compile Include="Registry\AppSettings.cs" />
     <Compile Include="Registry\IContextObject.cs" />
-    <Compile Include="Registry\JobDefinitionParameter.cs" />
-    <Compile Include="Registry\JobInstanceParameter.cs" />
     <Compile Include="Registry\UserGroupMembership.cs" />
     <Compile Include="Registry\UserGroupMembership.io.cs" />
     <Compile Include="Registry\Cluster.cs" />

@@ -62,6 +62,7 @@
     <Compile Include="Components\DelayedRetryLoop.cs" />
     <Compile Include="Components\Cache.cs" />
     <Compile Include="Components\DefaultDateTimeAttribute.cs" />
+    <Compile Include="Components\Enum.cs" />
     <Compile Include="Components\LazyDictionary.cs" />
     <Compile Include="Components\LazyItemAddedEventArgs.cs" />
     <Compile Include="Components\LazyItemLoadingEventArgs.cs" />

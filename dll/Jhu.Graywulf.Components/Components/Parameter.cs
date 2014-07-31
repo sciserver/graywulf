@@ -23,16 +23,37 @@ namespace Jhu.Graywulf.Components
     [Serializable]
     public class Parameter : ICloneable
     {
-        private string name;
+        #region Private member variables
 
+        private string name;
+        private string typeName;
+        private ParameterDirection direction;
         private object value;
         private string xmlValue;
+
+        #endregion
 
         [XmlAttribute]
         public string Name
         {
             get { return name; }
             set { name = value; }
+        }
+
+        [XmlAttribute]
+        [DefaultValue(null)]
+        public string TypeName
+        {
+            get { return typeName; }
+            set { typeName = value; }
+        }
+
+        [XmlAttribute]
+        [DefaultValue(ParameterDirection.Unknown)]
+        public ParameterDirection Direction
+        {
+            get { return direction; }
+            set { direction = value; }
         }
 
         [XmlIgnore]
