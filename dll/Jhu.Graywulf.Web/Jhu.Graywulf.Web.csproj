@@ -84,9 +84,13 @@
     <Compile Include="Web\Api\DynamicResponseFormatAttribute.cs" />
     <Compile Include="Web\Api\DynamicResponseMessageFormatter.cs" />
     <Compile Include="Web\Api\Enum.cs" />
+    <Compile Include="Web\Api\HttpMethod.cs" />
     <Compile Include="Web\Api\JobFactory.cs" />
     <Compile Include="Web\Api\Objects\Column.cs" />
     <Compile Include="Web\Api\Objects\ColumnList.cs" />
+    <Compile Include="Web\Api\Objects\JobList.cs" />
+    <Compile Include="Web\Api\Objects\QueueList.cs" />
+    <Compile Include="Web\Api\Objects\Queue.cs" />
     <Compile Include="Web\Api\Objects\DatasetList.cs" />
     <Compile Include="Web\Api\Objects\Dataset.cs" />
     <Compile Include="Web\Api\Objects\ExportJob.cs" />

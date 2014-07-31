@@ -27,6 +27,7 @@ namespace Jhu.Graywulf.Web.Api
     public enum JobQueue
     {
         Unknown,
+        Any,
         Quick,
         Long
     }

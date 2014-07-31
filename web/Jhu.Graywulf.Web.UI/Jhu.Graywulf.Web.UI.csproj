@@ -285,6 +285,7 @@
     <Compile Include="Util\QueryEditorUtil.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Api\Jobs.svc" />
     <Content Include="Api\Schema.svc" />
     <Content Include="Api\Test.svc" />
     <Content Include="Api\Data.svc" />

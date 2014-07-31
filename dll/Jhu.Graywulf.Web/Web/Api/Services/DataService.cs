@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Web.Api
 
         [OperationContract]
         [WebInvoke(Method="PUT", UriTemplate = "/{datasetName}/{tableName}")]
-        void PutTable(string datasetName, string tableName, Stream data);
+        void UploadTable(string datasetName, string tableName, Stream data);
     }
 
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
@@ -87,7 +87,7 @@ namespace Jhu.Graywulf.Web.Api
             return message;
         }
 
-        public void PutTable(string datasetName, string tableName, Stream data)
+        public void UploadTable(string datasetName, string tableName, Stream data)
         {
             // Create source
 

@@ -20,35 +20,26 @@ namespace Jhu.Graywulf.Web.Api
     public class JobFactory : ContextObject
     {
         #region Static members for entity caching
-        
+
         private static object syncRoot = new object();
 
+        private static bool queueInstancesLoaded = false;
+        private static ConcurrentDictionary<string, QueueInstance> queueInstances;
+
         private static bool jobDefinitionsLoaded = false;
-        private static ConcurrentDictionary<Guid, string> queryJobDefinitions = null;
-        private static ConcurrentDictionary<Guid, string> exportJobDefinitions = null;
+        private static ConcurrentDictionary<Guid, string> queryJobDefinitions;
+        private static ConcurrentDictionary<Guid, string> exportJobDefinitions;
 
-        public static HashSet<Guid> QueryJobDefinitionGuids
+        public static IEnumerable<Guid> QueryJobDefinitionGuids
         {
-            get
-            {
-                lock (syncRoot)
-                {
-                    return new HashSet<Guid>(queryJobDefinitions.Keys);
-                }
-            }
+            get { return new HashSet<Guid>(queryJobDefinitions.Keys); }
         }
 
-        public static HashSet<Guid> ExportJobDefinitionGuids
+        public static IEnumerable<Guid> ExportJobDefinitionGuids
         {
-            get
-            {
-                lock (syncRoot)
-                {
-                    return new HashSet<Guid>(exportJobDefinitions.Keys);
-                }
-            }
+            get { return new HashSet<Guid>(exportJobDefinitions.Keys); }
         }
-        
+
         #endregion
 
         private JobInstanceFactory jobFactory;
@@ -82,10 +73,34 @@ namespace Jhu.Graywulf.Web.Api
 
         private void InitializeMembers()
         {
+            LoadQueueInstances();
             LoadJobDefinitions();
 
             jobFactory = new JobInstanceFactory(Context);
             jobFactory.UserGuid = Context.UserGuid;
+        }
+
+        private void LoadQueueInstances()
+        {
+            // Load only queue instances defined under the controller machine
+            // 
+
+            lock (syncRoot)
+            {
+                if (!queueInstancesLoaded)
+                {
+                    queueInstances = new ConcurrentDictionary<string, QueueInstance>(Entity.StringComparer);
+
+                    Context.Federation.ControllerMachine.LoadQueueInstances(true);
+
+                    foreach (var q in Context.Federation.ControllerMachine.QueueInstances.Values)
+                    {
+                        queueInstances.TryAdd(q.Name, q);
+                    }
+
+                    queueInstancesLoaded = true;
+                }
+            }
         }
 
         private void LoadJobDefinitions()
@@ -119,6 +134,16 @@ namespace Jhu.Graywulf.Web.Api
                     jobDefinitionsLoaded = true;
                 }
             }
+        }
+
+        public IEnumerable<QueueInstance> SelectQueueInstances()
+        {
+            return queueInstances.Values;
+        }
+
+        public QueueInstance GetQueueInstance(string name)
+        {
+            return queueInstances[name];
         }
 
         public int CountJobs()

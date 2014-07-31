@@ -44,7 +44,8 @@ namespace Jhu.Graywulf.Web.Api
             {
                 statusCode = HttpStatusCode.Forbidden;
             }
-            if (error is KeyNotFoundException)
+            if (error is KeyNotFoundException ||
+                error is ResourceNotFoundException)
             {
                 statusCode = HttpStatusCode.NotFound;
             }
