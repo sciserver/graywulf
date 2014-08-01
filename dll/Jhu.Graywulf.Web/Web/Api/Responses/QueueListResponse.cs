@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Web.Api
     public class QueueListResponse
     {
         [DataMember(Name = "queues")]
-        public QueueResponse[] Queues { get; set; }
+        public Queue[] Queues { get; set; }
 
         public QueueListResponse()
         {
@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Api
 
         public QueueListResponse(IEnumerable<Queue> queues)
         {
-            this.Queues = queues.Select(q => new QueueResponse(q)).ToArray();
+            this.Queues = queues.ToArray();
         }
     }
 }
