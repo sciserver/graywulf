@@ -109,12 +109,12 @@ namespace Jhu.Graywulf.Web.Security
             var principal = (GraywulfPrincipal)System.Threading.Thread.CurrentPrincipal;
 
             GraywulfPrincipal cachedPrincipal;
-            if (!principalCache.TryGetValue(principal.Identity.Name, out cachedPrincipal))
+            if (!principalCache.TryGetValue(principal.UniqueID, out cachedPrincipal))
             {
                 // User not found in cache, need to load from database
                 principal.Identity.LoadUser();
 
-                principalCache.TryAdd(principal.Identity.Name, principal);
+                principalCache.TryAdd(principal.UniqueID, principal);
 
                 cachedPrincipal = principal;
 

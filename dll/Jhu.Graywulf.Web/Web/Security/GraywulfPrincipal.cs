@@ -48,5 +48,13 @@ namespace Jhu.Graywulf.Web.Security
         {
             return roles.Contains(role);
         }
+
+        public string UniqueID
+        {
+            get
+            {
+                return String.Format("{0}|{1}", identity.AuthorityUri, identity.Identifier);
+            }
+        }
     }
 }
