@@ -261,7 +261,7 @@ namespace Jhu.Graywulf.Web.Api
         /// Because we don't want to expose the complex class of JobInstances to the rest api,
         /// we wrap it into simplex classes exposing the necessary properties only.
         /// </remarks>
-        public Job CreateJobFromInstance(JobInstance jobInstance)
+        public static Job CreateJobFromInstance(JobInstance jobInstance)
         {
             Job job;
 

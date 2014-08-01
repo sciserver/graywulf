@@ -41,8 +41,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             jobInstance.Guid = guid;
             jobInstance.Load();
 
-            var jf = new JobFactory(RegistryContext);
-            var job = jf.CreateJobFromInstance(jobInstance);
+            var job = JobFactory.CreateJobFromInstance(jobInstance);
 
             switch (job.Type)
             {

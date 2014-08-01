@@ -17,6 +17,12 @@ namespace Jhu.Graywulf.Web.Api
     {
         #region Private member variables
 
+        /// <summary>
+        /// Holds a reference to the detailed job instance
+        /// registry object, if any
+        /// </summary>
+        private JobInstance jobInstance;
+
         private Guid guid;
         private string name;
         private JobType jobType;
@@ -31,6 +37,12 @@ namespace Jhu.Graywulf.Web.Api
 
         #endregion
         #region Properties
+
+        public JobInstance JobInstance
+        {
+            get { return jobInstance; }
+            protected set { jobInstance = value; }
+        }
 
         [DataMember(Name = "guid")]
         public Guid Guid
@@ -86,7 +98,7 @@ namespace Jhu.Graywulf.Web.Api
         }
 
         [DataMember(Name = "comments", EmitDefaultValue = false)]
-        [DefaultValue(null)]
+        [DefaultValue("")]
         public string Comments
         {
             get { return comments; }
@@ -171,7 +183,7 @@ namespace Jhu.Graywulf.Web.Api
             this.status = JobStatus.Unknown;
             this.canCancel = false;
             this.queue = JobQueue.Unknown;
-            this.comments = null;
+            this.comments = String.Empty;
             this.error = null;
             this.dateCreated = null;
             this.dateStarted = null;
@@ -193,12 +205,14 @@ namespace Jhu.Graywulf.Web.Api
             this.dateFinished = old.dateFinished;
         }
 
-        private void CopyFromJobInstance(JobInstance jobInstance)
+        protected virtual void CopyFromJobInstance(JobInstance jobInstance)
         {
+            this.jobInstance = jobInstance;
+
             this.guid = jobInstance.Guid;
             this.name = jobInstance.Name;
             this.canCancel = jobInstance.CanCancel;
-            this.comments = String.IsNullOrEmpty(jobInstance.Comments) ? null : jobInstance.Comments;
+            this.comments = jobInstance.Comments;
             this.error = jobInstance.ExceptionMessage;
             this.dateCreated = jobInstance.DateCreated == DateTime.MinValue ? (DateTime?)null : jobInstance.DateCreated;
             this.dateStarted = jobInstance.DateStarted == DateTime.MinValue ? (DateTime?)null : jobInstance.DateStarted;
@@ -284,7 +298,7 @@ namespace Jhu.Graywulf.Web.Api
             throw new KeyNotFoundException();
         }
 
-        public virtual JobInstance Schedule(FederationContext context)
+        public virtual void Schedule(FederationContext context)
         {
             throw new NotImplementedException();
         }

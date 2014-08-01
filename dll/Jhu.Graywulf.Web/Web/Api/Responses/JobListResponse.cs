@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Web.Api
 
         public JobListResponse(IEnumerable<Jhu.Graywulf.Registry.JobInstance> jobs)
         {
-            this.Jobs = jobs.Select(j => new JobResponse(new Job(j))).ToArray();
+            this.Jobs = jobs.Select(j => new JobResponse(JobFactory.CreateJobFromInstance(j))).ToArray();
         }
     }
 }

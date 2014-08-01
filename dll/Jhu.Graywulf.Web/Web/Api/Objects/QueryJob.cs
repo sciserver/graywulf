@@ -49,8 +49,6 @@ namespace Jhu.Graywulf.Web.Api
             : base(jobInstance)
         {
             InitializeMembers();
-
-            CopyFromJobInstance(jobInstance);
         }
 
         private void InitializeMembers()
@@ -62,8 +60,10 @@ namespace Jhu.Graywulf.Web.Api
 
         #endregion
 
-        private void CopyFromJobInstance(JobInstance jobInstance)
+        protected override void CopyFromJobInstance(JobInstance jobInstance)
         {
+            base.CopyFromJobInstance(jobInstance);
+
             // Because job parameter type might come from an unknown 
             // assembly, instead of deserializing, read xml directly here
 
@@ -117,7 +117,7 @@ namespace Jhu.Graywulf.Web.Api
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public JobInstance Schedule(FederationContext context)
+        public override void Schedule(FederationContext context)
         {
             var q = CreateQuery(context);
             q.Verify();
@@ -127,7 +127,7 @@ namespace Jhu.Graywulf.Web.Api
 
             job.Save();
 
-            return job;
+            CopyFromJobInstance(job);
         }
     }
 }

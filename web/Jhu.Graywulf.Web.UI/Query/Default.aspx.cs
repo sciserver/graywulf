@@ -137,8 +137,8 @@ namespace Jhu.Graywulf.Web.UI.Query
 
         protected JobInstance ScheduleQuery(QueryJob queryJob)
         {
-            var jobInstance = queryJob.Schedule(FederationContext);
-            return jobInstance;
+            queryJob.Schedule(FederationContext);
+            return queryJob.JobInstance;
         }
     }
 }

@@ -303,7 +303,7 @@ namespace Jhu.Graywulf.Registry
             cmd.Parameters.Add("@DateCreated", SqlDbType.DateTime).Value = dateCreated;
             cmd.Parameters.Add("@DateModified", SqlDbType.DateTime).Value = dateModified;
             cmd.Parameters.Add("@Settings", SqlDbType.NVarChar).Value = (object)settings.SaveToXml() ?? DBNull.Value;
-            cmd.Parameters.Add("@Comments", SqlDbType.NVarChar).Value = comments;
+            cmd.Parameters.Add("@Comments", SqlDbType.NVarChar).Value = comments ?? String.Empty;
 
             // Process entity feferences
 

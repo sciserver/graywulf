@@ -84,11 +84,6 @@ namespace Jhu.Graywulf.Web.Api
         {
             if (registryContext != null)
             {
-                if (registryContext.DatabaseTransaction != null)
-                {
-                    registryContext.CommitTransaction();
-                }
-
                 registryContext.Dispose();
                 registryContext = null;
             }
@@ -100,6 +95,15 @@ namespace Jhu.Graywulf.Web.Api
         public Context CreateRegistryContext()
         {
             var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.ManualCommit);
+
+            if (Thread.CurrentPrincipal is GraywulfPrincipal)
+            {
+                var identity = (GraywulfIdentity)Thread.CurrentPrincipal.Identity;
+
+                context.UserGuid = identity.UserReference.Guid;
+                context.UserName = identity.UserReference.Name;
+            }
+
             return context;
         }
 
@@ -113,7 +117,10 @@ namespace Jhu.Graywulf.Web.Api
         /// <param name="invoker"></param>
         internal void OnAfterInvoke()
         {
-            // TODO: dispose context, etc.
+            if (registryContext != null && registryContext.DatabaseTransaction != null)
+            {
+                registryContext.CommitTransaction();
+            }
         }
 
         internal void OnError(string operationName, Exception ex)

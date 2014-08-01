@@ -137,9 +137,17 @@ namespace Jhu.Graywulf.Web.Api
             return new JobResponse(JobFactory.GetJob(new Guid(guid)));
         }
 
-        public JobResponse SubmitJob(string queue, JobRequest job)
+        public JobResponse SubmitJob(string queue, JobRequest jobRequest)
         {
-            throw new NotImplementedException();
+            var job = jobRequest.GetValue();
+
+            // TODO: do some more scrubbing of the submitted job object here
+            // if necessary, prior to scheduling it as a real job
+
+            job.Queue = Util.EnumFormatter.FromXmlString<JobQueue>(queue);
+
+            job.Schedule(FederationContext);
+            return new JobResponse(job);
         }
     }
 }
