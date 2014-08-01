@@ -14,6 +14,8 @@ namespace Jhu.Graywulf.Web.Api
     [DataContract]
     public class Job
     {
+        #region Private member variables
+
         private Guid guid;
         private string name;
         private JobStatus status;
@@ -25,82 +27,117 @@ namespace Jhu.Graywulf.Web.Api
         private DateTime? dateStarted;
         private DateTime? dateFinished;
 
-        [DataMember]
+        #endregion
+        #region Properties
+
+        [DataMember(Name = "guid")]
         public Guid Guid
         {
             get { return guid; }
             set { guid = value; }
         }
 
-        [DataMember]
+        [DataMember(Name = "name")]
         public string Name
         {
             get { return name; }
             set { name = value; }
         }
 
-        [DataMember]
         public virtual JobType Type
         {
             get { return JobType.Unknown; }
             set { }
         }
 
-        [DataMember]
         public JobStatus Status
         {
             get { return status; }
             set { status = value; }
         }
 
-        [DataMember]
+        [DataMember(Name = "status")]
+        public string Status_ForXml
+        {
+            get { return Util.EnumFormatter.ToXmlString(Status); }
+            set { Status = Util.EnumFormatter.FromXmlString<JobStatus>(value); }
+        }
+
+        [DataMember(Name = "canCancel")]
         public bool CanCancel
         {
             get { return canCancel; }
             set { canCancel = value; }
         }
 
-        [DataMember]
         public JobQueue Queue
         {
             get { return queue; }
             set { queue = value; }
         }
 
-        [DataMember]
+        [DataMember(Name = "queue")]
+        public string Queue_ForXml
+        {
+            get { return Util.EnumFormatter.ToXmlString(Queue); }
+            set { Queue = Util.EnumFormatter.FromXmlString<JobQueue>(value); }
+        }
+
+        [DataMember(Name = "comments")]
         public string Comments
         {
             get { return comments; }
             set { comments = value; }
         }
 
-        [DataMember]
+        [DataMember(Name = "error")]
         public string Error
         {
             get { return error; }
             set { error = value; }
         }
 
-        [DataMember]
         public DateTime? DateCreated
         {
             get { return dateCreated; }
             set { dateCreated = value; }
         }
 
-        [DataMember]
+        [DataMember(Name = "dateCreated")]
+        public string DateCreated_ForXml
+        {
+            get { return Util.DateFormatter.ToXmlString(DateCreated); }
+            set { DateCreated = Util.DateFormatter.FromXmlString(value); }
+        }
+
         public DateTime? DateStarted
         {
             get { return dateStarted; }
             set { dateStarted = value; }
         }
 
-        [DataMember]
+        [DataMember(Name = "dateStarted")]
+        public string DateStarted_ForXml
+        {
+            get { return Util.DateFormatter.ToXmlString(DateStarted); }
+            set { DateStarted = Util.DateFormatter.FromXmlString(value); }
+        }
+
         public DateTime? DateFinished
         {
             get { return dateFinished; }
             set { dateFinished = value; }
         }
+
+        [DataMember(Name = "dateFinished")]
+        public string DateFinished_ForXml
+        {
+            get { return Util.DateFormatter.ToXmlString(DateFinished); }
+            set { DateFinished = Util.DateFormatter.FromXmlString(value); }
+        }
+
+        #endregion
+        #region Constructors and initializers
 
         public Job()
         {
@@ -185,6 +222,8 @@ namespace Jhu.Graywulf.Web.Api
                     break;
             }
         }
+
+        #endregion
 
         protected string GetAttribute(XmlDocument xml, string path, string attribute)
         {

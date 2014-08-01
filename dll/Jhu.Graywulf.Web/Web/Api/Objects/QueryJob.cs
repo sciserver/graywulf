@@ -14,21 +14,28 @@ namespace Jhu.Graywulf.Web.Api
     [DataContract]
     public class QueryJob : Job
     {
+        #region Private member variables
+
         private string query;
 
-        [DataMember]
+        #endregion
+        #region Properties
+
         public override JobType Type
         {
             get { return JobType.Query; }
             set { }
         }
 
-        [DataMember]
+        [DataMember(Name="query")]
         public string Query
         {
             get { return query; }
             set { query = value; }
         }
+
+        #endregion
+        #region Constructors and initializers
 
         public QueryJob()
         {
@@ -54,6 +61,8 @@ namespace Jhu.Graywulf.Web.Api
         {
             this.query = null;
         }
+
+        #endregion
 
         private void CopyFromJobInstance(JobInstance jobInstance)
         {

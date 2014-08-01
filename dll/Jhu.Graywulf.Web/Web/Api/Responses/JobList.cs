@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Web.Api
     public class JobList
     {
         [DataMember(Name = "jobs")]
-        public Job[] Jobs { get; set; }
+        public JobItem[] Jobs { get; set; }
 
         public JobList()
         {
@@ -20,12 +20,12 @@ namespace Jhu.Graywulf.Web.Api
 
         public JobList(IEnumerable<Job> jobs)
         {
-            this.Jobs = jobs.ToArray();
+            this.Jobs = jobs.Select(j => new JobItem(j)).ToArray();
         }
 
         public JobList(IEnumerable<Jhu.Graywulf.Registry.JobInstance> jobs)
         {
-            this.Jobs = jobs.Select(j => new Job(j)).ToArray();
+            this.Jobs = jobs.Select(j => new JobItem(new Job(j))).ToArray();
         }
     }
 }

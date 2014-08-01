@@ -16,6 +16,10 @@ namespace Jhu.Graywulf.Web.Api
         [DataMember(Name = "columns")]
         public Column[] Columns { get; set; }
 
+        public Table()
+        {
+        }
+
         public Table(Jhu.Graywulf.Schema.Table table)
         {
             this.Name = table.DisplayName;

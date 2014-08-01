@@ -15,6 +15,10 @@ namespace Jhu.Graywulf.Web.Api
         [DataMember(Name = "dataType")]
         public string DataType { get; set; }
 
+        public Column()
+        {
+        }
+
         public Column(Jhu.Graywulf.Schema.Column column)
         {
             this.Name = column.Name;

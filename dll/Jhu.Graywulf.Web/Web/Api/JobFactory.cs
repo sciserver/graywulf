@@ -15,7 +15,8 @@ using Jhu.Graywulf.Jobs.ExportTables;
 namespace Jhu.Graywulf.Web.Api
 {
     /// <summary>
-    /// Wrapper around job factory to support query specific features
+    /// Wraps a set of registry functions to simplify job creation
+    /// from the web interface and web services.
     /// </summary>
     public class JobFactory : ContextObject
     {
@@ -32,29 +33,65 @@ namespace Jhu.Graywulf.Web.Api
         private static ConcurrentDictionary<string, JobDefinition> importJobDefinitions;
 
         #endregion
+        #region Private member variables
 
-        private JobInstanceFactory jobFactory;
+        private EntityFactory entityFactory;
+        private JobInstanceFactory jobInstanceFactory;
+
+        #endregion
+        #region Properties
+
+        private EntityFactory EntityFactory
+        {
+            get
+            {
+                if (entityFactory == null)
+                {
+                    entityFactory = new EntityFactory(Context);
+                }
+
+                return entityFactory;
+            }
+        }
+
+        private JobInstanceFactory JobInstanceFactory
+        {
+            get
+            {
+                if (jobInstanceFactory == null)
+                {
+                    // Use user guid from context (only returns jobs of particular user)
+                    jobInstanceFactory = new JobInstanceFactory(Context);
+                    jobInstanceFactory.UserGuid = Context.UserGuid;
+                }
+
+                return jobInstanceFactory;
+            }
+        }
 
         public Guid UserGuid
         {
-            get { return jobFactory.UserGuid; }
-            set { jobFactory.UserGuid = value; }
+            get { return JobInstanceFactory.UserGuid; }
+            set { JobInstanceFactory.UserGuid = value; }
         }
 
         public HashSet<Guid> QueueInstanceGuids
         {
-            get { return jobFactory.QueueInstanceGuids; }
+            get { return JobInstanceFactory.QueueInstanceGuids; }
         }
 
         public HashSet<Guid> JobDefinitionGuids
         {
-            get { return jobFactory.JobDefinitionGuids; }
+            get { return JobInstanceFactory.JobDefinitionGuids; }
         }
 
         public JobExecutionState JobExecutionStatus
         {
-            get { return jobFactory.JobExecutionStatus; }
+            get { return JobInstanceFactory.JobExecutionStatus; }
         }
+
+        #endregion
+        #region Constructors and initializers
 
         public JobFactory(Context context)
             : base(context)
@@ -66,10 +103,9 @@ namespace Jhu.Graywulf.Web.Api
         {
             LoadQueueInstances();
             LoadJobDefinitions();
-
-            jobFactory = new JobInstanceFactory(Context);
-            jobFactory.UserGuid = Context.UserGuid;
         }
+
+        #endregion
 
         private void LoadQueueInstances()
         {
@@ -129,17 +165,44 @@ namespace Jhu.Graywulf.Web.Api
             }
         }
 
-        public IEnumerable<QueueInstance> SelectQueueInstances()
+        #region Queue functions
+
+        public Queue GetQueue(string name)
         {
-            return queueInstances.Values;
+            return new Queue(queueInstances[name]);
         }
 
-        public QueueInstance GetQueueInstance(string name)
+        public IEnumerable<Queue> SelectQueue()
         {
-            return queueInstances[name];
+            return queueInstances.Values.Select(q => new Queue(q));
         }
 
-        public static IEnumerable<JobDefinition> SelectJobDefinitions(JobType type)
+        #endregion
+        #region Job definition functions
+
+        public JobDefinition GetJobDefinition(string name)
+        {
+            JobDefinition jd;
+
+            if (queryJobDefinitions.TryGetValue(name, out jd))
+            {
+                return jd;
+            }
+            else if (exportJobDefinitions.TryGetValue(name, out jd))
+            {
+                return jd;
+            }
+            else if (importJobDefinitions.TryGetValue(name, out jd))
+            {
+                return jd;
+            }
+            else
+            {
+                throw new KeyNotFoundException();       // TODO
+            }
+        }
+
+        public IEnumerable<JobDefinition> SelectJobDefinitions(JobType type)
         {
             if ((type & JobType.Query) != 0)
             {
@@ -166,40 +229,28 @@ namespace Jhu.Graywulf.Web.Api
             }
         }
 
-        public static JobDefinition GetJobDefinition(string name)
-        {
-            JobDefinition jd;
+        #endregion
+        #region Job functions
 
-            if (queryJobDefinitions.TryGetValue(name, out jd))
-            {
-                return jd;
-            }
-            else if (exportJobDefinitions.TryGetValue(name, out jd))
-            {
-                return jd;
-            }
-            else if (importJobDefinitions.TryGetValue(name, out jd))
-            {
-                return jd;
-            }
-            else
-            {
-                throw new KeyNotFoundException();       // TODO
-            }
+        public Job GetJob(Guid guid)
+        {
+            return CreateJobFromInstance(EntityFactory.LoadEntity<JobInstance>(guid));
         }
 
         public int CountJobs()
         {
-            return jobFactory.CountJobInstances();
+            return JobInstanceFactory.CountJobInstances();
         }
 
         public IEnumerable<Job> SelectJobs(int from, int max)
         {
-            foreach (var job in jobFactory.FindJobInstances(from, max))
+            foreach (var job in JobInstanceFactory.FindJobInstances(from, max))
             {
                 yield return CreateJobFromInstance(job);
             }
         }
+
+        #endregion
 
         /// <summary>
         /// Creates a job description from a job instance.
@@ -216,15 +267,19 @@ namespace Jhu.Graywulf.Web.Api
 
             try
             {
-                var jdguid = jobInstance.JobDefinitionReference.Name;
+                var jdname = jobInstance.JobDefinition.Name;
 
-                if (queryJobDefinitions.ContainsKey(jdguid))
+                if (queryJobDefinitions.ContainsKey(jdname))
                 {
                     return new QueryJob(jobInstance);
                 }
-                else if (exportJobDefinitions.ContainsKey(jdguid))
+                else if (exportJobDefinitions.ContainsKey(jdname))
                 {
                     return new ExportJob(jobInstance);
+                }
+                else if (importJobDefinitions.ContainsKey(jdname))
+                {
+                    return new ImportJob(jobInstance);
                 }
                 else
                 {

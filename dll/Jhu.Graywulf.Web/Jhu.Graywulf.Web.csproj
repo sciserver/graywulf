@@ -89,6 +89,7 @@
     <Compile Include="Web\Api\Objects\Column.cs" />
     <Compile Include="Web\Api\Objects\ColumnList.cs" />
     <Compile Include="Web\Api\Objects\JobList.cs" />
+    <Compile Include="Web\Api\Objects\JobItem.cs" />
     <Compile Include="Web\Api\Objects\QueueList.cs" />
     <Compile Include="Web\Api\Objects\Queue.cs" />
     <Compile Include="Web\Api\Objects\DatasetList.cs" />
@@ -219,6 +220,7 @@
     <Compile Include="Web\Util\DocumentationFormatter.cs" />
     <Compile Include="Web\Util\EmailTemplateUtility.cs" />
     <Compile Include="Web\Util\EmailSender.cs" />
+    <Compile Include="Web\Util\EnumFormatter.cs" />
     <Compile Include="Web\Util\IIS.cs" />
     <Compile Include="Web\Util\JQuery.cs" />
     <Compile Include="Web\Util\UrlFormatter.cs" />

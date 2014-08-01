@@ -12,6 +12,10 @@ namespace Jhu.Graywulf.Web.Api
         [DataMember(Name="name")]
         public string Name { get; set; }
 
+        public Dataset()
+        {
+        }
+
         public Dataset(Jhu.Graywulf.Schema.DatasetBase dataset)
         {
             this.Name = dataset.Name;

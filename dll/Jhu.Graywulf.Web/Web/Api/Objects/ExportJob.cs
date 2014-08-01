@@ -16,32 +16,36 @@ namespace Jhu.Graywulf.Web.Api
     [DataContract]
     public class ExportJob : Job
     {
+        #region Private member variables
+
         private string[] tables;
         private string fileFormatType;
         private Uri uri;
 
-        [DataMember]
+        #endregion
+        #region Properties
+
         public override JobType Type
         {
             get { return JobType.Export; }
-            set {  }
+            set { }
         }
 
-        [DataMember]
+        [DataMember(Name = "tables")]
         public string[] Tables
         {
             get { return tables; }
             set { tables = value; }
         }
 
-        [DataMember]
+        [DataMember(Name = "fileFormat")]
         public string FileFormatType
         {
             get { return fileFormatType; }
             set { fileFormatType = value; }
         }
 
-        [DataMember]
+        [DataMember(Name = "uri")]
         public Uri Uri
         {
             get { return uri; }
@@ -80,13 +84,16 @@ namespace Jhu.Graywulf.Web.Api
             }
         }
 
+        #endregion
+        #region Constructors and initializers
+
         public ExportJob()
         {
             InitializeMembers();
         }
 
         public ExportJob(JobInstance jobInstance)
-            :base(jobInstance)
+            : base(jobInstance)
         {
             InitializeMembers();
 
@@ -99,6 +106,8 @@ namespace Jhu.Graywulf.Web.Api
             this.fileFormatType = null;
             this.uri = null;
         }
+
+        #endregion
 
         private void CopyFromJobInstance(JobInstance jobInstance)
         {

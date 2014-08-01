@@ -17,29 +17,24 @@ namespace Jhu.Graywulf.Web.Api
     public interface IJobsService
     {
         [OperationContract]
-        [DynamicResponseFormat]
         [WebGet(UriTemplate = "/queues")]
         QueueList ListQueues();
 
         [OperationContract]
-        [DynamicResponseFormat]
         [WebGet(UriTemplate = "/queues/{queue}")]
         Queue GetQueue(string queue);
 
         [OperationContract]
-        [DynamicResponseFormat]
-        [WebGet(UriTemplate = "/queues/{queue}/jobs?type={type}")]
+        [WebGet(UriTemplate = "/queues/{queue}/jobs/{type}")]
         JobList ListJobs(string queue, string type);
 
         [OperationContract]
-        [DynamicResponseFormat]
-        [WebGet(UriTemplate = "/queues/all/jobs/{guid}")]
-        Job GetJob(string guid);
+        [WebGet(UriTemplate = "/queues/all/jobs/all/{guid}")]
+        JobItem GetJob(string guid);
 
         [OperationContract]
-        [DynamicResponseFormat]
-        [WebInvoke(Method = HttpMethod.Post, UriTemplate = "/queues/{queue}/jobs")]
-        Job SubmitJob(string queue, Job job);
+        [WebInvoke(Method = HttpMethod.Post, UriTemplate = "/queues/{queue}/jobs/query")]
+        QueryJob SubmitQueryJob(string queue, QueryJob job);
     }
 
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
@@ -59,10 +54,7 @@ namespace Jhu.Graywulf.Web.Api
                 if (jobFactory == null)
                 {
                     // Make sure that searches are always limited to the current user
-                    jobFactory = new JobFactory(RegistryContext)
-                    {
-                        UserGuid = RegistryContext.UserGuid
-                    };
+                    jobFactory = new JobFactory(RegistryContext);
                 }
 
                 return jobFactory;
@@ -86,12 +78,12 @@ namespace Jhu.Graywulf.Web.Api
 
         public QueueList ListQueues()
         {
-            return new QueueList(JobFactory.SelectQueueInstances());
+            return new QueueList(JobFactory.SelectQueue());
         }
 
         public Queue GetQueue(string queue)
         {
-            return new Queue(JobFactory.GetQueueInstance(queue));
+            return JobFactory.GetQueue(queue);
         }
 
         public JobList ListJobs(string queue, string type)
@@ -109,7 +101,7 @@ namespace Jhu.Graywulf.Web.Api
                     break;
                 case JobQueue.Quick:
                 case JobQueue.Long:
-                    JobFactory.QueueInstanceGuids.Add(JobFactory.GetQueueInstance(queue).Guid);
+                    JobFactory.QueueInstanceGuids.Add(JobFactory.GetQueue(queue).Guid);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -134,18 +126,18 @@ namespace Jhu.Graywulf.Web.Api
                 default:
                     throw new NotImplementedException();
             }
-            
+
             // TODO: add options like: top, date limits, etc.
 
             return new JobList(JobFactory.SelectJobs(-1, -1));
         }
 
-        public Job GetJob(string guid)
+        public JobItem GetJob(string guid)
         {
-            throw new NotImplementedException();
+            return new JobItem(JobFactory.GetJob(new Guid(guid)));
         }
 
-        public Job SubmitJob(string queue, Job job)
+        public QueryJob SubmitQueryJob(string queue, QueryJob job)
         {
             throw new NotImplementedException();
         }

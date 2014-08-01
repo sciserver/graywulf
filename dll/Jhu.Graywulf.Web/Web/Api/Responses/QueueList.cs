@@ -18,9 +18,9 @@ namespace Jhu.Graywulf.Web.Api
         {
         }
 
-        public QueueList(IEnumerable<Jhu.Graywulf.Registry.QueueInstance> queues)
+        public QueueList(IEnumerable<Queue> queues)
         {
-            this.Queues = queues.Select(q => new Queue(q)).ToArray();
+            this.Queues = queues.ToArray();
         }
     }
 }
