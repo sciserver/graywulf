@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
+using System.ComponentModel;
 using System.Xml;
 using Jhu.Graywulf.Registry;
 
@@ -18,6 +19,7 @@ namespace Jhu.Graywulf.Web.Api
 
         private Guid guid;
         private string name;
+        private JobType jobType;
         private JobStatus status;
         private bool canCancel;
         private JobQueue queue;
@@ -44,10 +46,10 @@ namespace Jhu.Graywulf.Web.Api
             set { name = value; }
         }
 
-        public virtual JobType Type
+        public JobType Type
         {
-            get { return JobType.Unknown; }
-            set { }
+            get { return jobType; }
+            set { jobType = value; }
         }
 
         public JobStatus Status
@@ -83,14 +85,16 @@ namespace Jhu.Graywulf.Web.Api
             set { Queue = Util.EnumFormatter.FromXmlString<JobQueue>(value); }
         }
 
-        [DataMember(Name = "comments")]
+        [DataMember(Name = "comments", EmitDefaultValue = false)]
+        [DefaultValue(null)]
         public string Comments
         {
             get { return comments; }
             set { comments = value; }
         }
 
-        [DataMember(Name = "error")]
+        [DataMember(Name = "error", EmitDefaultValue = false)]
+        [DefaultValue(null)]
         public string Error
         {
             get { return error; }
@@ -103,7 +107,8 @@ namespace Jhu.Graywulf.Web.Api
             set { dateCreated = value; }
         }
 
-        [DataMember(Name = "dateCreated")]
+        [DataMember(Name = "dateCreated", EmitDefaultValue = false)]
+        [DefaultValue(null)]
         public string DateCreated_ForXml
         {
             get { return Util.DateFormatter.ToXmlString(DateCreated); }
@@ -116,7 +121,8 @@ namespace Jhu.Graywulf.Web.Api
             set { dateStarted = value; }
         }
 
-        [DataMember(Name = "dateStarted")]
+        [DataMember(Name = "dateStarted", EmitDefaultValue = false)]
+        [DefaultValue(null)]
         public string DateStarted_ForXml
         {
             get { return Util.DateFormatter.ToXmlString(DateStarted); }
@@ -129,7 +135,8 @@ namespace Jhu.Graywulf.Web.Api
             set { dateFinished = value; }
         }
 
-        [DataMember(Name = "dateFinished")]
+        [DataMember(Name = "dateFinished", EmitDefaultValue = false)]
+        [DefaultValue(null)]
         public string DateFinished_ForXml
         {
             get { return Util.DateFormatter.ToXmlString(DateFinished); }
@@ -144,6 +151,11 @@ namespace Jhu.Graywulf.Web.Api
             InitializeMembers();
         }
 
+        public Job(Job old)
+        {
+            CopyMembers(old);
+        }
+
         public Job(JobInstance jobInstance)
         {
             InitializeMembers();
@@ -155,14 +167,30 @@ namespace Jhu.Graywulf.Web.Api
         {
             this.guid = Guid.Empty;
             this.name = null;
+            this.jobType = JobType.Unknown;
             this.status = JobStatus.Unknown;
             this.canCancel = false;
             this.queue = JobQueue.Unknown;
-            this.comments = String.Empty;
+            this.comments = null;
             this.error = null;
             this.dateCreated = null;
             this.dateStarted = null;
             this.dateFinished = null;
+        }
+
+        private void CopyMembers(Job old)
+        {
+            this.guid = old.guid;
+            this.name = old.name;
+            this.jobType = old.jobType;
+            this.status = old.status;
+            this.canCancel = old.canCancel;
+            this.queue = old.queue;
+            this.comments = old.comments;
+            this.error = old.error;
+            this.dateCreated = old.dateCreated;
+            this.dateStarted = old.dateStarted;
+            this.dateFinished = old.dateFinished;
         }
 
         private void CopyFromJobInstance(JobInstance jobInstance)
@@ -170,7 +198,7 @@ namespace Jhu.Graywulf.Web.Api
             this.guid = jobInstance.Guid;
             this.name = jobInstance.Name;
             this.canCancel = jobInstance.CanCancel;
-            this.comments = jobInstance.Comments;
+            this.comments = String.IsNullOrEmpty(jobInstance.Comments) ? null : jobInstance.Comments;
             this.error = jobInstance.ExceptionMessage;
             this.dateCreated = jobInstance.DateCreated == DateTime.MinValue ? (DateTime?)null : jobInstance.DateCreated;
             this.dateStarted = jobInstance.DateStarted == DateTime.MinValue ? (DateTime?)null : jobInstance.DateStarted;

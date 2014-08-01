@@ -8,16 +8,16 @@ using System.Runtime.Serialization;
 namespace Jhu.Graywulf.Web.Api
 {
     [DataContract(Name = "columnList")]
-    public class ColumnList
+    public class ColumnListResponse
     {
         [DataMember(Name = "columns")]
         public Column[] Columns { get; set; }
 
-        public ColumnList()
+        public ColumnListResponse()
         {
         }
 
-        public ColumnList(IEnumerable<Jhu.Graywulf.Schema.Column> columns)
+        public ColumnListResponse(IEnumerable<Jhu.Graywulf.Schema.Column> columns)
         {
             this.Columns = columns.Select(c => new Column(c)).ToArray();
         }

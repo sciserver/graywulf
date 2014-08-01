@@ -21,12 +21,6 @@ namespace Jhu.Graywulf.Web.Api
         #endregion
         #region Properties
 
-        public override JobType Type
-        {
-            get { return JobType.Query; }
-            set { }
-        }
-
         [DataMember(Name="query")]
         public string Query
         {
@@ -45,6 +39,8 @@ namespace Jhu.Graywulf.Web.Api
         public QueryJob(string query, JobQueue queue)
             : this()
         {
+            InitializeMembers();
+
             this.query = query;
             this.Queue = queue;
         }
@@ -59,6 +55,8 @@ namespace Jhu.Graywulf.Web.Api
 
         private void InitializeMembers()
         {
+            base.Type = JobType.Query;
+
             this.query = null;
         }
 
@@ -106,7 +104,7 @@ namespace Jhu.Graywulf.Web.Api
                         TableInitializationOptions.Drop | TableInitializationOptions.Create);
                     break;
                 case JobQueue.Long:
-                    break;
+                    throw new NotImplementedException();
                 default:
                     break;
             }
@@ -123,8 +121,6 @@ namespace Jhu.Graywulf.Web.Api
         {
             var q = CreateQuery(context);
             q.Verify();
-
-            
 
             var qf = QueryFactory.Create(context.Federation);
             var job = qf.ScheduleAsJob(q, GetQueueName(context), Comments);

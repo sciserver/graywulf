@@ -8,7 +8,7 @@ using System.ComponentModel;
 namespace Jhu.Graywulf.Web.Api
 {
     [DataContract]
-    public class JobResponse
+    public class JobRequest
     {
         [DataMember(Name = "queryJob", EmitDefaultValue=false)]
         [DefaultValue(null)]
@@ -22,33 +22,28 @@ namespace Jhu.Graywulf.Web.Api
         [DefaultValue(null)]
         public ImportJob ImportJob { get; set; }
 
-        [DataMember(Name = "job", EmitDefaultValue = false)]
-        [DefaultValue(null)]
-        public Job Job { get; set; }
-
-        public JobResponse(Job job)
+        public JobRequest()
         {
-            SetValue((dynamic)job);
         }
 
-        private void SetValue(QueryJob job)
+        public Job GetValue()
         {
-            QueryJob = job;
-        }
-
-        private void SetValue(ExportJob job)
-        {
-            ExportJob = job;
-        }
-
-        private void SetValue(ImportJob job)
-        {
-            ImportJob = job;
-        }
-
-        private void SetValue(Job job)
-        {
-            Job = job;
+            if (QueryJob != null)
+            {
+                return QueryJob;
+            }
+            else if (ExportJob != null)
+            {
+                return ExportJob;
+            }
+            else if (ImportJob != null)
+            {
+                return ImportJob;
+            }
+            else
+            {
+                throw new ArgumentNullException();  // TODO
+            }
         }
     }
 }

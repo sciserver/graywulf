@@ -9,16 +9,16 @@ using System.Xml.Serialization;
 namespace Jhu.Graywulf.Web.Api
 {
     [DataContract(Name="tableList")]
-    public class TableList
+    public class TableListResponse
     {
         [DataMember(Name = "tables")]
         public Table[] Tables { get; set; }
 
-        public TableList()
+        public TableListResponse()
         {
         }
 
-        public TableList(IEnumerable<Jhu.Graywulf.Schema.Table> tables)
+        public TableListResponse(IEnumerable<Jhu.Graywulf.Schema.Table> tables)
         {
             this.Tables = tables.Select(t => new Table(t)).ToArray();
         }

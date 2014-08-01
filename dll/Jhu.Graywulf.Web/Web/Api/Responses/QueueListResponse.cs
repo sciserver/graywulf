@@ -8,19 +8,19 @@ using System.Xml.Serialization;
 
 namespace Jhu.Graywulf.Web.Api
 {
-    [DataContract(Name="queueList")]
-    public class QueueList
+    [DataContract(Name="queues")]
+    public class QueueListResponse
     {
         [DataMember(Name = "queues")]
-        public Queue[] Queues { get; set; }
+        public QueueResponse[] Queues { get; set; }
 
-        public QueueList()
+        public QueueListResponse()
         {
         }
 
-        public QueueList(IEnumerable<Queue> queues)
+        public QueueListResponse(IEnumerable<Queue> queues)
         {
-            this.Queues = queues.ToArray();
+            this.Queues = queues.Select(q => new QueueResponse(q)).ToArray();
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Web.Api
         [OperationContract]
         [DynamicResponseFormat]
         [WebGet(UriTemplate = "/datasets")]
-        DatasetList ListDatasets();
+        DatasetListResponse ListDatasets();
 
         [OperationContract]
         [DynamicResponseFormat]
@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Web.Api
         [OperationContract]
         [DynamicResponseFormat]
         [WebGet(UriTemplate = "/datasets/{datasetName}/tables")]
-        TableList ListTables(string datasetName);
+        TableListResponse ListTables(string datasetName);
 
         [OperationContract]
         [DynamicResponseFormat]
@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Web.Api
         [OperationContract]
         [DynamicResponseFormat]
         [WebGet(UriTemplate = "/datasets/{datasetName}/tables/{tableName}/columns")]
-        ColumnList ListTableColumns(string datasetName, string tableName);
+        ColumnListResponse ListTableColumns(string datasetName, string tableName);
     }
 
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
@@ -59,9 +59,9 @@ namespace Jhu.Graywulf.Web.Api
             return dataset.Tables[dataset.DatabaseName, parts[0], parts[1]];
         }
 
-        public DatasetList ListDatasets()
+        public DatasetListResponse ListDatasets()
         {
-            return new DatasetList(FederationContext.SchemaManager.Datasets.Values);
+            return new DatasetListResponse(FederationContext.SchemaManager.Datasets.Values);
         }
 
         public Dataset GetDataset(string datasetName)
@@ -69,12 +69,12 @@ namespace Jhu.Graywulf.Web.Api
             return new Dataset(GetDatasetInternal(datasetName));
         }
 
-        public TableList ListTables(string datasetName)
+        public TableListResponse ListTables(string datasetName)
         {
             var dataset = GetDatasetInternal(datasetName);
             dataset.Tables.LoadAll();
 
-            return new TableList(dataset.Tables.Values);
+            return new TableListResponse(dataset.Tables.Values);
         }
 
         public Table GetTable(string datasetName, string tableName)
@@ -83,10 +83,10 @@ namespace Jhu.Graywulf.Web.Api
             return new Table(table);
         }
 
-        public ColumnList ListTableColumns(string datasetName, string tableName)
+        public ColumnListResponse ListTableColumns(string datasetName, string tableName)
         {
             var table = GetTableInternal(datasetName, tableName);
-            return new ColumnList(table.Columns.Values);
+            return new ColumnListResponse(table.Columns.Values);
         }
     }
 }

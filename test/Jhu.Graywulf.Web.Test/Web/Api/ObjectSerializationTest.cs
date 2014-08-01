@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Web.Api
         [TestMethod]
         public void SerializeTableListTest()
         {
-            var value = new TableList();
+            var value = new TableListResponse();
 
             TryXmlSerializer(value);
             TryJsonSerializer(value);
@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Web.Api
         [TestMethod]
         public void SerializeColumnListTest()
         {
-            var value = new ColumnList();
+            var value = new ColumnListResponse();
 
             TryXmlSerializer(value);
             TryJsonSerializer(value);
@@ -76,7 +76,7 @@ namespace Jhu.Graywulf.Web.Api
         [TestMethod]
         public void SerializeDatasetListTest()
         {
-            var value = new DatasetList();
+            var value = new DatasetListResponse();
 
             TryXmlSerializer(value);
             TryJsonSerializer(value);
@@ -94,7 +94,7 @@ namespace Jhu.Graywulf.Web.Api
         [TestMethod]
         public void SerializeQueueListTest()
         {
-            var value = new QueueList();
+            var value = new QueueListResponse();
 
             TryXmlSerializer(value);
             TryJsonSerializer(value);
@@ -130,7 +130,7 @@ namespace Jhu.Graywulf.Web.Api
         [TestMethod]
         public void SerializeJobListTest()
         {
-            var value = new JobList();
+            var value = new JobListResponse();
 
             TryXmlSerializer(value);
             TryJsonSerializer(value);

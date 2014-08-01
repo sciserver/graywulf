@@ -25,12 +25,6 @@ namespace Jhu.Graywulf.Web.Api
         #endregion
         #region Properties
 
-        public override JobType Type
-        {
-            get { return JobType.Export; }
-            set { }
-        }
-
         [DataMember(Name = "tables")]
         public string[] Tables
         {
@@ -102,6 +96,8 @@ namespace Jhu.Graywulf.Web.Api
 
         private void InitializeMembers()
         {
+            base.Type = JobType.Export;
+
             this.tables = null;
             this.fileFormatType = null;
             this.uri = null;

@@ -18,23 +18,23 @@ namespace Jhu.Graywulf.Web.Api
     {
         [OperationContract]
         [WebGet(UriTemplate = "/queues")]
-        QueueList ListQueues();
+        QueueListResponse ListQueues();
 
         [OperationContract]
         [WebGet(UriTemplate = "/queues/{queue}")]
-        Queue GetQueue(string queue);
+        QueueResponse GetQueue(string queue);
 
         [OperationContract]
-        [WebGet(UriTemplate = "/queues/{queue}/jobs/{type}")]
-        JobList ListJobs(string queue, string type);
+        [WebGet(UriTemplate = "/queues/{queue}/jobs?type={type}")]
+        JobListResponse ListJobs(string queue, string type);
 
         [OperationContract]
-        [WebGet(UriTemplate = "/queues/all/jobs/all/{guid}")]
-        JobItem GetJob(string guid);
+        [WebGet(UriTemplate = "/queues/all/jobs/{guid}")]
+        JobResponse GetJob(string guid);
 
         [OperationContract]
-        [WebInvoke(Method = HttpMethod.Post, UriTemplate = "/queues/{queue}/jobs/query")]
-        QueryJob SubmitQueryJob(string queue, QueryJob job);
+        [WebInvoke(Method = HttpMethod.Post, UriTemplate = "/queues/{queue}/jobs")]
+        JobResponse SubmitJob(string queue, JobRequest job);
     }
 
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
@@ -76,17 +76,17 @@ namespace Jhu.Graywulf.Web.Api
 
         #endregion
 
-        public QueueList ListQueues()
+        public QueueListResponse ListQueues()
         {
-            return new QueueList(JobFactory.SelectQueue());
+            return new QueueListResponse(JobFactory.SelectQueue());
         }
 
-        public Queue GetQueue(string queue)
+        public QueueResponse GetQueue(string queue)
         {
-            return JobFactory.GetQueue(queue);
+            return new QueueResponse(JobFactory.GetQueue(queue));
         }
 
-        public JobList ListJobs(string queue, string type)
+        public JobListResponse ListJobs(string queue, string type)
         {
             JobQueue jobQueue;
             if (!Enum.TryParse<JobQueue>(queue, true, out jobQueue))
@@ -129,15 +129,15 @@ namespace Jhu.Graywulf.Web.Api
 
             // TODO: add options like: top, date limits, etc.
 
-            return new JobList(JobFactory.SelectJobs(-1, -1));
+            return new JobListResponse(JobFactory.SelectJobs(-1, -1));
         }
 
-        public JobItem GetJob(string guid)
+        public JobResponse GetJob(string guid)
         {
-            return new JobItem(JobFactory.GetJob(new Guid(guid)));
+            return new JobResponse(JobFactory.GetJob(new Guid(guid)));
         }
 
-        public QueryJob SubmitQueryJob(string queue, QueryJob job)
+        public JobResponse SubmitJob(string queue, JobRequest job)
         {
             throw new NotImplementedException();
         }

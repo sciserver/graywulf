@@ -98,7 +98,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
                     throw new NotImplementedException();
             }
 
-            jf.JobDefinitionGuids.UnionWith(JobFactory.SelectJobDefinitions(jobType).Select(jd => jd.Guid));
+            jf.JobDefinitionGuids.UnionWith(jf.SelectJobDefinitions(jobType).Select(jd => jd.Guid));
 
             e.ObjectInstance = jf;
         }
