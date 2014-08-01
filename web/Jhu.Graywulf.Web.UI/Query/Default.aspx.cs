@@ -7,7 +7,7 @@ using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.Web.Api;
+using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Query
 {

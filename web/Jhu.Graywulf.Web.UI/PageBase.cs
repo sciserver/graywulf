@@ -9,7 +9,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
-using Jhu.Graywulf.Web.Api;
+using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI
 {

@@ -285,11 +285,11 @@
     <Compile Include="Util\QueryEditorUtil.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Api\Jobs.svc" />
-    <Content Include="Api\Schema.svc" />
-    <Content Include="Api\Test.svc" />
-    <Content Include="Api\Data.svc" />
     <Content Include="Api\Default.aspx" />
+    <Content Include="Api\V1\Data.svc" />
+    <Content Include="Api\V1\Jobs.svc" />
+    <Content Include="Api\V1\Schema.svc" />
+    <Content Include="Api\V1\Test.svc" />
     <Content Include="App_Themes\Basic\Css\codemirror.css" />
     <Content Include="App_Themes\Basic\Css\docs.css" />
     <Content Include="App_Themes\Basic\Css\fonts.css" />

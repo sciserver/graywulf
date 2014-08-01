@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Web.Api;
+using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Controls
 {
     public class JobStatus : WebControl
     {
-        private Jhu.Graywulf.Web.Api.JobStatus status;
+        private Jhu.Graywulf.Web.Api.V1.JobStatus status;
 
-        public Jhu.Graywulf.Web.Api.JobStatus Status
+        public Jhu.Graywulf.Web.Api.V1.JobStatus Status
         {
             get { return status; }
             set { status = value; }
@@ -25,25 +25,25 @@ namespace Jhu.Graywulf.Web.UI.Controls
 
         private void InitializeMembers()
         {
-            this.status = Jhu.Graywulf.Web.Api.JobStatus.Unknown;
+            this.status = Jhu.Graywulf.Web.Api.V1.JobStatus.Unknown;
         }
 
         private string GetStatusBackColor()
         {
             switch (status)
             {
-                case Jhu.Graywulf.Web.Api.JobStatus.Waiting:
+                case Jhu.Graywulf.Web.Api.V1.JobStatus.Waiting:
                     return "yellow";
-                case Jhu.Graywulf.Web.Api.JobStatus.Executing:
+                case Jhu.Graywulf.Web.Api.V1.JobStatus.Executing:
                     return "green";
-                case Jhu.Graywulf.Web.Api.JobStatus.Completed:
+                case Jhu.Graywulf.Web.Api.V1.JobStatus.Completed:
                     return "blue";
-                case Jhu.Graywulf.Web.Api.JobStatus.Canceled:
+                case Jhu.Graywulf.Web.Api.V1.JobStatus.Canceled:
                     return "black";
-                case Jhu.Graywulf.Web.Api.JobStatus.Failed:
-                case Jhu.Graywulf.Web.Api.JobStatus.TimedOut:
+                case Jhu.Graywulf.Web.Api.V1.JobStatus.Failed:
+                case Jhu.Graywulf.Web.Api.V1.JobStatus.TimedOut:
                     return "red";
-                case Jhu.Graywulf.Web.Api.JobStatus.Unknown:
+                case Jhu.Graywulf.Web.Api.V1.JobStatus.Unknown:
                 default:
                     return "";
             }
@@ -53,18 +53,18 @@ namespace Jhu.Graywulf.Web.UI.Controls
         {
             switch (status)
             {
-                case Jhu.Graywulf.Web.Api.JobStatus.Waiting:
+                case Jhu.Graywulf.Web.Api.V1.JobStatus.Waiting:
                     return "black";
-                case Jhu.Graywulf.Web.Api.JobStatus.Executing:
+                case Jhu.Graywulf.Web.Api.V1.JobStatus.Executing:
                     return "white";
-                case Jhu.Graywulf.Web.Api.JobStatus.Completed:
+                case Jhu.Graywulf.Web.Api.V1.JobStatus.Completed:
                     return "white";
-                case Jhu.Graywulf.Web.Api.JobStatus.Canceled:
+                case Jhu.Graywulf.Web.Api.V1.JobStatus.Canceled:
                     return "white";
-                case Jhu.Graywulf.Web.Api.JobStatus.Failed:
-                case Jhu.Graywulf.Web.Api.JobStatus.TimedOut:
+                case Jhu.Graywulf.Web.Api.V1.JobStatus.Failed:
+                case Jhu.Graywulf.Web.Api.V1.JobStatus.TimedOut:
                     return "white";
-                case Jhu.Graywulf.Web.Api.JobStatus.Unknown:
+                case Jhu.Graywulf.Web.Api.V1.JobStatus.Unknown:
                 default:
                     return "";
             }
