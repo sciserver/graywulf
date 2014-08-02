@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Web.Api
         /// <summary>
         /// Called when a user signs in
         /// </summary>
-        internal protected virtual void OnUserArrived(GraywulfPrincipal principal)
+        internal protected override void OnUserArrived(GraywulfPrincipal principal)
         {
             using (var context = CreateRegistryContext())
             {
@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Web.Api
         /// <summary>
         /// Called when a user sings out
         /// </summary>
-        internal protected virtual void OnUserSignedOut(GraywulfPrincipal principaly)
+        internal protected override void OnUserSignedOut(GraywulfPrincipal principaly)
         {
         }
 

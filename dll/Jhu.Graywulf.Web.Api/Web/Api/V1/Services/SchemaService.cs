@@ -6,7 +6,6 @@ using System.ServiceModel;
 using System.ServiceModel.Activation;
 using System.ServiceModel.Web;
 using System.ServiceModel.Security;
-using System.Web.Routing;
 using System.Security.Permissions;
 using Jhu.Graywulf.Registry;
 

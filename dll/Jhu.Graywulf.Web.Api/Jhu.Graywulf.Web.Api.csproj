@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{975EE996-A41B-4C73-8562-E2B2035E8899}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Jhu.Graywulf</RootNamespace>
+    <AssemblyName>Jhu.Graywulf.Web.Api</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO">
+      <HintPath>..\..\..\packages\Microsoft.Bcl.1.1.9\lib\net40\System.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http, Version=2.2.22.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.Net.Http.2.2.22\lib\net40\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions">
+      <HintPath>..\..\..\packages\Microsoft.Net.Http.2.2.22\lib\net40\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives">
+      <HintPath>..\..\..\packages\Microsoft.Net.Http.2.2.22\lib\net40\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest, Version=2.2.22.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.Net.Http.2.2.22\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime">
+      <HintPath>..\..\..\packages\Microsoft.Bcl.1.1.9\lib\net40\System.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activation" />
+    <Reference Include="System.ServiceModel.Channels" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Threading.Tasks">
+      <HintPath>..\..\..\packages\Microsoft.Bcl.1.1.9\lib\net40\System.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Web\Api\DynamicResponseFormatAttribute.cs" />
+    <Compile Include="Web\Api\DynamicResponseMessageFormatter.cs" />
+    <Compile Include="Web\Api\HttpMethod.cs" />
+    <Compile Include="Web\Api\ResourceNotFoundException.cs" />
+    <Compile Include="Web\Api\RestErrorHandler.cs" />
+    <Compile Include="Web\Api\RestOperationBehavior.cs" />
+    <Compile Include="Web\Api\RestOperationInvoker.cs" />
+    <Compile Include="Web\Api\RestServiceBase.cs" />
+    <Compile Include="Web\Api\RestServiceBehavior.cs" />
+    <Compile Include="Web\Api\TextResponseMessageBodyWriter.cs" />
+    <Compile Include="Web\Api\TextResponseMessageFormatter.cs" />
+    <Compile Include="Web\Api\V1\Enum.cs" />
+    <Compile Include="Web\Api\V1\JobFactory.cs" />
+    <Compile Include="Web\Api\V1\Objects\Column.cs" />
+    <Compile Include="Web\Api\V1\Objects\Dataset.cs" />
+    <Compile Include="Web\Api\V1\Objects\ExportJob.cs" />
+    <Compile Include="Web\Api\V1\Objects\ImportJob.cs" />
+    <Compile Include="Web\Api\V1\Objects\Job.cs" />
+    <Compile Include="Web\Api\V1\Objects\QueryJob.cs" />
+    <Compile Include="Web\Api\V1\Objects\Queue.cs" />
+    <Compile Include="Web\Api\V1\Objects\Table.cs" />
+    <Compile Include="Web\Api\V1\Requests\JobRequest.cs" />
+    <Compile Include="Web\Api\V1\Responses\ColumnListResponse.cs" />
+    <Compile Include="Web\Api\V1\Responses\DatasetListResponse.cs" />
+    <Compile Include="Web\Api\V1\Responses\JobListResponse.cs" />
+    <Compile Include="Web\Api\V1\Responses\JobResponse.cs" />
+    <Compile Include="Web\Api\V1\Responses\QueueListResponse.cs" />
+    <Compile Include="Web\Api\V1\Responses\QueueResponse.cs" />
+    <Compile Include="Web\Api\V1\Responses\TableListResponse.cs" />
+    <Compile Include="Web\Api\V1\Services\DataService.cs" />
+    <Compile Include="Web\Api\V1\Services\JobsService.cs" />
+    <Compile Include="Web\Api\V1\Services\SchemaService.cs" />
+    <Compile Include="Web\Api\V1\Services\TestService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
+      <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
+      <Name>Jhu.Graywulf.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Install\Jhu.Graywulf.Install.csproj">
+      <Project>{AC357A2C-5388-4D7F-B1AF-C78D9BF8326C}</Project>
+      <Name>Jhu.Graywulf.Install</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.IO\Jhu.Graywulf.IO.csproj">
+      <Project>{6797ED88-1D8C-491B-A036-4C42C4BF2EAF}</Project>
+      <Name>Jhu.Graywulf.IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Jobs\Jhu.Graywulf.Jobs.csproj">
+      <Project>{2BD2D467-D003-468D-9B97-83DDC6F2ED78}</Project>
+      <Name>Jhu.Graywulf.Jobs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Metadata\Jhu.Graywulf.Metadata.csproj">
+      <Project>{129E1B6F-B0B3-4C7C-8FE2-4B1B8556B96D}</Project>
+      <Name>Jhu.Graywulf.Metadata</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.ParserLib\Jhu.Graywulf.ParserLib.csproj">
+      <Project>{4039B7D0-F8E5-49D8-A770-133DBED2EA75}</Project>
+      <Name>Jhu.Graywulf.ParserLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Registry.Enum\Jhu.Graywulf.Registry.Enum.csproj">
+      <Project>{71599792-21CC-4E63-AFB5-2AFBDB3DF418}</Project>
+      <Name>Jhu.Graywulf.Registry.Enum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Registry\Jhu.Graywulf.Registry.csproj">
+      <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
+      <Name>Jhu.Graywulf.Registry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
+      <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
+      <Name>Jhu.Graywulf.RemoteService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Sql\Jhu.Graywulf.Sql.csproj">
+      <Project>{AADA04EE-F578-4628-8AE0-D423BB94C738}</Project>
+      <Name>Jhu.Graywulf.Sql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
+      <Project>{E9D182CF-746E-4E40-B01C-74A32FB70749}</Project>
+      <Name>Jhu.Graywulf.Web</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)
+copy $(TargetDir)$(TargetName).pdb $(SolutionDir)$(OutDir)</PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <Import Project="..\..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

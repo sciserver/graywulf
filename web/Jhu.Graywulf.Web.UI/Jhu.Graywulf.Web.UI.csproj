@@ -705,6 +705,10 @@
       <Project>{AADA04EE-F578-4628-8AE0-D423BB94C738}</Project>
       <Name>Jhu.Graywulf.Sql</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web.Api\Jhu.Graywulf.Web.Api.csproj">
+      <Project>{975EE996-A41B-4C73-8562-E2B2035E8899}</Project>
+      <Name>Jhu.Graywulf.Web.Api</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
       <Project>{E9D182CF-746E-4E40-B01C-74A32FB70749}</Project>
       <Name>Jhu.Graywulf.Web</Name>
