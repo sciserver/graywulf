@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
-using Jhu.Graywulf.Components;
+using System.Security.Principal;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
@@ -20,7 +20,14 @@ namespace Jhu.Graywulf.Web.Security
     /// </remarks>
     public class WebAuthenticationModule : AuthenticationModuleBase, IHttpModule
     {
+        #region Constructors and initializers
+
         public WebAuthenticationModule()
+        {
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
         {
         }
 
@@ -28,6 +35,9 @@ namespace Jhu.Graywulf.Web.Security
         {
             base.Dispose();
         }
+
+        #endregion
+        #region HttpModule life-cycle methods
 
         /// <summary>
         /// Initialize the authentication module by loading authenticators and setting events.
@@ -39,6 +49,8 @@ namespace Jhu.Graywulf.Web.Security
         /// </remarks>
         public void Init(HttpApplication application)
         {
+            // (0.) Called by the Http framework when the entire module is initializing
+
             // Load authenticators from the registry
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
@@ -63,42 +75,56 @@ namespace Jhu.Graywulf.Web.Security
             application.PostAcquireRequestState += new EventHandler(OnPostAcquireRequestState);
         }
 
+        #endregion
+        #region Authentication life-cycle methods
+
         private void OnAuthenticateRequest(object sender, EventArgs e)
         {
-            Authenticate(new AuthenticationRequest(HttpContext.Current.Request));
-        }
+            // (1.) Called when a new page request is made and the built in
+            // security module has established the identity of the user.
 
-        private void OnPostAuthenticateRequest(object sender, EventArgs e)
-        {
-            var httpContext = HttpContext.Current;
-            var principal = DispatchIdentityType(httpContext.User);
-
-            if (principal != null)
-            {
-                httpContext.User = principal;
-            }
-        }
-
-        private void OnPostAcquireRequestState(object sender, EventArgs e)
-        {
-            IdentifyUser();
+            Authenticate(new AuthenticationRequest(HttpContext.Current));
         }
 
         protected override void OnAuthenticated(GraywulfPrincipal principal)
         {
+            // (2.) Called after successfull authentication
+
+            // Assign principal to both thread and HTTP contexts
+            System.Threading.Thread.CurrentPrincipal = principal;
             HttpContext.Current.User = principal;
         }
 
         protected override void OnAuthenticationFailed()
         {
+            // (3.) Called after authentication was unsuccessful
+
+            // This only means that the custom authenticators could not
+            // identify the user, but it still might have been identified by
+            // the web server (from Forms ticket, windows authentication, etc.)
+            // In this case, the principal provided by the framework needs to
+            // be converted to a graywulf principal
+
+            /* TODO: delete
+            var httpContext = HttpContext.Current;
+            
+            var principal = DispatchPrincipal(httpContext.User);
+
+            System.Threading.Thread.CurrentPrincipal = principal;
+            HttpContext.Current.User = principal;*/
         }
 
-        /// <summary>
-        /// Checks if the authenticated user appears for the first time,
-        /// and if so, raises an event. Also checks if the user signed out.
-        /// </summary>
-        private void IdentifyUser()
+        private void OnPostAuthenticateRequest(object sender, EventArgs e)
         {
+            // (4.) Called after the web request is authenticated
+            
+            // Required by the interface implementation
+        }
+
+        private void OnPostAcquireRequestState(object sender, EventArgs e)
+        {   
+            // (5.) This is where we get the session object the first time
+
             // To detect whether a user has left or a new user arrived we
             // store the principal in a session variable. Each request
             // looks into the variable and compares it with the principal
@@ -159,5 +185,7 @@ namespace Jhu.Graywulf.Web.Security
                 }
             }
         }
+
+        #endregion
     }
 }

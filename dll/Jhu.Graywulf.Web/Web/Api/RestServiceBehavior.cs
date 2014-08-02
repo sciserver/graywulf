@@ -44,12 +44,6 @@ namespace Jhu.Graywulf.Web.Api
                     var htbe = cubind.Elements.Find<HttpTransportBindingElement>();
                     htbe.TransferMode = TransferMode.Streamed;
                     htbe.MaxReceivedMessageSize = 0x40000000;     // 1 GB
-                    
-                    // TODO: delete these, not used
-                    //cubind.Elements.Find<WebMessageEncodingBindingElement>().m
-
-                    //var whs = new WebHttpSecurity();
-                    //whs.Transport.ClientCredentialType = HttpClientCredentialType.None;
                 }
 
                 var whb = ep.Behaviors.Find<WebHttpBehavior>();
@@ -99,7 +93,6 @@ namespace Jhu.Graywulf.Web.Api
                 // Add new custom error handler
                 cd.ErrorHandlers.Add(reh);
 
-
                 // We use an endpoint behavior to authenticate REST requests.
                 // Normaly an authentication manager would be used but this
                 // approach is more similar to web page authentication and
@@ -114,7 +107,6 @@ namespace Jhu.Graywulf.Web.Api
                 }
             }
         }
-
 
         public void Validate(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
         {

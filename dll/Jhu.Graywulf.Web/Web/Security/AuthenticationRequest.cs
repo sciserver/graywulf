@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Net;
+using System.Security.Principal;
 
 namespace Jhu.Graywulf.Web.Security
 {
@@ -14,6 +15,12 @@ namespace Jhu.Graywulf.Web.Security
         private NameValueCollection queryString;
         private NameValueCollection headers;
         private HttpCookieCollection cookies;
+
+        /// <summary>
+        /// Holds the principal established so far during the processing of
+        /// the request.
+        /// </summary>
+        private IPrincipal establishedPrincipal;
 
         public NameValueCollection QueryString
         {
@@ -30,16 +37,24 @@ namespace Jhu.Graywulf.Web.Security
             get { return cookies; }
         }
 
+        public IPrincipal EstablishedPrincipal
+        {
+            get { return establishedPrincipal; }
+        }
+
         #region Constructors and initializers
 
-        public AuthenticationRequest(System.Web.HttpRequest request)
+        public AuthenticationRequest(System.Web.HttpContext context)
         {
             InitializeMembers();
+
+            var request = context.Request;
 
             this.uri = request.Url;
             this.queryString = request.QueryString;
             this.headers = request.Headers;
             this.cookies = request.Cookies;
+            this.establishedPrincipal = context.User;
         }
 
         public AuthenticationRequest(System.ServiceModel.Web.IncomingWebRequestContext request)
@@ -52,13 +67,17 @@ namespace Jhu.Graywulf.Web.Security
 
             // Web services don't parse cookies, so we do it now
             ParseCookies();
+
+            // TODO: figure out principal here
         }
 
         private void InitializeMembers()
         {
+            this.uri = null;
             this.queryString = null;
             this.headers = null;
             this.cookies = null;
+            this.establishedPrincipal = null;
         }
 
         #endregion

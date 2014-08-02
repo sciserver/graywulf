@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Security.Principal;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
@@ -19,12 +20,40 @@ namespace Jhu.Graywulf.Web.Security
     /// </remarks>
     public abstract class AuthenticationModuleBase : IDisposable
     {
+        #region Static principal cache implementation
+
+        /// <summary>
+        /// Holds a cache of principals to identify users without accessing
+        /// the registry.
+        /// </summary>
+        private static Cache<string, GraywulfPrincipal> principalCache;
+
+        static AuthenticationModuleBase()
+        {
+            principalCache = new Cache<string, GraywulfPrincipal>()
+            {
+                AutoExtendLifetime = true,
+                CollectionInterval = new TimeSpan(0, 1, 0),     // one minute
+                // TODO: implement per token expiration...
+                DefaultLifetime = new TimeSpan(0, 20, 0),       // twenty minutes
+            };
+        }
+
+        #endregion
+        #region Private member variables
+
+        /// <summary>
+        /// Holds a list of authenticators that are tried to identify a user
+        /// from a web request.
+        /// </summary>
         private Authenticator[] authenticators;
 
+        #endregion
         #region Constructors and initializers
 
         protected AuthenticationModuleBase()
         {
+            InitializeMembers();
         }
 
         private void InitializeMembers()
@@ -52,38 +81,87 @@ namespace Jhu.Graywulf.Web.Security
         /// <param name="context"></param>
         protected virtual void Authenticate(AuthenticationRequest request)
         {
+            // See if we can use the principal as it is, otherwise try
+            // other authentication methods
+
+            var principal = DispatchPrincipal(request.EstablishedPrincipal);
+
             // If user is not authenticated yet, try to authenticate them now using
             // various types of authenticators
 
-            if (authenticators != null)
-            {
-                GraywulfPrincipal principal = null;
+            // This is the time to execute other custom authenticators.
+            // Call base class method to go through all authentication methods
 
+            if (principal == null && authenticators != null)
+            {
                 // Try each authentication protocol
                 for (int i = 0; principal == null && i < authenticators.Length; i++)
                 {
                     principal = authenticators[i].Authenticate(request);
                 }
-
-                if (principal != null)
-                {
-                    OnAuthenticated(principal);
-                    return;
-                }
             }
 
-            OnAuthenticationFailed();
+            if (principal != null)
+            {
+                // Associate user identified by the authentication method with a Graywulf user
+                LoadUser(ref principal);
+
+                // Report user as authenticated
+                OnAuthenticated(principal);
+
+                return;
+            }
+            else
+            {
+                // None of the authenticators could identify the user
+                // This only means that the custom authenticators could not
+                // identify the user, but it still might have been identified by
+                // the web server (from Forms ticket, windows authentication, etc.)
+                // In this case, the principal provided by the framework needs to
+                // be converted to a graywulf principal
+
+                OnAuthenticationFailed();
+            }
         }
 
         protected abstract void OnAuthenticated(GraywulfPrincipal principal);
 
         protected abstract void OnAuthenticationFailed();
 
+        protected void LoadUser(ref GraywulfPrincipal principal)
+        {
+            // REST services do not use a session but we don't want to load the user
+            // every single time from the session so do some caching here.
+            // The problem is, however, that we don't want to keep the user in the cache
+            // for ever, so some cache expiration should be done
+
+            GraywulfPrincipal cachedPrincipal;
+            if (principalCache.TryGetValue(principal.UniqueID, out cachedPrincipal))
+            {
+                principal = cachedPrincipal;
+            }
+            else
+            {
+                // User not found in cache, need to load from database
+                principal.Identity.LoadUser();
+
+                principalCache.TryAdd(principal.UniqueID, principal);
+
+                // Also, we have to be able to detect users who just arrived so the appropriate
+                // event can be raised. Now simply rise the event every time
+
+                // TODO: find a new place for this event
+                //httpApplication.OnUserSignedIn(principal.Identity);
+            }
+        }
+
+        #region Principal type conversion methods
+
         /// <summary>
         /// Converts indentities into Graywulf identity.
         /// </summary>
         /// <param name="context"></param>
-        protected virtual GraywulfPrincipal DispatchIdentityType(IPrincipal principal)
+        protected virtual GraywulfPrincipal DispatchPrincipal(IPrincipal principal)
         {
             // The request is processed now. If the user has been authenticated but
             // the principal is not a Graywulf principal, it has to be replaced now
@@ -148,5 +226,7 @@ namespace Jhu.Graywulf.Web.Security
 
             return new GraywulfPrincipal(identity);
         }
+
+        #endregion
     }
 }
