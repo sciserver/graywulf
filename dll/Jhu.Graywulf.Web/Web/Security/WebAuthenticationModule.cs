@@ -155,20 +155,11 @@ namespace Jhu.Graywulf.Web.Security
                             httpContext.Session.Abandon();
                             sessionPrincipal = null;
                         }
-                        else
-                        {
-                            HttpContext.Current.User = sessionPrincipal;
-                        }
                     }
 
                     if (sessionPrincipal == null)
                     {
-                        // A new user has just arrived, load info from the registry
-                        using (var registryContext = httpApplication.CreateRegistryContext())
-                        {
-                            ((GraywulfIdentity)httpContext.User.Identity).LoadUser();
-                        }
-
+                        // Save user into the session
                         httpContext.Session[Web.Constants.SessionPrincipal] = httpContext.User;
 
                         // Report the arrival of a new user
@@ -177,7 +168,7 @@ namespace Jhu.Graywulf.Web.Security
                 }
                 else if (!httpContext.Request.IsAuthenticated && sessionPrincipal != null)
                 {
-                    // No authenticated used but we see someone in the session. That means
+                    // No authenticated uses but we see someone in the session. That means
                     // someone has just left (or the session has expired)
                     // Report the leaving of the user
                     httpApplication.OnUserSignedOut();
