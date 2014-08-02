@@ -181,11 +181,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Web\Security\AuthenticationRequest.cs" />
-    <Compile Include="Web\Security\RestAuthenticationModule.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Web\Security\WebAuthenticationModule.cs" />
-    <Compile Include="Web\ServiceBase.cs" />
     <Compile Include="Web\UserControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.Web.Api
 
             var rob = new RestOperationBehavior();
             var reh = new RestErrorHandler();
-            var ram = new Security.RestAuthenticationModule();
+            var ram = new RestAuthenticationModule();
 
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {

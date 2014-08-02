@@ -11,8 +11,9 @@ using System.ServiceModel.Web;
 using System.Web;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Web.Security;
 
-namespace Jhu.Graywulf.Web.Security
+namespace Jhu.Graywulf.Web.Api
 {
     /// <summary>
     /// Implements a module that can authenticate REST web service clients
@@ -65,9 +66,8 @@ namespace Jhu.Graywulf.Web.Security
 
             Authenticate(new AuthenticationRequest(WebOperationContext.Current.IncomingRequest));
 
-            instanceContext.GetServiceInstance();
-
-            instanceContext.ReleaseServiceInstance();
+            // TODO: session handling could be added here, if necessary
+            // would be nice to detect user arrival, etc.
 
 
             // TODO: wrap everything into a fault exception so that it is returned to the client nicely
