@@ -743,7 +743,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <Content Include="Api\V1\Web.config" />
     <None Include="Scripts\CodeMirror\mode\livescript\livescript.ls" />
   </ItemGroup>
   <ItemGroup>
