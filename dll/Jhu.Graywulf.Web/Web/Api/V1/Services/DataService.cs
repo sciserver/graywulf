@@ -36,7 +36,7 @@ namespace Jhu.Graywulf.Web.Api.V1
     [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     [RestServiceBehavior]
-    public class DataService : ServiceBase, IDataService
+    public class DataService : RestServiceBase, IDataService
     {
         public Message GetTable(string datasetName, string tableName, string top)
         {

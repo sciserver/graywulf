@@ -101,12 +101,12 @@ namespace Jhu.Graywulf.Web
         /// <summary>
         /// Called when a user signs in
         /// </summary>
-        internal protected abstract void OnUserSignedIn(GraywulfIdentity identity);
+        internal protected abstract void OnUserArrived(GraywulfPrincipal principal);
 
         /// <summary>
         /// Called when a user sings out
         /// </summary>
-        internal protected abstract void OnUserSignedOut();
+        internal protected abstract void OnUserLeft(GraywulfPrincipal principal);
 
         #endregion
     }

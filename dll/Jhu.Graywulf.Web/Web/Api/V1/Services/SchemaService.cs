@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Web.Api.V1
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
     [RestServiceBehavior]
-    public class SchemaService : ServiceBase, ISchemaService
+    public class SchemaService : RestServiceBase, ISchemaService
     {
         private Schema.DatasetBase GetDatasetInternal(string datasetName)
         {

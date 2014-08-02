@@ -14,13 +14,13 @@ namespace Jhu.Graywulf.Web.Api
 {
     public class RestErrorHandler : IErrorHandler
     {
-        private ServiceBase service;
+        private RestServiceBase service;
 
         public RestErrorHandler()
         {
         }
 
-        public RestErrorHandler(ServiceBase service)
+        public RestErrorHandler(RestServiceBase service)
         {
             this.service = service;
         }

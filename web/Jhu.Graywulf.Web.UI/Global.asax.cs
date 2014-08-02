@@ -32,36 +32,26 @@ namespace Jhu.Graywulf.Web.UI
         }
 
 
-        protected override void OnUserSignedIn(GraywulfIdentity identity)
+        protected override void OnUserArrived(GraywulfPrincipal principal)
         {
-            // TODO: context cannot be created if no user is set
             using (var context = CreateRegistryContext())
             {
-                // Check if user's myDB exists, if not, create
-                var mydb = context.Federation.MyDBDatabaseVersion.GetUserDatabaseInstance(identity.User);
-
-                if (mydb == null)
-                {
-                    identity.User.Context = context;
-                    var udii = new UserDatabaseInstanceInstaller(identity.User);
-                    var udi = udii.CreateUserDatabaseInstance(context.Federation.MyDBDatabaseVersion);
-                }
+                // Check if user database (MYDB) exists, and create it if necessary
+                var udii = new UserDatabaseInstanceInstaller(context);
+                udii.EnsureUserDatabaseInstanceExists(principal.Identity.User, context.Federation.MyDBDatabaseVersion);
 
                 // Load all datasets at start to be able to display from schema browser
                 // Datasets will be cached internally
-                using (var registryContext = CreateRegistryContext())
-                {
-                    var schemaManager = new Jhu.Graywulf.Schema.GraywulfSchemaManager(registryContext, Jhu.Graywulf.Registry.AppSettings.FederationName);
-                    schemaManager.Datasets.LoadAll();
-                }
+                var schemaManager = new Jhu.Graywulf.Schema.GraywulfSchemaManager(context, Jhu.Graywulf.Registry.AppSettings.FederationName);
+                schemaManager.Datasets.LoadAll();
 
                 context.CommitTransaction();
             }
         }
 
-        protected override void OnUserSignedOut()
+        protected override void OnUserLeft(GraywulfPrincipal principal)
         {
-            
+
         }
     }
 }

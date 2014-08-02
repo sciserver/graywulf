@@ -27,13 +27,13 @@ namespace Jhu.Graywulf.Web.Admin
             Session[Web.Constants.SessionRegistryDatabase] = String.Format("{0}\\{1}", csb.DataSource, csb.InitialCatalog);
         }
 
-        protected override void OnUserSignedIn(GraywulfIdentity identity)
+        protected override void OnUserArrived(GraywulfPrincipal principal)
         {
             Session[Constants.SessionClusterGuid] = RegistryUser.Domain.Cluster.Guid;
             Session[Constants.SessionDomainGuid] = RegistryUser.Domain.Guid;
         }
 
-        protected override void OnUserSignedOut()
+        protected override void OnUserLeft(GraywulfPrincipal principal)
         {
             
         }

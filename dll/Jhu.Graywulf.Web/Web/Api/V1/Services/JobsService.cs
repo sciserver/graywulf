@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Web.Api.V1
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
     [RestServiceBehavior]
-    public class JobsService : ServiceBase, IJobsService
+    public class JobsService : RestServiceBase, IJobsService
     {
         private JobFactory jobFactory;
 

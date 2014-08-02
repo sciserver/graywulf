@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Web.Api
         public object Invoke(object instance, object[] inputs, out object[] outputs)
         {
             object res = null;
-            var svc = (ServiceBase)instance;
+            var svc = (RestServiceBase)instance;
 
             svc.OnBeforeInvoke();
 

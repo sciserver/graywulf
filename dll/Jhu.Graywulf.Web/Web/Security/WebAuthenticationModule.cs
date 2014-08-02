@@ -151,7 +151,7 @@ namespace Jhu.Graywulf.Web.Security
                         {
                             // This is someone we haven't seen, so report the
                             // leaving of the previous user
-                            httpApplication.OnUserSignedOut();
+                            httpApplication.OnUserLeft(sessionPrincipal);
                             httpContext.Session.Abandon();
                             sessionPrincipal = null;
                         }
@@ -163,7 +163,7 @@ namespace Jhu.Graywulf.Web.Security
                         httpContext.Session[Web.Constants.SessionPrincipal] = httpContext.User;
 
                         // Report the arrival of a new user
-                        httpApplication.OnUserSignedIn((GraywulfIdentity)httpContext.User.Identity);
+                        httpApplication.OnUserArrived((GraywulfPrincipal)httpContext.User);
                     }
                 }
                 else if (!httpContext.Request.IsAuthenticated && sessionPrincipal != null)
@@ -171,7 +171,7 @@ namespace Jhu.Graywulf.Web.Security
                     // No authenticated uses but we see someone in the session. That means
                     // someone has just left (or the session has expired)
                     // Report the leaving of the user
-                    httpApplication.OnUserSignedOut();
+                    httpApplication.OnUserLeft(sessionPrincipal);
                     httpContext.Session.Abandon();
                 }
             }

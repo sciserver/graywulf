@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     [RestServiceBehavior]
-    public class TestService : ServiceBase, ITestService
+    public class TestService : RestServiceBase, ITestService
     {
         public void ThrowException()
         {

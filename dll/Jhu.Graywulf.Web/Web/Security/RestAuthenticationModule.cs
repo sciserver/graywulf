@@ -65,6 +65,14 @@ namespace Jhu.Graywulf.Web.Security
 
             Authenticate(new AuthenticationRequest(WebOperationContext.Current.IncomingRequest));
 
+            instanceContext.GetServiceInstance();
+
+            instanceContext.ReleaseServiceInstance();
+
+
+            // TODO: wrap everything into a fault exception so that it is returned to the client nicely
+            // packed.
+
             // The return value is passes to BeforeSendReply
             return null;
         }

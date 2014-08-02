@@ -26,12 +26,12 @@ namespace Jhu.Graywulf.Web.Auth
             }
         }
 
-        protected override void OnUserSignedIn(GraywulfIdentity identity)
+        protected override void OnUserArrived(GraywulfPrincipal principal)
         {
             
         }
 
-        protected override void OnUserSignedOut()
+        protected override void OnUserLeft(GraywulfPrincipal principal)
         {
             
         }

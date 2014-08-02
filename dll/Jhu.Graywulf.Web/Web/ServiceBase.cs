@@ -11,7 +11,7 @@ using System.ServiceModel.Dispatcher;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Web.Api
+namespace Jhu.Graywulf.Web
 {
     public abstract class ServiceBase : IDisposable
     {
@@ -146,5 +146,19 @@ namespace Jhu.Graywulf.Web.Api
 
             return error;
         }
+
+        #region User managemenet functions
+
+        /// <summary>
+        /// Called when a user signs in
+        /// </summary>
+        internal protected abstract void OnUserArrived(GraywulfPrincipal principal);
+
+        /// <summary>
+        /// Called when a user sings out
+        /// </summary>
+        internal protected abstract void OnUserSignedOut(GraywulfPrincipal principaly);
+
+        #endregion
     }
 }
