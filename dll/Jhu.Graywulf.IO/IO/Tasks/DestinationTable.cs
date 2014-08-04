@@ -141,6 +141,10 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private string GetTableName(string batchName, string resultsetName)
         {
+            // TODO: batch name is usually the file name
+            // use this parameter also with jobid for multi-step queries
+            // without into parts...
+
             var tableName = tableNameTemplate.Replace("[$BatchName]", batchName);
             tableName = tableName.Replace("[$ResultsetName]", resultsetName);
 

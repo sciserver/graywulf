@@ -182,7 +182,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             InitializeMembers();
 
-            CopyFromJobInstance(jobInstance);
+            LoadFromRegistryObject(jobInstance);
         }
 
         private void InitializeMembers()
@@ -219,7 +219,9 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.dependencies = Jhu.Graywulf.Util.DeepCloner.CloneArray(old.dependencies);
         }
 
-        protected virtual void CopyFromJobInstance(JobInstance jobInstance)
+        #endregion
+
+        protected virtual void LoadFromRegistryObject(JobInstance jobInstance)
         {
             this.jobInstance = jobInstance;
 
@@ -290,8 +292,6 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        #endregion
-
         protected string GetAttribute(XmlDocument xml, string path, string attribute)
         {
             return xml.SelectNodes(path)[0].Attributes[attribute].Value;
@@ -331,6 +331,15 @@ namespace Jhu.Graywulf.Web.Api.V1
         public virtual void Schedule(FederationContext context)
         {
             throw new NotImplementedException();
+        }
+
+        protected virtual void SaveDependencies()
+        {
+            foreach (var dep in dependencies)
+            {
+                var jd = dep.CreateRegistryObject(jobInstance);
+                jd.Save();
+            }
         }
 
         protected string GetQueueName(FederationContext context)

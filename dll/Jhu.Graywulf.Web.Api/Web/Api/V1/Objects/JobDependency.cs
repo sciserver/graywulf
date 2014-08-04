@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             InitializeMembers();
 
-            CopyFromJobInstanceDependency(jobInstanceDependency);
+            LoadFromRegistryObject(jobInstanceDependency);
         }
 
         private void InitializeMembers()
@@ -73,7 +73,14 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.condition = old.condition;
         }
 
-        private void CopyFromJobInstanceDependency(JobInstanceDependency jobInstanceDependency)
+        public object Clone()
+        {
+            return new JobDependency(this);
+        }
+
+        #endregion
+
+        private void LoadFromRegistryObject(JobInstanceDependency jobInstanceDependency)
         {
             this.predecessorJobGuid = jobInstanceDependency.PredecessorJobInstanceReference.Guid;
 
@@ -101,11 +108,41 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        public object Clone()
+        internal JobInstanceDependency CreateRegistryObject(JobInstance jobInstance)
         {
-            return new JobDependency(this);
-        }
+            var ef = new EntityFactory(jobInstance.Context);
+            var predji = ef.LoadEntity<JobInstance>(predecessorJobGuid);
 
-        #endregion
+            var jd = new JobInstanceDependency(jobInstance);
+
+            jd.Name = String.Format("{0}_{1}", jobInstance.Name, predji.Name);
+
+            jd.PredecessorJobInstanceReference.Guid = predecessorJobGuid;
+
+            // To keep REST API entirely isolated, we need to copy
+            // the enum using a switch
+            switch (condition)
+            {
+                case JobDependencyCondition.Unknown:
+                    jd.Condition = Registry.JobDependencyCondition.Unknown;
+                    break;
+                case JobDependencyCondition.Completed:
+                    jd.Condition = Registry.JobDependencyCondition.Completed;
+                    break;
+                case JobDependencyCondition.Cancelled:
+                    jd.Condition = Registry.JobDependencyCondition.Cancelled;
+                    break;
+                case JobDependencyCondition.Failed:
+                    jd.Condition = Registry.JobDependencyCondition.Failed;
+                    break;
+                case JobDependencyCondition.TimedOut:
+                    jd.Condition = Registry.JobDependencyCondition.TimedOut;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return jd;
+        }
     }
 }

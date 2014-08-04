@@ -12,6 +12,11 @@ namespace Jhu.Graywulf.Registry
     /// </summary>
     public class JobInstanceFactory : EntityFactory
     {
+        #region Static member variables
+
+        private static readonly Random random = new Random();
+
+        #endregion
         #region Member variables
 
         private Guid userGuid;
@@ -124,5 +129,48 @@ namespace Jhu.Graywulf.Registry
         }
 
         #endregion
+
+        private static string GenerateUniqueJobID()
+        {
+            int rnd;
+
+            lock (random)
+            {
+                rnd = random.Next(1000);
+            }
+
+            var now = DateTime.Now;
+
+            return String.Format("{0:yyMMddHHmmssff}{1:000}", now, rnd);
+        }
+
+        public static string GenerateUniqueJobID(Context context)
+        {
+            return String.Format("{0}_{1}", EntityFactory.GetName(context.UserName), GenerateUniqueJobID());
+        }
+
+        public static string GenerateRecurringJobID(Context context, string oldName)
+        {
+            // TODO: This is an ad-hoc solution, make it more robust
+            // Take old name, but remove date part
+            int i = oldName.LastIndexOf('_');
+
+            string newname;
+
+            if (i < 0)
+            {
+                newname = oldName;
+            }
+            else if (i == 0)
+            {
+                newname = context.UserName;
+            }
+            else
+            {
+                newname = oldName.Substring(0, i);
+            }
+
+            return String.Format("{0}_{1}", newname, GenerateUniqueJobID());
+        }
     }
 }

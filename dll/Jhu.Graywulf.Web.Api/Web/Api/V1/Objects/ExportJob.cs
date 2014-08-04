@@ -104,9 +104,9 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         #endregion
 
-        protected override void CopyFromJobInstance(JobInstance jobInstance)
+        protected override void LoadFromRegistryObject(JobInstance jobInstance)
         {
-            base.CopyFromJobInstance(jobInstance);
+            base.LoadFromRegistryObject(jobInstance);
 
             // Because job parameter type might come from an unknown 
             // assembly, instead of deserializing, read xml directly here
@@ -166,7 +166,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             job.Save();
 
-            CopyFromJobInstance(job);
+            LoadFromRegistryObject(job);
         }
     }
 }

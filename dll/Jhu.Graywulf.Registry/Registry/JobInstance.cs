@@ -452,7 +452,7 @@ namespace Jhu.Graywulf.Registry
 
                 // Reset properties
                 newjob.Guid = Guid.Empty;
-                newjob.Name = GenerateRecurringJobID();
+                newjob.Name = JobInstanceFactory.GenerateRecurringJobID(Context, Name);
                 newjob.dateStarted = DateTime.MinValue;
                 newjob.dateFinished = DateTime.MinValue;
                 newjob.JobExecutionStatus = JobExecutionState.Scheduled;
@@ -472,30 +472,6 @@ namespace Jhu.Graywulf.Registry
             {
                 return null;
             }
-        }
-
-        private string GenerateRecurringJobID()
-        {
-            // TODO: This is an ad-hoc solution, make it more robust
-            // Take old name, but remove date part
-            int i = Name.LastIndexOf('_');
-
-            string newname;
-
-            if (i < 0)
-            {
-                newname = Name;
-            }
-            else if (i == 0)
-            {
-                newname = Context.UserName;
-            }
-            else
-            {
-                newname = Name.Substring(0, i);
-            }
-
-            return String.Format("{0}_{1:yyMMddHHmmssff}", newname, DateTime.Now);
         }
 
         /// <summary>

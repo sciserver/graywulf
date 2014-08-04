@@ -156,9 +156,10 @@ namespace Jhu.Graywulf.Jobs.Query
             query.CodeDataset = codeds;
         }
 
-        public override JobInstance ScheduleAsJob(QueryBase query, string queueName, string comments)
+        public override JobInstance ScheduleAsJob(string jobName, QueryBase query, string queueName, string comments)
         {
             var job = CreateJobInstance(
+                jobName,
                 EntityFactory.CombineName(EntityType.JobDefinition, Registry.AppSettings.FederationName, typeof(SqlQueryJob).Name),
                 queueName,
                 comments);

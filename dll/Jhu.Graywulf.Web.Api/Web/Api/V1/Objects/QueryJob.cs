@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         #endregion
         #region Properties
 
-        [DataMember(Name="query")]
+        [DataMember(Name = "query")]
         public string Query
         {
             get { return query; }
@@ -60,9 +60,9 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         #endregion
 
-        protected override void CopyFromJobInstance(JobInstance jobInstance)
+        protected override void LoadFromRegistryObject(JobInstance jobInstance)
         {
-            base.CopyFromJobInstance(jobInstance);
+            base.LoadFromRegistryObject(jobInstance);
 
             // Because job parameter type might come from an unknown 
             // assembly, instead of deserializing, read xml directly here
@@ -91,18 +91,31 @@ namespace Jhu.Graywulf.Web.Api.V1
             var qf = QueryFactory.Create(context.Federation);
             var q = qf.CreateQuery(query, ExecutionMode.Graywulf);
 
+            // TODO: Target table settings will need to be modified
+            // once multi-select queries are implemented
+
             switch (Queue)
             {
                 case JobQueue.Quick:
-                    q.Destination = new IO.Tasks.DestinationTable(
-                        context.MyDBDataset,
-                        context.MyDBDataset.DatabaseName,
-                        context.MyDBDataset.DefaultSchemaName,
-                        "quickResults",
-                        TableInitializationOptions.Drop | TableInitializationOptions.Create);
+                    q.Destination = new IO.Tasks.DestinationTable()
+                    {
+                        Dataset = context.MyDBDataset,
+                        DatabaseName = context.MyDBDataset.DatabaseName,
+                        SchemaName = context.MyDBDataset.DefaultSchemaName,
+                        TableNameTemplate = Jhu.Graywulf.Jobs.Constants.DefaultQuickResultsTableNamePattern,
+                        Options = TableInitializationOptions.Drop | TableInitializationOptions.Create
+                    };
                     break;
                 case JobQueue.Long:
-                    throw new NotImplementedException();
+                    q.Destination = new IO.Tasks.DestinationTable()
+                    {
+                        Dataset = context.MyDBDataset,
+                        DatabaseName = context.MyDBDataset.DatabaseName,
+                        SchemaName = context.MyDBDataset.DefaultSchemaName,
+                        TableNameTemplate = Jhu.Graywulf.Jobs.Constants.DefaultLongResultsTableNamePattern,
+                        Options = TableInitializationOptions.Create
+                    };
+                    break;
                 default:
                     break;
             }
@@ -117,15 +130,23 @@ namespace Jhu.Graywulf.Web.Api.V1
         /// <returns></returns>
         public override void Schedule(FederationContext context)
         {
-            var q = CreateQuery(context);
-            q.Verify();
+            // Create the query object from the query test
+            var query = CreateQuery(context);
 
+            // Run syntax and other sanity tests
+            query.Verify();
+
+            // Schedule as a job
             var qf = QueryFactory.Create(context.Federation);
-            var job = qf.ScheduleAsJob(q, GetQueueName(context), Comments);
+            
+            this.JobInstance = qf.ScheduleAsJob(this.Name, query, GetQueueName(context), Comments);
+            this.JobInstance.Save();
 
-            job.Save();
+            // Save dependencies
+            SaveDependencies();
 
-            CopyFromJobInstance(job);
+            // Reload
+            LoadFromRegistryObject(this.JobInstance);
         }
     }
 }
