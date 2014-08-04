@@ -103,6 +103,7 @@ namespace Jhu.Graywulf.Registry
             { EntityType.QueueInstance, EntityNames.QueueInstance_Singular},
             { EntityType.JobDefinition, EntityNames.JobDefinition_Singular},
             { EntityType.JobInstance, EntityNames.JobInstance_Singular},
+            { EntityType.JobInstanceDependency, EntityNames.JobInstanceDependency_Singular},
         };
 
         public static readonly Dictionary<EntityType, string> EntityNames_Plural = new Dictionary<EntityType, string>()
@@ -135,6 +136,7 @@ namespace Jhu.Graywulf.Registry
             { EntityType.QueueInstance, EntityNames.QueueInstance_Plural},
             { EntityType.JobDefinition, EntityNames.JobDefinition_Plural},
             { EntityType.JobInstance, EntityNames.JobInstance_Plural},
+            { EntityType.JobInstanceDependency, EntityNames.JobInstanceDependency_Plural},
         };
     }
 }

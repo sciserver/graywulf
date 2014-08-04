@@ -152,5 +152,10 @@ namespace Jhu.Graywulf.Web.Api.V1
             job.Schedule(FederationContext);
             return new JobResponse(job);
         }
+
+        public JobResponse CancelJob(string guid)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

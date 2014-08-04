@@ -148,6 +148,7 @@ namespace Jhu.Graywulf.Web.Admin
                 case EntityType.QueueInstance:
                 case EntityType.JobDefinition:
                 case EntityType.JobInstance:
+                case EntityType.JobInstanceDependency:
                     group = EntityGroup.Jobs;
                     break;
                 
@@ -204,6 +205,7 @@ namespace Jhu.Graywulf.Web.Admin
                 case EntityType.QueueInstance:
                 case EntityType.JobDefinition:
                 case EntityType.JobInstance:
+                case EntityType.JobInstanceDependency:
                     group = EntityGroup.Jobs;
                     break;
                 case EntityType.User:

@@ -74,6 +74,13 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
             RefreshParametersTable();
         }
 
+        protected override void InitLists()
+        {
+            base.InitLists();
+
+            JobInstanceDependencyList.ParentEntity = Item;
+        }
+
         private void RefreshParametersTable()
         {
             foreach (string name in Item.Parameters.Keys)

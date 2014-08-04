@@ -356,6 +356,14 @@ namespace Jhu.Graywulf.Registry
             };
         }
 
+        protected override EntityType[] CreateChildTypes()
+        {
+            return new EntityType[]
+            {
+                EntityType.JobInstanceDependency,
+            };
+        }
+
         #endregion
         #region Cancelation functions
 

@@ -222,6 +222,8 @@
     <Content Include="Icons\Small\User.gif" />
     <Content Include="Icons\Small\UserGroup.gif" />
     <Content Include="Jobs\ClusterDetails.aspx" />
+    <Content Include="Jobs\JobInstanceDependencyDetails.aspx" />
+    <Content Include="Jobs\JobInstanceDependencyForm.aspx" />
     <Content Include="Jobs\Default.aspx" />
     <Content Include="Jobs\DomainDetails.aspx" />
     <Content Include="Jobs\FederationDetails.aspx" />
@@ -1055,6 +1057,20 @@
     </Compile>
     <Compile Include="Jobs\ClusterDetails.aspx.designer.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Jobs\JobInstanceDependencyDetails.aspx.cs">
+      <DependentUpon>JobInstanceDependencyDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Jobs\JobInstanceDependencyDetails.aspx.designer.cs">
+      <DependentUpon>JobInstanceDependencyDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Jobs\JobInstanceDependencyForm.aspx.cs">
+      <DependentUpon>JobInstanceDependencyForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Jobs\JobInstanceDependencyForm.aspx.designer.cs">
+      <DependentUpon>JobInstanceDependencyForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
