@@ -25,6 +25,16 @@ namespace Jhu.Graywulf.Web
 
         #endregion
 
+        public Context RegistryContext
+        {
+            get { return registryContext; }
+        }
+
+        public User RegistryUser
+        {
+            get { return registryUser; }
+        }
+
         public Cluster Cluster
         {
             get { return registryContext.Cluster; }
