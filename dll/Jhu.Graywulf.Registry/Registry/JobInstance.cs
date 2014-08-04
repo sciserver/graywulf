@@ -225,6 +225,13 @@ namespace Jhu.Graywulf.Registry
             set { JobDefinitionReference.Name = value; }
         }
 
+        [XmlIgnore]
+        public Dictionary<string, JobInstanceDependency> Dependencies
+        {
+            get { return GetChildren<JobInstanceDependency>(); }
+            set { SetChildren<JobInstanceDependency>(value); }
+        }
+
         #endregion
         #region Validation Properties
 

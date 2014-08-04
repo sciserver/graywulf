@@ -35,6 +35,8 @@ namespace Jhu.Graywulf.Web.Api.V1
         private DateTime? dateStarted;
         private DateTime? dateFinished;
 
+        private JobDependency[] dependencies;
+
         #endregion
         #region Properties
 
@@ -155,6 +157,14 @@ namespace Jhu.Graywulf.Web.Api.V1
             set { DateFinished = Util.DateFormatter.FromXmlString(value); }
         }
 
+        [DataMember(Name = "dependencies", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public JobDependency[] Dependencies
+        {
+            get { return dependencies; }
+            set { dependencies = value; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -188,6 +198,8 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.dateCreated = null;
             this.dateStarted = null;
             this.dateFinished = null;
+
+            this.dependencies = null;
         }
 
         private void CopyMembers(Job old)
@@ -203,6 +215,8 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.dateCreated = old.dateCreated;
             this.dateStarted = old.dateStarted;
             this.dateFinished = old.dateFinished;
+
+            this.dependencies = Jhu.Graywulf.Util.DeepCloner.CloneArray(old.dependencies);
         }
 
         protected virtual void CopyFromJobInstance(JobInstance jobInstance)
@@ -218,6 +232,8 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.dateStarted = jobInstance.DateStarted == DateTime.MinValue ? (DateTime?)null : jobInstance.DateStarted;
             this.dateFinished = jobInstance.DateFinished == DateTime.MinValue ? (DateTime?)null : jobInstance.DateFinished;
 
+            // To keep REST API entirely isolated, we need to copy
+            // the enum using a switch
             switch (jobInstance.JobExecutionStatus)
             {
                 case JobExecutionState.Cancelled:
@@ -262,6 +278,15 @@ namespace Jhu.Graywulf.Web.Api.V1
                 default:
                     this.queue = JobQueue.Unknown;
                     break;
+            }
+
+            jobInstance.LoadJobInstancesDependencies(false);
+            this.dependencies = new JobDependency[jobInstance.Dependencies.Count];
+
+            int q = 0;
+            foreach (var dep in jobInstance.Dependencies.Values)
+            {
+                this.dependencies[q] = new JobDependency(dep);
             }
         }
 

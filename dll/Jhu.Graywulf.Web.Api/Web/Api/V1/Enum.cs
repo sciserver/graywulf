@@ -34,4 +34,13 @@ namespace Jhu.Graywulf.Web.Api.V1
         Long = 2,
         All = Quick | Long
     }
+
+    public enum JobDependencyCondition : int
+    {
+        Unknown = 0,
+        Completed = 8,
+        Failed = 64,
+        Cancelled = 512,
+        TimedOut = 1024,
+    }
 }

@@ -36,7 +36,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         JobResponse GetJob(string guid);
 
         [OperationContract]
-        [WebGet(UriTemplate = "/jobs/{guid}")]
+        [WebInvoke(Method = HttpMethod.Delete, UriTemplate = "/jobs/{guid}")]
         JobResponse CancelJob(string guid);
     }
 

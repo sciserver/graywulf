@@ -43,6 +43,7 @@ namespace Jhu.Graywulf.Registry
             { EntityType.FileGroup, typeof(FileGroup) },
             { EntityType.JobDefinition, typeof(JobDefinition) },
             { EntityType.JobInstance, typeof(JobInstance) },
+            { EntityType.JobInstanceDependency, typeof(JobInstanceDependency) },
             { EntityType.Machine, typeof(Machine) },
             { EntityType.MachineRole, typeof(MachineRole) },
             { EntityType.Partition, typeof(Partition) },

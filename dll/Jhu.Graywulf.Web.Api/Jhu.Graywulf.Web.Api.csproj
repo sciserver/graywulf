@@ -93,6 +93,7 @@
     <Compile Include="Web\Api\V1\Objects\Headers.cs" />
     <Compile Include="Web\Api\V1\Objects\ImportJob.cs" />
     <Compile Include="Web\Api\V1\Objects\Job.cs" />
+    <Compile Include="Web\Api\V1\Objects\JobDependency.cs" />
     <Compile Include="Web\Api\V1\Objects\QueryJob.cs" />
     <Compile Include="Web\Api\V1\Objects\Queue.cs" />
     <Compile Include="Web\Api\V1\Objects\Table.cs" />

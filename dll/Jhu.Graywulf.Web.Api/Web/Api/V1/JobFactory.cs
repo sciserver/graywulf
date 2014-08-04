@@ -288,7 +288,12 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
             catch (Exception)
             {
-                job = new Job();
+                // Something went wrong but at lease we can set the Guid and name
+                job = new Job()
+                {
+                    Guid = jobInstance.Guid,
+                    Name = jobInstance.Name,
+                };
             }
 
             return job;
