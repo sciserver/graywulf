@@ -31,21 +31,21 @@ namespace Jhu.Graywulf.Web.Admin.Jobs {
         protected global::System.Web.UI.WebControls.DropDownList PredecessorJobInstance;
         
         /// <summary>
-        /// DependencyTypeLabel control.
+        /// ConditionLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label DependencyTypeLabel;
+        protected global::System.Web.UI.WebControls.Label ConditionLabel;
         
         /// <summary>
-        /// DependencyType control.
+        /// Condition control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList DependencyType;
+        protected global::System.Web.UI.WebControls.DropDownList Condition;
     }
 }

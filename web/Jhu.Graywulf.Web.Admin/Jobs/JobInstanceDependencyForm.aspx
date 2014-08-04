@@ -16,10 +16,10 @@
         </tr>
         <tr>
             <td class="FormLabel">
-                <asp:Label ID="DependencyTypeLabel" runat="server" Text="Dependency Type:"></asp:Label>
+                <asp:Label ID="ConditionLabel" runat="server" Text="Run only if:"></asp:Label>
             </td>
             <td class="FormField">
-                <asp:DropDownList ID="DependencyType" runat="server" CssClass="FormField">
+                <asp:DropDownList ID="Condition" runat="server" CssClass="FormField">
                     <asp:ListItem Value="Unknown" Text="(select status)" />
                     <asp:ListItem Value="Completed" Text="Completed" />
                     <asp:ListItem Value="Failed" Text="Failed" />

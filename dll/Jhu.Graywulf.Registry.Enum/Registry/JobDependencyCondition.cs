@@ -8,7 +8,7 @@ namespace Jhu.Graywulf.Registry
     /// Kind of dependency between two jobs
     /// </summary>
     [Flags]
-    public enum JobDependencyType : int
+    public enum JobDependencyCondition : int
     {
         /// <summary>
         /// Default value

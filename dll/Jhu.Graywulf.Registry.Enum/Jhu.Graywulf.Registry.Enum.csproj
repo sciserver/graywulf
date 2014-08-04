@@ -53,7 +53,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Registry\Gender.cs" />
-    <Compile Include="Registry\JobDependencyType.cs" />
+    <Compile Include="Registry\JobDependencyCondition.cs" />
     <Compile Include="Registry\RunningState.cs" />
     <Compile Include="Registry\DatabaseLayoutType.cs" />
     <Compile Include="Registry\DeadlockPriority.cs" />

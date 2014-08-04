@@ -171,7 +171,7 @@
             EntityGroup="Jobs">
             <columns>
                 <jgwc:BoundField DataField="JobInstance.Name" HeaderText="Predecessor Job Instance" />
-                <asp:BoundField DataField="DependencyType" HeaderText="Dependency Type" />
+                <asp:BoundField DataField="Condition" HeaderText="Run Only If" />
             </columns>
         </jgwac:EntityList>
     </jgwac:EntityChildren>

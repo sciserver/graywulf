@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Registry
 
         #region Member Variables
 
-        private JobDependencyType dependencyType;
+        private JobDependencyCondition condition;
 
         #endregion
         #region Member Access Properties
@@ -39,10 +39,10 @@ namespace Jhu.Graywulf.Registry
         }
 
         [DBColumn]
-        public JobDependencyType DependencyType
+        public JobDependencyCondition Condition
         {
-            get { return dependencyType; }
-            set { dependencyType = value; }
+            get { return condition; }
+            set { condition = value; }
         }
 
         #endregion
@@ -135,7 +135,7 @@ namespace Jhu.Graywulf.Registry
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.dependencyType = JobDependencyType.Unknown;
+            this.condition = JobDependencyCondition.Unknown;
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="old">A <b>Slice</b> object to create the deep copy from.</param>
         private void CopyMembers(JobInstanceDependency old)
         {
-            this.dependencyType = old.dependencyType;
+            this.condition = old.condition;
         }
 
         public override object Clone()

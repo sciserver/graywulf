@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
 
             RefreshJobInstanceList();
 
-            DependencyType.SelectedValue = Item.DependencyType.ToString();
+            Condition.SelectedValue = Item.Condition.ToString();
             PredecessorJobInstance.SelectedValue = Item.PredecessorJobInstanceReference.Guid.ToString();
         }
 
@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
         {
             base.OnSaveForm();
 
-            Item.DependencyType = (JobDependencyType)Enum.Parse(typeof(JobDependencyType), DependencyType.SelectedValue);
+            Item.Condition = (JobDependencyCondition)Enum.Parse(typeof(JobDependencyCondition), Condition.SelectedValue);
             Item.PredecessorJobInstanceReference.Guid = new Guid(PredecessorJobInstance.SelectedValue);
         }
 

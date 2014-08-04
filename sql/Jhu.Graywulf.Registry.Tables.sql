@@ -279,7 +279,7 @@ GO
 CREATE TABLE [dbo].[JobInstanceDependency]
 (
 	[EntityGuid] [uniqueidentifier] NOT NULL,
-	[DependencyType] [int] NOT NULL,
+	[Condition] [int] NOT NULL,
 	CONSTRAINT [PK_JobInstanceDependency] PRIMARY KEY CLUSTERED 
 	(
 		[EntityGuid] ASC

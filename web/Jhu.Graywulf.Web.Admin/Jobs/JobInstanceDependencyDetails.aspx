@@ -14,10 +14,10 @@
         </tr>
         <tr>
             <td class="FormLabel">
-                <asp:Label ID="DependencyTypeLabel" runat="server" Text="Dependency Type:"></asp:Label>
+                <asp:Label ID="ConditionLabel" runat="server" Text="Run only if:"></asp:Label>
             </td>
             <td class="FormField">
-                <asp:Label ID="DependencyType" runat="server"></asp:Label>
+                <asp:Label ID="Condition" runat="server"></asp:Label>
             </td>
         </tr>
     </table>

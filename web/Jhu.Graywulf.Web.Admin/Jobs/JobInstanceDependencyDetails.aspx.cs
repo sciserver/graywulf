@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
             base.UpdateForm();
 
             JobInstance.EntityReference.Value = Item.JobInstance;
-            DependencyType.Text = Item.DependencyType.ToString();
+            Condition.Text = Item.Condition.ToString();
         }
     }
 }
