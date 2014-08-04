@@ -28,12 +28,16 @@ namespace Jhu.Graywulf.Web.Api.V1
         JobListResponse ListJobs(string queue, string type);
 
         [OperationContract]
-        [WebGet(UriTemplate = "/queues/all/jobs/{guid}")]
+        [WebInvoke(Method = HttpMethod.Post, UriTemplate = "/queues/{queue}/jobs")]
+        JobResponse SubmitJob(string queue, JobRequest job);
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/jobs/{guid}")]
         JobResponse GetJob(string guid);
 
         [OperationContract]
-        [WebInvoke(Method = HttpMethod.Post, UriTemplate = "/queues/{queue}/jobs")]
-        JobResponse SubmitJob(string queue, JobRequest job);
+        [WebGet(UriTemplate = "/jobs/{guid}")]
+        JobResponse CancelJob(string guid);
     }
 
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]

@@ -187,6 +187,11 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         JobInstance = Jobs | 0x0400,
 
+        /// <summary>
+        /// Job instance dependency
+        /// </summary>
+        JobInstanceDependency = Jobs | 0x0500,
+
         AllJobs = Jobs | 0xFFFF,
 
         #endregion

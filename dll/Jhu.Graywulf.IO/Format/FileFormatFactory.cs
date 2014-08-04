@@ -137,6 +137,16 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region File format description access functions
 
+        public bool IsMimeTypeSupported(string mimeType)
+        {
+            return filesByMimeType.ContainsKey(mimeType);
+        }
+
+        public bool IsExtensionSupported(string extension)
+        {
+            return filesByExtension.ContainsKey(extension);
+        }
+
         public DataFileBase CreateFile(Uri uri, out string filename, out string extension, out DataFileCompression compression)
         {
             DataFileBase file;

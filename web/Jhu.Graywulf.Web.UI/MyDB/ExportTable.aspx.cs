@@ -85,7 +85,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             var ej = new ExportJob()
             {
                 Tables = tables,
-                FileFormatType = FileFormat.SelectedValue,
+                ContentType = FileFormat.SelectedValue,
                 Uri = Jhu.Graywulf.Util.UriConverter.FromFilePath(path),
                 Queue = JobQueue.Long,
                 Comments = "",

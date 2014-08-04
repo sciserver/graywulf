@@ -90,6 +90,7 @@
     </Compile>
     <Compile Include="IO\BufferedTextReader.cs" />
     <Compile Include="IO\Constants.cs" />
+    <Compile Include="IO\Credentials.cs" />
     <Compile Include="IO\DetachedStream.cs" />
     <Compile Include="IO\Enum.cs" />
     <Compile Include="IO\IArchiveEntry.cs" />

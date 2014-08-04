@@ -12,11 +12,11 @@ namespace Jhu.Graywulf.Util
         {
             if (path.StartsWith(@"\\") || path.StartsWith(@"//"))
             {
-                return new Uri(String.Format("file:{0}", path.Replace('\\', '/')));
+                return new Uri(String.Format("{0}:", Uri.UriSchemeFile, Uri.SchemeDelimiter, path.Replace('\\', '/')));
             }
             if (Path.IsPathRooted(path))
             {
-                return new Uri(String.Format("file:///{0}", path.Replace('\\', '/')));
+                return new Uri(String.Format("{0}{1}/{2}", Uri.UriSchemeFile, Uri.SchemeDelimiter, path.Replace('\\', '/')));
             }
             else
             {

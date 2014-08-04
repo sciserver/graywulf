@@ -73,8 +73,6 @@ namespace Jhu.Graywulf.Web.Api.V1
                 xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Jobs.Constants.JobParameterQuery].XmlValue);
 
                 this.query = GetXmlInnerText(xml, "Query/QueryString");
-                //jobDescription.SchemaName = GetXmlInnerText(xml, "Query/Destination/SchemaName");
-                //jobDescription.ObjectName = GetXmlInnerText(xml, "Query/Destination/TableName");
             }
             else
             {

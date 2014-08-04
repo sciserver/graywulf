@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         #region Private member variables
 
         private string[] tables;
-        private string fileFormatType;
+        private string mimeType;
         private Uri uri;
 
         #endregion
@@ -32,11 +32,11 @@ namespace Jhu.Graywulf.Web.Api.V1
             set { tables = value; }
         }
 
-        [DataMember(Name = "fileFormat")]
-        public string FileFormatType
+        [DataMember(Name = "mimeType")]
+        public string ContentType
         {
-            get { return fileFormatType; }
-            set { fileFormatType = value; }
+            get { return mimeType; }
+            set { mimeType = value; }
         }
 
         [DataMember(Name = "uri")]
@@ -52,6 +52,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         /// <remarks>
         /// Used to display list of tables on the web UI.
         /// </remarks>
+        [IgnoreDataMember]
         public string TableList
         {
             get
@@ -97,7 +98,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             base.Type = JobType.Export;
 
             this.tables = null;
-            this.fileFormatType = null;
+            this.mimeType = null;
             this.uri = null;
         }
 
@@ -116,7 +117,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Jobs.Constants.JobParameterExport].XmlValue);
 
                 this.tables = new string[] { "xxx" };
-                this.fileFormatType = GetAttribute(xml, "/ExportTablesParameters/Destinations/DataFileBase", "z:Type");
+                this.mimeType = GetAttribute(xml, "/ExportTablesParameters/Destinations/DataFileBase", "z:Type");
                 this.uri = new Uri(GetXmlInnerText(xml, "ExportTablesParameters/Uri"));
 
                 // TODO:
@@ -148,7 +149,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 ts[i] = context.MyDBDataset.Tables[tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName];
             }
 
-            return ef.CreateParameters(context.Federation, ts, uri, fileFormatType, GetQueueName(context), Comments);
+            return ef.CreateParameters(context.Federation, ts, uri, mimeType, GetQueueName(context), Comments);
         }
 
         private string GetTableName(TableOrView table)

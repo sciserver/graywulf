@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Registry\AppSettings.cs" />
+    <Compile Include="Registry\JobInstanceDependency.cs" />
     <Compile Include="Registry\IContextObject.cs" />
     <Compile Include="Registry\UserGroupMembership.cs" />
     <Compile Include="Registry\UserGroupMembership.io.cs" />

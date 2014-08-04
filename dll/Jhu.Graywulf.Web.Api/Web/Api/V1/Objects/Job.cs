@@ -298,6 +298,11 @@ namespace Jhu.Graywulf.Web.Api.V1
             throw new KeyNotFoundException();
         }
 
+        public virtual bool Validate()
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Schedule(FederationContext context)
         {
             throw new NotImplementedException();

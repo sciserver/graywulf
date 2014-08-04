@@ -45,15 +45,11 @@ namespace Jhu.Graywulf.IO
 
         #endregion
 
-        // TODO: add logic to handle user credentials
-
         private Uri uri;
+        private Credentials credentials;
         private DataFileMode mode;
         private DataFileCompression compression;
         private DataFileArchival archival;
-
-        private string userName;
-        private string password;
 
         /// <summary>
         /// Gets or sets the URI to open
@@ -62,6 +58,16 @@ namespace Jhu.Graywulf.IO
         {
             get { return uri; }
             set { uri = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the object holding credentials to authenticate
+        /// file access.
+        /// </summary>
+        public Credentials Credentials
+        {
+            get { return credentials; }
+            set { credentials = value; }
         }
 
         /// <summary>
@@ -91,23 +97,7 @@ namespace Jhu.Graywulf.IO
             set { archival = value; }
         }
 
-        /// <summary>
-        /// Gets or sets the username to access the URI
-        /// </summary>
-        public string UserName
-        {
-            get { return userName; }
-            set { userName = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the password to access the URI
-        /// </summary>
-        public string Password
-        {
-            get { return password; }
-            set { password = value; }
-        }
+        #region Constructors and initialzers
 
         /// <summary>
         /// Initializes a new instance of the class
@@ -123,14 +113,48 @@ namespace Jhu.Graywulf.IO
         private void InitializeMembers()
         {
             this.uri = null;
+            this.credentials = null;
             this.mode = DataFileMode.Read;
             this.compression = DataFileCompression.Automatic;
             this.archival = DataFileArchival.Automatic;
-
-            this.userName = null;
-            this.password = null;
         }
 
+        #endregion
+        #region Uri verification
+
+        /// <summary>
+        /// Returns true if the URI is safe for general user access.
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>As most operations run under a service account, user access
+        /// to the file system is needs to be controlled manually. This function
+        /// returns false for all URIs targeting the file system.</remarks>
+        public virtual bool IsUriSchemeSafe(Uri uri)
+        {
+            if (uri.IsFile || !uri.IsAbsoluteUri)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public virtual bool IsUriSchemeSupported(Uri uri)
+        {
+            var c = StringComparer.InvariantCultureIgnoreCase;
+
+            if (c.Compare(uri.Scheme, Uri.UriSchemeFile) == 0 ||
+                c.Compare(uri.Scheme, Uri.UriSchemeHttp) == 0 ||
+                c.Compare(uri.Scheme, Uri.UriSchemeHttps) == 0 ||
+                c.Compare(uri.Scheme, Uri.UriSchemeFtp) == 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
         #region Public methods to open a stream
 
         /// <summary>
@@ -202,7 +226,7 @@ namespace Jhu.Graywulf.IO
             {
                 throw new FileFormatException("Unknown protocol.");      // TODO
             }
-            
+
             // Check if compressed and wrap in compressed stream reader
             stream = WrapCompressedStreamForRead(stream);
 
@@ -443,9 +467,21 @@ namespace Jhu.Graywulf.IO
             // TODO: add authentication
 
             var req = WebRequest.Create(uri);
-            req.Credentials = GetCredentials();
+
+            if (credentials != null)
+            {
+                req.UseDefaultCredentials = false;
+                req.Credentials = credentials.GetNetworkCredentials();
+
+                req.Headers = credentials.GetWebHeaders();
+            }
+            else
+            {
+                req.UseDefaultCredentials = true;
+            }
+
             var res = req.GetResponse();
-            
+
             return res.GetResponseStream();
         }
 
@@ -459,7 +495,16 @@ namespace Jhu.Graywulf.IO
             // TODO: add write logic: how to write FTP
 
             var req = FtpWebRequest.Create(uri);
-            req.Credentials = GetCredentials();
+
+            if (credentials != null)
+            {
+                req.Credentials = credentials.GetNetworkCredentials();
+            }
+            else
+            {
+                req.UseDefaultCredentials = true;
+            }
+
             var res = req.GetResponse();
 
             return res.GetResponseStream();
@@ -467,23 +512,6 @@ namespace Jhu.Graywulf.IO
 
         #endregion
         #region Utility functions
-
-        /// <summary>
-        /// Gets username and password as network credentials for HTTP, FTP etc.
-        /// </summary>
-        /// <returns></returns>
-        private ICredentials GetCredentials()
-        {
-            // TODO: Hopefully credentials from URIs are read automatically, test
-            if (userName != null)
-            {
-                return new NetworkCredential(userName, password);
-            }
-            else
-            {
-                return new NetworkCredential("anonymous", "anonymous@");
-            }
-        }
 
         /// <summary>
         /// If compression is set to automatic, figures out compression

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 
@@ -91,6 +92,31 @@ namespace Jhu.Graywulf.Util
             {
                 return source.Select(i => new KeyValuePair<TKey, TValue>(i.Key, (TValue)i.Value.Clone()));
             }
+        }
+
+        public static Dictionary<TKey, TValue> CloneDictionary<TKey, TValue>(Dictionary<TKey, TValue> source)
+            where TValue : ICloneable
+        {
+            if (source == null)
+            {
+                return null;
+            }
+            else
+            {
+                var coll = new Dictionary<TKey, TValue>(source.Comparer);
+
+                foreach (var i in source)
+                {
+                    coll.Add(i.Key, (TValue)i.Value.Clone());
+                }
+
+                return coll;
+            }
+        }
+
+        public static NameValueCollection CloneNameValueCollection(NameValueCollection source)
+        {
+            return new NameValueCollection(source);
         }
     }
 }

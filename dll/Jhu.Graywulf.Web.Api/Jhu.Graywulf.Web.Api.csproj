@@ -87,8 +87,10 @@
     <Compile Include="Web\Api\V1\Enum.cs" />
     <Compile Include="Web\Api\V1\JobFactory.cs" />
     <Compile Include="Web\Api\V1\Objects\Column.cs" />
+    <Compile Include="Web\Api\V1\Objects\Credentials.cs" />
     <Compile Include="Web\Api\V1\Objects\Dataset.cs" />
     <Compile Include="Web\Api\V1\Objects\ExportJob.cs" />
+    <Compile Include="Web\Api\V1\Objects\Headers.cs" />
     <Compile Include="Web\Api\V1\Objects\ImportJob.cs" />
     <Compile Include="Web\Api\V1\Objects\Job.cs" />
     <Compile Include="Web\Api\V1\Objects\QueryJob.cs" />
