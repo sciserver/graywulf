@@ -178,6 +178,7 @@
     <Compile Include="Web\Security\GraywulfIdentity.cs" />
     <Compile Include="Web\Security\GraywulfPrincipal.cs" />
     <Compile Include="Web\Security\KeystoneAuthenticator.cs" />
+    <Compile Include="Web\Security\KeystoneIdentityProviderSettings.cs" />
     <Compile Include="Web\Security\OpenIDAuthenticator.cs">
       <SubType>Code</SubType>
     </Compile>

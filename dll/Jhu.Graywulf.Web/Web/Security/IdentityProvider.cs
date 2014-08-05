@@ -6,6 +6,7 @@ using System.Xml.Serialization;
 using System.Runtime.Serialization;
 using System.Web;
 using System.Web.Security;
+using System.Reflection;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
@@ -65,8 +66,20 @@ namespace Jhu.Graywulf.Web.Security
 
         public static IdentityProvider Create(Domain domain)
         {
-            // TODO: make this a plugin here
-            return new GraywulfIdentityProvider(domain.Context);
+            Type type = null;
+
+            if (!String.IsNullOrWhiteSpace(domain.IdentityProvider))
+            {
+                type = Type.GetType(domain.IdentityProvider);
+            }
+
+            // Fall back logic if config is invalid
+            if (type == null)
+            {
+                type = typeof(GraywulfIdentityProvider);
+            }
+
+            return (IdentityProvider)Activator.CreateInstance(type, new object [] { domain });
         }
 
         /// <summary>

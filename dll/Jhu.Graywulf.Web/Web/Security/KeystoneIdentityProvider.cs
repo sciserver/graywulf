@@ -15,65 +15,14 @@ namespace Jhu.Graywulf.Web.Security
     {
         #region Private member variables
 
-        private string authorityName;
-        private Uri keystoneBaseUri;
-        private string keystoneAdminToken;
-        private string keystoneDomainID;
-        private string authTokenParameter;
-        private string authTokenHeader;
+        private KeystoneIdentityProviderSettings settings;
 
         #endregion
         #region Properties
 
-        /// <summary>
-        /// Gets or sets the name of the authority providing
-        /// the Keystone service
-        /// </summary>
-        public string AuthorityName
+        public KeystoneIdentityProviderSettings Settings
         {
-            get { return authorityName; }
-            set { authorityName = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the base URL of the Keystone service
-        /// </summary>
-        public Uri KeystoneBaseUri
-        {
-            get { return keystoneBaseUri; }
-            set { keystoneBaseUri = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the token identifying the administrator
-        /// of the Keystone service.
-        /// </summary>
-        public string KeystoneAdminToken
-        {
-            get { return keystoneAdminToken; }
-            set { keystoneAdminToken = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the Keystone domain associated with the
-        /// Graywulf domain
-        /// </summary>
-        public string KeystoneDomainID
-        {
-            get { return keystoneDomainID; }
-            set { keystoneDomainID = value; }
-        }
-
-        public string AuthTokenParameter
-        {
-            get { return authTokenParameter; }
-            set { authTokenParameter = value; }
-        }
-
-        public string AuthTokenHeader
-        {
-            get { return authTokenHeader; }
-            set { authTokenHeader = value; }
+            get { return settings; }
         }
 
         /// <summary>
@@ -83,9 +32,9 @@ namespace Jhu.Graywulf.Web.Security
         {
             get
             {
-                return new Keystone.KeystoneClient(keystoneBaseUri)
+                return new Keystone.KeystoneClient(settings.KeystoneBaseUri)
                 {
-                    AdminAuthToken = this.keystoneAdminToken,
+                    AdminAuthToken = settings.KeystoneAdminToken,
                 };
             }
         }
@@ -93,19 +42,17 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region Constructors and initializers
 
-        public KeystoneIdentityProvider(Context context)
-            : base(context)
+        public KeystoneIdentityProvider(Domain domain)
+            : base(domain)
         {
             InitializeMembers();
+
+            settings = (KeystoneIdentityProviderSettings)domain.Settings[Constants.SettingsKeystone].Value;
         }
 
         private void InitializeMembers()
         {
-            this.authorityName = Constants.AuthorityNameKeystone;
-            this.keystoneBaseUri = new Uri(Constants.KeystoneDefaultUri);
-            this.keystoneAdminToken = null;
-            this.authTokenParameter = Constants.KeystoneDefaultAuthTokenParameter;
-            this.authTokenHeader = Constants.KeystoneDefaultAuthTokenHeader;
+            this.settings = new KeystoneIdentityProviderSettings();
         }
 
         #endregion
@@ -120,7 +67,7 @@ namespace Jhu.Graywulf.Web.Security
             var keystoneUser = new Keystone.User()
             {
                 Name = graywulfUser.Name,
-                DomainID = keystoneDomainID,
+                DomainID = settings.KeystoneDomainID,
                 Description = graywulfUser.Comments,
                 Email = graywulfUser.Email,
                 Enabled = graywulfUser.DeploymentState == DeploymentState.Deployed,
@@ -170,7 +117,7 @@ namespace Jhu.Graywulf.Web.Security
         /// <returns></returns>
         private string GetIdentityName(User user)
         {
-            return String.Format("{0}_{1}", authorityName, user.Name);
+            return String.Format("{0}_{1}", settings.AuthorityName, user.Name);
         }
 
         #region User account manipulation
@@ -188,7 +135,7 @@ namespace Jhu.Graywulf.Web.Security
         public override User GetUser(string username)
         {
             // Try to get user from Keystone
-            var users = KeystoneClient.FindUsers(keystoneDomainID, username, false, false);
+            var users = KeystoneClient.FindUsers(settings.KeystoneDomainID, username, false, false);
 
             if (users == null || users.Length != 1)
             {
@@ -224,7 +171,7 @@ namespace Jhu.Graywulf.Web.Security
             {
                 Name = GetIdentityName(user),
                 Protocol = Constants.ProtocolNameKeystone,
-                Authority = keystoneBaseUri.ToString(),
+                Authority = settings.KeystoneBaseUri.ToString(),
                 Identifier = keystoneUser.Links.Self
             };
 
@@ -252,7 +199,7 @@ namespace Jhu.Graywulf.Web.Security
         public override bool IsNameExisting(string username)
         {
             // Try to get user from Keystone
-            var users = KeystoneClient.FindUsers(keystoneDomainID, username, false, false);
+            var users = KeystoneClient.FindUsers(settings.KeystoneDomainID, username, false, false);
 
             return users != null && users.Length > 0;
         }
@@ -294,15 +241,15 @@ namespace Jhu.Graywulf.Web.Security
             // Verify user password in Keystone, we don't use
             // Graywulf password in this case
 
-            var token = KeystoneClient.Authenticate(keystoneDomainID, username, password);
+            var token = KeystoneClient.Authenticate(settings.KeystoneDomainID, username, password);
             var user = GetUser(token.User.Name);
 
             // Create a response and set necessary headers
 
             var response = CreateAuthenticationResponse(user);
 
-            response.QueryParameters.Add(authTokenParameter, token.ID);
-            response.Headers.Add(authTokenHeader, token.ID);
+            response.QueryParameters.Add(settings.AuthTokenParameter, token.ID);
+            response.Headers.Add(settings.AuthTokenHeader, token.ID);
             response.Cookies.Add(CreateFormsAuthenticationTicketCookie(user, createPersistentCookie));
 
             return response;

@@ -12,10 +12,9 @@ namespace Jhu.Graywulf.Web.Security
     {
         #region Constructors and initializers
 
-        public GraywulfIdentityProvider(Context context)
-            : base(context)
+        public GraywulfIdentityProvider(Domain domain)
+            : base(domain.Context)
         {
-
         }
 
         #endregion
