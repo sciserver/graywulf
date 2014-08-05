@@ -103,6 +103,24 @@ namespace Jhu.Graywulf.Web.Admin.Domain {
         protected global::System.Web.UI.WebControls.TextBox Disclaimer;
         
         /// <summary>
+        /// IdentityProviderLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label IdentityProviderLabel;
+        
+        /// <summary>
+        /// IdentityProvider control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox IdentityProvider;
+        
+        /// <summary>
         /// AuthenticatorFactoryLabel control.
         /// </summary>
         /// <remarks>

@@ -25,6 +25,7 @@ namespace Jhu.Graywulf.Web.Admin.Domain
 
             RefreshStandardUserGroupList();
 
+            IdentityProvider.Text = Item.IdentityProvider;
             AuthenticatorFactory.Text = Item.AuthenticatorFactory;
             ShortTitle.Text = Item.ShortTitle;
             LongTitle.Text = Item.LongTitle;
@@ -43,6 +44,7 @@ namespace Jhu.Graywulf.Web.Admin.Domain
         {
             base.OnSaveForm();
 
+            Item.IdentityProvider = IdentityProvider.Text;
             Item.AuthenticatorFactory = AuthenticatorFactory.Text;
             Item.ShortTitle = ShortTitle.Text;
             Item.LongTitle = LongTitle.Text;

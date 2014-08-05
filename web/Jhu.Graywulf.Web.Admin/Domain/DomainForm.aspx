@@ -45,6 +45,14 @@
         </tr>
         <tr>
             <td class="FormLabel">
+                <asp:Label ID="IdentityProviderLabel" runat="server" Text="Identity Provider:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:TextBox ID="IdentityProvider" runat="server" />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabel">
                 <asp:Label ID="AuthenticatorFactoryLabel" runat="server" Text="Authenticator Factory:"></asp:Label>
             </td>
             <td class="FormField">
