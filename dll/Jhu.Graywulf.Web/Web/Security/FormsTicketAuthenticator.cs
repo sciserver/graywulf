@@ -68,7 +68,6 @@ namespace Jhu.Graywulf.Web.Security
                     // Create a GraywulfPrincipal based on the ticket.
                     response.SetPrincipal(CreatePrincipal(oldToken));
 
-#if false // TODO: this is ticket renewal logic. It is removed because no way to send cookies back now.
                     // Read the ticket from the token and renew it if sliding expiration is turned on
                     var ticket = oldToken;
                     if (FormsAuthentication.SlidingExpiration)
@@ -123,14 +122,8 @@ namespace Jhu.Graywulf.Web.Security
                             cookie.Domain = FormsAuthentication.CookieDomain;
                         }
 
-                        // Remove old cookie and set new one
-                        // TODO: this doesn't work with web services, so it is removed temporarily
-                        /*
-                        httpContext.Response.Cookies.Remove(cookie.Name);
-                        httpContext.Response.Cookies.Add(cookie);
-                         * */
+                        response.Cookies.Add(cookie);
                     }
-#endif
                 }
             }
 
