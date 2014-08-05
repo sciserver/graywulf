@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Activate.aspx" />
+    <Content Include="Api\Auth.svc" />
     <Content Include="App_Themes\Basic\Css\codemirror.css" />
     <Content Include="App_Themes\Basic\Css\docs.css" />
     <Content Include="App_Themes\Basic\Css\fonts.css" />
@@ -198,6 +199,10 @@
       <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
       <Name>Jhu.Graywulf.Registry</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web.Api\Jhu.Graywulf.Web.Api.csproj">
+      <Project>{975EE996-A41B-4C73-8562-E2B2035E8899}</Project>
+      <Name>Jhu.Graywulf.Web.Api</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
       <Project>{E9D182CF-746E-4E40-B01C-74A32FB70749}</Project>
       <Name>Jhu.Graywulf.Web</Name>
@@ -213,6 +218,7 @@
     <Content Include="App_Masters\Basic.master" />
     <Content Include="App_Themes\Basic\Basic.skin" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <ProjectExtensions>

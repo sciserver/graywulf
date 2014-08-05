@@ -79,12 +79,13 @@ namespace Jhu.Graywulf.Web.Security
         /// Calls all registered request authenticators
         /// </summary>
         /// <param name="context"></param>
-        protected virtual void Authenticate(AuthenticationRequest request)
+        protected virtual AuthenticationResponse Authenticate(AuthenticationRequest request)
         {
             // See if we can use the principal as it is, otherwise try
             // other authentication methods
 
-            var principal = DispatchPrincipal(request.EstablishedPrincipal);
+            var response = new AuthenticationResponse();
+            response.SetPrincipal(DispatchPrincipal(request.Principal));
 
             // If user is not authenticated yet, try to authenticate them now using
             // various types of authenticators
@@ -92,24 +93,25 @@ namespace Jhu.Graywulf.Web.Security
             // This is the time to execute other custom authenticators.
             // Call base class method to go through all authentication methods
 
-            if (principal == null && authenticators != null)
+            if (response.Principal == null && authenticators != null)
             {
                 // Try each authentication protocol
-                for (int i = 0; principal == null && i < authenticators.Length; i++)
+                for (int i = 0; response.Principal == null && i < authenticators.Length; i++)
                 {
-                    principal = authenticators[i].Authenticate(request);
+                    response = authenticators[i].Authenticate(request);
                 }
             }
 
-            if (principal != null)
+            if (response.Principal != null)
             {
                 // Associate user identified by the authentication method with a Graywulf user
+                var principal = response.Principal;
+                
                 LoadUser(ref principal);
+                response.SetPrincipal(principal);
 
                 // Report user as authenticated
-                OnAuthenticated(principal);
-
-                return;
+                OnAuthenticated(response);
             }
             else
             {
@@ -122,9 +124,11 @@ namespace Jhu.Graywulf.Web.Security
 
                 OnAuthenticationFailed();
             }
+
+            return response;
         }
 
-        protected abstract void OnAuthenticated(GraywulfPrincipal principal);
+        protected abstract void OnAuthenticated(AuthenticationResponse response);
 
         protected abstract void OnAuthenticationFailed();
 

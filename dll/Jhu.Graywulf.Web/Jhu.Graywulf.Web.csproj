@@ -160,6 +160,7 @@
     <Compile Include="Web\Security\AuthenticationModuleBase.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Web\Security\AuthenticationResponse.cs" />
     <Compile Include="Web\Security\Authenticator.cs" />
     <Compile Include="Web\Security\Enum.cs" />
     <Compile Include="Web\Security\ExceptionMessages.Designer.cs">

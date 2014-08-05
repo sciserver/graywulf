@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         Message GetTable(string datasetName, string tableName, string top);
 
         [OperationContract]
-        [WebInvoke(Method="PUT", UriTemplate = "/{datasetName}/{tableName}")]
+        [WebInvoke(Method=HttpMethod.Put, UriTemplate = "/{datasetName}/{tableName}")]
         void UploadTable(string datasetName, string tableName, Stream data);
     }
 

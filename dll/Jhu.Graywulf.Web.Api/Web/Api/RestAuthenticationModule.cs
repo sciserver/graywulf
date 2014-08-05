@@ -64,17 +64,23 @@ namespace Jhu.Graywulf.Web.Api
         {
             // (1.) Called before the WCF operation is invoked
 
-            Authenticate(new AuthenticationRequest(WebOperationContext.Current.IncomingRequest));
+            try
+            {
+                var response = Authenticate(new AuthenticationRequest(WebOperationContext.Current.IncomingRequest));
 
-            // TODO: session handling could be added here, if necessary
-            // would be nice to detect user arrival, etc.
+                // TODO: session handling could be added here, if necessary
+                // would be nice to detect user arrival, etc.
 
+                // The return value is passed to BeforeSendReply
+                return response;
+            }
+            catch (Exception ex)
+            {
+                // Wrap everything into a fault exception so that it
+                // is returned to the client nicely packed.
 
-            // TODO: wrap everything into a fault exception so that it is returned to the client nicely
-            // packed.
-
-            // The return value is passes to BeforeSendReply
-            return null;
+                throw new WebFaultException<Exception>(ex, System.Net.HttpStatusCode.InternalServerError);
+            }
         }
 
         public object BeforeCall(string operationName, object[] inputs)
@@ -97,15 +103,21 @@ namespace Jhu.Graywulf.Web.Api
         {
             // (4.)
 
-            // Required by the interface, not used
-            // This call could be used to pass cookies to the client
+            var context = WebOperationContext.Current;
+            var response = (AuthenticationResponse)correlationState;
+
+            // Set response headers and cookies
+            if (response != null)
+            {
+                response.SetResponseHeaders(context.OutgoingResponse);
+            }
         }
 
-        protected override void OnAuthenticated(GraywulfPrincipal principal)
+        protected override void OnAuthenticated(AuthenticationResponse response)
         {
             // (5.)  Called after successfull authentication
 
-            System.Threading.Thread.CurrentPrincipal = principal;
+            System.Threading.Thread.CurrentPrincipal = response.Principal;
         }
 
         protected override void OnAuthenticationFailed()

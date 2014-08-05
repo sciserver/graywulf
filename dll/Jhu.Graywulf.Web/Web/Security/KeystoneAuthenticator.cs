@@ -183,14 +183,14 @@ namespace Jhu.Graywulf.Web.Security
             graywulfDomainPrefix = name.Substring(idx + 1);
         }
 
-        public override GraywulfPrincipal Authenticate(AuthenticationRequest request)
+        public override AuthenticationResponse Authenticate(AuthenticationRequest request)
         {
             // Keystone tokens (in the simplest case) do not carry any detailed
             // information about the identity of the user. For this reason,
             // every token needs to be validated by calling the Keystone service.
             // To avoid doing this, we need to cache tokens.
 
-            GraywulfPrincipal principal = null;
+            var response = new AuthenticationResponse();
 
             // Look for a token in the request headers
             var tokenID = request.Headers[authTokenHeader];
@@ -227,10 +227,13 @@ namespace Jhu.Graywulf.Web.Security
                 }
 
                 // Create a GraywulfPrincipal based on the token
-                principal = CreatePrincipal(token);
+                response.SetPrincipal(CreatePrincipal(token));
+
+                // Set keystone header to send it back to the user
+                response.Headers.Add(authTokenHeader, tokenID);
             }
 
-            return principal;
+            return response;
         }
 
         private KeystoneClient CreateClient()

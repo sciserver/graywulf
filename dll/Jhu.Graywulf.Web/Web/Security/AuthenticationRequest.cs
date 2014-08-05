@@ -9,8 +9,15 @@ using System.Security.Principal;
 
 namespace Jhu.Graywulf.Web.Security
 {
+    /// <summary>
+    /// Conveys authentication information from the HTTP requests
+    /// to the authenticator classes. Provides a unified view of
+    /// WCF web services and ASP.NET applications.
+    /// </summary>
     public class AuthenticationRequest
     {
+        #region Private member variables
+
         private Uri uri;
         private NameValueCollection queryString;
         private NameValueCollection headers;
@@ -20,7 +27,10 @@ namespace Jhu.Graywulf.Web.Security
         /// Holds the principal established so far during the processing of
         /// the request.
         /// </summary>
-        private IPrincipal establishedPrincipal;
+        private IPrincipal principal;
+
+        #endregion
+        #region Properties
 
         public NameValueCollection QueryString
         {
@@ -37,11 +47,12 @@ namespace Jhu.Graywulf.Web.Security
             get { return cookies; }
         }
 
-        public IPrincipal EstablishedPrincipal
+        public IPrincipal Principal
         {
-            get { return establishedPrincipal; }
+            get { return principal; }
         }
 
+        #endregion
         #region Constructors and initializers
 
         public AuthenticationRequest(System.Web.HttpContext context)
@@ -54,7 +65,7 @@ namespace Jhu.Graywulf.Web.Security
             this.queryString = request.QueryString;
             this.headers = request.Headers;
             this.cookies = request.Cookies;
-            this.establishedPrincipal = context.User;
+            this.principal = context.User;
         }
 
         public AuthenticationRequest(System.ServiceModel.Web.IncomingWebRequestContext request)
@@ -77,7 +88,7 @@ namespace Jhu.Graywulf.Web.Security
             this.queryString = null;
             this.headers = null;
             this.cookies = null;
-            this.establishedPrincipal = null;
+            this.principal = null;
         }
 
         #endregion

@@ -150,14 +150,15 @@ namespace Jhu.Graywulf.Web.Auth
 
             if (key != null)
             {
-                var a = CreateAuthenticator(key);
+                var authenticator = CreateAuthenticator(key);
 
                 Session[Constants.SessionAuthenticator] = null;
 
-                var principal = a.Authenticate(new AuthenticationRequest(HttpContext.Current));
-                if (principal != null)
+                var response = authenticator.Authenticate(new AuthenticationRequest(HttpContext.Current));
+                
+                if (response.Principal != null)
                 {
-                    var identity = (GraywulfIdentity)principal.Identity;
+                    var identity = (GraywulfIdentity)response.Principal.Identity;
                     
                     identity.LoadUser();
                     
@@ -176,9 +177,8 @@ namespace Jhu.Graywulf.Web.Auth
                         // from them could automatically registered without being
                         // sent to the user form.
 
-                        TemporaryPrincipal = principal;
+                        TemporaryPrincipal = response.Principal;
                     }
-
                 }
             }
         }
@@ -204,6 +204,8 @@ namespace Jhu.Graywulf.Web.Auth
 
         private void RedirectAuthenticatedUser(Registry.User user)
         {
+            // TODO return cookies and headers here
+
             if (user.IsActivated)
             {
                 Response.Redirect(Activate.GetUrl(ReturnUrl));

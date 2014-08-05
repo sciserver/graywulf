@@ -99,7 +99,7 @@ namespace Jhu.Graywulf.Web.Security
         /// and if succeeds, returns a principal identifying the user.
         /// </summary>
         /// <returns></returns>
-        public abstract GraywulfPrincipal Authenticate(AuthenticationRequest request);
+        public abstract AuthenticationResponse Authenticate(AuthenticationRequest request);
 
         /// <summary>
         /// Create a Graywulf principal with a pre-initialized identity

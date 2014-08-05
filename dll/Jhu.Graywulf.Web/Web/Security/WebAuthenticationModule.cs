@@ -86,13 +86,22 @@ namespace Jhu.Graywulf.Web.Security
             Authenticate(new AuthenticationRequest(HttpContext.Current));
         }
 
-        protected override void OnAuthenticated(GraywulfPrincipal principal)
+        protected override void OnAuthenticated(AuthenticationResponse response)
         {
             // (2.) Called after successfull authentication
 
+            var context = HttpContext.Current;
+
             // Assign principal to both thread and HTTP contexts
-            System.Threading.Thread.CurrentPrincipal = principal;
-            HttpContext.Current.User = principal;
+            System.Threading.Thread.CurrentPrincipal = response.Principal;
+            context.User = response.Principal;
+
+            // Save authentication response for later
+            // we cannot write headers here because this step is called for
+            // WCF services but we want to write WCF headers from the
+            // REST authentication module
+
+            context.Items[Constants.HttpContextAuthenticationResponse] = response;
         }
 
         protected override void OnAuthenticationFailed()
@@ -117,8 +126,16 @@ namespace Jhu.Graywulf.Web.Security
         private void OnPostAuthenticateRequest(object sender, EventArgs e)
         {
             // (4.) Called after the web request is authenticated
-            
-            // Required by the interface implementation
+
+            var context = HttpContext.Current;
+            var response = (AuthenticationResponse)context.Items[Constants.HttpContextAuthenticationResponse];
+
+            // Write out headers set by authenticators
+
+            if (response != null)
+            {
+                response.SetResponseHeaders(context.Response);
+            }
         }
 
         private void OnPostAcquireRequestState(object sender, EventArgs e)
