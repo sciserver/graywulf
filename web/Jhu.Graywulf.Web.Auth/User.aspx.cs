@@ -61,18 +61,20 @@ namespace Jhu.Graywulf.Web.Auth
 
         private void CreateUser()
         {
+            var ip = IdentityProvider.Create(RegistryContext.Domain);
+
             user.Name = Username.Text.Trim();
-            IdentityProvider.CreateUser(user);
-            IdentityProvider.ResetPassword(user, Password.Text);
+            ip.CreateUser(user);
+            ip.ResetPassword(user, Password.Text);
 
             // Set user activity status
-            if (IdentityProvider.IsActivationRequired)
+            if (ip.IsActivationRequired)
             {
-                IdentityProvider.DeactivateUser(user);
+                ip.DeactivateUser(user);
             }
             else
             {
-                IdentityProvider.ActivateUser(user);
+                ip.ActivateUser(user);
             }
 
             // If user signed in with a temporary identity
@@ -88,7 +90,8 @@ namespace Jhu.Graywulf.Web.Auth
 
         private void ModifyUser()
         {
-            IdentityProvider.ModifyUser(user);
+            var ip = IdentityProvider.Create(RegistryContext.Domain);
+            ip.ModifyUser(user);
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -131,7 +134,8 @@ namespace Jhu.Graywulf.Web.Auth
         {
             if (RegistryUser == null)
             {
-                args.IsValid = !IdentityProvider.IsNameExisting(args.Value);
+                var ip = IdentityProvider.Create(RegistryContext.Domain);
+                args.IsValid = !ip.IsNameExisting(args.Value);
             }
         }
 
@@ -139,7 +143,8 @@ namespace Jhu.Graywulf.Web.Auth
         {
             if (RegistryUser == null)
             {
-                args.IsValid = !IdentityProvider.IsEmailExisting(args.Value);
+                var ip = IdentityProvider.Create(RegistryContext.Domain);
+                args.IsValid = !ip.IsEmailExisting(args.Value);
             }
         }
 

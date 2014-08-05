@@ -169,7 +169,7 @@
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Web\Security\GraywulfIdentityProvider.cs" />
-    <Compile Include="Web\Security\IdentityProviderBase.cs" />
+    <Compile Include="Web\Security\IdentityProvider.cs" />
     <Compile Include="Web\Security\IdentityProviderException.cs" />
     <Compile Include="Web\Security\KeystoneIdentityProvider.cs" />
     <Compile Include="Web\Security\AuthenticatorFactory.cs" />

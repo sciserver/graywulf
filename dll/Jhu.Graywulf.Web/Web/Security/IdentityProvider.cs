@@ -8,7 +8,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
 {
-    public abstract class IdentityProviderBase
+    public abstract class IdentityProvider
     {
         #region Member Variables
 
@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Web.Security
         /// Default constructor that initializes private members to their
         /// defaul values.
         /// </summary>
-        protected IdentityProviderBase()
+        protected IdentityProvider()
         {
             InitializeMembers(new StreamingContext());
         }
@@ -54,11 +54,17 @@ namespace Jhu.Graywulf.Web.Security
         /// Constructor that creates an objects with a context set.
         /// </summary>
         /// <param name="context"></param>
-        protected IdentityProviderBase(Context context)
+        protected IdentityProvider(Context context)
         {
             InitializeMembers(new StreamingContext());
 
             this.context = context;
+        }
+
+        public static IdentityProvider Create(Domain domain)
+        {
+            // TODO: make this a plugin here
+            return new GraywulfIdentityProvider(domain.Context);
         }
 
         /// <summary>

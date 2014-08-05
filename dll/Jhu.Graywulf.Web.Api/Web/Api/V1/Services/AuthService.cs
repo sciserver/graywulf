@@ -5,6 +5,7 @@ using System.Text;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Runtime.Serialization;
+using Jhu.Graywulf.Web.Security;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
@@ -20,9 +21,15 @@ namespace Jhu.Graywulf.Web.Api.V1
     [RestServiceBehavior]
     public class AuthService : RestServiceBase, IAuthService
     {
+
         public void Authenticate(AuthRequest authRequest)
         {
+            if (authRequest != null && authRequest.Auth != null)
+            {
+                var ip = IdentityProvider.Create(RegistryContext.Domain);
 
+                ip.VerifyPassword(authRequest.Auth.Username, authRequest.Auth.Password);
+            }
         }
     }
 }

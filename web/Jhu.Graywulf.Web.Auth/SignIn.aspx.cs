@@ -185,7 +185,9 @@ namespace Jhu.Graywulf.Web.Auth
 
         private void LoginUser()
         {
-            user = IdentityProvider.VerifyPassword(Username.Text, Password.Text);
+            var ip = IdentityProvider.Create(RegistryContext.Domain);
+
+            user = ip.VerifyPassword(Username.Text, Password.Text);
 
             RegistryContext.UserGuid = user.Guid;
             RegistryContext.UserName = user.Name;

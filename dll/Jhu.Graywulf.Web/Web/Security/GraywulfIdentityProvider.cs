@@ -6,7 +6,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
 {
-    public class GraywulfIdentityProvider : IdentityProviderBase
+    public class GraywulfIdentityProvider : IdentityProvider
     {
         #region Constructors and initializers
 

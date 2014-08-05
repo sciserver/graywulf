@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Web.Security;
 
 namespace Jhu.Graywulf.Web.Auth
 {
@@ -22,8 +23,10 @@ namespace Jhu.Graywulf.Web.Auth
         {
             try
             {
-                user = IdentityProvider.GetUserByActivationCode(code);
-                IdentityProvider.ActivateUser(user);
+                var ip = IdentityProvider.Create(RegistryContext.Domain);
+
+                user = ip.GetUserByActivationCode(code);
+                ip.ActivateUser(user);
 
                 return true;
             }
