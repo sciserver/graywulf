@@ -106,14 +106,17 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region Password functions
 
-        public override User VerifyPassword(string username, string password)
+        public override AuthenticationResponse VerifyPassword(string username, string password, bool createPersistentCookie)
         {
             try
             {
                 var uf = new UserFactory(Context);
                 var user = uf.LoginUser(Context.Domain, username, password);
 
-                return user;
+                // Create a response with no headers set because
+                // forms authentication will set the cookie
+
+                return CreateAuthenticationResponse(user);
             }
             catch (Exception ex)
             {
@@ -123,7 +126,7 @@ namespace Jhu.Graywulf.Web.Security
 
         public override void ChangePassword(User user, string oldPassword, string newPassword)
         {
-            VerifyPassword(user.Name, oldPassword);
+            VerifyPassword(user.Name, oldPassword, false);
             ResetPassword(user, newPassword);
         }
 

@@ -19,6 +19,8 @@ namespace Jhu.Graywulf.Web.Security
         private Uri keystoneBaseUri;
         private string keystoneAdminToken;
         private string keystoneDomainID;
+        private string authTokenParameter;
+        private string authTokenHeader;
 
         #endregion
         #region Properties
@@ -62,6 +64,18 @@ namespace Jhu.Graywulf.Web.Security
             set { keystoneDomainID = value; }
         }
 
+        public string AuthTokenParameter
+        {
+            get { return authTokenParameter; }
+            set { authTokenParameter = value; }
+        }
+
+        public string AuthTokenHeader
+        {
+            get { return authTokenHeader; }
+            set { authTokenHeader = value; }
+        }
+
         /// <summary>
         /// Gets a configures Keystone client class.
         /// </summary>
@@ -90,6 +104,8 @@ namespace Jhu.Graywulf.Web.Security
             this.authorityName = Constants.AuthorityNameKeystone;
             this.keystoneBaseUri = new Uri(Constants.KeystoneDefaultUri);
             this.keystoneAdminToken = null;
+            this.authTokenParameter = Constants.KeystoneDefaultAuthTokenParameter;
+            this.authTokenHeader = Constants.KeystoneDefaultAuthTokenHeader;
         }
 
         #endregion
@@ -273,14 +289,23 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region Password functions
 
-        public override User VerifyPassword(string username, string password)
+        public override AuthenticationResponse VerifyPassword(string username, string password, bool createPersistentCookie)
         {
             // Verify user password in Keystone, we don't use
             // Graywulf password in this case
 
             var token = KeystoneClient.Authenticate(keystoneDomainID, username, password);
+            var user = GetUser(token.User.Name);
 
-            return base.GetUser(token.User.Name);
+            // Create a response and set necessary headers
+
+            var response = CreateAuthenticationResponse(user);
+
+            response.QueryParameters.Add(authTokenParameter, token.ID);
+            response.Headers.Add(authTokenHeader, token.ID);
+            response.Cookies.Add(System.Web.Security.FormsAuthentication.GetAuthCookie(user.GetFullyQualifiedName(), createPersistentCookie));
+
+            return response;
         }
 
         public override void ChangePassword(User user, string oldPassword, string newPassword)
@@ -298,6 +323,6 @@ namespace Jhu.Graywulf.Web.Security
         }
 
         #endregion
-        
+
     }
 }

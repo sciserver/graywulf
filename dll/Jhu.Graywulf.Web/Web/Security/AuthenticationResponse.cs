@@ -20,6 +20,7 @@ namespace Jhu.Graywulf.Web.Security
         #region Private member variables
 
         private bool success;
+        private NameValueCollection queryParameters;
         private NameValueCollection headers;
         private HttpCookieCollection cookies;
         private GraywulfPrincipal principal;
@@ -30,6 +31,11 @@ namespace Jhu.Graywulf.Web.Security
         public bool Success
         {
             get { return success; }
+        }
+
+        public NameValueCollection QueryParameters
+        {
+            get { return queryParameters; }
         }
 
         public NameValueCollection Headers
@@ -58,6 +64,7 @@ namespace Jhu.Graywulf.Web.Security
         private void InitializeMembers()
         {
             this.success = false;
+            this.queryParameters = new NameValueCollection();
             this.headers = new NameValueCollection();
             this.cookies = new HttpCookieCollection();
             this.principal = null;

@@ -186,14 +186,15 @@ namespace Jhu.Graywulf.Web.Auth
         private void LoginUser()
         {
             var ip = IdentityProvider.Create(RegistryContext.Domain);
+            var response = ip.VerifyPassword(Username.Text, Password.Text, Remember.Checked);
 
-            user = ip.VerifyPassword(Username.Text, Password.Text);
+            // Get user from the response
+            user = response.Principal.Identity.User;
 
             RegistryContext.UserGuid = user.Guid;
             RegistryContext.UserName = user.Name;
 
-            // If there's any temporary identifier set, associate
-            // with the user
+            // If there's any temporary identifier set, associate with the user
             if (TemporaryPrincipal != null)
             {
                 var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;

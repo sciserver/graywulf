@@ -163,7 +163,7 @@ namespace Jhu.Graywulf.Web.Security
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public abstract User VerifyPassword(string username, string password);
+        public abstract AuthenticationResponse VerifyPassword(string username, string password, bool createPersistentCookie);
 
         /// <summary>
         /// Changes a user's password.
@@ -202,5 +202,23 @@ namespace Jhu.Graywulf.Web.Security
 
         #endregion
 
+        protected AuthenticationResponse CreateAuthenticationResponse(User user)
+        {
+            var identity = new GraywulfIdentity()
+            {
+                Protocol = Constants.ProtocolNameForms,
+                Identifier = user.GetFullyQualifiedName(),
+                IsAuthenticated = true,
+                IsMasterAuthority = true,
+                User = user,
+            };
+
+            var principal = new GraywulfPrincipal(identity);
+            var response = new AuthenticationResponse();
+
+            response.SetPrincipal(principal);
+
+            return response;
+        }
     }
 }

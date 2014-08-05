@@ -24,11 +24,21 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         public void Authenticate(AuthRequest authRequest)
         {
+            var principal = System.Threading.Thread.CurrentPrincipal as GraywulfPrincipal;
+
             if (authRequest != null && authRequest.Auth != null)
             {
                 var ip = IdentityProvider.Create(RegistryContext.Domain);
+                var response = ip.VerifyPassword(authRequest.Auth.Username, authRequest.Auth.Password, false);
 
-                ip.VerifyPassword(authRequest.Auth.Username, authRequest.Auth.Password);
+                principal = response.Principal;
+
+                // set headers here if necessary
+            }
+
+            if (principal == null || !principal.Identity.IsAuthenticated)
+            {
+                throw new System.Security.Authentication.AuthenticationException("Access denied");  // TODO
             }
         }
     }
