@@ -303,7 +303,7 @@ namespace Jhu.Graywulf.Web.Security
 
             response.QueryParameters.Add(authTokenParameter, token.ID);
             response.Headers.Add(authTokenHeader, token.ID);
-            response.Cookies.Add(System.Web.Security.FormsAuthentication.GetAuthCookie(user.GetFullyQualifiedName(), createPersistentCookie));
+            response.Cookies.Add(CreateFormsAuthenticationTicketCookie(user, createPersistentCookie));
 
             return response;
         }

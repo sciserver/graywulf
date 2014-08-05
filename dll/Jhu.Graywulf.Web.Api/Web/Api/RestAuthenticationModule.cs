@@ -106,7 +106,10 @@ namespace Jhu.Graywulf.Web.Api
             var context = WebOperationContext.Current;
             var response = (AuthenticationResponse)correlationState;
 
-            // Set response headers and cookies
+            // Set response headers and cookies created by the authenticators
+            // This response doesn't contain any headers when authentication is
+            // done "manually" by service functions
+
             if (response != null)
             {
                 response.SetResponseHeaders(context.OutgoingResponse);

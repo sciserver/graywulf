@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
+using System.Web.Security;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
@@ -113,10 +115,16 @@ namespace Jhu.Graywulf.Web.Security
                 var uf = new UserFactory(Context);
                 var user = uf.LoginUser(Context.Domain, username, password);
 
-                // Create a response with no headers set because
-                // forms authentication will set the cookie
+                var response = CreateAuthenticationResponse(user);
 
-                return CreateAuthenticationResponse(user);
+                // If the HttpContext is null that means we are in a WCF session, so
+                // create the forms authentication ticket manually
+                if (HttpContext.Current == null)
+                {
+                    response.Cookies.Add(CreateFormsAuthenticationTicketCookie(user, createPersistentCookie));
+                }
+
+                return response;
             }
             catch (Exception ex)
             {

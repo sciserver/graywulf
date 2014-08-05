@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using System.Runtime.Serialization;
+using System.Web;
+using System.Web.Security;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
@@ -201,6 +203,11 @@ namespace Jhu.Graywulf.Web.Security
 #endif
 
         #endregion
+
+        protected HttpCookie CreateFormsAuthenticationTicketCookie(User user, bool createPersistentCookie)
+        {
+            return FormsAuthentication.GetAuthCookie(user.GetFullyQualifiedName(), createPersistentCookie);
+        }
 
         protected AuthenticationResponse CreateAuthenticationResponse(User user)
         {

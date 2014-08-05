@@ -33,7 +33,8 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                 principal = response.Principal;
 
-                // set headers here if necessary
+                // Set response headers based on authentication results
+                response.SetResponseHeaders(WebOperationContext.Current.OutgoingResponse);
             }
 
             if (principal == null || !principal.Identity.IsAuthenticated)

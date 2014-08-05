@@ -80,27 +80,29 @@ namespace Jhu.Graywulf.Web.Security
 
         public void SetResponseHeaders(HttpResponse response)
         {
-            foreach (string header in headers.Keys)
+            foreach (string key in headers.Keys)
             {
-                response.Headers.Add(header, headers[header]);
+                response.Headers.Add(key, headers[key]);
             }
 
-            foreach (HttpCookie cookie in cookies)
+            foreach (string key in cookies)
             {
-                response.Cookies.Add(cookie);
+                response.Cookies.Add(cookies[key]);
             }
         }
 
         public void SetResponseHeaders(System.ServiceModel.Web.OutgoingWebResponseContext response)
         {
-            foreach (string header in headers.Keys)
+            foreach (string key in headers.Keys)
             {
-                response.Headers.Add(header, headers[header]);
+                response.Headers.Add(key, headers[key]);
             }
 
-            foreach (HttpCookie cookie in cookies)
+            foreach (string key in cookies.Keys)
             {
-                response.Headers.Add(Web.Security.Constants.HttpHeaderSetCookie, AuthenticationResponse.GetSetCookieHeader(cookie));
+                response.Headers.Add(
+                    Web.Security.Constants.HttpHeaderSetCookie,
+                    AuthenticationResponse.GetSetCookieHeader(cookies[key]));
             }
         }
 
