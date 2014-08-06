@@ -10,6 +10,35 @@ namespace Jhu.Graywulf.Web.Api.V1
 {
     public class ApiTestBase
     {
+        private RestClientBehavior restClient;
+
+        protected ApiTestBase()
+        {
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
+        {
+            restClient = new RestClientBehavior();
+            restClient.AcceptedHeaders.Add(Jhu.Graywulf.Web.Security.Constants.KeystoneDefaultAuthTokenHeader);
+        }
+
+        protected void AuthenticateUser()
+        {
+            var auth = new AuthRequest()
+            {
+                Auth = new Auth()
+                {
+                    Username = "test",
+                    Password = "alma"
+                }
+            };
+
+            var client = CreateClient<IAuthService>(new Uri("http://localhost/gwauth/api/auth.svc"));
+
+            client.Authenticate(auth);
+        }
+
         protected T CreateClient<T>(Uri uri)
         {
             return CreateChannel<T>(CreateWebHttpBinding(), CreateEndpointAddress(uri));
@@ -17,11 +46,8 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         private T CreateChannel<T>(WebHttpBinding www, EndpointAddress endpoint)
         {
-            var rc = new RestClientBehavior();
-            rc.AcceptedHeaders.Add(Jhu.Graywulf.Web.Security.Constants.KeystoneDefaultAuthTokenHeader);
-
             var cf = new ChannelFactory<T>(www, endpoint);
-            cf.Endpoint.Behaviors.Add(rc);
+            cf.Endpoint.Behaviors.Add(restClient);
             return cf.CreateChannel();
         }
 

@@ -60,6 +60,7 @@
     <Compile Include="Security\KeystoneIdentityProviderTest.cs" />
     <Compile Include="Web\Api\V1\ApiTestBase.cs" />
     <Compile Include="Web\Api\V1\AuthServiceTest.cs" />
+    <Compile Include="Web\Api\V1\JobsServiceTest.cs" />
     <Compile Include="Web\Api\V1\ObjectSerializationTest.cs" />
   </ItemGroup>
   <ItemGroup>
