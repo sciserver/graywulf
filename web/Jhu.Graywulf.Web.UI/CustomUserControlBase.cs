@@ -7,21 +7,21 @@ using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.UI
 {
-    public class UserUserControlBase : Jhu.Graywulf.Web.UI.UserControlBase
+    public class CustomUserControlBase : Jhu.Graywulf.Web.UI.UserControlBase
     {
-        public new UserPageBase Page
+        public new CustomPageBase Page
         {
-            get { return (UserPageBase)base.Page; }
+            get { return (CustomPageBase)base.Page; }
         }
 
         public Context RegistryContext
         {
-            get { return ((UserPageBase)base.Page).RegistryContext; }
+            get { return ((CustomPageBase)base.Page).RegistryContext; }
     }
 
         public FederationContext FederationContext
         {
-            get { return ((UserPageBase)base.Page).FederationContext; }
+            get { return ((CustomPageBase)base.Page).FederationContext; }
         }
     }
 }

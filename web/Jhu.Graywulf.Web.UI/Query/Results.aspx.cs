@@ -13,7 +13,7 @@ using Jhu.Graywulf.Jobs.Query;
 
 namespace Jhu.Graywulf.Web.UI.Query
 {
-    public partial class Results : UserPageBase
+    public partial class Results : CustomPageBase
     {
         public static string GetUrl()
         {

@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class Tables : UserPageBase
+    public partial class Tables : CustomPageBase
     {
         public static string GetUrl()
         {

@@ -14,7 +14,7 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI
 {
-    public class UserPageBase : Jhu.Graywulf.Web.UI.PageBase
+    public class CustomPageBase : Jhu.Graywulf.Web.UI.PageBase
     {
         private const string SessionSelectedSchemaObject = "Jhu.Graywulf.Web.UI.SelectedSchemaObject";
         private const string SessionLastQueryJobGuid = "Jhu.Graywulf.Web.UI.LastQueryJobGuid";

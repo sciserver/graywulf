@@ -82,7 +82,10 @@
     </Compile>
     <Compile Include="Controls\JobStatus.cs" />
     <Compile Include="Controls\Query.cs" />
-    <Compile Include="FederationPageBase.cs">
+    <Compile Include="CustomPageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CustomUserControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="UI.master.cs">
@@ -277,9 +280,6 @@
     </Compile>
     <Compile Include="Schema\Peek.aspx.designer.cs">
       <DependentUpon>Peek.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="UserControlBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Util\QueryEditorUtil.cs" />
   </ItemGroup>

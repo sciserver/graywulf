@@ -7,7 +7,7 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Jobs
 {
-    public partial class QueryJobDetails : UserPageBase
+    public partial class QueryJobDetails : CustomPageBase
     {
         public static string GetUrl(Guid guid)
         {
