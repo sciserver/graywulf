@@ -50,5 +50,25 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             Job = job;
         }
+
+        public Job GetValue()
+        {
+            if (QueryJob != null)
+            {
+                return QueryJob;
+            }
+            else if (ExportJob != null)
+            {
+                return ExportJob; 
+            }
+            else if (ImportJob != null)
+            {
+                return ImportJob;
+            }
+            else
+            {
+                return Job;
+            }
+        }
     }
 }

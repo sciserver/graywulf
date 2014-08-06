@@ -272,7 +272,9 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             // Here we make the assumption that the queue is named the same as
             // the queue definition
-            var qi = JobFactory.GetQueueInstance(jobInstance.ParentReference.Guid);
+            var jobFactory = new JobFactory(jobInstance.Context);
+            var qi = jobFactory.GetQueueInstance(jobInstance.ParentReference.Guid);
+
             switch (qi.Name)
             {
                 case Jhu.Graywulf.Registry.Constants.QuickQueueDefinitionName:
@@ -286,13 +288,15 @@ namespace Jhu.Graywulf.Web.Api.V1
                     break;
             }
 
-            jobInstance.LoadJobInstancesDependencies(false);
-            this.dependencies = new JobDependency[jobInstance.Dependencies.Count];
-
-            int q = 0;
-            foreach (var dep in jobInstance.Dependencies.Values)
+            // Load job dependencies, if requested
+            if (jobInstance.Dependencies != null && jobInstance.Dependencies.Count > 0)
             {
-                this.dependencies[q] = new JobDependency(dep);
+                this.dependencies = new JobDependency[jobInstance.Dependencies.Count];
+                int q = 0;
+                foreach (var dep in jobInstance.Dependencies.Values)
+                {
+                    this.dependencies[q] = new JobDependency(dep);
+                }
             }
         }
 
@@ -339,10 +343,13 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         protected virtual void SaveDependencies()
         {
-            foreach (var dep in dependencies)
+            if (dependencies != null)
             {
-                var jd = dep.CreateRegistryObject(jobInstance);
-                jd.Save();
+                foreach (var dep in dependencies)
+                {
+                    var jd = dep.CreateRegistryObject(jobInstance);
+                    jd.Save();
+                }
             }
         }
 

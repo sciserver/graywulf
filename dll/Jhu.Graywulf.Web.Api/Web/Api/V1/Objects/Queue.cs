@@ -15,8 +15,8 @@ namespace Jhu.Graywulf.Web.Api.V1
         [DataMember(Name="name")]
         public string Name { get; set; }
 
-        [DataMember(Name = "jobCount")]
-        public int JobCount { get; set; }
+        [DataMember(Name = "pendingJobCount")]
+        public int PendingJobCount { get; set; }
 
         public Queue()
         {
@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.Guid = queue.Guid;
             this.Name = queue.Name;
             // TODO: implement this
-            this.JobCount = 0;
+            this.PendingJobCount = 0;
         }
     }
 }

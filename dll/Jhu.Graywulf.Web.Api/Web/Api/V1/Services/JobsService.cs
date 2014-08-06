@@ -72,8 +72,11 @@ namespace Jhu.Graywulf.Web.Api.V1
         public QueueResponse GetQueue(string queue)
         {
             var jobFactory = new JobFactory(RegistryContext);
+            var q = jobFactory.GetQueue(queue);
 
-            return new QueueResponse(jobFactory.GetQueue(queue));
+            q.PendingJobCount = jobFactory.CountPendingJobs(q.Name);
+
+            return new QueueResponse(q);
         }
 
         public JobListResponse ListJobs(string queue, string type, string from, string max)
@@ -119,7 +122,6 @@ namespace Jhu.Graywulf.Web.Api.V1
                     throw new NotImplementedException();
             }
 
-            // TODO: add options like: top, date limits, etc.
             int f = from == null ? 0 : int.Parse(from);
             int m = max == null ? 10 : int.Parse(max);
 
@@ -149,7 +151,10 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         public JobResponse CancelJob(string guid)
         {
-            throw new NotImplementedException();
+            // Load job
+            var jobFactory = new JobFactory(RegistryContext);
+
+            return new JobResponse(jobFactory.CancelJob(new Guid(guid)));
         }
     }
 }
