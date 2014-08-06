@@ -70,12 +70,12 @@ namespace Jhu.Graywulf.Web.Security
             this.queryString.Add(request.QueryString);
             this.headers.Add(request.Headers);
 
-            foreach (HttpCookie httpCookie in request.Cookies)
+            for (int i = 0; i < request.Cookies.Count; i ++)
             {
                 // TODO: this might not handle multi-values cookies, test
 
-                var cookie = Util.CookieConverter.ToCookie(httpCookie);
-                this.cookies.Add(cookie);
+                var cookie = Util.CookieConverter.ToCookie(request.Cookies[i]);
+                this.cookies.Add(uri, cookie);
             }
             
             this.principal = context.User;
@@ -90,7 +90,11 @@ namespace Jhu.Graywulf.Web.Security
             this.headers = request.Headers;
 
             // Web services don't parse cookies, so we do it now
-            this.cookies.SetCookies(uri, headers[Services.Constants.HttpHeaderCookie]);
+            var cookie = headers[Services.Constants.HttpHeaderCookie];
+            if (cookie != null)
+            {
+                this.cookies.SetCookies(uri, headers[Services.Constants.HttpHeaderCookie]);
+            }
         }
 
         private void InitializeMembers()

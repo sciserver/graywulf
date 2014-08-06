@@ -20,6 +20,7 @@ namespace Jhu.Graywulf.Web.Security
         #region Private member variables
 
         private bool success;
+        private Uri uri;
         private NameValueCollection queryParameters;
         private NameValueCollection headers;
         private HttpCookieCollection cookies;

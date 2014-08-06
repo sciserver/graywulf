@@ -85,7 +85,10 @@ namespace Jhu.Graywulf.Web.Services
             }
 
             // Set cookies
-            property.Headers.Add(HttpRequestHeader.Cookie, cookies.GetCookieHeader(request.Headers.To));
+            if (cookies.GetCookies(request.Headers.To).Count > 0)
+            {
+                property.Headers.Add(HttpRequestHeader.Cookie, cookies.GetCookieHeader(request.Headers.To));
+            }
 
             return request.Headers.To;
         }

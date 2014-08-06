@@ -73,5 +73,10 @@ namespace Jhu.Graywulf.Util
                 return new Uri(basestr + "/" + relstr, UriKind.Relative);
             }
         }
+
+        public static string ToCookieDomain(Uri uri)
+        {
+            return uri.Host;
+        }
     }
 }

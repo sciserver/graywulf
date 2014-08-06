@@ -11,28 +11,46 @@ namespace Jhu.Graywulf.Util
     {
         public static HttpCookie ToHttpCookie(Cookie cookie)
         {
-            return new HttpCookie(cookie.Name, cookie.Value)
+            if (cookie == null)
             {
-                Domain = cookie.Domain,
-                Path = cookie.Path,
-                Expires = cookie.Expires,
-                HttpOnly = cookie.HttpOnly,
-                Secure = cookie.Secure,
-            };
+                return null;
+            }
+            else
+            {
+                return new HttpCookie(cookie.Name, cookie.Value)
+                {
+                    Domain = cookie.Domain,
+                    Path = cookie.Path,
+                    Expires = cookie.Expires,
+                    HttpOnly = cookie.HttpOnly,
+                    Secure = cookie.Secure,
+                };
+            }
         }
 
         public static Cookie ToCookie(HttpCookie httpCookie)
         {
-            return new Cookie()
+            var cookie = new Cookie()
             {
                 Name = httpCookie.Name,
                 Value = httpCookie.Value,
-                Domain = httpCookie.Domain,
-                Path = httpCookie.Path,
                 Expires = httpCookie.Expires,
                 HttpOnly = httpCookie.HttpOnly,
                 Secure = httpCookie.Secure,
             };
+
+            // Due to a minor bug, these needs to be set one by one:
+            if (!String.IsNullOrEmpty(httpCookie.Domain))
+            {
+                cookie.Domain = httpCookie.Domain;
+            }
+
+            if (!String.IsNullOrEmpty(httpCookie.Path))
+            {
+                cookie.Path = httpCookie.Path;
+            }
+
+            return cookie;
         }
 
         public static string ToSetCookieHeader(HttpCookie httpCookie)
