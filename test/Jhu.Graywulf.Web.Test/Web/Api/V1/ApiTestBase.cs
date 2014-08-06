@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ServiceModel;
 using System.ServiceModel.Description;
+using Jhu.Graywulf.Web.Services;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
