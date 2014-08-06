@@ -9,7 +9,7 @@ using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Web;
 using Jhu.Graywulf.Components;
 
-namespace Jhu.Graywulf.Web.Api
+namespace Jhu.Graywulf.Web.Services
 {
     class DynamicResponseMessageFormatter : IDispatchMessageFormatter
     {

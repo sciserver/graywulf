@@ -194,6 +194,19 @@
     </Compile>
     <Compile Include="Web\Security\AuthenticationRequest.cs" />
     <Compile Include="Web\Security\WebAuthenticationModule.cs" />
+    <Compile Include="Web\Services\DynamicResponseFormatAttribute.cs" />
+    <Compile Include="Web\Services\DynamicResponseMessageFormatter.cs" />
+    <Compile Include="Web\Services\HttpMethod.cs" />
+    <Compile Include="Web\Services\ResourceNotFoundException.cs" />
+    <Compile Include="Web\Services\RestAuthenticationModule.cs" />
+    <Compile Include="Web\Services\RestClientBehavior.cs" />
+    <Compile Include="Web\Services\RestErrorHandler.cs" />
+    <Compile Include="Web\Services\RestOperationBehavior.cs" />
+    <Compile Include="Web\Services\RestOperationInvoker.cs" />
+    <Compile Include="Web\Services\RestServiceBase.cs" />
+    <Compile Include="Web\Services\RestServiceBehavior.cs" />
+    <Compile Include="Web\Services\TextResponseMessageBodyWriter.cs" />
+    <Compile Include="Web\Services\TextResponseMessageFormatter.cs" />
     <Compile Include="Web\UserControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -291,7 +304,9 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Web\UI\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)

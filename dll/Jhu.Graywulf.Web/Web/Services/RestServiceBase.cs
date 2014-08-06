@@ -11,7 +11,7 @@ using System.ServiceModel.Dispatcher;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Web.Api
+namespace Jhu.Graywulf.Web.Services
 {
     public abstract class RestServiceBase : IDisposable
     {

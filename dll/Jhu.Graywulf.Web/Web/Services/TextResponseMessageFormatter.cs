@@ -7,7 +7,7 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Web;
 using System.IO;
 
-namespace Jhu.Graywulf.Web.Api
+namespace Jhu.Graywulf.Web.Services
 {
     class TextResponseMessageFormatter : IDispatchMessageFormatter
     {

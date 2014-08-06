@@ -7,7 +7,7 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 
-namespace Jhu.Graywulf.Web.Api
+namespace Jhu.Graywulf.Web.Services
 {
     class RestOperationBehavior : Attribute, IOperationBehavior
     {

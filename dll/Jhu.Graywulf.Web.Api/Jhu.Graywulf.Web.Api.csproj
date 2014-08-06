@@ -72,21 +72,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Web\Api\DynamicResponseFormatAttribute.cs" />
-    <Compile Include="Web\Api\DynamicResponseMessageFormatter.cs" />
-    <Compile Include="Web\Api\HttpMethod.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Web\Api\ResourceNotFoundException.cs" />
-    <Compile Include="Web\Api\RestAuthenticationModule.cs" />
-    <Compile Include="Web\Api\RestClientBehavior.cs" />
-    <Compile Include="Web\Api\RestErrorHandler.cs" />
-    <Compile Include="Web\Api\RestOperationBehavior.cs" />
-    <Compile Include="Web\Api\RestOperationInvoker.cs" />
-    <Compile Include="Web\Api\RestServiceBase.cs" />
-    <Compile Include="Web\Api\RestServiceBehavior.cs" />
-    <Compile Include="Web\Api\TextResponseMessageBodyWriter.cs" />
-    <Compile Include="Web\Api\TextResponseMessageFormatter.cs" />
     <Compile Include="Web\Api\V1\Enum.cs" />
     <Compile Include="Web\Api\V1\JobFactory.cs" />
     <Compile Include="Web\Api\V1\Objects\Auth.cs" />

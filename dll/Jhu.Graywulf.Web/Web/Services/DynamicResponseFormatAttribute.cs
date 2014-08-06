@@ -7,7 +7,7 @@ using System.ServiceModel.Description;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
 
-namespace Jhu.Graywulf.Web.Api
+namespace Jhu.Graywulf.Web.Services
 {
     /// <summary>
     /// When applied to a REST web service operation, selects the return format

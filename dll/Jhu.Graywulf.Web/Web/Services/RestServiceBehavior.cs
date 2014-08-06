@@ -9,7 +9,7 @@ using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Web.Api
+namespace Jhu.Graywulf.Web.Services
 {
     public class RestServiceBehavior : Attribute, IServiceBehavior
     {

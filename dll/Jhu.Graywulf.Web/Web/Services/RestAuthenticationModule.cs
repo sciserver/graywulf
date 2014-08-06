@@ -13,7 +13,7 @@ using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Web.Security;
 
-namespace Jhu.Graywulf.Web.Api
+namespace Jhu.Graywulf.Web.Services
 {
     /// <summary>
     /// Implements a module that can authenticate REST web service clients

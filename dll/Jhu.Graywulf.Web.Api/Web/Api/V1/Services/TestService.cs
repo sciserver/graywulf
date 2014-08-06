@@ -9,6 +9,7 @@ using System.ServiceModel.Security;
 using System.ServiceModel.Channels;
 using System.Security.Permissions;
 using System.IO;
+using Jhu.Graywulf.Web.Services;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {

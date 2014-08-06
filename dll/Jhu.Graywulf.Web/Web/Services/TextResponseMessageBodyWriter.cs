@@ -11,7 +11,7 @@ using System.Data.SqlClient;
 using System.Reflection;
 using System.Text;
 
-namespace Jhu.Graywulf.Web.Api
+namespace Jhu.Graywulf.Web.Services
 {
     /// <summary>
     /// Implements a writer that can serialize objects as a text file.

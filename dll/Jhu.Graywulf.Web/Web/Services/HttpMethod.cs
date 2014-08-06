@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jhu.Graywulf.Web.Api
+namespace Jhu.Graywulf.Web.Services
 {
-    // TODO: delete and replace with .net class 
     public static class HttpMethod
     {
         public const string Head = "HEAD";
@@ -14,5 +13,6 @@ namespace Jhu.Graywulf.Web.Api
         public const string Post = "POST";
         public const string Patch = "PATCH";
         public const string Delete = "DELETE";
+
     }
 }

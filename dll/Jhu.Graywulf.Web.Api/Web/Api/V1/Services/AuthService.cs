@@ -6,6 +6,7 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Web.Security;
+using Jhu.Graywulf.Web.Services;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {

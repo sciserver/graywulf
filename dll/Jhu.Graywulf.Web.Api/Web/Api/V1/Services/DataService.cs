@@ -16,6 +16,7 @@ using Jhu.Graywulf.SqlCodeGen;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
+using Jhu.Graywulf.Web.Services;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
@@ -27,7 +28,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         Message GetTable(string datasetName, string tableName, string top);
 
         [OperationContract]
-        [WebInvoke(Method=HttpMethod.Put, UriTemplate = "/{datasetName}/{tableName}")]
+        [WebInvoke(Method = HttpMethod.Put, UriTemplate = "/{datasetName}/{tableName}")]
         void UploadTable(string datasetName, string tableName, Stream data);
     }
 

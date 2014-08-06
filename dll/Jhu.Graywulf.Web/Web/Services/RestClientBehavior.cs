@@ -11,7 +11,7 @@ using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Web;
 
-namespace Jhu.Graywulf.Web.Api
+namespace Jhu.Graywulf.Web.Services
 {
     /// <summary>
     /// 
