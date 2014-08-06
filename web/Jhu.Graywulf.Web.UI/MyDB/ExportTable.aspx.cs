@@ -10,7 +10,7 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class ExportTable : PageBase
+    public partial class ExportTable : UserPageBase
     {
         public static string GetUrl()
         {

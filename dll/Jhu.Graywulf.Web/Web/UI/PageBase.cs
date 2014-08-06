@@ -8,7 +8,7 @@ using System.Web.Security;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Web
+namespace Jhu.Graywulf.Web.UI
 {
     public class PageBase : Page, IContextObject
     {
@@ -144,7 +144,7 @@ namespace Jhu.Graywulf.Web
 
             base.OnError(e);
 
-            Response.Redirect(Jhu.Graywulf.Web.Error.GetUrl());
+            Response.Redirect(Jhu.Graywulf.Web.UI.Error.GetUrl());
         }
 
         #endregion

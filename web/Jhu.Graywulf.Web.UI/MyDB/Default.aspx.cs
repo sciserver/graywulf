@@ -5,7 +5,7 @@ using Jhu.Graywulf.Web;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class Default : PageBase
+    public partial class Default : UserPageBase
     {
         public static string GetUrl()
         {
@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
                 ProgressUsedLabel.Text = String.Format(CultureInfo.InvariantCulture, "{0:p}", free);
 
-                RequestSpaceLink.NavigateUrl = Jhu.Graywulf.Web.Feedback.GetSpaceRequestUrl();
+                RequestSpaceLink.NavigateUrl = Jhu.Graywulf.Web.UI.Feedback.GetSpaceRequestUrl();
             }
         }
     }

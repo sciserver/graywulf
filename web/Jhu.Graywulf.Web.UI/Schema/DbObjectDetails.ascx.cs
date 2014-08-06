@@ -6,7 +6,7 @@ using Jhu.Graywulf.Web.Controls;
 
 namespace Jhu.Graywulf.Web.UI.Schema
 {
-    public partial class DbObjectDetails : UserControlBase
+    public partial class DbObjectDetails : UserUserControlBase
     {
         private string databaseObjectID;
 

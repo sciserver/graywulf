@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace Jhu.Graywulf.Web
+namespace Jhu.Graywulf.Web.UI
 {
     public partial class Error : System.Web.UI.Page
     {
@@ -21,13 +21,13 @@ namespace Jhu.Graywulf.Web
                 var ex = Server.GetLastError();
                 if (ex == null)
                 {
-                    ex = (Exception)Session[Jhu.Graywulf.Web.Constants.SessionException];
+                    ex = (Exception)Session[Jhu.Graywulf.Web.UI.Constants.SessionException];
                 }
 
                 if (ex != null)
                 {
                     Message.Text = ex.Message;
-                    FeedbackLink.NavigateUrl = Jhu.Graywulf.Web.Feedback.GetErrorReportUrl();
+                    FeedbackLink.NavigateUrl = Jhu.Graywulf.Web.UI.Feedback.GetErrorReportUrl();
                 }
             }
         }

@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 namespace Jhu.Graywulf.Web.UI.Docs
 {
-    public partial class Default : PageBase
+    public partial class Default : UserPageBase
     {
         public static string GetUrl()
         {

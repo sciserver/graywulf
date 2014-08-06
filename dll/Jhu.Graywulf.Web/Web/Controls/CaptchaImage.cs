@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
+using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Controls
 {

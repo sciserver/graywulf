@@ -7,6 +7,7 @@ using System.Web.SessionState;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Web;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Auth
 {
@@ -21,8 +22,8 @@ namespace Jhu.Graywulf.Web.Auth
             {
                 var domain = context.Domain;
 
-                Application[Constants.ApplicationShortTitle] = domain.ShortTitle;
-                Application[Constants.ApplicationLongTitle] = domain.LongTitle;
+                Application[Web.UI.Constants.ApplicationShortTitle] = domain.ShortTitle;
+                Application[Web.UI.Constants.ApplicationLongTitle] = domain.LongTitle;
             }
         }
 

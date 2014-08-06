@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="PageError.aspx.cs" Inherits="Jhu.Graywulf.Web.Error"
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="PageError.aspx.cs" Inherits="Jhu.Graywulf.Web.UI.Error"
     MasterPageFile="~/App_Masters/Basic.master" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="middle">

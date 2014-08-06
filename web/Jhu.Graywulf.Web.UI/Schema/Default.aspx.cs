@@ -7,7 +7,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Schema
 {
-    public partial class Default : PageBase
+    public partial class Default : UserPageBase
     {
         public static string GetUrl()
         {

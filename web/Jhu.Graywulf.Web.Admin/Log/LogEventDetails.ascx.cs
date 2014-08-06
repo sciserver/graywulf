@@ -13,6 +13,7 @@ using System.Xml.Linq;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Logging;
 using Jhu.Graywulf.Web;
+using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Admin.Log
 {

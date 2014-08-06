@@ -7,7 +7,7 @@ using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class ImportTable : PageBase
+    public partial class ImportTable : UserPageBase
     {
         public static string GetUrl()
         {

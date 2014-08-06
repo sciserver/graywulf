@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
 
         private void UpdateForm()
         {
-            SendInquiry.NavigateUrl = Jhu.Graywulf.Web.Feedback.GetJobErrorUrl(job.Guid);
+            SendInquiry.NavigateUrl = Jhu.Graywulf.Web.UI.Feedback.GetJobErrorUrl(job.Guid);
             ExceptionMessage.Text = job.Error;
         }
     }

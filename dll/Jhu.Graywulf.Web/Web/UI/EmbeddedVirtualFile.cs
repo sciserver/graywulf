@@ -5,7 +5,7 @@ using System.Text;
 using System.Web.Hosting;
 using System.Reflection;
 
-namespace Jhu.Graywulf.Web
+namespace Jhu.Graywulf.Web.UI
 {
     public class EmbeddedVirtualFile : VirtualFile
     {

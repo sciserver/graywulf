@@ -10,7 +10,7 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Jobs
 {
-    public partial class ExportJobDetails : PageBase
+    public partial class ExportJobDetails : UserPageBase
     {
         public static string GetUrl(Guid guid)
         {

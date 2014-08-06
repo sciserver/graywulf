@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Web.Admin.User
         {
             if (!IsPostBack)
             {
-                SignInForm.Text = String.Format("Welcome to {0}", Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle]);
+                SignInForm.Text = String.Format("Welcome to {0}", Application[Jhu.Graywulf.Web.UI.Constants.ApplicationShortTitle]);
 
                 // Load clusters
                 EntityFactory cf = new EntityFactory(RegistryContext);

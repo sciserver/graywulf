@@ -5,7 +5,7 @@ using System.Text;
 using System.Web;
 using System.Web.Hosting;
 
-namespace Jhu.Graywulf.Web
+namespace Jhu.Graywulf.Web.UI
 {
     public class EmbeddedVirtualPathProvider : VirtualPathProvider
     {
@@ -13,9 +13,9 @@ namespace Jhu.Graywulf.Web
 
         private Dictionary<string, string> virtualFiles = new Dictionary<string, string>(comparer)
         {
-            { "~/Captcha.aspx", "Jhu.Graywulf.Web.Captcha.aspx"},
-            { "~/Feedback.aspx", "Jhu.Graywulf.Web.Feedback.aspx"},
-            { "~/Error.aspx", "Jhu.Graywulf.Web.Error.aspx"},
+            { "~/Captcha.aspx", "Jhu.Graywulf.Web.UI.Captcha.aspx"},
+            { "~/Feedback.aspx", "Jhu.Graywulf.UI.Web.Feedback.aspx"},
+            { "~/Error.aspx", "Jhu.Graywulf.Web.UI.Error.aspx"},
         };
 
         public override bool FileExists(string virtualPath)

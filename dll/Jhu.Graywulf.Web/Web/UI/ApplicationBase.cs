@@ -9,7 +9,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Logging;
 
-namespace Jhu.Graywulf.Web
+namespace Jhu.Graywulf.Web.UI
 {
     public abstract class ApplicationBase : System.Web.HttpApplication
     {

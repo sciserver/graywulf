@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jhu.Graywulf.Web
+namespace Jhu.Graywulf.Web.UI
 {
     public static class Constants
     {
@@ -26,9 +26,6 @@ namespace Jhu.Graywulf.Web
         
         public const string SessionException = "Jhu.Graywulf.Web.Exception";
         public const string SessionExceptionEventID = "Jhu.Graywulf.Web.ExceptionEventID";
-
-        public const string HttpHeaderCookie = "Cookie";
-        public const string HttpHeaderSetCookie = "Set-Cookie";
 
         public const string CaptchaVirtualPath = "~/Captcha.aspx";
         public const string CaptchaMimeType = "image/jpeg";

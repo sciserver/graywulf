@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic.master" AutoEventWireup="true"
-    Inherits="Jhu.Graywulf.Web.Feedback" CodeBehind="Default.aspx.cs" %>
+    Inherits="Jhu.Graywulf.Web.UI.Feedback" CodeBehind="Default.aspx.cs" %>
 
 <%@ Register TagPrefix="jgwc" Namespace="Jhu.Graywulf.Web.Controls" Assembly="Jhu.Graywulf.Web" %>
 <asp:Content ContentPlaceHolderID="middle" runat="Server">

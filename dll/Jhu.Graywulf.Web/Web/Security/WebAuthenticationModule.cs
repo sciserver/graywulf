@@ -5,6 +5,7 @@ using System.Text;
 using System.Web;
 using System.Security.Principal;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Security
 {
@@ -155,7 +156,7 @@ namespace Jhu.Graywulf.Web.Security
             if (httpContext.Session != null)
             {
                 // Get the saved principal from the session
-                var sessionPrincipal = (GraywulfPrincipal)httpContext.Session[Web.Constants.SessionPrincipal];
+                var sessionPrincipal = (GraywulfPrincipal)httpContext.Session[UI.Constants.SessionPrincipal];
 
                 if (httpContext.Request.IsAuthenticated && httpContext.User is GraywulfPrincipal)
                 {
@@ -177,7 +178,7 @@ namespace Jhu.Graywulf.Web.Security
                     if (sessionPrincipal == null)
                     {
                         // Save user into the session
-                        httpContext.Session[Web.Constants.SessionPrincipal] = httpContext.User;
+                        httpContext.Session[UI.Constants.SessionPrincipal] = httpContext.User;
 
                         // Report the arrival of a new user
                         httpApplication.OnUserArrived((GraywulfPrincipal)httpContext.User);

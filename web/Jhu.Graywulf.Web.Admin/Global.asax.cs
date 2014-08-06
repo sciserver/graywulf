@@ -6,6 +6,7 @@ using System.Web.Security;
 using System.Web.SessionState;
 using System.Data.SqlClient;
 using Jhu.Graywulf.Web.Security;
+using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Admin
 {
@@ -15,8 +16,8 @@ namespace Jhu.Graywulf.Web.Admin
         {
             base.Application_Start(sender, e);
 
-            Application[Web.Constants.ApplicationShortTitle] = "Graywulf admin";
-            Application[Web.Constants.ApplicationLongTitle] = "Graywulf admin interface";
+            Application[Web.UI.Constants.ApplicationShortTitle] = "Graywulf admin";
+            Application[Web.UI.Constants.ApplicationLongTitle] = "Graywulf admin interface";
         }
 
         protected override void Session_Start(object sender, EventArgs e)
@@ -24,7 +25,7 @@ namespace Jhu.Graywulf.Web.Admin
             base.Session_Start(sender, e);
 
             var csb = new SqlConnectionStringBuilder(Registry.AppSettings.ConnectionString);
-            Session[Web.Constants.SessionRegistryDatabase] = String.Format("{0}\\{1}", csb.DataSource, csb.InitialCatalog);
+            Session[Web.UI.Constants.SessionRegistryDatabase] = String.Format("{0}\\{1}", csb.DataSource, csb.InitialCatalog);
         }
 
         protected override void OnUserArrived(GraywulfPrincipal principal)

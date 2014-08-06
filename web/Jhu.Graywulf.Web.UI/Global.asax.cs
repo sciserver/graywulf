@@ -25,9 +25,9 @@ namespace Jhu.Graywulf.Web.UI
             {
                 var federation = context.Federation;
 
-                Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle] = federation.ShortTitle;
-                Application[Jhu.Graywulf.Web.Constants.ApplicationLongTitle] = federation.LongTitle;
-                Application[Jhu.Graywulf.Web.Constants.ApplicationCopyright] = federation.Copyright;
+                Application[Jhu.Graywulf.Web.UI.Constants.ApplicationShortTitle] = federation.ShortTitle;
+                Application[Jhu.Graywulf.Web.UI.Constants.ApplicationLongTitle] = federation.LongTitle;
+                Application[Jhu.Graywulf.Web.UI.Constants.ApplicationCopyright] = federation.Copyright;
             }
         }
 

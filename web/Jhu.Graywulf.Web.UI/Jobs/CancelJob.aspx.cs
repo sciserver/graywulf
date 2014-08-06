@@ -9,7 +9,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.UI.Jobs
 {
-    public partial class CancelJob : PageBase
+    public partial class CancelJob : UserPageBase
     {
         public static string GetUrl(Guid guid)
         {

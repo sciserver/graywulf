@@ -9,7 +9,7 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class Download : PageBase
+    public partial class Download : UserPageBase
     {
         public static string GetUrl()
         {

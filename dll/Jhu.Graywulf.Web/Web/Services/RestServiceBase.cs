@@ -10,6 +10,7 @@ using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Services
 {

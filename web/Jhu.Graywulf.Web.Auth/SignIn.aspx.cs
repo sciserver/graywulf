@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Web.Auth
             var key = ((IButtonControl)sender).CommandArgument;
             var a = CreateAuthenticator(key);
 
-            Session[Constants.SessionAuthenticator] = key;
+            Session[Web.UI.Constants.SessionAuthenticator] = key;
 
             a.RedirectToLoginPage();
         }
@@ -108,7 +108,7 @@ namespace Jhu.Graywulf.Web.Auth
                 RegisterLink2.NavigateUrl = Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl);
             }
 
-            SignInForm.Text = String.Format("Welcome to {0}", Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle]);
+            SignInForm.Text = String.Format("Welcome to {0}", Application[Jhu.Graywulf.Web.UI.Constants.ApplicationShortTitle]);
 
             RegisterLink.NavigateUrl = Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl);
             ActivateLink.NavigateUrl = Jhu.Graywulf.Web.Auth.Activate.GetUrl(ReturnUrl);
@@ -146,13 +146,13 @@ namespace Jhu.Graywulf.Web.Auth
 
         private void Authenticate()
         {
-            var key = (string)Session[Constants.SessionAuthenticator];
+            var key = (string)Session[Web.UI.Constants.SessionAuthenticator];
 
             if (key != null)
             {
                 var authenticator = CreateAuthenticator(key);
 
-                Session[Constants.SessionAuthenticator] = null;
+                Session[Web.UI.Constants.SessionAuthenticator] = null;
 
                 var response = authenticator.Authenticate(new AuthenticationRequest(HttpContext.Current));
                 

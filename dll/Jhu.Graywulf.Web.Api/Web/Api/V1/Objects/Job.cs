@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.ComponentModel;
 using System.Xml;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {

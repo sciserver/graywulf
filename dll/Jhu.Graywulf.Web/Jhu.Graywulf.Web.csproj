@@ -91,11 +91,6 @@
     <Compile Include="Util\IIS.cs" />
     <Compile Include="Util\JQuery.cs" />
     <Compile Include="Util\UrlFormatter.cs" />
-    <Compile Include="Web\ApplicationBase.cs" />
-    <Compile Include="Web\Captcha.aspx.cs">
-      <DependentUpon>Captcha.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Web\Check\CheckPageBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -107,7 +102,6 @@
     <Compile Include="Web\Check\AssemblyCheck.cs" />
     <Compile Include="Web\Check\IdentityCheck.cs" />
     <Compile Include="Web\Check\UrlCheck.cs" />
-    <Compile Include="Web\Constants.cs" />
     <Compile Include="Web\Controls\BoundField.cs" />
     <Compile Include="Web\Controls\CaptchaImage.cs" />
     <Compile Include="Web\Controls\CaptchaValidator.cs" />
@@ -137,32 +131,8 @@
     <Compile Include="Web\Controls\UserStatus.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Web\EmbeddedVirtualFile.cs" />
-    <Compile Include="Web\Enum.cs" />
-    <Compile Include="Web\EmbeddedVirtualPathProvider.cs" />
     <Compile Include="Web\Controls\ExpressionPropertyField.cs" />
-    <Compile Include="Web\FederationContext.cs" />
-    <Compile Include="Web\Feedback.aspx.cs">
-      <DependentUpon>Feedback.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Web\Feedback.aspx.designer.cs">
-      <DependentUpon>Feedback.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Web\MasterPageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Web\PageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Web\Controls\Toolbar.cs" />
-    <Compile Include="Web\Error.aspx.cs">
-      <DependentUpon>Error.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Web\Error.aspx.designer.cs">
-      <DependentUpon>Error.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Web\Controls\ToolbarElement.cs" />
     <Compile Include="Web\Controls\ToolbarButton.cs" />
@@ -194,6 +164,7 @@
     </Compile>
     <Compile Include="Web\Security\AuthenticationRequest.cs" />
     <Compile Include="Web\Security\WebAuthenticationModule.cs" />
+    <Compile Include="Web\Services\Constants.cs" />
     <Compile Include="Web\Services\DynamicResponseFormatAttribute.cs" />
     <Compile Include="Web\Services\DynamicResponseMessageFormatter.cs" />
     <Compile Include="Web\Services\HttpMethod.cs" />
@@ -207,7 +178,37 @@
     <Compile Include="Web\Services\RestServiceBehavior.cs" />
     <Compile Include="Web\Services\TextResponseMessageBodyWriter.cs" />
     <Compile Include="Web\Services\TextResponseMessageFormatter.cs" />
-    <Compile Include="Web\UserControlBase.cs">
+    <Compile Include="Web\UI\ApplicationBase.cs" />
+    <Compile Include="Web\UI\Captcha.aspx.cs">
+      <DependentUpon>Captcha.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\UI\Constants.cs" />
+    <Compile Include="Web\UI\EmbeddedVirtualFile.cs" />
+    <Compile Include="Web\UI\EmbeddedVirtualPathProvider.cs" />
+    <Compile Include="Web\UI\Enum.cs" />
+    <Compile Include="Web\UI\Error.aspx.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\UI\Error.aspx.designer.cs">
+      <DependentUpon>Error.aspx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Web\UI\FederationContext.cs" />
+    <Compile Include="Web\UI\Feedback.aspx.cs">
+      <DependentUpon>Feedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\UI\Feedback.aspx.designer.cs">
+      <DependentUpon>Feedback.aspx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Web\UI\MasterPageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\UI\PageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\UI\UserControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
   </ItemGroup>
@@ -277,21 +278,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Web\Captcha.aspx">
-      <SubType>ASPXCodeBehind</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Web\Error.aspx">
-      <SubType>ASPXCodeBehind</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Web\Feedback.aspx">
-      <SubType>ASPXCodeBehind</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Web\Controls\MultiSelectGridView.js" />
   </ItemGroup>
   <ItemGroup>
@@ -304,8 +290,17 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Web\UI\" />
+    <Content Include="Web\UI\Captcha.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Web\UI\Error.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Web\UI\Feedback.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

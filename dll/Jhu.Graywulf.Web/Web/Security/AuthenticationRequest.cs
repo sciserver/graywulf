@@ -90,7 +90,7 @@ namespace Jhu.Graywulf.Web.Security
             this.headers = request.Headers;
 
             // Web services don't parse cookies, so we do it now
-            this.cookies.SetCookies(uri, headers[Web.Constants.HttpHeaderCookie]);
+            this.cookies.SetCookies(uri, headers[Services.Constants.HttpHeaderCookie]);
         }
 
         private void InitializeMembers()

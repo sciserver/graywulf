@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using Jhu.Graywulf.Web;
+using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Check
 {

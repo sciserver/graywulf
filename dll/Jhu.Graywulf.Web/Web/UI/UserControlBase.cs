@@ -5,7 +5,7 @@ using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace Jhu.Graywulf.Web
+namespace Jhu.Graywulf.Web.UI
 {
     public abstract class UserControlBase : UserControl, Registry.IContextObject
     {

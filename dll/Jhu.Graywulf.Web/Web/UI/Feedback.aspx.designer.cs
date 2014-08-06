@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Jhu.Graywulf.Web {
+namespace Jhu.Graywulf.Web.UI {
     
     
     public partial class Feedback {

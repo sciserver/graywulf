@@ -102,7 +102,7 @@ namespace Jhu.Graywulf.Web.Security
             foreach (string key in cookies.Keys)
             {
                 response.Headers.Add(
-                    Web.Constants.HttpHeaderSetCookie,
+                    Services.Constants.HttpHeaderSetCookie,
                     Util.CookieConverter.ToSetCookieHeader(cookies[key]));
             }
         }

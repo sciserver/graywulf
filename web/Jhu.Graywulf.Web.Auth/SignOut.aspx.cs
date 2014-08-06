@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Auth
             FormsAuthentication.SignOut();
             Session.Abandon();
 
-            ShortTitle.Text = (string)Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle];
+            ShortTitle.Text = (string)Application[Jhu.Graywulf.Web.UI.Constants.ApplicationShortTitle];
             Ok.Attributes.Add("onClick", Util.UrlFormatter.GetClientRedirect(ReturnUrl));
         }
     }

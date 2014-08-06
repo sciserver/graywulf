@@ -6,7 +6,7 @@ using System.Web.UI;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace Jhu.Graywulf.Web
+namespace Jhu.Graywulf.Web.UI
 {
     public class Captcha : Page
     {

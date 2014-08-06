@@ -8,6 +8,7 @@ using System.ServiceModel;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {

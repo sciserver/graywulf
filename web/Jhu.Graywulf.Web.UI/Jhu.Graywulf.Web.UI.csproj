@@ -80,9 +80,11 @@
     <Compile Include="Check.aspx.designer.cs">
       <DependentUpon>Check.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Constants.cs" />
     <Compile Include="Controls\JobStatus.cs" />
     <Compile Include="Controls\Query.cs" />
+    <Compile Include="FederationPageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="UI.master.cs">
       <DependentUpon>UI.master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -218,9 +220,6 @@
     </Compile>
     <Compile Include="MyDB\Tabs.ascx.designer.cs">
       <DependentUpon>Tabs.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="PageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\Default.aspx.cs">
