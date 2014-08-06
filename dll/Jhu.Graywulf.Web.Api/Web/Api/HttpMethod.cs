@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Web.Api
 {
+    // TODO: delete and replace with .net class 
     public static class HttpMethod
     {
         public const string Head = "HEAD";

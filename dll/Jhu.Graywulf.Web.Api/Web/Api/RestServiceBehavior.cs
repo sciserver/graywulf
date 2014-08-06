@@ -13,6 +13,11 @@ namespace Jhu.Graywulf.Web.Api
 {
     public class RestServiceBehavior : Attribute, IServiceBehavior
     {
+        public void Validate(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
+        {
+            // (1.)
+        }
+
         /// <summary>
         /// Sets up default binding parameters.
         /// </summary>
@@ -23,6 +28,18 @@ namespace Jhu.Graywulf.Web.Api
         public void AddBindingParameters(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase, System.Collections.ObjectModel.Collection<ServiceEndpoint> endpoints, BindingParameterCollection bindingParameters)
         {
             // (2.)
+
+            // Enable debugging
+#if DEBUG
+            var sdb = serviceDescription.Behaviors.Find<ServiceDebugBehavior>();
+            if (sdb == null)
+            {
+                sdb = new ServiceDebugBehavior();
+                serviceDescription.Behaviors.Add(sdb);
+            }
+
+            sdb.IncludeExceptionDetailInFaults = true;
+#endif
 
             // Find all web http endpoint behaviors and
             // turn on help
@@ -106,11 +123,6 @@ namespace Jhu.Graywulf.Web.Api
                     }
                 }
             }
-        }
-
-        public void Validate(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
-        {
-            // (1.)
         }
     }
 }

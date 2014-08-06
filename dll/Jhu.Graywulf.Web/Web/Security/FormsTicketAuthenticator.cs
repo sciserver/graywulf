@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
 using System.Web;
 using System.Web.Security;
 
@@ -55,9 +56,10 @@ namespace Jhu.Graywulf.Web.Security
             // single request.
 
             var response = new AuthenticationResponse();
+            var cookies = request.Cookies.GetCookies(request.Uri);
 
             // Get the forms authentication cookie from the request
-            var cookie = request.Cookies[FormsAuthentication.FormsCookieName];
+            var cookie = Util.CookieConverter.ToHttpCookie(cookies[FormsAuthentication.FormsCookieName]);
             if (cookie != null)
             {
                 // Decrypt the token and check whether it's already expired
@@ -78,7 +80,7 @@ namespace Jhu.Graywulf.Web.Security
                     // Set special cookie path, if necessary
                     if (!ticket.CookiePath.Equals("/"))
                     {
-                        cookie = request.Cookies[FormsAuthentication.FormsCookieName];
+                        cookie = Util.CookieConverter.ToHttpCookie(cookies[FormsAuthentication.FormsCookieName]);
                         if (cookie != null)
                         {
                             cookie.Path = ticket.CookiePath;
@@ -93,15 +95,12 @@ namespace Jhu.Graywulf.Web.Security
 
                         if (cookie != null)
                         {
-                            cookie = request.Cookies[FormsAuthentication.FormsCookieName];
+                            cookie = Util.CookieConverter.ToHttpCookie(cookies[FormsAuthentication.FormsCookieName]); ;
                         }
 
                         if (cookie == null)
                         {
-                            cookie = new HttpCookie(FormsAuthentication.FormsCookieName, cookieValue)
-                            {
-                                Path = ticket.CookiePath
-                            };
+                            cookie = new HttpCookie(FormsAuthentication.FormsCookieName, cookieValue);
                         }
 
                         // If the ticket is persistent (survives browser sessions) an expiration
@@ -113,6 +112,7 @@ namespace Jhu.Graywulf.Web.Security
                         }
 
                         // Set additional cookie options
+                        cookie.Path = ticket.CookiePath;
                         cookie.Value = cookieValue;
                         cookie.Secure = FormsAuthentication.RequireSSL;
                         cookie.HttpOnly = true;

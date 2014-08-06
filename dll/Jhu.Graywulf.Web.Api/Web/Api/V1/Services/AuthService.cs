@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Web.Api.V1
     public interface IAuthService
     {
         [OperationContract]
-        [WebInvoke(Method = HttpMethod.Head, UriTemplate = "/")]
+        [WebInvoke(Method = HttpMethod.Post, UriTemplate = "/")]
         void Authenticate(AuthRequest authRequest);
     }
 

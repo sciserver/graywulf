@@ -43,6 +43,8 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web" />
     <Reference Include="System.XML" />
   </ItemGroup>
@@ -56,6 +58,8 @@
     <Compile Include="Security\AuthenticatorSettingsTest.cs" />
     <Compile Include="Security\GraywulfIdentityProviderTest.cs" />
     <Compile Include="Security\KeystoneIdentityProviderTest.cs" />
+    <Compile Include="Web\Api\V1\ApiTestBase.cs" />
+    <Compile Include="Web\Api\V1\AuthServiceTest.cs" />
     <Compile Include="Web\Api\V1\ObjectSerializationTest.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -188,6 +188,7 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Web\Util\ByteSizeFormatter.cs" />
+    <Compile Include="Web\Util\CookieConverter.cs" />
     <Compile Include="Web\Util\DateFormatter.cs" />
     <Compile Include="Web\Util\DocumentationFormatter.cs" />
     <Compile Include="Web\Util\EmailTemplateUtility.cs" />
