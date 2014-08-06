@@ -92,6 +92,8 @@ namespace Jhu.Graywulf.Registry
         private ParameterCollection settings;
         private string comments;
 
+        private string fullyQualifiedName;
+
         // --- Background storage for navigation properties ---
         private Dictionary<int, IEntityReference> entityReferences;
         private bool isEntityReferencesLoaded;
@@ -551,6 +553,8 @@ namespace Jhu.Graywulf.Registry
             this.settings = new ParameterCollection();
             this.comments = string.Empty;
 
+            this.fullyQualifiedName = null;
+
             InitializeEntityReferences();
             this.isEntityReferencesLoaded = false;
 
@@ -588,6 +592,8 @@ namespace Jhu.Graywulf.Registry
             this.userGuidDeleted = old.userGuidDeleted;
             this.settings = new ParameterCollection(old.settings);
             this.comments = old.comments;
+
+            this.fullyQualifiedName = old.fullyQualifiedName;
 
             CopyEntityReferences(old);
             InitializeChildTypes();
@@ -708,16 +714,21 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         public string GetFullyQualifiedName()
         {
-            string n = this.name;
-
-            Entity p = Parent;
-            while (p != null)
+            if (fullyQualifiedName == null)
             {
-                n = p.Name + "." + n;
-                p = p.Parent;
+                string n = this.name;
+
+                Entity p = Parent;
+                while (p != null)
+                {
+                    n = p.Name + "." + n;
+                    p = p.Parent;
+                }
+
+                fullyQualifiedName = EntityType.ToString() + ":" + n;
             }
 
-            return EntityType.ToString() + ":" + n;
+            return fullyQualifiedName;
         }
 
         public override string ToString()
