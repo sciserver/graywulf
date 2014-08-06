@@ -1,5 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" Inherits="Jhu.Graywulf.Web.UI.Controls.Footer" Codebehind="Footer.ascx.cs" %>
-<%= Application[Jhu.Graywulf.Web.Constants.ApplicationCopyright] %> - powered by Graywulf
+<%= Application[Jhu.Graywulf.Web.UI.Constants.ApplicationCopyright] %> - powered by Graywulf
 |
 <a runat="server" href="~/Feedback.aspx">feedback</a>
 |
