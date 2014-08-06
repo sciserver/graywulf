@@ -11,6 +11,7 @@ using System.Security.Permissions;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
+using System.ComponentModel;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.SqlCodeGen;
 using Jhu.Graywulf.Format;
@@ -21,15 +22,29 @@ using Jhu.Graywulf.Web.Services;
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [ServiceContract]
+    [Description("Manages table downloads and uploads.")]
     public interface IDataService
     {
         [OperationContract]
         [WebGet(UriTemplate = "/{datasetName}/{tableName}?top={top}")]
-        Message GetTable(string datasetName, string tableName, string top);
+        [Description("Downloads a table in any supported data format.")]
+        Message GetTable(
+            [Description("Name of the dataset to download from.")]
+            string datasetName,
+            [Description("Name of the table to download from.")]
+            string tableName,
+            [Description("Maximum number of rows to return.")]
+            string top);
 
         [OperationContract]
         [WebInvoke(Method = HttpMethod.Put, UriTemplate = "/{datasetName}/{tableName}")]
-        void UploadTable(string datasetName, string tableName, Stream data);
+        [Description("Uploads a table to a user database.")]
+        void UploadTable(
+            [Description("Name of the dataset to upload to.")]
+            string datasetName,
+            [Description("Name of the table to upload to.")]
+            string tableName,
+            Stream data);
     }
 
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]

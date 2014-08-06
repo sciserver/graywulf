@@ -15,6 +15,7 @@ using Jhu.Graywulf.Web.Services;
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [ServiceContract]
+    [Description("Manages queues and jobs.")]
     public interface IJobsService
     {
         [OperationContract]
@@ -24,23 +25,46 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         [OperationContract]
         [WebGet(UriTemplate = "/queues/{queue}")]
-        QueueResponse GetQueue(string queue);
+        [Description("Returns information about a job queue.")]
+        QueueResponse GetQueue(
+            [Description("Name of the queue.")]
+            string queue);
 
         [OperationContract]
         [WebGet(UriTemplate = "/queues/{queue}/jobs?type={type}&from={from}&max={max}")]
-        JobListResponse ListJobs(string queue, string type, string from, string max);
+        [Description("Lists the jobs in the queue in descending order by submission time. Only jobs of the authenticated user are listed.")]
+        JobListResponse ListJobs(
+            [Description("Name of the queue.")]
+            string queue,
+            [Description("Type of the job.")]
+            string type,
+            [Description("First job in the queue to be returned.")]
+            string from,
+            [Description("Maximum number of jobs to be returned.")]
+            string max);
 
         [OperationContract]
         [WebInvoke(Method = HttpMethod.Post, UriTemplate = "/queues/{queue}/jobs")]
-        JobResponse SubmitJob(string queue, JobRequest job);
+        [Description("Submits a new job of any kind.")]
+        JobResponse SubmitJob(
+            [Description("Name of the queue.")]
+            string queue,
+            [Description("The job to be sceduled.")]
+            JobRequest job);
 
         [OperationContract]
         [WebGet(UriTemplate = "/jobs/{guid}")]
-        JobResponse GetJob(string guid);
+        [Description("Returns a single job.")]
+        JobResponse GetJob(
+            [Description("Unique ID of the job to be returned.")]
+            string guid);
 
         [OperationContract]
         [WebInvoke(Method = HttpMethod.Delete, UriTemplate = "/jobs/{guid}")]
-        JobResponse CancelJob(string guid);
+        [Description("Cancels a single job.")]
+        JobResponse CancelJob(
+            [Description("Unique ID of the job to be canceled..")]
+            string guid);
     }
 
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]

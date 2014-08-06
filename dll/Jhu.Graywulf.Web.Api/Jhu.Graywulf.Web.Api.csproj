@@ -74,7 +74,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Web\Api\V1\Enum.cs" />
     <Compile Include="Web\Api\V1\JobFactory.cs" />
-    <Compile Include="Web\Api\V1\Objects\Auth.cs" />
     <Compile Include="Web\Api\V1\Objects\Column.cs" />
     <Compile Include="Web\Api\V1\Objects\Credentials.cs" />
     <Compile Include="Web\Api\V1\Objects\Dataset.cs" />

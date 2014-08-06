@@ -10,6 +10,7 @@ using Jhu.Graywulf.Registry;
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [DataContract(Name = "jobDependency")]
+    [Description("Represents a dependency between to jobs")]
     public class JobDependency : ICloneable
     {
         #region Private member variables
@@ -21,6 +22,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         #region Properties
 
         [DataMember(Name = "predecessorJob")]
+        [Description("Unique ID of the predecessor job.")]
         public Guid PredecessorJobGuid
         {
             get { return predecessorJobGuid; }
@@ -35,6 +37,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         }
 
         [DataMember(Name = "condition")]
+        [Description("Condition on the predecessor job has to met before this job is executed.")]
         public string Condition_ForXml
         {
             get { return Util.EnumFormatter.ToXmlString(condition); }

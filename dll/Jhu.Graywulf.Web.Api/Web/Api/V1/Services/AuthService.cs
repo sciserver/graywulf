@@ -5,17 +5,22 @@ using System.Text;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Runtime.Serialization;
+using System.ComponentModel;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Web.Services;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [ServiceContract]
+    [Description("Manages user authentication.")]
     public interface IAuthService
     {
         [OperationContract]
         [WebInvoke(Method = HttpMethod.Post, UriTemplate = "/")]
-        void Authenticate(AuthRequest authRequest);
+        [Description("Authenticates a user based on the submitted credentials.")]
+        void Authenticate(
+            [Description("User credentials.")]
+            AuthRequest authRequest);
     }
 
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
@@ -27,10 +32,10 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             var principal = System.Threading.Thread.CurrentPrincipal as GraywulfPrincipal;
 
-            if (authRequest != null && authRequest.Auth != null)
+            if (authRequest != null && authRequest.Credentials != null)
             {
                 var ip = IdentityProvider.Create(RegistryContext.Domain);
-                var response = ip.VerifyPassword(authRequest.Auth.Username, authRequest.Auth.Password, false);
+                var response = ip.VerifyPassword(authRequest.Credentials.Username, authRequest.Credentials.Password, false);
 
                 principal = response.Principal;
 

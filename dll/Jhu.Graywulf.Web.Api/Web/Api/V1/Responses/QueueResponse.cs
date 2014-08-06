@@ -8,9 +8,11 @@ using System.ComponentModel;
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [DataContract]
+    [Description("Represents a job queue.")]
     public class QueueResponse
     {
         [DataMember(Name = "queue")]
+        [Description("A job queue.")]
         public Queue Queue { get; set; }
 
         public QueueResponse(Queue queue)

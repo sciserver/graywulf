@@ -5,6 +5,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using System.Xml;
 using System.ServiceModel;
+using System.ComponentModel;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Schema;
@@ -13,6 +14,7 @@ using Jhu.Graywulf.Web.UI;
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [DataContract]
+    [Description("Represents a query job.")]
     public class QueryJob : Job
     {
         #region Private member variables
@@ -23,6 +25,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         #region Properties
 
         [DataMember(Name = "query")]
+        [Description("Query text in SQL.")]
         public string Query
         {
             get { return query; }

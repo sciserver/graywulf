@@ -7,38 +7,57 @@ using System.ServiceModel.Activation;
 using System.ServiceModel.Web;
 using System.ServiceModel.Security;
 using System.Security.Permissions;
+using System.ComponentModel;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Web.Services;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [ServiceContract]
+    [Description("Gives access to the datasets and database schema.")]
     public interface ISchemaService
     {
         [OperationContract]
         [DynamicResponseFormat]
         [WebGet(UriTemplate = "/datasets")]
+        [Description("Returns a list of all available datasets.")]
         DatasetListResponse ListDatasets();
 
         [OperationContract]
         [DynamicResponseFormat]
         [WebGet(UriTemplate = "/datasets/{datasetName}")]
-        Dataset GetDataset(string datasetName);
+        [Description("Returns information about a single dataset")]
+        Dataset GetDataset(
+            [Description("Name of the dataset.")]
+            string datasetName);
 
         [OperationContract]
         [DynamicResponseFormat]
         [WebGet(UriTemplate = "/datasets/{datasetName}/tables")]
-        TableListResponse ListTables(string datasetName);
+        [Description("Returns a list of the tables of a dataset.")]
+        TableListResponse ListTables(
+            [Description("Name of the dataset.")]
+            string datasetName);
 
         [OperationContract]
         [DynamicResponseFormat]
         [WebGet(UriTemplate = "/datasets/{datasetName}/tables/{tableName}")]
-        Table GetTable(string datasetName, string tableName);
+        [Description("Returns information about a single table.")]
+        Table GetTable(
+            [Description("Name of the dataset.")]
+            string datasetName,
+            [Description("Name of the table.")]
+            string tableName);
 
         [OperationContract]
         [DynamicResponseFormat]
         [WebGet(UriTemplate = "/datasets/{datasetName}/tables/{tableName}/columns")]
-        ColumnListResponse ListTableColumns(string datasetName, string tableName);
+        [Description("Returns the list of columns of a table")]
+        ColumnListResponse ListTableColumns(
+            [Description("Name of the dataset.")]
+            string datasetName,
+            [Description("Name of the table.")]
+            string tableName);
     }
 
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]

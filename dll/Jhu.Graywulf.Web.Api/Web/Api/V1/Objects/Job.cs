@@ -14,6 +14,7 @@ namespace Jhu.Graywulf.Web.Api.V1
     [KnownType(typeof(ImportJob))]
     [KnownType(typeof(QueryJob))]
     [DataContract]
+    [Description("Represents a job.")]
     public class Job
     {
         #region Private member variables
@@ -41,6 +42,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         #endregion
         #region Properties
 
+        [IgnoreDataMember]
         public JobInstance JobInstance
         {
             get { return jobInstance; }
@@ -48,6 +50,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         }
 
         [DataMember(Name = "guid")]
+        [Description("Unique identifier of the job.")]
         public Guid Guid
         {
             get { return guid; }
@@ -55,18 +58,21 @@ namespace Jhu.Graywulf.Web.Api.V1
         }
 
         [DataMember(Name = "name")]
+        [Description("Name of the job.")]
         public string Name
         {
             get { return name; }
             set { name = value; }
         }
 
+        [IgnoreDataMember]
         public JobType Type
         {
             get { return jobType; }
             set { jobType = value; }
         }
 
+        [IgnoreDataMember]
         public JobStatus Status
         {
             get { return status; }
@@ -74,6 +80,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         }
 
         [DataMember(Name = "status")]
+        [Description("Execution status of the job.")]
         public string Status_ForXml
         {
             get { return Util.EnumFormatter.ToXmlString(Status); }
@@ -81,12 +88,14 @@ namespace Jhu.Graywulf.Web.Api.V1
         }
 
         [DataMember(Name = "canCancel")]
+        [Description("True, if the job is in a state which support cancelation.")]
         public bool CanCancel
         {
             get { return canCancel; }
             set { canCancel = value; }
         }
 
+        [IgnoreDataMember]
         public JobQueue Queue
         {
             get { return queue; }
@@ -94,6 +103,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         }
 
         [DataMember(Name = "queue")]
+        [Description("Name of the queue this job is scheduled in.")]
         public string Queue_ForXml
         {
             get { return Util.EnumFormatter.ToXmlString(Queue); }
@@ -102,6 +112,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         [DataMember(Name = "comments", EmitDefaultValue = false)]
         [DefaultValue("")]
+        [Description("User-defined comments.")]
         public string Comments
         {
             get { return comments; }
@@ -110,12 +121,14 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         [DataMember(Name = "error", EmitDefaultValue = false)]
         [DefaultValue(null)]
+        [Description("Description of the error in case of a failed job.")]
         public string Error
         {
             get { return error; }
             set { error = value; }
         }
 
+        [IgnoreDataMember]
         public DateTime? DateCreated
         {
             get { return dateCreated; }
@@ -124,12 +137,14 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         [DataMember(Name = "dateCreated", EmitDefaultValue = false)]
         [DefaultValue(null)]
+        [Description("Date and time when the job was submited.")]
         public string DateCreated_ForXml
         {
             get { return Util.DateFormatter.ToXmlString(DateCreated); }
             set { DateCreated = Util.DateFormatter.FromXmlString(value); }
         }
 
+        [IgnoreDataMember]
         public DateTime? DateStarted
         {
             get { return dateStarted; }
@@ -138,12 +153,14 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         [DataMember(Name = "dateStarted", EmitDefaultValue = false)]
         [DefaultValue(null)]
+        [Description("Date and time when execution of the job started.")]
         public string DateStarted_ForXml
         {
             get { return Util.DateFormatter.ToXmlString(DateStarted); }
             set { DateStarted = Util.DateFormatter.FromXmlString(value); }
         }
 
+        [IgnoreDataMember]
         public DateTime? DateFinished
         {
             get { return dateFinished; }
@@ -152,6 +169,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         [DataMember(Name = "dateFinished", EmitDefaultValue = false)]
         [DefaultValue(null)]
+        [Description("Date and time when the execution of the job finished.")]
         public string DateFinished_ForXml
         {
             get { return Util.DateFormatter.ToXmlString(DateFinished); }
@@ -160,6 +178,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         [DataMember(Name = "dependencies", EmitDefaultValue = false)]
         [DefaultValue(null)]
+        [Description("A list of predecessor jobs on which this job depends.")]
         public JobDependency[] Dependencies
         {
             get { return dependencies; }

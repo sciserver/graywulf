@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml;
 using System.ServiceModel;
 using System.Runtime.Serialization;
+using System.ComponentModel;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Format;
@@ -15,6 +16,7 @@ using Jhu.Graywulf.Web.UI;
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [DataContract]
+    [Description("Represents a table export job.")]
     public class ExportJob : Job
     {
         #region Private member variables
@@ -27,6 +29,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         #region Properties
 
         [DataMember(Name = "tables")]
+        [Description("An array of fully qualified names of tables to be exported.")]
         public string[] Tables
         {
             get { return tables; }
@@ -34,6 +37,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         }
 
         [DataMember(Name = "mimeType")]
+        [Description("Mime type of the target data format.")]
         public string ContentType
         {
             get { return mimeType; }
@@ -41,6 +45,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         }
 
         [DataMember(Name = "uri")]
+        [Description("URI of the target file.")]
         public Uri Uri
         {
             get { return uri; }
@@ -51,7 +56,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         /// 
         /// </summary>
         /// <remarks>
-        /// Used to display list of tables on the web UI.
+        /// Used for displaying the list of tables on the web UI.
         /// </remarks>
         [IgnoreDataMember]
         public string TableList

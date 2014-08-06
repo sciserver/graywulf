@@ -5,13 +5,16 @@ using System.Text;
 using System.ServiceModel;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
+using System.ComponentModel;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [DataContract(Name="jobList")]
+    [Description("Represents a list of jobs.")]
     public class JobListResponse
     {
         [DataMember(Name = "jobs")]
+        [Description("An array of jobs.")]
         public JobResponse[] Jobs { get; set; }
 
         public JobListResponse()

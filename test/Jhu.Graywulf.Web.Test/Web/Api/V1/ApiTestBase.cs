@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             var auth = new AuthRequest()
             {
-                Auth = new Auth()
+                Credentials = new Credentials()
                 {
                     Username = "test",
                     Password = "alma"

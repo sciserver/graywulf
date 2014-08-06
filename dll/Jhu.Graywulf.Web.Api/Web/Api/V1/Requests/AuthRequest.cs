@@ -8,11 +8,13 @@ using System.ComponentModel;
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [DataContract]
+    [Description("Represents an authentication request.")]
     public class AuthRequest
     {
         [DataMember(Name = "auth", EmitDefaultValue = false)]
         [DefaultValue(null)]
-        public Auth Auth { get; set; }
+        [Description("User credentials used for authentication.")]
+        public Credentials Credentials { get; set; }
 
         public AuthRequest()
         {

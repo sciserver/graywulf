@@ -8,22 +8,27 @@ using System.ComponentModel;
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [DataContract]
+    [Description("Represents a job of a specific type.")]
     public class JobResponse
     {
         [DataMember(Name = "queryJob", EmitDefaultValue=false)]
         [DefaultValue(null)]
+        [Description("A query job.")]
         public QueryJob QueryJob { get; set; }
 
         [DataMember(Name = "exportJob", EmitDefaultValue = false)]
         [DefaultValue(null)]
+        [Description("A data table export job.")]
         public ExportJob ExportJob { get; set; }
 
         [DataMember(Name = "importJob", EmitDefaultValue = false)]
         [DefaultValue(null)]
+        [Description("A data table import job.")]
         public ImportJob ImportJob { get; set; }
 
         [DataMember(Name = "job", EmitDefaultValue = false)]
         [DefaultValue(null)]
+        [Description("A job of unknown type.")]
         public Job Job { get; set; }
 
         public JobResponse(Job job)
