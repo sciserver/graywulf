@@ -81,6 +81,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Util\ByteSizeFormatter.cs" />
+    <Compile Include="Util\CookieConverter.cs" />
+    <Compile Include="Util\DateFormatter.cs" />
+    <Compile Include="Util\DocumentationFormatter.cs" />
+    <Compile Include="Util\EmailSender.cs" />
+    <Compile Include="Util\EmailTemplateUtility.cs" />
+    <Compile Include="Util\EnumFormatter.cs" />
+    <Compile Include="Util\IIS.cs" />
+    <Compile Include="Util\JQuery.cs" />
+    <Compile Include="Util\UrlFormatter.cs" />
     <Compile Include="Web\ApplicationBase.cs" />
     <Compile Include="Web\Captcha.aspx.cs">
       <DependentUpon>Captcha.aspx</DependentUpon>
@@ -187,16 +197,6 @@
     <Compile Include="Web\UserControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Web\Util\ByteSizeFormatter.cs" />
-    <Compile Include="Web\Util\CookieConverter.cs" />
-    <Compile Include="Web\Util\DateFormatter.cs" />
-    <Compile Include="Web\Util\DocumentationFormatter.cs" />
-    <Compile Include="Web\Util\EmailTemplateUtility.cs" />
-    <Compile Include="Web\Util\EmailSender.cs" />
-    <Compile Include="Web\Util\EnumFormatter.cs" />
-    <Compile Include="Web\Util\IIS.cs" />
-    <Compile Include="Web\Util\JQuery.cs" />
-    <Compile Include="Web\Util\UrlFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Web\Controls\Labels.resx">

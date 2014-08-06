@@ -11,7 +11,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Web.Util;
+using Jhu.Graywulf.Web;
 
 namespace Jhu.Graywulf.Web.Admin.Layout
 {
@@ -29,9 +29,9 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             DatabaseFileType.SelectedValue = Item.DatabaseFileType.ToString();
             LogicalName.Text = Item.LogicalName;
             Filename.Text = Item.Filename;
-            AllocatedSpace.Text = ByteSizeFormatter.Format(Item.AllocatedSpace);
-            UsedSpace.Text = ByteSizeFormatter.Format(Item.UsedSpace);
-            ReservedSpace.Text = ByteSizeFormatter.Format(Item.ReservedSpace);
+            AllocatedSpace.Text = Util.ByteSizeFormatter.Format(Item.AllocatedSpace);
+            UsedSpace.Text = Util.ByteSizeFormatter.Format(Item.UsedSpace);
+            ReservedSpace.Text = Util.ByteSizeFormatter.Format(Item.ReservedSpace);
         }
 
         protected override void OnSaveForm()
@@ -42,9 +42,9 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             Item.DatabaseFileType = (DatabaseFileType)Enum.Parse(typeof(DatabaseFileType), DatabaseFileType.SelectedValue);
             Item.LogicalName = LogicalName.Text;
             Item.Filename = Filename.Text;
-            Item.AllocatedSpace = ByteSizeFormatter.Parse(AllocatedSpace.Text);
-            Item.UsedSpace = ByteSizeFormatter.Parse(UsedSpace.Text);
-            Item.ReservedSpace = ByteSizeFormatter.Parse(ReservedSpace.Text);
+            Item.AllocatedSpace = Util.ByteSizeFormatter.Parse(AllocatedSpace.Text);
+            Item.UsedSpace = Util.ByteSizeFormatter.Parse(UsedSpace.Text);
+            Item.ReservedSpace = Util.ByteSizeFormatter.Parse(ReservedSpace.Text);
         }
 
         protected void RefreshDiskVolumeList()

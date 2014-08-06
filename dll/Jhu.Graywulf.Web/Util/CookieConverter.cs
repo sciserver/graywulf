@@ -5,7 +5,7 @@ using System.Text;
 using System.Net;
 using System.Web;
 
-namespace Jhu.Graywulf.Web.Util
+namespace Jhu.Graywulf.Util
 {
     public static class CookieConverter
     {

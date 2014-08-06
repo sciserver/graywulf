@@ -6,7 +6,7 @@ using System.Xml;
 using System.Net.Mail;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Web.Util
+namespace Jhu.Graywulf.Util
 {
     public static class EmailTemplateUtility
     {

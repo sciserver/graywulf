@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
-namespace Jhu.Graywulf.Web.Util
+namespace Jhu.Graywulf.Util
 {
     public static class UrlFormatter
     {

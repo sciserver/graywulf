@@ -6,7 +6,7 @@ using System.Web;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Web.Util;
+using Jhu.Graywulf.Web;
 
 namespace Jhu.Graywulf.Web
 {
@@ -127,22 +127,22 @@ namespace Jhu.Graywulf.Web
             string subject;
             string body;
 
-            EmailTemplateUtility.LoadEmailTemplate(template, out subject, out body);
+            Util.EmailTemplateUtility.LoadEmailTemplate(template, out subject, out body);
 
-            EmailTemplateUtility.ReplaceEmailToken(ref subject, "[$ShortTitle]", RegistryContext.Federation.ShortTitle);
-            EmailTemplateUtility.ReplaceEmailToken(ref subject, "[$Subject]", Subject.Text);
+            Util.EmailTemplateUtility.ReplaceEmailToken(ref subject, "[$ShortTitle]", RegistryContext.Federation.ShortTitle);
+            Util.EmailTemplateUtility.ReplaceEmailToken(ref subject, "[$Subject]", Subject.Text);
 
-            EmailTemplateUtility.ReplaceEmailToken(ref body, "[$ShortTitle]", RegistryContext.Federation.ShortTitle);
-            EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Name]", Name.Text);
-            EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Email]", Email.Text);
-            EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Subject]", Subject.Text);
-            EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Comments]", Comments.Text);
+            Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$ShortTitle]", RegistryContext.Federation.ShortTitle);
+            Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Name]", Name.Text);
+            Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Email]", Email.Text);
+            Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Subject]", Subject.Text);
+            Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Comments]", Comments.Text);
 
             if (mode == Mode.Error && Session[Constants.SessionException] != null)
             {
-                EmailTemplateUtility.ReplaceEmailToken(ref body, "[$ErrorMessage]", ex.Message);
-                EmailTemplateUtility.ReplaceEmailToken(ref body, "[$JobGUID]", "-");
-                EmailTemplateUtility.ReplaceEmailToken(ref body, "[$EventID]", eventid.ToString());
+                Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$ErrorMessage]", ex.Message);
+                Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$JobGUID]", "-");
+                Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$EventID]", eventid.ToString());
             }
             else if (mode == Mode.JobError)
             {
@@ -150,12 +150,12 @@ namespace Jhu.Graywulf.Web
                 job.Guid = jobGuid;
                 job.Load();
 
-                EmailTemplateUtility.ReplaceEmailToken(ref body, "[$ErrorMessage]", job.ExceptionMessage);
-                EmailTemplateUtility.ReplaceEmailToken(ref body, "[$JobGUID]", job.Guid.ToString());
-                EmailTemplateUtility.ReplaceEmailToken(ref body, "[$EventID]", "-");
+                Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$ErrorMessage]", job.ExceptionMessage);
+                Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$JobGUID]", job.Guid.ToString());
+                Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$EventID]", "-");
             }
 
-            var msg = EmailTemplateUtility.CreateMessage(
+            var msg = Util.EmailTemplateUtility.CreateMessage(
                 RegistryContext.Federation.Email, RegistryContext.Federation.ShortTitle,
                 RegistryContext.Federation.Email, RegistryContext.Federation.ShortTitle,
                 subject, body);
@@ -170,12 +170,12 @@ namespace Jhu.Graywulf.Web
                     att = new System.Net.Mail.Attachment(mem, "error.html");
 
                     msg.Attachments.Add(att);
-                    EmailTemplateUtility.SendMessage(msg);
+                    Util.EmailTemplateUtility.SendMessage(msg);
                 }
             }
             else
             {
-                EmailTemplateUtility.SendMessage(msg);
+                Util.EmailTemplateUtility.SendMessage(msg);
             }
 
             FeedbackForm.Visible = false;

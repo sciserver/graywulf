@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jhu.Graywulf.Web.Util
+namespace Jhu.Graywulf.Util
 {
     public static class EnumFormatter
     {

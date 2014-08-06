@@ -50,20 +50,20 @@ namespace Jhu.Graywulf.Web.UI.Jobs
 
             Name.Text = exportJob.Name;
             Comments.Text = exportJob.Comments;
-            DateCreated.Text = Web.Util.DateFormatter.Format(exportJob.DateCreated);
-            DateStarted.Text = Web.Util.DateFormatter.Format(exportJob.DateStarted);
-            DateFinished.Text = Web.Util.DateFormatter.Format(exportJob.DateFinished);
+            DateCreated.Text = Util.DateFormatter.Format(exportJob.DateCreated);
+            DateStarted.Text = Util.DateFormatter.Format(exportJob.DateStarted);
+            DateFinished.Text = Util.DateFormatter.Format(exportJob.DateFinished);
             JobExecutionStatus.Status = exportJob.Status;
 
             // Set button actions
 
             Cancel.Enabled = exportJob.CanCancel;
-            Cancel.OnClientClick = Web.Util.UrlFormatter.GetClientRedirect(CancelJob.GetUrl(exportJob.Guid));
+            Cancel.OnClientClick = Util.UrlFormatter.GetClientRedirect(CancelJob.GetUrl(exportJob.Guid));
 
-            Back.OnClientClick = Web.Util.UrlFormatter.GetClientRedirect(OriginalReferer);
+            Back.OnClientClick = Util.UrlFormatter.GetClientRedirect(OriginalReferer);
 
             Download.Enabled = exportJob.Status == JobStatus.Completed;
-            Download.OnClientClick = Web.Util.UrlFormatter.GetClientPopUp(GetExportUrl(exportJob));
+            Download.OnClientClick = Util.UrlFormatter.GetClientPopUp(GetExportUrl(exportJob));
         }
 
         protected void Page_Load(object sender, EventArgs e)

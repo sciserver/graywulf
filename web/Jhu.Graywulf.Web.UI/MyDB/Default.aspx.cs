@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Web.UI.WebControls;
-using Jhu.Graywulf.Web.Util;
+using Jhu.Graywulf.Web;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
@@ -16,9 +16,9 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (!IsPostBack)
             {
-                DataSpace.Text = ByteSizeFormatter.Format(FederationContext.MyDBDataset.Statistics.DataSpace);
-                UsedSpace.Text = ByteSizeFormatter.Format(FederationContext.MyDBDataset.Statistics.UsedSpace);
-                LogSpace.Text = ByteSizeFormatter.Format(FederationContext.MyDBDataset.Statistics.LogSpace);
+                DataSpace.Text = Util.ByteSizeFormatter.Format(FederationContext.MyDBDataset.Statistics.DataSpace);
+                UsedSpace.Text = Util.ByteSizeFormatter.Format(FederationContext.MyDBDataset.Statistics.UsedSpace);
+                LogSpace.Text = Util.ByteSizeFormatter.Format(FederationContext.MyDBDataset.Statistics.LogSpace);
 
                 var used = (double)FederationContext.MyDBDataset.Statistics.UsedSpace / FederationContext.MyDBDataset.Statistics.DataSpace;
                 var free = 1 - used;

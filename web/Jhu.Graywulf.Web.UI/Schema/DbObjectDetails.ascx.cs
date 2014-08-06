@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
                 SummaryLabel.Text = dbobj.Metadata.Summary;
                 RemarksLabel.Text = dbobj.Metadata.Remarks;
                 RemarksPanel.Visible = !String.IsNullOrEmpty(dbobj.Metadata.Remarks);
-                ExampleLabel.Text = Web.Util.DocumentationFormatter.FormatExample(dbobj.Metadata.Example);
+                ExampleLabel.Text = Util.DocumentationFormatter.FormatExample(dbobj.Metadata.Example);
                 ExamplePanel.Visible = !String.IsNullOrEmpty(dbobj.Metadata.Example);
 
                 if (dbobj is IColumns)
@@ -109,7 +109,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
                 if (dbobj.ObjectType == DatabaseObjectType.Table || dbobj.ObjectType == DatabaseObjectType.View)
                 {
-                    Peek.OnClientClick = Web.Util.UrlFormatter.GetClientPopUp(Jhu.Graywulf.Web.UI.Schema.Peek.GetUrl(dbobj.UniqueKey));
+                    Peek.OnClientClick = Util.UrlFormatter.GetClientPopUp(Jhu.Graywulf.Web.UI.Schema.Peek.GetUrl(dbobj.UniqueKey));
                     Peek.Enabled = true;
                 }
                 else

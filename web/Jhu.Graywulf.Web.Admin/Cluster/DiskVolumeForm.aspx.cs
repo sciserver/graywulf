@@ -11,7 +11,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Web.Util;
+using Jhu.Graywulf.Web;
 
 namespace Jhu.Graywulf.Web.Admin.Cluster
 {
@@ -28,9 +28,9 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
             }
             LocalPath.Text = Item.LocalPath.Value;
             UncPath.Text = Item.UncPath.Value;
-            FullSpace.Text = ByteSizeFormatter.Format(Item.FullSpace);
-            AllocatedSpace.Text = ByteSizeFormatter.Format(Item.AllocatedSpace);
-            ReservedSpace.Text = ByteSizeFormatter.Format(Item.ReservedSpace);
+            FullSpace.Text = Util.ByteSizeFormatter.Format(Item.FullSpace);
+            AllocatedSpace.Text = Util.ByteSizeFormatter.Format(Item.AllocatedSpace);
+            ReservedSpace.Text = Util.ByteSizeFormatter.Format(Item.ReservedSpace);
             Speed.Text = (Item.Speed / 100000.0).ToString("0.00");
         }
 
@@ -46,9 +46,9 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
             }
             Item.LocalPath.Value = LocalPath.Text;
             Item.UncPath.Value = UncPath.Text;
-            Item.FullSpace = ByteSizeFormatter.Parse(FullSpace.Text);
+            Item.FullSpace = Util.ByteSizeFormatter.Parse(FullSpace.Text);
             //item.AllocatedSpace = ByteSizeFormatter.ParseFileSize(AllocatedSpace.Text);    // read only field
-            Item.ReservedSpace = ByteSizeFormatter.Parse(ReservedSpace.Text);
+            Item.ReservedSpace = Util.ByteSizeFormatter.Parse(ReservedSpace.Text);
             Item.Speed = (long)(double.Parse(Speed.Text) * 100000.0);
         }
 
