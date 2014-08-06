@@ -14,6 +14,9 @@ namespace Jhu.Graywulf.Registry
     {
         #region Static member variables
 
+        /// <summary>
+        /// Rendom number generator used to gerenate unique job names.
+        /// </summary>
         private static readonly Random random = new Random();
 
         #endregion

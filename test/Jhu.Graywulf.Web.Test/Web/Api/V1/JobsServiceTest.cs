@@ -26,11 +26,25 @@ namespace Jhu.Graywulf.Web.Api.V1
         }
 
         [TestMethod]
+        public void ListQueuesTest()
+        {
+            AuthenticateUser();
+
+            var queues = Client.ListQueues();
+        }
+
+        [TestMethod]
         public void ListJobsTest()
         {
             AuthenticateUser();
 
-            var jobs = Client.ListJobs("all", "all");
+            var jobs = Client.ListJobs("all", "all", null, null);
+
+            jobs = Client.ListJobs("quick", "query", "1", "5");
+            jobs = Client.ListJobs("long", "export", "1", "5");
+
+            jobs = Client.ListJobs("all", "all", "1", "5");
+            Assert.AreEqual(5, jobs.Jobs.Length);
         }
     }
 }

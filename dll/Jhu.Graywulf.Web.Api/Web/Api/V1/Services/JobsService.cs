@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.ComponentModel;
 using System.ServiceModel;
 using System.ServiceModel.Activation;
 using System.ServiceModel.Web;
@@ -18,6 +19,7 @@ namespace Jhu.Graywulf.Web.Api.V1
     {
         [OperationContract]
         [WebGet(UriTemplate = "/queues")]
+        [Description("Returns a list of all available job queues.")]
         QueueListResponse ListQueues();
 
         [OperationContract]
@@ -25,8 +27,8 @@ namespace Jhu.Graywulf.Web.Api.V1
         QueueResponse GetQueue(string queue);
 
         [OperationContract]
-        [WebGet(UriTemplate = "/queues/{queue}/jobs?type={type}")]
-        JobListResponse ListJobs(string queue, string type);
+        [WebGet(UriTemplate = "/queues/{queue}/jobs?type={type}&from={from}&max={max}")]
+        JobListResponse ListJobs(string queue, string type, string from, string max);
 
         [OperationContract]
         [WebInvoke(Method = HttpMethod.Post, UriTemplate = "/queues/{queue}/jobs")]
@@ -47,25 +49,6 @@ namespace Jhu.Graywulf.Web.Api.V1
     [RestServiceBehavior]
     public class JobsService : RestServiceBase, IJobsService
     {
-        private JobFactory jobFactory;
-
-        #region Properties
-
-        private JobFactory JobFactory
-        {
-            get
-            {
-                if (jobFactory == null)
-                {
-                    // Make sure that searches are always limited to the current user
-                    jobFactory = new JobFactory(RegistryContext);
-                }
-
-                return jobFactory;
-            }
-        }
-
-        #endregion
         #region Constructors and initializers
 
         public JobsService()
@@ -75,23 +58,28 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         private void InitializeMembers()
         {
-            this.jobFactory = null;
         }
 
         #endregion
 
         public QueueListResponse ListQueues()
         {
-            return new QueueListResponse(JobFactory.SelectQueue());
+            var jobFactory = new JobFactory(RegistryContext);
+
+            return new QueueListResponse(jobFactory.SelectQueue());
         }
 
         public QueueResponse GetQueue(string queue)
         {
-            return new QueueResponse(JobFactory.GetQueue(queue));
+            var jobFactory = new JobFactory(RegistryContext);
+
+            return new QueueResponse(jobFactory.GetQueue(queue));
         }
 
-        public JobListResponse ListJobs(string queue, string type)
+        public JobListResponse ListJobs(string queue, string type, string from, string max)
         {
+            var jobFactory = new JobFactory(RegistryContext);
+
             JobQueue jobQueue;
             if (!Enum.TryParse<JobQueue>(queue, true, out jobQueue))
             {
@@ -105,7 +93,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                     break;
                 case JobQueue.Quick:
                 case JobQueue.Long:
-                    JobFactory.QueueInstanceGuids.Add(JobFactory.GetQueue(queue).Guid);
+                    jobFactory.QueueInstanceGuids.Add(jobFactory.GetQueue(queue).Guid);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -125,20 +113,24 @@ namespace Jhu.Graywulf.Web.Api.V1
                 case JobType.Export:
                 case JobType.Import:
                 case JobType.Query:
-                    JobFactory.JobDefinitionGuids.UnionWith(JobFactory.SelectJobDefinitions(jobType).Select(jd => jd.Guid));
+                    jobFactory.JobDefinitionGuids.UnionWith(jobFactory.SelectJobDefinitions(jobType).Select(jd => jd.Guid));
                     break;
                 default:
                     throw new NotImplementedException();
             }
 
             // TODO: add options like: top, date limits, etc.
+            int f = from == null ? 0 : int.Parse(from);
+            int m = max == null ? 10 : int.Parse(max);
 
-            return new JobListResponse(JobFactory.SelectJobs(-1, -1));
+            return new JobListResponse(jobFactory.SelectJobs(f, Math.Min(m, 50)));
         }
 
         public JobResponse GetJob(string guid)
         {
-            return new JobResponse(JobFactory.GetJob(new Guid(guid)));
+            var jobFactory = new JobFactory(RegistryContext);
+
+            return new JobResponse(jobFactory.GetJob(new Guid(guid)));
         }
 
         public JobResponse SubmitJob(string queue, JobRequest jobRequest)
@@ -149,8 +141,9 @@ namespace Jhu.Graywulf.Web.Api.V1
             // if necessary, prior to scheduling it as a real job
 
             job.Queue = Util.EnumFormatter.FromXmlString<JobQueue>(queue);
-
+            
             job.Schedule(FederationContext);
+
             return new JobResponse(job);
         }
 

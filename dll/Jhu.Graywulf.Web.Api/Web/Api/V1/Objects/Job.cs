@@ -270,7 +270,10 @@ namespace Jhu.Graywulf.Web.Api.V1
                     break;
             }
 
-            switch (jobInstance.QueueInstance.QueueDefinition.Name)
+            // Here we make the assumption that the queue is named the same as
+            // the queue definition
+            var qi = JobFactory.GetQueueInstance(jobInstance.ParentReference.Guid);
+            switch (qi.Name)
             {
                 case Jhu.Graywulf.Registry.Constants.QuickQueueDefinitionName:
                     this.queue = JobQueue.Quick;
