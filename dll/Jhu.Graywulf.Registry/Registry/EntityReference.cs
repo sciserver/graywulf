@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Registry
             {
                 if (guid == Guid.Empty)
                 {
-                    if (value == null)
+                    if (value == null && !IsEmpty)
                     {
                         LoadEntity();   
                     }
@@ -103,12 +103,15 @@ namespace Jhu.Graywulf.Registry
             {
                 if (name == null)
                 {
-                    if (value == null)
+                    if (value == null && !IsEmpty)
                     {
                         LoadEntity();
                     }
 
-                    name = value.GetFullyQualifiedName();
+                    if (value != null)
+                    {
+                        name = value.GetFullyQualifiedName();
+                    }
                 }
 
                 return name;
