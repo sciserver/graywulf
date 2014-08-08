@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Net;
+using System.Net.Mime;
 using System.Collections.Specialized;
 using System.ServiceModel.Description;
 using System.ServiceModel.Configuration;
 using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Web;
+using System.Net.Http.Headers;
 
 namespace Jhu.Graywulf.Web.Services
 {
@@ -17,8 +19,8 @@ namespace Jhu.Graywulf.Web.Services
     /// 
     /// </summary>
     /// <remarks>
-    /// The behavior accepts all cookies and a limited set of headers and
-    /// automatically forwards them to the next request.
+    /// The behavior accepts all cookies and headers to be inspected by
+    /// the client.
     /// </remarks>
     public class RestClientBehavior : IEndpointBehavior, IClientMessageInspector
     {
@@ -41,6 +43,18 @@ namespace Jhu.Graywulf.Web.Services
             get { return cookies; }
         }
 
+        public string ContentType
+        {
+            get { return headers[Constants.HttpHeaderContentType]; }
+            set { headers[Constants.HttpHeaderContentType] = value; }
+        }
+
+        public string Accept
+        {
+            get { return headers[Constants.HttpHeaderAccept]; }
+            set { headers[Constants.HttpHeaderAccept] = value; }
+        }
+
         public RestClientBehavior()
         {
             InitializeMembers();
@@ -58,7 +72,7 @@ namespace Jhu.Graywulf.Web.Services
         }
 
         public void AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
-        {   
+        {
         }
 
         public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
@@ -71,7 +85,7 @@ namespace Jhu.Graywulf.Web.Services
         }
 
         public void ApplyDispatchBehavior(ServiceEndpoint endpoint, EndpointDispatcher endpointDispatcher)
-        {   
+        {
         }
 
         public object BeforeSendRequest(ref Message request, System.ServiceModel.IClientChannel channel)

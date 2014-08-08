@@ -170,7 +170,10 @@
     <Compile Include="Web\Services\HttpMethod.cs" />
     <Compile Include="Web\Services\ResourceNotFoundException.cs" />
     <Compile Include="Web\Services\RestAuthenticationModule.cs" />
-    <Compile Include="Web\Services\RestClientBehavior.cs" />
+    <Compile Include="Web\Services\RestClientBehavior.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\Services\RestClientSession.cs" />
     <Compile Include="Web\Services\RestErrorHandler.cs" />
     <Compile Include="Web\Services\RestOperationBehavior.cs" />
     <Compile Include="Web\Services\RestOperationInvoker.cs" />

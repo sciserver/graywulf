@@ -9,5 +9,7 @@ namespace Jhu.Graywulf.Web.Services
     {
         public const string HttpHeaderCookie = "Cookie";
         public const string HttpHeaderSetCookie = "Set-Cookie";
+        public const string HttpHeaderContentType = "Content-Type";
+        public const string HttpHeaderAccept = "Accept";
     }
 }

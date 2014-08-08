@@ -122,6 +122,9 @@ namespace Jhu.Graywulf.IO
         {
             if (this.baseStream != null)
             {
+                // HACK
+                // Because not all streams support flushing the best we can do here
+                // is to wrap things into a try block and hope it won't cause problems.
                 try
                 {
                     this.baseStream.Flush();

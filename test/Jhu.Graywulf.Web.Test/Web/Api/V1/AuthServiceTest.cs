@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jhu.Graywulf.SimpleRestClient;
+using Jhu.Graywulf.Web.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Jhu.Graywulf.Web.Api.V1
@@ -13,7 +13,10 @@ namespace Jhu.Graywulf.Web.Api.V1
         [TestMethod]
         public void AuthenticateTest()
         {
-            AuthenticateUser();
+            using (var session = new RestClientSession())
+            {
+                AuthenticateUser(session);
+            }
         }
     }
 }

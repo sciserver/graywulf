@@ -93,7 +93,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// Creates a destination object based on a target table.
         /// </summary>
         /// <param name="table"></param>
-        public DestinationTable(Table table)
+        public DestinationTable(Table table, TableInitializationOptions options)
         {
             InitializeMembers();
 
@@ -101,6 +101,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.databaseName = table.DatabaseName;
             this.schemaName = table.SchemaName;
             this.tableNameTemplate = table.TableName;
+            this.options = options;
         }
 
         public DestinationTable(SqlServerDataset dataset, string databaseName, string schemaName, string tableName, TableInitializationOptions options)

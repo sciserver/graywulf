@@ -2,102 +2,105 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jhu.Graywulf.SimpleRestClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Jhu.Graywulf.Web.Services;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [TestClass]
     public class JobsServiceTest : ApiTestBase
     {
-        private IJobsService client;
-
-        protected IJobsService Client
+        protected IJobsService CreateClient(RestClientSession session)
         {
-            get
-            {
-                if (client == null)
-                {
-                    client = CreateClient<IJobsService>(new Uri("http://localhost/gwui/api/v1/jobs.svc"));
-                }
-
-                return client;
-            }
+            AuthenticateUser(session);
+            var client = session.CreateClient<IJobsService>(new Uri("http://localhost/gwui/api/v1/jobs.svc"));
+            return client;
         }
+
 
         [TestMethod]
         public void ListQueuesTest()
         {
-            AuthenticateUser();
-
-            var queues = Client.ListQueues();
-            Assert.AreEqual(2, queues.Queues.Length);
+            using (var session = new RestClientSession())
+            {
+                var client = CreateClient(session);
+                var queues = client.ListQueues();
+                Assert.AreEqual(2, queues.Queues.Length);
+            }
         }
 
         [TestMethod]
         public void GetQueueTest()
         {
-            AuthenticateUser();
-
-            var queue = Client.GetQueue("long");
-            queue = Client.GetQueue("quick");
+            using (var session = new RestClientSession())
+            {
+                var client = CreateClient(session);
+                var queue = client.GetQueue("long");
+                queue = client.GetQueue("quick");
+            }
         }
 
         [TestMethod]
         public void ListJobsTest()
         {
-            AuthenticateUser();
+            using (var session = new RestClientSession())
+            {
+                var client = CreateClient(session);
+                var jobs = client.ListJobs("all", "all", null, null);
 
-            var jobs = Client.ListJobs("all", "all", null, null);
+                jobs = client.ListJobs("quick", "query", "1", "5");
+                jobs = client.ListJobs("long", "export", "1", "5");
 
-            jobs = Client.ListJobs("quick", "query", "1", "5");
-            jobs = Client.ListJobs("long", "export", "1", "5");
-
-            jobs = Client.ListJobs("all", "all", "1", "5");
-            Assert.AreEqual(5, jobs.Jobs.Length);
+                jobs = client.ListJobs("all", "all", "1", "5");
+                Assert.AreEqual(5, jobs.Jobs.Length);
+            }
         }
 
         [TestMethod]
         public void GetJobTest()
         {
-            AuthenticateUser();
+            using (var session = new RestClientSession())
+            {
+                var client = CreateClient(session);
+                // Get some jobs
+                var jobs = client.ListJobs("all", "all", null, null);
 
-            // Get some jobs
-            var jobs = Client.ListJobs("all", "all", null, null);
-
-            // Pick the first one
-            var job = Client.GetJob(jobs.Jobs[0].GetValue().Guid.ToString());
+                // Pick the first one
+                var job = client.GetJob(jobs.Jobs[0].GetValue().Guid.ToString());
+            }
         }
 
         [TestMethod]
         public void SubmitQueryJobTest()
         {
-            AuthenticateUser();
-
-            var job = new QueryJob()
+            using (var session = new RestClientSession())
             {
-                Query = "SELECT * FROM TEST:SampleData",
-                Comments = "test comments",
-            };
+                var client = CreateClient(session);
 
-            var request = new JobRequest()
-            {
-                QueryJob = job
-            };
+                var job = new QueryJob()
+                {
+                    Query = "SELECT * FROM TEST:SampleData",
+                    Comments = "test comments",
+                };
 
-            var response = Client.SubmitJob("quick", request);
+                var request = new JobRequest()
+                {
+                    QueryJob = job
+                };
 
-            // Try to get newly scheduled job
-            var nj = Client.GetJob(response.QueryJob.Guid.ToString());
+                var response = client.SubmitJob("quick", request);
+
+                // Try to get newly scheduled job
+                var nj = client.GetJob(response.QueryJob.Guid.ToString());
 
 
-            // Now create another job depending on this one
+                // Now create another job depending on this one
 
-            job = new QueryJob()
-            {
-                Query = "SELECT * FROM TEST:SampleData -- JOB 2",
-                Comments = "test comments",
-                Dependencies = new JobDependency[]
+                job = new QueryJob()
+                {
+                    Query = "SELECT * FROM TEST:SampleData -- JOB 2",
+                    Comments = "test comments",
+                    Dependencies = new JobDependency[]
                 {
                     new JobDependency()
                     {
@@ -105,47 +108,51 @@ namespace Jhu.Graywulf.Web.Api.V1
                         PredecessorJobGuid = nj.QueryJob.Guid
                     }
                 }
-            };
+                };
 
-            request = new JobRequest()
-            {
-                QueryJob = job
-            };
+                request = new JobRequest()
+                {
+                    QueryJob = job
+                };
 
-            response = Client.SubmitJob("quick", request);
+                response = client.SubmitJob("quick", request);
 
-            var nj2 = Client.GetJob(response.QueryJob.Guid.ToString());
+                var nj2 = client.GetJob(response.QueryJob.Guid.ToString());
 
-            Assert.IsTrue(nj2.QueryJob.Dependencies.Length > 0);
+                Assert.IsTrue(nj2.QueryJob.Dependencies.Length > 0);
+            }
         }
 
         [TestMethod]
         public void CancelJobTest()
         {
-            AuthenticateUser();
-
-            // Create a simple job first
-
-            var job = new QueryJob()
+            using (var session = new RestClientSession())
             {
-                Query = "SELECT * FROM TEST:SampleData",
-                Comments = "test comments",
-            };
+                var client = CreateClient(session);
 
-            var request = new JobRequest()
-            {
-                QueryJob = job
-            };
+                // Create a simple job first
 
-            var response = Client.SubmitJob("quick", request);
+                var job = new QueryJob()
+                {
+                    Query = "SELECT * FROM TEST:SampleData",
+                    Comments = "test comments",
+                };
 
-            // Try to get newly scheduled job
-            var nj = Client.GetJob(response.QueryJob.Guid.ToString());
+                var request = new JobRequest()
+                {
+                    QueryJob = job
+                };
 
-            // Now cancel it
-            var nj2 = Client.CancelJob(response.QueryJob.Guid.ToString());
+                var response = client.SubmitJob("quick", request);
 
-            Assert.AreEqual(JobStatus.Canceled, nj2.QueryJob.Status);
+                // Try to get newly scheduled job
+                var nj = client.GetJob(response.QueryJob.Guid.ToString());
+
+                // Now cancel it
+                var nj2 = client.CancelJob(response.QueryJob.Guid.ToString());
+
+                Assert.AreEqual(JobStatus.Canceled, nj2.QueryJob.Status);
+            }
         }
     }
 }

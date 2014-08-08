@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.IO;
+using System.Net.Http.Headers;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.IO;
 
@@ -195,10 +196,10 @@ namespace Jhu.Graywulf.Format
             return false;
         }
 
-        public DataFileBase CreateFileFromMimeType(string mimeType)
+        public DataFileBase CreateFileFromMimeType(string mediaType)
         {
             DataFileBase file;
-            if (!TryCreateFileFromMimeType(mimeType, out file))
+            if (!TryCreateFileFromMimeType(mediaType, out file))
             {
                 throw CreateFileFormatUnknownException();
             }
@@ -206,15 +207,23 @@ namespace Jhu.Graywulf.Format
             return file;
         }
 
-        public bool TryCreateFileFromMimeType(string mimeType, out DataFileBase file)
+        public bool TryCreateFileFromMimeType(string mediaType, out DataFileBase file)
         {
             EnsureFileFormatsLoaded();
 
-            int idx;
-            if (filesByMimeType.TryGetValue(mimeType, out idx))
+            // Parse accept header
+            var parts = mediaType.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < parts.Length; i++)
             {
-                file = (DataFileBase)prototypes[idx].Clone();
-                return true;
+                var accept = new MediaTypeWithQualityHeaderValue(parts[i]);
+
+                int idx;
+                if (filesByMimeType.TryGetValue(accept.MediaType, out idx))
+                {
+                    file = (DataFileBase)prototypes[idx].Clone();
+                    return true;
+                }
             }
 
             file = null;

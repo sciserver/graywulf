@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Format
 
         public const string MimeTypePlainText = "text/plain";
         public const string MimeTypeCsv = "text/csv";
-        public const string MimeTypeBcp = "application/octet-stream";
+        public const string MimeTypeBcp = "application/sqlserver";
         public const string MimeTypeXml = "application/xml";
         public const string MimeTypeHtml = "text/html";
         public const string MimeTypeXHtml = "application/xhtml+xml";

@@ -44,6 +44,7 @@
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Channels" />
     <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web" />
     <Reference Include="System.XML" />
@@ -60,6 +61,7 @@
     <Compile Include="Security\KeystoneIdentityProviderTest.cs" />
     <Compile Include="Web\Api\V1\ApiTestBase.cs" />
     <Compile Include="Web\Api\V1\AuthServiceTest.cs" />
+    <Compile Include="Web\Api\V1\DataServiceTest.cs" />
     <Compile Include="Web\Api\V1\JobsServiceTest.cs" />
     <Compile Include="Web\Api\V1\ObjectSerializationTest.cs" />
   </ItemGroup>
@@ -75,6 +77,10 @@
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.IO\Jhu.Graywulf.IO.csproj">
+      <Project>{6797ED88-1D8C-491B-A036-4C42C4BF2EAF}</Project>
+      <Name>Jhu.Graywulf.IO</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry.Enum\Jhu.Graywulf.Registry.Enum.csproj">
       <Project>{71599792-21CC-4E63-AFB5-2AFBDB3DF418}</Project>
