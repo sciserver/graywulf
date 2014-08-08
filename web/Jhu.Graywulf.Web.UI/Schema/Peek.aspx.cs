@@ -75,9 +75,6 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
             var sql = codegen.GenerateSelectStarQuery(tableOrView, 100);
 
-            DbProviderFactory dbf;
-            string cstr;
-
             using (var cn = tableOrView.Dataset.OpenConnection())
             {
                 using (var cmd = new SmartCommand(tableOrView.Dataset, cn.CreateCommand()))

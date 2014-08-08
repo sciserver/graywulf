@@ -615,12 +615,14 @@
     </Compile>
     <Compile Include="Cluster\DiskVolumeDetails.aspx.cs">
       <DependentUpon>DiskVolumeDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\DiskVolumeDetails.aspx.designer.cs">
       <DependentUpon>DiskVolumeDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\DiskVolumeForm.aspx.cs">
       <DependentUpon>DiskVolumeForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\DiskVolumeForm.aspx.designer.cs">
       <DependentUpon>DiskVolumeForm.aspx</DependentUpon>
@@ -984,12 +986,14 @@
     </Compile>
     <Compile Include="Federation\FileGroupDetails.aspx.cs">
       <DependentUpon>FileGroupDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\FileGroupDetails.aspx.designer.cs">
       <DependentUpon>FileGroupDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\FileGroupForm.aspx.cs">
       <DependentUpon>FileGroupForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\FileGroupForm.aspx.designer.cs">
       <DependentUpon>FileGroupForm.aspx</DependentUpon>
@@ -1182,18 +1186,21 @@
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileDetails.aspx.cs">
       <DependentUpon>DatabaseInstanceFileDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileDetails.aspx.designer.cs">
       <DependentUpon>DatabaseInstanceFileDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileForm.aspx.cs">
       <DependentUpon>DatabaseInstanceFileForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileForm.aspx.designer.cs">
       <DependentUpon>DatabaseInstanceFileForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileGroupDetails.aspx.cs">
       <DependentUpon>DatabaseInstanceFileGroupDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileGroupDetails.aspx.designer.cs">
       <DependentUpon>DatabaseInstanceFileGroupDetails.aspx</DependentUpon>
@@ -1249,6 +1256,7 @@
     </Compile>
     <Compile Include="Layout\UserDatabaseInstanceDetails.aspx.cs">
       <DependentUpon>UserDatabaseInstanceDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\UserDatabaseInstanceDetails.aspx.designer.cs">
       <DependentUpon>UserDatabaseInstanceDetails.aspx</DependentUpon>

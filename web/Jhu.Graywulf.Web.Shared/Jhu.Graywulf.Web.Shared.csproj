@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="App_Masters\Basic.master.cs">
       <DependentUpon>Basic.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="App_Masters\Basic.master.designer.cs">
       <DependentUpon>Basic.master</DependentUpon>
