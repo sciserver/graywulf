@@ -1,4 +1,15 @@
-﻿-- USER DEFINE TYPES --
+﻿-- ENABLE CLR
+
+sp_configure 'show advanced options', 1;
+GO
+RECONFIGURE;
+GO
+sp_configure 'clr enabled', 1;
+GO
+RECONFIGURE;
+GO
+
+-- USER DEFINE TYPES --
 
 CREATE TYPE [dbo].[DeploymentState]
 EXTERNAL NAME [Jhu.Graywulf.Registry.Enum].[Jhu.Graywulf.Registry.Sql.DeploymentState]
