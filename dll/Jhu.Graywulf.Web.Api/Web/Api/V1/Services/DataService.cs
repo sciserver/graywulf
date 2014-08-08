@@ -65,7 +65,7 @@ namespace Jhu.Graywulf.Web.Api.V1
     {
         public Message DownloadTable(string datasetName, string tableName, string top)
         {
-            int toplimit = top == null ? 0 : int.Parse(top);
+            int toplimit = top == null ? int.MaxValue : int.Parse(top);
 
             // Get table from the schema
             var dataset = FederationContext.SchemaManager.Datasets[datasetName];
@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             // not owned by the user
             if (!dataset.IsMutable)
             {
-                toplimit = 5000;        // TODO: make this a setting
+                toplimit = Math.Min(toplimit, 5000);        // TODO: make this a setting
             }
 
             var table = ParserTableName(dataset, tableName);

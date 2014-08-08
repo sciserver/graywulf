@@ -81,7 +81,7 @@ namespace Jhu.Graywulf.SqlCodeGen.PostgreSql
         protected override string GenerateTopExpression(int top)
         {
             string topstr = String.Empty;
-            if (top != 0)
+            if (top < int.MaxValue)
             {
                 topstr = String.Format("LIMIT {0}", top);
             }

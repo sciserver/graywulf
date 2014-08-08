@@ -89,7 +89,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
         protected override string GenerateTopExpression(int top)
         {
             var topstr = String.Empty;
-            if (top != 0)
+            if (top < int.MaxValue)
             {
                 topstr = String.Format("TOP {0}", top);
             }
