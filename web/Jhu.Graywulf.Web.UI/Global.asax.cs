@@ -9,7 +9,7 @@ using System.ServiceModel;
 using System.ServiceModel.Activation;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Web;
-using Jhu.Graywulf.Web.Api;
+using Jhu.Graywulf.Web.Api.V1;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Install;
 
@@ -25,55 +25,33 @@ namespace Jhu.Graywulf.Web.UI
             {
                 var federation = context.Federation;
 
-                Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle] = federation.ShortTitle;
-                Application[Jhu.Graywulf.Web.Constants.ApplicationLongTitle] = federation.LongTitle;
-                Application[Jhu.Graywulf.Web.Constants.ApplicationCopyright] = federation.Copyright;
+                Application[Jhu.Graywulf.Web.UI.Constants.ApplicationShortTitle] = federation.ShortTitle;
+                Application[Jhu.Graywulf.Web.UI.Constants.ApplicationLongTitle] = federation.LongTitle;
+                Application[Jhu.Graywulf.Web.UI.Constants.ApplicationCopyright] = federation.Copyright;
             }
-
-            // Add service routes here
-            // TODO: move these from here into a service factory,
-            // so applications can get their own services registered,
-            // for example SkyQuery:Tap
-            
-            RouteTable.Routes.Ignore("{resource}.axd/{*pathInfo}");
-
-            RouteTable.Routes.Add(new ServiceRoute("Api/Jobs/", new WebServiceHostFactory(), typeof(Jhu.Graywulf.Web.Api.JobsService)));
-            RouteTable.Routes.Add(new ServiceRoute("Api/Tables/", new WebServiceHostFactory(), typeof(Jhu.Graywulf.Web.Api.TablesService)));
-            RouteTable.Routes.Add(new ServiceRoute("Api/Schema/", new WebServiceHostFactory(), typeof(Jhu.Graywulf.Web.Api.SchemaService)));
-            
         }
 
 
-        protected override void OnUserSignedIn(GraywulfIdentity identity)
+        protected override void OnUserArrived(GraywulfPrincipal principal)
         {
-            // TODO: context cannot be created if no user is set
             using (var context = CreateRegistryContext())
             {
-                // Check if user's myDB exists, if not, create
-                var mydb = context.Federation.MyDBDatabaseVersion.GetUserDatabaseInstance(identity.User);
-
-                if (mydb == null)
-                {
-                    identity.User.Context = context;
-                    var udii = new UserDatabaseInstanceInstaller(identity.User);
-                    var udi = udii.CreateUserDatabaseInstance(context.Federation.MyDBDatabaseVersion);
-                }
+                // Check if user database (MYDB) exists, and create it if necessary
+                var udii = new UserDatabaseInstanceInstaller(context);
+                udii.EnsureUserDatabaseInstanceExists(principal.Identity.User, context.Federation.MyDBDatabaseVersion);
 
                 // Load all datasets at start to be able to display from schema browser
                 // Datasets will be cached internally
-                using (var registryContext = CreateRegistryContext())
-                {
-                    var schemaManager = new Jhu.Graywulf.Schema.GraywulfSchemaManager(registryContext, Jhu.Graywulf.Registry.AppSettings.FederationName);
-                    schemaManager.Datasets.LoadAll();
-                }
+                var schemaManager = new Jhu.Graywulf.Schema.GraywulfSchemaManager(context, Jhu.Graywulf.Registry.AppSettings.FederationName);
+                schemaManager.Datasets.LoadAll();
 
                 context.CommitTransaction();
             }
         }
 
-        protected override void OnUserSignedOut()
+        protected override void OnUserLeft(GraywulfPrincipal principal)
         {
-            
+
         }
     }
 }

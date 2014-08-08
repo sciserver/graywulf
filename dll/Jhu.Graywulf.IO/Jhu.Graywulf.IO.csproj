@@ -40,8 +40,31 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO">
+      <HintPath>..\..\..\packages\Microsoft.Bcl.1.1.9\lib\net40\System.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http, Version=2.2.22.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.Net.Http.2.2.22\lib\net40\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions">
+      <HintPath>..\..\..\packages\Microsoft.Net.Http.2.2.22\lib\net40\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives">
+      <HintPath>..\..\..\packages\Microsoft.Net.Http.2.2.22\lib\net40\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest, Version=2.2.22.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.Net.Http.2.2.22\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime">
+      <HintPath>..\..\..\packages\Microsoft.Bcl.1.1.9\lib\net40\System.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Threading.Tasks">
+      <HintPath>..\..\..\packages\Microsoft.Bcl.1.1.9\lib\net40\System.Threading.Tasks.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,6 +73,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Format\Constants.cs" />
+    <Compile Include="Format\XHtmlDataFile.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Format\XHtmlDataFileResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>XHtmlDataFileResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Format\XHtmlDataFileTable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Format\XmlDataFile.cs" />
     <Compile Include="Format\DataFileBase.cs" />
     <Compile Include="Format\DataFileBlockBase.cs" />
     <Compile Include="Format\DelimitedTextDataFile.cs" />
@@ -58,16 +93,27 @@
     <Compile Include="Format\FileDataReader.cs" />
     <Compile Include="Format\FileFormatDescription.cs" />
     <Compile Include="Format\FileFormatException.cs" />
-    <Compile Include="Format\FileFormatFactory.cs" />
-    <Compile Include="Format\FileFormatNames.Designer.cs" />
+    <Compile Include="Format\FileFormatFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Format\FileFormatMapping.cs" />
+    <Compile Include="Format\FileFormatNames.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FileFormatNames.resx</DependentUpon>
+    </Compile>
     <Compile Include="Format\FormattedDataFileBase.cs" />
     <Compile Include="Format\FormattedDataFileBlockBase.cs" />
     <Compile Include="Format\SqlServerNativeDataFile.cs" />
     <Compile Include="Format\SqlServerNativeDataFileBlock.cs" />
     <Compile Include="Format\TextDataFileBase.cs" />
     <Compile Include="Format\TextDataFileBlockBase.cs" />
+    <Compile Include="Format\XmlDataFileBlock.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="IO\BufferedTextReader.cs" />
     <Compile Include="IO\Constants.cs" />
+    <Compile Include="IO\Credentials.cs" />
     <Compile Include="IO\DetachedStream.cs" />
     <Compile Include="IO\Enum.cs" />
     <Compile Include="IO\IArchiveEntry.cs" />
@@ -119,14 +165,26 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Format\FileFormatNames.resx" />
+    <EmbeddedResource Include="Format\FileFormatNames.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileFormatNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Format\XHtmlDataFileResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>XHtmlDataFileResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="IO\Tasks\ExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Format\Resources\XHtmlDataFileStyle.css" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -140,6 +198,11 @@ copy $(TargetDir)ICSharpCode.SharpZipLib.dll $(SolutionDir)$(OutDir)</PostBuildE
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <Import Project="..\..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\..\..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

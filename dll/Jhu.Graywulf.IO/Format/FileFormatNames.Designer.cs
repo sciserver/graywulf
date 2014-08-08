@@ -61,20 +61,47 @@ namespace Jhu.Graywulf.Format {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to TXT (tabulated text file).
+        /// </summary>
+        internal static string AsciiFile {
+            get {
+                return ResourceManager.GetString("AsciiFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CSV (delimited text file).
         /// </summary>
-        internal static string Jhu_Graywulf_Format_DelimitedTextDataFile {
+        internal static string CsvFile {
             get {
-                return ResourceManager.GetString("Jhu.Graywulf.Format.DelimitedTextDataFile", resourceCulture);
+                return ResourceManager.GetString("CsvFile", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to SQL Server native format.
         /// </summary>
-        internal static string Jhu_Graywulf_Format_SqlServerNativeDataFile {
+        internal static string SqlServerNativeDataFile {
             get {
-                return ResourceManager.GetString("Jhu.Graywulf.Format.SqlServerNativeDataFile", resourceCulture);
+                return ResourceManager.GetString("SqlServerNativeDataFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XHTML file.
+        /// </summary>
+        internal static string XHtmlDataFile {
+            get {
+                return ResourceManager.GetString("XHtmlDataFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XML file.
+        /// </summary>
+        internal static string XmlDataFile {
+            get {
+                return ResourceManager.GetString("XmlDataFile", resourceCulture);
             }
         }
     }

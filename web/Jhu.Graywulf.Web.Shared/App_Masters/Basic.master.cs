@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Web;
+using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web
 {
@@ -12,7 +13,7 @@ namespace Jhu.Graywulf.Web
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            this.theScriptManager.Scripts.Add(new ScriptReference(Jhu.Graywulf.Web.Util.JQuery.JQueryUrl));
+            this.theScriptManager.Scripts.Add(new ScriptReference(Util.JQuery.JQueryUrl));
             this.theScriptManager.Scripts.Add(new ScriptReference("Jhu.Graywulf.Web.Controls.DockingPanel.js", "Jhu.Graywulf.Web"));
 
             this.Page.Title = (string)Page.Application[Constants.ApplicationLongTitle];

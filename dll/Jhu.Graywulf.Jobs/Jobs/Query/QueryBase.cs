@@ -11,6 +11,7 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
+using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.SqlCodeGen;
 using Jhu.Graywulf.IO;
@@ -176,6 +177,32 @@ namespace Jhu.Graywulf.Jobs.Query
             Parse(true);
             Interpret(true);
             Validate();
+        }
+
+        public bool Verify(out string message)
+        {
+            try
+            {
+                Verify();
+
+                message = "Query OK.";
+                return true;
+            }
+            catch (ValidatorException ex)
+            {
+                message = String.Format("Query error: {0}", ex.Message);
+                return false;
+            }
+            catch (NameResolverException ex)
+            {
+                message = String.Format("Query error: {0}", ex.Message);
+                return false;
+            }
+            catch (ParserException ex)
+            {
+                message = String.Format("Query error: {0}", ex.Message);
+                return false;
+            }
         }
 
         protected override void FinishInterpret(bool forceReinitialize)

@@ -25,27 +25,6 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Properties
 
-        public override FileFormatDescription Description
-        {
-            get
-            {
-                return new FileFormatDescription()
-                {
-                    DisplayName = FileFormatNames.Jhu_Graywulf_Format_SqlServerNativeDataFile,
-                    MimeType = Constants.MimeTypeBcp,
-                    DefaultExtension = Constants.FileExtensionBcp,
-                    CanRead = true,
-                    CanWrite = true,
-                    CanDetectColumnNames = true,
-                    CanHoldMultipleDatasets = false,
-                    RequiresArchive = true,
-                    IsCompressed = false,
-                    KnowsRecordCount = false,
-                    RequiresRecordCount = false,
-                };
-            }
-        }
-
         [IgnoreDataMember]
         internal SqlServerNativeBinaryWriter NativeWriter
         {
@@ -85,6 +64,21 @@ namespace Jhu.Graywulf.Format
 
         private void InitializeMembers()
         {
+            Description = new FileFormatDescription()
+            {
+                DisplayName = FileFormatNames.SqlServerNativeDataFile,
+                MimeType = Constants.MimeTypeBcp,
+                Extension = Constants.FileExtensionBcp,
+                CanRead = true,
+                CanWrite = true,
+                CanDetectColumnNames = true,
+                CanHoldMultipleDatasets = false,
+                RequiresArchive = true,
+                IsCompressed = false,
+                KnowsRecordCount = false,
+                RequiresRecordCount = false,
+            };
+
             this.nativeWriter = null;
         }
 

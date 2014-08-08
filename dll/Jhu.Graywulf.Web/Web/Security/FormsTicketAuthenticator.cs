@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
 using System.Web;
 using System.Web.Security;
 
@@ -44,7 +45,7 @@ namespace Jhu.Graywulf.Web.Security
 
         #endregion
 
-        public override GraywulfPrincipal Authenticate(HttpContext httpContext)
+        public override AuthenticationResponse Authenticate(AuthenticationRequest request)
         {
             // The logic implemented here is based on the .Net reference source
             // original class: FormAuthenticationModule
@@ -54,10 +55,11 @@ namespace Jhu.Graywulf.Web.Security
             // directly. This saves us from looking into the database at every
             // single request.
 
-            GraywulfPrincipal principal = null;
+            var response = new AuthenticationResponse();
+            var cookies = request.Cookies.GetCookies(request.Uri);
 
             // Get the forms authentication cookie from the request
-            var cookie = httpContext.Request.Cookies[FormsAuthentication.FormsCookieName];
+            var cookie = Util.CookieConverter.ToHttpCookie(cookies[FormsAuthentication.FormsCookieName]);
             if (cookie != null)
             {
                 // Decrypt the token and check whether it's already expired
@@ -65,21 +67,20 @@ namespace Jhu.Graywulf.Web.Security
                 if (oldToken != null && !oldToken.Expired)
                 {
                     // The token hasn't expired yet
+                    // Create a GraywulfPrincipal based on the ticket.
+                    response.SetPrincipal(CreatePrincipal(oldToken));
 
                     // Read the ticket from the token and renew it if sliding expiration is turned on
                     var ticket = oldToken;
                     if (FormsAuthentication.SlidingExpiration)
                     {
                         ticket = FormsAuthentication.RenewTicketIfOld(oldToken);
-                    }
-
-                    // Create a GraywulfPrincipal based on the ticket.
-                    principal = CreatePrincipal(ticket);
+                    }                  
 
                     // Set special cookie path, if necessary
                     if (!ticket.CookiePath.Equals("/"))
                     {
-                        cookie = httpContext.Request.Cookies[FormsAuthentication.FormsCookieName];
+                        cookie = Util.CookieConverter.ToHttpCookie(cookies[FormsAuthentication.FormsCookieName]);
                         if (cookie != null)
                         {
                             cookie.Path = ticket.CookiePath;
@@ -94,15 +95,12 @@ namespace Jhu.Graywulf.Web.Security
 
                         if (cookie != null)
                         {
-                            cookie = httpContext.Request.Cookies[FormsAuthentication.FormsCookieName];
+                            cookie = Util.CookieConverter.ToHttpCookie(cookies[FormsAuthentication.FormsCookieName]); ;
                         }
 
                         if (cookie == null)
                         {
-                            cookie = new HttpCookie(FormsAuthentication.FormsCookieName, cookieValue)
-                            {
-                                Path = ticket.CookiePath
-                            };
+                            cookie = new HttpCookie(FormsAuthentication.FormsCookieName, cookieValue);
                         }
 
                         // If the ticket is persistent (survives browser sessions) an expiration
@@ -114,6 +112,7 @@ namespace Jhu.Graywulf.Web.Security
                         }
 
                         // Set additional cookie options
+                        cookie.Path = ticket.CookiePath;
                         cookie.Value = cookieValue;
                         cookie.Secure = FormsAuthentication.RequireSSL;
                         cookie.HttpOnly = true;
@@ -123,14 +122,12 @@ namespace Jhu.Graywulf.Web.Security
                             cookie.Domain = FormsAuthentication.CookieDomain;
                         }
 
-                        // Remove old cookie and set new one
-                        httpContext.Response.Cookies.Remove(cookie.Name);
-                        httpContext.Response.Cookies.Add(cookie);
+                        response.Cookies.Add(cookie);
                     }
                 }
             }
 
-            return principal;
+            return response;
         }
 
         /// <summary>

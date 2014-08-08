@@ -11,6 +11,7 @@ using System.IO;
 using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 
@@ -208,9 +209,9 @@ namespace Jhu.Graywulf.Scheduler
 
                 // Deserialize parameters
                 Dictionary<string, object> pars = new Dictionary<string, object>();
-                foreach (JobInstanceParameter par in ji.Parameters.Values)
+                foreach (Parameter par in ji.Parameters.Values)
                 {
-                    if ((par.Direction & JobParameterDirection.In) != 0)
+                    if ((par.Direction & ParameterDirection.In) != 0)
                     {
                         pars.Add(par.Name, ji.Parameters[par.Name].Value);
                     }

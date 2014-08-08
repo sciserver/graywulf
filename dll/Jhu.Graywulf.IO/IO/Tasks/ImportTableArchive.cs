@@ -14,7 +14,7 @@ using Jhu.Graywulf.Schema.SqlServer;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
-    [RemoteServiceClass(typeof(ImportTableArchive))]
+    [RemoteService(typeof(ImportTableArchive))]
     public interface IImportTableArchive : ICopyTableArchiveBase
     {
         DestinationTable Destination

@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Web.Security
         {
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
             {
-                var ip = new GraywulfIdentityProvider(context);
+                var ip = new GraywulfIdentityProvider(context.Domain);
 
                 // Create a new user and set password
                 var user = new User(context.Domain);

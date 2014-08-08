@@ -14,7 +14,7 @@ using Jhu.Graywulf.Schema;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
-    [RemoteServiceClass(typeof(CopyTable))]
+    [RemoteService(typeof(CopyTable))]
     [NetDataContract]
     public interface ICopyTable : ICopyTableBase
     {

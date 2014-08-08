@@ -110,8 +110,8 @@ namespace Jhu.Graywulf.Format
 
         private void CopyMembers(FormattedDataFileBase old)
         {
-            this.encoding = (Encoding)old.encoding.Clone();
-            this.culture = (CultureInfo)old.culture.Clone();
+            this.encoding = Util.DeepCloner.CloneObject(old.encoding);
+            this.culture = Util.DeepCloner.CloneObject(old.culture);
             this.numberStyle = old.numberStyle;
             this.dateTimeStyle = old.dateTimeStyle;
         }

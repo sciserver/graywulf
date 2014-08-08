@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
-using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Logging
 {
@@ -18,12 +17,12 @@ namespace Jhu.Graywulf.Logging
         /// <summary>
         /// Holds an object pool for database commands to create an event
         /// </summary>
-        private ObjectPool<SqlCommand> createEventCommandPool;
+        private Components.ObjectPool<SqlCommand> createEventCommandPool;
 
         /// <summary>
         /// Holds an object pool for database commands to create event data
         /// </summary>
-        private ObjectPool<SqlCommand> createEventDataCommandPool;
+        private Components.ObjectPool<SqlCommand> createEventDataCommandPool;
 
         #endregion
         #region Properties
@@ -58,8 +57,8 @@ namespace Jhu.Graywulf.Logging
         {
             this.skipExceptions = true;
             this.connectionString = AppSettings.ConnectionString;
-            createEventCommandPool = new ObjectPool<SqlCommand>(CreateCreateEventCommand);
-            createEventDataCommandPool = new ObjectPool<SqlCommand>(CreateCreateEventDataCommand);
+            createEventCommandPool = new Components.ObjectPool<SqlCommand>(CreateCreateEventCommand);
+            createEventDataCommandPool = new Components.ObjectPool<SqlCommand>(CreateCreateEventDataCommand);
         }
 
         #endregion

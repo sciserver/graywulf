@@ -1,5 +1,5 @@
 <%@ Page Language="C#" Inherits="Jhu.Graywulf.Web.Admin.Jobs.JobInstanceDetails"
-    MasterPageFile="~/EntityDetails.master" CodeBehind="JobInstanceDetails.aspx.cs" %>
+    MasterPageFile="~/EntityChildren.master" CodeBehind="JobInstanceDetails.aspx.cs" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="FormDetails">
     <table class="DetailsForm">
@@ -146,10 +146,12 @@
             <asp:Button ID="SnoozeAdminRequest" runat="server" Text="Snooze" CssClass="FormButton" />
         </p>
     </asp:Panel>
+    <!--
     <h3>
         Job Parameters</h3>
     <table cellpadding="0" cellspacing="0" class="Form" runat="server" id="ParametersTable">
     </table>
+    -->
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="FormButtons">
     <jgwac:EntityButtons runat="server" ID="EntityButtons" />
@@ -162,4 +164,15 @@
         OnCommand="Button_Command" CommandName="Suspend" />
     <asp:Button ID="Resume" runat="server" CssClass="FormButtonNarrow" Text="Resume"
         OnCommand="Button_Command" CommandName="Resume" />
+</asp:Content>
+<asp:Content runat="server" ContentPlaceHolderID="FormTabs">
+    <jgwac:EntityChildren ID="EntityChildren" runat="server">
+        <jgwac:EntityList runat="server" ID="JobInstanceDependencyList" ChildrenType="JobInstanceDependency"
+            EntityGroup="Jobs">
+            <columns>
+                <jgwc:BoundField DataField="JobInstance.Name" HeaderText="Predecessor Job Instance" />
+                <asp:BoundField DataField="Condition" HeaderText="Run Only If" />
+            </columns>
+        </jgwac:EntityList>
+    </jgwac:EntityChildren>
 </asp:Content>

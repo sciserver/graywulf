@@ -6,7 +6,7 @@
         <FormTemplate>
             <p>
                 When you registered to
-                <%= Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle] %>
+                <%= Application[Jhu.Graywulf.Web.UI.Constants.ApplicationShortTitle] %>
                 an e-mail with an activation code was sent to your e-mail adderess. Please enter
                 the activation below to begin using the service.</p>
             <ul>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
+using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Check
 {
@@ -34,7 +35,7 @@ namespace Jhu.Graywulf.Web.Check
 
         public override void Execute(PageBase page)
         {
-            var absurl = Jhu.Graywulf.Web.Util.UrlFormatter.ToAbsoluteUrl(Url);
+            var absurl = Util.UrlFormatter.ToAbsoluteUrl(Url);
 
             page.Response.Output.WriteLine(
                 "Testing URL {0} expecting HTTP status {1}",

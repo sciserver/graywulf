@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Controls
 {

@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Web.Auth
             var key = ((IButtonControl)sender).CommandArgument;
             var a = CreateAuthenticator(key);
 
-            Session[Constants.SessionAuthenticator] = key;
+            Session[Web.UI.Constants.SessionAuthenticator] = key;
 
             a.RedirectToLoginPage();
         }
@@ -108,7 +108,7 @@ namespace Jhu.Graywulf.Web.Auth
                 RegisterLink2.NavigateUrl = Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl);
             }
 
-            SignInForm.Text = String.Format("Welcome to {0}", Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle]);
+            SignInForm.Text = String.Format("Welcome to {0}", Application[Jhu.Graywulf.Web.UI.Constants.ApplicationShortTitle]);
 
             RegisterLink.NavigateUrl = Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl);
             ActivateLink.NavigateUrl = Jhu.Graywulf.Web.Auth.Activate.GetUrl(ReturnUrl);
@@ -146,18 +146,19 @@ namespace Jhu.Graywulf.Web.Auth
 
         private void Authenticate()
         {
-            var key = (string)Session[Constants.SessionAuthenticator];
+            var key = (string)Session[Web.UI.Constants.SessionAuthenticator];
 
             if (key != null)
             {
-                var a = CreateAuthenticator(key);
+                var authenticator = CreateAuthenticator(key);
 
-                Session[Constants.SessionAuthenticator] = null;
+                Session[Web.UI.Constants.SessionAuthenticator] = null;
 
-                var principal = a.Authenticate(HttpContext.Current);
-                if (principal != null)
+                var response = authenticator.Authenticate(new AuthenticationRequest(HttpContext.Current));
+                
+                if (response.Principal != null)
                 {
-                    var identity = (GraywulfIdentity)principal.Identity;
+                    var identity = (GraywulfIdentity)response.Principal.Identity;
                     
                     identity.LoadUser();
                     
@@ -176,22 +177,24 @@ namespace Jhu.Graywulf.Web.Auth
                         // from them could automatically registered without being
                         // sent to the user form.
 
-                        TemporaryPrincipal = principal;
+                        TemporaryPrincipal = response.Principal;
                     }
-
                 }
             }
         }
 
         private void LoginUser()
         {
-            user = IdentityProvider.VerifyPassword(Username.Text, Password.Text);
+            var ip = IdentityProvider.Create(RegistryContext.Domain);
+            var response = ip.VerifyPassword(Username.Text, Password.Text, Remember.Checked);
+
+            // Get user from the response
+            user = response.Principal.Identity.User;
 
             RegistryContext.UserGuid = user.Guid;
             RegistryContext.UserName = user.Name;
 
-            // If there's any temporary identifier set, associate
-            // with the user
+            // If there's any temporary identifier set, associate with the user
             if (TemporaryPrincipal != null)
             {
                 var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
@@ -204,6 +207,8 @@ namespace Jhu.Graywulf.Web.Auth
 
         private void RedirectAuthenticatedUser(Registry.User user)
         {
+            // TODO return cookies and headers here
+
             if (user.IsActivated)
             {
                 Response.Redirect(Activate.GetUrl(ReturnUrl));

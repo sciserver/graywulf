@@ -385,10 +385,9 @@ namespace Jhu.Graywulf.Jobs.Query
             var temptable = GetTemporaryTable(GetEscapedUniqueName(table));
             TemporaryTables.TryAdd(table.UniqueName, temptable);
 
-            var dest = new DestinationTable(temptable)
-            {
-                Options = TableInitializationOptions.Drop | TableInitializationOptions.Create
-            };
+            var dest = new DestinationTable(
+                temptable,
+                TableInitializationOptions.Drop | TableInitializationOptions.Create);
             
             var tc = CreateTableCopyTask(source, dest, false);
 

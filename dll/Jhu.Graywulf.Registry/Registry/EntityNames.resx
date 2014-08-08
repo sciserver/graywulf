@@ -285,4 +285,10 @@
   <data name="UserIdentity_Singular" xml:space="preserve">
     <value>User Identity</value>
   </data>
+  <data name="JobInstanceDependency_Plural" xml:space="preserve">
+    <value>Job Dependencies</value>
+  </data>
+  <data name="JobInstanceDependency_Singular" xml:space="preserve">
+    <value>Job Dependeny</value>
+  </data>
 </root>

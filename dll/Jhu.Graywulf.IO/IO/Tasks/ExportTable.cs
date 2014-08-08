@@ -14,7 +14,7 @@ using Jhu.Graywulf.Format;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
-    [RemoteServiceClass(typeof(ExportTable))]
+    [RemoteService(typeof(ExportTable))]
     [NetDataContract]
     public interface IExportTable : ICopyTableBase
     {
@@ -123,10 +123,13 @@ namespace Jhu.Graywulf.IO.Tasks
             try
             {
                 // TODO: add user access logic here
+                if (destination.IsClosed)
+                {
+                    destination.FileMode = DataFileMode.Write;
+                    destination.StreamFactoryType = StreamFactoryType;
+                    destination.Open();
+                }
 
-                destination.FileMode = DataFileMode.Write;
-                destination.StreamFactoryType = StreamFactoryType;
-                destination.Open();
                 CopyToFile(source, destination);
             }
             finally

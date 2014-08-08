@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
@@ -61,25 +62,28 @@ namespace Jhu.Graywulf.Web.Security
         /// Authenicates a user based on the information in the HTTP request.
         /// </summary>
         /// <returns></returns>
-        public override GraywulfPrincipal Authenticate(HttpContext httpContext)
+        public override AuthenticationResponse Authenticate(AuthenticationRequest request)
         {
+            var response = new AuthenticationResponse();
+
             // Get OpenID provider's response from the http context
             using (var openid = new OpenIdRelyingParty())
             {
-                var response = openid.GetResponse();
+                var openIDResponse = openid.GetResponse();
 
                 // TODO: figure out which OpenID provider sent the response
                 // and associate with the right authenticator
 
                 if (response != null)
                 {
-                    switch (response.Status)
+                    switch (openIDResponse.Status)
                     {
                         case AuthenticationStatus.Authenticated:
-                            return CreatePrincipal(response);
+                            response.SetPrincipal(CreatePrincipal(openIDResponse));
+                            break;
                         case AuthenticationStatus.Canceled:
                         case AuthenticationStatus.Failed:
-                            throw new System.Security.Authentication.AuthenticationException("OpenID authentication failed.", response.Exception);
+                            throw new System.Security.Authentication.AuthenticationException("OpenID authentication failed.", openIDResponse.Exception);
                         case AuthenticationStatus.ExtensionsOnly:
                         case AuthenticationStatus.SetupRequired:
                             throw new InvalidOperationException();
@@ -87,9 +91,9 @@ namespace Jhu.Graywulf.Web.Security
                             throw new NotImplementedException();
                     }
                 }
-
-                return null;
             }
+
+            return response;
         }
 
         /// <summary>

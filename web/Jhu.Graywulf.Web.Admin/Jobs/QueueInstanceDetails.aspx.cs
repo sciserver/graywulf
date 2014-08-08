@@ -16,13 +16,6 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
 {
     public partial class QueueInstanceDetails : EntityDetailsPageBase<QueueInstance>
     {
-        protected override void InitLists()
-        {
-            base.InitLists();
-
-            JobInstanceList.ParentEntity = Item;
-        }
-
         protected override void UpdateForm()
         {
             base.UpdateForm();
@@ -30,48 +23,13 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
             QueueDefinition.EntityReference.Value = Item.QueueDefinition;
             MaxOutstandingJobs.Text = Item.MaxOutstandingJobs.ToString();
             Timeout.Text = Item.Timeout.ToString();
-
-            //switch (item.RunningState)
-            //{
-            //    case RunningState.Running:
-            //        ChangeRunningState.Text = "Pause";   // *** TODO add resource
-            //        break;
-            //    case RunningState.Paused:
-            //        ChangeRunningState.Text = "Resume";   // *** TODO add resource
-            //        break;
-            //    default:
-            //        throw new NotImplementedException();
-            //}
         }
 
-        /*
-        protected void JobInstanceList_ItemCommand(object sender, CommandEventArgs e)
+        protected override void InitLists()
         {
-            Response.Redirect("~/jobs/JobInstanceDetails.aspx?Guid=" + e.CommandArgument);
-        }
+            base.InitLists();
 
-        protected void AddJobInstance_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(item.GetNewChildFormUrl(EntityType.JobInstance));
+            JobInstanceList.ParentEntity = Item;
         }
-
-        protected void ChangeRunningState_Click(object sender, EventArgs e)
-        {
-            switch (item.RunningState)
-            {
-                case RunningState.Running:
-                    item.RunningState = RunningState.Paused;
-                    break;
-                case RunningState.Paused:
-                    item.RunningState = RunningState.Running;
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            item.Save();
-            UpdateForm();
-        }
-         * */
     }
 }

@@ -6,11 +6,11 @@ using Jhu.Graywulf.Jobs.ExportTables;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Format;
-using Jhu.Graywulf.Web.Api;
+using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class ExportTable : PageBase
+    public partial class ExportTable : CustomPageBase
     {
         public static string GetUrl()
         {
@@ -53,13 +53,13 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         private void RefreshFileFormatList()
         {
-            var dfs = FederationContext.FileFormatFactory.GetFileFormatDescriptions();
+            var dfs = FederationContext.FileFormatFactory.EnumerateFileFormatDescriptions();
 
             foreach (var df in dfs)
             {
-                if (df.Value.CanWrite)
+                if (df.CanWrite)
                 {
-                    var li = new ListItem(df.Value.DisplayName, df.Value.DefaultExtension);
+                    var li = new ListItem(df.DisplayName, df.Type.FullName);
                     FileFormat.Items.Add(li);
                 }
             }
@@ -85,7 +85,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             var ej = new ExportJob()
             {
                 Tables = tables,
-                Format = FileFormat.SelectedValue,
+                ContentType = FileFormat.SelectedValue,
                 Uri = Jhu.Graywulf.Util.UriConverter.FromFilePath(path),
                 Queue = JobQueue.Long,
                 Comments = "",

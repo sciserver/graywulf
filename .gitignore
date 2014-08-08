@@ -16,6 +16,7 @@ test/Jhu.Graywulf.RemoteService.Test/App.config
 test/Jhu.Graywulf.Scheduler.Test/App.config
 test/Jhu.Graywulf.Sql.Test/App.config
 test/Jhu.Graywulf.SqlParser.Test/App.config
+test/Jhu.Graywulf.Web.Test/App.config
 web/Jhu.Graywulf.Web.Admin/Web.config
 web/Jhu.Graywulf.Web.Auth/Web.config
 web/Jhu.Graywulf.Web.Shared/web.config

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net.Mail;
 using Jhu.Graywulf.Web;
-using Jhu.Graywulf.Web.Util;
+using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Check
 {
@@ -31,12 +31,12 @@ namespace Jhu.Graywulf.Web.Check
             var subject = String.Format("{0} test message from {1}", page.RegistryContext.Domain.ShortTitle, Environment.MachineName);
             var body = "Test message, please ignore.";
 
-            var msg = EmailTemplateUtility.CreateMessage(
+            var msg = Util.EmailTemplateUtility.CreateMessage(
                 page.RegistryContext.Domain.Email, page.RegistryContext.Domain.ShortTitle,
                 EmailAddress, EmailAddress,
                 subject, body);
 
-            EmailTemplateUtility.SendMessage(msg);
+            Util.EmailTemplateUtility.SendMessage(msg);
 
             page.Response.Output.WriteLine("E-mail message sent.");
         }

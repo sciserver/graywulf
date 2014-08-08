@@ -9,7 +9,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.UI.Jobs
 {
-    public partial class CancelJob : PageBase
+    public partial class CancelJob : CustomPageBase
     {
         public static string GetUrl(Guid guid)
         {
@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
 
         public static string GetUrl(Guid[] guids)
         {
-            string gs = Web.Util.UrlFormatter.ArrayToUrlList(guids);
+            string gs = Util.UrlFormatter.ArrayToUrlList(guids);
             return String.Format("~/Jobs/CancelJob.aspx?guid={0}", gs);
         }
 

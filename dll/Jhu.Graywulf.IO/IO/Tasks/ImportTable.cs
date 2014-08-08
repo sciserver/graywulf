@@ -13,7 +13,7 @@ using Jhu.Graywulf.Schema;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
-    [RemoteServiceClass(typeof(ImportTable))]
+    [RemoteService(typeof(ImportTable))]
     [NetDataContract]
     public interface IImportTable : ICopyTableBase
     {
@@ -127,9 +127,13 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 // TODO: add authentication options here
 
-                source.FileMode = DataFileMode.Read;
-                source.StreamFactoryType = StreamFactoryType;
-                source.Open();
+                if (source.IsClosed)
+                {
+                    source.FileMode = DataFileMode.Read;
+                    source.StreamFactoryType = StreamFactoryType;
+                    source.Open();
+                }
+
                 CopyFromFile(source, destination);
             }
             finally

@@ -21,13 +21,19 @@ namespace Jhu.Graywulf.Jobs.ExportTables
     [DataContract(Name = "ExportTablesParameters", Namespace = "")]
     public class ExportTablesParameters
     {
+        #region Private member variables
+
         private TableOrView[] sources;
         private DataFileBase[] destinations;
         private Uri uri;
+        private Credentials credentials;
         private string fileFormatFactoryType;
         private string streamFactoryType;
         private DataFileArchival archival;
         private int timeout;
+
+        #endregion
+        #region Properties
 
         [DataMember]
         public TableOrView[] Sources
@@ -48,6 +54,13 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         {
             get { return uri; }
             set { uri = value; }
+        }
+
+        [DataMember]
+        public Credentials Credentials
+        {
+            get { return credentials; }
+            set { credentials = value; }
         }
 
         [DataMember]
@@ -75,6 +88,9 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             set { timeout = value; }
         }
 
+        #endregion
+        #region Constructors and initializers
+
         public ExportTablesParameters()
         {
             InitializeMembers(new StreamingContext());
@@ -86,11 +102,14 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             this.sources = null;
             this.destinations = null;
             this.uri = null;
+            this.credentials = null;
             this.fileFormatFactoryType = null;
             this.streamFactoryType = null;
             this.archival = DataFileArchival.Zip;
             this.timeout = 1200;    // *** TODO: get from settings
         }
+
+        #endregion
 
         public IExportTableArchive GetInitializedTableExportTask()
         {

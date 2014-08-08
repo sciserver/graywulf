@@ -5,7 +5,7 @@ using Jhu.Graywulf.Web;
 
 namespace Jhu.Graywulf.Web.UI.Schema
 {
-    public partial class ColumnList : UserControlBase
+    public partial class ColumnList : CustomUserControlBase
     {
         protected schema::IColumns databaseObject;
 

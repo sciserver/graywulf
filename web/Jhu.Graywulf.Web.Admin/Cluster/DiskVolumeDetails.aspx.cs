@@ -11,7 +11,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Web.Util;
+using Jhu.Graywulf.Web;
 
 namespace Jhu.Graywulf.Web.Admin.Cluster
 {
@@ -24,9 +24,9 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
             DiskVolumeType.Text = Item.DiskVolumeType.ToString();
             LocalPath.Text = String.Format("{0} ({1})", Item.LocalPath.Value, Item.LocalPath.ResolvedValue);
             UncPath.Text = String.Format("{0} ({1})", Item.UncPath.Value, Item.UncPath.ResolvedValue);
-            FullSpace.Text = ByteSizeFormatter.Format(Item.FullSpace);
-            AllocatedSpace.Text = ByteSizeFormatter.Format(Item.AllocatedSpace);
-            ReservedSpace.Text = ByteSizeFormatter.Format(Item.ReservedSpace);
+            FullSpace.Text = Util.ByteSizeFormatter.Format(Item.FullSpace);
+            AllocatedSpace.Text = Util.ByteSizeFormatter.Format(Item.AllocatedSpace);
+            ReservedSpace.Text = Util.ByteSizeFormatter.Format(Item.ReservedSpace);
             Speed.Text = (Item.Speed / 100000.0).ToString("0.00");
 
             Usage.Values.Clear();

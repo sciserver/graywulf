@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Security.Principal;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Security
 {
@@ -14,16 +16,32 @@ namespace Jhu.Graywulf.Web.Security
     /// <remarks>
     /// This class implements an HTTP module that inspects each request coming from
     /// the web browser and calls a set of authenticators to attempt to authenticate
-    /// the user based on request parameters or cookies.
+    /// the user based on request parameters or cookies. The authenticated user's
+    /// details are cached in the session.
     /// </remarks>
     public class WebAuthenticationModule : AuthenticationModuleBase, IHttpModule
     {
+        #region Constructors and initializers
+
         public WebAuthenticationModule()
+        {
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
         {
         }
 
+        public override void Dispose()
+        {
+            base.Dispose();
+        }
+
+        #endregion
+        #region HttpModule life-cycle methods
+
         /// <summary>
-        /// Initialize the authentication module events.
+        /// Initialize the authentication module by loading authenticators and setting events.
         /// </summary>
         /// <param name="application"></param>
         /// <remarks>
@@ -32,7 +50,9 @@ namespace Jhu.Graywulf.Web.Security
         /// </remarks>
         public void Init(HttpApplication application)
         {
-            // Create authenticators
+            // (0.) Called by the Http framework when the entire module is initializing
+
+            // Load authenticators from the registry
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 // The admin interface doesn't have a domain associated with, this
@@ -42,11 +62,12 @@ namespace Jhu.Graywulf.Web.Security
                     // Initialize authenticators            
 
                     var af = AuthenticatorFactory.Create(context.Domain);
-                    RegisterAuthenticators(af.GetRestRequestAuthenticators());
+                    RegisterAuthenticators(af.GetWebRequestAuthenticators());
                 }
             }
 
             // Wire up request events
+
             // --- Call all authenticators in this one
             application.AuthenticateRequest += new EventHandler(OnAuthenticateRequest);
             // --- Associate identity with graywulf user
@@ -55,44 +76,73 @@ namespace Jhu.Graywulf.Web.Security
             application.PostAcquireRequestState += new EventHandler(OnPostAcquireRequestState);
         }
 
-        public void Dispose()
-        {
-        }
+        #endregion
+        #region Authentication life-cycle methods
 
-        /// <summary>
-        /// Tries to authenticate the request with all authenticators.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /// <remarks></remarks>
         private void OnAuthenticateRequest(object sender, EventArgs e)
         {
-            var context = ((HttpApplication)sender).Context;
-            CallAuthenticators(context);
+            // (1.) Called when a new page request is made and the built in
+            // security module has established the identity of the user.
+
+            Authenticate(new AuthenticationRequest(HttpContext.Current));
+        }
+
+        protected override void OnAuthenticated(AuthenticationResponse response)
+        {
+            // (2.) Called after successfull authentication
+
+            var context = HttpContext.Current;
+
+            // Assign principal to both thread and HTTP contexts
+            System.Threading.Thread.CurrentPrincipal = response.Principal;
+            context.User = response.Principal;
+
+            // Save authentication response for later
+            // we cannot write headers here because this step is called for
+            // WCF services but we want to write WCF headers from the
+            // REST authentication module
+
+            context.Items[Constants.HttpContextAuthenticationResponse] = response;
+        }
+
+        protected override void OnAuthenticationFailed()
+        {
+            // (3.) Called after authentication was unsuccessful
+
+            // This only means that the custom authenticators could not
+            // identify the user, but it still might have been identified by
+            // the web server (from Forms ticket, windows authentication, etc.)
+            // In this case, the principal provided by the framework needs to
+            // be converted to a graywulf principal
+
+            /* TODO: delete
+            var httpContext = HttpContext.Current;
+            
+            var principal = DispatchPrincipal(httpContext.User);
+
+            System.Threading.Thread.CurrentPrincipal = principal;
+            HttpContext.Current.User = principal;*/
         }
 
         private void OnPostAuthenticateRequest(object sender, EventArgs e)
         {
-            var httpContext = ((HttpApplication)sender).Context;
-            var principal = DispatchIdentityType(httpContext.User);
+            // (4.) Called after the web request is authenticated
 
-            if (principal != null)
+            var context = HttpContext.Current;
+            var response = (AuthenticationResponse)context.Items[Constants.HttpContextAuthenticationResponse];
+
+            // Write out headers set by authenticators
+
+            if (response != null)
             {
-                httpContext.User = principal;
+                response.SetResponseHeaders(context.Response);
             }
         }
 
         private void OnPostAcquireRequestState(object sender, EventArgs e)
-        {
-            IdentifyUser();
-        }
+        {   
+            // (5.) This is where we get the session object the first time
 
-        /// <summary>
-        /// Checks if the authenticated user appears for the first time,
-        /// and if so, raises an event. Also checks if the user signed out.
-        /// </summary>
-        private void IdentifyUser()
-        {
             // To detect whether a user has left or a new user arrived we
             // store the principal in a session variable. Each request
             // looks into the variable and compares it with the principal
@@ -106,7 +156,7 @@ namespace Jhu.Graywulf.Web.Security
             if (httpContext.Session != null)
             {
                 // Get the saved principal from the session
-                var sessionPrincipal = (GraywulfPrincipal)httpContext.Session[Web.Constants.SessionPrincipal];
+                var sessionPrincipal = (GraywulfPrincipal)httpContext.Session[UI.Constants.SessionPrincipal];
 
                 if (httpContext.Request.IsAuthenticated && httpContext.User is GraywulfPrincipal)
                 {
@@ -119,39 +169,32 @@ namespace Jhu.Graywulf.Web.Security
                         {
                             // This is someone we haven't seen, so report the
                             // leaving of the previous user
-                            httpApplication.OnUserSignedOut();
+                            httpApplication.OnUserLeft(sessionPrincipal);
                             httpContext.Session.Abandon();
                             sessionPrincipal = null;
-                        }
-                        else
-                        {
-                            HttpContext.Current.User = sessionPrincipal;
                         }
                     }
 
                     if (sessionPrincipal == null)
                     {
-                        // A new user has just arrived, load info from the registry
-                        using (var registryContext = httpApplication.CreateRegistryContext())
-                        {
-                            ((GraywulfIdentity)httpContext.User.Identity).LoadUser();
-                        }
-
-                        httpContext.Session[Web.Constants.SessionPrincipal] = httpContext.User;
+                        // Save user into the session
+                        httpContext.Session[UI.Constants.SessionPrincipal] = httpContext.User;
 
                         // Report the arrival of a new user
-                        httpApplication.OnUserSignedIn((GraywulfIdentity)httpContext.User.Identity);
+                        httpApplication.OnUserArrived((GraywulfPrincipal)httpContext.User);
                     }
                 }
                 else if (!httpContext.Request.IsAuthenticated && sessionPrincipal != null)
                 {
-                    // No authenticated used but we see someone in the session. That means
+                    // No authenticated uses but we see someone in the session. That means
                     // someone has just left (or the session has expired)
                     // Report the leaving of the user
-                    httpApplication.OnUserSignedOut();
+                    httpApplication.OnUserLeft(sessionPrincipal);
                     httpContext.Session.Abandon();
                 }
             }
         }
+
+        #endregion
     }
 }

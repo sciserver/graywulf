@@ -1,0 +1,22 @@
+﻿body
+{
+    
+}
+table
+{
+    font-family: Consolas, Lucida Console, Courier New, Courier;
+    font-size: 8pt;
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+th
+{
+    background-color: lightgray;
+    white-space: nowrap;
+    border: 1px solid black;
+}
+td
+{
+    white-space: nowrap;
+    border: 1px solid black;
+}

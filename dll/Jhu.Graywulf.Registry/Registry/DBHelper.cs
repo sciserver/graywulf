@@ -9,6 +9,7 @@ using System.Reflection;
 using System.IO;
 using System.Xml;
 using System.Runtime.Serialization;
+using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Registry
 {

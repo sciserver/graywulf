@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 namespace Jhu.Graywulf.Registry
 {
     /// <summary>
-    /// The class implements a wrapper around the entity GUID and used for navigation
+    /// The class implements a wrapper around the entity GUID and name used for navigation
     /// properties for entity cross references.
     /// </summary>
     /// <remarks>
@@ -73,9 +73,14 @@ namespace Jhu.Graywulf.Registry
         {
             get
             {
-                if (guid == Guid.Empty && !IsEmpty)
+                if (guid == Guid.Empty)
                 {
-                    LoadEntity();
+                    if (value == null && !IsEmpty)
+                    {
+                        LoadEntity();   
+                    }
+
+                    guid = value.Guid;
                 }
 
                 return guid;
@@ -96,9 +101,17 @@ namespace Jhu.Graywulf.Registry
         {
             get
             {
-                if (name == null && !IsEmpty)
+                if (name == null)
                 {
-                    LoadEntity();
+                    if (value == null && !IsEmpty)
+                    {
+                        LoadEntity();
+                    }
+
+                    if (value != null)
+                    {
+                        name = value.GetFullyQualifiedName();
+                    }
                 }
 
                 return name;
@@ -148,7 +161,11 @@ namespace Jhu.Graywulf.Registry
                 if (this.value != null)
                 {
                     this.guid = this.value.Guid;
-                    this.name = this.value.GetFullyQualifiedName();
+                    
+                    // TODO: remove this and use lazy-loading of full name
+                    // for performance reasons
+                    //this.name = this.value.GetFullyQualifiedName();
+                    this.name = null;
                 }
                 else
                 {
@@ -274,7 +291,10 @@ namespace Jhu.Graywulf.Registry
                 if (this.guid != Guid.Empty)
                 {
                     this.value = ef.LoadEntity<T>(this.guid);
-                    this.name = this.value.GetFullyQualifiedName();
+
+                    // TODO: remove this and use lazy loading for performance
+                    //this.name = this.value.GetFullyQualifiedName();
+                    this.name = null;
                 }
                 else if (this.name != null)
                 {
@@ -292,8 +312,11 @@ namespace Jhu.Graywulf.Registry
                 this.value.Context = context;
 
                 // Update IDs
-                this.name = this.value.GetFullyQualifiedName();
                 this.guid = this.value.Guid;
+
+                // TODO: remove this and use lazy-loading for performance
+                // this.name = this.value.GetFullyQualifiedName();
+                this.name = null;
             }
         }
     }

@@ -81,25 +81,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Web\Api\Enum.cs" />
-    <Compile Include="Web\Api\ExportJob.cs" />
-    <Compile Include="Web\Api\ImportJob.cs" />
-    <Compile Include="Web\Api\Job.cs" />
-    <Compile Include="Web\Api\JobFactory.cs" />
-    <Compile Include="Web\Api\JobsService.cs" />
-    <Compile Include="Web\Api\QueryJob.cs" />
-    <Compile Include="Web\Api\RestErrorHandler.cs" />
-    <Compile Include="Web\Api\RestOperationBehavior.cs" />
-    <Compile Include="Web\Api\RestOperationInvoker.cs" />
-    <Compile Include="Web\Api\RestServiceBehavior.cs" />
-    <Compile Include="Web\Api\SchemaService.cs" />
-    <Compile Include="Web\Api\ServiceBase.cs" />
-    <Compile Include="Web\Api\TablesService.cs" />
-    <Compile Include="Web\ApplicationBase.cs" />
-    <Compile Include="Web\Captcha.aspx.cs">
-      <DependentUpon>Captcha.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="Util\ByteSizeFormatter.cs" />
+    <Compile Include="Util\CookieConverter.cs" />
+    <Compile Include="Util\DateFormatter.cs" />
+    <Compile Include="Util\DocumentationFormatter.cs" />
+    <Compile Include="Util\EmailSender.cs" />
+    <Compile Include="Util\EmailTemplateUtility.cs" />
+    <Compile Include="Util\EnumFormatter.cs" />
+    <Compile Include="Util\IIS.cs" />
+    <Compile Include="Util\JQuery.cs" />
+    <Compile Include="Util\UrlFormatter.cs" />
     <Compile Include="Web\Check\CheckPageBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -111,7 +102,6 @@
     <Compile Include="Web\Check\AssemblyCheck.cs" />
     <Compile Include="Web\Check\IdentityCheck.cs" />
     <Compile Include="Web\Check\UrlCheck.cs" />
-    <Compile Include="Web\Constants.cs" />
     <Compile Include="Web\Controls\BoundField.cs" />
     <Compile Include="Web\Controls\CaptchaImage.cs" />
     <Compile Include="Web\Controls\CaptchaValidator.cs" />
@@ -141,36 +131,16 @@
     <Compile Include="Web\Controls\UserStatus.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Web\EmbeddedVirtualFile.cs" />
-    <Compile Include="Web\Enum.cs" />
-    <Compile Include="Web\EmbeddedVirtualPathProvider.cs" />
     <Compile Include="Web\Controls\ExpressionPropertyField.cs" />
-    <Compile Include="Web\FederationContext.cs" />
-    <Compile Include="Web\Feedback.aspx.cs">
-      <DependentUpon>Feedback.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Web\Feedback.aspx.designer.cs">
-      <DependentUpon>Feedback.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Web\MasterPageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Web\PageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Web\Controls\Toolbar.cs" />
-    <Compile Include="Web\Error.aspx.cs">
-      <DependentUpon>Error.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Web\Error.aspx.designer.cs">
-      <DependentUpon>Error.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Web\Controls\ToolbarElement.cs" />
     <Compile Include="Web\Controls\ToolbarButton.cs" />
     <Compile Include="Web\Controls\ToolbarSpan.cs" />
+    <Compile Include="Web\Security\AuthenticationModuleBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\Security\AuthenticationResponse.cs" />
     <Compile Include="Web\Security\Authenticator.cs" />
     <Compile Include="Web\Security\Enum.cs" />
     <Compile Include="Web\Security\ExceptionMessages.Designer.cs">
@@ -179,32 +149,71 @@
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Web\Security\GraywulfIdentityProvider.cs" />
-    <Compile Include="Web\Security\IdentityProviderBase.cs" />
+    <Compile Include="Web\Security\IdentityProvider.cs" />
     <Compile Include="Web\Security\IdentityProviderException.cs" />
     <Compile Include="Web\Security\KeystoneIdentityProvider.cs" />
-    <Compile Include="Web\Security\AuthenticationModuleBase.cs" />
     <Compile Include="Web\Security\AuthenticatorFactory.cs" />
     <Compile Include="Web\Security\Constants.cs" />
     <Compile Include="Web\Security\FormsTicketAuthenticator.cs" />
     <Compile Include="Web\Security\GraywulfIdentity.cs" />
     <Compile Include="Web\Security\GraywulfPrincipal.cs" />
     <Compile Include="Web\Security\KeystoneAuthenticator.cs" />
+    <Compile Include="Web\Security\KeystoneIdentityProviderSettings.cs" />
     <Compile Include="Web\Security\OpenIDAuthenticator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Web\Security\RestAuthenticationModule.cs" />
+    <Compile Include="Web\Security\AuthenticationRequest.cs" />
     <Compile Include="Web\Security\WebAuthenticationModule.cs" />
-    <Compile Include="Web\UserControlBase.cs">
+    <Compile Include="Web\Services\Constants.cs" />
+    <Compile Include="Web\Services\DynamicResponseFormatAttribute.cs" />
+    <Compile Include="Web\Services\DynamicResponseMessageFormatter.cs" />
+    <Compile Include="Web\Services\HttpMethod.cs" />
+    <Compile Include="Web\Services\ResourceNotFoundException.cs" />
+    <Compile Include="Web\Services\RestAuthenticationModule.cs" />
+    <Compile Include="Web\Services\RestClientBehavior.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Web\Services\RestClientSession.cs" />
+    <Compile Include="Web\Services\RestErrorHandler.cs" />
+    <Compile Include="Web\Services\RestOperationBehavior.cs" />
+    <Compile Include="Web\Services\RestOperationInvoker.cs" />
+    <Compile Include="Web\Services\RestServiceBase.cs" />
+    <Compile Include="Web\Services\RestServiceBehavior.cs" />
+    <Compile Include="Web\Services\TextResponseMessageBodyWriter.cs" />
+    <Compile Include="Web\Services\TextResponseMessageFormatter.cs" />
+    <Compile Include="Web\UI\ApplicationBase.cs" />
+    <Compile Include="Web\UI\Captcha.aspx.cs">
+      <DependentUpon>Captcha.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Web\Util\ByteSizeFormatter.cs" />
-    <Compile Include="Web\Util\DateFormatter.cs" />
-    <Compile Include="Web\Util\DocumentationFormatter.cs" />
-    <Compile Include="Web\Util\EmailTemplateUtility.cs" />
-    <Compile Include="Web\Util\EmailSender.cs" />
-    <Compile Include="Web\Util\IIS.cs" />
-    <Compile Include="Web\Util\JQuery.cs" />
-    <Compile Include="Web\Util\UrlFormatter.cs" />
+    <Compile Include="Web\UI\Constants.cs" />
+    <Compile Include="Web\UI\EmbeddedVirtualFile.cs" />
+    <Compile Include="Web\UI\EmbeddedVirtualPathProvider.cs" />
+    <Compile Include="Web\UI\Enum.cs" />
+    <Compile Include="Web\UI\Error.aspx.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\UI\Error.aspx.designer.cs">
+      <DependentUpon>Error.aspx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Web\UI\FederationContext.cs" />
+    <Compile Include="Web\UI\Feedback.aspx.cs">
+      <DependentUpon>Feedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\UI\Feedback.aspx.designer.cs">
+      <DependentUpon>Feedback.aspx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Web\UI\MasterPageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\UI\PageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\UI\UserControlBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Web\Controls\Labels.resx">
@@ -272,21 +281,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Web\Captcha.aspx">
-      <SubType>ASPXCodeBehind</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Web\Error.aspx">
-      <SubType>ASPXCodeBehind</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Web\Feedback.aspx">
-      <SubType>ASPXCodeBehind</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Web\Controls\MultiSelectGridView.js" />
   </ItemGroup>
   <ItemGroup>
@@ -300,6 +294,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Content Include="Web\UI\Captcha.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Web\UI\Error.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Web\UI\Feedback.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)

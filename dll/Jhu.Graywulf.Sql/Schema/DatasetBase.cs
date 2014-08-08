@@ -226,6 +226,7 @@ namespace Jhu.Graywulf.Schema
         private void InitializeMembers(StreamingContext context)
         {
             this.isCacheable = false;
+            this.isMutable = false;
             this.name = String.Empty;
             this.defaultSchemaName = String.Empty;
 
@@ -250,6 +251,7 @@ namespace Jhu.Graywulf.Schema
         private void CopyMembers(DatasetBase old)
         {
             this.isCacheable = old.isCacheable;
+            this.isMutable = old.isMutable;
             this.name = old.name;
             this.defaultSchemaName = old.defaultSchemaName;
 

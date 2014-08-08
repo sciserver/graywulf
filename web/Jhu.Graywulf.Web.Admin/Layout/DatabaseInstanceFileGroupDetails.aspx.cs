@@ -11,7 +11,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Web.Util;
+using Jhu.Graywulf.Web;
 
 namespace Jhu.Graywulf.Web.Admin.Layout
 {
@@ -23,9 +23,9 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
             FileGroup.EntityReference.Value = Item.FileGroup;
             Partition.EntityReference.Value = Item.Partition;
-            AllocatedSpace.Text = ByteSizeFormatter.Format(Item.AllocatedSpace);
-            UsedSpace.Text = ByteSizeFormatter.Format(Item.UsedSpace); // TODO
-            ReservedSpace.Text = ByteSizeFormatter.Format(Item.ReservedSpace); // TODO
+            AllocatedSpace.Text = Util.ByteSizeFormatter.Format(Item.AllocatedSpace);
+            UsedSpace.Text = Util.ByteSizeFormatter.Format(Item.UsedSpace);
+            ReservedSpace.Text = Util.ByteSizeFormatter.Format(Item.ReservedSpace);
         }
 
         protected override void InitLists()
@@ -34,16 +34,5 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
             FileList.ParentEntity = Item;
         }
-
-        /*
-        protected void DatabaseInstanceFileList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/layout/DatabaseInstanceFileDetails.aspx?Guid=" + e.CommandArgument);
-        }
-
-        protected void AddDatabaseFile_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(item.GetNewChildFormUrl(EntityType.DatabaseInstanceFile));
-        }*/
     }
 }

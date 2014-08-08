@@ -122,6 +122,12 @@ namespace Jhu.Graywulf.Web.Admin
                     group = EntityGroup.Cluster;
                     break;
                 case EntityType.Domain:
+                case EntityType.UserGroup:
+                case EntityType.User:
+                case EntityType.UserIdentity:
+                case EntityType.UserGroupMembership:
+                    group = EntityGroup.Domain;
+                    break;
                 case EntityType.Federation:
                 case EntityType.DatabaseDefinition:
                 case EntityType.RemoteDatabase:
@@ -142,14 +148,10 @@ namespace Jhu.Graywulf.Web.Admin
                 case EntityType.QueueInstance:
                 case EntityType.JobDefinition:
                 case EntityType.JobInstance:
+                case EntityType.JobInstanceDependency:
                     group = EntityGroup.Jobs;
                     break;
-                case EntityType.UserGroup:
-                case EntityType.User:
-                case EntityType.UserIdentity:
-                case EntityType.UserGroupMembership:
-                    group = EntityGroup.Domain;
-                    break;
+                
                 default:
                     throw new NotImplementedException();
             }
@@ -203,6 +205,7 @@ namespace Jhu.Graywulf.Web.Admin
                 case EntityType.QueueInstance:
                 case EntityType.JobDefinition:
                 case EntityType.JobInstance:
+                case EntityType.JobInstanceDependency:
                     group = EntityGroup.Jobs;
                     break;
                 case EntityType.User:

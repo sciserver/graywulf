@@ -22,10 +22,13 @@ namespace Jhu.Graywulf.Web.Security
         public const string UserRole = "User";
 
         public const string SettingsAuthenticators = "Authenticators";
+        public const string SettingsKeystone = "KeystoneIdentityProviderSettings";
 
         public const string KeystoneDefaultUri = "http://localhost:5000/";
         public const string KeystoneDefaultDomain= "default";
-        public const string KeystoneDefaultAuthTokenParameter = "token";
-        public const string KeystoneDefaultAuthTokenHeader = "X-Subject-Token";
+        public const string KeystoneDefaultAuthTokenParameter = "token";        // TODO
+        public const string KeystoneDefaultAuthTokenHeader = "X-Subject-Token"; // TODO
+
+        public const string HttpContextAuthenticationResponse = "Jhu.Graywulf.Web.Security.AuthenticationResponse";
     }
 }

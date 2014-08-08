@@ -7,6 +7,7 @@ using System.ServiceModel;
 namespace Jhu.Graywulf.RemoteService
 {
     [ServiceContract]
+    [RemoteService]
     public interface IRemoteServiceControl
     {
         /// <summary>
@@ -14,6 +15,7 @@ namespace Jhu.Graywulf.RemoteService
         /// </summary>
         /// <returns></returns>
         [OperationContract]
+        [LimitedAccessOperation]
         string Hello();
 
         /// <summary>

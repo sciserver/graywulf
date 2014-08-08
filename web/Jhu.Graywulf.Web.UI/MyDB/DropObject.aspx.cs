@@ -4,7 +4,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class DropObject : PageBase
+    public partial class DropObject : CustomPageBase
     {
         public static string GetUrl(string objid)
         {
@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         public static string GetUrl(string[] objids)
         {
-            var ids = Web.Util.UrlFormatter.ArrayToUrlList(objids);
+            var ids = Util.UrlFormatter.ArrayToUrlList(objids);
             return String.Format("~/MyDb/DropObject.aspx?objid={0}", ids);
         }
 

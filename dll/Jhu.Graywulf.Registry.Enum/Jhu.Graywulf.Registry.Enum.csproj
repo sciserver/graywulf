@@ -38,7 +38,7 @@
     <DeployCode>true</DeployCode>
   </PropertyGroup>
   <PropertyGroup>
-    <RootNamespace>Jhu.Graywulf.Registry</RootNamespace>
+    <RootNamespace>Jhu.Graywulf</RootNamespace>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildBinPath)\SqlServer.targets" />
@@ -53,7 +53,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Registry\Gender.cs" />
-    <Compile Include="Registry\JobParameterDirection.cs" />
+    <Compile Include="Registry\JobDependencyCondition.cs" />
     <Compile Include="Registry\RunningState.cs" />
     <Compile Include="Registry\DatabaseLayoutType.cs" />
     <Compile Include="Registry\DeadlockPriority.cs" />

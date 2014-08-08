@@ -8,6 +8,7 @@ using System.IO;
 using System.Configuration;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Registry
@@ -180,7 +181,7 @@ namespace Jhu.Graywulf.Registry
         }
 
         [XmlArray("Parameters")]
-        [XmlArrayItem(typeof(JobInstanceParameter))]
+        [XmlArrayItem(typeof(Parameter))]
         [DefaultValue(null)]
         public Parameter[] Parameters_ForXml
         {
@@ -222,6 +223,13 @@ namespace Jhu.Graywulf.Registry
         {
             get { return JobDefinitionReference.Name; }
             set { JobDefinitionReference.Name = value; }
+        }
+
+        [XmlIgnore]
+        public Dictionary<string, JobInstanceDependency> Dependencies
+        {
+            get { return GetChildren<JobInstanceDependency>(); }
+            set { SetChildren<JobInstanceDependency>(value); }
         }
 
         #endregion
@@ -355,6 +363,14 @@ namespace Jhu.Graywulf.Registry
             };
         }
 
+        protected override EntityType[] CreateChildTypes()
+        {
+            return new EntityType[]
+            {
+                EntityType.JobInstanceDependency,
+            };
+        }
+
         #endregion
         #region Cancelation functions
 
@@ -436,7 +452,7 @@ namespace Jhu.Graywulf.Registry
 
                 // Reset properties
                 newjob.Guid = Guid.Empty;
-                newjob.Name = GenerateRecurringJobID();
+                newjob.Name = JobInstanceFactory.GenerateRecurringJobID(Context, Name);
                 newjob.dateStarted = DateTime.MinValue;
                 newjob.dateFinished = DateTime.MinValue;
                 newjob.JobExecutionStatus = JobExecutionState.Scheduled;
@@ -456,30 +472,6 @@ namespace Jhu.Graywulf.Registry
             {
                 return null;
             }
-        }
-
-        private string GenerateRecurringJobID()
-        {
-            // TODO: This is an ad-hoc solution, make it more robust
-            // Take old name, but remove date part
-            int i = Name.LastIndexOf('_');
-
-            string newname;
-
-            if (i < 0)
-            {
-                newname = Name;
-            }
-            else if (i == 0)
-            {
-                newname = Context.UserName;
-            }
-            else
-            {
-                newname = Name.Substring(0, i);
-            }
-
-            return String.Format("{0}_{1:yyMMddHHmmssff}", newname, DateTime.Now);
         }
 
         /// <summary>

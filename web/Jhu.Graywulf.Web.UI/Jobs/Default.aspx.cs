@@ -4,11 +4,11 @@ using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Web.Controls;
 using Jhu.Graywulf.Jobs.Query;
-using Jhu.Graywulf.Web.Api;
+using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Jobs
 {
-    public partial class Default : PageBase
+    public partial class Default : CustomPageBase
     {
         public static string GetUrl()
         {
@@ -41,8 +41,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             jobInstance.Guid = guid;
             jobInstance.Load();
 
-            var jf = new JobFactory(RegistryContext);
-            var job = jf.CreateJobFromInstance(jobInstance);
+            var job = JobFactory.CreateJobFromInstance(jobInstance);
 
             switch (job.Type)
             {
@@ -79,20 +78,26 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             RegistryContext.TransactionMode = Registry.TransactionMode.DirtyRead;
             var jf = new JobFactory(RegistryContext);
 
+            var jobType = JobType.Unknown;
             switch ((Views)multiView.ActiveViewIndex)
             {
                 case Views.All:
+                    jobType = JobType.All;
                     break;
                 case Views.Query:
-                    jf.JobDefinitionGuids.UnionWith(JobFactory.QueryJobDefinitionGuids);
+                    jobType = JobType.Query;
                     break;
                 case Views.Export:
-                    jf.JobDefinitionGuids.UnionWith(JobFactory.ExportJobDefinitionGuids);
+                    jobType = JobType.Export;
                     break;
                 case Views.Import:
+                    jobType = JobType.Import;
+                    break;
                 default:
                     throw new NotImplementedException();
             }
+
+            jf.JobDefinitionGuids.UnionWith(jf.SelectJobDefinitions(jobType).Select(jd => jd.Guid));
 
             e.ObjectInstance = jf;
         }

@@ -8,10 +8,29 @@ namespace Jhu.Graywulf.Format
 {
     public static class Constants
     {
+        public const string FileExtensionTxt = ".txt";
         public const string FileExtensionCsv = ".csv";
         public const string FileExtensionBcp = ".bcp";
+        public const string FileExtensionXml = ".xml";
+        public const string FileExtensionHtm = ".htm";
+        public const string FileExtensionHtml = ".html";
 
+        public const string MimeTypePlainText = "text/plain";
         public const string MimeTypeCsv = "text/csv";
-        public const string MimeTypeBcp = "application/octet-stream";
+        public const string MimeTypeBcp = "application/sqlserver";
+        public const string MimeTypeXml = "application/xml";
+        public const string MimeTypeHtml = "text/html";
+        public const string MimeTypeXHtml = "application/xhtml+xml";
+
+        public const string HtmlKeywordHtml = "html";
+        public const string HtmlKeywordHead = "head";
+        public const string HtmlKeywordStyle = "style";
+        public const string HtmlKeywordBody = "body";
+        public const string HtmlKeywordTable = "table";
+        public const string HtmlKeywordTHead = "thead";
+        public const string HtmlKeywordTBody = "tbody";
+        public const string HtmlKeywordTR = "tr";
+        public const string HtmlKeywordTH = "th";
+        public const string HtmlKeywordTD = "td";
     }
 }

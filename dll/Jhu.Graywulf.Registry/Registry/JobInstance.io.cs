@@ -13,7 +13,14 @@ namespace Jhu.Graywulf.Registry
     {
         #region Database IO Functions
 
-        
+        #endregion
+        #region Navigation Functions
+
+        public void LoadJobInstancesDependencies(bool forceReload)
+        {
+            LoadChildren<JobInstanceDependency>(forceReload);
+        }
+
         #endregion
     }
 }

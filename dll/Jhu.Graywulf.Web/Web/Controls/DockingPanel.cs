@@ -5,6 +5,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Jhu.Graywulf.Web.UI;
 
 [assembly: WebResource("Jhu.Graywulf.Web.Controls.DockingPanel.js", "text/javascript", PerformSubstitution = true)]
 

@@ -10,7 +10,7 @@ using Jhu.Graywulf.Tasks;
 namespace Jhu.Graywulf.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
-    [RemoteServiceClass(typeof(CancelableDelay))]
+    [RemoteService(typeof(CancelableDelay))]
     public interface ICancelableDelay : IRemoteService
     {
         int Period

@@ -5,11 +5,11 @@ using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Web.UI.Jobs;
 using Jhu.Graywulf.Jobs.Query;
-using Jhu.Graywulf.Web.Api;
+using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class Download : PageBase
+    public partial class Download : CustomPageBase
     {
         public static string GetUrl()
         {
@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             RegistryContext.TransactionMode = Registry.TransactionMode.DirtyRead;
             var jf = new JobFactory(RegistryContext);
             jf.JobDefinitionGuids.Clear();
-            jf.JobDefinitionGuids.UnionWith(JobFactory.ExportJobDefinitionGuids);
+            jf.JobDefinitionGuids.UnionWith(jf.SelectJobDefinitions(JobType.Export).Select(jd => jd.Guid));
 
             e.ObjectInstance = jf;
         }

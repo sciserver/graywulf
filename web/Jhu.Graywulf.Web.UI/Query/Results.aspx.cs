@@ -13,7 +13,7 @@ using Jhu.Graywulf.Jobs.Query;
 
 namespace Jhu.Graywulf.Web.UI.Query
 {
-    public partial class Results : PageBase
+    public partial class Results : CustomPageBase
     {
         public static string GetUrl()
         {
@@ -123,15 +123,15 @@ namespace Jhu.Graywulf.Web.UI.Query
             var error = LogError(ex);
 
             // Save exception to session for future use
-            Session[Jhu.Graywulf.Web.Constants.SessionException] = ex;
-            Session[Jhu.Graywulf.Web.Constants.SessionExceptionEventID] = error.EventId;
+            Session[Constants.SessionException] = ex;
+            Session[Constants.SessionExceptionEventID] = error.EventId;
 
             Server.ClearError();
 
             Response.Output.WriteLine("<p>An exception occured: {0}</p>", ex.Message);
             Response.Output.WriteLine(
                 "<p><a href=\"{0}\">Click here to report error.</a></p>",
-                VirtualPathUtility.MakeRelative(Page.AppRelativeVirtualPath, Jhu.Graywulf.Web.Feedback.GetErrorReportUrl()));
+                VirtualPathUtility.MakeRelative(Page.AppRelativeVirtualPath, Jhu.Graywulf.Web.UI.Feedback.GetErrorReportUrl()));
         }
     }
 }

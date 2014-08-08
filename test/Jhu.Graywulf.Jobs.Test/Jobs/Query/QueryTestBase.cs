@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Test.Jobs.Query
                 var f = new SqlQueryFactory(context);
 
                 var q = f.CreateQuery(query);
-                var ji = f.ScheduleAsJob(q, queue, "testjob");
+                var ji = f.ScheduleAsJob(null, q, queue, "testjob");
 
                 ji.Save();
 

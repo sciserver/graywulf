@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Install
 
         public void GenerateDefaultSettings()
         {
-            // TODO:
+            domain.IdentityProvider = typeof(Jhu.Graywulf.Web.Security.GraywulfIdentityProvider).AssemblyQualifiedName;
             domain.AuthenticatorFactory = typeof(Jhu.Graywulf.Web.Security.AuthenticatorFactory).AssemblyQualifiedName;
         }
 

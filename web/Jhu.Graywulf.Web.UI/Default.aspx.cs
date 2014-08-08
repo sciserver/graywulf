@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Web.UI
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            WelcomeForm.Text = String.Format("Welcome to {0}", Application[Jhu.Graywulf.Web.Constants.ApplicationShortTitle]);
+            WelcomeForm.Text = String.Format("Welcome to {0}", Application[Jhu.Graywulf.Web.UI.Constants.ApplicationShortTitle]);
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Globalization;
 using System.Web.UI.WebControls;
-using Jhu.Graywulf.Web.Util;
+using Jhu.Graywulf.Web;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class Default : PageBase
+    public partial class Default : CustomPageBase
     {
         public static string GetUrl()
         {
@@ -16,9 +16,9 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (!IsPostBack)
             {
-                DataSpace.Text = ByteSizeFormatter.Format(FederationContext.MyDBDataset.Statistics.DataSpace);
-                UsedSpace.Text = ByteSizeFormatter.Format(FederationContext.MyDBDataset.Statistics.UsedSpace);
-                LogSpace.Text = ByteSizeFormatter.Format(FederationContext.MyDBDataset.Statistics.LogSpace);
+                DataSpace.Text = Util.ByteSizeFormatter.Format(FederationContext.MyDBDataset.Statistics.DataSpace);
+                UsedSpace.Text = Util.ByteSizeFormatter.Format(FederationContext.MyDBDataset.Statistics.UsedSpace);
+                LogSpace.Text = Util.ByteSizeFormatter.Format(FederationContext.MyDBDataset.Statistics.LogSpace);
 
                 var used = (double)FederationContext.MyDBDataset.Statistics.UsedSpace / FederationContext.MyDBDataset.Statistics.DataSpace;
                 var free = 1 - used;
@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
                 ProgressUsedLabel.Text = String.Format(CultureInfo.InvariantCulture, "{0:p}", free);
 
-                RequestSpaceLink.NavigateUrl = Jhu.Graywulf.Web.Feedback.GetSpaceRequestUrl();
+                RequestSpaceLink.NavigateUrl = Jhu.Graywulf.Web.UI.Feedback.GetSpaceRequestUrl();
             }
         }
     }

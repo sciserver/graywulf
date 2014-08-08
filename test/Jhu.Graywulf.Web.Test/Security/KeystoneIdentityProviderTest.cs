@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
@@ -60,12 +61,12 @@ namespace Jhu.Graywulf.Web.Security
         {
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
             {
-                var ip = new KeystoneIdentityProvider(context)
-                {
-                    KeystoneDomainID = "default",
-                    KeystoneBaseUri = new Uri("http://192.168.170.50:5000"),
-                    KeystoneAdminToken = "e5b19f25f5d55a995a16"
-                };
+                var ip = new KeystoneIdentityProvider(context.Domain);
+
+                // TODO: move these to a better location
+                ip.Settings.KeystoneDomainID = "default";
+                ip.Settings.KeystoneBaseUri = new Uri("http://192.168.170.50:5000");
+                ip.Settings.KeystoneAdminToken = "e5b19f25f5d55a995a16";
 
                 PurgeTestEntities(ip.KeystoneClient);
 
@@ -89,9 +90,19 @@ namespace Jhu.Graywulf.Web.Security
                 ip.DeactivateUser(user);
 
                 Assert.IsTrue(user.DeploymentState == DeploymentState.Undeployed);
-                
+
                 ip.DeleteUser(user);
             }
+        }
+
+        [TestMethod]
+        public void SerializeSettingsTest()
+        {
+            var p = new Parameter();
+
+            p.Value = new KeystoneIdentityProviderSettings();
+
+            var xml = p.XmlValue;
         }
     }
 }

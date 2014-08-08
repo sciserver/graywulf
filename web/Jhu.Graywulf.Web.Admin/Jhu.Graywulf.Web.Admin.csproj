@@ -133,6 +133,7 @@
     <Content Include="Docs\images\vao.png" />
     <Content Include="Domain\AddUserGroupMember.aspx" />
     <Content Include="Domain\ClusterDetails.aspx" />
+    <Content Include="Domain\DomainForm.aspx" />
     <Content Include="Domain\UserIdentityDetails.aspx" />
     <Content Include="Domain\UserIdentityForm.aspx" />
     <Content Include="Domain\Default.aspx" />
@@ -152,7 +153,6 @@
     <Content Include="Federation\DeploymentPackageDetails.aspx" />
     <Content Include="Federation\DeploymentPackageForm.aspx" />
     <Content Include="Federation\DomainDetails.aspx" />
-    <Content Include="Federation\DomainForm.aspx" />
     <Content Include="Federation\FederationDetails.aspx" />
     <Content Include="Federation\FederationForm.aspx" />
     <Content Include="Federation\FileGroupDetails.aspx" />
@@ -222,6 +222,8 @@
     <Content Include="Icons\Small\User.gif" />
     <Content Include="Icons\Small\UserGroup.gif" />
     <Content Include="Jobs\ClusterDetails.aspx" />
+    <Content Include="Jobs\JobInstanceDependencyDetails.aspx" />
+    <Content Include="Jobs\JobInstanceDependencyForm.aspx" />
     <Content Include="Jobs\Default.aspx" />
     <Content Include="Jobs\DomainDetails.aspx" />
     <Content Include="Jobs\FederationDetails.aspx" />
@@ -613,14 +615,12 @@
     </Compile>
     <Compile Include="Cluster\DiskVolumeDetails.aspx.cs">
       <DependentUpon>DiskVolumeDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\DiskVolumeDetails.aspx.designer.cs">
       <DependentUpon>DiskVolumeDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\DiskVolumeForm.aspx.cs">
       <DependentUpon>DiskVolumeForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\DiskVolumeForm.aspx.designer.cs">
       <DependentUpon>DiskVolumeForm.aspx</DependentUpon>
@@ -799,6 +799,13 @@
     <Compile Include="Domain\ClusterDetails.aspx.designer.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Domain\DomainForm.aspx.cs">
+      <DependentUpon>DomainForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\DomainForm.aspx.designer.cs">
+      <DependentUpon>DomainForm.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Domain\UserIdentityDetails.aspx.cs">
       <DependentUpon>UserIdentityDetails.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -961,13 +968,6 @@
     <Compile Include="Federation\DomainDetails.aspx.designer.cs">
       <DependentUpon>DomainDetails.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Federation\DomainForm.aspx.cs">
-      <DependentUpon>DomainForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Federation\DomainForm.aspx.designer.cs">
-      <DependentUpon>DomainForm.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Federation\FederationDetails.aspx.cs">
       <DependentUpon>FederationDetails.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -984,14 +984,12 @@
     </Compile>
     <Compile Include="Federation\FileGroupDetails.aspx.cs">
       <DependentUpon>FileGroupDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\FileGroupDetails.aspx.designer.cs">
       <DependentUpon>FileGroupDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Federation\FileGroupForm.aspx.cs">
       <DependentUpon>FileGroupForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Federation\FileGroupForm.aspx.designer.cs">
       <DependentUpon>FileGroupForm.aspx</DependentUpon>
@@ -1055,6 +1053,20 @@
     </Compile>
     <Compile Include="Jobs\ClusterDetails.aspx.designer.cs">
       <DependentUpon>ClusterDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Jobs\JobInstanceDependencyDetails.aspx.cs">
+      <DependentUpon>JobInstanceDependencyDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Jobs\JobInstanceDependencyDetails.aspx.designer.cs">
+      <DependentUpon>JobInstanceDependencyDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Jobs\JobInstanceDependencyForm.aspx.cs">
+      <DependentUpon>JobInstanceDependencyForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Jobs\JobInstanceDependencyForm.aspx.designer.cs">
+      <DependentUpon>JobInstanceDependencyForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -1170,21 +1182,18 @@
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileDetails.aspx.cs">
       <DependentUpon>DatabaseInstanceFileDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileDetails.aspx.designer.cs">
       <DependentUpon>DatabaseInstanceFileDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileForm.aspx.cs">
       <DependentUpon>DatabaseInstanceFileForm.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileForm.aspx.designer.cs">
       <DependentUpon>DatabaseInstanceFileForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileGroupDetails.aspx.cs">
       <DependentUpon>DatabaseInstanceFileGroupDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\DatabaseInstanceFileGroupDetails.aspx.designer.cs">
       <DependentUpon>DatabaseInstanceFileGroupDetails.aspx</DependentUpon>
@@ -1240,7 +1249,6 @@
     </Compile>
     <Compile Include="Layout\UserDatabaseInstanceDetails.aspx.cs">
       <DependentUpon>UserDatabaseInstanceDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layout\UserDatabaseInstanceDetails.aspx.designer.cs">
       <DependentUpon>UserDatabaseInstanceDetails.aspx</DependentUpon>

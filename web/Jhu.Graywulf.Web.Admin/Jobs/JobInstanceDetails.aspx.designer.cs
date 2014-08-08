@@ -380,5 +380,23 @@ namespace Jhu.Graywulf.Web.Admin.Jobs {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button Resume;
+        
+        /// <summary>
+        /// EntityChildren control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityChildren EntityChildren;
+        
+        /// <summary>
+        /// JobInstanceDependencyList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList JobInstanceDependencyList;
     }
 }

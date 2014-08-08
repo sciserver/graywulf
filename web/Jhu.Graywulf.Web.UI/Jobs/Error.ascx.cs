@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Jhu.Graywulf.Web.Api;
+using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Jobs
 {
@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
 
         private void UpdateForm()
         {
-            SendInquiry.NavigateUrl = Jhu.Graywulf.Web.Feedback.GetJobErrorUrl(job.Guid);
+            SendInquiry.NavigateUrl = Jhu.Graywulf.Web.UI.Feedback.GetJobErrorUrl(job.Guid);
             ExceptionMessage.Text = job.Error;
         }
     }

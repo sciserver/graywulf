@@ -43,6 +43,7 @@ namespace Jhu.Graywulf.Registry
             { EntityType.FileGroup, typeof(FileGroup) },
             { EntityType.JobDefinition, typeof(JobDefinition) },
             { EntityType.JobInstance, typeof(JobInstance) },
+            { EntityType.JobInstanceDependency, typeof(JobInstanceDependency) },
             { EntityType.Machine, typeof(Machine) },
             { EntityType.MachineRole, typeof(MachineRole) },
             { EntityType.Partition, typeof(Partition) },
@@ -90,6 +91,8 @@ namespace Jhu.Graywulf.Registry
         private Guid userGuidDeleted;
         private ParameterCollection settings;
         private string comments;
+
+        private string fullyQualifiedName;
 
         // --- Background storage for navigation properties ---
         private Dictionary<int, IEntityReference> entityReferences;
@@ -432,8 +435,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         [XmlArray("Settings")]
         [XmlArrayItem(typeof(Parameter))]
-        [XmlArrayItem(typeof(JobDefinitionParameter))]
-        [XmlArrayItem(typeof(JobInstanceParameter))]
         [DefaultValue(null)]
         public Parameter[] Settings_ForXml
         {
@@ -552,6 +553,8 @@ namespace Jhu.Graywulf.Registry
             this.settings = new ParameterCollection();
             this.comments = string.Empty;
 
+            this.fullyQualifiedName = null;
+
             InitializeEntityReferences();
             this.isEntityReferencesLoaded = false;
 
@@ -589,6 +592,8 @@ namespace Jhu.Graywulf.Registry
             this.userGuidDeleted = old.userGuidDeleted;
             this.settings = new ParameterCollection(old.settings);
             this.comments = old.comments;
+
+            this.fullyQualifiedName = old.fullyQualifiedName;
 
             CopyEntityReferences(old);
             InitializeChildTypes();
@@ -709,16 +714,21 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         public string GetFullyQualifiedName()
         {
-            string n = this.name;
-
-            Entity p = Parent;
-            while (p != null)
+            if (fullyQualifiedName == null)
             {
-                n = p.Name + "." + n;
-                p = p.Parent;
+                string n = this.name;
+
+                Entity p = Parent;
+                while (p != null)
+                {
+                    n = p.Name + "." + n;
+                    p = p.Parent;
+                }
+
+                fullyQualifiedName = EntityType.ToString() + ":" + n;
             }
 
-            return EntityType.ToString() + ":" + n;
+            return fullyQualifiedName;
         }
 
         public override string ToString()

@@ -12,7 +12,7 @@ using Jhu.Graywulf.Tasks;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
-    [RemoteServiceClass(typeof(CopyFile))]
+    [RemoteService(typeof(CopyFile))]
     public interface ICopyFile : IRemoteService
     {
         string Source

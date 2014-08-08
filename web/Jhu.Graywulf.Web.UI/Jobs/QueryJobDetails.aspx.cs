@@ -3,11 +3,11 @@ using System.Security;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
-using Jhu.Graywulf.Web.Api;
+using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Jobs
 {
-    public partial class QueryJobDetails : PageBase
+    public partial class QueryJobDetails : CustomPageBase
     {
         public static string GetUrl(Guid guid)
         {
@@ -47,9 +47,9 @@ namespace Jhu.Graywulf.Web.UI.Jobs
 
             Name.Text = queryJob.Name;
             Comments.Text = queryJob.Comments;
-            DateCreated.Text = Web.Util.DateFormatter.Format(queryJob.DateCreated);
-            DateStarted.Text = Web.Util.DateFormatter.Format(queryJob.DateStarted);
-            DateFinished.Text = Web.Util.DateFormatter.Format(queryJob.DateFinished);
+            DateCreated.Text = Util.DateFormatter.Format(queryJob.DateCreated);
+            DateStarted.Text = Util.DateFormatter.Format(queryJob.DateStarted);
+            DateFinished.Text = Util.DateFormatter.Format(queryJob.DateFinished);
             JobExecutionStatus.Status = queryJob.Status;
 
             Query.Text = queryJob.Query;
@@ -57,7 +57,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             // Set button actions
             Cancel.Enabled = queryJob.CanCancel;
 
-            Back.OnClientClick = Web.Util.UrlFormatter.GetClientRedirect(OriginalReferer);
+            Back.OnClientClick = Util.UrlFormatter.GetClientRedirect(OriginalReferer);
         }
 
         protected void Page_Load(object sender, EventArgs e)

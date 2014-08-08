@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
 using System.Xml.Serialization;
 using System.ComponentModel;
+using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -33,8 +34,6 @@ namespace Jhu.Graywulf.Registry
             
             [XmlArray("Parameters")]
             [XmlArrayItem(typeof(Parameter))]
-            [XmlArrayItem(typeof(JobDefinitionParameter))]
-            [XmlArrayItem(typeof(JobInstanceParameter))]
             [DefaultValue(null)]
             public Parameter[] Parameters_ForXml
             {
@@ -54,15 +53,15 @@ namespace Jhu.Graywulf.Registry
             };
             pars.Parameters.Add(par1);
 
-            var par2 = new JobDefinitionParameter()
+            var par2 = new Parameter()
             {
                 Name = "param2",
                 TypeName = typeof(string).AssemblyQualifiedName,
-                Direction = JobParameterDirection.In
+                Direction = ParameterDirection.In
             };
             pars.Parameters.Add(par2);
 
-            var par3 = new JobInstanceParameter()
+            var par3 = new Parameter()
             {
                 Name = "param3",
                 Value = 123L

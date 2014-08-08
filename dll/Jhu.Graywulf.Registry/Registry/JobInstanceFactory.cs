@@ -12,6 +12,14 @@ namespace Jhu.Graywulf.Registry
     /// </summary>
     public class JobInstanceFactory : EntityFactory
     {
+        #region Static member variables
+
+        /// <summary>
+        /// Rendom number generator used to gerenate unique job names.
+        /// </summary>
+        private static readonly Random random = new Random();
+
+        #endregion
         #region Member variables
 
         private Guid userGuid;
@@ -67,39 +75,6 @@ namespace Jhu.Graywulf.Registry
 
         #endregion
         #region Job Search Functions
-
-#if false // TODO: delete
-        public IEnumerable<JobInstance> FindJobInstances(Guid userGuid, Guid queueInstanceGuid, HashSet<Guid> jobDefinitionGuids, JobExecutionState jobExecutionStatus)
-        {
-            string sql = "spFindJobInstance_byDetails";
-
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
-            {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
-                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
-                cmd.Parameters.Add("@From", SqlDbType.Int).Value = DBNull.Value;
-                cmd.Parameters.Add("@Max", SqlDbType.Int).Value = DBNull.Value;
-                cmd.Parameters.Add("@RowCount", SqlDbType.Int).Direction = ParameterDirection.Output;
-
-                cmd.Parameters.Add("@JobUserGuid", SqlDbType.UniqueIdentifier).Value = userGuid == Guid.Empty ? DBNull.Value : (object)userGuid;
-                cmd.Parameters.Add("@QueueInstanceGuid", SqlDbType.UniqueIdentifier).Value = queueInstanceGuid == Guid.Empty ? DBNull.Value : (object)queueInstanceGuid;
-                cmd.Parameters.Add("@JobDefinitionGuids", SqlDbType.Structured).Value = CreateGuidListTable(jobDefinitionGuids);
-                cmd.Parameters.Add("@JobExecutionStatus", SqlDbType.Int).Value = jobExecutionStatus;
-
-                using (SqlDataReader dr = cmd.ExecuteReader())
-                {
-                    while (dr.Read())
-                    {
-                        JobInstance item = new JobInstance(Context);
-                        item.LoadFromDataReader(dr);
-                        yield return item;
-                    }
-                    dr.Close();
-                }
-            }
-        }
-#endif
 
         public int CountJobInstances()
         {
@@ -157,5 +132,48 @@ namespace Jhu.Graywulf.Registry
         }
 
         #endregion
+
+        private static string GenerateUniqueJobID()
+        {
+            int rnd;
+
+            lock (random)
+            {
+                rnd = random.Next(1000);
+            }
+
+            var now = DateTime.Now;
+
+            return String.Format("{0:yyMMddHHmmssff}{1:000}", now, rnd);
+        }
+
+        public static string GenerateUniqueJobID(Context context)
+        {
+            return String.Format("{0}_{1}", EntityFactory.GetName(context.UserName), GenerateUniqueJobID());
+        }
+
+        public static string GenerateRecurringJobID(Context context, string oldName)
+        {
+            // TODO: This is an ad-hoc solution, make it more robust
+            // Take old name, but remove date part
+            int i = oldName.LastIndexOf('_');
+
+            string newname;
+
+            if (i < 0)
+            {
+                newname = oldName;
+            }
+            else if (i == 0)
+            {
+                newname = context.UserName;
+            }
+            else
+            {
+                newname = oldName.Substring(0, i);
+            }
+
+            return String.Format("{0}_{1}", newname, GenerateUniqueJobID());
+        }
     }
 }

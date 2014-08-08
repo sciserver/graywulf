@@ -2,6 +2,7 @@
 using System.Web.UI.WebControls;
 using System.IO;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Web.Security;
 
 namespace Jhu.Graywulf.Web.Auth
 {
@@ -38,12 +39,13 @@ namespace Jhu.Graywulf.Web.Auth
         {
             try
             {
+                var ip = IdentityProvider.Create(RegistryContext.Domain);
                 var uu = new UserFactory(RegistryContext);
-                var user = IdentityProvider.GetUserByEmail(args.Value);
+                var user = ip.GetUserByEmail(args.Value);
 
                 user.GenerateActivationCode();
 
-                IdentityProvider.ModifyUser(user);
+                ip.ModifyUser(user);
 
                 Util.EmailSender.Send(user, File.ReadAllText(MapPath("~/Templates/RequestResetEmail.xml")), BaseUrl);
 

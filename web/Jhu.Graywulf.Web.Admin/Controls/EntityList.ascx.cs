@@ -6,11 +6,12 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Web.Controls;
+using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Admin.Controls
 {
     [ParseChildren(true)]
-    public partial class EntityList : Jhu.Graywulf.Web.UserControlBase
+    public partial class EntityList : Jhu.Graywulf.Web.UI.UserControlBase
     {
         private Entity parentEntity;
         private EntityType childrenType;

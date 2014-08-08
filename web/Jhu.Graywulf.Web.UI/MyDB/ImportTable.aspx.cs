@@ -7,7 +7,7 @@ using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class ImportTable : PageBase
+    public partial class ImportTable : CustomPageBase
     {
         public static string GetUrl()
         {
@@ -18,13 +18,13 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (!IsPostBack)
             {
-                var dfs = FederationContext.FileFormatFactory.GetFileFormatDescriptions();
+                var dfs = FederationContext.FileFormatFactory.EnumerateFileFormatDescriptions();
 
                 foreach (var df in dfs)
                 {
-                    if (df.Value.CanRead)
+                    if (df.CanRead)
                     {
-                        var li = new ListItem(df.Value.DisplayName, df.Key);
+                        var li = new ListItem(df.DisplayName, df.Extension);
                         FileFormat.Items.Add(li);
                     }
                 }
@@ -91,14 +91,12 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             string filename, extension;
             DataFileCompression compression;
 
-            // Determine file format
-            var format = FederationContext.FileFormatFactory.GetFileFormatDescription(
+            // Determine file format and create a file
+            var source = FederationContext.FileFormatFactory.CreateFile(
                 GetUploadedFileUri(),
                 out filename,
                 out extension,
                 out compression);
-
-            var source = FederationContext.FileFormatFactory.CreateFile(format);
 
             source.BaseStream = ImportedFile.PostedFile.InputStream;
             //source.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read);
@@ -140,7 +138,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         protected void RefreshForm()
         {
-            var format = FederationContext.FileFormatFactory.GetFileFormatDescription(FileFormat.SelectedValue);
+            var format = FederationContext.FileFormatFactory.CreateFileFromExtension(FileFormat.SelectedValue).Description;
 
             DetectColumnNamesRow.Visible = format.CanDetectColumnNames;
             CompressedRow.Visible = !format.IsCompressed;

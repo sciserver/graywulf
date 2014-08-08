@@ -3,6 +3,7 @@ using System.Web.UI.WebControls;
 using System.Configuration;
 using System.Security;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Web.Security;
 
 namespace Jhu.Graywulf.Web.Auth
 {
@@ -27,7 +28,9 @@ namespace Jhu.Graywulf.Web.Auth
             {
                 // Reset password mode
                 OldPasswordRow.Visible = false;
-                user = IdentityProvider.GetUserByActivationCode(Request.QueryString["code"]);
+
+                var ip = IdentityProvider.Create(RegistryContext.Domain);
+                user = ip.GetUserByActivationCode(Request.QueryString["code"]);
             }
         }
 
@@ -37,7 +40,11 @@ namespace Jhu.Graywulf.Web.Auth
             {
                 try
                 {
-                    user = IdentityProvider.VerifyPassword(user.Name, OldPassword.Text);
+                    var ip = IdentityProvider.Create(RegistryContext.Domain);
+                    var response = ip.VerifyPassword(user.Name, OldPassword.Text, false);
+
+                    user = response.Principal.Identity.User;
+
                     args.IsValid = true;
                 }
                 catch (Exception)
@@ -57,13 +64,15 @@ namespace Jhu.Graywulf.Web.Auth
         {
             if (IsValid)
             {
+                var ip = IdentityProvider.Create(RegistryContext.Domain);
+
                 if (RegistryUser != null)
                 {
-                    IdentityProvider.ChangePassword(user, OldPassword.Text, Password.Text);
+                    ip.ChangePassword(user, OldPassword.Text, Password.Text);
                 }
                 else
                 {
-                    IdentityProvider.ResetPassword(user, Password.Text);
+                    ip.ResetPassword(user, Password.Text);
                 }
 
                 ChangePasswordForm.Visible = false;

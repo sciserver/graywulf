@@ -151,6 +151,8 @@ namespace Jhu.Graywulf.Install
             QueueInstance qi = new QueueInstance(mcont)
             {
                 Name = Constants.MaintenanceQueueName,
+                System = system,
+                Hidden = true,
                 RunningState = Registry.RunningState.Running,
             };
             qi.QueueDefinitionReference.Value = qd;

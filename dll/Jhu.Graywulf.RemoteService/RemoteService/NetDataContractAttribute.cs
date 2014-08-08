@@ -8,6 +8,11 @@ using System.Runtime.Serialization;
 namespace Jhu.Graywulf.RemoteService
 {
 
+    /// <summary>
+    /// Implements a contract behaviour that replaces default serialization
+    /// logic with NetDataContractSerializer to use specific versions
+    /// of assemblies for services.
+    /// </summary>
     public class NetDataContractAttribute : Attribute, IContractBehavior
     {
         public void AddBindingParameters(ContractDescription contractDescription, ServiceEndpoint endpoint, System.ServiceModel.Channels.BindingParameterCollection bindingParameters)

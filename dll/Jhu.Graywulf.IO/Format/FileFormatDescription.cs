@@ -6,8 +6,10 @@ using System.Text;
 namespace Jhu.Graywulf.Format
 {
     [Serializable]
-    public class FileFormatDescription
+    public class FileFormatDescription : ICloneable
     {
+        #region Private member variables
+
         /// <summary>
         /// .Net type implementing the file format
         /// </summary>
@@ -26,7 +28,7 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Default extension of file format.
         /// </summary>
-        private string defaultExtension;
+        private string extension;
 
         /// <summary>
         /// File format class can read data.
@@ -71,6 +73,9 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         private bool requiresRecordCount;
 
+        #endregion
+        #region
+
         public Type Type
         {
             get { return type; }
@@ -89,10 +94,10 @@ namespace Jhu.Graywulf.Format
             set { mimeType = value; }
         }
 
-        public string DefaultExtension
+        public string Extension
         {
-            get { return defaultExtension; }
-            set { defaultExtension = value; }
+            get { return extension; }
+            set { extension = value; }
         }
 
         public bool CanRead
@@ -150,9 +155,17 @@ namespace Jhu.Graywulf.Format
             set { requiresRecordCount = value; }
         }
 
+        #endregion
+        #region Constructors and initializers
+
         public FileFormatDescription()
         {
             InitializeMembers();
+        }
+
+        public FileFormatDescription(FileFormatDescription old)
+        {
+            CopyMembers(old);
         }
 
         private void InitializeMembers()
@@ -160,13 +173,38 @@ namespace Jhu.Graywulf.Format
             this.type = null;
             this.displayName = null;
             this.mimeType = null;
-            this.defaultExtension = null;
+            this.extension = null;
             this.canRead = false;
             this.canWrite = false;
             this.canDetectColumnNames = false;
             this.canHoldMultipleDatasets = false;
             this.requiresArchive = false;
             this.isCompressed = false;
+            this.knowsRecordCount = false;
+            this.requiresRecordCount = false;
         }
+
+        private void CopyMembers(FileFormatDescription old)
+        {
+            this.type = old.type;
+            this.displayName = old.displayName;
+            this.mimeType = old.mimeType;
+            this.extension = old.extension;
+            this.canRead = old.canRead;
+            this.canWrite = old.canWrite;
+            this.canDetectColumnNames = old.canDetectColumnNames;
+            this.canHoldMultipleDatasets = old.canHoldMultipleDatasets;
+            this.requiresArchive = old.requiresArchive;
+            this.isCompressed = old.isCompressed;
+            this.knowsRecordCount = old.knowsRecordCount;
+            this.requiresRecordCount = old.requiresRecordCount;
+        }
+
+        public object Clone()
+        {
+            return new FileFormatDescription(this);
+        }
+
+        #endregion
     }
 }

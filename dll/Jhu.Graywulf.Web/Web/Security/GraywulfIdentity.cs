@@ -103,19 +103,12 @@ namespace Jhu.Graywulf.Web.Security
         /// <summary>
         /// Gets the name of the registry user.
         /// </summary>
+        /// <remarks>
+        /// Required by the IIdentity
+        /// </remarks>
         public string Name
         {
-            get
-            {
-                if (userReference.IsEmpty)
-                {
-                    return null;
-                }
-                else
-                {
-                    return EntityFactory.GetName(userReference.Name);
-                }
-            }
+            get { return userReference.Value.Name; }
         }
 
         /// <summary>
@@ -186,7 +179,7 @@ namespace Jhu.Graywulf.Web.Security
             // forms authentication ticket. In this case we trust the user name within
             // the ticket (as it was previously issued by us) so we simply load the
             // user by name
-          
+
             using (var registryContext = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 User user = null;
@@ -236,6 +229,9 @@ namespace Jhu.Graywulf.Web.Security
 
                 this.isAuthenticated = true;
                 this.userReference.Value = user;
+
+                // Cache name for later
+                this.userReference.Value.GetFullyQualifiedName();
             }
         }
 

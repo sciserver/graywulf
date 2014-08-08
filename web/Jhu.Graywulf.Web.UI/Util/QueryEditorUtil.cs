@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 
-namespace Jhu.Graywulf.Web.UI.Util
+namespace Jhu.Graywulf.Util
 {
     public static class QueryEditorUtil
     {

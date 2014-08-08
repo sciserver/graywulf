@@ -11,7 +11,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Web.Util;
+using Jhu.Graywulf.Web;
 
 namespace Jhu.Graywulf.Web.Admin.Federation
 {
@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             allocationTypeList.SelectedValue = Item.AllocationType.ToString();
             diskVolumeTypeList.SelectedValue = Item.DiskVolumeType.ToString();
             FileGroupName.Text = Item.FileGroupName;
-            AllocatedSpace.Text = ByteSizeFormatter.Format(Item.AllocatedSpace);
+            AllocatedSpace.Text = Util.ByteSizeFormatter.Format(Item.AllocatedSpace);
             FileCount.Text = Item.FileCount.ToString();
         }
 
@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             Item.AllocationType = (FileGroupAllocationType)Enum.Parse(typeof(FileGroupAllocationType), allocationTypeList.SelectedValue);
             Item.DiskVolumeType = (DiskVolumeType)Enum.Parse(typeof(DiskVolumeType), diskVolumeTypeList.SelectedValue);
             Item.FileGroupName = FileGroupName.Text;
-            Item.AllocatedSpace = ByteSizeFormatter.Parse(AllocatedSpace.Text);
+            Item.AllocatedSpace = Util.ByteSizeFormatter.Parse(AllocatedSpace.Text);
             Item.FileCount = int.Parse(FileCount.Text);
         }
     }

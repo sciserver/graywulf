@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
+using System.Web.Security;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
 {
-    public class GraywulfIdentityProvider : IdentityProviderBase
+    public class GraywulfIdentityProvider : IdentityProvider
     {
         #region Constructors and initializers
 
-        public GraywulfIdentityProvider(Context context)
-            : base(context)
+        public GraywulfIdentityProvider(Domain domain)
+            : base(domain.Context)
         {
-
         }
 
         #endregion
@@ -106,14 +107,23 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region Password functions
 
-        public override User VerifyPassword(string username, string password)
+        public override AuthenticationResponse VerifyPassword(string username, string password, bool createPersistentCookie)
         {
             try
             {
                 var uf = new UserFactory(Context);
                 var user = uf.LoginUser(Context.Domain, username, password);
 
-                return user;
+                var response = CreateAuthenticationResponse(user);
+
+                // If the HttpContext is null that means we are in a WCF session, so
+                // create the forms authentication ticket manually
+                if (HttpContext.Current == null)
+                {
+                    response.Cookies.Add(CreateFormsAuthenticationTicketCookie(user, createPersistentCookie));
+                }
+
+                return response;
             }
             catch (Exception ex)
             {
@@ -123,7 +133,7 @@ namespace Jhu.Graywulf.Web.Security
 
         public override void ChangePassword(User user, string oldPassword, string newPassword)
         {
-            VerifyPassword(user.Name, oldPassword);
+            VerifyPassword(user.Name, oldPassword, false);
             ResetPassword(user, newPassword);
         }
 

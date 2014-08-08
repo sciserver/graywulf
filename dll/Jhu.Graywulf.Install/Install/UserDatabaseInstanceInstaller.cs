@@ -8,16 +8,27 @@ namespace Jhu.Graywulf.Install
 {
     public class UserDatabaseInstanceInstaller : ContextObject
     {
-        private User user;
-
-        public UserDatabaseInstanceInstaller(User user)
-            :base(user.Context)
+        public UserDatabaseInstanceInstaller(Context context)
+            :base(context)
         {
-            this.user = user;
         }
 
-        public UserDatabaseInstance CreateUserDatabaseInstance(DatabaseVersion databaseVersion)
+        public void EnsureUserDatabaseInstanceExists(User user, DatabaseVersion databaseVersion)
         {
+            // Check if user's myDB exists, if not, create
+            var mydb = databaseVersion.GetUserDatabaseInstance(user);
+
+            if (mydb == null)
+            {
+                CreateUserDatabaseInstance(user, databaseVersion);
+            }
+        }
+
+        public UserDatabaseInstance CreateUserDatabaseInstance(User user, DatabaseVersion databaseVersion)
+        {
+            user.Context = this.Context;
+            databaseVersion.Context = this.Context;
+
             // Load server instances that can store user databases
             var ef = new EntityFactory(Context);
             var serverInstances = ef.FindAll<ServerInstance>()

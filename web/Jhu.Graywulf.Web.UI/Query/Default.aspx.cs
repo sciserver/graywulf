@@ -7,16 +7,18 @@ using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.Web.Api;
+using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Query
 {
-    public partial class Default : PageBase
+    public partial class Default : CustomPageBase
     {
         public static string GetUrl()
         {
             return "~/Query/Default.aspx";
         }
+
+        #region Event handlers
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -41,15 +43,20 @@ namespace Jhu.Graywulf.Web.UI.Query
             Message.ForeColor = Color.White;
         }
 
+        /// <summary>
+        /// Executes when the syntax check button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void Check_Click(object sender, EventArgs e)
         {
-            var q = CreateQuery(JobQueue.Unknown);
+            var q = CreateQueryJob(JobQueue.Unknown);
             VerifyQuery(q);
         }
 
         protected void ExecuteQuick_Click(object sender, EventArgs e)
         {
-            var q = CreateQuery(JobQueue.Quick);
+            var q = CreateQueryJob(JobQueue.Quick);
 
             if (VerifyQuery(q) != null)
             {
@@ -64,8 +71,8 @@ namespace Jhu.Graywulf.Web.UI.Query
 
         protected void ExecuteLong_Click(object sender, EventArgs e)
         {
-            var q = CreateQuery(JobQueue.Long);
-            
+            var q = CreateQueryJob(JobQueue.Long);
+
             if (VerifyQuery(q) != null)
             {
                 ScheduleQuery(q);
@@ -73,12 +80,19 @@ namespace Jhu.Graywulf.Web.UI.Query
             }
         }
 
+        // TODO: use pop-up windows instead for results
         protected void CloseResults_Click(object sender, EventArgs e)
         {
             ResultsDiv.Visible = false;
             CloseResults.Visible = false;
         }
 
+        #endregion
+
+        /// <summary>
+        /// Returns the entire or only selected portion of the query.
+        /// </summary>
+        /// <returns></returns>
         private string GetQueryString()
         {
             string query;
@@ -94,7 +108,12 @@ namespace Jhu.Graywulf.Web.UI.Query
             return query;
         }
 
-        private QueryJob CreateQuery(JobQueue queue)
+        /// <summary>
+        /// Creates a query job from the query string.
+        /// </summary>
+        /// <param name="queue"></param>
+        /// <returns></returns>
+        private QueryJob CreateQueryJob(JobQueue queue)
         {
             return new QueryJob(GetQueryString(), queue);
         }
@@ -106,39 +125,32 @@ namespace Jhu.Graywulf.Web.UI.Query
         /// <returns></returns>
         private QueryBase VerifyQuery(QueryJob queryJob)
         {
-            try
+            var q = queryJob.CreateQuery(FederationContext);
+            string message;
+
+            if (q.Verify(out message))
             {
-                var q = queryJob.CreateQuery(FederationContext);
-                q.Verify();
-
                 Message.BackColor = Color.Green;
-                Message.Text = "Query OK.";
-
+                Message.Text = message;
                 return q;
             }
-            catch (ValidatorException ex)
+            else
             {
                 Message.BackColor = Color.Red;
-                Message.Text = String.Format("Query error: {0}", ex.Message);
+                Message.Text = message;
+                return null;
             }
-            catch (NameResolverException ex)
-            {
-                Message.BackColor = Color.Red;
-                Message.Text = String.Format("Query error: {0}", ex.Message);
-            }
-            catch (ParserException ex)
-            {
-                Message.BackColor = Color.Red;
-                Message.Text = String.Format("Query error: {0}", ex.Message);
-            }
-
-            return null;
         }
 
+        /// <summary>
+        /// Schedules a query for execution.
+        /// </summary>
+        /// <param name="queryJob"></param>
+        /// <returns></returns>
         protected JobInstance ScheduleQuery(QueryJob queryJob)
         {
-            var jobInstance = queryJob.Schedule(FederationContext);
-            return jobInstance;
+            queryJob.Schedule(FederationContext);
+            return queryJob.JobInstance;
         }
     }
 }

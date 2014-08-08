@@ -141,21 +141,86 @@ namespace Jhu.Graywulf.RemoteService
         }
 
         /// <summary>
-        /// Authorizes the user only if they belong to a specified user group.
+        /// Creates a new type of service identified by its contract.
         /// </summary>
-        public static void EnsureRoleAccess()
+        /// <param name="contract"></param>
+        /// <returns></returns>
+        public static Uri CreateService(Type contract, out ServiceHost host, out ServiceEndpoint endpoint)
         {
-            // Access automatically granted for non-remoting scenarios.
-            // OperationContext.Current is null if the object is created locally.
-            // Otherwise check if the user is authenticated and the identity is equal to the specified
-            // user (group) name or member of the given group (role).
+            // See if contractType is decorated with the RemoteServiceClassAttribute
+            var attr = contract.GetCustomAttributes(typeof(RemoteServiceAttribute), false);
 
-            if (OperationContext.Current != null &&
-                StringComparer.InvariantCultureIgnoreCase.Compare(Thread.CurrentPrincipal.Identity.Name, AppSettings.UserGroup) != 0 &&
-                !Thread.CurrentPrincipal.IsInRole(AppSettings.UserGroup))
+            if (attr == null || attr.Length != 1)
             {
-                throw new SecurityException("Access denied.");
+                // TODO
+                throw new InvalidOperationException("Contracts must be decorated with the RemoteServiceClassAttribute for automatic service registration.");
             }
+
+            var serviceType = ((RemoteServiceAttribute)attr[0]).Type.AssemblyQualifiedName;
+
+            // Attempt to load type
+            var service = Type.GetType(serviceType);
+
+            if (!service.IsSubclassOf(typeof(RemoteServiceBase)))
+            {
+                // TODO
+                throw new InvalidOperationException("Service class must derive from Jhu.Graywulf.RemoteService.RemoteServiceBase");
+            }
+
+            if (service == null || contract == null)
+            {
+                throw new Exception("Type not found.");    // TODO
+            }
+
+            // Everything is OK, initialize service
+
+            host = new ServiceHost(
+                service,
+                RemoteServiceHelper.CreateEndpointUri(RemoteServiceHelper.GetFullyQualifiedDnsName(), ""));
+
+            // Turn on detailed debug info
+#if DEBUG
+            var sdb = host.Description.Behaviors.Find<ServiceDebugBehavior>();
+            if (sdb == null)
+            {
+                sdb = new ServiceDebugBehavior();
+                host.Description.Behaviors.Add(sdb);
+            }
+            sdb.IncludeExceptionDetailInFaults = true;
+#endif
+
+            // Turn on impersonation
+            /*
+            var sab = host.Description.Behaviors.Find<ServiceAuthorizationBehavior>();
+            if (sab == null)
+            {
+                sab = new ServiceAuthorizationBehavior();
+                host.Description.Behaviors.Add(sab);
+            }
+            sab.ImpersonateCallerForAllOperations = true;
+            */
+
+            // Unthrottle service to increase throughput
+            // Service is behind a firewall, no DOS attacks will happen
+            // TODO: copy these settings to the control endpoint
+            var tb = host.Description.Behaviors.Find<ServiceThrottlingBehavior>();
+            if (tb == null)
+            {
+                tb = new ServiceThrottlingBehavior();
+                host.Description.Behaviors.Add(tb);
+            }
+            tb.MaxConcurrentCalls = 1024;
+            tb.MaxConcurrentInstances = Int32.MaxValue;
+            tb.MaxConcurrentSessions = 1024;
+
+            endpoint = host.AddServiceEndpoint(
+                contract,
+                RemoteServiceHelper.CreateNetTcpBinding(),
+                RemoteServiceHelper.CreateEndpointUri(RemoteServiceHelper.GetFullyQualifiedDnsName(), service.FullName));
+
+            host.Open();
+
+            return endpoint.Address.Uri;
         }
 
         /// <summary>
