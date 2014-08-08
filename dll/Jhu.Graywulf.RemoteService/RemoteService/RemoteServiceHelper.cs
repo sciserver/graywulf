@@ -29,9 +29,11 @@ namespace Jhu.Graywulf.RemoteService
         /// <returns></returns>
         public static IRemoteServiceControl GetControlObject(string host)
         {
-            return CreateChannel<IRemoteServiceControl>(
-                CreateNetTcpBinding(),
-                CreateEndpointAddress(GetFullyQualifiedDnsName(host), "Control"));
+            var fdqn = GetFullyQualifiedDnsName(host);
+            var tcp = CreateNetTcpBinding();
+            var ep = CreateEndpointAddress(fdqn, "Control");
+
+            return CreateChannel<IRemoteServiceControl>(tcp, ep);
         }
 
         /// <summary>
@@ -67,7 +69,7 @@ namespace Jhu.Graywulf.RemoteService
 
             // Ensure delegation
             cf.Credentials.Windows.ClientCredential = System.Net.CredentialCache.DefaultNetworkCredentials;
-            cf.Credentials.Windows.AllowedImpersonationLevel = TokenImpersonationLevel.Delegation;
+            cf.Credentials.Windows.AllowedImpersonationLevel = TokenImpersonationLevel.Impersonation;
 
             return cf.CreateChannel();
         }
@@ -80,13 +82,16 @@ namespace Jhu.Graywulf.RemoteService
         /// <returns></returns>
         public static NetTcpBinding CreateNetTcpBinding()
         {
-            var tcp = new NetTcpBinding(SecurityMode.Transport);
-            tcp.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
-            tcp.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.Sign;
-            tcp.Security.Message.ClientCredentialType = MessageCredentialType.Windows;
+            var tcp = new NetTcpBinding();
             tcp.ReceiveTimeout = TimeSpan.FromHours(2);     // **** TODO
             tcp.SendTimeout = TimeSpan.FromHours(2);
             tcp.OpenTimeout = TimeSpan.FromHours(2);
+
+            // Configure security to use windows credentials and signed messages
+            tcp.Security.Mode = SecurityMode.Transport;
+            tcp.Security.Transport.ClientCredentialType = TcpClientCredentialType.Windows;
+            tcp.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.Sign;
+            tcp.Security.Message.ClientCredentialType = MessageCredentialType.Windows;
 
             // Large XML messages require these quotas set to large values
             tcp.ReaderQuotas.MaxArrayLength = 0x7FFFFFFF;
@@ -173,10 +178,14 @@ namespace Jhu.Graywulf.RemoteService
             }
 
             // Everything is OK, initialize service
+            var fdqn = RemoteServiceHelper.GetFullyQualifiedDnsName();
+            var ep = RemoteServiceHelper.CreateEndpointUri(fdqn, service.FullName);
+            var tcp = RemoteServiceHelper.CreateNetTcpBinding();
 
-            host = new ServiceHost(
-                service,
-                RemoteServiceHelper.CreateEndpointUri(RemoteServiceHelper.GetFullyQualifiedDnsName(), ""));
+            host = new ServiceHost(service, ep);
+
+            // Create endpoint
+            endpoint = host.AddServiceEndpoint(contract, tcp, ep);
 
             // Turn on detailed debug info
 #if DEBUG
@@ -213,11 +222,6 @@ namespace Jhu.Graywulf.RemoteService
             tb.MaxConcurrentInstances = Int32.MaxValue;
             tb.MaxConcurrentSessions = 1024;
 
-            endpoint = host.AddServiceEndpoint(
-                contract,
-                RemoteServiceHelper.CreateNetTcpBinding(),
-                RemoteServiceHelper.CreateEndpointUri(RemoteServiceHelper.GetFullyQualifiedDnsName(), service.FullName));
-
             host.Open();
 
             return endpoint.Address.Uri;
@@ -252,6 +256,15 @@ namespace Jhu.Graywulf.RemoteService
         /// <returns></returns>
         public static string GetFullyQualifiedDnsName(string host)
         {
+            // If host is localhost, simply replace it with the known host name,
+            // otherwise windows authentication will not work within the local
+            // machine
+
+            if (StringComparer.InvariantCultureIgnoreCase.Compare(host, "localhost") == 0)
+            {
+                return GetFullyQualifiedDnsName();
+            }
+
             // TODO: reverse lookup to get FQDN, it fails on current GW config at JHU!
             /*var name = System.Net.Dns.GetHostEntry(host).HostName;
             return name;*/
