@@ -280,16 +280,17 @@ namespace Jhu.Graywulf.IO.Tasks
             isBulkCopyCancelRequested = false;
             bulkCopyFinishedEvent = new AutoResetEvent(false);
 
+            // Turn on TABLOCK
             var sbo = System.Data.SqlClient.SqlBulkCopyOptions.TableLock;
 
             // Initialize bulk copy
             var sbc = new System.Data.SqlClient.SqlBulkCopy(destination.Dataset.ConnectionString, sbo)
             {
                 DestinationTableName = cg.GetResolvedTableName(destination),
-                BatchSize = batchSize,
                 BulkCopyTimeout = timeout,
-                //EnableStreaming = true    // TODO: add, new in .net 4.5
-                NotifyAfter = batchSize
+                NotifyAfter = batchSize,
+                // BatchSize = batchSize,    // Must not be set, otherwise SQL Server will write log
+                // EnableStreaming = true    // TODO: add, new in .net 4.5
             };
 
             // Initialize events
