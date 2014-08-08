@@ -55,8 +55,8 @@
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\ExportTables\ExportMaintenanceJob.cs" />
-    <Compile Include="Jobs\ExportTables\ExportTablesFactory.cs" />
     <Compile Include="Jobs\ExportTables\ExportTablesJob.cs" />
+    <Compile Include="Jobs\ExportTables\ExportTablesJobFactory.cs" />
     <Compile Include="Jobs\ExportTables\ExportTablesJobSettings.cs" />
     <Compile Include="Jobs\ExportTables\ExportTablesParameters.cs" />
     <Compile Include="Jobs\ExportTables\IExportTablesJob.cs" />
