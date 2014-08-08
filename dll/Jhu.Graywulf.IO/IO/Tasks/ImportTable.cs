@@ -130,7 +130,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 if (source.IsClosed)
                 {
                     source.FileMode = DataFileMode.Read;
-                    source.StreamFactoryType = StreamFactoryType;
+                    source.StreamFactory = GetStreamFactory();
                     source.Open();
                 }
 

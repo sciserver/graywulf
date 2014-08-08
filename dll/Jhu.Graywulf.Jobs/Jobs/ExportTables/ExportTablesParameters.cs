@@ -17,6 +17,9 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Jobs.ExportTables
 {
+    /// <summary>
+    /// Represents a set of parameters that describe a table export job.
+    /// </summary>
     [Serializable]
     [DataContract(Name = "ExportTablesParameters", Namespace = "")]
     public class ExportTablesParameters
@@ -35,6 +38,9 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         #endregion
         #region Properties
 
+        /// <summary>
+        /// Gets or sets an array of tables that will be exported.
+        /// </summary>
         [DataMember]
         public TableOrView[] Sources
         {
@@ -42,6 +48,10 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             set { sources = value; }
         }
 
+        /// <summary>
+        /// Gets or sets an array of data files that carry specific
+        /// format settings for the individual files.
+        /// </summary>
         [DataMember]
         public DataFileBase[] Destinations
         {
@@ -49,6 +59,13 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             set { destinations = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the destination URI of the export.
+        /// </summary>
+        /// <remarks>
+        /// This is a single URI, meaning multiple files will be saved into
+        /// an archive, or put into a directory pointed by this URI.
+        /// </remarks>
         [DataMember]
         public Uri Uri
         {
@@ -56,6 +73,9 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             set { uri = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the credentials to access the destination.
+        /// </summary>
         [DataMember]
         public Credentials Credentials
         {
@@ -63,6 +83,9 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             set { credentials = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the name of the file format factory to be used during export.
+        /// </summary>
         [DataMember]
         public string FileFormatFactoryType
         {
@@ -70,18 +93,31 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             set { fileFormatFactoryType = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the name of the stream format factory that is
+        /// used to open a stream to the destination URI.
+        /// </summary>
+        [DataMember]
         public string StreamFactoryType
         {
             get { return streamFactoryType; }
             set { streamFactoryType = value; }
         }
 
+        /// <summary>
+        /// Gets or sets whether the destination is an archive.
+        /// </summary>
+        [DataMember]
         public DataFileArchival Archival
         {
             get { return archival; }
             set { archival = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the execution time-out.
+        /// </summary>
+        [DataMember]
         public int Timeout
         {
             get { return timeout; }
@@ -111,12 +147,20 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
         #endregion
 
+        /// <summary>
+        /// Returns an initialized table export task based on the job parameters
+        /// </summary>
+        /// <returns></returns>
         public IExportTableArchive GetInitializedTableExportTask()
         {
             // Determine server name from connection string
             // This is required, because bulk copy can go into databases that are only known
             // by their connection string
-            // Get server name from data source name (requires trimming the sql server instance name)
+
+            // Get server name from the very first data source
+            // (requires trimming the sql server instance name)
+            // This will be the database server responsible for executing the export
+            // What
             string host = ((Jhu.Graywulf.Schema.SqlServer.SqlServerDataset)sources[0].Dataset).Host;
 
             var ss = new SourceTableQuery[sources.Length];
@@ -130,16 +174,16 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             }
 
             // Create bulk operation
-            var te = RemoteServiceHelper.CreateObject<IExportTableArchive>(host);
+            var task = RemoteServiceHelper.CreateObject<IExportTableArchive>(host);
 
-            te.Sources = ss;
-            te.Destinations = destinations;
-            te.Uri = uri;
-            te.FileFormatFactoryType = fileFormatFactoryType;
-            te.StreamFactoryType = streamFactoryType;
-            te.Timeout = timeout;
+            task.Sources = ss;
+            task.Destinations = destinations;
+            task.Uri = uri;
+            task.FileFormatFactoryType = fileFormatFactoryType;
+            task.StreamFactoryType = streamFactoryType;
+            task.Timeout = timeout;
 
-            return te;
+            return task;
         }
 
         /*

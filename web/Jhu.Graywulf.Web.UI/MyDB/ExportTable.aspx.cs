@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         private void ScheduleExportTableJob()
         {
-            var ef = ExportTablesFactory.Create(FederationContext.Federation);
+            var ef = ExportTablesJobFactory.Create(FederationContext.Federation);
             var settings = ef.GetJobDefinitionSettings();
 
             var path = Path.Combine(

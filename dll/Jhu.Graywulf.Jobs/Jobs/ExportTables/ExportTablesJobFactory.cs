@@ -12,24 +12,24 @@ using Jhu.Graywulf.Schema;
 namespace Jhu.Graywulf.Jobs.ExportTables
 {
     [Serializable]
-    public class ExportTablesFactory : JobFactoryBase
+    public class ExportTablesJobFactory : JobFactoryBase
     {
         #region Static members
 
-        public static ExportTablesFactory Create(Federation federation)
+        public static ExportTablesJobFactory Create(Federation federation)
         {
-            return new ExportTablesFactory(federation.Context);
+            return new ExportTablesJobFactory(federation.Context);
         }
 
         #endregion
 
-        protected ExportTablesFactory()
+        protected ExportTablesJobFactory()
             : base()
         {
             InitializeMembers(new StreamingContext());
         }
 
-        protected ExportTablesFactory(Context context)
+        protected ExportTablesJobFactory(Context context)
             : base(context)
         {
             InitializeMembers(new StreamingContext());

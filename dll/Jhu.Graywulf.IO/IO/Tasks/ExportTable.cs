@@ -126,7 +126,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 if (destination.IsClosed)
                 {
                     destination.FileMode = DataFileMode.Write;
-                    destination.StreamFactoryType = StreamFactoryType;
+                    destination.StreamFactory = GetStreamFactory();
                     destination.Open();
                 }
 

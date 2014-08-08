@@ -135,7 +135,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         public ExportTablesParameters CreateParameters(FederationContext context)
         {
-            var ef = ExportTablesFactory.Create(context.Federation);
+            var ef = ExportTablesJobFactory.Create(context.Federation);
 
             // Add tables and destination files
             var ts = new TableOrView[tables.Length];
@@ -167,7 +167,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             var p = CreateParameters(context);
 
-            var ef = ExportTablesFactory.Create(context.Federation);
+            var ef = ExportTablesJobFactory.Create(context.Federation);
             var job = ef.ScheduleAsJob(p, GetQueueName(context), Comments);
 
             job.Save();

@@ -62,8 +62,20 @@ namespace Jhu.Graywulf.RemoteService.Server
             e.UserData.Add("UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName));
             LogEvent(e);
 
-            // Initialize WCF service
+            // Initialize WCF service host to run the control service
+            // TODO: the localhost stting needs to be tested!
+            var fdqn = RemoteServiceHelper.GetFullyQualifiedDnsName();
+            var tcp = RemoteServiceHelper.CreateNetTcpBinding();
+            var ep = RemoteServiceHelper.CreateEndpointUri(RemoteServiceHelper.GetFullyQualifiedDnsName(), "Control");
+
             controlServiceHost = new ServiceHost(
+                typeof(RemoteServiceControl), ep);
+
+            controlEndpoint = controlServiceHost.AddServiceEndpoint(
+                typeof(IRemoteServiceControl), tcp, ep);
+
+            // TODO: old, delete
+            /*controlServiceHost = new ServiceHost(
                 typeof(RemoteServiceControl),
                 RemoteServiceHelper.CreateEndpointUri(RemoteServiceHelper.GetFullyQualifiedDnsName(), ""));
 
@@ -71,6 +83,7 @@ namespace Jhu.Graywulf.RemoteService.Server
                 typeof(IRemoteServiceControl),
                 RemoteServiceHelper.CreateNetTcpBinding(),
                 RemoteServiceHelper.CreateEndpointUri(RemoteServiceHelper.GetFullyQualifiedDnsName(), "Control"));
+             * */
 
             controlServiceHost.Open();
         }

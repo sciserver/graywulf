@@ -8,19 +8,30 @@ namespace Jhu.Graywulf.Util
 {
     public static class UriConverter
     {
+        /// <summary>
+        /// Converts a path to a file:// uri
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static Uri FromFilePath(string path)
         {
-            if (path.StartsWith(@"\\") || path.StartsWith(@"//"))
+            path = path.Replace('\\', '/');
+
+            if (path.StartsWith(@"//"))
             {
-                return new Uri(String.Format("{0}:", Uri.UriSchemeFile, Uri.SchemeDelimiter, path.Replace('\\', '/')));
+                // This is a UNC path, replace \ with / and remove one of the starting /-s
+                path = path.Substring(2);
+                return new Uri(String.Format("{0}{1}{2}", Uri.UriSchemeFile, Uri.SchemeDelimiter, path));
             }
             if (Path.IsPathRooted(path))
             {
-                return new Uri(String.Format("{0}{1}/{2}", Uri.UriSchemeFile, Uri.SchemeDelimiter, path.Replace('\\', '/')));
+                // This is a local patch starting with a volume letter
+                return new Uri(String.Format("{0}{1}/{2}", Uri.UriSchemeFile, Uri.SchemeDelimiter, path));
             }
             else
             {
-                return new Uri(path.Replace('\\', '/'), UriKind.Relative);
+                // This is a relative URI, just replace \ with /
+                return new Uri(path, UriKind.Relative);
             }
         }
 
