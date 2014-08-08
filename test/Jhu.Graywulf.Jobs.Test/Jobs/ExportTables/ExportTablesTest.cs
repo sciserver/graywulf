@@ -33,23 +33,25 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
                 var source = new Jhu.Graywulf.Schema.Table()
                 {
-                    Dataset = mydbds,  // TODO: fix this
-                    DatabaseName = mydbds.DatabaseName,
+                    Dataset = IOTestDataset,
+                    DatabaseName = IOTestDataset.DatabaseName,
                     SchemaName = schemaName,
                     TableName = tableName
                 };
 
+
+                // Set the file name (within the archive)
                 var destination = new Jhu.Graywulf.Format.DelimitedTextDataFile();
                 destination.Uri = Util.UriConverter.FromFilePath(tableName + destination.Description.Extension);
 
                 var parameters = new ExportTablesParameters()
                 {
                     Sources = new TableOrView[] { source },
-                    Uri = new Uri(path, UriKind.Relative),
                     Destinations = new DataFileBase[] { destination },
+                    Uri = Util.UriConverter.FromFilePath(path),
                 };
 
-                var etf = ExportTablesFactory.Create(context.Federation);
+                var etf = ExportTablesJobFactory.Create(context.Federation);
                 var ji = etf.ScheduleAsJob(parameters, queue, "");
 
                 ji.Save();
@@ -73,7 +75,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var path = String.Format(@"\\{0}\{1}.csv.zip", Jhu.Graywulf.Test.Constants.Localhost, Jhu.Graywulf.Test.Constants.TestDirectory);
-                var guid = ScheduleExportTableJob("dbo", "testtable", path, QueueType.Long);
+                var guid = ScheduleExportTableJob("dbo", "SampleData", path, QueueType.Long);
 
                 var ji = LoadJob(guid);
 
@@ -96,8 +98,9 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 {
                     RemoteServiceTester.Instance.EnsureRunning();
 
-                    var path = String.Format(@"\\{0}\{1}", Jhu.Graywulf.Test.Constants.Localhost, Jhu.Graywulf.Test.Constants.TestDirectory);
-                    var guid = ScheduleExportTableJob("dbo", "testtable", path, QueueType.Long);
+                    var path = String.Format(@"\\{0}\{1}\SimpleExportTest.csv.zip",
+                        Jhu.Graywulf.Test.Constants.Localhost, Jhu.Graywulf.Test.Constants.TestDirectory);
+                    var guid = ScheduleExportTableJob("dbo", "SampleData", path, QueueType.Long);
 
                     WaitJobComplete(guid, TimeSpan.FromSeconds(10));
 

@@ -49,11 +49,11 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             var zippath = "TableExportArchiveTest_ExportZipTest.zip";
             var path = "test.csv";
-            var te = GetTableExportTask(Util.UriConverter.FromFilePath(zippath), path, false);
+            var task = GetTableExportTask(Util.UriConverter.FromFilePath(zippath), path, false);
 
-            te.Open();
-            te.Execute();
-            te.Close();
+            task.Open();
+            task.Execute();
+            task.Close();
 
             Assert.IsTrue(File.Exists(zippath));
             File.Delete(zippath);
@@ -68,11 +68,11 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 var zippath = String.Format(@"\\{0}\{1}\{2}.zip", Test.Constants.RemoteHost1, Test.Constants.TestDirectory, "TableExportArchiveTest_RemoteExportZipTest");
                 var path = "test.csv";
-                var te = GetTableExportTask(Util.UriConverter.FromFilePath(zippath), path, true);
+                var task = GetTableExportTask(Util.UriConverter.FromFilePath(zippath), path, true);
 
-                te.Open();
-                te.Execute();
-                te.Close();
+                task.Open();
+                task.Execute();
+                task.Close();
 
                 Assert.IsTrue(File.Exists(zippath));
                 File.Delete(zippath);
