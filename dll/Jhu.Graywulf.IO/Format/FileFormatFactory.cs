@@ -148,6 +148,8 @@ namespace Jhu.Graywulf.Format
             return filesByExtension.ContainsKey(extension);
         }
 
+        // TODO: this is only used by web form
+        // delete when web form is changed to accept archives
         public DataFileBase CreateFile(Uri uri, out string filename, out string extension, out DataFileCompression compression)
         {
             DataFileBase file;
@@ -161,7 +163,7 @@ namespace Jhu.Graywulf.Format
 
         public bool TryCreateFile(Uri uri, out string filename, out string extension, out DataFileCompression compression, out DataFileBase file)
         {
-            GetExtensionWithoutCompression(uri, out filename, out extension, out compression);
+            GetFileExtensions(uri, out filename, out extension, out compression);
 
             var res = TryCreateFileFromExtension(extension, out file);
 
@@ -275,7 +277,7 @@ namespace Jhu.Graywulf.Format
         /// Returns the file extension by stripping of the extension of the
         /// compressed file, if any.
         /// </summary>
-        protected void GetExtensionWithoutCompression(Uri uri, out string filename, out string extension, out DataFileCompression compressionMethod)
+        public virtual void GetFileExtensions(Uri uri, out string filename, out string extension, out DataFileCompression compressionMethod)
         {
             var path = Util.UriConverter.ToFilePath(uri);    // This isn't always a file path, so it's the safest to do now
             extension = Path.GetExtension(path);

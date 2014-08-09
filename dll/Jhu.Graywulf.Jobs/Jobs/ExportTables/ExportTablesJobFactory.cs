@@ -40,17 +40,18 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         {
         }
 
-        public ExportTablesParameters CreateParameters(Federation federation, TableOrView[] sources, Uri uri, string fileFormatType, string queueName, string comments)
+        public ExportTablesParameters CreateParameters(Federation federation, TableOrView[] sources, Uri uri, string mimeType, string queueName, string comments)
         {
+            var ff = FileFormatFactory.Create(federation.FileFormatFactory);
+
             // Create destination files
             // One file per source
             var destinations = new DataFileBase[sources.Length];
             for (int i = 0; i < sources.Length; i++)
             {
-                var ff = FileFormatFactory.Create(federation.FileFormatFactory);
-
-                // TODO use file extensions instead of type!
-                var destination = ff.CreateFile(sources[i].ObjectName + fileFormatType);
+                // TODO: use file extensions instead of type?
+                var destination = ff.CreateFileFromMimeType(mimeType);
+                destination.Uri = Util.UriConverter.FromFilePath(sources[i].ObjectName + destination.Description.Extension);
 
                 // special initialization in case of a text file
                 if (destination is TextDataFileBase)

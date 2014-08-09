@@ -289,7 +289,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 DestinationTableName = cg.GetResolvedTableName(destination),
                 BulkCopyTimeout = timeout,
                 NotifyAfter = batchSize,
-                // BatchSize = batchSize,    // Must not be set, otherwise SQL Server will write log
+                BatchSize = batchSize,       // Must be set to 0, otherwise SQL Server will write log
                 // EnableStreaming = true    // TODO: add, new in .net 4.5
             };
 

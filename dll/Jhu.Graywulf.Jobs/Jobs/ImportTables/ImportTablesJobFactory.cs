@@ -42,21 +42,50 @@ namespace Jhu.Graywulf.Jobs.ImportTables
         }
 
         /// <summary>
-        /// Creates parameters for a single-archive import job
+        /// Creates parameters for a single file or single-archive import job
         /// </summary>
         public ImportTablesParameters CreateParameters(Federation federation, Uri uri, DestinationTable destination, string queueName, string comments)
         {
-            var ip = new ImportTablesParameters()
-            {
-                Sources = null, // in single archive mode, source file formats are figured out automatically
-                Destinations = new [] {destination },   // this is a table name pattern only in this case
-                Archival = DataFileArchival.Automatic,
-                Uri = uri,
-                FileFormatFactoryType = federation.FileFormatFactory,
-                StreamFactoryType = federation.StreamFactory,
-            };
+            var sf = StreamFactory.Create(federation.StreamFactory);
 
-            return ip;
+            // Check if input file is an archive
+            var archival = sf.GetArchivalMethod(uri);
+
+            if (archival == DataFileArchival.None)
+            {
+                // This is a single file import
+                // In single file mode the source file and destination must
+                // be set explicitly
+
+                var ff = FileFormatFactory.Create(federation.FileFormatFactory);
+                var source = ff.CreateFile(uri);
+
+                return new ImportTablesParameters()
+                {
+                    Sources = new [] { source },
+                    Destinations = new[] { destination },
+                    Archival = archival,
+                    Uri = uri,
+                    FileFormatFactoryType = federation.FileFormatFactory,
+                    StreamFactoryType = federation.StreamFactory,
+                };
+            }
+            else
+            {
+                // This is an import of an entire archive
+                // In archive mode, source file formats are figured out automatically
+                // and destination is a table name pattern only
+
+                return new ImportTablesParameters()
+                {
+                    Sources = null, 
+                    Destinations = new[] { destination },
+                    Archival = archival,
+                    Uri = uri,
+                    FileFormatFactoryType = federation.FileFormatFactory,
+                    StreamFactoryType = federation.StreamFactory,
+                };
+            }
         }
 
         public JobInstance ScheduleAsJob(ImportTablesParameters parameters, string queueName, string comments)

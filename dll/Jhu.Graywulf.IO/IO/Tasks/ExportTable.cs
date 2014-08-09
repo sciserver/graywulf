@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [ServiceContract(SessionMode = SessionMode.Required)]
     [RemoteService(typeof(ExportTable))]
     [NetDataContract]
-    public interface IExportTable : ICopyTableBase
+    public interface IExportTable : ICopyTableBase, ICopyDataStream
     {
         SourceTableQuery Source
         {
@@ -105,6 +105,18 @@ namespace Jhu.Graywulf.IO.Tasks
 
         #endregion
 
+        public void Open()
+        {
+            destination.FileMode = DataFileMode.Write;
+            destination.StreamFactory = GetStreamFactory();
+            destination.Open();
+        }
+
+        public void Close()
+        {
+            destination.Clone();
+        }
+
         /// <summary>
         /// Executes the table export operation
         /// </summary>
@@ -122,19 +134,16 @@ namespace Jhu.Graywulf.IO.Tasks
 
             try
             {
-                // TODO: add user access logic here
                 if (destination.IsClosed)
                 {
-                    destination.FileMode = DataFileMode.Write;
-                    destination.StreamFactory = GetStreamFactory();
-                    destination.Open();
+                    Open();
                 }
 
                 CopyToFile(source, destination);
             }
             finally
             {
-                destination.Close();
+                Close();
             }
         }
     }

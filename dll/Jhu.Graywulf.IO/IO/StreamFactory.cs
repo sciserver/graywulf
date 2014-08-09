@@ -323,7 +323,7 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapCompressedStreamForRead(Stream baseStream)
         {
-            var cm = GetCompressionMethod(Util.UriConverter.ToFileName(uri));
+            var cm = GetCompressionMethod(uri);
 
             switch (cm)
             {
@@ -356,7 +356,7 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapCompressedStreamForWrite(Stream baseStream)
         {
-            var cm = GetCompressionMethod(Util.UriConverter.ToFileName(uri));
+            var cm = GetCompressionMethod(uri);
 
             switch (cm)
             {
@@ -390,7 +390,16 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapArchiveStreamForRead(Stream baseStream)
         {
-            var am = GetArchivalMethod(Util.UriConverter.ToFileName(uri));
+            DataFileArchival am;
+
+            if (archival == DataFileArchival.Automatic)
+            {
+                am = GetArchivalMethod(uri);
+            }
+            else
+            {
+                am = archival;
+            }
 
             switch (am)
             {
@@ -413,7 +422,16 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapArchiveStreamForWrite(Stream baseStream)
         {
-            var am = GetArchivalMethod(Util.UriConverter.ToFileName(uri));
+            DataFileArchival am;
+
+            if (archival == DataFileArchival.Automatic)
+            {
+                am = GetArchivalMethod(uri);
+            }
+            else
+            {
+                am = archival;
+            }
 
             switch (am)
             {
@@ -518,9 +536,11 @@ namespace Jhu.Graywulf.IO
         /// method from the file extension
         /// </summary>
         /// <returns></returns>
-        private DataFileCompression GetCompressionMethod(string path)
+        public virtual DataFileCompression GetCompressionMethod(Uri uri)
         {
             // TODO: We could use mime type here if stream comes from HTTP
+
+            var path = Util.UriConverter.ToFileName(uri);
 
             // Open compressed stream, if necessary
             var cm = compression;
@@ -550,32 +570,30 @@ namespace Jhu.Graywulf.IO
         }
 
         /// <summary>
-        /// If archival method is set to automatic, figures it out from
-        /// file extension.
+        /// Returnes the archival method used within this file.
         /// </summary>
         /// <returns></returns>
-        private DataFileArchival GetArchivalMethod(string path)
+        public virtual DataFileArchival GetArchivalMethod(Uri uri)
         {
-            var am = archival;
+            var path = Util.UriConverter.ToFileName(uri);
+            DataFileArchival am;
 
-            if (am == DataFileArchival.Automatic)
+            var firstExtension = Path.GetExtension(path);
+            var secondExtension = Path.GetExtension(Path.GetFileNameWithoutExtension(path));
+
+            if (StringComparer.InvariantCultureIgnoreCase.Compare(firstExtension, Constants.FileExtensionZip) == 0)
             {
-                // Look for second extension
-                // TODO: this doesn't work with non-gzipped tar files but
-                // whoever would use that?
-
-                // Zip files
-                var extension = Path.GetExtension(Path.GetFileNameWithoutExtension(path)).ToLowerInvariant();
-
-                switch (extension)
-                {
-                    case Constants.FileExtensionTar:
-                        am = DataFileArchival.Tar;
-                        break;
-                    default:
-                        am = DataFileArchival.None;
-                        break;
-                }
+                am = DataFileArchival.Zip;
+            }
+            else if (
+                StringComparer.InvariantCultureIgnoreCase.Compare(firstExtension, Constants.FileExtensionTar) == 0 ||
+                StringComparer.InvariantCultureIgnoreCase.Compare(secondExtension, Constants.FileExtensionTar) == 0)
+            {
+                am = DataFileArchival.Tar;
+            }
+            else
+            {
+                am = DataFileArchival.None;
             }
 
             return am;

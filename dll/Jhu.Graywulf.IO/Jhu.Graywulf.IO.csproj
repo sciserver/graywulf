@@ -136,6 +136,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IO\Tasks\ExportTableArchive.cs" />
+    <Compile Include="IO\Tasks\ICopyDataStream.cs" />
     <Compile Include="IO\Tasks\ImportTable.cs" />
     <Compile Include="IO\Tasks\ImportTableArchive.cs" />
     <Compile Include="IO\Tasks\SourceTableQuery.cs" />

@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
     [NetDataContract]
-    public interface ICopyTableArchiveBase : ICopyTableBase
+    public interface ICopyTableArchiveBase : ICopyTableBase, ICopyDataStream
     {
         Uri Uri
         {
@@ -25,14 +25,9 @@ namespace Jhu.Graywulf.IO.Tasks
             set;
         }
 
-        [OperationContract]
-        void Open();
-
+        // TODO: check if it's used, if not, remove
         [OperationContract(Name="Open_Uri")]
         void Open(Uri uri);
-
-        [OperationContract]
-        void Close();
     }
 
     /// <summary>

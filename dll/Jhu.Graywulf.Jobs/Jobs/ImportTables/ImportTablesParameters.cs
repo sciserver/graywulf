@@ -163,43 +163,53 @@ namespace Jhu.Graywulf.Jobs.ImportTables
         /// Returns an initialized table export task based on the job parameters
         /// </summary>
         /// <returns></returns>
-        public IExportTableArchive GetInitializedTableImportTask()
+        public ICopyDataStream GetInitializedTableImportTask()
         {
-            /*
-            // Determine server name from connection string
-            // This is required, because bulk copy can go into databases that are only known
-            // by their connection string
+            var sf = StreamFactory.Create(streamFactoryType);
 
-            // Get server name from the very first data source
+            // Get server name from the very first destination
             // (requires trimming the sql server instance name)
-            // This will be the database server responsible for executing the export
-            // What
-            string host = ((Jhu.Graywulf.Schema.SqlServer.SqlServerDataset)sources[0].Dataset).Host;
+            // This will be the database server responsible for executing the import
+            var dataset = (Jhu.Graywulf.Schema.SqlServer.SqlServerDataset)destinations[0].Dataset;
+            var host = dataset.Host;
 
-            var ss = new SourceTableQuery[sources.Length];
-            for (int i = 0; i < sources.Length; i++)
+            // Import works in two modes: single file and archive mode.
+            // In archive mode, the file is imported using ImportTableArchive task whereas
+            // in single file mode a simpler ImportTable task is created
+
+            // If arhival mode is set to automatic, figure out mode from extensions
+            if (this.Archival == DataFileArchival.Automatic)
             {
-                ss[i] = new SourceTableQuery()
-                {
-                    Dataset = sources[i].Dataset,
-                    Query = String.Format("SELECT t.* FROM [{0}].[{1}] AS t", sources[i].SchemaName, sources[i].ObjectName)
-                };
+                this.Archival = sf.GetArchivalMethod(this.Uri);
             }
 
-            // Create bulk operation
-            var task = RemoteServiceHelper.CreateObject<IExportTableArchive>(host);
+            if (this.Archival == DataFileArchival.None)
+            {
+                // Single file mode
+                // Use only first item from sources and destinations
+                // TODO: this could be extended but that would mean multiple tasks
 
-            task.Sources = ss;
-            task.Destinations = destination;
-            task.Uri = uri;
-            task.FileFormatFactoryType = fileFormatFactoryType;
-            task.StreamFactoryType = streamFactoryType;
-            task.Timeout = timeout;
+                var task = RemoteServiceHelper.CreateObject<IImportTable>(host);
+                task.Source = this.sources[0];
+                task.Destination = this.destinations[0];
+                task.FileFormatFactoryType = this.fileFormatFactoryType;
+                task.StreamFactoryType = this.streamFactoryType;
+                task.Timeout = this.timeout;
 
-            return task;
-             * */
+                return task;
+            }
+            else
+            {
+                // Archive mode
 
-            throw new NotImplementedException();
+                var task = RemoteServiceHelper.CreateObject<IImportTableArchive>(host);
+                task.Uri = this.uri;
+                task.Destination = this.destinations[0];
+                task.FileFormatFactoryType = this.fileFormatFactoryType;
+                task.StreamFactoryType = this.streamFactoryType;
+
+                return task;
+            }
         }
     }
 }

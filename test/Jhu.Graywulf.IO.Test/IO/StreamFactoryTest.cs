@@ -11,6 +11,30 @@ namespace Jhu.Graywulf.IO
     public class StreamFactoryTest
     {
         [TestMethod]
+        public void GetCompressionMethodTest()
+        {
+            var sf = StreamFactory.Create(null);
+
+            Assert.AreEqual(DataFileCompression.None, sf.GetCompressionMethod(Util.UriConverter.FromFilePath("test.dat")));
+            Assert.AreEqual(DataFileCompression.None, sf.GetCompressionMethod(Util.UriConverter.FromFilePath("test.tar")));
+            Assert.AreEqual(DataFileCompression.GZip, sf.GetCompressionMethod(Util.UriConverter.FromFilePath("test.tar.gz")));
+            Assert.AreEqual(DataFileCompression.BZip2, sf.GetCompressionMethod(Util.UriConverter.FromFilePath("test.tar.bz2")));
+            Assert.AreEqual(DataFileCompression.Zip, sf.GetCompressionMethod(Util.UriConverter.FromFilePath("test.zip")));
+        }
+
+        [TestMethod]
+        public void GetArchivalMethodTest()
+        {
+            var sf = StreamFactory.Create(null);
+
+            Assert.AreEqual(DataFileArchival.None, sf.GetArchivalMethod(Util.UriConverter.FromFilePath("test.dat")));
+            Assert.AreEqual(DataFileArchival.Tar, sf.GetArchivalMethod(Util.UriConverter.FromFilePath("test.tar")));
+            Assert.AreEqual(DataFileArchival.Tar, sf.GetArchivalMethod(Util.UriConverter.FromFilePath("test.tar.gz")));
+            Assert.AreEqual(DataFileArchival.Tar, sf.GetArchivalMethod(Util.UriConverter.FromFilePath("test.tar.bz2")));
+            Assert.AreEqual(DataFileArchival.Zip, sf.GetArchivalMethod(Util.UriConverter.FromFilePath("test.zip")));
+        }
+
+        [TestMethod]
         public void ReadRelativePathFileTest()
         {
             var sf = StreamFactory.Create(null);

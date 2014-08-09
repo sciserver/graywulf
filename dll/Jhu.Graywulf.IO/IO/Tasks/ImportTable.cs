@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [ServiceContract(SessionMode = SessionMode.Required)]
     [RemoteService(typeof(ImportTable))]
     [NetDataContract]
-    public interface IImportTable : ICopyTableBase
+    public interface IImportTable : ICopyTableBase, ICopyDataStream
     {
         DataFileBase Source
         {
@@ -105,6 +105,18 @@ namespace Jhu.Graywulf.IO.Tasks
 
         #endregion
 
+        public void Open()
+        {
+            source.FileMode = DataFileMode.Read;
+            source.StreamFactory = GetStreamFactory();
+            source.Open();
+        }
+
+        public void Close()
+        {
+            source.Close();
+        }
+
         /// <summary>
         /// Executes the copy operation.
         /// </summary>
@@ -124,21 +136,16 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 // Make sure file is in read mode and uses the right
                 // stream factory to open the URI
-
-                // TODO: add authentication options here
-
                 if (source.IsClosed)
                 {
-                    source.FileMode = DataFileMode.Read;
-                    source.StreamFactory = GetStreamFactory();
-                    source.Open();
+                    Open();
                 }
 
                 CopyFromFile(source, destination);
             }
             finally
             {
-                source.Close();
+                Close();
             }
         }
     }
