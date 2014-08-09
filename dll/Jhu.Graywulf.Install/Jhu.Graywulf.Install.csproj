@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Install\ImportTablesJobInstaller.cs" />
     <Compile Include="Install\ExportMaintenanceJobInstaller.cs" />
     <Compile Include="Install\DatabaseDefinitionInstaller.cs" />
     <Compile Include="Install\DatabaseInstanceInstaller.cs" />

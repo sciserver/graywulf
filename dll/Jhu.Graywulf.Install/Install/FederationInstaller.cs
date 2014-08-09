@@ -109,6 +109,9 @@ namespace Jhu.Graywulf.Install
             var emji = new ExportMaintenanceJobInstaller(federation);
             emji.Install();
 
+            var iji = new ImportTablesJobInstaller(federation);
+            iji.Install();
+
             var jdi = new SqlQueryJobInstaller(federation);
             jdi.Install();
 
