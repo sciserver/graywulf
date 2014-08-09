@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
         public JobInstance ScheduleAsJob(ExportTablesParameters parameters, string queueName, string comments)
         {
-            JobInstance job = CreateJobInstance("", GetJobDefinitionName(), queueName, comments);
+            JobInstance job = CreateJobInstance(null, GetJobDefinitionName(), queueName, comments);
 
             job.Parameters[Constants.JobParameterExport].Value = parameters;
 

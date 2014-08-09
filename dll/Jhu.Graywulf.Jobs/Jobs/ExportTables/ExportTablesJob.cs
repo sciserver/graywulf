@@ -26,18 +26,18 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         {
             var parameters = Parameters.Get(activityContext);
 
-            // TODO: try to generalize connection string loading logic and move this from here
-            // Use connection string of the database instance, if only database instance name is supplied
-            for (int i = 0; i < parameters.Sources.Length; i++)
+            // Make sure connection strings are cached
+            using (var context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                if (parameters.Sources[i].Dataset is GraywulfDataset)
+                for (int i = 0; i < parameters.Sources.Length; i++)
                 {
-                    // Load database instace and get connection string to make it cached
-                    using (var context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                    if (parameters.Sources[i].Dataset is GraywulfDataset)
                     {
+                        // Load database instace and get connection string to make it cached
+
                         var gwds = (GraywulfDataset)parameters.Sources[i].Dataset;
                         gwds.Context = context;
-                        gwds.DatabaseInstanceReference.Value.GetConnectionString();
+                        gwds.CacheSchemaConnectionString();
                     }
                 }
             }
@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             {
                 exporter.Close();
             }
-            
+
             UnregisterCancelable(workflowInstanceGuid, activityInstanceId, exporter);
         }
 
