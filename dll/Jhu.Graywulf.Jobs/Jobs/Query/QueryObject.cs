@@ -880,6 +880,11 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Cancelable command execution
 
+        public virtual void Execute()
+        {
+            throw new NotImplementedException();
+        }
+
         protected void RegisterCancelable(Guid key, ICancelableTask task)
         {
             RegisterCancelable(key.ToString(), task);
