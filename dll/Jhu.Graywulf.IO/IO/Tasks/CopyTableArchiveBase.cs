@@ -25,9 +25,13 @@ namespace Jhu.Graywulf.IO.Tasks
             set;
         }
 
-        // TODO: check if it's used, if not, remove
-        [OperationContract(Name="Open_Uri")]
-        void Open(Uri uri);
+        Credentials Credentials
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
     }
 
     /// <summary>
@@ -39,6 +43,7 @@ namespace Jhu.Graywulf.IO.Tasks
         #region Private member variables
 
         private Uri uri;
+        private Credentials credentials;
 
         [NonSerialized]
         private Stream baseStream;
@@ -60,6 +65,15 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             get { return uri; }
             set { uri = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the credentials to be used to access the source or destination URI
+        /// </summary>
+        public Credentials Credentials
+        {
+            get { return credentials; }
+            set { credentials = value; }
         }
 
         /// <summary>
@@ -87,6 +101,7 @@ namespace Jhu.Graywulf.IO.Tasks
         private void InitializeMembers()
         {
             this.uri = null;
+            this.credentials = null;
             this.baseStream = null;
             this.ownsBaseStream = false;
         }
@@ -94,6 +109,7 @@ namespace Jhu.Graywulf.IO.Tasks
         private void CopyMembers(CopyTableArchiveBase old)
         {
             this.uri = old.uri;
+            this.credentials = old.credentials;
             this.baseStream = null;
             this.ownsBaseStream = false;
         }
@@ -138,6 +154,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 var sf = GetStreamFactory();
                 sf.Uri = uri;
+                sf.Credentials = credentials;
                 sf.Mode = fileMode;
                 sf.Archival = archival;
 

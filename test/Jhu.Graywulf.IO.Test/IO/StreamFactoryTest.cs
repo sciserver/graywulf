@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/csv_numbers.csv", UriKind.Relative), DataFileMode.Read))
+            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/csv_numbers.csv", UriKind.Relative), null, DataFileMode.Read))
             {
                 s.ReadByte();
             }
@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/writetest.csv", UriKind.Relative), DataFileMode.Write))
+            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/writetest.csv", UriKind.Relative), null, DataFileMode.Write))
             {
                 s.WriteByte(0);
             }
@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/csv_numbers.csv.gz", UriKind.Relative), DataFileMode.Read))
+            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/csv_numbers.csv.gz", UriKind.Relative), null, DataFileMode.Read))
             {
                 s.ReadByte();
             }
@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/writetest.csv.gz", UriKind.Relative), DataFileMode.Write))
+            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/writetest.csv.gz", UriKind.Relative), null, DataFileMode.Write))
             {
                 s.WriteByte(0);
             }
@@ -83,7 +83,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/csv_numbers.csv.bz2", UriKind.Relative), DataFileMode.Read))
+            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/csv_numbers.csv.bz2", UriKind.Relative), null, DataFileMode.Read))
             {
                 s.ReadByte();
             }
@@ -94,7 +94,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/writetest.csv.bz2", UriKind.Relative), DataFileMode.Write))
+            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/writetest.csv.bz2", UriKind.Relative), null, DataFileMode.Write))
             {
                 s.WriteByte(0);
             }
@@ -105,7 +105,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/csv_numbers.zip", UriKind.Relative), DataFileMode.Read))
+            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/csv_numbers.zip", UriKind.Relative), null, DataFileMode.Read))
             {
                 Assert.IsTrue(s is IArchiveInputStream);
 
@@ -124,7 +124,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/writetest.zip", UriKind.Relative), DataFileMode.Write))
+            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/writetest.zip", UriKind.Relative), null, DataFileMode.Write))
             {
                 Assert.IsTrue(s is IArchiveOutputStream);
 
@@ -144,7 +144,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/csv_numbers.tar.gz", UriKind.Relative), DataFileMode.Read))
+            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/csv_numbers.tar.gz", UriKind.Relative), null, DataFileMode.Read))
             {
                 Assert.IsTrue(s is IArchiveInputStream);
 
@@ -163,7 +163,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/writetest.tar.gz", UriKind.Relative), DataFileMode.Write))
+            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/writetest.tar.gz", UriKind.Relative), null, DataFileMode.Write))
             {
                 Assert.IsTrue(s is IArchiveOutputStream);
 
@@ -183,7 +183,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("file:///C:/windows/win.ini"), DataFileMode.Read))
+            using (var s = sf.Open(new Uri("file:///C:/windows/win.ini"), null, DataFileMode.Read))
             {
                 s.ReadByte();
             }
@@ -200,7 +200,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("http://www.bing.com"), DataFileMode.Read))
+            using (var s = sf.Open(new Uri("http://www.bing.com"), null, DataFileMode.Read))
             {
                 s.ReadByte();
             }
@@ -211,7 +211,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("https://www.google.com"), DataFileMode.Read))
+            using (var s = sf.Open(new Uri("https://www.google.com"), null, DataFileMode.Read))
             {
                 s.ReadByte();
             }
@@ -222,7 +222,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("ftp://ftp.debian.com/debian/README"), DataFileMode.Read))
+            using (var s = sf.Open(new Uri("ftp://ftp.debian.com/debian/README"), null, DataFileMode.Read))
             {
                 s.ReadByte();
             }

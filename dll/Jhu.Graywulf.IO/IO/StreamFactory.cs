@@ -167,7 +167,7 @@ namespace Jhu.Graywulf.IO
         /// If not set explicitly through properties, compression and archival settings
         /// are figured out automatically from the file extension.
         /// </remarks>
-        public Stream Open(Uri uri, DataFileMode mode)
+        public Stream Open(Uri uri, Credentials credentials, DataFileMode mode)
         {
             this.uri = uri;
             this.mode = mode;
@@ -183,7 +183,7 @@ namespace Jhu.Graywulf.IO
         /// <param name="compression"></param>
         /// <param name="archival"></param>
         /// <returns></returns>
-        public Stream Open(Uri uri, DataFileMode mode, DataFileCompression compression, DataFileArchival archival)
+        public Stream Open(Uri uri, Credentials credentials, DataFileMode mode, DataFileCompression compression, DataFileArchival archival)
         {
             this.uri = uri;
             this.mode = mode;

@@ -61,6 +61,14 @@ namespace Jhu.Graywulf.Format
         private Uri uri;
 
         /// <summary>
+        /// Credentials to access the URI pointing to the file. Used
+        /// by the stream facroty to automatically open the URI as
+        /// a stream.
+        /// </summary>
+        [NonSerialized]
+        private Credentials credentials;
+
+        /// <summary>
         /// Determines if an identity column is automatically generated.
         /// </summary>
         [NonSerialized]
@@ -149,6 +157,23 @@ namespace Jhu.Graywulf.Format
             {
                 EnsureNotOpen();
                 uri = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the credentials to be used to access the URI.
+        /// </summary>
+        /// <remarks>
+        /// Do not use for file within archives.
+        /// </remarks>
+        [DataMember]
+        public Credentials Credentials
+        {
+            get { return credentials; }
+            set
+            {
+                EnsureNotOpen();
+                credentials = value;
             }
         }
 
@@ -279,6 +304,7 @@ namespace Jhu.Graywulf.Format
 
             this.fileMode = DataFileMode.Unknown;
             this.uri = null;
+            this.credentials = null;
             this.generateIdentityColumn = false;
             this.name = null;
             this.metadata = null;
@@ -297,6 +323,7 @@ namespace Jhu.Graywulf.Format
 
             this.fileMode = old.fileMode;
             this.uri = old.uri;
+            this.credentials = old.credentials;
             this.generateIdentityColumn = old.generateIdentityColumn;
             this.name = old.name;
             this.metadata = Util.DeepCloner.CloneObject(old.metadata);
@@ -409,7 +436,7 @@ namespace Jhu.Graywulf.Format
         private void OpenOwnStream()
         {
             // Use stream factory to open stream
-            baseStream = streamFactory.Open(uri, fileMode);
+            baseStream = streamFactory.Open(uri, credentials, fileMode);
 
             ownsBaseStream = true;
         }
