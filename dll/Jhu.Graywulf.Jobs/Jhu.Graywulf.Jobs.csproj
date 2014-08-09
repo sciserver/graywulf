@@ -60,6 +60,11 @@
     <Compile Include="Jobs\ExportTables\ExportTablesJobSettings.cs" />
     <Compile Include="Jobs\ExportTables\ExportTablesParameters.cs" />
     <Compile Include="Jobs\ExportTables\IExportTablesJob.cs" />
+    <Compile Include="Jobs\ImportTables\ImportTablesJob.cs" />
+    <Compile Include="Jobs\ImportTables\ImportTablesJobFactory.cs" />
+    <Compile Include="Jobs\ImportTables\ImportTablesJobSettings.cs" />
+    <Compile Include="Jobs\ImportTables\ImportTablesParameters.cs" />
+    <Compile Include="Jobs\ImportTables\IImportTablesJob.cs" />
     <Compile Include="Jobs\JobFactoryBase.cs" />
     <Compile Include="Jobs\MirrorDatabase\AttachDatabase.cs" />
     <Compile Include="Jobs\MirrorDatabase\DetachDatabase.cs" />
