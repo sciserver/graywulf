@@ -77,7 +77,7 @@ namespace Jhu.Graywulf.Util
             }
             else
             {
-                return source.Select(i => (T)i.Clone());
+                return source.Select(i => i == null ? default(T) : (T)i.Clone());
             }
         }
 
