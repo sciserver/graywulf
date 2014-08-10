@@ -964,7 +964,7 @@ END",
 
             if (!IsMutable)
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("Operation valid on mutable datasets only.");   // TODO ***
             }
 
             if (table.Columns.Count == 0)

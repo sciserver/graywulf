@@ -36,7 +36,8 @@ namespace Jhu.Graywulf.IO.SharpZipLibWrapper
         /// <returns></returns>
         public IArchiveEntry ReadNextFileEntry()
         {
-            return new TarEntry(GetNextEntry());
+            var entry = GetNextEntry();
+            return entry == null ? null : new TarEntry(entry);
         }
     }
 }

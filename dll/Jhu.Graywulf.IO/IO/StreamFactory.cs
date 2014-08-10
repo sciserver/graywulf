@@ -410,6 +410,20 @@ namespace Jhu.Graywulf.IO
                     {
                         IsStreamOwner = true
                     };
+                case DataFileArchival.Zip:
+                    // because zip might have already handled by the compression
+                    // wrapper, we need to make a distinction here
+                    if (baseStream is SharpZipLibWrapper.ZipInputStream)
+                    {
+                        return baseStream;
+                    }
+                    else
+                    {
+                        return new SharpZipLibWrapper.ZipInputStream(baseStream)
+                        {
+                            IsStreamOwner = true
+                        };
+                    }
                 default:
                     throw new NotImplementedException();
             }
@@ -443,6 +457,20 @@ namespace Jhu.Graywulf.IO
                     {
                         IsStreamOwner = true
                     };
+                case DataFileArchival.Zip:
+                    // because zip might have already handled by the compression
+                    // wrapper, we need to make a distinction here
+                    if (baseStream is SharpZipLibWrapper.ZipOutputStream)
+                    {
+                        return baseStream;
+                    }
+                    else
+                    {
+                        return new SharpZipLibWrapper.ZipOutputStream(baseStream)
+                        {
+                            IsStreamOwner = true
+                        };
+                    }
                 default:
                     throw new NotImplementedException();
             }

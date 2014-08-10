@@ -54,6 +54,7 @@
     <Compile Include="Format\SerializationTest.cs" />
     <Compile Include="Format\SqlServerNativeDataFileWriterTest.cs" />
     <Compile Include="IO\StreamFactoryTest.cs" />
+    <Compile Include="IO\Tasks\ImportTableArchiveTest.cs" />
     <Compile Include="IO\Tasks\CopyFileTest.cs" />
     <Compile Include="IO\Tasks\CopyTableTest.cs" />
     <Compile Include="IO\Tasks\ExportTableArchiveTest.cs" />
