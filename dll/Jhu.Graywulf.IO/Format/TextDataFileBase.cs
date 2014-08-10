@@ -282,6 +282,8 @@ namespace Jhu.Graywulf.Format
                         return inputReader == null;
                     case DataFileMode.Write:
                         return outputWriter == null;
+                    case DataFileMode.Unknown:
+                        return true;
                     default:
                         throw new NotImplementedException();
                 }
