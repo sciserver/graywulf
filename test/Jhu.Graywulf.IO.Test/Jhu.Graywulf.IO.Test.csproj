@@ -54,10 +54,12 @@
     <Compile Include="Format\SerializationTest.cs" />
     <Compile Include="Format\SqlServerNativeDataFileWriterTest.cs" />
     <Compile Include="IO\StreamFactoryTest.cs" />
-    <Compile Include="IO\Tasks\FileCopyTest.cs" />
+    <Compile Include="IO\Tasks\CopyFileTest.cs" />
+    <Compile Include="IO\Tasks\CopyTableTest.cs" />
+    <Compile Include="IO\Tasks\ExportTableArchiveTest.cs" />
+    <Compile Include="IO\Tasks\ExportTableTest.cs" />
+    <Compile Include="IO\Tasks\ImportTableTest.cs" />
     <Compile Include="IO\Tasks\SerializationTest.cs" />
-    <Compile Include="IO\Tasks\TableExportArchiveTest.cs" />
-    <Compile Include="IO\Tasks\TableExportTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

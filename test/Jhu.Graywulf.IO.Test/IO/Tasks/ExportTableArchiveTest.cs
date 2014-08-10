@@ -12,7 +12,7 @@ using Jhu.Graywulf.Test;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [TestClass]
-    public class TableExportArchiveTest : TestClassBase
+    public class ExportTableArchiveTest : TestClassBase
     {
         private IExportTableArchive GetTableExportTask(Uri uri, string path, bool remote)
         {

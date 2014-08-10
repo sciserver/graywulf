@@ -12,7 +12,7 @@ using Jhu.Graywulf.RemoteService;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [TestClass]
-    public class TableCopyTest : TestClassBase
+    public class CopyTableTest : TestClassBase
     {
         private ICopyTable GetTableCopy(string tableName, bool remote)
         {
@@ -37,19 +37,19 @@ namespace Jhu.Graywulf.IO.Tasks
                 Query = "SELECT 1 AS one, 2 AS two, 3 AS three"
             };
 
-            q.Source = new SourceTableQuery[] { source };
+            q.Source = source;
 
           
-            var destination = new Jhu.Graywulf.Schema.Table()
+            var destination = new DestinationTable()
             {
                 Dataset = ds,
+                DatabaseName = ds.DatabaseName,
                 SchemaName = "dbo",
-                TableName = tableName
+                TableNameTemplate = tableName,
+                Options = TableInitializationOptions.Create
             };
 
-            q.Destination = new Schema.Table[] { destination };
-
-            q.Options = TableInitializationOptions.Create;
+            q.Destination = destination;
 
             return q;
         }
@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
             q.Execute();
 
-            DropTable(q.Destination[0]);
+            DropTable(q.Destination.GetTable());
         }
 
         [TestMethod]
@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 q.Execute();
 
-                DropTable(q.Destination[0]);
+                DropTable(q.Destination.GetTable());
             }
         }
     }

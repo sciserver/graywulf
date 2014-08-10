@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
-    class TableImportTest
+    public class ImportTableTest
     {
     }
 }

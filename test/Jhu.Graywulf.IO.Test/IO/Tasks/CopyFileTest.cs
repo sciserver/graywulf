@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [TestClass]
     [DeploymentItem("ese.dll")]
     [DeploymentItem("eseutil.exe")]
-    public class FileCopyTest : TestClassBase
+    public class CopyFileTest : TestClassBase
     {
         private ICopyFile GetFileCopy(string name, bool remote)
         {
