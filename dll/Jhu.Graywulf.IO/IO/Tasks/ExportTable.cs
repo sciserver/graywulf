@@ -114,7 +114,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         public void Close()
         {
-            destination.Clone();
+            destination.Close();
         }
 
         /// <summary>
