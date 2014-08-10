@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.IO.Tasks
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
     [NetDataContract]
-    public interface ICopyDataStream : ICancelableTask
+    public interface ICopyDataStream : IRemoteService
     {
         [OperationContract]
         void Open();

@@ -21,9 +21,6 @@ namespace Jhu.Graywulf.Tasks
         }
 
         [OperationContract]
-        void Execute();
-
-        [OperationContract]
         void Cancel();
     }
 
