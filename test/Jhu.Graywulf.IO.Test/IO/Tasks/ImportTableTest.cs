@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 Dataset = ds,
                 DatabaseName = ds.DatabaseName,
                 SchemaName = ds.DefaultSchemaName,
-                TableNameTemplate = table,
+                TableNamePattern = table,
             };
 
             IImportTable it = null;

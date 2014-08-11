@@ -106,7 +106,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                         Dataset = context.MyDBDataset,
                         DatabaseName = context.MyDBDataset.DatabaseName,
                         SchemaName = context.MyDBDataset.DefaultSchemaName,
-                        TableNameTemplate = Jhu.Graywulf.Jobs.Constants.DefaultQuickResultsTableNamePattern,
+                        TableNamePattern = Jhu.Graywulf.Jobs.Constants.DefaultQuickResultsTableNamePattern,
                         Options = TableInitializationOptions.Drop | TableInitializationOptions.Create
                     };
                     break;
@@ -116,7 +116,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                         Dataset = context.MyDBDataset,
                         DatabaseName = context.MyDBDataset.DatabaseName,
                         SchemaName = context.MyDBDataset.DefaultSchemaName,
-                        TableNameTemplate = Jhu.Graywulf.Jobs.Constants.DefaultLongResultsTableNamePattern,
+                        TableNamePattern = Jhu.Graywulf.Jobs.Constants.DefaultLongResultsTableNamePattern,
                         Options = TableInitializationOptions.Create
                     };
                     break;

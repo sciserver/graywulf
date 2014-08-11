@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 Dataset = ds,
                 DatabaseName = ds.DatabaseName,
                 SchemaName = ds.DefaultSchemaName,
-                TableNameTemplate = table,
+                TableNamePattern = table,
             };
 
             IImportTableArchive it = null;
@@ -72,6 +72,19 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 it.Destination.GetTable().Drop();
             }
+        }
+
+        [TestMethod]
+        public void ImportArchiveTest()
+        {
+            var path = @"..\..\..\graywulf\test\files\archive.zip";
+            var table = "TableImportArchiveTest_[$BatchName]_[$ResultsetName]";
+            var it = GetImportTableArchiveTask(path, table, false);
+
+            it.Open();
+            it.Execute();
+
+            it.Destination.GetTable().Drop();
         }
     }
 }
