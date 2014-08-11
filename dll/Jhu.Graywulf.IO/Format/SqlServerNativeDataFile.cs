@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Format
     /// Reads and writes recordsets in SQL Server native format
     /// </summary>
     [Serializable]
-    [DataContract(Namespace="")]
+    [DataContract(Namespace = "")]
     public class SqlServerNativeDataFile : DataFileBase, ICloneable
     {
         #region Member variables

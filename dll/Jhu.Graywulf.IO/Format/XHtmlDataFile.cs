@@ -180,7 +180,7 @@ namespace Jhu.Graywulf.Format
             XmlWriter.WriteStartElement(Constants.HtmlKeywordHead);
 
             XmlWriter.WriteElementString(Constants.HtmlKeywordStyle, XHtmlDataFileResources.XHtmlDataFileStyle);
-            
+
             XmlWriter.WriteEndElement();    // head
         }
 

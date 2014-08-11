@@ -205,8 +205,8 @@ namespace Jhu.Graywulf.IO.Tasks
                 {
                     var sdr = (ISmartDataReader)dr;
 
-                    // Create destination table first
-                    // TODO: merge these two function calls somehow and set name and columns in same step
+                    // DestinationTable has the property TableNameTemplate which needs to
+                    // be evaluated now
                     var table = destination.GetTable(cmd.Name, sdr.Name, sdr.Metadata);
                     table.Initialize(sdr.Columns, destination.Options);
 

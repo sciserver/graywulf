@@ -12,7 +12,7 @@ using Jhu.Graywulf.IO;
 namespace Jhu.Graywulf.Format
 {
     [Serializable]
-    [DataContract(Namespace="")]
+    [DataContract(Namespace = "")]
     public class DelimitedTextDataFile : TextDataFileBase, IDisposable, ICloneable
     {
         [NonSerialized]
