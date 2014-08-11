@@ -435,7 +435,7 @@ namespace Jhu.Graywulf.Format
         private void OpenOwnStream()
         {
             // Use stream factory to open stream
-            baseStream = streamFactory.Open(uri, credentials, fileMode);
+            baseStream = (streamFactory ?? Jhu.Graywulf.IO.StreamFactory.Create(null)).Open(uri, credentials, fileMode);
 
             ownsBaseStream = true;
         }
