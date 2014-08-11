@@ -53,29 +53,29 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         /// <param name="parts"></param>
         /// <param name="useNames"></param>
-        /// <param name="cols"></param>
-        /// <param name="colRanks"></param>
+        /// <param name="columns"></param>
+        /// <param name="columnTypePrecedence"></param>
         /// <remarks>
         /// If it is the first line and useName is true, it will use them as column names,
         /// otherwise parts are only counted, columns are created for each and automatically generated
         /// names are used.
         /// </remarks>
-        protected void DetectColumnsFromParts(string[] parts, bool useNames, out Column[] cols, out int[] colRanks)
+        protected void DetectColumnsFromParts(string[] parts, bool useNames, out Column[] columns, out int[] columnTypePrecedence)
         {
-            cols = new Column[parts.Length];
-            colRanks = new int[parts.Length];
+            columns = new Column[parts.Length];
+            columnTypePrecedence = new int[parts.Length];
 
-            for (int i = 0; i < cols.Length; i++)
+            for (int i = 0; i < columns.Length; i++)
             {
-                cols[i] = new Column();
+                columns[i] = new Column();
 
                 if (useNames)
                 {
-                    cols[i].Name = parts[i].Trim();
+                    columns[i].Name = parts[i].Trim();
                 }
                 else
                 {
-                    cols[i].Name = String.Format("Col{0}", i);  // *** TODO: use constants
+                    columns[i].Name = String.Format("Col{0}", i);  // *** TODO: use constants
                 }
             }
         }
@@ -97,15 +97,14 @@ namespace Jhu.Graywulf.Format
                 File.BufferedReader.StartLineBuffer();
 
                 string[] parts;
-
-                Column[] cols = null;      // detected columns
-                int[] colranks = null;
+                Column[] columns = null;      // detected columns
+                int[] columnTypePrecedence = null;
 
                 // If column names are in the first line, use them to generate names
                 if (File.ColumnNamesInFirstLine)
                 {
                     ReadNextRowParts(out parts, false);
-                    DetectColumnsFromParts(parts, true, out cols, out colranks);
+                    DetectColumnsFromParts(parts, true, out columns, out columnTypePrecedence);
                 }
 
                 File.BufferedReader.SkipLines(File.SkipLinesCount);
@@ -115,17 +114,17 @@ namespace Jhu.Graywulf.Format
                 int q = 0;
                 while (q < File.AutoDetectColumnsCount && ReadNextRowParts(out parts, true))
                 {
-                    if (q == 0 && cols == null)
+                    if (q == 0 && columns == null)
                     {
-                        DetectColumnsFromParts(parts, false, out cols, out colranks);
+                        DetectColumnsFromParts(parts, false, out columns, out columnTypePrecedence);
                     }
 
-                    if (cols.Length != parts.Length)
+                    if (columns.Length != parts.Length)
                     {
                         throw new FileFormatException();    // TODO
                     }
 
-                    DetectColumnTypes(parts, cols, colranks);
+                    DetectColumnTypes(parts, columns, columnTypePrecedence);
 
                     q++;
                 }
@@ -134,7 +133,7 @@ namespace Jhu.Graywulf.Format
                 File.BufferedReader.RewindLineBuffer();
                 File.BufferedReader.StopLineBuffer();
 
-                CreateColumns(cols);
+                CreateColumns(columns);
             }
             else
             {

@@ -104,28 +104,29 @@ namespace Jhu.Graywulf.Format
         /// Detect column types from a set of values
         /// </summary>
         /// <param name="parts"></param>
-        /// <param name="cols"></param>
-        /// <param name="colranks"></param>
-        protected void DetectColumnTypes(string[] parts, Column[] cols, int[] colranks)
+        /// <param name="columns"></param>
+        /// <param name="columnTypePredence"></param>
+        protected void DetectColumnTypes(string[] parts, Column[] columns, int[] columnTypePredence)
         {
-            for (int i = 0; i < cols.Length; i++)
+            for (int i = 0; i < columns.Length; i++)
             {
                 Type type;
-                int size, rank;
-                if (!GetBestColumnTypeEstimate(parts[i], out type, out size, out rank))
+                int size, precedence;
+                if (!GetBestColumnTypeEstimate(parts[i], out type, out size, out precedence))
                 {
-                    cols[i].DataType.IsNullable = true;
+                    columns[i].DataType.IsNullable = true;
                 }
 
-                if (cols[i].DataType == null || colranks[i] < rank)
+                if (columns[i].DataType == null || columnTypePredence[i] < precedence)
                 {
-                    cols[i].DataType = DataType.Create(type, (short)size);
+                    columns[i].DataType = DataType.Create(type, (short)size);
+                    columnTypePredence[i] = precedence;
                 }
 
                 // Make column longer if necessary
-                if (cols[i].DataType.HasLength && cols[i].DataType.Length < size)
+                if (columns[i].DataType.HasLength && columns[i].DataType.Length < size)
                 {
-                    cols[i].DataType.Length = (short)size;
+                    columns[i].DataType.Length = (short)size;
                 }
             }
         }
@@ -577,13 +578,13 @@ namespace Jhu.Graywulf.Format
             throw new NotImplementedException();
         }
 
-        private bool GetBestColumnTypeEstimate(string value, out Type type, out int size, out int rank)
+        private bool GetBestColumnTypeEstimate(string value, out Type type, out int size, out int precedence)
         {
             if (String.IsNullOrEmpty(value))
             {
                 type = null;
                 size = 0;
-                rank = 0;
+                precedence = 0;
                 return false;
             }
 
@@ -596,7 +597,11 @@ namespace Jhu.Graywulf.Format
             // while the number of decimal digits could be used, standard .net functions don't provide
             // this functionality, so we always assume double by default
 
-            rank = 0;
+            // We calculate a precedence value (a kind of type complexity value). Types with
+            // higher precedence can store types with lower precedence. Any type can be stored
+            // in strings.
+
+            precedence = 0;
 
             Int32 int32v;
             if (Int32.TryParse(value, File.NumberStyle, File.Culture, out int32v))
@@ -605,7 +610,7 @@ namespace Jhu.Graywulf.Format
                 size = 0;
                 return true;
             }
-            rank++;
+            precedence++;
 
             Int64 int64v;
             if (Int64.TryParse(value, File.NumberStyle, File.Culture, out int64v))
@@ -614,7 +619,7 @@ namespace Jhu.Graywulf.Format
                 size = 0;
                 return true;
             }
-            rank++;
+            precedence++;
 
             double doublev;
             if (double.TryParse(value, File.NumberStyle, File.Culture, out doublev))
@@ -623,7 +628,7 @@ namespace Jhu.Graywulf.Format
                 size = 0;
                 return true;
             }
-            rank++;
+            precedence++;
 
             Guid guidv;
             if (Guid.TryParse(value, out guidv))
@@ -632,7 +637,7 @@ namespace Jhu.Graywulf.Format
                 size = 0;
                 return true;
             }
-            rank++;
+            precedence++;
 
             DateTime datetimev;
             if (DateTime.TryParse(value, File.Culture, File.DateTimeStyle, out datetimev))
@@ -641,7 +646,7 @@ namespace Jhu.Graywulf.Format
                 size = 0;
                 return true;
             }
-            rank++;
+            precedence++;
 
             if (value.Length == 1)
             {
@@ -649,7 +654,7 @@ namespace Jhu.Graywulf.Format
                 size = 0;
                 return true;
             }
-            rank++;
+            precedence++;
 
             bool boolv;
             if (bool.TryParse(value, out boolv))
@@ -658,7 +663,7 @@ namespace Jhu.Graywulf.Format
                 size = 0;
                 return true;
             }
-            rank++;
+            precedence++;
 
             // TODO: check if it's a hex literal that can be parsed into byte[]
 
