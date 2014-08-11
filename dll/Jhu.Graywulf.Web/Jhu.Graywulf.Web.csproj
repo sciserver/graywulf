@@ -197,7 +197,6 @@
     <Compile Include="Web\UI\Error.aspx.designer.cs">
       <DependentUpon>Error.aspx.cs</DependentUpon>
     </Compile>
-    <Compile Include="Web\UI\FederationContext.cs" />
     <Compile Include="Web\UI\Feedback.aspx.cs">
       <DependentUpon>Feedback.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
