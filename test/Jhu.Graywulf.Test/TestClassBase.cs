@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Test
 {
     public abstract class TestClassBase
     {
-        private SqlServerDataset ioTestDataset = new SqlServerDataset("Test", Jhu.Graywulf.Test.AppSettings.IOTestConnectionString);
+        private SqlServerDataset ioTestDataset = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString);
 
         protected SqlServerDataset IOTestDataset
         {

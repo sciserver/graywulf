@@ -12,11 +12,11 @@ using Jhu.Graywulf.Test;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [TestClass]
-    public class ImportTableArchiveTest
+    public class ImportTableArchiveTest : TestClassBase
     {
         private IImportTableArchive GetImportTableArchiveTask(string path, string table, bool remote)
         {
-            var ds = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString);
+            var ds = IOTestDataset;
             ds.IsMutable = true;
 
             var destination = new DestinationTable()
@@ -41,6 +41,21 @@ namespace Jhu.Graywulf.IO.Tasks
             it.Destination = destination;
 
             return it;
+        }
+
+        private void DropTestTables(string name)
+        {
+            var ds = IOTestDataset;
+            ds.IsMutable = true;
+
+            ds.Tables.LoadAll();
+            foreach (var t in ds.Tables.Values)
+            {
+                if (t.ObjectName.StartsWith(name))
+                {
+                    t.Drop();
+                }
+            }
         }
 
         [TestMethod]
@@ -84,7 +99,7 @@ namespace Jhu.Graywulf.IO.Tasks
             it.Open();
             it.Execute();
 
-            it.Destination.GetTable().Drop();
+            DropTestTables("TableImportArchiveTest");
         }
     }
 }
