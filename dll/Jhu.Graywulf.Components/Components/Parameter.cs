@@ -138,12 +138,18 @@ namespace Jhu.Graywulf.Components
         private void InitializeMembers()
         {
             this.name = null;
+            this.typeName = null;
+            this.direction = ParameterDirection.Unknown;
+            this.value = null;
             this.xmlValue = null;
         }
 
         private void CopyMembers(Parameter old)
         {
             this.name = old.name;
+            this.typeName = old.typeName;
+            this.direction = old.direction;
+            this.value = old.value;
             this.xmlValue = old.xmlValue;
         }
 
