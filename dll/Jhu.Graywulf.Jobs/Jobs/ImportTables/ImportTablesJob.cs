@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
             // Make sure connection strings are cached
             using (var context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                for (int i = 0; i < parameters.Sources.Length; i++)
+                for (int i = 0; i < parameters.Destinations.Length; i++)
                 {
                     if (parameters.Destinations[i].Dataset is GraywulfDataset)
                     {

@@ -26,16 +26,16 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                //var user = SignInTestUser(context);
-                //var mydbds = context.Federation.MyDBDatabaseVersion.GetUserDatabaseInstance(user).GetDataset();
+                var user = SignInTestUser(context);
 
-
+                var ds = IOTestDataset;
+                ds.IsMutable = true;
 
                 var destination = new DestinationTable()
                 {
-                    Dataset = IOTestDataset,
-                    DatabaseName = IOTestDataset.DatabaseName,
-                    SchemaName = IOTestDataset.DefaultSchemaName,
+                    Dataset = ds,
+                    DatabaseName = ds.DatabaseName,
+                    SchemaName = ds.DefaultSchemaName,
                     TableNamePattern = tableName
                 };
 
@@ -53,6 +53,21 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 ji.Save();
 
                 return ji.Guid;
+            }
+        }
+
+        private void DropTestTables(string name)
+        {
+            var ds = IOTestDataset;
+            ds.IsMutable = true;
+
+            ds.Tables.LoadAll();
+            foreach (var t in ds.Tables.Values)
+            {
+                if (t.ObjectName.StartsWith(name))
+                {
+                    t.Drop();
+                }
             }
         }
 
@@ -96,7 +111,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
                     var path = String.Format(@"\\{0}\{1}\SimpleExportTest.csv.zip",
                         Jhu.Graywulf.Test.Constants.Localhost, Jhu.Graywulf.Test.Constants.TestDirectory);
-                    var guid = ScheduleImportTableJob(path, "SampleData", QueueType.Long);
+                    var guid = ScheduleImportTableJob(path, "SimpleImportJobTest_[$BatchName]_[$ResultsetName]", QueueType.Long);
 
                     WaitJobComplete(guid, TimeSpan.FromSeconds(10));
 
@@ -106,6 +121,31 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                     var uri = ((ExportTablesParameters)ji.Parameters["Parameters"].Value).Uri;
 
                     
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ImportArchiveJobTest()
+        {
+            using (SchedulerTester.Instance.GetToken())
+            {
+                SchedulerTester.Instance.EnsureRunning();
+
+                using (RemoteServiceTester.Instance.GetToken())
+                {
+                    RemoteServiceTester.Instance.EnsureRunning();
+
+                    var path = @"..\..\..\graywulf\test\files\archive.zip";
+
+                    var guid = ScheduleImportTableJob(path, "ImportArchiveJobTest_[$BatchName]_[$ResultsetName]", QueueType.Long);
+
+                    WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+
+                    var ji = LoadJob(guid);
+                    Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
+
+                    DropTestTables("ImportArchiveJobTest");
                 }
             }
         }

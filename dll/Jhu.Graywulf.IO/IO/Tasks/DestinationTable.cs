@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 
@@ -11,6 +12,7 @@ namespace Jhu.Graywulf.IO.Tasks
     /// Represents the destination of a table copy operation.
     /// </summary>
     [Serializable]
+    [DataContract]
     public class DestinationTable
     {
         // TODO: figure out automatic table naming when importing
@@ -18,10 +20,19 @@ namespace Jhu.Graywulf.IO.Tasks
 
         #region Private member variables
 
+        [IgnoreDataMember]
         private SqlServerDataset dataset;
+
+        [IgnoreDataMember]
         private string databaseName;
+
+        [IgnoreDataMember]
         private string schemaName;
+
+        [IgnoreDataMember]
         private string tableNamePattern;
+
+        [IgnoreDataMember]
         private TableInitializationOptions options;
 
         #endregion
@@ -30,6 +41,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <summary>
         /// Gets or sets the destination dataset.
         /// </summary>
+        [DataMember]
         public SqlServerDataset Dataset
         {
             get { return dataset; }
@@ -39,6 +51,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <summary>
         /// Gets or sets the name of the destination database.
         /// </summary>
+        [DataMember]
         public string DatabaseName
         {
             get { return databaseName; }
@@ -48,6 +61,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <summary>
         /// Gets or sets the schema name of the destination table.
         /// </summary>
+        [DataMember]
         public string SchemaName
         {
             get { return schemaName; }
@@ -63,6 +77,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// inside the file or the name of the table, or the resultset counter
         /// if the name is not specified.
         /// </remarks>
+        [DataMember]
         public string TableNamePattern
         {
             get { return tableNamePattern; }
@@ -72,6 +87,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <summary>
         /// Gets or sets the destination table initialization method.
         /// </summary>
+        [DataMember]
         public TableInitializationOptions Options
         {
             get { return options; }
