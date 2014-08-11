@@ -15,8 +15,6 @@ namespace Jhu.Graywulf.Format
 
         private DataFileBase file;
         private FileDataReader dataReader;
-        private string name;
-        private DatasetMetadata metadata;
         private bool recordsCounted;
 
         #endregion
@@ -50,12 +48,12 @@ namespace Jhu.Graywulf.Format
 
         public string Name
         {
-            get { return name; }
+            get { return file.Name; }
         }
 
         public DatasetMetadata Metadata
         {
-            get { return metadata; }
+            get { return file.Metadata; }
         }
 
         public bool RecordsCounted
@@ -83,8 +81,6 @@ namespace Jhu.Graywulf.Format
         {
             this.file = null;
             this.dataReader = null;
-            this.name = null;
-            this.metadata = null;
             this.recordsCounted = false;
         }
 

@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.IO.Tasks
         private SqlServerDataset dataset;
         private string databaseName;
         private string schemaName;
-        private string tableNameTemplate;
+        private string tableNamePattern;
         private TableInitializationOptions options;
 
         #endregion
@@ -63,10 +63,10 @@ namespace Jhu.Graywulf.IO.Tasks
         /// inside the file or the name of the table, or the resultset counter
         /// if the name is not specified.
         /// </remarks>
-        public string TableNameTemplate
+        public string TableNamePattern
         {
-            get { return tableNameTemplate; }
-            set { tableNameTemplate = value; }
+            get { return tableNamePattern; }
+            set { tableNamePattern = value; }
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.dataset = (SqlServerDataset)table.Dataset;
             this.databaseName = table.DatabaseName;
             this.schemaName = table.SchemaName;
-            this.tableNameTemplate = table.TableName;
+            this.tableNamePattern = table.TableName;
             this.options = options;
         }
 
@@ -111,7 +111,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.dataset = dataset;
             this.databaseName = databaseName;
             this.schemaName = schemaName;
-            this.tableNameTemplate = tableName;
+            this.tableNamePattern = tableName;
             this.options = options;
         }
 
@@ -125,7 +125,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.dataset = null;
             this.databaseName = null;
             this.schemaName = null;
-            this.tableNameTemplate = null;
+            this.tableNamePattern = null;
             this.options = TableInitializationOptions.Create;
         }
 
@@ -134,7 +134,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.dataset = old.dataset;
             this.databaseName = old.databaseName;
             this.schemaName = old.schemaName;
-            this.tableNameTemplate = old.tableNameTemplate;
+            this.tableNamePattern = old.tableNamePattern;
             this.options = old.options;
         }
 
@@ -146,7 +146,7 @@ namespace Jhu.Graywulf.IO.Tasks
             // use this parameter also with jobid for multi-step queries
             // without into parts...
 
-            var tableName = tableNameTemplate.Replace("[$BatchName]", batchName);
+            var tableName = tableNamePattern.Replace("[$BatchName]", batchName);
             tableName = tableName.Replace("[$ResultsetName]", resultsetName);
 
             return tableName;
@@ -163,7 +163,7 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 DatabaseName = this.databaseName,
                 SchemaName = this.schemaName,
-                TableName = this.tableNameTemplate,
+                TableName = this.tableNamePattern,
             };
         }
 

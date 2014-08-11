@@ -95,7 +95,6 @@ namespace Jhu.Graywulf.Format
         [NonSerialized]
         private int blockCounter;
 
-
         #endregion
         #region Properties
 
@@ -522,6 +521,13 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         protected internal abstract void OnReadHeader();
 
+        protected internal virtual void OnSetMetadata()
+        {
+            // TODO: where to get name from if uri is not set?
+            this.name = uri == null ? "" : Util.UriConverter.ToFileNameWithoutExtension(uri);
+            this.metadata = null;    // TODO: set metadata
+        }
+
         /// <summary>
         /// Appends a new block to a file.
         /// </summary>
@@ -564,6 +570,7 @@ namespace Jhu.Graywulf.Format
             {
                 // If this would be the very first block, read the file header first.
                 OnReadHeader();
+                OnSetMetadata();
             }
             else
             {
@@ -601,6 +608,7 @@ namespace Jhu.Graywulf.Format
                 if (nextBlock != null)
                 {
                     nextBlock.OnReadHeader();
+                    nextBlock.OnSetMetadata(blockCounter);
                     return nextBlock;
                 }
                 else

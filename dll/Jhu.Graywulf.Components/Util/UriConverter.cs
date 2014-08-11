@@ -37,6 +37,7 @@ namespace Jhu.Graywulf.Util
 
         public static string ToFilePath(Uri uri)
         {
+            // TODO: replace / with \ ?
             if (!uri.IsAbsoluteUri)
             {
                 return uri.ToString();
@@ -55,6 +56,7 @@ namespace Jhu.Graywulf.Util
             }
         }
 
+        // TODO: merge this with ToFilePath... Or maybe just use localpath?
         public static string ToFileName(Uri uri)
         {
             if (!uri.IsAbsoluteUri)
@@ -63,8 +65,15 @@ namespace Jhu.Graywulf.Util
             }
             else
             {
+                // TODO: does this return query string too?
                 return uri.AbsolutePath;
             }
+        }
+
+        public static string ToFileNameWithoutExtension(Uri uri)
+        {
+            var path = ToFileName(uri);
+            return Path.GetFileNameWithoutExtension(path);
         }
 
         public static Uri Combine(Uri baseUri, Uri relativeUri)

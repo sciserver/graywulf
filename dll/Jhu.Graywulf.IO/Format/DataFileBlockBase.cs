@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Format
         public string Name
         {
             get { return name; }
-            protected set { name = value; }
+            set { name = value; }
         }
 
         public long RecordCount
@@ -65,7 +65,7 @@ namespace Jhu.Graywulf.Format
         public DatabaseObjectMetadata Metadata
         {
             get { return metadata; }
-            protected set { metadata = value; }
+            set { metadata = value; }
         }
 
         /// <summary>
@@ -225,6 +225,12 @@ namespace Jhu.Graywulf.Format
         /// block and extracts columns and metadata.
         /// </summary>
         protected internal abstract void OnReadHeader();
+
+        protected internal virtual void OnSetMetadata(int blockCounter)
+        {
+            Name = blockCounter == 0 ? "" : blockCounter.ToString();
+            Metadata = null;    // TODO: set metadata
+        }
 
         /// <summary>
         /// When implemented in derived classes, reads the next data row from
