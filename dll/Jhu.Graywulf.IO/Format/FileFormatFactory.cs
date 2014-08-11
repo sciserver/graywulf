@@ -103,7 +103,7 @@ namespace Jhu.Graywulf.Format
             // -- Plain TXT file
             file = new DelimitedTextDataFile()
             {
-                Separator = '\t',
+                ColumnSeparators = "\t ",
             };
             file.Description.MimeType = Constants.MimeTypePlainText;
             file.Description.Extension = Constants.FileExtensionTxt;
@@ -113,7 +113,7 @@ namespace Jhu.Graywulf.Format
             // -- CSV file
             file = new DelimitedTextDataFile()
             {
-                Separator = ',',
+                ColumnSeparators = ",",
             };
             file.Description.MimeType = Constants.MimeTypeCsv;
             file.Description.Extension = Constants.FileExtensionCsv;

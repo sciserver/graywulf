@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Format
         private char quote;
 
         [NonSerialized]
-        private char separator;
+        private string columnSeparators;
 
         #region Properties
 
@@ -44,10 +44,10 @@ namespace Jhu.Graywulf.Format
         }
 
         [DataMember]
-        public char Separator
+        public string ColumnSeparators
         {
-            get { return separator; }
-            set { separator = value; }
+            get { return columnSeparators; }
+            set { columnSeparators = value; }
         }
 
         #endregion
@@ -141,7 +141,7 @@ namespace Jhu.Graywulf.Format
 
             this.comment = '#';
             this.quote = '"';
-            this.separator = ',';
+            this.columnSeparators = ",";
         }
 
         private void CopyMembers(DelimitedTextDataFile old)
@@ -150,7 +150,7 @@ namespace Jhu.Graywulf.Format
 
             this.comment = old.comment;
             this.quote = old.quote;
-            this.separator = old.separator;
+            this.columnSeparators = old.columnSeparators;
         }
 
         public override object Clone()

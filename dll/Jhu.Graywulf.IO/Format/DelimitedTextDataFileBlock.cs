@@ -86,6 +86,17 @@ namespace Jhu.Graywulf.Format
         }
 
         #endregion
+
+        private string EscapeColumnName(string name)
+        {
+            for (int i = 0; i < File.ColumnSeparators.Length; i ++)
+            {
+                name.Replace(File.ColumnSeparators[i], '_');
+            }
+
+            return name;
+        }
+
         /// <summary>
         /// Returns the next line in the file broken up into parts
         /// along separators.
@@ -146,7 +157,7 @@ namespace Jhu.Graywulf.Format
 
                         ci = 0;
                     }
-                    if (!inquote && ci == line.Length || line[ci] == File.Separator)
+                    if (!inquote && ci == line.Length || File.ColumnSeparators.Contains(line[ci]))
                     {
                         res.Add(part);
                         part = String.Empty;
@@ -195,10 +206,11 @@ namespace Jhu.Graywulf.Format
             {
                 if (i > 0)
                 {
-                    line.Append(File.Separator);
+                    // Allways use the first column separator
+                    line.Append(File.ColumnSeparators[0]);
                 }
 
-                line.Append(Columns[i].Name.Replace(File.Separator, '_'));    // TODO
+                line.Append(EscapeColumnName(Columns[i].Name));
             }
 
             File.TextWriter.WriteLine(line.ToString());
@@ -212,7 +224,8 @@ namespace Jhu.Graywulf.Format
             {
                 if (i > 0)
                 {
-                    line.Append(File.Separator);
+                    // Allways use the first column separator
+                    line.Append(File.ColumnSeparators[0]);
                 }
 
                 line.Append(ColumnFormatters[i](values[i], Columns[i].Metadata.Format));
