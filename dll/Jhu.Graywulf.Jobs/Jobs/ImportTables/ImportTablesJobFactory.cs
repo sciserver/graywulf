@@ -44,7 +44,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
         /// <summary>
         /// Creates parameters for a single file or single-archive import job
         /// </summary>
-        public ImportTablesParameters CreateParameters(Federation federation, Uri uri, DestinationTable destination, string queueName, string comments)
+        public ImportTablesParameters CreateParameters(Federation federation, Uri uri, DestinationTable destination)
         {
             var sf = StreamFactory.Create(federation.StreamFactory);
 
@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                 {
                     Sources = new [] { source },
                     Destinations = new[] { destination },
-                    Archival = archival,
+                    Archival = DataFileArchival.None,
                     Uri = uri,
                     FileFormatFactoryType = federation.FileFormatFactory,
                     StreamFactoryType = federation.StreamFactory,
