@@ -33,6 +33,9 @@ namespace Jhu.Graywulf.IO.Tasks
             return fc;
         }
 
+        /// <summary>
+        /// Copies a file from one UNC share to another, using the local machine.
+        /// </summary>
         [TestMethod]
         public void ExecuteTest()
         {
@@ -48,6 +51,9 @@ namespace Jhu.Graywulf.IO.Tasks
             File.Delete(fc.Destination);
         }
 
+        /// <summary>
+        /// Copies a file from one UNC share to another, using a remote machine.
+        /// </summary>
         [TestMethod]
         public void RemoteExecuteTest()
         {
