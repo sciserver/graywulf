@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Jobs\ExportTables\ExportTablesTest.cs" />
+    <Compile Include="Jobs\ImportTables\ImportTablesTest.cs" />
     <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseTest.cs" />
     <Compile Include="Jobs\Query\QueryTestBase.cs" />
     <Compile Include="Jobs\Query\SqlQueryTest.cs" />
