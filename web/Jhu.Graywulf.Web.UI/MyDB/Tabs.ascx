@@ -3,6 +3,7 @@
     <tabs>
     <jgwc:Tab runat="server" Text="Summary" ID="Summary" />
     <jgwc:Tab runat="server" Text="Tables" ID="Tables" />
+    <jgwc:Tab runat="server" Text="Upload" ID="Upload" />
     <jgwc:Tab runat="server" Text="Import" ID="Import" />
     <jgwc:Tab runat="server" Text="Export" ID="Export" />
     <jgwc:Tab runat="server" Text="Download" ID="Download" />

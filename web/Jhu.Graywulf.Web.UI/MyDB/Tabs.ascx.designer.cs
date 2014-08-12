@@ -40,6 +40,15 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::Jhu.Graywulf.Web.Controls.Tab Tables;
         
         /// <summary>
+        /// Upload control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Controls.Tab Upload;
+        
+        /// <summary>
         /// Import control.
         /// </summary>
         /// <remarks>

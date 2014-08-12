@@ -18,7 +18,8 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             Summary.NavigateUrl = Jhu.Graywulf.Web.UI.MyDB.Default.GetUrl();
             Tables.NavigateUrl = Jhu.Graywulf.Web.UI.MyDB.Tables.GetUrl();
-            Import.NavigateUrl = Jhu.Graywulf.Web.UI.MyDB.ImportTable.GetUrl();
+            Upload.NavigateUrl = Jhu.Graywulf.Web.UI.MyDB.Upload.GetUrl();
+            Import.NavigateUrl = Jhu.Graywulf.Web.UI.MyDB.Import.GetUrl();
             Export.NavigateUrl = Jhu.Graywulf.Web.UI.MyDB.ExportTable.GetUrl();
             Download.NavigateUrl = Jhu.Graywulf.Web.UI.MyDB.Download.GetUrl();
 

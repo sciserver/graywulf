@@ -1,19 +1,26 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/UI.master" AutoEventWireup="true"
-    Inherits="Jhu.Graywulf.Web.UI.MyDB.Import" CodeBehind="Import.aspx.cs" %>
+    Inherits="Jhu.Graywulf.Web.UI.MyDB.Upload" CodeBehind="Upload.aspx.cs" %>
 
 <%@ Register Src="~/MyDb/Tabs.ascx" TagPrefix="jgwc" TagName="MyDbTabs" %>
 <asp:Content runat="server" ContentPlaceHolderID="middle">
     <div class="dock-top">
-    <jgwc:MyDbTabs ID="MyDbTabs" runat="server" SelectedTab="Import" />
+        <jgwc:MyDbTabs ID="MyDbTabs" runat="server" SelectedTab="Upload" />
     </div>
     <div class="TabFrame dock-fill dock-container">
-        <jgwc:Form runat="server" Text="Import table" SkinID="ImportTable">
+        <jgwc:Form runat="server" Text="Upload data files" SkinID="ImportTable">
             <FormTemplate>
                 <p>
-                    Upload only files containing comma separated values (CSV).</p>
-                <p>
-                    When importing to a new table, column names will be taken from the first line of
-                    the uploaded file and column types will be infered from the first 100 lines automatically.</p>
+                    Upload single files or archives.</p>
+                <ul>
+                    <li>File format is inferred automatically from file extension.</li>
+                    <li>Table names are generated from file names.</li>
+                    <li>Supported file formats:
+                        <asp:BulletedList runat="server" ID="SupportedFormatsList" /></li>
+                    <li>When importing text files to a new table, column names will be taken from the first
+                        line of the uploaded file and column types will be infered from the first 100 lines
+                        automatically.</li>
+                    <li>Use batch import for large files.</li>
+                </ul>
                 <table class="FormTable">
                     <tr>
                         <td class="FormLabel" style="width: 50px">
@@ -26,7 +33,7 @@
                     </tr>
                 </table>
                 <p style="text-align: center">
-                    <asp:LinkButton runat="server" ID="ToggleDetails" OnClick="ToggleDetails_Click" Visible="false">advanced mode</asp:LinkButton>
+                    <asp:LinkButton runat="server" ID="ToggleAdvanced" OnClick="ToggleAdvanced_Click">advanced mode</asp:LinkButton>
                 </p>
                 <table runat="server" id="DetailsTable" class="FormTable" visible="false">
                     <tr>
@@ -39,10 +46,10 @@
                     </tr>
                     <tr>
                         <td class="FormLabel">
-                            <asp:Label runat="server" ID="TableNameLabel">Table name:</asp:Label>
+                            <asp:Label runat="server" ID="TableNamePrefixLabel">Table name prefix:</asp:Label>
                         </td>
                         <td class="FormField">
-                            <asp:TextBox ID="TableName" runat="server" CssClass="FormField">import</asp:TextBox>
+                            <asp:TextBox ID="TableNamePrefix" runat="server" CssClass="FormField">Upload</asp:TextBox>
                         </td>
                     </tr>
                     <tr>
@@ -50,26 +57,15 @@
                             <asp:Label runat="server" ID="FileFormatLabel">File format:</asp:Label>
                         </td>
                         <td class="FormField">
-                            <asp:DropDownList runat="server" ID="FileFormat" AutoPostBack="True" OnSelectedIndexChanged="FileFormat_SelectedIndexChanged" />
+                            <asp:DropDownList runat="server" ID="FileFormatList" AutoPostBack="True" OnSelectedIndexChanged="FileFormat_SelectedIndexChanged" />
                         </td>
                     </tr>
-                    <tr runat="server" id="CompressedRow" visible="false">
+                    <tr runat="server" id="AutoDetectColumnsRow" visible="false">
                         <td class="FormLabel">
                             &nbsp;
                         </td>
                         <td class="FormField">
-                        <asp:DropDownList runat="server" ID="CompressionMethod">
-                            <asp:ListItem Value="None">No compression</asp:ListItem>
-                            <asp:ListItem Value="GZip">GZip</asp:ListItem>
-                        </asp:DropDownList>
-                        </td>
-                    </tr>
-                    <tr runat="server" id="DetectColumnNamesRow" visible="false">
-                        <td class="FormLabel">
-                            &nbsp;
-                        </td>
-                        <td class="FormField">
-                            <asp:CheckBox runat="server" ID="DetectColumnNames" Text="Detect column names automatically"
+                            <asp:CheckBox runat="server" ID="AutoDetectColumns" Text="Detect column names automatically"
                                 Checked="true" />
                         </td>
                     </tr>

@@ -7,11 +7,11 @@ using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class ImportTable : CustomPageBase
+    public partial class Import : CustomPageBase
     {
         public static string GetUrl()
         {
-            return "~/MyDb/ImportTable.aspx";
+            return "~/MyDb/Import.aspx";
         }
 
         protected void Page_Load(object sender, EventArgs e)
