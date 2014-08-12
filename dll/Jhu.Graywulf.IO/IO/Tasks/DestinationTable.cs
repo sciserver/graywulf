@@ -174,7 +174,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 name += "_" + resultsetName;
             }
 
-            return tableNamePattern.Replace("[$ResultsetName]", name.Substring(1));
+            return tableNamePattern.Replace(Constants.ResultsetNameToken, name.Substring(1));
         }
 
         /// <summary>

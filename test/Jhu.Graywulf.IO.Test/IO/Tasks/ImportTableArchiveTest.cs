@@ -94,7 +94,7 @@ namespace Jhu.Graywulf.IO.Tasks
         public void ImportArchiveTest()
         {
             var path = @"..\..\..\graywulf\test\files\archive.zip";
-            var table = "TableImportArchiveTest_[$ResultsetName]";
+            var table = "TableImportArchiveTest_" + IO.Constants.ResultsetNameToken;
             var it = GetImportTableArchiveTask(path, table, false);
 
             it.Open();

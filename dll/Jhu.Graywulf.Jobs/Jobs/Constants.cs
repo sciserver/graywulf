@@ -15,6 +15,6 @@ namespace Jhu.Graywulf.Jobs
         public const string JobParameterImport = "Parameters";
 
         public const string DefaultQuickResultsTableNamePattern = "quickResults";
-        public const string DefaultLongResultsTableNamePattern = "Results_[$ResultsetName]";
+        public const string DefaultLongResultsTableNamePattern = "Results_" + Jhu.Graywulf.IO.Constants.ResultsetNameToken;
     }
 }

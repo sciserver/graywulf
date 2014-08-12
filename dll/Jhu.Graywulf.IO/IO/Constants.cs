@@ -20,6 +20,8 @@ namespace Jhu.Graywulf.IO
         public const string UriSchemeHttps = "https";
         public const string UriSchemeFtp = "ftp";
 
+        public const string ResultsetNameToken = "[$ResultsetName]";
+
         public static readonly Map<string, DataFileCompression> CompressionExtensions = new Map<string, DataFileCompression>(StringComparer.InvariantCultureIgnoreCase)
         {
             { String.Empty, DataFileCompression.None  },
