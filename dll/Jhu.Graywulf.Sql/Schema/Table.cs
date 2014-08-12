@@ -101,7 +101,9 @@ namespace Jhu.Graywulf.Schema
             Columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
             for (int i = 0; i < columns.Count; i++)
             {
-                Columns.TryAdd(columns[i].Name, (Column)columns[i].Clone());
+                var nc = (Column)columns[i].Clone();
+                nc.ID = i;
+                Columns.TryAdd(columns[i].Name, nc);
             }
 
             if ((options & TableInitializationOptions.Append) != 0)
@@ -167,19 +169,5 @@ namespace Jhu.Graywulf.Schema
 
             return true;
         }
-
-        /* TODO: delete
-        public void LoadColumnsFromSchemaTable(DataTable schemaTable)
-        {
-            Columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
-
-            foreach (DataRow dr in schemaTable.Rows)
-            {
-                var c = Column.Create(dr);
-
-                Columns.TryAdd(c.Name, c);
-            }
-        }
-         * */
     }
 }
