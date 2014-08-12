@@ -548,7 +548,8 @@ namespace Jhu.Graywulf.IO
             }
             else
             {
-                req.UseDefaultCredentials = true;
+                // TODO: what are the default credentials for FTP?
+                //req.UseDefaultCredentials = true;
             }
 
             var res = req.GetResponse();
