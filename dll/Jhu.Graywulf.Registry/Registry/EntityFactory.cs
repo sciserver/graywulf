@@ -35,6 +35,7 @@ namespace Jhu.Graywulf.Registry
             [XmlArrayItem(typeof(FileGroup))]
             [XmlArrayItem(typeof(JobDefinition))]
             [XmlArrayItem(typeof(JobInstance))]
+            [XmlArrayItem(typeof(JobInstanceDependency))]
             [XmlArrayItem(typeof(Machine))]
             [XmlArrayItem(typeof(MachineRole))]
             [XmlArrayItem(typeof(Partition))]

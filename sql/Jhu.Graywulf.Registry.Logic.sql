@@ -1,13 +1,13 @@
 ﻿-- ENABLE CLR
 
-sp_configure 'show advanced options', 1;
-GO
-RECONFIGURE;
-GO
-sp_configure 'clr enabled', 1;
-GO
-RECONFIGURE;
-GO
+-- sp_configure 'show advanced options', 1;
+-- GO
+-- RECONFIGURE;
+-- GO
+-- sp_configure 'clr enabled', 1;
+-- GO
+-- RECONFIGURE;
+-- GO
 
 -- USER DEFINE TYPES --
 
@@ -237,8 +237,8 @@ AS
 	SELECT @count = COUNT(*)
 	FROM Entity
 	WHERE
-		Entity.EntityType = @EntityType
-		AND (@Guid IS NULL OR Guid <> @Guid)
+		-- Entity.EntityType = @EntityType AND
+		(@Guid IS NULL OR Guid <> @Guid)
 		AND Entity.ParentGuid = @ParentGuid
 		AND Entity.Name = @Name
 		AND Deleted = 0;

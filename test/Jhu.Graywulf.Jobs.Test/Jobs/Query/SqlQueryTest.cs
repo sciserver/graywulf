@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Test.Jobs.Query
                 {
                     RemoteServiceTester.Instance.EnsureRunning();
 
-                    var sql = "SELECT TOP 10 objid, ra, dec INTO SqlQueryTest_SimpleQueryTest FROM SDSSDR7:PhotoObj";
+                    var sql = "SELECT TOP 10 * INTO SqlQueryTest_SimpleQueryTest FROM TEST:SampleData";
 
                     var guid = ScheduleQueryJob(sql, QueueType.Long);
 

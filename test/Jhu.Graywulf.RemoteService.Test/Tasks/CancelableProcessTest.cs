@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.Tasks
         {
             var pinfo = new ProcessStartInfo()
             {
-                FileName = @"..\..\..\..\graywulf\util\eseutil.exe",
+                FileName = @"..\..\..\graywulf\util\eseutil.exe",
                 Arguments = "/y",
                 UseShellExecute = false,
                 CreateNoWindow = true,

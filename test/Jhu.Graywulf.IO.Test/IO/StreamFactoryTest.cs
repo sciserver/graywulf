@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/csv_numbers.csv", UriKind.Relative), null, DataFileMode.Read))
+            using (var s = sf.Open(new Uri("../../../graywulf/test/files/csv_numbers.csv", UriKind.Relative), null, DataFileMode.Read))
             {
                 s.ReadByte();
             }
@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/csv_numbers.csv.gz", UriKind.Relative), null, DataFileMode.Read))
+            using (var s = sf.Open(new Uri("../../../graywulf/test/files/csv_numbers.csv.gz", UriKind.Relative), null, DataFileMode.Read))
             {
                 s.ReadByte();
             }
@@ -83,7 +83,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/csv_numbers.csv.bz2", UriKind.Relative), null, DataFileMode.Read))
+            using (var s = sf.Open(new Uri("../../../graywulf/test/files/csv_numbers.csv.bz2", UriKind.Relative), null, DataFileMode.Read))
             {
                 s.ReadByte();
             }
@@ -105,7 +105,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/csv_numbers.zip", UriKind.Relative), null, DataFileMode.Read))
+            using (var s = sf.Open(new Uri("../../../graywulf/test/files/csv_numbers.zip", UriKind.Relative), null, DataFileMode.Read))
             {
                 Assert.IsTrue(s is IArchiveInputStream);
 
@@ -144,7 +144,7 @@ namespace Jhu.Graywulf.IO
         {
             var sf = StreamFactory.Create(null);
 
-            using (var s = sf.Open(new Uri("../../../../graywulf/test/files/csv_numbers.tar.gz", UriKind.Relative), null, DataFileMode.Read))
+            using (var s = sf.Open(new Uri("../../../graywulf/test/files/csv_numbers.tar.gz", UriKind.Relative), null, DataFileMode.Read))
             {
                 Assert.IsTrue(s is IArchiveInputStream);
 
