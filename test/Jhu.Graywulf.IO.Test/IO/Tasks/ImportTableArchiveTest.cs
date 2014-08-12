@@ -37,6 +37,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 it = new ImportTableArchive();
             }
 
+            it.BatchName = Path.GetFileNameWithoutExtension(path);
             it.Uri = Util.UriConverter.FromFilePath(path);
             it.Destination = destination;
 
@@ -93,7 +94,7 @@ namespace Jhu.Graywulf.IO.Tasks
         public void ImportArchiveTest()
         {
             var path = @"..\..\..\graywulf\test\files\archive.zip";
-            var table = "TableImportArchiveTest_[$BatchName]_[$ResultsetName]";
+            var table = "TableImportArchiveTest_[$ResultsetName]";
             var it = GetImportTableArchiveTask(path, table, false);
 
             it.Open();

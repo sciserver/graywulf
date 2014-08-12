@@ -20,6 +20,14 @@ namespace Jhu.Graywulf.IO.Tasks
     [NetDataContract]
     public interface ICopyTableBase : IRemoteService
     {
+        string BatchName
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
+
         int BatchSize
         {
             [OperationContract]
@@ -60,6 +68,7 @@ namespace Jhu.Graywulf.IO.Tasks
     {
         #region Private member variables
 
+        private string batchName;
         private int batchSize;
         private int timeout;
         private string fileFormatFactoryType;
@@ -80,6 +89,16 @@ namespace Jhu.Graywulf.IO.Tasks
 
         #endregion
         #region Properties
+
+        /// <summary>
+        /// Gets or sets the name of the batch. Used when
+        /// importing and exporting archives.
+        /// </summary>
+        public string BatchName
+        {
+            get { return batchName; }
+            set { batchName = value; }
+        }
 
         /// <summary>
         /// Gets or sets the batch size of bulk insert operations.
@@ -134,6 +153,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void InitializeMembers()
         {
+            this.batchName = null;
             this.batchSize = Constants.DefaultBulkInsertBatchSize;
             this.timeout = Constants.DefaultBulkInsertTimeout;
             this.fileFormatFactoryType = null;
@@ -142,6 +162,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private void CopyMembers(CopyTableBase old)
         {
+            this.batchName = old.batchName;
             this.batchSize = old.batchSize;
             this.timeout = old.timeout;
             this.fileFormatFactoryType = old.fileFormatFactoryType;
@@ -207,7 +228,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
                     // DestinationTable has the property TableNameTemplate which needs to
                     // be evaluated now
-                    var table = destination.GetTable(cmd.Name, sdr.Name, sdr.Metadata);
+                    var table = destination.GetTable(batchName, cmd.Name, sdr.Name, sdr.Metadata);
                     table.Initialize(sdr.Columns, destination.Options);
 
                     ExecuteBulkCopy(dr, table);

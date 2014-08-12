@@ -71,12 +71,6 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <summary>
         /// Gets or sets the name of the destination table.
         /// </summary>
-        /// <remarks>
-        /// The table name template can contain standard .Net format string
-        /// where [$BatchName] is the name of the file, [$ResultsetName] is the name of the resultset
-        /// inside the file or the name of the table, or the resultset counter
-        /// if the name is not specified.
-        /// </remarks>
         [DataMember]
         public string TableNamePattern
         {
@@ -156,16 +150,31 @@ namespace Jhu.Graywulf.IO.Tasks
 
         #endregion
 
-        private string GetTableName(string batchName, string resultsetName)
+        private string GetTableName(string batchName, string queryName, string resultsetName)
         {
-            // TODO: batch name is usually the file name
-            // use this parameter also with jobid for multi-step queries
-            // without into parts...
+            // When importing archives:
+            // -- Batch name is usually the archive name
+            // -- Query name is the file name
+            // -- Resultset name is the table within the file
 
-            var tableName = tableNamePattern.Replace("[$BatchName]", batchName);
-            tableName = tableName.Replace("[$ResultsetName]", resultsetName);
+            var name = "";
 
-            return tableName;
+            if (!String.IsNullOrWhiteSpace(batchName))
+            {
+                name += "_" + batchName;
+            }
+
+            if (!String.IsNullOrWhiteSpace(queryName))
+            {
+                name += "_" + queryName;
+            }
+
+            if (!String.IsNullOrWhiteSpace(resultsetName))
+            {
+                name += "_" + resultsetName;
+            }
+
+            return tableNamePattern.Replace("[$ResultsetName]", name.Substring(1));
         }
 
         /// <summary>
@@ -190,13 +199,13 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <param name="batchName"></param>
         /// <param name="resultsetName"></param>
         /// <returns></returns>
-        public Table GetTable(string batchName, string resultsetName, DatabaseObjectMetadata metadata)
+        public Table GetTable(string batchName, string queryName, string resultsetName, DatabaseObjectMetadata metadata)
         {
             return new Table(dataset)
             {
                 DatabaseName = this.databaseName,
                 SchemaName = this.schemaName,
-                TableName = GetTableName(batchName, resultsetName),
+                TableName = GetTableName(batchName, queryName, resultsetName),
             };
 
             // TODO: attach metadata to table

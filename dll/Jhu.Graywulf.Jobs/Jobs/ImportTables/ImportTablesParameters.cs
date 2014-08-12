@@ -190,6 +190,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                 // TODO: this could be extended but that would mean multiple tasks
 
                 var task = RemoteServiceHelper.CreateObject<IImportTable>(host);
+
                 task.Source = this.sources[0];
                 task.Destination = this.destinations[0];
                 task.FileFormatFactoryType = this.fileFormatFactoryType;
@@ -203,6 +204,8 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                 // Archive mode
 
                 var task = RemoteServiceHelper.CreateObject<IImportTableArchive>(host);
+
+                task.BatchName = Util.UriConverter.ToFileNameWithoutExtension(this.uri);
                 task.Uri = this.uri;
                 task.Destination = this.destinations[0];
                 task.FileFormatFactoryType = this.fileFormatFactoryType;
