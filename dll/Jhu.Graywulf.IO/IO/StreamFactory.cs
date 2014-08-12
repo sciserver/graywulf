@@ -175,6 +175,15 @@ namespace Jhu.Graywulf.IO
             return Open();
         }
 
+        public Stream Open(Uri uri, Credentials credentials, DataFileMode mode, DataFileCompression compression)
+        {
+            this.uri = uri;
+            this.mode = mode;
+            this.compression = compression;
+
+            return Open();
+        }
+
         /// <summary>
         /// Opens a file identified by a URI for read or write.
         /// </summary>
@@ -193,6 +202,15 @@ namespace Jhu.Graywulf.IO
             return Open();
         }
 
+        public Stream Open(Stream stream, DataFileMode mode, DataFileCompression compression, DataFileArchival archival)
+        {
+            this.mode = mode;
+            this.compression = compression;
+            this.archival = archival;
+
+            return Open(stream);
+        }
+
         /// <summary>
         /// Opens a file with parameters determined by the factory class properties.
         /// </summary>
@@ -205,6 +223,19 @@ namespace Jhu.Graywulf.IO
                     return OpenForRead();
                 case DataFileMode.Write:
                     return OpenForWrite();
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public Stream Open(Stream stream)
+        {
+            switch (mode)
+            {
+                case DataFileMode.Read:
+                    return OpenForRead(stream);
+                case DataFileMode.Write:
+                    return OpenForWrite(stream);
                 default:
                     throw new NotImplementedException();
             }
@@ -227,6 +258,11 @@ namespace Jhu.Graywulf.IO
                 throw new FileFormatException("Unknown protocol.");      // TODO
             }
 
+            return OpenForRead(stream);
+        }
+
+        private Stream OpenForRead(Stream stream)
+        {
             // Check if compressed and wrap in compressed stream reader
             stream = WrapCompressedStreamForRead(stream);
 
@@ -250,6 +286,11 @@ namespace Jhu.Graywulf.IO
                 throw new FileFormatException("Unknown protocol.");      // TODO
             }
 
+            return OpenForWrite(stream);
+        }
+
+        private Stream OpenForWrite(Stream stream)
+        {
             // Check if compressed and wrap in compressed stream reader
             stream = WrapCompressedStreamForWrite(stream);
 
@@ -262,10 +303,6 @@ namespace Jhu.Graywulf.IO
         /// <summary>
         /// Opens the base stream for reading a file using the protocol specified by the URI.
         /// </summary>
-        /// <param name="uri"></param>
-        /// <param name="mode"></param>
-        /// <param name="compression"></param>
-        /// <returns></returns>
         /// <remarks>
         /// This function can be overloaded in inherited classes to
         /// support special protocols.
@@ -323,7 +360,7 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapCompressedStreamForRead(Stream baseStream)
         {
-            var cm = GetCompressionMethod(uri);
+            var cm = GetCompressionMethod();
 
             switch (cm)
             {
@@ -356,7 +393,7 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapCompressedStreamForWrite(Stream baseStream)
         {
-            var cm = GetCompressionMethod(uri);
+            var cm = GetCompressionMethod();
 
             switch (cm)
             {
@@ -390,16 +427,7 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapArchiveStreamForRead(Stream baseStream)
         {
-            DataFileArchival am;
-
-            if (archival == DataFileArchival.Automatic)
-            {
-                am = GetArchivalMethod(uri);
-            }
-            else
-            {
-                am = archival;
-            }
+            var am = GetArchivalMethod();
 
             switch (am)
             {
@@ -436,16 +464,7 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         private Stream WrapArchiveStreamForWrite(Stream baseStream)
         {
-            DataFileArchival am;
-
-            if (archival == DataFileArchival.Automatic)
-            {
-                am = GetArchivalMethod(uri);
-            }
-            else
-            {
-                am = archival;
-            }
+            var am = GetArchivalMethod();
 
             switch (am)
             {
@@ -560,6 +579,22 @@ namespace Jhu.Graywulf.IO
         #endregion
         #region Utility functions
 
+        private DataFileCompression GetCompressionMethod()
+        {
+            DataFileCompression cm;
+
+            if (compression == DataFileCompression.Automatic || uri != null)
+            {
+                cm = GetCompressionMethod(uri);
+            }
+            else
+            {
+                cm = compression;
+            }
+
+            return cm;
+        }
+
         /// <summary>
         /// If compression is set to automatic, figures out compression
         /// method from the file extension
@@ -571,31 +606,42 @@ namespace Jhu.Graywulf.IO
 
             var path = Util.UriConverter.ToFileName(uri);
 
-            // Open compressed stream, if necessary
-            var cm = compression;
+            var extension = Path.GetExtension(path).ToLowerInvariant();
+            DataFileCompression cm;
 
-            if (cm == DataFileCompression.Automatic)
+            switch (extension)
             {
-                var extension = Path.GetExtension(path).ToLowerInvariant();
-
-                switch (extension)
-                {
-                    case Constants.FileExtensionGz:
-                        cm = DataFileCompression.GZip;
-                        break;
-                    case Constants.FileExtensionBz2:
-                        cm = DataFileCompression.BZip2;
-                        break;
-                    case Constants.FileExtensionZip:
-                        cm = DataFileCompression.Zip;
-                        break;
-                    default:
-                        cm = DataFileCompression.None;
-                        break;
-                }
+                case Constants.FileExtensionGz:
+                    cm = DataFileCompression.GZip;
+                    break;
+                case Constants.FileExtensionBz2:
+                    cm = DataFileCompression.BZip2;
+                    break;
+                case Constants.FileExtensionZip:
+                    cm = DataFileCompression.Zip;
+                    break;
+                default:
+                    cm = DataFileCompression.None;
+                    break;
             }
 
             return cm;
+        }
+
+        protected DataFileArchival GetArchivalMethod()
+        {
+            DataFileArchival am;
+
+            if (uri != null && archival == DataFileArchival.Automatic)
+            {
+                am = GetArchivalMethod(uri);
+            }
+            else
+            {
+                am = archival;
+            }
+
+            return am;
         }
 
         /// <summary>
