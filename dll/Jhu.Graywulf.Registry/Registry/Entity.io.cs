@@ -171,7 +171,10 @@ namespace Jhu.Graywulf.Registry
         {
             // Check entity duplicate
             var ef = new EntityFactory(Context);
-            if (ef.CheckEntityDuplicate(this.EntityType, this.Guid, this.parentReference.Guid, this.name))
+
+            var parentGuid = this.parentReference.IsEmpty ? Guid.Empty : this.parentReference.Guid;
+
+            if (ef.CheckEntityDuplicate(this.EntityType, this.Guid, parentGuid, this.name))
             {
                 Jhu.Graywulf.Logging.Event e = new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.CheckConcurrency", this.guid); ;
                 e.Message = String.Format(LogMessages.DuplicateName, name);
@@ -210,7 +213,7 @@ namespace Jhu.Graywulf.Registry
                 AppendBasicParameters(cmd);
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Direction = ParameterDirection.Output;
 
-                cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parentReference.Guid;
+                cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parentReference.IsEmpty ? Guid.Empty : parentReference.Guid;
                 cmd.Parameters.Add("@EntityType", SqlDbType.Int).Value = (int)EntityType;   // always use property
                 cmd.Parameters.Add("@Number", SqlDbType.Int).Direction = ParameterDirection.Output;
 
@@ -318,7 +321,9 @@ namespace Jhu.Graywulf.Registry
             {
                 foreach (var er in entityReferences.Values)
                 {
-                    refdt.Rows.Add(this.guid, er.ReferenceType, er.ReferencedEntityGuid);
+                    var referencedGuid = er.IsEmpty ? Guid.Empty : er.ReferencedEntityGuid;
+
+                    refdt.Rows.Add(this.guid, er.ReferenceType, referencedGuid);
                 }
             }
 
