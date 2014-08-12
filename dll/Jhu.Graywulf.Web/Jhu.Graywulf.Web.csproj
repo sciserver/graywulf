@@ -294,15 +294,15 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="Web\UI\Captcha.aspx">
+    <EmbeddedResource Include="Web\UI\Captcha.aspx">
       <SubType>ASPXCodeBehind</SubType>
-    </Content>
-    <Content Include="Web\UI\Error.aspx">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Web\UI\Error.aspx">
       <SubType>ASPXCodeBehind</SubType>
-    </Content>
-    <Content Include="Web\UI\Feedback.aspx">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Web\UI\Feedback.aspx">
       <SubType>ASPXCodeBehind</SubType>
-    </Content>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
