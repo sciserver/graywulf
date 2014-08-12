@@ -55,6 +55,12 @@ namespace Jhu.Graywulf.Format
         private DataFileMode fileMode;
 
         /// <summary>
+        /// Compress file or read compressed file
+        /// </summary>
+        [NonSerialized]
+        private DataFileCompression compression;
+
+        /// <summary>
         /// Uri to the file. If set, the class can open it internally.
         /// </summary>
         [NonSerialized]
@@ -139,6 +145,20 @@ namespace Jhu.Graywulf.Format
             {
                 EnsureNotOpen();
                 fileMode = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets file compression method.
+        /// </summary>
+        [DataMember]
+        public DataFileCompression Compression
+        {
+            get { return compression; }
+            set
+            {
+                EnsureNotOpen();
+                compression = value;
             }
         }
 
@@ -302,6 +322,7 @@ namespace Jhu.Graywulf.Format
             this.streamFactory = null;
 
             this.fileMode = DataFileMode.Unknown;
+            this.compression = DataFileCompression.None;
             this.uri = null;
             this.credentials = null;
             this.generateIdentityColumn = false;
@@ -321,6 +342,7 @@ namespace Jhu.Graywulf.Format
             this.streamFactory = old.streamFactory;
 
             this.fileMode = old.fileMode;
+            this.compression = old.compression;
             this.uri = old.uri;
             this.credentials = old.credentials;
             this.generateIdentityColumn = old.generateIdentityColumn;
@@ -435,7 +457,7 @@ namespace Jhu.Graywulf.Format
         private void OpenOwnStream()
         {
             // Use stream factory to open stream
-            baseStream = (streamFactory ?? Jhu.Graywulf.IO.StreamFactory.Create(null)).Open(uri, credentials, fileMode);
+            baseStream = (streamFactory ?? Jhu.Graywulf.IO.StreamFactory.Create(null)).Open(uri, credentials, fileMode, compression);
 
             ownsBaseStream = true;
         }

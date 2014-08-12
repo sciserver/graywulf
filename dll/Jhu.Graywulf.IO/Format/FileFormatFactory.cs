@@ -166,8 +166,9 @@ namespace Jhu.Graywulf.Format
             GetFileExtensions(uri, out filename, out extension, out compression);
 
             var res = TryCreateFileFromExtension(extension, out file);
-
+            
             file.Uri = uri;
+            file.Compression = compression;
 
             return res;
         }
@@ -284,15 +285,15 @@ namespace Jhu.Graywulf.Format
 
             if (Jhu.Graywulf.IO.Constants.CompressionExtensions.ContainsKey(extension))
             {
-                filename = Path.GetFileNameWithoutExtension(path);
-                extension = Path.GetExtension(path);
                 compressionMethod = Jhu.Graywulf.IO.Constants.CompressionExtensions[extension];
+                
+                filename = Path.GetFileNameWithoutExtension(path);
+                extension = Path.GetExtension(filename);
             }
             else
             {
-                filename = Path.GetFileName(path);
-                extension = Path.GetExtension(path);
                 compressionMethod = DataFileCompression.None;
+                filename = Path.GetFileName(path);
             }
         }
 
@@ -320,7 +321,6 @@ namespace Jhu.Graywulf.Format
                 throw CreateFileFormatUnknownException();
             }
 
-            file.Uri = uri;
             return file;
         }
 
