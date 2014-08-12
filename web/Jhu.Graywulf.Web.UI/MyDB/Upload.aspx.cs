@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             if (IsValid)
             {
                 // Run import
-                CopyTableBase importer = CreateImporter();
+                CopyTableBase importer = GetTableImporter();
                 importer.Execute();
 
                 Response.Redirect(Jhu.Graywulf.Web.UI.MyDB.Tables.GetUrl());
@@ -132,6 +132,8 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                 file = FederationContext.FileFormatFactory.CreateFileFromExtension(FileFormatList.SelectedValue);
                 file.GenerateIdentityColumn = GenerateIdentity.Checked;
 
+                // TODO: add compression
+
                 if (file is TextDataFileBase)
                 {
                     ((TextDataFileBase)file).AutoDetectColumns = AutoDetectColumns.Checked;
@@ -142,9 +144,11 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                 // Create file type based on extension
                 file = FederationContext.FileFormatFactory.CreateFile(uri);
                 file.GenerateIdentityColumn = true;
+
+                // AutoDetectColumns is turned on by default in this case
             }
 
-            file.BaseStream = ImportedFile.PostedFile.InputStream;
+            file.BaseStream = FederationContext.StreamFactory.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read, file.Compression, DataFileArchival.None);
             return file;
         }
 
@@ -163,7 +167,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             }
             else
             {
-                var tableName = Util.UriConverter.ToFileNameWithoutExtension(uri);
+                var tableName = Util.UriConverter.ToFileNameWithoutExtension(uri).Replace('.', '_');
                 GetUniqueTableName(FederationContext.MyDBDataset.DefaultSchemaName, ref tableName);
 
                 destination = new DestinationTable(
@@ -177,12 +181,13 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             return destination;
         }
 
-        private CopyTableBase CreateImporter()
+        private CopyTableBase GetTableImporter()
         {
             var uri = GetUploadedFileUri();
 
             // Check if uploaded file is an archive
             var archival = FederationContext.StreamFactory.GetArchivalMethod(uri);
+            var compression = FederationContext.StreamFactory.GetCompressionMethod(uri);
             var batchName = Util.UriConverter.ToFileNameWithoutExtension(uri);
 
             if (archival == DataFileArchival.None)
@@ -211,7 +216,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                     FileFormatFactoryType = RegistryContext.Federation.FileFormatFactory,
                 };
 
-                task.Open(ImportedFile.PostedFile.InputStream);
+                task.Open(FederationContext.StreamFactory.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read, compression, archival));
 
                 return task;
             }
