@@ -95,13 +95,6 @@
     <Compile Include="MyDB\Download.aspx.designer.cs">
       <DependentUpon>Download.aspx</DependentUpon>
     </Compile>
-    <Compile Include="MyDB\DownloadHandler.aspx.cs">
-      <DependentUpon>DownloadHandler.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\DownloadHandler.aspx.designer.cs">
-      <DependentUpon>DownloadHandler.aspx</DependentUpon>
-    </Compile>
     <Compile Include="MyDB\ExportList.aspx.cs">
       <DependentUpon>ExportList.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -352,7 +345,6 @@
     <Content Include="Default.aspx" />
     <Content Include="Global.asax" />
     <Content Include="MyDB\Download.aspx" />
-    <Content Include="MyDB\DownloadHandler.aspx" />
     <Content Include="MyDB\ExportList.aspx" />
     <Content Include="MyDB\Upload.aspx" />
     <Content Include="MyDB\Default.aspx" />

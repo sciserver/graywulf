@@ -31,9 +31,15 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             // Check if file is requested
             if (Request.QueryString["download"] != null)
             {
+                var filename = String.Format(
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    "{0}_download_{1:yyMMddHHmmss}.zip",
+                    User.Identity.Name,
+                    DateTime.Now);
+
                 Response.Expires = -1;
                 Response.ContentType = IO.Constants.MimeTypeZip;
-                Response.AddHeader("Content-Disposition", "attachment;filename=download.zip");
+                Response.AddHeader("Content-Disposition", String.Format("attachment;filename={0}", filename));
 
                 var exporter = GetTableExporter();
                 exporter.Execute();
