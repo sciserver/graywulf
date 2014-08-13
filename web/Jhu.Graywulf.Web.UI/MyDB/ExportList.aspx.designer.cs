@@ -10,7 +10,7 @@
 namespace Jhu.Graywulf.Web.UI.MyDB {
     
     
-    public partial class Download {
+    public partial class ExportList {
         
         /// <summary>
         /// MyDbTabs1 control.

@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (!IsPostBack)
             {
-                DownloadLink.NavigateUrl = Download.GetUrl();
+                DownloadLink.NavigateUrl = ExportList.GetUrl();
 
                 RefreshFileFormatList();
                 RefreshTableList();
@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             {
                 if (df.CanWrite)
                 {
-                    var li = new ListItem(df.DisplayName, df.Type.FullName);
+                    var li = new ListItem(df.DisplayName, df.Extension);
                     FileFormat.Items.Add(li);
                 }
             }

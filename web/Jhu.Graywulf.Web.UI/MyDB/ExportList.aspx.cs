@@ -9,11 +9,11 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class Download : CustomPageBase
+    public partial class ExportList : CustomPageBase
     {
         public static string GetUrl()
         {
-            return "~/MyDb/Download.aspx";
+            return "~/MyDb/ExportList.aspx";
         }
 
         protected void Page_Load(object sender, EventArgs e)

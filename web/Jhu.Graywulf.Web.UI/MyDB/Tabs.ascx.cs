@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             Upload.NavigateUrl = Jhu.Graywulf.Web.UI.MyDB.Upload.GetUrl();
             Import.NavigateUrl = Jhu.Graywulf.Web.UI.MyDB.Import.GetUrl();
             Export.NavigateUrl = Jhu.Graywulf.Web.UI.MyDB.ExportTable.GetUrl();
-            Download.NavigateUrl = Jhu.Graywulf.Web.UI.MyDB.Download.GetUrl();
+            Download.NavigateUrl = Jhu.Graywulf.Web.UI.MyDB.ExportList.GetUrl();
 
             TabHeader.SelectedTab = (Tab)TabHeader.FindControl(SelectedTab);
         }

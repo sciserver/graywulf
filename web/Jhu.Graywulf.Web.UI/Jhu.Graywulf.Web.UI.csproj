@@ -88,6 +88,13 @@
     <Compile Include="CustomUserControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="MyDB\ExportList.aspx.cs">
+      <DependentUpon>ExportList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MyDB\ExportList.aspx.designer.cs">
+      <DependentUpon>ExportList.aspx</DependentUpon>
+    </Compile>
     <Compile Include="MyDB\Upload.aspx.cs">
       <DependentUpon>Upload.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -181,13 +188,6 @@
     </Compile>
     <Compile Include="MyDB\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\Download.aspx.cs">
-      <DependentUpon>Download.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\Download.aspx.designer.cs">
-      <DependentUpon>Download.aspx</DependentUpon>
     </Compile>
     <Compile Include="MyDB\DropObject.aspx.cs">
       <DependentUpon>DropObject.aspx</DependentUpon>
@@ -337,9 +337,9 @@
     <Content Include="Controls\Menu.ascx" />
     <Content Include="Default.aspx" />
     <Content Include="Global.asax" />
+    <Content Include="MyDB\ExportList.aspx" />
     <Content Include="MyDB\Upload.aspx" />
     <Content Include="MyDB\Default.aspx" />
-    <Content Include="MyDB\Download.aspx" />
     <Content Include="MyDB\DropObject.aspx" />
     <Content Include="MyDB\ExportTable.aspx" />
     <Content Include="MyDB\ImportTable.aspx" />
