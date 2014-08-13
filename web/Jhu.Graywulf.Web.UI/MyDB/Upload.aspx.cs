@@ -4,6 +4,7 @@ using System.Web.UI.WebControls;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
@@ -108,20 +109,6 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             return new Uri(filename, UriKind.Relative);
         }
 
-        private void GetUniqueTableName(string schemaName, ref string tableName)
-        {
-            string newname = tableName;
-            int q = 1;
-
-            while (FederationContext.MyDBDataset.GetObject(FederationContext.MyDBDataset.DatabaseName, schemaName, newname) != null)
-            {
-                newname = String.Format("{0}_{1}", tableName, q);
-                q++;
-            }
-
-            tableName = newname;
-        }
-
         private DataFileBase GetSourceDataFile(Uri uri)
         {
             DataFileBase file;
@@ -163,19 +150,20 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                     FederationContext.MyDBDataset.DatabaseName,
                     SchemaName.Text,
                     TableNamePrefix.Text + "_" + IO.Constants.ResultsetNameToken,
-                    Graywulf.Schema.TableInitializationOptions.Create);
+                    TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName);
             }
             else
             {
-                var tableName = Util.UriConverter.ToFileNameWithoutExtension(uri).Replace('.', '_');
-                GetUniqueTableName(FederationContext.MyDBDataset.DefaultSchemaName, ref tableName);
+                // TODO: move unique name logic to importer class
+                //var tableName = Util.UriConverter.ToFileNameWithoutExtension(uri).Replace('.', '_');
+                //GetUniqueTableName(FederationContext.MyDBDataset.DefaultSchemaName, ref tableName);
 
                 destination = new DestinationTable(
                     FederationContext.MyDBDataset,
                     FederationContext.MyDBDataset.DatabaseName,
                     FederationContext.MyDBDataset.DefaultSchemaName,
-                    tableName,
-                    Graywulf.Schema.TableInitializationOptions.Create);
+                    IO.Constants.ResultsetNameToken,        // generate table names automatically
+                    Graywulf.Schema.TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName);
             }
 
             return destination;
@@ -210,6 +198,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             {
                 var task = new ImportTableArchive()
                 {
+                    BypassExceptions = true,
                     BatchName = batchName,
                     Destination = GetDestinationTable(uri),
                     StreamFactoryType = RegistryContext.Federation.StreamFactory,

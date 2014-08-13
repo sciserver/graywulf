@@ -57,6 +57,7 @@ namespace Jhu.Graywulf.Schema
         Drop = 1,
         Create = 2,
         Clear = 4,
-        Append = 8
+        Append = 8,
+        GenerateUniqueName = 16,
     }
 }
