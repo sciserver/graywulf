@@ -155,8 +155,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 // Prepare results
                 var result = new TableCopyResult()
                 {
-                    // TODO
-                    //Table = sources[i].Table,
+                    TableName = sources[i].SourceObjectName,
                 };
 
                 Results.Add(result);

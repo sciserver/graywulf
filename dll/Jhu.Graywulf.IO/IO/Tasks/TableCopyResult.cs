@@ -9,7 +9,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [Serializable]
     public class TableCopyResult
     {
-        public Table Table { get; set; }
+        public string TableName { get; set; }
         public string FileName { get; set; }
         public long RecordsAffected { get; set; }
         public TableCopyStatus Status { get; set; }

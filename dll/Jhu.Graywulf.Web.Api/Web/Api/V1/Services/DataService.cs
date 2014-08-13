@@ -89,6 +89,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             var source = new SourceTableQuery()
             {
                 Dataset = dataset,
+                SourceObjectName = table.DisplayName,
                 Query = sql
             };
 

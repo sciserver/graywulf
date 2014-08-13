@@ -20,6 +20,7 @@ namespace Jhu.Graywulf.IO.Tasks
         #region Private member variables
 
         private DatasetBase dataset;
+        private string sourceObjectName;
         private string query;
 
         #endregion
@@ -32,6 +33,15 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             get { return dataset; }
             set { dataset = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the name table from which data is returned.
+        /// </summary>
+        public string SourceObjectName
+        {
+            get { return sourceObjectName; }
+            set { sourceObjectName = value; }
         }
 
         /// <summary>
@@ -59,12 +69,14 @@ namespace Jhu.Graywulf.IO.Tasks
         private void InitializeMembers()
         {
             this.dataset = null;
+            this.sourceObjectName = null;
             this.query = null;
         }
 
         private void CopyMembers(SourceTableQuery old)
         {
             this.dataset = Util.DeepCloner.CloneObject(old.dataset);
+            this.sourceObjectName = old.sourceObjectName;
             this.query = old.query;
         }
 

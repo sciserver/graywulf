@@ -166,10 +166,14 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             var ss = new SourceTableQuery[sources.Length];
             for (int i = 0; i < sources.Length; i++)
             {
+                var cg = sources[i].Dataset.CreateCodeGenerator();
+                var sql = cg.GenerateSelectStarQuery(sources[i], int.MaxValue);
+
                 ss[i] = new SourceTableQuery()
                 {
                     Dataset = sources[i].Dataset,
-                    Query = String.Format("SELECT t.* FROM [{0}].[{1}] AS t", sources[i].SchemaName, sources[i].ObjectName)
+                    SourceObjectName = sources[i].DisplayName,
+                    Query = sql
                 };
             }
 
