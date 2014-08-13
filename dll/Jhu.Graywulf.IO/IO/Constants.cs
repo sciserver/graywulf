@@ -16,6 +16,12 @@ namespace Jhu.Graywulf.IO
         public const string FileExtensionZip = ".zip";
         public const string FileExtensionTar = ".tar";
 
+        // Mime types taken from wikipedia
+        public const string MimeTypeBz2 = "application/x-bzip2";
+        public const string MimeTypeGz = "application/gzip";
+        public const string MimeTypeZip = "application/zip";
+        public const string MimeTypeTar = "application/x-tar";
+
         public const string UriSchemeHttp = "http";
         public const string UriSchemeHttps = "https";
         public const string UriSchemeFtp = "ftp";

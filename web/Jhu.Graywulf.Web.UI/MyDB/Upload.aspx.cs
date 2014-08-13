@@ -22,7 +22,6 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             if (!IsPostBack)
             {
                 RefreshFileFormatLists();
-
                 RefreshForm();
             }
         }

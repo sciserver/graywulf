@@ -583,7 +583,7 @@ namespace Jhu.Graywulf.IO
         {
             DataFileCompression cm;
 
-            if (compression == DataFileCompression.Automatic || uri != null)
+            if (uri != null && compression == DataFileCompression.Automatic)
             {
                 cm = GetCompressionMethod(uri);
             }
