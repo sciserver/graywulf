@@ -141,6 +141,8 @@ namespace Jhu.Graywulf.IO.Tasks
                 throw new InvalidOperationException();  // *** TODO
             }
 
+            var stream = (IArchiveOutputStream)BaseStream;
+
             // Write individual tables into the archive
 
             // TODO: add logic to handle multiple resultsets
@@ -180,6 +182,8 @@ namespace Jhu.Graywulf.IO.Tasks
                     destinations[i].Close();
                 }
             }
+
+            stream.Finish();
         }
     }
 }

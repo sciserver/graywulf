@@ -130,6 +130,7 @@ namespace Jhu.Graywulf.Format
 
             File.CreateArchiveEntry(filename, buffer.Length);
             File.BaseStream.Write(buffer, 0, buffer.Length);
+            File.CloseArchiveEntry();
         }
 
         private void WriteCreateScript()

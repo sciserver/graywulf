@@ -30,5 +30,15 @@ namespace Jhu.Graywulf.IO
         /// </summary>
         /// <param name="entry"></param>
         void WriteNextEntry(IArchiveEntry entry);
+
+        /// <summary>
+        /// Closes the current entry
+        /// </summary>
+        void CloseEntry();
+
+        /// <summary>
+        /// Finishes the archive
+        /// </summary>
+        void Finish();
     }
 }

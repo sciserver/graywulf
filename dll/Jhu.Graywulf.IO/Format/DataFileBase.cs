@@ -515,6 +515,11 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         public virtual void Close()
         {
+            if (IsArchive)
+            {
+                CloseArchiveEntry();
+            }
+
             if (ownsBaseStream && baseStream != null)
             {
                 baseStream.Flush();
@@ -541,6 +546,12 @@ namespace Jhu.Graywulf.Format
             arch.WriteNextEntry(entry);
 
             return entry;
+        }
+
+        internal void CloseArchiveEntry()
+        {
+            var arch = (IArchiveOutputStream)BaseStream;
+            arch.CloseEntry();
         }
 
         #endregion
