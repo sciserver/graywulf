@@ -132,6 +132,14 @@ namespace Jhu.Graywulf.IO.Tasks
                 throw new InvalidOperationException();  // *** TODO
             }
 
+            // Prepare results
+            var result = new TableCopyResult()
+            {
+                FileName = source.Uri == null ? null : Util.UriConverter.ToFileName(source.Uri),
+            };
+
+            Results.Add(result);
+
             try
             {
                 // Make sure file is in read mode and uses the right
@@ -141,7 +149,11 @@ namespace Jhu.Graywulf.IO.Tasks
                     Open();
                 }
 
-                CopyFromFile(source, destination);
+                CopyFromFile(source, destination, result);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, result);
             }
             finally
             {

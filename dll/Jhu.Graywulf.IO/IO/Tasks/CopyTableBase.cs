@@ -44,6 +44,14 @@ namespace Jhu.Graywulf.IO.Tasks
             set;
         }
 
+        bool BypassExceptions
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
+
         string FileFormatFactoryType
         {
             [OperationContract]
@@ -59,6 +67,12 @@ namespace Jhu.Graywulf.IO.Tasks
             [OperationContract]
             set;
         }
+
+        TableCopyResults Results
+        {
+            [OperationContract]
+            get;
+        }
     }
 
     /// <summary>
@@ -68,11 +82,26 @@ namespace Jhu.Graywulf.IO.Tasks
     {
         #region Private member variables
 
+        [NonSerialized]
         private string batchName;
+
+        [NonSerialized]
         private int batchSize;
+
+        [NonSerialized]
         private int timeout;
+
+        [NonSerialized]
+        private bool bypassExceptions;
+
+        [NonSerialized]
         private string fileFormatFactoryType;
+
+        [NonSerialized]
         private string streamFactoryType;
+
+        [NonSerialized]
+        private TableCopyResults results;
 
         /// <summary>
         /// When set to true, informs the class that the executing bulk copy operation
@@ -119,6 +148,17 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         /// <summary>
+        /// Gets or sets if the task ignores problems and proceeds with table
+        /// copy even when an exception is thrown. Exception bypass logic is
+        /// implemented differently in derived classes.
+        /// </summary>
+        public bool BypassExceptions
+        {
+            get { return bypassExceptions; }
+            set { bypassExceptions = value; }
+        }
+
+        /// <summary>
         /// Gets or sets the file format factory to use when creating output files
         /// or opening input files.
         /// </summary>
@@ -136,6 +176,11 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             get { return streamFactoryType; }
             set { streamFactoryType = value; }
+        }
+
+        public TableCopyResults Results
+        {
+            get { return results; }
         }
 
         #endregion
@@ -156,8 +201,10 @@ namespace Jhu.Graywulf.IO.Tasks
             this.batchName = null;
             this.batchSize = Constants.DefaultBulkInsertBatchSize;
             this.timeout = Constants.DefaultBulkInsertTimeout;
+            this.bypassExceptions = false;
             this.fileFormatFactoryType = null;
             this.streamFactoryType = null;
+            this.results = new TableCopyResults();
         }
 
         private void CopyMembers(CopyTableBase old)
@@ -165,8 +212,10 @@ namespace Jhu.Graywulf.IO.Tasks
             this.batchName = old.batchName;
             this.batchSize = old.batchSize;
             this.timeout = old.timeout;
+            this.bypassExceptions = old.bypassExceptions;
             this.fileFormatFactoryType = old.fileFormatFactoryType;
             this.streamFactoryType = old.streamFactoryType;
+            this.results = new TableCopyResults();
         }
 
         public abstract object Clone();
@@ -198,12 +247,12 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         /// <param name="source"></param>
         /// <param name="destination"></param>
-        protected void CopyFromFile(DataFileBase source, DestinationTable destination)
+        protected void CopyFromFile(DataFileBase source, DestinationTable destination, TableCopyResult result)
         {
             // Import the file by wrapping it into a dummy command
             using (var cmd = new FileCommand(source))
             {
-                CopyFromCommand(cmd, destination);
+                CopyFromCommand(cmd, destination, result);
             }
         }
 
@@ -213,7 +262,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         /// <param name="cmd"></param>
         /// <param name="destination"></param>
-        protected void CopyFromCommand(ISmartCommand cmd, DestinationTable destination)
+        protected void CopyFromCommand(ISmartCommand cmd, DestinationTable destination, TableCopyResult result)
         {
             // Run bulk insert wrapped into a cancelable task
             var guid = Guid.NewGuid();
@@ -222,8 +271,10 @@ namespace Jhu.Graywulf.IO.Tasks
 
             ccmd.ExecuteReader(dr =>
             {
-                do
-                {
+                // TODO: implement multi-table copy, might require converting results to a
+                // a collection
+                //do
+                //{
                     var sdr = (ISmartDataReader)dr;
 
                     // DestinationTable has the property TableNameTemplate which needs to
@@ -231,9 +282,11 @@ namespace Jhu.Graywulf.IO.Tasks
                     var table = destination.GetTable(batchName, cmd.Name, sdr.Name, sdr.Metadata);
                     table.Initialize(sdr.Columns, destination.Options);
 
-                    ExecuteBulkCopy(dr, table);
-                }
-                while (dr.NextResult());
+                    result.Table = table;
+
+                    ExecuteBulkCopy(dr, table, result);
+                //}
+                //while (dr.NextResult());
             });
 
             UnregisterCancelable(guid);
@@ -244,7 +297,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         /// <param name="source"></param>
         /// <param name="destination"></param>
-        protected void CopyToFile(SourceTableQuery source, DataFileBase destination)
+        protected void CopyToFile(SourceTableQuery source, DataFileBase destination, TableCopyResult result)
         {
             // Create command that reads the table
             using (var cmd = source.CreateCommand())
@@ -257,7 +310,7 @@ namespace Jhu.Graywulf.IO.Tasks
                         cmd.Transaction = tn;
                         cmd.CommandTimeout = Timeout;
 
-                        CopyToFile(cmd, destination);
+                        CopyToFile(cmd, destination, result);
                     }
                 }
             }
@@ -268,7 +321,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         /// <param name="cmd"></param>
         /// <param name="destination"></param>
-        private void CopyToFile(ISmartCommand cmd, DataFileBase destination)
+        private void CopyToFile(ISmartCommand cmd, DataFileBase destination, TableCopyResult result)
         {
             // Wrap command into a cancellable task
             var guid = Guid.NewGuid();
@@ -276,7 +329,7 @@ namespace Jhu.Graywulf.IO.Tasks
             RegisterCancelable(guid, ccmd);
 
             // Pass data reader to the file formatter
-            ccmd.ExecuteReader(dr =>
+            result.RecordsAffected = ccmd.ExecuteReader(dr =>
             {
                 destination.WriteFromDataReader((SmartDataReader)dr);
             });
@@ -288,7 +341,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// Executest bulk copy to ingest data from the DataReader
         /// </summary>
         /// <param name="dr"></param>
-        protected void ExecuteBulkCopy(IDataReader dr, Table destination)
+        protected void ExecuteBulkCopy(IDataReader dr, Table destination, TableCopyResult result)
         {
             // Bulk insert is a tricky animal. To get best performance, batch size
             // has to be set to zero and table locking has to be set on. This prevents
@@ -318,6 +371,7 @@ namespace Jhu.Graywulf.IO.Tasks
             sbc.SqlRowsCopied += delegate(object sender, SqlRowsCopiedEventArgs e)
             {
                 e.Abort = isBulkCopyCancelRequested;
+                result.RecordsAffected = e.RowsCopied;
             };
 
             try
@@ -343,6 +397,19 @@ namespace Jhu.Graywulf.IO.Tasks
             }
 
             base.Cancel();
+        }
+
+        protected void HandleException(Exception ex, TableCopyResult result)
+        {
+            // Put a breakpoint here when debuggin bypassed exceptions
+
+            result.Status = TableCopyStatus.Failed;
+            result.Error = ex.Message;
+
+            if (!BypassExceptions)
+            {
+                throw new TableCopyException("Table copy failed.", ex);     // TODO
+            }
         }
     }
 }

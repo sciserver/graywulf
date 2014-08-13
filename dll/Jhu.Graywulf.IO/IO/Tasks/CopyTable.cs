@@ -102,6 +102,18 @@ namespace Jhu.Graywulf.IO.Tasks
                 throw new InvalidOperationException();  // *** TODO
             }
 
+            // Prepare results
+            var result = new TableCopyResult()
+            {
+                // TODO
+                // Table = source.Table,
+            };
+
+            Results.Add(result);
+
+            // No exception bypass logic here,
+            // server to server copies should always throw an exception
+
             // Create command that reads the table
             using (var cmd = source.CreateCommand())
             {
@@ -113,7 +125,7 @@ namespace Jhu.Graywulf.IO.Tasks
                         cmd.Transaction = tn;
                         cmd.CommandTimeout = Timeout;
 
-                        CopyFromCommand(cmd, destination);
+                        CopyFromCommand(cmd, destination, result);
                     }
                 }
             }

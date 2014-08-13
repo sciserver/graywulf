@@ -132,6 +132,15 @@ namespace Jhu.Graywulf.IO.Tasks
                 throw new InvalidOperationException();  // *** TODO
             }
 
+            // Prepare results
+            var result = new TableCopyResult()
+            {
+                // TODO
+                //Table = sources[i].Table,
+            };
+
+            Results.Add(result);
+
             try
             {
                 if (destination.IsClosed)
@@ -139,7 +148,11 @@ namespace Jhu.Graywulf.IO.Tasks
                     Open();
                 }
 
-                CopyToFile(source, destination);
+                CopyToFile(source, destination, result);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, result);
             }
             finally
             {

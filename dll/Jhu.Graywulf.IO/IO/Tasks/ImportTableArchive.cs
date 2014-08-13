@@ -121,24 +121,45 @@ namespace Jhu.Graywulf.IO.Tasks
                 // Skip directory entries, we read files only
                 if (!entry.IsDirectory)
                 {
-                    // Use the file format factory to open the file
-                    
-                    // TODO: what to do with unknown file extensions?
-                    // TODO: what to do if a file is malformed?
-
-                    using (var file = ff.CreateFile(entry.Filename))
+                    // Prepare results
+                    var result = new TableCopyResult()
                     {
-                        // Open the file. It's read directly from the archive stream.
-                        file.Open(BaseStream, DataFileMode.Read);
+                        FileName = entry.Filename,
+                    };
 
-                        // Wrap the file into a dummy command that will expose it as
-                        // a data reader for bulk insert operations.
-                        using (var cmd = new FileCommand(file))
+                    Results.Add(result);
+                    
+                    // Use the file format factory to open the file
+                    string filename, extension;
+                    DataFileCompression compression;
+                    DataFileBase file = null;
+
+                    // We simply skip unrecognized files
+                    if (ff.TryCreateFile(Util.UriConverter.FromFilePath(entry.Filename), out filename, out extension, out compression, out file))
+                    {
+                        try
                         {
-                            // TODO: implement table auto-naming
-                            // TODO: Pass table name here
-                            CopyFromCommand(cmd, destination);
+                            // Open the file. It's read directly from the archive stream.
+                            file.Open(BaseStream, DataFileMode.Read);
+
+                            CopyFromFile(file, destination, result);
                         }
+                        catch (Exception ex)
+                        {
+                            HandleException(ex, result);
+                        }
+                        finally
+                        {
+                            if (file != null)
+                            {
+                                file.Dispose();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Mark file as skipped
+                        result.Status = TableCopyStatus.Skipped;
                     }
                 }
             }

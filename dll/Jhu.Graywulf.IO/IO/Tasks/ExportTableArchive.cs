@@ -152,6 +152,15 @@ namespace Jhu.Graywulf.IO.Tasks
             // Iterate through all source queries
             for (int i = 0; i < sources.Length; i++)
             {
+                // Prepare results
+                var result = new TableCopyResult()
+                {
+                    // TODO
+                    //Table = sources[i].Table,
+                };
+
+                Results.Add(result);
+
                 try
                 {
                     // Open the destination file that will be written into the archive
@@ -161,7 +170,11 @@ namespace Jhu.Graywulf.IO.Tasks
                     // or new files need to be created for every single resultset
 
                     destinations[i].Open(BaseStream, DataFileMode.Write);
-                    CopyToFile(sources[i], destinations[i]);
+                    CopyToFile(sources[i], destinations[i], result);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex, result);
                 }
                 finally
                 {

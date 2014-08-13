@@ -166,7 +166,8 @@ namespace Jhu.Graywulf.Format
             GetFileExtensions(uri, out filename, out extension, out compression);
 
             var res = TryCreateFileFromExtension(extension, out file);
-            
+
+            file.Name = Util.UriConverter.ToFileNameWithoutExtension(uri);
             file.Uri = uri;
             file.Compression = compression;
 

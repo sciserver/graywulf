@@ -207,11 +207,19 @@ namespace Jhu.Graywulf.Format
             set { generateIdentityColumn = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the name of this file that can be used
+        /// by the FileDataReader.
+        /// </summary>
         public string Name
         {
             get { return name; }
+            set { name = value; }
         }
 
+        /// <summary>
+        /// Gets or sets metadata associated with this file
+        /// </summary>
         public DatasetMetadata Metadata
         {
             get { return metadata; }

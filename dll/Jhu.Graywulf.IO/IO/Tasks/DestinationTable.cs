@@ -15,9 +15,6 @@ namespace Jhu.Graywulf.IO.Tasks
     [DataContract]
     public class DestinationTable
     {
-        // TODO: figure out automatic table naming when importing
-        // multiple tables from archives etc.
-
         #region Private member variables
 
         [IgnoreDataMember]
@@ -174,7 +171,36 @@ namespace Jhu.Graywulf.IO.Tasks
                 name += "_" + resultsetName;
             }
 
-            return tableNamePattern.Replace(Constants.ResultsetNameToken, name.Substring(1));
+            if (name.Length > 0)
+            {
+                name = name.Substring(1);
+            }
+
+            // Substitute into name pattern
+            // Strip leading _
+            name = tableNamePattern.Replace(Constants.ResultsetNameToken, name);
+
+            // Generate unique name, if necessary
+            if ((options & TableInitializationOptions.GenerateUniqueName) != 0)
+            {
+                name = GetUniqueTableName(name);
+            }
+
+            return name;
+        }
+
+        private string GetUniqueTableName(string tableName)
+        {
+            string newname = tableName;
+            int q = 1;
+
+            while (dataset.GetObject(dataset.DatabaseName, schemaName, newname) != null)
+            {
+                newname = String.Format("{0}_{1}", tableName, q);
+                q++;
+            }
+
+            return newname;
         }
 
         /// <summary>

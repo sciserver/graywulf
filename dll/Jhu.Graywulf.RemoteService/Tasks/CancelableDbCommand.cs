@@ -77,13 +77,14 @@ namespace Jhu.Graywulf.Tasks
         /// data reader to a delegate.
         /// </summary>
         /// <param name="action"></param>
-        public void ExecuteReader(Action<IDataReader> action)
+        public long ExecuteReader(Action<IDataReader> action)
         {
             try
             {
                 using (var dr = command.ExecuteReader())
                 {
                     action(dr);
+                    return dr.RecordsAffected;
                 }
             }
             catch (Exception ex)
