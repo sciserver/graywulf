@@ -130,13 +130,18 @@ namespace Jhu.Graywulf.Format
 
             File.CreateArchiveEntry(filename, buffer.Length);
             File.BaseStream.Write(buffer, 0, buffer.Length);
-            File.CloseArchiveEntry();
+            
+            // Normally, this entry would need to be closed here but
+            // it will get closed automatically when the next entry
+            // is added so the following line is commented out
+            // File.CloseArchiveEntry();
         }
 
         private void WriteCreateScript()
         {
             var sql = new StringBuilder();
 
+            // TODO: somehow bring table name here, probably via smartdatareader/smartcommand
             sql.AppendLine(String.Format("CREATE TABLE [{0}]", "$tablename"));
             sql.AppendLine("(");
 
@@ -168,7 +173,7 @@ namespace Jhu.Graywulf.Format
             var sql = new StringBuilder();
 
             sql.AppendLine(String.Format("BULK INSERT [{0}]", "$tablename"));
-            sql.AppendLine(String.Format("FROM '{0}'", filename));
+            sql.AppendLine(String.Format("FROM '{0}.bcp'", filename));
             sql.AppendLine("WITH (DATAFILETYPE = 'native', TABLOCK)");
 
             WriteTextFileEntry("_insert.sql", sql.ToString());
