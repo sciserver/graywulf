@@ -7,7 +7,7 @@
         <jgwc:MyDbTabs ID="MyDbTabs" runat="server" SelectedTab="Upload" />
     </div>
     <div class="TabFrame dock-fill dock-container">
-        <jgwc:Form runat="server" Text="Upload data files" SkinID="ImportTable">
+        <jgwc:Form runat="server" ID="UploadForm" Text="Upload data files" SkinID="ImportTable">
             <FormTemplate>
                 <p>
                     Upload single files or archives.</p>
@@ -15,7 +15,8 @@
                     <li>File format is inferred automatically from file extension.</li>
                     <li>Table names are generated from file names.</li>
                     <li>Supported file formats:
-                        <asp:BulletedList runat="server" ID="SupportedFormatsList" /></li>
+                        <asp:BulletedList runat="server" ID="SupportedFormatsList" />
+                    </li>
                     <li>When importing text files to a new table, column names will be taken from the first
                         line of the uploaded file and column types will be infered from the first 100 lines
                         automatically.</li>
@@ -84,6 +85,17 @@
                 <asp:Button ID="Ok" runat="server" Text="OK" OnClick="Ok_Click" CssClass="FormButton" />&nbsp;
                 <asp:Button ID="Cancel" runat="server" Text="Cancel" OnClick="Cancel_Click" CausesValidation="false"
                     CssClass="FormButton" />
+            </ButtonsTemplate>
+        </jgwc:Form>
+        <jgwc:Form ID="ResultsForm" runat="server" Text="File upload results" SkinID="ImportTable"
+            Visible="false">
+            <FormTemplate>
+                <p>
+                    The following tables have been created:</p>
+                <asp:BulletedList runat="server" ID="ResultTableList" />
+            </FormTemplate>
+            <ButtonsTemplate>
+                <asp:Button ID="Back" runat="server" Text="OK" OnClick="Back_Click" CssClass="FormButton" />&nbsp;
             </ButtonsTemplate>
         </jgwc:Form>
     </div>

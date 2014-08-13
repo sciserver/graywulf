@@ -46,13 +46,29 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                 CopyTableBase importer = GetTableImporter();
                 importer.Execute();
 
-                Response.Redirect(Jhu.Graywulf.Web.UI.MyDB.Tables.GetUrl());
+                foreach (var r in importer.Results)
+                {
+                    var li = new ListItem()
+                    {
+                        Text = String.Format("{0} > {1} ({2})", r.FileName, r.TableName, r.Status)
+                    };
+                    
+                    ResultTableList.Items.Add(li);
+                }
+
+                UploadForm.Visible = false;
+                ResultsForm.Visible = true;
             }
         }
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
             Response.Redirect(OriginalReferer);
+        }
+
+        protected void Back_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(Jhu.Graywulf.Web.UI.MyDB.Tables.GetUrl());
         }
 
         #endregion
