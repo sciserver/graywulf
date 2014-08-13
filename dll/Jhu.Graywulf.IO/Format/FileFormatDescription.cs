@@ -11,11 +11,6 @@ namespace Jhu.Graywulf.Format
         #region Private member variables
 
         /// <summary>
-        /// .Net type implementing the file format
-        /// </summary>
-        private Type type;
-
-        /// <summary>
         /// Name of file format
         /// </summary>
         private string displayName;
@@ -75,12 +70,6 @@ namespace Jhu.Graywulf.Format
 
         #endregion
         #region
-
-        public Type Type
-        {
-            get { return type; }
-            set { type = value; }
-        }
 
         public string DisplayName
         {
@@ -170,7 +159,6 @@ namespace Jhu.Graywulf.Format
 
         private void InitializeMembers()
         {
-            this.type = null;
             this.displayName = null;
             this.mimeType = null;
             this.extension = null;
@@ -186,7 +174,6 @@ namespace Jhu.Graywulf.Format
 
         private void CopyMembers(FileFormatDescription old)
         {
-            this.type = old.type;
             this.displayName = old.displayName;
             this.mimeType = old.mimeType;
             this.extension = old.extension;

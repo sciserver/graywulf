@@ -298,19 +298,6 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        /// <summary>
-        /// Returns a file object based on the format description.
-        /// </summary>
-        /// <param name="format"></param>
-        /// <returns></returns>
-        public DataFileBase CreateFile(FileFormatDescription format)
-        {
-            var c = format.Type.GetConstructor(Type.EmptyTypes);
-            var f = (DataFileBase)c.Invoke(null);
-
-            return f;
-        }
-
         public DataFileBase CreateFile(Uri uri)
         {
             string filename, extension;
