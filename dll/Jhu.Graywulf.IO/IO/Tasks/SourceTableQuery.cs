@@ -66,6 +66,23 @@ namespace Jhu.Graywulf.IO.Tasks
             CopyMembers(old);
         }
 
+        public static SourceTableQuery Create(TableOrView table)
+        {
+            return Create(table, Int32.MaxValue);
+        }
+
+        public static SourceTableQuery Create(TableOrView table, int top)
+        {
+            var cg = table.Dataset.CreateCodeGenerator();
+
+            return new SourceTableQuery()
+            {
+                Dataset = table.Dataset,
+                SourceObjectName = table.DisplayName,
+                Query = cg.GenerateSelectStarQuery(table, top)
+            };
+        }
+
         private void InitializeMembers()
         {
             this.dataset = null;

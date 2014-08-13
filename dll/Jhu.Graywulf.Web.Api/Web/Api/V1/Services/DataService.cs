@@ -83,15 +83,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             // Create source
 
             // -- Build a query to export everything
-            var codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(table.Dataset);
-            var sql = codegen.GenerateSelectStarQuery(table, toplimit);
-
-            var source = new SourceTableQuery()
-            {
-                Dataset = dataset,
-                SourceObjectName = table.DisplayName,
-                Query = sql
-            };
+            var source = SourceTableQuery.Create(table, toplimit);
 
             // Create destination
 

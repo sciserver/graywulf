@@ -166,15 +166,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             var ss = new SourceTableQuery[sources.Length];
             for (int i = 0; i < sources.Length; i++)
             {
-                var cg = sources[i].Dataset.CreateCodeGenerator();
-                var sql = cg.GenerateSelectStarQuery(sources[i], int.MaxValue);
-
-                ss[i] = new SourceTableQuery()
-                {
-                    Dataset = sources[i].Dataset,
-                    SourceObjectName = sources[i].DisplayName,
-                    Query = sql
-                };
+                ss[i] = SourceTableQuery.Create(sources[i]);
             }
 
             // Create bulk operation
