@@ -6,7 +6,7 @@
     <div class="dock-top">
         <jgwc:MyDbTabs ID="MyDbTabs1" runat="server" SelectedTab="Summary" />
     </div>
-    <div class="dock-fill TabFrame">
+    <div class="dock-fill dock-container TabFrame">
         <jgwc:Form runat="server" Text="MyDB Summary" SkinID="MyDB">
             <FormTemplate>
                 <p>

@@ -4,7 +4,7 @@
 <%@ Register Src="~/MyDb/Tabs.ascx" TagPrefix="jgwc" TagName="MyDbTabs" %>
 <asp:Content runat="server" ContentPlaceHolderID="middle">
     <div class="dock-top">
-        <jgwc:MyDbTabs ID="MyDbTabs" runat="server" SelectedTab="Upload" />
+        <jgwc:MyDbTabs ID="MyDbTabs" runat="server" SelectedTab="Import" />
     </div>
     <div class="TabFrame dock-fill dock-container">
         <jgwc:Form runat="server" ID="ImportForm" Text="Import data files" SkinID="ImportTable">
