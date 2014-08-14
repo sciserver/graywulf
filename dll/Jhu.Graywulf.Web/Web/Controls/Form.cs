@@ -90,7 +90,7 @@ namespace Jhu.Graywulf.Web.Controls
             iconcell.Controls.Add(formIcon);
             formcell.Controls.Add(formContainer);
 
-            formDiv.CssClass = "FormFrame dock-top";
+            formDiv.CssClass = "FormFrame dock-fill dock-scroll";
             table.CssClass = "Form";
             titlecell.CssClass = "FormHeadline";
             iconcell.CssClass = "FormIcon";
@@ -109,8 +109,8 @@ namespace Jhu.Graywulf.Web.Controls
             buttonsDiv.CssClass = "dock-bottom";
 
             // ---
-            Controls.Add(formDiv);
             Controls.Add(buttonsDiv);
+            Controls.Add(formDiv);
         }
 
         private void ClearContent()
@@ -148,8 +148,8 @@ namespace Jhu.Graywulf.Web.Controls
 
         protected override void Render(HtmlTextWriter writer)
         {
-            formDiv.RenderControl(writer);
             buttonsDiv.RenderControl(writer);
+            formDiv.RenderControl(writer);
         }
     }
 }
