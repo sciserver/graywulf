@@ -69,6 +69,8 @@ namespace Jhu.Graywulf.Web.Controls
         {
             base.OnLoad(e);
 
+            this.PageIndexChanging += new GridViewPageEventHandler(MultiSelectGridView_PageIndexChanging);
+
             if (!Page.IsPostBack)
             {
                 selectedDataKeys = new HashSet<string>();
@@ -112,6 +114,11 @@ namespace Jhu.Graywulf.Web.Controls
             }
 
             ViewState[ViewStateSelectedDataKeys] = selectedDataKeys;
+        }
+
+        void MultiSelectGridView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            this.PageIndex = e.NewPageIndex;
         }
 
         protected override void OnPreRender(EventArgs e)
