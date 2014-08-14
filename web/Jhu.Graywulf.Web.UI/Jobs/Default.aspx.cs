@@ -25,12 +25,11 @@ namespace Jhu.Graywulf.Web.UI.Jobs
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            
         }
 
-        protected override void OnLoadComplete(EventArgs e)
+        protected void Page_LoadComplete(object sender, EventArgs e)
         {
-            base.OnLoadComplete(e);
-
             var list = GetVisibleListView();
             list.DataSource = JobDataSource;
         }
@@ -52,6 +51,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
                     Response.Redirect(ExportJobDetails.GetUrl(guid));
                     break;
                 case JobType.Import:
+                    //Response.Redirect(ImportJobDetails.GetUrl(guid));
                 default:
                     throw new NotImplementedException();
             }
@@ -68,6 +68,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
                 case Views.Export:
                     return ExportJobList;
                 case Views.Import:
+                    return ImportJobList;
                 default:
                     throw new NotImplementedException();
             }
