@@ -12,7 +12,7 @@ using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class Download : CustomPageBase
+    public partial class Download : CopyTablePage
     {
         public static string GetUrl()
         {
@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             {
                 if (!IsPostBack)
                 {
-                    RefreshFileFormatLists();
+                    RefreshFileFormatLists(false, true);
                     RefreshTableList();
                 }
             }
@@ -83,77 +83,20 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         #endregion
 
-        private void RefreshFileFormatLists()
-        {
-            var dfs = FederationContext.FileFormatFactory.EnumerateFileFormatDescriptions();
-
-            foreach (var df in dfs)
-            {
-                if (df.CanWrite)
-                {
-                    var li = new ListItem(df.DisplayName, df.Extension);
-                    FileFormatList.Items.Add(li);
-                }
-            }
-        }
-
-        private void RefreshTableList()
-        {
-            FederationContext.MyDBDataset.Tables.LoadAll();
-
-            foreach (var table in FederationContext.MyDBDataset.Tables.Values.OrderBy(t => t.UniqueKey))
-            {
-                TableList.Items.Add(new ListItem(table.DisplayName, table.UniqueKey));
-            }
-        }
-
-
-        private SourceTableQuery[] GetSources()
-        {
-            var tableKeys = Request.QueryString["tables"].Split(',');
-            var sources = new SourceTableQuery[tableKeys.Length];
-
-            for (int i = 0; i < tableKeys.Length; i++)
-            {
-                var table = FederationContext.MyDBDataset.Tables[tableKeys[i]];
-
-                // TODO: maybe set a row maximum here
-                sources[i] = SourceTableQuery.Create(table);
-            }
-
-            return sources;
-        }
-
-        private DataFileBase[] GetDestinations()
-        {
-            var tableKeys = Request.QueryString["tables"].Split(',');
-            var format = Request.QueryString["format"];
-            var destinations = new DataFileBase[tableKeys.Length];
-
-            for (int i = 0; i < tableKeys.Length; i++)
-            {
-                var table = FederationContext.MyDBDataset.Tables[tableKeys[i]];
-
-                destinations[i] = FederationContext.FileFormatFactory.CreateFileFromExtension(format);
-
-                // TODO: maybe change file naming logic here?
-                destinations[i].Uri = Util.UriConverter.FromFilePath(table.TableName + destinations[i].Description.Extension);
-            }
-
-            return destinations;
-        }
-
         private ExportTableArchive GetTableExporter()
         {
             // Check if uploaded file is an archive
             var batchName = "download";
 
+            var tableKeys = Request.QueryString["tables"].Split(',');
+            var format = Request.QueryString["format"];
+
             var task = new ExportTableArchive()
             {
                 BatchName = batchName,
                 BypassExceptions = true,
-                Sources = GetSources(),
-                Destinations = GetDestinations(),
+                Sources = GetSourceTables(tableKeys),
+                Destinations = GetDestinationFiles(tableKeys, format),
                 StreamFactoryType = RegistryContext.Federation.StreamFactory,
                 FileFormatFactoryType = RegistryContext.Federation.FileFormatFactory,
             };

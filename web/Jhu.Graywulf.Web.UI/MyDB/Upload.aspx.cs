@@ -8,7 +8,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class Upload : CustomPageBase
+    public partial class Upload : CopyTablePage
     {
         public static string GetUrl()
         {
@@ -21,15 +21,9 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (!IsPostBack)
             {
-                RefreshFileFormatLists();
+                RefreshFileFormatLists(true, false);
                 RefreshForm();
             }
-        }
-
-        protected void ToggleAdvanced_Click(object sender, EventArgs e)
-        {
-            DetailsTable.Visible = !DetailsTable.Visible;
-            RefreshForm();
         }
 
         protected void FileFormat_SelectedIndexChanged(object sender, EventArgs e)
@@ -72,31 +66,8 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         #endregion
 
-        protected void RefreshForm()
+        private void RefreshForm()
         {
-            if (DetailsTable.Visible)
-            {
-                ToggleAdvanced.Text = "simple mode";
-            }
-            else
-            {
-                ToggleAdvanced.Text = "advanced mode";
-            }
-        }
-
-        private void RefreshFileFormatLists()
-        {
-            var dfs = FederationContext.FileFormatFactory.EnumerateFileFormatDescriptions();
-
-            foreach (var df in dfs)
-            {
-                if (df.CanRead)
-                {
-                    var li = new ListItem(df.DisplayName, df.Extension);
-                    FileFormatList.Items.Add(li);
-                    SupportedFormatsList.Items.Add(li);
-                }
-            }
         }
 
         private Uri GetUploadedFileUri()
@@ -124,66 +95,6 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             return new Uri(filename, UriKind.Relative);
         }
 
-        private DataFileBase GetSourceDataFile(Uri uri)
-        {
-            DataFileBase file;
-
-            if (DetailsTable.Visible)
-            {
-                // Create a specific file type
-                file = FederationContext.FileFormatFactory.CreateFileFromExtension(FileFormatList.SelectedValue);
-                file.GenerateIdentityColumn = GenerateIdentity.Checked;
-
-                // TODO: add compression
-
-                if (file is TextDataFileBase)
-                {
-                    ((TextDataFileBase)file).AutoDetectColumns = AutoDetectColumns.Checked;
-                }
-            }
-            else
-            {
-                // Create file type based on extension
-                file = FederationContext.FileFormatFactory.CreateFile(uri);
-                file.GenerateIdentityColumn = true;
-
-                // AutoDetectColumns is turned on by default in this case
-            }
-
-            file.BaseStream = FederationContext.StreamFactory.Open(ImportedFile.PostedFile.InputStream, DataFileMode.Read, file.Compression, DataFileArchival.None);
-            return file;
-        }
-
-        private DestinationTable GetDestinationTable(Uri uri)
-        {
-            DestinationTable destination;
-
-            if (DetailsTable.Visible)
-            {
-                destination = new DestinationTable(
-                    FederationContext.MyDBDataset,
-                    FederationContext.MyDBDataset.DatabaseName,
-                    SchemaName.Text,
-                    TableNamePrefix.Text + "_" + IO.Constants.ResultsetNameToken,
-                    TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName);
-            }
-            else
-            {
-                // TODO: move unique name logic to importer class
-                //var tableName = Util.UriConverter.ToFileNameWithoutExtension(uri).Replace('.', '_');
-                //GetUniqueTableName(FederationContext.MyDBDataset.DefaultSchemaName, ref tableName);
-
-                destination = new DestinationTable(
-                    FederationContext.MyDBDataset,
-                    FederationContext.MyDBDataset.DatabaseName,
-                    FederationContext.MyDBDataset.DefaultSchemaName,
-                    IO.Constants.ResultsetNameToken,        // generate table names automatically
-                    Graywulf.Schema.TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName);
-            }
-
-            return destination;
-        }
-
         private CopyTableBase GetTableImporter()
         {
             var uri = GetUploadedFileUri();
@@ -195,12 +106,21 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
             if (archival == DataFileArchival.None)
             {
+                // A single file is being uploaded
+                var file = GetSourceDataFile(uri);
+                
+                file.BaseStream = FederationContext.StreamFactory.Open(
+                    ImportedFile.PostedFile.InputStream,
+                    DataFileMode.Read,
+                    file.Compression,
+                    DataFileArchival.None);
+
                 // Use simple importer
                 var task = new ImportTable()
                 {
                     BatchName = batchName,
-                    Source = GetSourceDataFile(uri),
-                    Destination = GetDestinationTable(uri),
+                    Source = file,
+                    Destination = GetDestinationTable(),
                     StreamFactoryType = RegistryContext.Federation.StreamFactory,
                     FileFormatFactoryType = RegistryContext.Federation.FileFormatFactory,
                 };
@@ -211,11 +131,12 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             }
             else
             {
+                // An archive is being uploaded, use archive importer
                 var task = new ImportTableArchive()
                 {
                     BypassExceptions = true,
                     BatchName = batchName,
-                    Destination = GetDestinationTable(uri),
+                    Destination = GetDestinationTable(),
                     StreamFactoryType = RegistryContext.Federation.StreamFactory,
                     FileFormatFactoryType = RegistryContext.Federation.FileFormatFactory,
                 };

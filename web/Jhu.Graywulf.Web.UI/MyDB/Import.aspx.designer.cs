@@ -22,31 +22,49 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::Jhu.Graywulf.Web.UI.MyDB.Tabs MyDbTabs;
         
         /// <summary>
-        /// Label1 control.
+        /// ImportForm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Label1;
+        protected global::Jhu.Graywulf.Web.Controls.Form ImportForm;
         
         /// <summary>
-        /// ImportedFile control.
+        /// SupportedFormatsList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlInputFile ImportedFile;
+        protected global::System.Web.UI.WebControls.BulletedList SupportedFormatsList;
         
         /// <summary>
-        /// ToggleDetails control.
+        /// UriLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton ToggleDetails;
+        protected global::System.Web.UI.WebControls.Label UriLabel;
+        
+        /// <summary>
+        /// Uri control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Uri;
+        
+        /// <summary>
+        /// ToggleAdvanced control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton ToggleAdvanced;
         
         /// <summary>
         /// DetailsTable control.
@@ -56,6 +74,51 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlTable DetailsTable;
+        
+        /// <summary>
+        /// UsernameLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label UsernameLabel;
+        
+        /// <summary>
+        /// Username control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Username;
+        
+        /// <summary>
+        /// PasswordLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label PasswordLabel;
+        
+        /// <summary>
+        /// Password control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Password;
+        
+        /// <summary>
+        /// DetailsTable2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTable DetailsTable2;
         
         /// <summary>
         /// SchemaNameLabel control.
@@ -76,22 +139,22 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::System.Web.UI.WebControls.TextBox SchemaName;
         
         /// <summary>
-        /// TableNameLabel control.
+        /// TableNamePrefixLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label TableNameLabel;
+        protected global::System.Web.UI.WebControls.Label TableNamePrefixLabel;
         
         /// <summary>
-        /// TableName control.
+        /// TableNamePrefix control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TableName;
+        protected global::System.Web.UI.WebControls.TextBox TableNamePrefix;
         
         /// <summary>
         /// FileFormatLabel control.
@@ -103,49 +166,31 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::System.Web.UI.WebControls.Label FileFormatLabel;
         
         /// <summary>
-        /// FileFormat control.
+        /// FileFormatList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList FileFormat;
+        protected global::System.Web.UI.WebControls.DropDownList FileFormatList;
         
         /// <summary>
-        /// CompressedRow control.
+        /// AutoDetectColumnsRow control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow CompressedRow;
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow AutoDetectColumnsRow;
         
         /// <summary>
-        /// CompressionMethod control.
+        /// AutoDetectColumns control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList CompressionMethod;
-        
-        /// <summary>
-        /// DetectColumnNamesRow control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow DetectColumnNamesRow;
-        
-        /// <summary>
-        /// DetectColumnNames control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox DetectColumnNames;
+        protected global::System.Web.UI.WebControls.CheckBox AutoDetectColumns;
         
         /// <summary>
         /// GenerateIdentityRow control.
@@ -166,6 +211,24 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::System.Web.UI.WebControls.CheckBox GenerateIdentity;
         
         /// <summary>
+        /// CommentsLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label CommentsLabel;
+        
+        /// <summary>
+        /// Comments control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Comments;
+        
+        /// <summary>
         /// Ok control.
         /// </summary>
         /// <remarks>
@@ -182,5 +245,23 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button Cancel;
+        
+        /// <summary>
+        /// ResultsForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Controls.Form ResultsForm;
+        
+        /// <summary>
+        /// Back control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button Back;
     }
 }

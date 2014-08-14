@@ -88,6 +88,23 @@
     <Compile Include="CustomUserControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="MyDB\CopyTablePage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MyDB\Export.aspx.cs">
+      <DependentUpon>Export.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MyDB\Export.aspx.designer.cs">
+      <DependentUpon>Export.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="MyDB\Import.aspx.cs">
+      <DependentUpon>Import.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MyDB\Import.aspx.designer.cs">
+      <DependentUpon>Import.aspx</DependentUpon>
+    </Compile>
     <Compile Include="MyDB\Download.aspx.cs">
       <DependentUpon>Download.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -202,20 +219,6 @@
     </Compile>
     <Compile Include="MyDB\DropObject.aspx.designer.cs">
       <DependentUpon>DropObject.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\ExportTable.aspx.cs">
-      <DependentUpon>ExportTable.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\ExportTable.aspx.designer.cs">
-      <DependentUpon>ExportTable.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\ImportTable.aspx.cs">
-      <DependentUpon>ImportTable.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\ImportTable.aspx.designer.cs">
-      <DependentUpon>ImportTable.aspx</DependentUpon>
     </Compile>
     <Compile Include="MyDB\RenameObject.aspx.cs">
       <DependentUpon>RenameObject.aspx</DependentUpon>
@@ -344,13 +347,13 @@
     <Content Include="Controls\Menu.ascx" />
     <Content Include="Default.aspx" />
     <Content Include="Global.asax" />
+    <Content Include="MyDB\Export.aspx" />
+    <Content Include="MyDB\Import.aspx" />
     <Content Include="MyDB\Download.aspx" />
     <Content Include="MyDB\ExportList.aspx" />
     <Content Include="MyDB\Upload.aspx" />
     <Content Include="MyDB\Default.aspx" />
     <Content Include="MyDB\DropObject.aspx" />
-    <Content Include="MyDB\ExportTable.aspx" />
-    <Content Include="MyDB\ImportTable.aspx" />
     <Content Include="MyDB\RenameObject.aspx" />
     <Content Include="MyDB\Tables.aspx" />
     <Content Include="MyDB\Tabs.ascx" />

@@ -57,7 +57,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                         Response.Redirect(Schema.Peek.GetUrl(objid));
                         break;
                     case "Export":
-                        Response.Redirect(MyDB.ExportTable.GetUrl(objid));
+                        Response.Redirect(MyDB.Export.GetUrl(objid));
                         break;
                     case "Rename":
                         Response.Redirect(MyDB.RenameObject.GetUrl(objid));

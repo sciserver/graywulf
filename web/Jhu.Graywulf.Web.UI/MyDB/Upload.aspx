@@ -36,50 +36,52 @@
                 <p style="text-align: center">
                     <asp:LinkButton runat="server" ID="ToggleAdvanced" OnClick="ToggleAdvanced_Click">advanced mode</asp:LinkButton>
                 </p>
-                <table runat="server" id="DetailsTable" class="FormTable" visible="false">
-                    <tr>
-                        <td class="FormLabel">
-                            <asp:Label runat="server" ID="SchemaNameLabel">Schema name:</asp:Label>
-                        </td>
-                        <td class="FormField">
-                            <asp:TextBox ID="SchemaName" runat="server" CssClass="FormField">dbo</asp:TextBox>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="FormLabel">
-                            <asp:Label runat="server" ID="TableNamePrefixLabel">Table name prefix:</asp:Label>
-                        </td>
-                        <td class="FormField">
-                            <asp:TextBox ID="TableNamePrefix" runat="server" CssClass="FormField">Upload</asp:TextBox>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="FormLabel">
-                            <asp:Label runat="server" ID="FileFormatLabel">File format:</asp:Label>
-                        </td>
-                        <td class="FormField">
-                            <asp:DropDownList runat="server" ID="FileFormatList" AutoPostBack="True" OnSelectedIndexChanged="FileFormat_SelectedIndexChanged" />
-                        </td>
-                    </tr>
-                    <tr runat="server" id="AutoDetectColumnsRow" visible="false">
-                        <td class="FormLabel">
-                            &nbsp;
-                        </td>
-                        <td class="FormField">
-                            <asp:CheckBox runat="server" ID="AutoDetectColumns" Text="Detect column names automatically"
-                                Checked="true" />
-                        </td>
-                    </tr>
-                    <tr runat="server" id="GenerateIdentityRow">
-                        <td class="FormLabel">
-                            &nbsp;
-                        </td>
-                        <td class="FormField">
-                            <asp:CheckBox runat="server" ID="GenerateIdentity" Text="Generate identity column"
-                                Checked="true" />
-                        </td>
-                    </tr>
-                </table>
+                <asp:Panel runat="server" ID="DetailsPanel" Visible="false">
+                    <table class="FormTable">
+                        <tr>
+                            <td class="FormLabel">
+                                <asp:Label runat="server" ID="SchemaNameLabel">Schema name:</asp:Label>
+                            </td>
+                            <td class="FormField">
+                                <asp:TextBox ID="SchemaName" runat="server" CssClass="FormField">dbo</asp:TextBox>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="FormLabel">
+                                <asp:Label runat="server" ID="TableNamePrefixLabel">Table name prefix:</asp:Label>
+                            </td>
+                            <td class="FormField">
+                                <asp:TextBox ID="TableNamePrefix" runat="server" CssClass="FormField">Upload</asp:TextBox>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="FormLabel">
+                                <asp:Label runat="server" ID="FileFormatLabel">File format:</asp:Label>
+                            </td>
+                            <td class="FormField">
+                                <asp:DropDownList runat="server" ID="FileFormatList" AutoPostBack="True" OnSelectedIndexChanged="FileFormat_SelectedIndexChanged" />
+                            </td>
+                        </tr>
+                        <tr runat="server" id="AutoDetectColumnsRow" visible="false">
+                            <td class="FormLabel">
+                                &nbsp;
+                            </td>
+                            <td class="FormField">
+                                <asp:CheckBox runat="server" ID="AutoDetectColumns" Text="Detect column names automatically"
+                                    Checked="true" />
+                            </td>
+                        </tr>
+                        <tr runat="server" id="GenerateIdentityRow">
+                            <td class="FormLabel">
+                                &nbsp;
+                            </td>
+                            <td class="FormField">
+                                <asp:CheckBox runat="server" ID="GenerateIdentity" Text="Generate identity column"
+                                    Checked="true" />
+                            </td>
+                        </tr>
+                    </table>
+                </asp:Panel>
             </FormTemplate>
             <ButtonsTemplate>
                 <asp:Button ID="Ok" runat="server" Text="OK" OnClick="Ok_Click" CssClass="FormButton" />&nbsp;

@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/UI.master" AutoEventWireup="true"
-    Inherits="Jhu.Graywulf.Web.UI.MyDB.ExportTable" CodeBehind="ExportTable.aspx.cs" %>
+    Inherits="Jhu.Graywulf.Web.UI.MyDB.Export" CodeBehind="Export.aspx.cs" %>
 
 <%@ Register Src="~/MyDb/Tabs.ascx" TagPrefix="jgwc" TagName="MyDbTabs" %>
 <asp:Content runat="server" ContentPlaceHolderID="middle">

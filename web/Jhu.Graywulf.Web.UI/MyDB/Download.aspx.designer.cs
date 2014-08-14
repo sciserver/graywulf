@@ -40,15 +40,6 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::System.Web.UI.WebControls.Label TableListLabel;
         
         /// <summary>
-        /// TableList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.ListBox TableList;
-        
-        /// <summary>
         /// FileFormatListLabel control.
         /// </summary>
         /// <remarks>
@@ -56,15 +47,6 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label FileFormatListLabel;
-        
-        /// <summary>
-        /// FileFormatList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList FileFormatList;
         
         /// <summary>
         /// Ok control.

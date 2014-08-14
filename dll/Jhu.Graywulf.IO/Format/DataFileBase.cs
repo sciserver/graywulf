@@ -515,7 +515,7 @@ namespace Jhu.Graywulf.Format
         /// </summary>
         public virtual void Close()
         {
-            if (IsArchive)
+            if (FileMode == DataFileMode.Write && IsArchive)
             {
                 CloseArchiveEntry();
             }

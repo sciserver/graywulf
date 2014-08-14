@@ -10,16 +10,16 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class ExportTable : CustomPageBase
+    public partial class Export : CustomPageBase
     {
         public static string GetUrl()
         {
-            return "~/MyDb/ExportTable.aspx";
+            return "~/MyDb/Export.aspx";
         }
 
         public static string GetUrl(string objid)
         {
-            return String.Format("~/MyDb/ExportTable.aspx?objid={0}", objid);
+            return String.Format("~/MyDb/Export.aspx?objid={0}", objid);
         }
 
         protected override void OnLoad(EventArgs e)
