@@ -124,6 +124,62 @@ namespace Jhu.Graywulf.Web.Api.V1
         }
 
         [TestMethod]
+        public void SubmitExportJobTest()
+        {
+            using (var session = new RestClientSession())
+            {
+                var client = CreateClient(session);
+
+                var job = new ExportJob()
+                {
+                    Uri = new Uri("http://test/test.zip"),
+                    ContentType = "text/csv",
+                    Tables = new string[]
+                    {
+                        "testdata"
+                    },
+                    Comments = "test comments",
+                };
+
+                var request = new JobRequest()
+                {
+                    ExportJob = job
+                };
+
+                var response = client.SubmitJob("quick", request);
+
+                // Try to get newly scheduled job
+                var nj = client.GetJob(response.ExportJob.Guid.ToString());
+            }
+        }
+
+        [TestMethod]
+        public void SubmitImportJobTest()
+        {
+            using (var session = new RestClientSession())
+            {
+                var client = CreateClient(session);
+
+                var job = new ImportJob()
+                {
+                    Uri = new Uri("http://test/test.zip"),
+                    Table = "importtable",
+                    Comments = "test comments",
+                };
+
+                var request = new JobRequest()
+                {
+                    ImportJob = job
+                };
+
+                var response = client.SubmitJob("quick", request);
+
+                // Try to get newly scheduled job
+                var nj = client.GetJob(response.ImportJob.Guid.ToString());
+            }
+        }
+
+        [TestMethod]
         public void CancelJobTest()
         {
             using (var session = new RestClientSession())

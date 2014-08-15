@@ -140,7 +140,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             var table = ParserTableName(dataset, tableName);
 
             // Create a destination object targeted to the specific table
-            var destination = new DestinationTable(table, Schema.TableInitializationOptions.Create);
+            var destination = new IO.Tasks.DestinationTable(table, Schema.TableInitializationOptions.Create);
 
             // Create import task and execute it
             var import = new ImportTable()

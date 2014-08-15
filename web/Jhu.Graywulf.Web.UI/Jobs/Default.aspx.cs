@@ -19,8 +19,8 @@ namespace Jhu.Graywulf.Web.UI.Jobs
         {
             All = 0,
             Query = 1,
-            Export = 2,
-            Import = 3
+            Import = 2,
+            Export = 3,
         }
 
         protected void Page_Load(object sender, EventArgs e)

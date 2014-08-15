@@ -33,7 +33,7 @@
                             <Columns>
                                 <jgwc:SelectionField ItemStyle-Width="24px" />
                                 <jgwc:BoundField DataField="Name" HeaderText="Job ID" ItemStyle-Width="150px" />
-                                <jgwc:BoundField DataField="Type" HeaderText="Job type" ItemStyle-Width="120px" />
+                                <jgwc:BoundField DataField="Type" HeaderText="Type" ItemStyle-Width="48px" />
                                 <jgwc:BoundDateTimeField DataField="DateCreated" HeaderText="Submitted" ItemStyle-Width="140px"
                                     ItemStyle-HorizontalAlign="Center" />
                                 <jgwc:BoundDateTimeField DataField="DateStarted" HeaderText="Started" ItemStyle-Width="140px"

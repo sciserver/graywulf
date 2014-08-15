@@ -24,6 +24,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         private string[] tables;
         private string mimeType;
         private Uri uri;
+        private Credentials credentials;
 
         #endregion
         #region Properties
@@ -50,6 +51,15 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             get { return uri; }
             set { uri = value; }
+        }
+
+        [DataMember(Name = "credentials", EmitDefaultValue=false)]
+        [Description("Credentials to access the target URI.")]
+        [DefaultValue(null)]
+        public Credentials Credentials
+        {
+            get { return credentials; }
+            set { credentials = value; }
         }
 
         /// <summary>
@@ -106,6 +116,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.tables = null;
             this.mimeType = null;
             this.uri = null;
+            this.credentials = null;
         }
 
         #endregion
@@ -156,11 +167,6 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
 
             return ef.CreateParameters(context.Federation, ts, uri, mimeType, GetQueueName(context), Comments);
-        }
-
-        private string GetTableName(TableOrView table)
-        {
-            return table.ObjectName;
         }
 
         public override void Schedule(FederationContext context)

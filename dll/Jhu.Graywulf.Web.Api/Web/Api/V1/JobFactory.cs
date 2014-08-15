@@ -192,7 +192,12 @@ namespace Jhu.Graywulf.Web.Api.V1
                     exportJobDefinitionsByGuid.TryAdd(jd.Guid, jd);
                     exportJobDefinitionsByName.TryAdd(jd.Name, jd);
                 }
-                // TODO: add more jobs here, especially import!
+                else if (rh.HasInterface(typeof(Jhu.Graywulf.Jobs.ImportTables.IImportTablesJob).ToString()))
+                {
+                    importJobDefinitionsByGuid.TryAdd(jd.Guid, jd);
+                    importJobDefinitionsByName.TryAdd(jd.Name, jd);
+                }
+                // TODO: add more jobs here
             }
 
             jobDefinitionsLoaded = true;
