@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         public static SourceTableQuery Create(TableOrView table, int top)
         {
-            var cg = table.Dataset.CreateCodeGenerator();
+            var cg = SqlCodeGen.CodeGeneratorFactory.CreateCodeGenerator(table.Dataset.ProviderName);
 
             return new SourceTableQuery()
             {
@@ -119,7 +119,8 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <returns></returns>
         internal ISmartCommand CreateCommand()
         {
-            var cmd = dataset.CreateCommand();
+            var dbf = DbProviderFactories.GetFactory(dataset.ProviderName);
+            var cmd = new SmartCommand(dataset, dbf.CreateCommand());
 
             cmd.CommandText = query;
             cmd.CommandType = CommandType.Text;

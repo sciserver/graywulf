@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.IO;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Data;
 using Jhu.Graywulf.Format;
 
 namespace Jhu.Graywulf.Format
@@ -24,8 +25,10 @@ namespace Jhu.Graywulf.Format
             {
                 using (var cn = IOTestDataset.OpenConnection())
                 {
-                    using (var cmd = IOTestDataset.CreateCommand("SELECT * FROM SampleData_NumericTypes", cn))
+                    using (var cmd = new SmartCommand(IOTestDataset, cn.CreateCommand()))
                     {
+                        cmd.CommandText = "SELECT * FROM SampleData_NumericTypes";
+
                         using (var dr = cmd.ExecuteReader())
                         {
                             nat.WriteFromDataReader(dr);
@@ -74,7 +77,7 @@ namespace Jhu.Graywulf.Format
                 }
             }
         }
-        
+
         [TestMethod]
         public void SimpleWriterAllTypesNullableTest()
         {

@@ -679,7 +679,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        internal List<Column> DetectColumns(IDataReader reader)
+        public List<Column> DetectColumns(IDataReader reader)
         {
             // TODO: modify to accept command instead of data reader?
 

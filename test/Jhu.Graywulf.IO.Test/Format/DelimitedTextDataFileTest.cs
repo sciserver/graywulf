@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.IO;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.IO;
+using Jhu.Graywulf.Data;
 
 namespace Jhu.Graywulf.Format
 {
@@ -308,8 +309,10 @@ testline
 
             using (var cn = IOTestDataset.OpenConnection())
             {
-                using (var cmd = IOTestDataset.CreateCommand("SELECT SampleData.* FROM SampleData", cn))
+                using (var cmd = new SmartCommand(IOTestDataset, cn.CreateCommand()))
                 {
+                    cmd.CommandText = "SELECT SampleData.* FROM SampleData";
+
                     using (var dr = cmd.ExecuteReader())
                     {
                         var csv = new DelimitedTextDataFile(w);

@@ -19,8 +19,9 @@ namespace Jhu.Graywulf.Data
 
             using (var cn = IOTestDataset.OpenConnection())
             {
-                using (var cmd = IOTestDataset.CreateCommand(sql, cn))
+                using (var cmd = new SmartCommand(cn.CreateCommand()))
                 {
+                    cmd.CommandText = sql;
                     cmd.RecordsCounted = false;
 
                     using (var dr = cmd.ExecuteReader())
