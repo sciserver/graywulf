@@ -5,7 +5,6 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Jhu.Graywulf.Web.UI;
 
 [assembly: WebResource("Jhu.Graywulf.Web.Controls.DockingPanel.js", "text/javascript", PerformSubstitution = true)]
 
@@ -43,7 +42,7 @@ namespace Jhu.Graywulf.Web.Controls
 
         public IEnumerable<ScriptReference> GetScriptReferences()
         {
-            yield return new ScriptReference("Jhu.Graywulf.Web.Controls.DockingPanel.js", "Jhu.Graywulf.Web");
+            yield return new ScriptReference("Jhu.Graywulf.Web.Controls.DockingPanel.js", "Jhu.Graywulf.Web.Controls");
         }
     }
 }

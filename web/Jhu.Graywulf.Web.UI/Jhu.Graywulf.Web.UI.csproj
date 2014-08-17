@@ -731,6 +731,10 @@
       <Project>{975EE996-A41B-4C73-8562-E2B2035E8899}</Project>
       <Name>Jhu.Graywulf.Web.Api</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web.Controls\Jhu.Graywulf.Web.Controls.csproj">
+      <Project>{3ADB72A9-4417-4454-AA10-1AF3B2750A94}</Project>
+      <Name>Jhu.Graywulf.Web.Controls</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
       <Project>{E9D182CF-746E-4E40-B01C-74A32FB70749}</Project>
       <Name>Jhu.Graywulf.Web</Name>

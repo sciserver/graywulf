@@ -159,7 +159,7 @@ namespace Jhu.Graywulf.Web.Controls
 
         public IEnumerable<ScriptReference> GetScriptReferences()
         {
-            yield return new ScriptReference("Jhu.Graywulf.Web.Controls.ToolbarButton.js", "Jhu.Graywulf.Web");
+            yield return new ScriptReference("Jhu.Graywulf.Web.Controls.ToolbarButton.js", "Jhu.Graywulf.Web.Controls");
         }
 
         protected override void Render(HtmlTextWriter writer)

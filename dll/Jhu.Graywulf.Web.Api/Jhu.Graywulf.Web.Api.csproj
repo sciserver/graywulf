@@ -72,6 +72,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Web\Api\Util\DateFormatter.cs" />
+    <Compile Include="Web\Api\Util\EnumFormatter.cs" />
     <Compile Include="Web\Api\V1\Enum.cs" />
     <Compile Include="Web\Api\V1\JobFactory.cs" />
     <Compile Include="Web\Api\V1\Objects\Column.cs" />
