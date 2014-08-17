@@ -183,7 +183,7 @@ namespace Jhu.Graywulf.Web.Controls
         {
             if (Rows.Count > 0)
             {
-                yield return new ScriptReference("Jhu.Graywulf.Web.Controls.MultiSelectGridView.js", "Jhu.Graywulf.Web");
+                yield return new ScriptReference("Jhu.Graywulf.Web.Controls.MultiSelectGridView.js", "Jhu.Graywulf.Web.Controls");
             }
             else
             {

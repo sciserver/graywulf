@@ -719,6 +719,10 @@
       <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
       <Name>Jhu.Graywulf.RemoteService</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
+      <Project>{5868B518-CBFC-43FB-B9C8-C617A65121C4}</Project>
+      <Name>Jhu.Graywulf.Schema</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Sql\Jhu.Graywulf.Sql.csproj">
       <Project>{AADA04EE-F578-4628-8AE0-D423BB94C738}</Project>
       <Name>Jhu.Graywulf.Sql</Name>
@@ -726,6 +730,10 @@
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web.Api\Jhu.Graywulf.Web.Api.csproj">
       <Project>{975EE996-A41B-4C73-8562-E2B2035E8899}</Project>
       <Name>Jhu.Graywulf.Web.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web.Controls\Jhu.Graywulf.Web.Controls.csproj">
+      <Project>{3ADB72A9-4417-4454-AA10-1AF3B2750A94}</Project>
+      <Name>Jhu.Graywulf.Web.Controls</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
       <Project>{E9D182CF-746E-4E40-B01C-74A32FB70749}</Project>

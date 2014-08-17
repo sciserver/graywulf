@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5868B518-CBFC-43FB-B9C8-C617A65121C4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Jhu.Graywulf</RootNamespace>
+    <AssemblyName>Jhu.Graywulf.Schema</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Security">
+      <HintPath>..\..\..\packages\Npgsql.2.1.3\lib\net40\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data">
+      <HintPath>..\..\..\packages\MySql.Data.6.8.3\lib\net40\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql">
+      <HintPath>..\..\..\packages\Npgsql.2.1.3\lib\net40\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Schema\Column.cs" />
+    <Compile Include="Schema\Constants.cs" />
+    <Compile Include="Schema\DatabaseObject.cs" />
+    <Compile Include="Schema\DatabaseObjectCollection.cs" />
+    <Compile Include="Schema\DatabaseObjectMetadata.cs" />
+    <Compile Include="Schema\DatabaseObjectNames.Designer.cs" />
+    <Compile Include="Schema\DatasetBase.cs" />
+    <Compile Include="Schema\DatasetMetadata.cs" />
+    <Compile Include="Schema\DatasetStatistics.cs" />
+    <Compile Include="Schema\DataType.cs" />
+    <Compile Include="Schema\DataTypes.cs" />
+    <Compile Include="Schema\DoubleComplex.cs" />
+    <Compile Include="Schema\Enum.cs" />
+    <Compile Include="Schema\ExceptionMessages.Designer.cs" />
+    <Compile Include="Schema\IColumns.cs" />
+    <Compile Include="Schema\IIndexes.cs" />
+    <Compile Include="Schema\Index.cs" />
+    <Compile Include="Schema\IndexColumn.cs" />
+    <Compile Include="Schema\IParameters.cs" />
+    <Compile Include="Schema\MySql\Constants.cs" />
+    <Compile Include="Schema\MySql\MySqlDataset.cs" />
+    <Compile Include="Schema\Parameter.cs" />
+    <Compile Include="Schema\PostgreSql\Constants.cs" />
+    <Compile Include="Schema\PostgreSql\PostgreSqlDataset.cs" />
+    <Compile Include="Schema\ScalarFunction.cs" />
+    <Compile Include="Schema\SchemaException.cs" />
+    <Compile Include="Schema\SchemaManager.cs" />
+    <Compile Include="Schema\SingleComplex.cs" />
+    <Compile Include="Schema\SqlServer\Constants.cs" />
+    <Compile Include="Schema\SqlServer\SqlServerDataset.cs" />
+    <Compile Include="Schema\SqlServer\SqlServerSchemaManager.cs" />
+    <Compile Include="Schema\StoredProcedure.cs" />
+    <Compile Include="Schema\Table.cs" />
+    <Compile Include="Schema\TableOrView.cs" />
+    <Compile Include="Schema\TableStatistics.cs" />
+    <Compile Include="Schema\TableValuedFunction.cs" />
+    <Compile Include="Schema\Variable.cs" />
+    <Compile Include="Schema\VariableMetadata.cs" />
+    <Compile Include="Schema\View.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
+      <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
+      <Name>Jhu.Graywulf.Components</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Schema\DatabaseObjectNames.resx" />
+    <EmbeddedResource Include="Schema\ExceptionMessages.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

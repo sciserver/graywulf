@@ -72,6 +72,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Web\Api\Util\DateFormatter.cs" />
+    <Compile Include="Web\Api\Util\EnumFormatter.cs" />
     <Compile Include="Web\Api\V1\Enum.cs" />
     <Compile Include="Web\Api\V1\JobFactory.cs" />
     <Compile Include="Web\Api\V1\Objects\Column.cs" />
@@ -140,6 +142,10 @@
     <ProjectReference Include="..\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
       <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
       <Name>Jhu.Graywulf.RemoteService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
+      <Project>{5868B518-CBFC-43FB-B9C8-C617A65121C4}</Project>
+      <Name>Jhu.Graywulf.Schema</Name>
     </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Sql\Jhu.Graywulf.Sql.csproj">
       <Project>{AADA04EE-F578-4628-8AE0-D423BB94C738}</Project>

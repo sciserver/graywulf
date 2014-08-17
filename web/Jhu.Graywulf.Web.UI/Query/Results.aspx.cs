@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Web.UI.Query
 
             using (var cn = FederationContext.MyDBDataset.OpenConnection())
             {
-                using (var cmd = FederationContext.MyDBDataset.CreateCommand())
+                using (var cmd = cn.CreateCommand())
                 {
                     cmd.CommandText = sql;
                     cmd.CommandType = CommandType.Text;

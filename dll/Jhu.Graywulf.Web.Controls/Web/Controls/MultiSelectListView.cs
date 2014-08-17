@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
-using Jhu.Graywulf.Registry;
 
 [assembly: WebResource("Jhu.Graywulf.Web.Controls.MultiSelectListView.js", "text/javascript", PerformSubstitution = true)]
 
@@ -187,7 +186,7 @@ namespace Jhu.Graywulf.Web.Controls
 
         public IEnumerable<ScriptReference> GetScriptReferences()
         {
-            yield return new ScriptReference("Jhu.Graywulf.Web.Controls.MultiSelectListView.js", "Jhu.Graywulf.Web");
+            yield return new ScriptReference("Jhu.Graywulf.Web.Controls.MultiSelectListView.js", "Jhu.Graywulf.Web.Controls");
         }
 
         protected override void Render(HtmlTextWriter writer)

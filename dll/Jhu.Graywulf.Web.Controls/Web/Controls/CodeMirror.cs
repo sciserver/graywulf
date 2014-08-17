@@ -162,7 +162,7 @@ $find('{0}${1}').onBeforeSubmit.call($find('{0}${1}'));
 
         IEnumerable<ScriptReference> IScriptControl.GetScriptReferences()
         {
-            yield return new ScriptReference("Jhu.Graywulf.Web.Controls.CodeMirror.js", "Jhu.Graywulf.Web");
+            yield return new ScriptReference("Jhu.Graywulf.Web.Controls.CodeMirror.js", "Jhu.Graywulf.Web.Controls");
             yield return new ScriptReference("~/Scripts/CodeMirror/lib/codemirror.js");
 
             if (!String.IsNullOrWhiteSpace(Mode))
