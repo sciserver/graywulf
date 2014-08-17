@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic.master" AutoEventWireup="true"
     Inherits="Jhu.Graywulf.Web.UI.Feedback" CodeBehind="Default.aspx.cs" %>
 
-<%@ Register TagPrefix="jgwc" Namespace="Jhu.Graywulf.Web.Controls" Assembly="Jhu.Graywulf.Web" %>
+<%@ Register TagPrefix="jgwc" Namespace="Jhu.Graywulf.Web.Controls" Assembly="Jhu.Graywulf.Web.Controls" %>
 <asp:Content ContentPlaceHolderID="middle" runat="Server">
     <jgwc:Form ID="FeedbackForm" runat="server" Text="We appreciate your feedback!" SkinID="Feedback">
         <formtemplate>
