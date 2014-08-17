@@ -42,6 +42,23 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
+        public class ParameterWithXmlTestClass
+        {
+            XmlElement contents;
+
+            public ParameterWithXmlTestClass()
+            {
+                var xml = new XmlDocument();
+                contents = xml.CreateElement("test");
+            }
+
+            public XmlElement Contents
+            {
+                get { return contents; }
+                set { contents = value; }
+            }
+        }
+
         private ParameterTestClass CreateTestClass()
         {
             var pars = new ParameterTestClass();
@@ -67,6 +84,13 @@ namespace Jhu.Graywulf.Registry
                 Value = 123L
             };
             pars.Parameters.Add(par3);
+
+            var par4 = new Parameter()
+            {
+                Name = "param4",
+                Value = new ParameterWithXmlTestClass()
+            };
+            pars.Parameters.Add(par4);
 
             return pars;
         }

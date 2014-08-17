@@ -19,6 +19,9 @@ namespace Jhu.Graywulf.Web.UI
     {
         protected override void Application_Start(object sender, EventArgs e)
         {
+            var wci = new WebConfigInstaller();
+            wci.MergeSettings();
+
             base.Application_Start(sender, e);
 
             using (var context = CreateRegistryContext())
