@@ -8,7 +8,6 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Components;
-using Jhu.Graywulf.Data;
 
 namespace Jhu.Graywulf.Schema
 {
@@ -718,37 +717,8 @@ namespace Jhu.Graywulf.Schema
             return column;
         }
 
-        #endregion
+        #endregion     
 
-        public abstract SqlCodeGen.SqlCodeGeneratorBase CreateCodeGenerator();
-        
         public abstract IDbConnection OpenConnection();
-
-        public SmartCommand CreateCommand()
-        {
-            return CreateCommand(null, null, null);
-        }
-
-        public SmartCommand CreateCommand(string commandText)
-        {
-            return CreateCommand(commandText, null, null);
-        }
-
-        public SmartCommand CreateCommand(string commandText, IDbConnection connection)
-        {
-            return CreateCommand(commandText, connection, null);
-        }
-
-        public SmartCommand CreateCommand(string commandText, IDbConnection connection, IDbTransaction transaction)
-        {
-            var dbf = DbProviderFactories.GetFactory(this.ProviderName);
-            var cmd = new SmartCommand(this, dbf.CreateCommand());
-
-            cmd.CommandText = commandText;
-            cmd.Connection = connection;
-            cmd.Transaction = transaction;
-
-            return cmd;
-        }
     }
 }
