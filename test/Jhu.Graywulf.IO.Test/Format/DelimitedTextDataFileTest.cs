@@ -336,8 +336,10 @@ testline
 
             using (var cn = IOTestDataset.OpenConnection())
             {
-                using (var cmd = IOTestDataset.CreateCommand("SELECT * FROM SampleData_AllTypes", cn))
+                using (var cmd = new SmartCommand(IOTestDataset, cn.CreateCommand()))
                 {
+                    cmd.CommandText = "SELECT * FROM SampleData_AllTypes";
+
                     using (var dr = cmd.ExecuteReader())
                     {
                         var csv = new DelimitedTextDataFile(w);
@@ -363,8 +365,10 @@ testline
             {
                 using (var cn = IOTestDataset.OpenConnection())
                 {
-                    using (var cmd = IOTestDataset.CreateCommand("SELECT SampleData.* FROM SampleData", cn))
+                    using (var cmd = new SmartCommand(IOTestDataset, cn.CreateCommand()))
                     {
+                        cmd.CommandText = "SELECT SampleData.* FROM SampleData";
+
                         using (var dr = cmd.ExecuteReader())
                         {
                             csv.WriteFromDataReader(dr);

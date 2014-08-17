@@ -47,8 +47,10 @@ namespace Jhu.Graywulf.Format
             {
                 using (var cn = IOTestDataset.OpenConnection())
                 {
-                    using (var cmd = IOTestDataset.CreateCommand("SELECT * FROM SampleData_NumericTypes_Null", cn))
+                    using (var cmd = new SmartCommand(IOTestDataset, cn.CreateCommand()))
                     {
+                        cmd.CommandText = "SELECT * FROM SampleData_NumericTypes_Null";
+
                         using (var dr = cmd.ExecuteReader())
                         {
                             nat.WriteFromDataReader(dr);
@@ -67,8 +69,10 @@ namespace Jhu.Graywulf.Format
             {
                 using (var cn = IOTestDataset.OpenConnection())
                 {
-                    using (var cmd = IOTestDataset.CreateCommand("SELECT * FROM SampleData_AllTypes", cn))
+                    using (var cmd = new SmartCommand(IOTestDataset, cn.CreateCommand()))
                     {
+                        cmd.CommandText = "SELECT * FROM SampleData_AllTypes";
+
                         using (var dr = cmd.ExecuteReader())
                         {
                             nat.WriteFromDataReader(dr);
@@ -87,8 +91,10 @@ namespace Jhu.Graywulf.Format
             {
                 using (var cn = IOTestDataset.OpenConnection())
                 {
-                    using (var cmd = IOTestDataset.CreateCommand("SELECT * FROM SampleData_AllTypes_Nullable", cn))
+                    using (var cmd = new SmartCommand(IOTestDataset, cn.CreateCommand()))
                     {
+                        cmd.CommandText = "SELECT * FROM SampleData_AllTypes_Nullable";
+
                         using (var dr = cmd.ExecuteReader())
                         {
                             nat.WriteFromDataReader(dr);
