@@ -24,6 +24,7 @@ namespace Jhu.Graywulf.Web.Auth
 
                 Application[Web.UI.Constants.ApplicationShortTitle] = domain.ShortTitle;
                 Application[Web.UI.Constants.ApplicationLongTitle] = domain.LongTitle;
+                Application[Web.UI.Constants.ApplicationCopyright] = domain.Copyright;
             }
         }
 
