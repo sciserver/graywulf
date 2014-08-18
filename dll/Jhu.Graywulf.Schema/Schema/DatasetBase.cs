@@ -493,7 +493,7 @@ namespace Jhu.Graywulf.Schema
 
         protected abstract DatasetMetadata LoadDatasetMetadata();
 
-        internal abstract DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject);
+        internal protected abstract DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject);
 
         internal abstract void SaveDatabaseObjectMetadata(DatabaseObject databaseObject);
 

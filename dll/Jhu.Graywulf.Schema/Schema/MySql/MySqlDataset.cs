@@ -501,7 +501,7 @@ ORDER BY 1;";
             }
         }
 
-        internal override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
+        internal protected override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             var sql = @"
 SELECT table_comment comment 

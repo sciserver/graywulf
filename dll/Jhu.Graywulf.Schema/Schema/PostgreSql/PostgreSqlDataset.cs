@@ -539,7 +539,7 @@ WHERE p.specific_catalog ILIKE @databaseName AND p.specific_schema ILIKE @schema
         #endregion
         #region Metadata
 
-        internal override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
+        internal protected override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             var sql = @"SELECT DISTINCT
 pg_catalog.obj_description(c.oid) AS table_comment,

@@ -611,7 +611,7 @@ ORDER BY p.parameter_id";
         /// </summary>
         /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
+        internal protected override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
             var sql = @"
 SELECT p.name, p.value
