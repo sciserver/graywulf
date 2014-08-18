@@ -73,11 +73,15 @@ namespace Jhu.Graywulf.Registry
         {
             get
             {
-                if (guid == Guid.Empty)
+                if (IsEmpty)
+                {
+                    return Guid.Empty;
+                }
+                else if (guid == Guid.Empty)
                 {
                     if (value == null && !IsEmpty)
                     {
-                        LoadEntity();   
+                        LoadEntity();
                     }
 
                     guid = value.Guid;

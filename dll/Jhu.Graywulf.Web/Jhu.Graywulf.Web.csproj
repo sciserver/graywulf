@@ -161,6 +161,7 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Web\UI\Constants.cs" />
+    <Compile Include="Web\UI\DomainApplicationBase.cs" />
     <Compile Include="Web\UI\EmbeddedVirtualFile.cs" />
     <Compile Include="Web\UI\EmbeddedVirtualPathProvider.cs" />
     <Compile Include="Web\UI\Error.aspx.cs">
@@ -170,6 +171,7 @@
     <Compile Include="Web\UI\Error.aspx.designer.cs">
       <DependentUpon>Error.aspx.cs</DependentUpon>
     </Compile>
+    <Compile Include="Web\UI\FederationApplicationBase.cs" />
     <Compile Include="Web\UI\Feedback.aspx.cs">
       <DependentUpon>Feedback.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -186,6 +188,7 @@
     <Compile Include="Web\UI\UserControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Web\UI\WebConfigHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Web\Controls\Labels.resx">

@@ -62,7 +62,7 @@ namespace Jhu.Graywulf.Web.UI
         {
             get { return ((GraywulfIdentity)User.Identity).User; }
         }
-
+        
         protected virtual void Application_Start(object sender, EventArgs e)
         {
             // Initialize virtual paths
@@ -101,12 +101,14 @@ namespace Jhu.Graywulf.Web.UI
         /// <summary>
         /// Called when a user signs in
         /// </summary>
-        internal protected abstract void OnUserArrived(GraywulfPrincipal principal);
+        internal protected virtual void OnUserArrived(GraywulfPrincipal principal)
+        { }
 
         /// <summary>
         /// Called when a user sings out
         /// </summary>
-        internal protected abstract void OnUserLeft(GraywulfPrincipal principal);
+        internal protected virtual void OnUserLeft(GraywulfPrincipal principal)
+        { }
 
         #endregion
     }

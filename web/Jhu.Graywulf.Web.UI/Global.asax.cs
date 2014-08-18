@@ -15,25 +15,16 @@ using Jhu.Graywulf.Install;
 
 namespace Jhu.Graywulf.Web.UI
 {
-    public class Global : ApplicationBase
+    public class Global : FederationApplicationBase
     {
         protected override void Application_Start(object sender, EventArgs e)
         {
-            var wci = new WebConfigInstaller();
-            wci.MergeSettings();
-
             base.Application_Start(sender, e);
 
-            using (var context = CreateRegistryContext())
-            {
-                var federation = context.Federation;
-
-                Application[Jhu.Graywulf.Web.UI.Constants.ApplicationShortTitle] = federation.ShortTitle;
-                Application[Jhu.Graywulf.Web.UI.Constants.ApplicationLongTitle] = federation.LongTitle;
-                Application[Jhu.Graywulf.Web.UI.Constants.ApplicationCopyright] = federation.Copyright;
-            }
+            //var m = (System.Web.Configuration.MachineKeySection)System.Configuration.ConfigurationManager.GetSection("system.web/machineKey");
+            //var m = (System.Web.Configuration.MachineKeySection)System.Web.Configuration.WebConfigurationManager.GetSection("system.web/machineKey");
+            //throw new Exception(m.ValidationKey);
         }
-
 
         protected override void OnUserArrived(GraywulfPrincipal principal)
         {

@@ -11,31 +11,21 @@ using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Auth
 {
-    public class Global : ApplicationBase
+    public class Global : DomainApplicationBase
     {
         protected override void Application_Start(object sender, EventArgs e)
         {
             base.Application_Start(sender, e);
 
-            // Load domain settings
-            using (var context = CreateRegistryContext())
-            {
-                var domain = context.Domain;
+            var xml = System.IO.File.ReadAllText(@"C:\Users\dobos\project\skyquery-all\graywulf\web\Jhu.Graywulf.Web.Auth\web.config");
 
-                Application[Web.UI.Constants.ApplicationShortTitle] = domain.ShortTitle;
-                Application[Web.UI.Constants.ApplicationLongTitle] = domain.LongTitle;
-                Application[Web.UI.Constants.ApplicationCopyright] = domain.Copyright;
-            }
+            //var m = (System.Web.Configuration.MachineKeySection)System.Configuration.ConfigurationManager.GetSection("system.web/machineKey");
+            //var m = (System.Web.Configuration.MachineKeySection)System.Web.Configuration.WebConfigurationManager.GetSection("system.web/machineKey");
+            //throw new Exception(m.ValidationKey);
+
+            var m = (System.Web.Configuration.MachineKeySection)System.Web.Configuration.WebConfigurationManager.GetSection("system.web/machineKey");
+            throw new Exception(m.ValidationKey);
         }
 
-        protected override void OnUserArrived(GraywulfPrincipal principal)
-        {
-            
-        }
-
-        protected override void OnUserLeft(GraywulfPrincipal principal)
-        {
-            
-        }
     }
 }

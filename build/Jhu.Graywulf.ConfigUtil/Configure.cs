@@ -11,8 +11,6 @@ namespace Jhu.Graywulf.ConfigUtil
     [Verb(Name = "Configure", Description = "Merge configuration files for a given project.")]
     class Configure : Verb
     {
-        private static StringComparer comparer = StringComparer.InvariantCulture;
-
         private string rootPath;
         private string configurationsFile;
         private string configurationRoot;
@@ -66,7 +64,7 @@ namespace Jhu.Graywulf.ConfigUtil
 
                 //
                 Console.WriteLine("Merging '{0}' into '{1}'.", m, GetOriginalConfigPath());
-                MergeConfigs(orig, merge);
+                Util.ConfigXmlMerger.Merge(orig, merge);
             }
 
             WriteTargetConfig(orig);
@@ -126,135 +124,5 @@ namespace Jhu.Graywulf.ConfigUtil
 
             return config;
         }
-
-        private void MergeConfigs(XmlDocument orig, XmlDocument merge)
-        {
-            MergeNodes(orig.DocumentElement, merge.DocumentElement);
-        }
-
-        private void MergeNodes(XmlNode orig, XmlNode merge)
-        {
-            // This can happen in case of the root nodes only
-            if (comparer.Compare(orig.Name, merge.Name) != 0)
-            {
-                throw new Exception("Incompatible nodes.");
-            }
-
-            MergeAttributes(orig, merge);
-            MergeChildNodes(orig, merge);
-        }
-
-        private void MergeAttributes(XmlNode orig, XmlNode merge)
-        {
-            foreach (XmlAttribute ma in merge.Attributes)
-            {
-                // Include or overwrite
-                XmlAttribute oa = orig.Attributes[ma.Name];
-                if (oa == null)
-                {
-                    // Include
-                    XmlAttribute na = orig.OwnerDocument.CreateAttribute(ma.Name);
-                    na.Value = ma.Value;
-
-                    orig.Attributes.Append(na);
-                }
-                else
-                {
-                    // Overwrite value
-                    oa.Value = ma.Value;
-                }
-            }
-        }
-
-        private void MergeChildNodes(XmlNode orig, XmlNode merge)
-        {
-            foreach (XmlNode m in merge.ChildNodes)
-            {
-                // Find possible matching nodes in original
-                var all = new HashSet<XmlNode>();
-                var matching = new HashSet<XmlNode>();
-
-                var q = String.Format("./{0}", m.Name);
-                IEnumerable<XmlNode> nodes = null;
-
-                // Try merging in nodes
-                try
-                {
-                    nodes = orig.SelectNodes(q).Cast<XmlNode>();
-                }
-                catch (Exception e)
-                {
-                    throw new Exception(String.Format("Cannot merge in {0}.", q), e);
-                }
-
-                all.UnionWith(nodes);
-
-                if (all.Count == 0)
-                {
-                    // Simple case, merge in the whole branch
-                    MergeInWholeBranch(orig, m);
-                }
-                else
-                {
-                    // If all specified attributes match
-                    foreach (XmlNode on in all)
-                    {
-                        bool goodmatch = true;
-                        foreach (XmlAttribute ma in m.Attributes)
-                        {
-                            XmlAttribute oa = on.Attributes[ma.Name];
-
-                            if (oa == null)
-                            {
-                                continue;
-                            }
-                            else if (comparer.Compare(oa.Value, ma.Value) == 0)
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                goodmatch = false;
-                                break;
-                            }
-                        }
-
-                        if (goodmatch)
-                        {
-                            matching.Add(on);
-                        }
-                    }
-
-                    // Now check the number of matching nodes
-                    if (matching.Count == 1)
-                    {
-                        // Merge the two nodes
-                        MergeNodes(matching.First(), m);
-                    }
-                    else
-                    {
-                        // Multiple nodes but no matching
-                        // Merge in the whole branch
-                        MergeInWholeBranch(orig, m);
-                    }
-                }
-            }
-        }
-
-        private void MergeInWholeBranch(XmlNode orig, XmlNode merge)
-        {
-            XmlNode nn = orig.OwnerDocument.ImportNode(merge, true);
-
-            if (comparer.Compare(merge.Name, "configSections") == 0 && orig.HasChildNodes)
-            {
-                // config sections must go to the beginning
-                orig.InsertBefore(nn, orig.FirstChild);
-            }
-            else
-            {
-                orig.AppendChild(nn);
-            }
-        }
-
     }
 }

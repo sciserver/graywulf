@@ -81,6 +81,7 @@
     <Compile Include="Util\EmailFormatter.cs" />
     <Compile Include="Util\MediaTypeComparer.cs" />
     <Compile Include="Util\UriConverter.cs" />
+    <Compile Include="Util\ConfigXmlMerger.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CommandLineParser\ExceptionMessages.resx">

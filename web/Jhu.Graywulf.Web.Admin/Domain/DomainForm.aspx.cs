@@ -19,6 +19,17 @@ namespace Jhu.Graywulf.Web.Admin.Domain
     {
         protected Registry.Cluster cluster;
 
+        protected override void OnItemLoaded(bool newentity)
+        {
+            base.OnItemLoaded(newentity);
+
+            if (!IsPostBack && newentity)
+            {
+                var di = new Jhu.Graywulf.Install.DomainInstaller(Item);
+                di.GenerateDefaultSettings();
+            }
+        }
+
         protected override void OnUpdateForm()
         {
             base.OnUpdateForm();
@@ -59,7 +70,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain
             if (newentity)
             {
                 var i = new DomainInstaller(Item);
-                i.GenerateDefaultSettings();
                 i.GenerateDefaultChildren();
             }
         }
