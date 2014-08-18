@@ -773,6 +773,7 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <None Include="Scripts\CodeMirror\mode\livescript\livescript.ls" />
+    <Content Include="Web.original.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\CodeMirror\keymap\lib\" />

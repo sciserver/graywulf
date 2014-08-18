@@ -17,15 +17,6 @@ namespace Jhu.Graywulf.Web.UI
 {
     public class Global : FederationApplicationBase
     {
-        protected override void Application_Start(object sender, EventArgs e)
-        {
-            base.Application_Start(sender, e);
-
-            //var m = (System.Web.Configuration.MachineKeySection)System.Configuration.ConfigurationManager.GetSection("system.web/machineKey");
-            //var m = (System.Web.Configuration.MachineKeySection)System.Web.Configuration.WebConfigurationManager.GetSection("system.web/machineKey");
-            //throw new Exception(m.ValidationKey);
-        }
-
         protected override void OnUserArrived(GraywulfPrincipal principal)
         {
             using (var context = CreateRegistryContext())
