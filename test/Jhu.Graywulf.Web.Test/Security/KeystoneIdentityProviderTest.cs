@@ -63,10 +63,9 @@ namespace Jhu.Graywulf.Web.Security
             {
                 var ip = new KeystoneIdentityProvider(context.Domain);
 
-                // TODO: move these to a better location
-                ip.Settings.KeystoneDomainID = "default";
-                ip.Settings.KeystoneBaseUri = new Uri("http://192.168.170.50:5000");
-                ip.Settings.KeystoneAdminToken = "e5b19f25f5d55a995a16";
+                ip.Settings.KeystoneBaseUri = new Uri(Jhu.Graywulf.Keystone.AppSettings.Url);
+                ip.Settings.KeystoneDomainID = Jhu.Graywulf.Keystone.AppSettings.Domain;
+                ip.Settings.KeystoneAdminToken = Jhu.Graywulf.Keystone.AppSettings.AdminToken;
 
                 PurgeTestEntities(ip.KeystoneClient);
 
