@@ -686,7 +686,6 @@
     <Content Include="Templates\ErrorFeedbackEmail.xml" />
     <Content Include="Templates\FeedbackEmail.xml" />
     <Content Include="Templates\RequestResetEmail.xml" />
-    <Content Include="Web.original.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
@@ -784,6 +783,7 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <None Include="Scripts\CodeMirror\mode\livescript\livescript.ls" />
+    <Content Include="Web.original.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\CodeMirror\keymap\lib\" />

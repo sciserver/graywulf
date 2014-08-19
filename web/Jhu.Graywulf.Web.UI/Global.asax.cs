@@ -15,23 +15,8 @@ using Jhu.Graywulf.Install;
 
 namespace Jhu.Graywulf.Web.UI
 {
-    public class Global : ApplicationBase
+    public class Global : FederationApplicationBase
     {
-        protected override void Application_Start(object sender, EventArgs e)
-        {
-            base.Application_Start(sender, e);
-
-            using (var context = CreateRegistryContext())
-            {
-                var federation = context.Federation;
-
-                Application[Jhu.Graywulf.Web.UI.Constants.ApplicationShortTitle] = federation.ShortTitle;
-                Application[Jhu.Graywulf.Web.UI.Constants.ApplicationLongTitle] = federation.LongTitle;
-                Application[Jhu.Graywulf.Web.UI.Constants.ApplicationCopyright] = federation.Copyright;
-            }
-        }
-
-
         protected override void OnUserArrived(GraywulfPrincipal principal)
         {
             using (var context = CreateRegistryContext())

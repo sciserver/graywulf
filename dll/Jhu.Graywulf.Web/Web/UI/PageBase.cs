@@ -127,6 +127,10 @@ namespace Jhu.Graywulf.Web.UI
         {
             var ex = Server.GetLastError();
 
+#if DEBUG
+            System.Diagnostics.Debugger.Break();
+#endif
+
             var error = LogError(ex);
 
             // Save exception to session for future use

@@ -11,31 +11,7 @@ using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Auth
 {
-    public class Global : ApplicationBase
+    public class Global : DomainApplicationBase
     {
-        protected override void Application_Start(object sender, EventArgs e)
-        {
-            base.Application_Start(sender, e);
-
-            // Load domain settings
-            using (var context = CreateRegistryContext())
-            {
-                var domain = context.Domain;
-
-                Application[Web.UI.Constants.ApplicationShortTitle] = domain.ShortTitle;
-                Application[Web.UI.Constants.ApplicationLongTitle] = domain.LongTitle;
-                Application[Web.UI.Constants.ApplicationCopyright] = domain.Copyright;
-            }
-        }
-
-        protected override void OnUserArrived(GraywulfPrincipal principal)
-        {
-            
-        }
-
-        protected override void OnUserLeft(GraywulfPrincipal principal)
-        {
-            
-        }
     }
 }
