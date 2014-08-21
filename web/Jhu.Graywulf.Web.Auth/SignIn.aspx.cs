@@ -18,50 +18,67 @@ namespace Jhu.Graywulf.Web.Auth
             return String.Format("~/SignIn.aspx?ReturnUrl={0}", returnUrl);
         }
 
-        private Jhu.Graywulf.Registry.User user;
+        private AuthenticationResponse authResponse;
+
+        #region Event handlers
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Try all authentication methods.
-            Authenticate();
-            UpdateForm();
+            // First try to authenticate by headers and cookies in the request only.
+            // If that works, the user will be redirected back to the URL they were
+            // coming from and execution will not get to the update form stage.
+            if (AuthenticateByRequest())
+            {
+                RedirectAuthenticatedUser();
+            }
+            else
+            {
+                // If the authentication is unsuccessful based on request data,
+                // we need to display the form
+                UpdateForm();
+            }
         }
 
+        /// <summary>
+        /// Fires when the user clicks on the Sign in button after providing a
+        /// username and a password.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="args"></param>
         protected void PasswordValidator_ServerValidate(object source, ServerValidateEventArgs args)
         {
-            // Attempt to log in with supplied credentials
-            try
-            {
-                LoginUser();
-                args.IsValid = true;
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
-                args.IsValid = false;
-            }
+            // Attempt to log in with supplied username and password
+            args.IsValid = AuthenticateByForm();
         }
 
+        /// <summary>
+        /// Fires when the user clicks on the Sign in button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void Ok_Click(object sender, EventArgs e)
         {
             if (IsValid)
             {
-                // Check if user was already activated. If not, redirect to activation page
-                RedirectAuthenticatedUser(user);
+                RedirectAuthenticatedUser();
             }
         }
 
+        /// <summary>
+        /// Fires when the user click on the Register button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void Register_Click(object sender, EventArgs e)
         {
             Response.Redirect(Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl));
         }
 
-        protected void CancelIdentifier_Click(object sender, EventArgs e)
-        {
-            TemporaryPrincipal = null;
-            UpdateForm();
-        }
-
+        /// <summary>
+        /// Fires when the users clicks on any of the identity service links
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void AuthenticatorButton_Click(object sender, EventArgs e)
         {
             var key = ((IButtonControl)sender).CommandArgument;
@@ -72,15 +89,20 @@ namespace Jhu.Graywulf.Web.Auth
             a.RedirectToLoginPage();
         }
 
-        private Authenticator CreateAuthenticator(string key)
+        /// <summary>
+        /// Fires when the user cancels the authentication using a
+        /// third-party identity service.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void CancelIdentifier_Click(object sender, EventArgs e)
         {
-            var parts = key.Split('|');
-            var af = AuthenticatorFactory.Create(RegistryContext.Domain);
-            var a = af.GetInteractiveAuthenticator(parts[0], parts[1]);
-
-            return a;
+            TemporaryPrincipal = null;
+            UpdateForm();
         }
 
+        #endregion
+        #region Form update
 
         private void UpdateForm()
         {
@@ -115,6 +137,18 @@ namespace Jhu.Graywulf.Web.Auth
             ResetLink.NavigateUrl = Jhu.Graywulf.Web.Auth.RequestReset.GetUrl(ReturnUrl);
         }
 
+        #endregion
+        #region Third party authenticators
+
+        private Authenticator CreateAuthenticator(string key)
+        {
+            var parts = key.Split('|');
+            var af = AuthenticatorFactory.Create(RegistryContext.Domain);
+            var a = af.GetInteractiveAuthenticator(parts[0], parts[1]);
+
+            return a;
+        }
+
         private void CreateAuthenticatorButtons()
         {
             var af = AuthenticatorFactory.Create(RegistryContext.Domain);
@@ -144,11 +178,14 @@ namespace Jhu.Graywulf.Web.Auth
             Ok.Focus();
         }
 
+        #endregion
+        #region Authentication logic
+
         /// <summary>
         /// Authenticates a post-back request with certain authenticators
-        /// (OpenID etc which requires a post-back from a remote server)
+        /// (OpenID etc which requires a post-back from a remote server).
         /// </summary>
-        private void Authenticate()
+        private bool AuthenticateByRequest()
         {
             var key = (string)Session[Web.UI.Constants.SessionAuthenticator];
 
@@ -160,9 +197,9 @@ namespace Jhu.Graywulf.Web.Auth
                 // Now that the postback has happened, remove the session data
                 Session[Web.UI.Constants.SessionAuthenticator] = null;
 
-                // Authenticate the response based on the value received from
-                // the borswer
-                var response = authenticator.Authenticate(new AuthenticationRequest(HttpContext.Current));
+                // Authenticate the response based on the value received from the browser
+                var response = new AuthenticationResponse();
+                authenticator.Authenticate(new AuthenticationRequest(HttpContext.Current), response);
 
                 // If the resposen contains a valid principal it means the authentication
                 // was successful. We need to load the user from the registry now.
@@ -177,9 +214,7 @@ namespace Jhu.Graywulf.Web.Auth
 
                     if (identity.IsAuthenticated)
                     {
-                        // TODO: pass the response here, because we will need
-                        // to set headers etc.
-                        RedirectAuthenticatedUser(identity.User);
+                        return true;
                     }
                     else
                     {
@@ -191,46 +226,67 @@ namespace Jhu.Graywulf.Web.Auth
                     }
                 }
             }
+
+            return false;
         }
 
         /// <summary>
         /// Authenticates a user coming in with a username and a password.
         /// </summary>
-        private void LoginUser()
+        private bool AuthenticateByForm()
         {
-            AuthenticationResponse response = null;
-            var ip = IdentityProvider.Create(RegistryContext.Domain);
-
             // Try to authenticate the user.
             // It might happen that the user is awaiting activation.
-            response = ip.VerifyPassword(Username.Text, Password.Text);
-
-            // Get user from the response
-            user = response.Principal.Identity.User;
-
-            if (user.IsActivated)
+            try
             {
-                RegistryContext.UserGuid = user.Guid;
-                RegistryContext.UserName = user.Name;
+                var ip = IdentityProvider.Create(RegistryContext.Domain);
 
-                // If there's any temporary identifier set, associate with the user
-                if (TemporaryPrincipal != null)
+                authResponse = ip.VerifyPassword(Username.Text, Password.Text);
+
+                // Get user from the response
+                var user = authResponse.Principal.Identity.User;
+
+                if (user.IsActivated)
                 {
-                    var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
-                    ip.AddUserIdentity(user, identity);
+                    RegistryContext.UserGuid = user.Guid;
+                    RegistryContext.UserName = user.Name;
 
-                    TemporaryPrincipal = null;
+                    // If there's any temporary identifier set, associate with the user
+                    if (TemporaryPrincipal != null)
+                    {
+                        var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
+                        ip.AddUserIdentity(user, identity);
+
+                        TemporaryPrincipal = null;
+                    }
                 }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Load failed logon attempt
+                LogError(ex);
+
+                // TODO: there five different exceptions thrown by different parts of
+                // the code when access is denied. Sort these out for once.
+
+                // This exception means we cannot authenticate the user
+                return false;
             }
         }
 
-        private void RedirectAuthenticatedUser(Registry.User user)
+        private void RedirectAuthenticatedUser()
         {
             // TODO return cookies and headers here
             // TODO: solve disabled keystone user problem here
 
+            var user = authResponse.Principal.Identity.User;
+
             if (user.IsActivated)
             {
+                authResponse.SetResponseHeaders(Response);
+
                 FormsAuthentication.RedirectFromLoginPage(user.GetFullyQualifiedName(), Remember.Checked);
             }
             else
@@ -238,5 +294,7 @@ namespace Jhu.Graywulf.Web.Auth
                 Response.Redirect(Activate.GetUrl(ReturnUrl));
             }
         }
+
+        #endregion
     }
 }
