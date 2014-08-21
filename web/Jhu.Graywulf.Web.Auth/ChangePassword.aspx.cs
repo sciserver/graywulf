@@ -41,8 +41,13 @@ namespace Jhu.Graywulf.Web.Auth
                 try
                 {
                     var ip = IdentityProvider.Create(RegistryContext.Domain);
-                    var response = ip.VerifyPassword(user.Name, OldPassword.Text);
+                    var request = new AuthenticationRequest(System.Web.HttpContext.Current)
+                    {
+                        Username = user.Name,
+                        Password = OldPassword.Text
+                    };
 
+                    var response = ip.VerifyPassword(request);
                     user = response.Principal.Identity.User;
 
                     args.IsValid = true;

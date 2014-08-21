@@ -35,7 +35,15 @@ namespace Jhu.Graywulf.Web.Api.V1
             if (authRequest != null && authRequest.Credentials != null)
             {
                 var ip = IdentityProvider.Create(RegistryContext.Domain);
-                var response = ip.VerifyPassword(authRequest.Credentials.Username, authRequest.Credentials.Password);
+
+                // Create an authentication request and include headers from the HTTP request
+                var request = new AuthenticationRequest(WebOperationContext.Current.IncomingRequest)
+                {
+                    Username = authRequest.Credentials.Username,
+                    Password = authRequest.Credentials.Password,
+                };
+
+                var response = ip.VerifyPassword(request);
 
                 principal = response.Principal;
 

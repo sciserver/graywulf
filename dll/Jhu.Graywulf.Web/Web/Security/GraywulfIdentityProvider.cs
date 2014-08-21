@@ -256,14 +256,14 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region Password functions
 
-        public override AuthenticationResponse VerifyPassword(string username, string password)
+        public override AuthenticationResponse VerifyPassword(AuthenticationRequest request)
         {
             try
             {
                 var uf = new UserFactory(Context);
-                var user = uf.LoginUser(Context.Domain, username, password);
+                var user = uf.LoginUser(Context.Domain, request.Username, request.Password);
                 
-                return CreateAuthenticationResponse(user);
+                return CreateAuthenticationResponse(request, user);
             }
             catch (EntityNotFoundException ex)
             {
@@ -285,9 +285,9 @@ namespace Jhu.Graywulf.Web.Security
             return new GraywulfPrincipal(identity);
         }
 
-        private AuthenticationResponse CreateAuthenticationResponse(User user)
+        private AuthenticationResponse CreateAuthenticationResponse(AuthenticationRequest request, User user)
         {
-            var response = new AuthenticationResponse();
+            var response = new AuthenticationResponse(request);
             var principal = CreateAuthenticatedPrincipal(user);
 
             response.SetPrincipal(principal);
@@ -297,7 +297,8 @@ namespace Jhu.Graywulf.Web.Security
 
         public override void ChangePassword(User user, string oldPassword, string newPassword)
         {
-            VerifyPassword(user.Name, oldPassword);
+            var request = new AuthenticationRequest(user.Name, oldPassword);
+            VerifyPassword(request);
             ResetPassword(user, newPassword);
         }
 

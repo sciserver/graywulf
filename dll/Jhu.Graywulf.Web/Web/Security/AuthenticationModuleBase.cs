@@ -88,7 +88,7 @@ namespace Jhu.Graywulf.Web.Security
             // other authentication methods
             // The principal is usually valid if a built-in authentication protocol,
             // like forms ticket, successfully identified the user.
-            var response = new AuthenticationResponse();
+            var response = new AuthenticationResponse(request);
             response.SetPrincipal(DispatchPrincipal(request.Principal));
 
             // If user is not authenticated yet, try to authenticate them now using

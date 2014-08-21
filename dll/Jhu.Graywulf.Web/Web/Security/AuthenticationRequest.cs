@@ -19,6 +19,8 @@ namespace Jhu.Graywulf.Web.Security
         #region Private member variables
 
         private Uri uri;
+        private string username;
+        private string password;
         private NameValueCollection queryString;
         private NameValueCollection headers;
         private CookieContainer cookies;
@@ -35,6 +37,24 @@ namespace Jhu.Graywulf.Web.Security
         public Uri Uri
         {
             get { return uri; }
+        }
+
+        /// <summary>
+        /// Gets or sets the username associated with the request.
+        /// </summary>
+        public string Username
+        {
+            get { return username; }
+            set { username = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the password associated with the request.
+        /// </summary>
+        public string Password
+        {
+            get { return password; }
+            set { password = value; }
         }
 
         public NameValueCollection QueryString
@@ -60,6 +80,14 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region Constructors and initializers
 
+        public AuthenticationRequest(string username, string password)
+        {
+            InitializeMembers();
+
+            this.username = username;
+            this.password = password;
+        }
+
         public AuthenticationRequest(System.Web.HttpContext context)
         {
             InitializeMembers();
@@ -81,13 +109,13 @@ namespace Jhu.Graywulf.Web.Security
             this.principal = context.User;
         }
 
-        public AuthenticationRequest(System.ServiceModel.Web.IncomingWebRequestContext request)
+        public AuthenticationRequest(System.ServiceModel.Web.IncomingWebRequestContext context)
         {
             InitializeMembers();
 
             this.uri = System.ServiceModel.OperationContext.Current.RequestContext.RequestMessage.Headers.To;
             this.queryString = HttpUtility.ParseQueryString(uri.Query);
-            this.headers = request.Headers;
+            this.headers = context.Headers;
 
             // Web services don't parse cookies, so we do it now
             var cookie = headers[Services.Constants.HttpHeaderCookie];
@@ -100,6 +128,8 @@ namespace Jhu.Graywulf.Web.Security
         private void InitializeMembers()
         {
             this.uri = null;
+            this.username = null;
+            this.password = null;
             this.queryString = new NameValueCollection();
             this.headers = new NameValueCollection();
             this.cookies = new CookieContainer();

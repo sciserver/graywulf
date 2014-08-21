@@ -198,8 +198,9 @@ namespace Jhu.Graywulf.Web.Auth
                 Session[Web.UI.Constants.SessionAuthenticator] = null;
 
                 // Authenticate the response based on the value received from the browser
-                var response = new AuthenticationResponse();
-                authenticator.Authenticate(new AuthenticationRequest(HttpContext.Current), response);
+                var request = new AuthenticationRequest(HttpContext.Current);
+                var response = new AuthenticationResponse(request);
+                authenticator.Authenticate(request, response);
 
                 // If the resposen contains a valid principal it means the authentication
                 // was successful. We need to load the user from the registry now.
@@ -241,7 +242,12 @@ namespace Jhu.Graywulf.Web.Auth
             {
                 var ip = IdentityProvider.Create(RegistryContext.Domain);
 
-                authResponse = ip.VerifyPassword(Username.Text, Password.Text);
+                var request = new AuthenticationRequest(HttpContext.Current)
+                {
+                    Username = Username.Text,
+                    Password = Password.Text,
+                };
+                authResponse = ip.VerifyPassword(request);
 
                 // Get user from the response
                 var user = authResponse.Principal.Identity.User;
@@ -285,9 +291,13 @@ namespace Jhu.Graywulf.Web.Auth
 
             if (user.IsActivated)
             {
+                authResponse.AddFormsAuthenticationTicket(Remember.Checked);
                 authResponse.SetResponseHeaders(Response);
 
-                FormsAuthentication.RedirectFromLoginPage(user.GetFullyQualifiedName(), Remember.Checked);
+                var url = authResponse.GetReturnUrl();
+                Response.Redirect(url);
+
+                //FormsAuthentication.RedirectFromLoginPage(user.GetFullyQualifiedName(), Remember.Checked);
             }
             else
             {

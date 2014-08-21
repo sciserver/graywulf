@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Security
         #region Private member variables
 
         private bool success;
-        private Uri uri;
+        private AuthenticationRequest request;
         private NameValueCollection queryParameters;
         private NameValueCollection headers;
         private HttpCookieCollection cookies;
@@ -57,14 +57,17 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region Constructors and initializers
 
-        public AuthenticationResponse()
+        public AuthenticationResponse(AuthenticationRequest request)
         {
             InitializeMembers();
+
+            this.request = request;
         }
 
         private void InitializeMembers()
         {
             this.success = false;
+            this.request = null;
             this.queryParameters = new NameValueCollection();
             this.headers = new NameValueCollection();
             this.cookies = new HttpCookieCollection();
@@ -84,6 +87,8 @@ namespace Jhu.Graywulf.Web.Security
             var cookie = System.Web.Security.FormsAuthentication.GetAuthCookie(
                 this.principal.Identity.User.GetFullyQualifiedName(), 
                 createPersistentCookie);
+
+            cookies.Add(cookie);
         }
 
         public void SetResponseHeaders(HttpResponse response)
@@ -113,6 +118,24 @@ namespace Jhu.Graywulf.Web.Security
                     Services.Constants.HttpHeaderSetCookie,
                     Util.CookieConverter.ToSetCookieHeader(cookies[key]));
             }
+        }
+
+        /// <summary>
+        /// Returns the URL where the user is
+        /// </summary>
+        /// <returns></returns>
+        public string GetReturnUrl()
+        {
+            // We will redirect the user to an url passed as a parameter
+            var url = new StringBuilder(HttpUtility.UrlDecode(request.QueryString["ReturnUrl"]));
+
+            // Take all parameters from the return url and substitute parameter values
+            foreach (string key in queryParameters.Keys)
+            {
+                url.Replace("$" + key, HttpUtility.UrlEncode(queryParameters[key]));
+            }
+
+            return url.ToString();
         }
     }
 }

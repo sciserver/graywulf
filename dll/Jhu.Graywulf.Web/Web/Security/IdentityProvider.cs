@@ -196,7 +196,7 @@ namespace Jhu.Graywulf.Web.Security
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public abstract AuthenticationResponse VerifyPassword(string username, string password);
+        public abstract AuthenticationResponse VerifyPassword(AuthenticationRequest request);
 
         /// <summary>
         /// Changes a user's password.
