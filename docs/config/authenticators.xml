@@ -1,0 +1,32 @@
+  <Parameter Name="Authenticators">
+    <Value>
+      <ArrayOfAuthenticator xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/" xmlns="http://schemas.datacontract.org/2004/07/Jhu.Graywulf.Web.Security" z:Type="Jhu.Graywulf.Web.Security.Authenticator[]" z:Assembly="Jhu.Graywulf.Web">
+        <Authenticator z:Type="Jhu.Graywulf.Web.Security.KeystoneAuthenticator" z:Assembly="Jhu.Graywulf.Web">
+          <AuthorityName>Keystone</AuthorityName>
+          <AuthorityUrl>http://192.168.170.50:5000</AuthorityUrl>
+          <DisplayName>Keystone</DisplayName>
+          <IsMasterAuthority>true</IsMasterAuthority>
+          <AdminDomain>default</AdminDomain>
+          <AdminPassword>password</AdminPassword>
+          <AdminProject>admin</AdminProject>
+          <!--<AdminToken>e5b19f25f5d55a995a16</AdminToken>-->
+          <AdminUserName>admin</AdminUserName>
+          <AuthTokenHeader>X-Auth-Keystone-Token</AuthTokenHeader>
+          <!--<AuthTokenParameter></AuthTokenParameter>-->
+          <Domain>default</Domain>
+        </Authenticator>
+        <Authenticator z:Type="Jhu.Graywulf.Web.Security.OpenIDAuthenticator" z:Assembly="Jhu.Graywulf.Web">
+          <AuthorityName>Google</AuthorityName>
+          <AuthorityUrl>https://www.google.com/accounts/o8/ud</AuthorityUrl>
+          <DisplayName>GoogleID</DisplayName>
+          <DiscoveryUrl>https://www.google.com/accounts/o8/id</DiscoveryUrl>
+        </Authenticator>
+        <Authenticator z:Type="Jhu.Graywulf.Web.Security.OpenIDAuthenticator" z:Assembly="Jhu.Graywulf.Web">
+          <AuthorityName>VOID</AuthorityName>
+          <AuthorityUrl>https://sso.usvao.org/openid/provider</AuthorityUrl>
+          <DisplayName>VO OpenID</DisplayName>
+          <DiscoveryUrl>https://sso.usvao.org/openid/provider_id</DiscoveryUrl>
+        </Authenticator>
+      </ArrayOfAuthenticator>
+    </Value>
+  </Parameter>

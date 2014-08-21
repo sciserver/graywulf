@@ -1,0 +1,12 @@
+<Parameter Name="KeystoneIdentityProviderSettings">
+    <Value>
+      <KeystoneIdentityProviderSettings xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/" xmlns="http://schemas.datacontract.org/2004/07/Jhu.Graywulf.Web.Security" z:Id="1" z:Type="Jhu.Graywulf.Web.Security.KeystoneIdentityProviderSettings" z:Assembly="Jhu.Graywulf.Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <AuthTokenHeader>X-Auth-Keystone-Token</AuthTokenHeader>
+        <AuthTokenParameter>keystoneToken</AuthTokenParameter>
+        <AuthorityName>Keystone</AuthorityName>
+        <KeystoneAdminToken>e5b19f25f5d55a995a16</KeystoneAdminToken>
+        <KeystoneBaseUri>http://192.168.170.50:5000/</KeystoneBaseUri>
+        <KeystoneDomainID>default</KeystoneDomainID>
+      </KeystoneIdentityProviderSettings>
+    </Value>
+  </Parameter>
