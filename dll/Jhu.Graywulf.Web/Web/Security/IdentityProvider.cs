@@ -196,7 +196,7 @@ namespace Jhu.Graywulf.Web.Security
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public abstract AuthenticationResponse VerifyPassword(string username, string password, bool createPersistentCookie);
+        public abstract AuthenticationResponse VerifyPassword(string username, string password);
 
         /// <summary>
         /// Changes a user's password.
@@ -234,10 +234,5 @@ namespace Jhu.Graywulf.Web.Security
 #endif
 
         #endregion
-
-        protected HttpCookie CreateFormsAuthenticationTicketCookie(User user, bool createPersistentCookie)
-        {
-            return FormsAuthentication.GetAuthCookie(user.GetFullyQualifiedName(), createPersistentCookie);
-        }
     }
 }

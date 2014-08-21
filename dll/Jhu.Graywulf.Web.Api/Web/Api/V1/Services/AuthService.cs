@@ -35,9 +35,12 @@ namespace Jhu.Graywulf.Web.Api.V1
             if (authRequest != null && authRequest.Credentials != null)
             {
                 var ip = IdentityProvider.Create(RegistryContext.Domain);
-                var response = ip.VerifyPassword(authRequest.Credentials.Username, authRequest.Credentials.Password, false);
+                var response = ip.VerifyPassword(authRequest.Credentials.Username, authRequest.Credentials.Password);
 
                 principal = response.Principal;
+
+                // In a WCF service, we need to create the Forms ticket manually
+                response.AddFormsAuthenticationTicket(false);
 
                 // Set response headers based on authentication results
                 response.SetResponseHeaders(WebOperationContext.Current.OutgoingResponse);

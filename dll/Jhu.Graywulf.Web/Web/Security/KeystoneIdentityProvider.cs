@@ -224,7 +224,7 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region Password functions
 
-        public override AuthenticationResponse VerifyPassword(string username, string password, bool createPersistentCookie)
+        public override AuthenticationResponse VerifyPassword(string username, string password)
         {
             // Verify user password in Keystone, we don't use
             // Graywulf password in this case
@@ -239,13 +239,6 @@ namespace Jhu.Graywulf.Web.Security
             // Load user from the graywulf registry. This call will create the user
             // if necessary because authority is set to master
             LoadOrCreateUser(response.Principal.Identity);
-
-            // If the HttpContext is null that means we are in a WCF session, so
-            // create the forms authentication ticket manually
-            if (System.Web.HttpContext.Current == null)
-            {
-                response.Cookies.Add(CreateFormsAuthenticationTicketCookie(response.Principal.Identity.User, createPersistentCookie));
-            }
             
             return response;
         }

@@ -79,6 +79,13 @@ namespace Jhu.Graywulf.Web.Security
             this.principal = principal;
         }
 
+        public void AddFormsAuthenticationTicket(bool createPersistentCookie)
+        {
+            var cookie = System.Web.Security.FormsAuthentication.GetAuthCookie(
+                this.principal.Identity.User.GetFullyQualifiedName(), 
+                createPersistentCookie);
+        }
+
         public void SetResponseHeaders(HttpResponse response)
         {
             foreach (string key in headers.Keys)

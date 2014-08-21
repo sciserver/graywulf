@@ -256,25 +256,16 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region Password functions
 
-        public override AuthenticationResponse VerifyPassword(string username, string password, bool createPersistentCookie)
+        public override AuthenticationResponse VerifyPassword(string username, string password)
         {
             try
             {
                 var uf = new UserFactory(Context);
                 var user = uf.LoginUser(Context.Domain, username, password);
                 
-                var response = CreateAuthenticationResponse(user);
-
-                // If the HttpContext is null that means we are in a WCF session, so
-                // create the forms authentication ticket manually
-                if (HttpContext.Current == null)
-                {
-                    response.Cookies.Add(CreateFormsAuthenticationTicketCookie(user, createPersistentCookie));
-                }
-
-                return response;
+                return CreateAuthenticationResponse(user);
             }
-            catch (Exception ex)
+            catch (EntityNotFoundException ex)
             {
                 throw new IdentityProviderException(ExceptionMessages.AccessDenied, ex);
             }
@@ -306,7 +297,7 @@ namespace Jhu.Graywulf.Web.Security
 
         public override void ChangePassword(User user, string oldPassword, string newPassword)
         {
-            VerifyPassword(user.Name, oldPassword, false);
+            VerifyPassword(user.Name, oldPassword);
             ResetPassword(user, newPassword);
         }
 
