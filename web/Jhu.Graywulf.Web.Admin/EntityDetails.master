@@ -21,7 +21,7 @@
                             <asp:ContentPlaceHolder runat="server" ID="FormButtons" />
                         </p>
                     </div>
-                    <div class="dock-fill dock-container">
+                    <div class="dock-fill dock-container dock-scroll">
                         <asp:MultiView runat="server" ID="MainMultiViewTabs" ActiveViewIndex="0">
                             <jgwc:TabView ID="tabViewMain" runat="server" Text="Details">
                                 <asp:ContentPlaceHolder runat="server" ID="FormDetails" />
