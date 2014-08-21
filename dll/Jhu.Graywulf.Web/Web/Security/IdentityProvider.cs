@@ -104,7 +104,7 @@ namespace Jhu.Graywulf.Web.Security
         /// <remarks>
         /// The unique identifier is either username or email address.
         /// </remarks>
-        public abstract User GetUser(string username);
+        public abstract User GetUserByUserName(string username);
 
         public abstract User GetUserByEmail(string email);
 
@@ -112,7 +112,25 @@ namespace Jhu.Graywulf.Web.Security
         /// Creates a new user.
         /// </summary>
         /// <param name="user"></param>
-        public abstract void CreateUser(User user);
+        public void CreateUser(User user)
+        {
+            // Set user activity status
+            // Set user activity status depending on settings
+            if (IsActivationRequired)
+            {
+                user.Deactivate();
+            }
+            else
+            {
+                user.Activate();
+            }
+
+            OnCreateUser(user);
+        }
+
+        protected abstract void OnCreateUser(User user);
+
+        public abstract UserIdentity AddUserIdentity(User user, GraywulfIdentity identity);
 
         /// <summary>
         /// Modifies an existing user.
@@ -220,25 +238,6 @@ namespace Jhu.Graywulf.Web.Security
         protected HttpCookie CreateFormsAuthenticationTicketCookie(User user, bool createPersistentCookie)
         {
             return FormsAuthentication.GetAuthCookie(user.GetFullyQualifiedName(), createPersistentCookie);
-        }
-
-        protected AuthenticationResponse CreateAuthenticationResponse(User user)
-        {
-            var identity = new GraywulfIdentity()
-            {
-                Protocol = Constants.ProtocolNameForms,
-                Identifier = user.GetFullyQualifiedName(),
-                IsAuthenticated = true,
-                IsMasterAuthority = true,
-                User = user,
-            };
-
-            var principal = new GraywulfPrincipal(identity);
-            var response = new AuthenticationResponse();
-
-            response.SetPrincipal(principal);
-
-            return response;
         }
     }
 }

@@ -21,6 +21,14 @@ namespace Jhu.Graywulf.Web.Security
         private static List<Authenticator> webRequestAuthenticators;
         private static List<Authenticator> restRequestAuthenticators;
 
+        static AuthenticatorFactory()
+        {
+            allAuthenticators = new List<Authenticator>();
+            webInteractiveAuthenticators = new List<Authenticator>();
+            webRequestAuthenticators = new List<Authenticator>();
+            restRequestAuthenticators = new List<Authenticator>();
+        }
+
         /// <summary>
         /// Creates an authenticator factory class from the
         /// type name.
@@ -61,25 +69,34 @@ namespace Jhu.Graywulf.Web.Security
 
         private static void LoadAuthenticators(Domain domain)
         {
-            // Load authenticators from settings
-            allAuthenticators = new List<Authenticator>(
-                (Authenticator[])domain.Settings[Constants.SettingsAuthenticators].Value);
-
-            // Initialize all authenticators
-            foreach (var a in allAuthenticators)
+            // Only load authenticators if settings are set
+            if (domain.Settings.ContainsKey(Constants.SettingsAuthenticators))
             {
-                a.Initialize(domain);
+                allAuthenticators.Clear();
+                webInteractiveAuthenticators.Clear();
+                webRequestAuthenticators.Clear();
+                restRequestAuthenticators.Clear();
+
+                // Load authenticators from settings
+                allAuthenticators.AddRange(
+                    (Authenticator[])domain.Settings[Constants.SettingsAuthenticators].Value);
+
+                // Initialize all authenticators
+                foreach (var a in allAuthenticators)
+                {
+                    a.Initialize(domain);
+                }
+
+                // Sort authenticators by type
+                webInteractiveAuthenticators.AddRange(
+                    allAuthenticators.Where(i => (i.ProtocolType & AuthenticatorProtocolType.WebInteractive) != 0));
+
+                webRequestAuthenticators.AddRange(
+                    allAuthenticators.Where(i => (i.ProtocolType & AuthenticatorProtocolType.WebRequest) != 0));
+
+                restRequestAuthenticators.AddRange(
+                    allAuthenticators.Where(i => (i.ProtocolType & AuthenticatorProtocolType.RestRequest) != 0));
             }
-
-            // Sort authenticators by type
-            webInteractiveAuthenticators = new List<Authenticator>(
-                allAuthenticators.Where(i => (i.ProtocolType & AuthenticatorProtocolType.WebInteractive) != 0));
-
-            webRequestAuthenticators = new List<Authenticator>(
-                allAuthenticators.Where(i => (i.ProtocolType & AuthenticatorProtocolType.WebRequest) != 0));
-
-            restRequestAuthenticators = new List<Authenticator>(
-                allAuthenticators.Where(i => (i.ProtocolType & AuthenticatorProtocolType.RestRequest) != 0));
         }
 
         protected AuthenticatorFactory()
@@ -97,7 +114,7 @@ namespace Jhu.Graywulf.Web.Security
             foreach (var a in GetInteractiveAuthenticators())
             {
                 if (StringComparer.InvariantCultureIgnoreCase.Compare(a.ProtocolName, protocol) == 0 &&
-                        StringComparer.InvariantCultureIgnoreCase.Compare(a.AuthorityUrl, authority) == 0)
+                        StringComparer.InvariantCultureIgnoreCase.Compare(a.AuthorityUri, authority) == 0)
                 {
                     return a;
                 }

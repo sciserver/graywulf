@@ -14,10 +14,16 @@ namespace Jhu.Graywulf.Web.UI
     {
         public DomainApplicationBase()
         {
+
+            // These few lines below turn on web auto-configure that
+            // replaces settings in web.config based on the contents of the
+            // registry. Currently not used as needs more testing.
+#if FALSE
             if (WebConfigHelper.Configure())
             {
                 HttpRuntime.UnloadAppDomain();
             }
+#endif
 
             //var m = (System.Web.Configuration.MachineKeySection)System.Configuration.ConfigurationManager.GetSection("system.web/machineKey");
             //throw new Exception(m.ValidationKey);

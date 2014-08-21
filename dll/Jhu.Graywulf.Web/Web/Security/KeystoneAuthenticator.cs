@@ -37,19 +37,8 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region Private member variables
 
-        private string graywulfDomainPrefix;
-
-        private string adminDomain;
-        private string adminProject;
-        private string adminUserName;
-        private string adminPassword;
-        private string adminToken;
-        private string domain;
-        private string authTokenParameter;
-        private string authTokenHeader;
-
-        private DateTime adminTokenExpiresAt;
-
+        private KeystoneSettings settings;
+        
         #endregion
         #region Properties
 
@@ -67,82 +56,10 @@ namespace Jhu.Graywulf.Web.Security
             }
         }
 
-        /// <summary>
-        /// Gets or sets the Keytone domain of the admin users used
-        /// to access the identity service.
-        /// </summary>
-        public string AdminDomain
+        public KeystoneSettings Settings
         {
-            get { return adminDomain; }
-            set { adminDomain = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the user name of the project/tenant name of
-        /// the admin.
-        /// </summary>
-        public string AdminProject
-        {
-            get { return adminProject; }
-            set { adminProject = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the user name of the administrator having
-        /// rights to manage the identity service.
-        /// </summary>
-        public string AdminUserName
-        {
-            get { return adminUserName; }
-            set { adminUserName = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the password of the administrator having
-        /// rights to manage the identity service.
-        /// </summary>
-        public string AdminPassword
-        {
-            get { return adminPassword; }
-            set { adminPassword = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the admin token used to manage the identity service.
-        /// </summary>
-        public string AdminToken
-        {
-            get { return adminToken; }
-            set { adminToken = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the Keystone domain in which users reside.
-        /// </summary>
-        public string Domain
-        {
-            get { return domain; }
-            set { domain = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the name of the parameter used to convey the
-        /// authentication token.
-        /// </summary>
-        public string AuthTokenParameter
-        {
-            get { return authTokenParameter; }
-            set { authTokenParameter = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the name of the header used to convey the
-        /// authentication token.
-        /// </summary>
-        public string AuthTokenHeader
-        {
-            get { return authTokenHeader; }
-            set { authTokenHeader = value; }
+            get { return settings; }
+            set { settings = value; }
         }
 
         #endregion
@@ -158,16 +75,7 @@ namespace Jhu.Graywulf.Web.Security
         {
             AuthorityName = Constants.AuthorityNameKeystone;
 
-            this.graywulfDomainPrefix = null;
-            this.adminProject = null;
-            this.adminUserName = null;
-            this.adminPassword = null;
-            this.adminToken = null;
-            this.domain = Constants.KeystoneDefaultUri;
-            this.authTokenParameter = Constants.KeystoneDefaultAuthTokenParameter;
-            this.authTokenHeader = Constants.KeystoneDefaultAuthTokenHeader;
-
-            this.adminTokenExpiresAt = DateTime.MinValue;
+            this.settings = new KeystoneSettings();
         }
 
         #endregion
@@ -176,11 +84,9 @@ namespace Jhu.Graywulf.Web.Security
         {
             base.Initialize(domain);
 
-            // Save domain name, it will be used to prefix user names
-            var name = domain.GetFullyQualifiedName();
-            var idx = name.IndexOf(':');
-
-            graywulfDomainPrefix = name.Substring(idx + 1);
+            // Make sure settings holds same info as the authenticator
+            settings.AuthorityName = this.AuthorityName;
+            settings.AuthorityUri = this.AuthorityUri;
         }
 
         public override AuthenticationResponse Authenticate(AuthenticationRequest request)
@@ -193,12 +99,12 @@ namespace Jhu.Graywulf.Web.Security
             var response = new AuthenticationResponse();
 
             // Look for a token in the request headers
-            var tokenID = request.Headers[authTokenHeader];
+            var tokenID = request.Headers[settings.AuthTokenHeader];
 
             if (tokenID == null)
             {
                 // Try to take header from the query string
-                tokenID = request.QueryString[authTokenParameter];
+                tokenID = request.QueryString[settings.AuthTokenParameter];
             }
 
             if (tokenID != null)
@@ -209,7 +115,7 @@ namespace Jhu.Graywulf.Web.Security
                 if (!tokenCache.TryGetValue(tokenID, out token))
                 {
                     // Need to validate token against Keystone
-                    var ksclient = CreateClient();
+                    var ksclient = settings.CreateClient();
 
                     token = new Token()
                     {
@@ -226,70 +132,10 @@ namespace Jhu.Graywulf.Web.Security
                     tokenCache.TryAdd(token.ID, token);
                 }
 
-                // Create a GraywulfPrincipal based on the token
-                response.SetPrincipal(CreatePrincipal(token));
-
-                // Set keystone header to send it back to the user
-                response.Headers.Add(authTokenHeader, tokenID);
+                response = settings.CreateAuthenticationResponse(token, IsMasterAuthority);
             }
 
             return response;
-        }
-
-        private KeystoneClient CreateClient()
-        {
-            var ksclient = new KeystoneClient(new Uri(AuthorityUrl));
-
-            // If using password authentication, make sure we have a valid admin token
-            // Leave e 30 second margin to perform all keystone-related operations with an
-            // already existing token
-            if (!String.IsNullOrWhiteSpace(adminPassword) && (DateTime.Now - adminTokenExpiresAt).TotalSeconds > -30)
-            {
-                lock (this)
-                {
-                    var project = new Keystone.Project()
-                    {
-                        Domain = new Keystone.Domain()
-                        {
-                            Name = adminDomain
-                        },
-                        Name = adminProject
-                    };
-
-                    var token = ksclient.Authenticate(adminDomain, adminUserName, adminPassword, project);
-
-                    adminToken = token.ID;
-                    adminTokenExpiresAt = token.ExpiresAt;
-                }
-            }
-
-            // Set the valid admin token
-            ksclient.AdminAuthToken = adminToken;
-
-            return ksclient;
-        }
-
-        private GraywulfPrincipal CreatePrincipal(Token token)
-        {
-            var principal = base.CreatePrincipal();
-            var identity = principal.Identity;
-
-            identity.Identifier = token.User.ID;
-
-            identity.User = new Registry.User();
-
-            identity.User.Name = token.User.Name;
-
-            // Accept users without the following parameters set but
-            // this is not a good practice in general to leave them null 
-            // in Keystone
-            identity.User.Comments = token.User.Description ?? String.Empty;
-            identity.User.Email = token.User.Email ?? String.Empty;
-
-            // TODO: fill in additional information based on user data
-            // in the keystone token
-
-            return new GraywulfPrincipal(identity);
         }
     }
 }

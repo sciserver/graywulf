@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Web.Security
     {
         #region Private member variables
 
-        private string discoveryUrl;
+        private Uri discoveryUri;
 
         #endregion
         #region Properties
@@ -37,10 +37,10 @@ namespace Jhu.Graywulf.Web.Security
         /// Gets or set the discovery URL of the authority.
         /// </summary>
         [XmlElement]
-        public string DiscoveryUrl
+        public Uri DiscoveryUri
         {
-            get { return discoveryUrl; }
-            set { discoveryUrl = value; }
+            get { return discoveryUri; }
+            set { discoveryUri = value; }
         }
 
         #endregion
@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Web.Security
 
         private void InitializeMembers()
         {
-            this.discoveryUrl = null;
+            this.discoveryUri = null;
         }
 
         #endregion
@@ -106,7 +106,7 @@ namespace Jhu.Graywulf.Web.Security
                 // TODO: do this only once when OpenID is initialized
                 System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Ssl3;
 
-                IAuthenticationRequest request = openid.CreateRequest(discoveryUrl);
+                IAuthenticationRequest request = openid.CreateRequest(discoveryUri);
                 request.AddExtension(CreateFetchRequest());
                 request.RedirectToProvider();
             }

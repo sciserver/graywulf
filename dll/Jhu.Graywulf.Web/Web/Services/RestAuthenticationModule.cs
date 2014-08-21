@@ -79,6 +79,10 @@ namespace Jhu.Graywulf.Web.Services
                 // Wrap everything into a fault exception so that it
                 // is returned to the client nicely packed.
 
+#if DEBUG
+                System.Diagnostics.Debugger.Break();
+#endif
+
                 throw new WebFaultException<Exception>(ex, System.Net.HttpStatusCode.InternalServerError);
             }
         }

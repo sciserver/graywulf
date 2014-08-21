@@ -67,22 +67,14 @@ namespace Jhu.Graywulf.Web.Auth
             ip.CreateUser(user);
             ip.ResetPassword(user, Password.Text);
 
-            // Set user activity status
-            if (ip.IsActivationRequired)
-            {
-                ip.DeactivateUser(user);
-            }
-            else
-            {
-                ip.ActivateUser(user);
-            }
-
-            // If user signed in with a temporary identity
+            // If user signed in with a temporary identity that means
+            // it's a postback from a foreign identity provider. In this case
+            // we need to associate the identity with the user now.
             if (TemporaryPrincipal != null)
             {
+                var gwip = new GraywulfIdentityProvider(RegistryContext.Domain);
                 var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
-                var uid = identity.CreateUserIdentity(user);
-                uid.Save();
+                gwip.AddUserIdentity(user, identity);
             }
 
             Util.EmailSender.Send(user, File.ReadAllText(MapPath("~/templates/ActivationEmail.xml")), BaseUrl);

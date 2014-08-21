@@ -15,12 +15,12 @@ namespace Jhu.Graywulf.Web.Security
     {
         #region Private member variables
 
-        private KeystoneIdentityProviderSettings settings;
+        private KeystoneSettings settings;
 
         #endregion
         #region Properties
 
-        public KeystoneIdentityProviderSettings Settings
+        public KeystoneSettings Settings
         {
             get { return settings; }
         }
@@ -32,9 +32,9 @@ namespace Jhu.Graywulf.Web.Security
         {
             get
             {
-                return new Keystone.KeystoneClient(settings.KeystoneBaseUri)
+                return new Keystone.KeystoneClient(settings.AuthorityUri)
                 {
-                    AdminAuthToken = settings.KeystoneAdminToken,
+                    AdminAuthToken = settings.AdminToken,
                 };
             }
         }
@@ -47,12 +47,12 @@ namespace Jhu.Graywulf.Web.Security
         {
             InitializeMembers();
 
-            settings = (KeystoneIdentityProviderSettings)domain.Settings[Constants.SettingsKeystone].Value;
+            settings = (KeystoneSettings)domain.Settings[Constants.SettingsKeystone].Value;
         }
 
         private void InitializeMembers()
         {
-            this.settings = new KeystoneIdentityProviderSettings();
+            this.settings = new KeystoneSettings();
         }
 
         #endregion
@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Web.Security
             var keystoneUser = new Keystone.User()
             {
                 Name = graywulfUser.Name,
-                DomainID = settings.KeystoneDomainID,
+                DomainID = settings.Domain,
                 Description = graywulfUser.Comments,
                 Email = graywulfUser.Email,
                 Enabled = graywulfUser.DeploymentState == DeploymentState.Deployed,
@@ -86,27 +86,12 @@ namespace Jhu.Graywulf.Web.Security
                 }
                 else
                 {
+                    // TODO: we might add logic here, to create user in keystone
                     throw new IdentityProviderException("No matching identity found."); // TODO
                 }
             }
 
             return keystoneUser;
-        }
-
-        /// <summary>
-        /// Converts a Keystone user to a matching Graywulf user
-        /// </summary>
-        /// <param name="keystoneUser"></param>
-        /// <returns></returns>
-        private User ConvertUser(Jhu.Graywulf.Keystone.User keystoneUser)
-        {
-            return new User(Context)
-            {
-                Name = keystoneUser.Name,
-                Comments = keystoneUser.Description,
-                Email = keystoneUser.Email,
-                DeploymentState = keystoneUser.Enabled.Value ? DeploymentState.Deployed : DeploymentState.Undeployed
-            };
         }
 
         /// <summary>
@@ -122,6 +107,27 @@ namespace Jhu.Graywulf.Web.Security
 
         #region User account manipulation
 
+        private Keystone.User GetKeystoneUser(string username)
+        {
+            // Try to get user from Keystone
+            var users = KeystoneClient.FindUsers(settings.Domain, username, false, false);
+
+            if (users == null)
+            {
+                return null;
+            }
+            else if (users.Length != 1)
+            {
+                // This shouldn't happen but let's throw an exception to
+                // make sure nothing goes wrong
+                throw new InvalidOperationException();
+            }
+            else
+            {
+                return users[0];
+            }
+        }
+
         /// <summary>
         /// Returns a user looked up by username.
         /// </summary>
@@ -132,50 +138,32 @@ namespace Jhu.Graywulf.Web.Security
         /// a Graywulf user is returned initialized to values from Keystone
         /// but not saved automatically to the Graywulf registry.
         /// </remarks>
-        public override User GetUser(string username)
+        public override User GetUserByUserName(string username)
         {
-            // Try to get user from Keystone
-            var users = KeystoneClient.FindUsers(settings.KeystoneDomainID, username, false, false);
+            var user = GetKeystoneUser(username);
 
-            if (users == null || users.Length != 1)
+            if (user == null)
             {
                 return null;
             }
             else
             {
-                try
-                {
-                    // Try to get the matching user from the Graywulf repository
-                    return base.GetUser(username);
-                }
-                catch (EntityNotFoundException)
-                {
-                    // Create a non-saved user from keystone user
-                    return ConvertUser(users[0]);
-                }
+                // Try to get user from the registry. If not found, return null       
+                return base.GetUserByUserName(username);
             }
         }
 
-        public override void CreateUser(User user)
+        protected override void OnCreateUser(User user)
         {
             // Create user in keystone
             var keystoneUser = KeystoneClient.Create(ConvertUser(user));
 
-            // Create local shadow
-            base.CreateUser(user);
+            // Create user locally
+            base.OnCreateUser(user);
 
-            // TODO: add logic to create project/tenant in keystone here if necessary
-
-            // Create identity refering to the keystone id
-            var id = new UserIdentity(user)
-            {
-                Name = GetIdentityName(user),
-                Protocol = Constants.ProtocolNameKeystone,
-                Authority = settings.KeystoneBaseUri.ToString(),
-                Identifier = keystoneUser.Links.Self
-            };
-
-            id.Save();
+            // Add identity to local user
+            var principal = settings.CreateAuthenticatedPrincipal(keystoneUser, true);
+            AddUserIdentity(user, principal.Identity);
         }
 
         public override void ModifyUser(User user)
@@ -199,7 +187,7 @@ namespace Jhu.Graywulf.Web.Security
         public override bool IsNameExisting(string username)
         {
             // Try to get user from Keystone
-            var users = KeystoneClient.FindUsers(settings.KeystoneDomainID, username, false, false);
+            var users = KeystoneClient.FindUsers(settings.Domain, username, false, false);
 
             return users != null && users.Length > 0;
         }
@@ -240,18 +228,25 @@ namespace Jhu.Graywulf.Web.Security
         {
             // Verify user password in Keystone, we don't use
             // Graywulf password in this case
+            var token = KeystoneClient.Authenticate(settings.Domain, username, password);
 
-            var token = KeystoneClient.Authenticate(settings.KeystoneDomainID, username, password);
-            var user = GetUser(token.User.Name);
+            // Find user details in keystone
+            token.User = GetKeystoneUser(username);
 
-            // Create a response and set necessary headers
+            // Create a response, this sets necessary response headers
+            var response = settings.CreateAuthenticationResponse(token, true);
+            
+            // Load user from the graywulf registry. This call will create the user
+            // if necessary because authority is set to master
+            LoadOrCreateUser(response.Principal.Identity);
 
-            var response = CreateAuthenticationResponse(user);
-
-            response.QueryParameters.Add(settings.AuthTokenParameter, token.ID);
-            response.Headers.Add(settings.AuthTokenHeader, token.ID);
-            response.Cookies.Add(CreateFormsAuthenticationTicketCookie(user, createPersistentCookie));
-
+            // If the HttpContext is null that means we are in a WCF session, so
+            // create the forms authentication ticket manually
+            if (System.Web.HttpContext.Current == null)
+            {
+                response.Cookies.Add(CreateFormsAuthenticationTicketCookie(response.Principal.Identity.User, createPersistentCookie));
+            }
+            
             return response;
         }
 

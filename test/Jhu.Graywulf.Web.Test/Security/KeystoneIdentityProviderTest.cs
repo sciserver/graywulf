@@ -11,12 +11,14 @@ namespace Jhu.Graywulf.Web.Security
     [TestClass]
     public class KeystoneIdentityProviderTest
     {
+        protected const string TestPrefix = "__test__";
+
         protected void PurgeTestEntities(Jhu.Graywulf.Keystone.KeystoneClient client)
         {
             var domains = client.ListDomains();
             for (int i = 0; i < domains.Length; i++)
             {
-                if (domains[i].Name.StartsWith("test"))
+                if (domains[i].Name.StartsWith(TestPrefix))
                 {
                     client.Delete(domains[i]);
                 }
@@ -25,7 +27,7 @@ namespace Jhu.Graywulf.Web.Security
             var projects = client.ListProjects();
             for (int i = 0; i < projects.Length; i++)
             {
-                if (projects[i].Name.StartsWith("test"))
+                if (projects[i].Name.StartsWith(TestPrefix))
                 {
                     client.Delete(projects[i]);
                 }
@@ -34,7 +36,7 @@ namespace Jhu.Graywulf.Web.Security
             var roles = client.ListRoles();
             for (int i = 0; i < roles.Length; i++)
             {
-                if (roles[i].Name.StartsWith("test"))
+                if (roles[i].Name.StartsWith(TestPrefix))
                 {
                     client.Delete(roles[i]);
                 }
@@ -43,16 +45,19 @@ namespace Jhu.Graywulf.Web.Security
             var groups = client.ListGroups();
             for (int i = 0; i < groups.Length; i++)
             {
-                if (groups[i].Name.StartsWith("test"))
+                if (groups[i].Name.StartsWith(TestPrefix))
                 {
                     client.Delete(groups[i]);
                 }
             }
 
-            var users = client.FindUsers(null, "test*", false, false);
+            var users = client.FindUsers(null, TestPrefix + "*", false, false);
             for (int i = 0; i < users.Length; i++)
             {
-                client.Delete(users[i]);
+                if (users[i].Name.StartsWith(TestPrefix))
+                {
+                    client.Delete(users[i]);
+                }
             }
         }
 
@@ -63,24 +68,23 @@ namespace Jhu.Graywulf.Web.Security
             {
                 var ip = new KeystoneIdentityProvider(context.Domain);
 
-                ip.Settings.KeystoneBaseUri = new Uri(Jhu.Graywulf.Keystone.AppSettings.Url);
-                ip.Settings.KeystoneDomainID = Jhu.Graywulf.Keystone.AppSettings.Domain;
-                ip.Settings.KeystoneAdminToken = Jhu.Graywulf.Keystone.AppSettings.AdminToken;
-
                 PurgeTestEntities(ip.KeystoneClient);
 
                 // Create a new user and set password
                 var user = new User(context.Domain);
 
-                user.Name = "testuser";
+                user.Name = TestPrefix + "user";
                 user.Email = "testuser@graywulf.org";
 
                 ip.CreateUser(user);
                 ip.ResetPassword(user, "alma");
 
+                user.FirstName = "Modified";
+                ip.ModifyUser(user);
+
                 ip.ChangePassword(user, "alma", "alma2");
 
-                Assert.IsTrue(user.DeploymentState == DeploymentState.New);
+                Assert.IsTrue(user.DeploymentState == DeploymentState.Undeployed);
 
                 ip.ActivateUser(user);
 
@@ -99,7 +103,7 @@ namespace Jhu.Graywulf.Web.Security
         {
             var p = new Parameter();
 
-            p.Value = new KeystoneIdentityProviderSettings();
+            p.Value = new KeystoneSettings();
 
             var xml = p.XmlValue;
         }

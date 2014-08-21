@@ -12,6 +12,11 @@ namespace Jhu.Graywulf.Web.Security
     {
         #region Constructors and initializers
 
+        public GraywulfIdentityProvider(Context context)
+            : base(context)
+        {
+        }
+
         public GraywulfIdentityProvider(Domain domain)
             : base(domain.Context)
         {
@@ -20,28 +25,174 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region User account manipulation
 
-        public override User GetUser(string username)
+        /// <summary>
+        /// Loads user from the Graywulf registry based on the identity. If the
+        /// user is marked as authenticated by a master authority and the graywulf
+        /// user doesn't exists, this function creates it automatically.
+        /// </summary>
+        public User LoadOrCreateUser(GraywulfIdentity identity)
         {
-            var uf = new UserFactory(Context);
-            var user = uf.FindUserByName(Context.Domain, username);
+            // If the user is authenticated by a generic authority then we should
+            // be able to find it by a registered identity in the Graywulf registry.
+            // If the authenticator, on the other hand, is a master authority,
+            // that case we either load the user by name or by identity. If the user
+            // is not found in the registry then we create it.
+
+            // The only special case is when the user is authenticated by an ASP.NET
+            // forms authentication ticket. In this case we trust the user name within
+            // the ticket (as it was previously issued by us) so we simply load the
+            // user by name
+
+            User user = null;
+
+            if (identity.Protocol == Constants.ProtocolNameForms)
+            {
+                user = GetUser(identity.Identifier);
+            }
+            else if (identity.IsMasterAuthority)
+            {
+                // If the user ahs been authenticated by a master authority
+                // we try to find it first, then we create a new user if
+                // necessary
+
+                user = GetUserByIdentity(identity);
+
+                if (user == null)
+                {
+                    // No user found by identity, try to load by name
+                    user = GetUserByUserName(identity.User.Name);
+
+                    // If the user is still not found, create an entirely new user
+                    if (user == null)
+                    {
+                        CreateUserInternal(identity.User);
+                        user = identity.User;
+                    }
+
+                    // Now we have a user but no identifier is associated with it
+                    // Simply create a new identity in the Graywulf registry
+                    var uid = AddUserIdentity(user, identity);
+                }
+            }
+            else
+            {
+                // If the user was authenticated by a non-master authority
+                // we simply look it up by identifier
+
+                user = GetUserByIdentity(identity);
+            }
+
+            if (user == null)
+            {
+                throw new SecurityException(ExceptionMessages.AccessDenied);
+            }
+
+            identity.IsAuthenticated = true;
+            identity.UserReference.Value = user;
+
+            // Cache name for later
+            identity.UserReference.Value.GetFullyQualifiedName();
 
             return user;
+        }
+
+        public User GetUser(string fullyQualifiedName)
+        {
+            var ef = new EntityFactory(Context);
+
+            try
+            {
+                return ef.LoadEntity<User>(fullyQualifiedName);
+            }
+            catch (EntityNotFoundException)
+            {
+                return null;
+            }
+        }
+
+        public override User GetUserByUserName(string username)
+        {
+            var uf = new UserFactory(Context);
+
+            try
+            {
+                return uf.FindUserByName(Context.Domain, username);
+            }
+            catch (EntityNotFoundException)
+            {
+                return null;
+            }
         }
 
         public override User GetUserByEmail(string email)
         {
             var uf = new UserFactory(Context);
-            var user = uf.FindUserByEmail(Context.Domain, email);
 
-            return user;
+            try
+            {
+                return uf.FindUserByEmail(Context.Domain, email);
+            }
+            catch (EntityNotFoundException)
+            {
+                return null;
+            }
         }
 
-        public override void CreateUser(User user)
+        private User GetUserByIdentity(GraywulfIdentity identity)
+        {
+            var uf = new UserFactory(Context);
+
+            try
+            {
+                return uf.FindUserByIdentity(
+                    Context.Domain,
+                    identity.Protocol,
+                    identity.AuthorityUri,
+                    identity.Identifier);
+            }
+            catch (EntityNotFoundException)
+            {
+                return null;
+            }
+        }
+
+        protected override void OnCreateUser(User user)
+        {
+            CreateUserInternal(user);
+        }
+
+        private void CreateUserInternal(User user)
         {
             user.Context = Context;
+            user.ParentReference.Value = Context.Domain;
+
             user.Save();
 
             user.MakeMemberOf(Context.Domain.StandardUserGroup.Guid);
+        }
+
+        /// <summary>
+        /// Associates a new identity with a user
+        /// </summary>
+        /// <param name="identity"></param>
+        /// <returns></returns>
+        public override UserIdentity AddUserIdentity(User user, GraywulfIdentity identity)
+        {
+            identity.User = user;
+
+            var uid = new UserIdentity(user)
+            {
+                Name = String.Format("{0}_{1}", identity.AuthorityName, identity.Name),
+                Protocol = identity.Protocol,
+                Authority = identity.AuthorityUri,
+                Identifier = identity.Identifier
+            };
+
+            uid.Save();
+
+            user.LoadUserIdentities(true);
+
+            return uid;
         }
 
         public override void ModifyUser(User user)
@@ -91,16 +242,14 @@ namespace Jhu.Graywulf.Web.Security
         public override void ActivateUser(User user)
         {
             user.Context = Context;
-            user.ActivationCode = string.Empty;
-            user.DeploymentState = DeploymentState.Deployed;
+            user.Activate();
             user.Save();
         }
 
         public override void DeactivateUser(User user)
         {
             user.Context = Context;
-            user.GenerateActivationCode();
-            user.DeploymentState = DeploymentState.Undeployed;
+            user.Deactivate();
             user.Save();
         }
 
@@ -129,6 +278,30 @@ namespace Jhu.Graywulf.Web.Security
             {
                 throw new IdentityProviderException(ExceptionMessages.AccessDenied, ex);
             }
+        }
+
+        private GraywulfPrincipal CreateAuthenticatedPrincipal(User user)
+        {
+            var identity = new GraywulfIdentity()
+            {
+                Protocol = Constants.ProtocolNameForms,
+                Identifier = user.GetFullyQualifiedName(),
+                IsAuthenticated = true,
+                IsMasterAuthority = true,
+                User = user,
+            };
+
+            return new GraywulfPrincipal(identity);
+        }
+
+        private AuthenticationResponse CreateAuthenticationResponse(User user)
+        {
+            var response = new AuthenticationResponse();
+            var principal = CreateAuthenticatedPrincipal(user);
+
+            response.SetPrincipal(principal);
+
+            return response;
         }
 
         public override void ChangePassword(User user, string oldPassword, string newPassword)

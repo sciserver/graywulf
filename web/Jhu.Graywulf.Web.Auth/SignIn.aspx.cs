@@ -128,7 +128,7 @@ namespace Jhu.Graywulf.Web.Auth
                     CausesValidation = false,
                     Text = au.DisplayName,
                     ToolTip = String.Format("Log on using {0}.", au.DisplayName),
-                    CommandArgument = String.Format("{0}|{1}", au.ProtocolName, au.AuthorityUrl)
+                    CommandArgument = String.Format("{0}|{1}", au.ProtocolName, au.AuthorityUri)
                 };
 
                 b.Click += new EventHandler(AuthenticatorButton_Click);
@@ -144,26 +144,41 @@ namespace Jhu.Graywulf.Web.Auth
             Ok.Focus();
         }
 
+        /// <summary>
+        /// Authenticates a post-back request with certain authenticators
+        /// (OpenID etc which requires a post-back from a remote server)
+        /// </summary>
         private void Authenticate()
         {
             var key = (string)Session[Web.UI.Constants.SessionAuthenticator];
 
             if (key != null)
             {
+                // The postback needs to be handled by a specific authenticator
                 var authenticator = CreateAuthenticator(key);
 
+                // Now that the postback has happened, remove the session data
                 Session[Web.UI.Constants.SessionAuthenticator] = null;
 
+                // Authenticate the response based on the value received from
+                // the borswer
                 var response = authenticator.Authenticate(new AuthenticationRequest(HttpContext.Current));
                 
+                // If the resposen contains a valid principal it means the authentication
+                // was successful. We need to load the user from the registry now.
                 if (response.Principal != null)
                 {
-                    var identity = (GraywulfIdentity)response.Principal.Identity;
+                    var gwip = new GraywulfIdentityProvider(RegistryContext.Domain);
+                    var identity = response.Principal.Identity;
                     
-                    identity.LoadUser();
+                    // This call will load the user from the registry. If the authenticator
+                    // is marked as master, it also created the user if necessary
+                    gwip.LoadOrCreateUser(identity);
                     
                     if (identity.IsAuthenticated)
                     {
+                        // TODO: pass the response here, because we will need
+                        // to set headers etc.
                         RedirectAuthenticatedUser(identity.User);
                     }
                     else
@@ -172,17 +187,15 @@ namespace Jhu.Graywulf.Web.Auth
                         // an existing one, or registration is offered. In the
                         // latter case, save user data received from the authentication
                         // authority
-
-                        // TODO: we may trust certain identity services, so users coming
-                        // from them could automatically registered without being
-                        // sent to the user form.
-
                         TemporaryPrincipal = response.Principal;
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Authenticates a user coming in with a username and a password.
+        /// </summary>
         private void LoginUser()
         {
             var ip = IdentityProvider.Create(RegistryContext.Domain);
@@ -198,8 +211,7 @@ namespace Jhu.Graywulf.Web.Auth
             if (TemporaryPrincipal != null)
             {
                 var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
-                var ui = identity.CreateUserIdentity(user);
-                ui.Save();
+                ip.AddUserIdentity(user, identity);
 
                 TemporaryPrincipal = null;
             }
@@ -208,6 +220,7 @@ namespace Jhu.Graywulf.Web.Auth
         private void RedirectAuthenticatedUser(Registry.User user)
         {
             // TODO return cookies and headers here
+            // TODO: solve disabled keystone user problem here
 
             if (user.IsActivated)
             {

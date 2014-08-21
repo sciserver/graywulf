@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Web.Security
         #region Private member variables
 
         private string authorityName;
-        private string authorityUrl;
+        private Uri authorityUri;
         private bool isMasterAuthority;
         private string displayName;
 
@@ -46,10 +46,10 @@ namespace Jhu.Graywulf.Web.Security
         /// Gets or sets the URL of the authority.
         /// </summary>
         [XmlElement]
-        public string AuthorityUrl
+        public Uri AuthorityUri
         {
-            get { return authorityUrl; }
-            set { authorityUrl = value; }
+            get { return authorityUri; }
+            set { authorityUri = value; }
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace Jhu.Graywulf.Web.Security
         private void InitializeMembers()
         {
             this.authorityName = null;
-            this.authorityUrl = null;
+            this.authorityUri = null;
             this.isMasterAuthority = false;
             this.displayName = null;
         }
@@ -111,7 +111,7 @@ namespace Jhu.Graywulf.Web.Security
             {
                 Protocol = ProtocolName,
                 AuthorityName = authorityName,
-                AuthorityUri = authorityUrl,
+                AuthorityUri = authorityUri == null ? null : authorityUri.ToString(),
                 IsMasterAuthority = isMasterAuthority,
                 IsAuthenticated = true,
             };

@@ -568,6 +568,18 @@ namespace Jhu.Graywulf.Registry
             activationCode = code;
         }
 
+        public void Activate()
+        {
+            activationCode = string.Empty;
+            DeploymentState = DeploymentState.Deployed;
+        }
+
+        public void Deactivate()
+        {
+            GenerateActivationCode();
+            DeploymentState = DeploymentState.Undeployed;
+        }
+
         #endregion
 
     }

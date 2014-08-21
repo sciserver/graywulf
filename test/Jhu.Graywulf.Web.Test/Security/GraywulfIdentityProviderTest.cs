@@ -26,6 +26,9 @@ namespace Jhu.Graywulf.Web.Security
                 ip.CreateUser(user);
                 ip.ResetPassword(user, "alma");
 
+                user.FirstName = "Modified";
+                ip.ModifyUser(user);
+
                 ip.ChangePassword(user, "alma", "alma2");
 
                 Assert.IsTrue(user.DeploymentState == DeploymentState.Undeployed);

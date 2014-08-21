@@ -51,9 +51,9 @@ namespace Jhu.Graywulf.Web.Auth
 
                 args.IsValid = true;
             }
-            catch (EntityNotFoundException)
+            catch (Exception)
             {
-                args.IsValid = false;
+                args.IsValid = false;    
             }
         }
     }

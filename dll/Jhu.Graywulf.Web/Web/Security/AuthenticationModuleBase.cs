@@ -147,15 +147,13 @@ namespace Jhu.Graywulf.Web.Security
             else
             {
                 // User not found in cache, need to load from database
-                principal.Identity.LoadUser();
+                using (var registryContext = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                {
+                    var ip = new GraywulfIdentityProvider(registryContext);
+                    ip.LoadOrCreateUser(principal.Identity);
+                }
 
                 principalCache.TryAdd(principal.UniqueID, principal);
-
-                // Also, we have to be able to detect users who just arrived so the appropriate
-                // event can be raised. Now simply rise the event every time
-
-                // TODO: find a new place for this event
-                //httpApplication.OnUserSignedIn(principal.Identity);
             }
         }
 
