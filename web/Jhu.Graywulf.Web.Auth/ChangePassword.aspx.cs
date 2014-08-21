@@ -46,6 +46,7 @@ namespace Jhu.Graywulf.Web.Auth
                     user = response.Principal.Identity.User;
 
                     args.IsValid = true;
+                    return;
                 }
                 catch (Exception)
                 {

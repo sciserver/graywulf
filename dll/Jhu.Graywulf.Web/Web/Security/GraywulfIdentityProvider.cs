@@ -262,7 +262,7 @@ namespace Jhu.Graywulf.Web.Security
             {
                 var uf = new UserFactory(Context);
                 var user = uf.LoginUser(Context.Domain, username, password);
-
+                
                 var response = CreateAuthenticationResponse(user);
 
                 // If the HttpContext is null that means we are in a WCF session, so

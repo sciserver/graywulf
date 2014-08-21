@@ -104,7 +104,7 @@ namespace Jhu.Graywulf.Web.Auth
 
                 AuthorityName.Text = auth.DisplayName;
                 Identifier.Text = identity.Identifier;
-                
+
                 RegisterLink2.NavigateUrl = Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl);
             }
 
@@ -163,18 +163,18 @@ namespace Jhu.Graywulf.Web.Auth
                 // Authenticate the response based on the value received from
                 // the borswer
                 var response = authenticator.Authenticate(new AuthenticationRequest(HttpContext.Current));
-                
+
                 // If the resposen contains a valid principal it means the authentication
                 // was successful. We need to load the user from the registry now.
                 if (response.Principal != null)
                 {
                     var gwip = new GraywulfIdentityProvider(RegistryContext.Domain);
                     var identity = response.Principal.Identity;
-                    
+
                     // This call will load the user from the registry. If the authenticator
                     // is marked as master, it also created the user if necessary
                     gwip.LoadOrCreateUser(identity);
-                    
+
                     if (identity.IsAuthenticated)
                     {
                         // TODO: pass the response here, because we will need
@@ -198,22 +198,29 @@ namespace Jhu.Graywulf.Web.Auth
         /// </summary>
         private void LoginUser()
         {
+            AuthenticationResponse response = null;
             var ip = IdentityProvider.Create(RegistryContext.Domain);
-            var response = ip.VerifyPassword(Username.Text, Password.Text, Remember.Checked);
+
+            // Try to authenticate the user.
+            // It might happen that the user is awaiting activation.
+            response = ip.VerifyPassword(Username.Text, Password.Text, Remember.Checked);
 
             // Get user from the response
             user = response.Principal.Identity.User;
 
-            RegistryContext.UserGuid = user.Guid;
-            RegistryContext.UserName = user.Name;
-
-            // If there's any temporary identifier set, associate with the user
-            if (TemporaryPrincipal != null)
+            if (user.IsActivated)
             {
-                var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
-                ip.AddUserIdentity(user, identity);
+                RegistryContext.UserGuid = user.Guid;
+                RegistryContext.UserName = user.Name;
 
-                TemporaryPrincipal = null;
+                // If there's any temporary identifier set, associate with the user
+                if (TemporaryPrincipal != null)
+                {
+                    var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
+                    ip.AddUserIdentity(user, identity);
+
+                    TemporaryPrincipal = null;
+                }
             }
         }
 

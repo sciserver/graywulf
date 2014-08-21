@@ -86,6 +86,10 @@ namespace Jhu.Graywulf.Web.Security
 
                 Assert.IsTrue(user.DeploymentState == DeploymentState.Undeployed);
 
+                // At this point a user should be able to be looked up
+                // even though they aren't active
+                //ip.VerifyPassword(TestPrefix + user
+
                 ip.ActivateUser(user);
 
                 Assert.IsTrue(user.DeploymentState == DeploymentState.Deployed);
