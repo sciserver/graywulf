@@ -49,6 +49,9 @@ namespace Jhu.Graywulf.Web.Services
             }
             catch (Exception ex)
             {
+#if DEBUG
+                System.Diagnostics.Debugger.Break();
+#endif
                 // TODO: this won't catch exceptions from IEnumerator that occur
                 // in MoveNext, so they won't be logged.
                 svc.OnError(operationName, ex);
