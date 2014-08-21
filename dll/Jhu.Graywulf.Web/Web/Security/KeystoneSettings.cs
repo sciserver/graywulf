@@ -15,6 +15,7 @@ namespace Jhu.Graywulf.Web.Security
         private string authorityName;
         private Uri authorityUri;
         private string domain;
+        private string project;
         private string adminToken;
         private string adminProject;
         private string adminUserName;
@@ -58,6 +59,15 @@ namespace Jhu.Graywulf.Web.Security
         {
             get { return domain; }
             set { domain = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the project (tenant) users are associated with.
+        /// </summary>
+        public string Project
+        {
+            get { return project; }
+            set { project = value; }
         }
 
         /// <summary>

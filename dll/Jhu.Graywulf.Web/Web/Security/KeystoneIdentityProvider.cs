@@ -224,17 +224,27 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region Password functions
 
-        public override AuthenticationResponse VerifyPassword(string username, string password)
+        public override AuthenticationResponse VerifyPassword(AuthenticationRequest request)
         {
+            // User needs to be authenticated in the scope of a project
+            var project = new Keystone.Project()
+            {
+                Domain = new Keystone.Domain()
+                {
+                    Name = settings.Domain
+                },
+                Name = settings.Project,
+            };
+
             // Verify user password in Keystone, we don't use
             // Graywulf password in this case
-            var token = KeystoneClient.Authenticate(settings.Domain, username, password);
+            var token = KeystoneClient.Authenticate(settings.Domain, request.Username, request.Password, project);
 
             // Find user details in keystone
-            token.User = GetKeystoneUser(username);
+            token.User = GetKeystoneUser(request.Username);
 
             // Create a response, this sets necessary response headers
-            var response = new AuthenticationResponse();
+            var response = new AuthenticationResponse(request);
             settings.UpdateAuthenticationResponse(response, token, true);
             
             // Load user from the graywulf registry. This call will create the user
