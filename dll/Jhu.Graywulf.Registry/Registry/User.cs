@@ -392,7 +392,7 @@ namespace Jhu.Graywulf.Registry
 
         public bool IsActivated
         {
-            get { return DeploymentState != DeploymentState.Deployed; }
+            get { return DeploymentState == DeploymentState.Deployed; }
         }
 
         #endregion
@@ -572,12 +572,14 @@ namespace Jhu.Graywulf.Registry
         {
             activationCode = string.Empty;
             DeploymentState = DeploymentState.Deployed;
+            RunningState = Registry.RunningState.Running;
         }
 
         public void Deactivate()
         {
             GenerateActivationCode();
             DeploymentState = DeploymentState.Undeployed;
+            RunningState = Registry.RunningState.Stopped;
         }
 
         #endregion

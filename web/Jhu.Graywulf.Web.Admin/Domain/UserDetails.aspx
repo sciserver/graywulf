@@ -200,7 +200,7 @@
 <asp:Content runat="server" ContentPlaceHolderID="FormButtons">
     <jgwac:EntityButtons runat="server" ID="EntityButtons" />
     |
-    <asp:Button ID="ToggleActive" runat="server" OnCommand="Button_Command" CommandName="ToggleDeploymentState" />
+    <asp:Button ID="ToggleActive" runat="server" CssClass="FormButton" OnCommand="Button_Command" CommandName="ToggleDeploymentState" />
 
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="FormTabs">

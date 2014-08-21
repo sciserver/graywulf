@@ -87,6 +87,18 @@ namespace Jhu.Graywulf.Web.Admin.Domain
 
             switch (e.CommandName)
             {
+                case "ToggleDeploymentState":
+                    if (Item.IsActivated)
+                    {
+                        Item.Deactivate();
+                    }
+                    else
+                    {
+                        Item.Activate();
+                    }
+                    Item.Save();
+                    UpdateForm();
+                    break;
                 case "RemoveUserGroup":
                     RemoveUserGroup(guids);
                     break;

@@ -203,7 +203,7 @@ namespace Jhu.Graywulf.Web.Auth
 
             // Try to authenticate the user.
             // It might happen that the user is awaiting activation.
-            response = ip.VerifyPassword(Username.Text, Password.Text, Remember.Checked);
+            response = ip.VerifyPassword(Username.Text, Password.Text);
 
             // Get user from the response
             user = response.Principal.Identity.User;
@@ -231,11 +231,11 @@ namespace Jhu.Graywulf.Web.Auth
 
             if (user.IsActivated)
             {
-                Response.Redirect(Activate.GetUrl(ReturnUrl));
+                FormsAuthentication.RedirectFromLoginPage(user.GetFullyQualifiedName(), Remember.Checked);
             }
             else
             {
-                FormsAuthentication.RedirectFromLoginPage(user.GetFullyQualifiedName(), Remember.Checked);
+                Response.Redirect(Activate.GetUrl(ReturnUrl));
             }
         }
     }
