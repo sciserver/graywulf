@@ -28,6 +28,9 @@ namespace Jhu.Graywulf.Web.Security
         /// </summary>
         private static Cache<string, GraywulfPrincipal> principalCache;
 
+        /// <summary>
+        /// Initializes static variables
+        /// </summary>
         static AuthenticationModuleBase()
         {
             principalCache = new Cache<string, GraywulfPrincipal>()
@@ -76,29 +79,26 @@ namespace Jhu.Graywulf.Web.Security
         }
 
         /// <summary>
-        /// Calls all registered request authenticators
+        /// Calls all registered request authenticators on.
         /// </summary>
         /// <param name="context"></param>
         protected virtual AuthenticationResponse Authenticate(AuthenticationRequest request)
         {
             // See if we can use the principal as it is, otherwise try
             // other authentication methods
-
+            // The principal is usually valid if a built-in authentication protocol,
+            // like forms ticket, successfully identified the user.
             var response = new AuthenticationResponse();
             response.SetPrincipal(DispatchPrincipal(request.Principal));
 
             // If user is not authenticated yet, try to authenticate them now using
             // various types of authenticators
-
-            // This is the time to execute other custom authenticators.
-            // Call base class method to go through all authentication methods
-
             if (response.Principal == null && authenticators != null)
             {
                 // Try each authentication protocol
-                for (int i = 0; response.Principal == null && i < authenticators.Length; i++)
+                for (int i = 0; i < authenticators.Length; i++)
                 {
-                    response = authenticators[i].Authenticate(request);
+                    authenticators[i].Authenticate(request, response);
                 }
             }
 
@@ -128,10 +128,21 @@ namespace Jhu.Graywulf.Web.Security
             return response;
         }
 
+        /// <summary>
+        /// When implemented in a derived class, called when a user is successfully authenticated.
+        /// </summary>
+        /// <param name="response"></param>
         protected abstract void OnAuthenticated(AuthenticationResponse response);
 
+        /// <summary>
+        /// When implemented in a derived class, called when all attempts to authenticate the user have failed.
+        /// </summary>
         protected abstract void OnAuthenticationFailed();
 
+        /// <summary>
+        /// Loads the user object, from the cache or from the Graywulf registry.
+        /// </summary>
+        /// <param name="principal"></param>
         protected void LoadUser(ref GraywulfPrincipal principal)
         {
             // REST services do not use a session but we don't want to load the user
@@ -160,7 +171,8 @@ namespace Jhu.Graywulf.Web.Security
         #region Principal type conversion methods
 
         /// <summary>
-        /// Converts indentities into Graywulf identity.
+        /// Converts principals and identities established by built-in authentication
+        /// methods into a Graywulf principal and identity.
         /// </summary>
         /// <param name="context"></param>
         protected virtual GraywulfPrincipal DispatchPrincipal(IPrincipal principal)

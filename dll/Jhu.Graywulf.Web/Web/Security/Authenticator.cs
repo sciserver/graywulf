@@ -98,8 +98,15 @@ namespace Jhu.Graywulf.Web.Security
         /// Authenticates the user based on data in the HTTP context
         /// and if succeeds, returns a principal identifying the user.
         /// </summary>
-        /// <returns></returns>
-        public abstract AuthenticationResponse Authenticate(AuthenticationRequest request);
+        /// <remarks>
+        /// When this function is implemented by an authenticator, it
+        /// should verify if the identity of the user has been established already
+        /// by testing response.Principal not being null and being marked as
+        /// authenticated, as indicated by response.Principal.Identity.IsAuthenticated.
+        /// Once the principal is valid, is should not be changed. An authenticator
+        /// can use this call to refresh its tickets and tokens.
+        /// </remarks>
+        public abstract void Authenticate(AuthenticationRequest request, AuthenticationResponse response);
 
         /// <summary>
         /// Create a Graywulf principal with a pre-initialized identity

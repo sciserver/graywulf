@@ -210,13 +210,13 @@ namespace Jhu.Graywulf.Web.Security
             return new GraywulfPrincipal(identity);
         }
 
-        public AuthenticationResponse CreateAuthenticationResponse(Token token, bool isMasterAuthority)
+        public void UpdateAuthenticationResponse(AuthenticationResponse response, Token token, bool isMasterAuthority)
         {
-            var principal = CreateAuthenticatedPrincipal(token.User, isMasterAuthority);
-
-            var response = new AuthenticationResponse();
-
-            response.SetPrincipal(principal);
+            if (response.Principal == null)
+            {
+                var principal = CreateAuthenticatedPrincipal(token.User, isMasterAuthority);
+                response.SetPrincipal(principal);
+            }
 
             // TODO: add keystone cookie, custom parameter, etc...
             response.QueryParameters.Add(authTokenParameter, token.ID);
@@ -224,8 +224,6 @@ namespace Jhu.Graywulf.Web.Security
 
             // TODO: not sure if it is needed or created automatically
             //response.Cookies.Add(CreateFormsAuthenticationTicketCookie(principal.Identity.User, createPersistentCookie));
-
-            return response;
         }
     }
 }

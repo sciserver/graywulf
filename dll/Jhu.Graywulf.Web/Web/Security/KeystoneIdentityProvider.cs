@@ -234,7 +234,8 @@ namespace Jhu.Graywulf.Web.Security
             token.User = GetKeystoneUser(username);
 
             // Create a response, this sets necessary response headers
-            var response = settings.CreateAuthenticationResponse(token, true);
+            var response = new AuthenticationResponse();
+            settings.UpdateAuthenticationResponse(response, token, true);
             
             // Load user from the graywulf registry. This call will create the user
             // if necessary because authority is set to master

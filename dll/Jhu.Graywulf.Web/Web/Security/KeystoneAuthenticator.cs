@@ -89,14 +89,12 @@ namespace Jhu.Graywulf.Web.Security
             settings.AuthorityUri = this.AuthorityUri;
         }
 
-        public override AuthenticationResponse Authenticate(AuthenticationRequest request)
+        public override void Authenticate(AuthenticationRequest request, AuthenticationResponse response)
         {
             // Keystone tokens (in the simplest case) do not carry any detailed
             // information about the identity of the user. For this reason,
             // every token needs to be validated by calling the Keystone service.
             // To avoid doing this, we need to cache tokens.
-
-            var response = new AuthenticationResponse();
 
             // Look for a token in the request headers
             var tokenID = request.Headers[settings.AuthTokenHeader];
@@ -132,10 +130,8 @@ namespace Jhu.Graywulf.Web.Security
                     tokenCache.TryAdd(token.ID, token);
                 }
 
-                response = settings.CreateAuthenticationResponse(token, IsMasterAuthority);
+                settings.UpdateAuthenticationResponse(response, token, IsMasterAuthority);
             }
-
-            return response;
         }
     }
 }

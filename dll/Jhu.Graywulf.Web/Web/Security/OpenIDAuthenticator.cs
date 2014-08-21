@@ -62,38 +62,39 @@ namespace Jhu.Graywulf.Web.Security
         /// Authenicates a user based on the information in the HTTP request.
         /// </summary>
         /// <returns></returns>
-        public override AuthenticationResponse Authenticate(AuthenticationRequest request)
+        public override void Authenticate(AuthenticationRequest request, AuthenticationResponse response)
         {
-            var response = new AuthenticationResponse();
+            // Only execute the authentication if the user is not known yet
 
-            // Get OpenID provider's response from the http context
-            using (var openid = new OpenIdRelyingParty())
+            if (response.Principal == null)
             {
-                var openIDResponse = openid.GetResponse();
-
-                // TODO: figure out which OpenID provider sent the response
-                // and associate with the right authenticator
-
-                if (response != null)
+                // Get OpenID provider's response from the http context
+                using (var openid = new OpenIdRelyingParty())
                 {
-                    switch (openIDResponse.Status)
+                    var openIDResponse = openid.GetResponse();
+
+                    // TODO: figure out which OpenID provider sent the response
+                    // and associate with the right authenticator
+
+                    if (response != null)
                     {
-                        case AuthenticationStatus.Authenticated:
-                            response.SetPrincipal(CreatePrincipal(openIDResponse));
-                            break;
-                        case AuthenticationStatus.Canceled:
-                        case AuthenticationStatus.Failed:
-                            throw new System.Security.Authentication.AuthenticationException("OpenID authentication failed.", openIDResponse.Exception);
-                        case AuthenticationStatus.ExtensionsOnly:
-                        case AuthenticationStatus.SetupRequired:
-                            throw new InvalidOperationException();
-                        default:
-                            throw new NotImplementedException();
+                        switch (openIDResponse.Status)
+                        {
+                            case AuthenticationStatus.Authenticated:
+                                response.SetPrincipal(CreatePrincipal(openIDResponse));
+                                break;
+                            case AuthenticationStatus.Canceled:
+                            case AuthenticationStatus.Failed:
+                                throw new System.Security.Authentication.AuthenticationException("OpenID authentication failed.", openIDResponse.Exception); // TODO
+                            case AuthenticationStatus.ExtensionsOnly:
+                            case AuthenticationStatus.SetupRequired:
+                                throw new InvalidOperationException();
+                            default:
+                                throw new NotImplementedException();
+                        }
                     }
                 }
             }
-
-            return response;
         }
 
         /// <summary>

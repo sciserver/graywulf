@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Web.Security
 
         #endregion
 
-        public override AuthenticationResponse Authenticate(AuthenticationRequest request)
+        public override void Authenticate(AuthenticationRequest request, AuthenticationResponse response)
         {
             // The logic implemented here is based on the .Net reference source
             // original class: FormAuthenticationModule
@@ -55,7 +55,6 @@ namespace Jhu.Graywulf.Web.Security
             // directly. This saves us from looking into the database at every
             // single request.
 
-            var response = new AuthenticationResponse();
             var cookies = request.Cookies.GetCookies(request.Uri);
 
             // Get the forms authentication cookie from the request
@@ -68,7 +67,10 @@ namespace Jhu.Graywulf.Web.Security
                 {
                     // The token hasn't expired yet
                     // Create a GraywulfPrincipal based on the ticket.
-                    response.SetPrincipal(CreatePrincipal(oldToken));
+                    if (response.Principal == null)
+                    {
+                        response.SetPrincipal(CreatePrincipal(oldToken));
+                    }
 
                     // Read the ticket from the token and renew it if sliding expiration is turned on
                     var ticket = oldToken;
@@ -126,8 +128,6 @@ namespace Jhu.Graywulf.Web.Security
                     }
                 }
             }
-
-            return response;
         }
 
         /// <summary>
