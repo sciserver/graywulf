@@ -249,3 +249,62 @@ Graywulf scheduler is starting...
 2014.07.09. 16:16:32 : Jhu.Graywulf.Scheduler.QueueManager.ProcessInterruptedJobs[Executing] : Closed
 2014.07.09. 16:16:32 : Jhu.Graywulf.Scheduler.StartPoller : Closed
                                   done.
+								  
+								  
+2014.08.21.
+
+Add AuthCookie to identity provider
+(this will determine what's sent back to the caller)
+
+Add admin name and password to identity provider
+this will also require caching logic
+but check if IP can actuallz use admin username and pass to authenticate
+
+
+Create keystone admin user:
+
+ keystone user-create --name graywulf --tenant service --pass almafa
+ 
+  keystone user-role-add --user graywulf --role admin --tenant service
+  
+add checks to auth site test routines
+
+make sure user gets activated in keystone because user is now not redirected if disabled in keystone
+
+
+
+
+
+
+Keystone user test scenarios
+
+- user in keystone but not in gw
+
+
+
+
+
+
+User portal test scenarios:
+===========================
+
+Register new user on portal
+Activate user.
+Try activation by clickin on link.
+Try logging in without activation, should redirect to activate page.
+Modify user data.
+Change password.
+Request a password reset.
+Reset password.
+Login with existing user
+Login with wrong username
+Login with email address
+Login with correct username but wrong password
+Login with correct email address but wrong password
+Login with user in Keystone but now in Graywulf
+Login with unknown OpenID, associate with existing user.
+Login with unknown OpenID, register user and associate with it.
+Login with existing OpenID.
+Login using OpenID but with wrong password, make sure it fails.
+
+Login to admin portal
