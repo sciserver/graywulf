@@ -40,6 +40,8 @@ namespace Jhu.Graywulf.Registry
             ugm.UserGroup = ug;
             ugm.Save();
 
+            LoadUserGroupMemberships(true);
+
             return ugm;
         }
 

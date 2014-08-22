@@ -161,6 +161,20 @@ namespace Jhu.Graywulf.Web.Security
             // Create user locally
             base.OnCreateUser(user);
 
+            // Grant user a role on the default project. This is necessary to
+            // gain access to services like swift.
+            // Project has no equivalent in graywulf (because users are not associated
+            // with federations but only with domains). Hence, project name is simply
+            // taken from settings.
+            // Roles are taken from graywulf user groups.
+            var project = KeystoneClient.FindProjects(settings.Domain, settings.Project, true, false)[0];
+
+            foreach (var userGroup in user.UserGroupMemberships.Values)
+            {
+                var role = KeystoneClient.FindRoles(settings.Domain, userGroup.Name, true, false)[0];
+                KeystoneClient.GrantRole(project, keystoneUser, role);
+            }
+
             // Add identity to local user
             var principal = settings.CreateAuthenticatedPrincipal(keystoneUser, true);
             AddUserIdentity(user, principal.Identity);
