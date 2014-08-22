@@ -32,6 +32,8 @@ namespace Jhu.Graywulf.Web.Security
         /// </summary>
         public User LoadOrCreateUser(GraywulfIdentity identity)
         {
+            // TODO: we could create roles here too
+
             // If the user is authenticated by a generic authority then we should
             // be able to find it by a registered identity in the Graywulf registry.
             // If the authenticator, on the other hand, is a master authority,
@@ -168,7 +170,13 @@ namespace Jhu.Graywulf.Web.Security
 
             user.Save();
 
-            user.AddToGroup(Context.Domain.StandardUserGroup.Guid);
+            // Add user to default roles
+            user.Domain.LoadUserRoles(true);
+
+            foreach (var role in user.Domain.UserRoles.Values)
+            {
+                user.AddToRole(role.Guid);
+            }
         }
 
         /// <summary>
