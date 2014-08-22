@@ -65,6 +65,8 @@
     <Compile Include="Registry\FederationContext.cs" />
     <Compile Include="Registry\JobInstanceDependency.cs" />
     <Compile Include="Registry\IContextObject.cs" />
+    <Compile Include="Registry\UserRoleMembership.cs" />
+    <Compile Include="Registry\UserRole.cs" />
     <Compile Include="Registry\UserGroupMembership.cs" />
     <Compile Include="Registry\UserGroupMembership.io.cs" />
     <Compile Include="Registry\Cluster.cs" />

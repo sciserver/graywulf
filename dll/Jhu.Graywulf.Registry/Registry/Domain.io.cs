@@ -26,6 +26,11 @@ namespace Jhu.Graywulf.Registry
             LoadChildren<UserGroup>(forceReload);
         }
 
+        public void LoadUserRoles(bool forceReload)
+        {
+            LoadChildren<UserRole>(forceReload);
+        }
+
         #endregion
     }
 }

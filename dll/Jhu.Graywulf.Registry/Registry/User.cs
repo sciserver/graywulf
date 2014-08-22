@@ -356,6 +356,10 @@ namespace Jhu.Graywulf.Registry
             set { passwordHash = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the code used to activate a user account or validate a
+        /// password reset request.
+        /// </summary>
         [DBColumn(Size = 50)]
         [DefaultValue("")]
         public string ActivationCode
@@ -378,6 +382,13 @@ namespace Jhu.Graywulf.Registry
         {
             get { return GetChildren<UserGroupMembership>(); }
             set { SetChildren<UserGroupMembership>(value); }
+        }
+
+        [XmlIgnore]
+        public Dictionary<string, UserRoleMembership> UserRoleMemberships
+        {
+            get { return GetChildren<UserRoleMembership>(); }
+            set { SetChildren<UserRoleMembership>(value); }
         }
 
         [XmlIgnore]
@@ -520,6 +531,7 @@ namespace Jhu.Graywulf.Registry
             return new EntityType[] 
             {
                 EntityType.UserGroupMembership,
+                EntityType.UserRoleMembership,
                 EntityType.UserIdentity,
             };
         }

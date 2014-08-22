@@ -242,7 +242,7 @@ namespace Jhu.Graywulf.Install
             u.SetPassword(password);
             u.Save();
 
-            u.MakeMemberOf(ug.Guid);
+            u.AddToGroup(ug.Guid);
         }
     }
 }

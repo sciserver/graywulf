@@ -168,7 +168,7 @@ namespace Jhu.Graywulf.Web.Security
 
             user.Save();
 
-            user.MakeMemberOf(Context.Domain.StandardUserGroup.Guid);
+            user.AddToGroup(Context.Domain.StandardUserGroup.Guid);
         }
 
         /// <summary>

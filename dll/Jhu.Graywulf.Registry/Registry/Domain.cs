@@ -18,7 +18,9 @@ namespace Jhu.Graywulf.Registry
     {
         public enum ReferenceType : int
         {
-            StandardUserGroup = 1,
+            // TODO: modify this to user role and add flags to the role instead
+            // meaning default
+            DefaultUserGroup = 1,
         }
 
         #region Member Variables
@@ -96,6 +98,7 @@ namespace Jhu.Graywulf.Registry
             set { disclaimer = value; }
         }
 
+        // TODO: remove this
         [XmlIgnore]
         public UserGroup StandardUserGroup
         {
@@ -121,12 +124,14 @@ namespace Jhu.Graywulf.Registry
             get { return (Cluster)ParentReference.Value; }
         }
 
+        // TODO: delete
         [XmlIgnore]
         public EntityReference<UserGroup> StandardUserGroupReference
         {
-            get { return (EntityReference<UserGroup>)EntityReferences[(int)ReferenceType.StandardUserGroup]; }
+            get { return (EntityReference<UserGroup>)EntityReferences[(int)ReferenceType.DefaultUserGroup]; }
         }
 
+        // TODO: delete
         /// <summary>
         /// For internal use only.
         /// </summary>
@@ -156,6 +161,13 @@ namespace Jhu.Graywulf.Registry
         {
             get { return GetChildren<UserGroup>(); }
             set { SetChildren<UserGroup>(value); }
+        }
+
+        [XmlIgnore]
+        public Dictionary<string, UserRole> UserRoles
+        {
+            get { return GetChildren<UserRole>(); }
+            set { SetChildren<UserRole>(value); }
         }
 
         #endregion
@@ -240,7 +252,8 @@ namespace Jhu.Graywulf.Registry
         {
             return new IEntityReference[]
             {
-                new EntityReference<UserGroup>((int)ReferenceType.StandardUserGroup),
+                // TODO: delete this
+                new EntityReference<UserGroup>((int)ReferenceType.DefaultUserGroup),
             };
         }
 
@@ -250,7 +263,8 @@ namespace Jhu.Graywulf.Registry
             {
                 EntityType.Federation,
                 EntityType.User,
-                EntityType.UserGroup
+                EntityType.UserGroup,
+                EntityType.UserRole
             };
         }
 

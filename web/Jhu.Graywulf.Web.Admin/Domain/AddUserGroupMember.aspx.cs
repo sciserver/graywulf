@@ -55,7 +55,7 @@ namespace Jhu.Graywulf.Web.Admin.Domain
             if (IsValid)
             {
                 LoadItem();
-                user.MakeMemberOf(new Guid(UserGroup.SelectedValue));
+                user.AddToGroup(new Guid(UserGroup.SelectedValue));
 
                 Response.Redirect(user.GetDetailsUrl());
             }

@@ -48,3 +48,30 @@ ALTER TABLE dbo.Domain ADD CONSTRAINT
 	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 
 GO
+
+-- Create user role table
+
+CREATE TABLE [dbo].[UserRole]
+(
+	[EntityGuid] [uniqueidentifier] NOT NULL,
+	[Default] [bit] NOT NULL,
+	CONSTRAINT [PK_UserRole] PRIMARY KEY CLUSTERED 
+	(
+		[EntityGuid] ASC
+	)
+)
+
+GO
+
+-- Create role membership table
+
+CREATE TABLE [dbo].[UserRoleMembership]
+(
+	[EntityGuid] [uniqueidentifier] NOT NULL,
+	CONSTRAINT [PK_UserRoleMembership] PRIMARY KEY CLUSTERED 
+	(
+		[EntityGuid] ASC
+	)
+)
+
+GO

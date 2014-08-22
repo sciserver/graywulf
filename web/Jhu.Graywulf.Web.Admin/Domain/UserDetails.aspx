@@ -209,7 +209,8 @@
     </div>
     <div class="TabFrame dock-fill dock-container">
         <asp:MultiView runat="server" ID="MultiViewTabs" ActiveViewIndex="0">
-            <jgwc:TabView runat="server" Text="Member of">
+            <!-- User groups -->
+            <jgwc:TabView runat="server" Text="Group Membership">
                 <div class="dock-top">
                     <jgwc:MultiSelectGridView runat="server" ID="UserGroupMemberList" AllowPaging="false"
                         DataKeyNames="Guid" AutoGenerateColumns="false">
@@ -224,14 +225,39 @@
                 <div class="dock-bottom">
                     <p class="FormMessage">
                         <asp:CustomValidator ID="UserGroupSelectedValidator" runat="server" ErrorMessage="No item was selected."
-                            OnServerValidate="UserGroupSelectedValidator_ServerValidate"></asp:CustomValidator></p>
+                            OnServerValidate="UserGroupSelectedValidator_ServerValidate" ValidationGroup="UserGroup"></asp:CustomValidator></p>
                     <p class="FormButtons">
-                        <asp:Button ID="AddUserGroupButton" runat="server" CssClass="FormButtonNarrow" Text="Add" />
+                        <asp:Button ID="AddUserGroupButton" runat="server" CssClass="FormButtonNarrow" Text="Add" ValidationGroup="UserGroup" CausesValidation="false" />
                         <asp:Button ID="RemoveUserGroupButton" runat="server" CssClass="FormButtonNarrow"
-                            Text="Remove" OnCommand="Button_Command" CommandName="RemoveUserGroup" />
+                            Text="Remove" OnCommand="Button_Command" CommandName="RemoveUserGroup"  ValidationGroup="UserGroup"/>
                     </p>
                 </div>
             </jgwc:TabView>
+            <!-- User roles -->
+            <jgwc:TabView runat="server" Text="Role Membership">
+                <div class="dock-top">
+                    <jgwc:MultiSelectGridView runat="server" ID="UserRoleMemberList" AllowPaging="false"
+                        DataKeyNames="Guid" AutoGenerateColumns="false">
+                        <Columns>
+                            <jgwc:SelectionField ItemStyle-CssClass="GridViewIcon" />
+                            <asp:ImageField DataImageUrlField="Guid" DataImageUrlFormatString="~/Icons/Small/UserRole.gif"
+                                ItemStyle-CssClass="GridViewIcon" />
+                            <jgwc:BoundField HeaderText="Name" DataField="Name" ItemStyle-CssClass="GridViewSpan" />
+                        </Columns>
+                    </jgwc:MultiSelectGridView>
+                </div>
+                <div class="dock-bottom">
+                    <p class="FormMessage">
+                        <asp:CustomValidator ID="UserRoleSelectedValidator" runat="server" ErrorMessage="No item was selected."
+                            OnServerValidate="UserRoleSelectedValidator_ServerValidate" ValidationGroup="UserRole"></asp:CustomValidator></p>
+                    <p class="FormButtons">
+                        <asp:Button ID="AddUserRoleButton" runat="server" CssClass="FormButtonNarrow" Text="Add"  ValidationGroup="UserRole" CausesValidation="false" />
+                        <asp:Button ID="RemoveUserRoleButton" runat="server" CssClass="FormButtonNarrow"
+                            Text="Remove" OnCommand="Button_Command" CommandName="RemoveUserRole"  ValidationGroup="UserRole"/>
+                    </p>
+                </div>
+            </jgwc:TabView>
+            <!-- Identities -->
             <jgwc:TabView runat="server" Text="Identities">
                 <jgwac:EntityList runat="server" ID="IdentitiesList" ChildrenType="UserIdentity" EntityGroup="Domain" DataObjectTypeName="UserIdentity" />
             </jgwc:TabView>

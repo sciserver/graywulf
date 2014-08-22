@@ -440,6 +440,19 @@ CREATE TABLE [dbo].[UserGroup]
 GO
 
 
+CREATE TABLE [dbo].[UserRole]
+(
+	[EntityGuid] [uniqueidentifier] NOT NULL,
+	[Default] [bit] NOT NULL,
+	CONSTRAINT [PK_UserRole] PRIMARY KEY CLUSTERED 
+	(
+		[EntityGuid] ASC
+	)
+)
+
+GO
+
+
 CREATE TABLE [dbo].[User]
 (
 	[EntityGuid] [uniqueidentifier] NOT NULL,
@@ -494,6 +507,18 @@ CREATE TABLE [dbo].[UserGroupMembership]
 (
 	[EntityGuid] [uniqueidentifier] NOT NULL,
 	CONSTRAINT [PK_UserGroupMembership] PRIMARY KEY CLUSTERED 
+	(
+		[EntityGuid] ASC
+	)
+)
+
+GO
+
+
+CREATE TABLE [dbo].[UserRoleMembership]
+(
+	[EntityGuid] [uniqueidentifier] NOT NULL,
+	CONSTRAINT [PK_UserRoleMembership] PRIMARY KEY CLUSTERED 
 	(
 		[EntityGuid] ASC
 	)

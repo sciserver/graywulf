@@ -126,6 +126,8 @@ namespace Jhu.Graywulf.Web.Admin
                 case EntityType.User:
                 case EntityType.UserIdentity:
                 case EntityType.UserGroupMembership:
+                case EntityType.UserRole:
+                case EntityType.UserRoleMembership:
                     group = EntityGroup.Domain;
                     break;
                 case EntityType.Federation:
@@ -212,6 +214,8 @@ namespace Jhu.Graywulf.Web.Admin
                 case EntityType.UserGroup:
                 case EntityType.UserGroupMembership:
                 case EntityType.UserIdentity:
+                case EntityType.UserRole:
+                case EntityType.UserRoleMembership:
                     group = EntityGroup.Domain;
                     break;
                 default:

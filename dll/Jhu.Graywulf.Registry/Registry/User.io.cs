@@ -16,6 +16,11 @@ namespace Jhu.Graywulf.Registry
             LoadChildren<UserGroupMembership>(forceReload);
         }
 
+        public void LoadUserRoleMemberships(bool forceReload)
+        {
+            LoadChildren<UserRoleMembership>(forceReload);
+        }
+
         public void LoadUserIdentities(bool forceReload)
         {
             LoadChildren<UserIdentity>(forceReload);
@@ -24,9 +29,9 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Group membership
 
-        public UserGroupMembership MakeMemberOf(Guid userGroupGuid)
+        public UserGroupMembership AddToGroup(Guid userGroupGuid)
         {
-            if (IsMemberOf(userGroupGuid))
+            if (IsMemberOfGroup(userGroupGuid))
             {
                 throw new Exception("Already a member of ..."); // TODO ***
             }
@@ -45,7 +50,7 @@ namespace Jhu.Graywulf.Registry
             return ugm;
         }
 
-        public void RemoveMemberOf(Guid userGroupGuid)
+        public void RemoveFromGroup(Guid userGroupGuid)
         {
             LoadUserGroupMemberships(true);
 
@@ -56,9 +61,11 @@ namespace Jhu.Graywulf.Registry
                     ugm.Delete();
                 }
             }
+
+            LoadUserGroupMemberships(true);
         }
 
-        public bool IsMemberOf(Guid userGroupGuid)
+        public bool IsMemberOfGroup(Guid userGroupGuid)
         {
             LoadUserGroupMemberships(true);
 
@@ -74,7 +81,60 @@ namespace Jhu.Graywulf.Registry
 
         }
 
+        #endregion
+        #region Role membership
+        
+        public UserRoleMembership AddToRole(Guid userRoleGuid)
+        {
+            if (IsMemberOfRole(userRoleGuid))
+            {
+                throw new Exception("Already a member of ..."); // TODO ***
+            }
 
+            var ur = new UserRole(Context);
+            ur.Guid = userRoleGuid;
+            ur.Load();
+
+            var ugm = new UserRoleMembership(this);
+            ugm.Name = ur.Name;
+            ugm.UserRole = ur;
+            ugm.Save();
+
+            LoadUserRoleMemberships(true);
+
+            return ugm;
+        }
+
+        public void RemoveFromRole(Guid userRoleGuid)
+        {
+            LoadUserRoleMemberships(true);
+
+            foreach (var urm in UserRoleMemberships.Values)
+            {
+                if (urm.Guid == userRoleGuid)
+                {
+                    urm.Delete();
+                }
+            }
+
+            LoadUserRoleMemberships(true);
+        }
+
+        public bool IsMemberOfRole(Guid userRoleGuid)
+        {
+            LoadUserRoleMemberships(true);
+
+            foreach (var urm in UserRoleMemberships.Values)
+            {
+                if (urm.Guid == userRoleGuid)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+
+        }
 
         #endregion
     }

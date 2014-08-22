@@ -683,7 +683,9 @@ AS
 	DELETE [User]
 	DELETE UserDatabaseInstance
 	DELETE UserGroup
+	DELETE UserRole
 	DELETE UserGroupMembership
+	DELETE UserRoleMembership
 	
 	DELETE Entity
 	DELETE EntityReference

@@ -141,9 +141,12 @@
     <Content Include="Docs\images\jhu.png" />
     <Content Include="Docs\images\nsf.png" />
     <Content Include="Docs\images\vao.png" />
+    <Content Include="Domain\AddUserRoleMember.aspx" />
     <Content Include="Domain\AddUserGroupMember.aspx" />
     <Content Include="Domain\ClusterDetails.aspx" />
     <Content Include="Domain\DomainForm.aspx" />
+    <Content Include="Domain\UserRoleDetails.aspx" />
+    <Content Include="Domain\UserRoleForm.aspx" />
     <Content Include="Domain\UserIdentityDetails.aspx" />
     <Content Include="Domain\UserIdentityForm.aspx" />
     <Content Include="Domain\Default.aspx" />
@@ -770,8 +773,16 @@
       <DependentUpon>Menu.ascx</DependentUpon>
     </Compile>
     <Compile Include="Controls\UserStatus.cs" />
+    <Compile Include="Domain\AddUserRoleMember.aspx.cs">
+      <DependentUpon>AddUserRoleMember.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\AddUserRoleMember.aspx.designer.cs">
+      <DependentUpon>AddUserRoleMember.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Domain\AddUserGroupMember.aspx.cs">
       <DependentUpon>AddUserGroupMember.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Domain\AddUserGroupMember.aspx.designer.cs">
       <DependentUpon>AddUserGroupMember.aspx</DependentUpon>
@@ -787,6 +798,20 @@
     </Compile>
     <Compile Include="Domain\DomainForm.aspx.designer.cs">
       <DependentUpon>DomainForm.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Domain\UserRoleDetails.aspx.cs">
+      <DependentUpon>UserRoleDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\UserRoleDetails.aspx.designer.cs">
+      <DependentUpon>UserRoleDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Domain\UserRoleForm.aspx.cs">
+      <DependentUpon>UserRoleForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Domain\UserRoleForm.aspx.designer.cs">
+      <DependentUpon>UserRoleForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Domain\UserIdentityDetails.aspx.cs">
       <DependentUpon>UserIdentityDetails.aspx</DependentUpon>
@@ -808,6 +833,7 @@
     </Compile>
     <Compile Include="Domain\DomainDetails.aspx.cs">
       <DependentUpon>DomainDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Domain\DomainDetails.aspx.designer.cs">
       <DependentUpon>DomainDetails.aspx</DependentUpon>
@@ -1222,7 +1248,9 @@
     <Compile Include="Monitor\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="PageBase.cs" />
+    <Compile Include="PageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="User\SignIn.aspx.cs">
       <DependentUpon>SignIn.aspx</DependentUpon>
