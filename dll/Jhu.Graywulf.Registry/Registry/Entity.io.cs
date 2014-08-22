@@ -654,21 +654,21 @@ namespace Jhu.Graywulf.Registry
         public void LoadChildren(EntityType entityType, bool forceReload)
         {
             var gm = this.GetType().GetMethod("LoadChildren", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, new [] { typeof(bool) }, null);
-            gm = gm.MakeGenericMethod(EntityTypeMap[entityType]);
+            gm = gm.MakeGenericMethod(Constants.EntityTypeMap[entityType]);
             gm.Invoke(this, new object[] { forceReload });
         }
 
         public void LoadChildren<T>(bool forceReload)
             where T : Entity, new()
         {
-            var children = (Dictionary<string, T>)childEntities[EntityTypeMap[typeof(T)]];
+            var children = (Dictionary<string, T>)childEntities[Constants.EntityTypeMap[typeof(T)]];
 
             var reload = children == null || forceReload;
 
             if (children == null)
             {
                 children = CreateDictionary<T>();
-                childEntities[EntityTypeMap[typeof(T)]] = children;
+                childEntities[Constants.EntityTypeMap[typeof(T)]] = children;
             }
 
             if (forceReload)

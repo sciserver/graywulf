@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
+using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -73,6 +74,40 @@ namespace Jhu.Graywulf.Registry
 
         public const string DefaultSchemaName = "dbo";
 
+        internal static Map<EntityType, Type> EntityTypeMap = new Map<EntityType, Type>()
+        {
+            { EntityType.Cluster, typeof(Cluster) },
+            { EntityType.DatabaseDefinition, typeof(DatabaseDefinition) },
+            { EntityType.DatabaseInstance, typeof(DatabaseInstance) },
+            { EntityType.DatabaseInstanceFile, typeof(DatabaseInstanceFile) },
+            { EntityType.DatabaseInstanceFileGroup, typeof(DatabaseInstanceFileGroup) },
+            { EntityType.DatabaseVersion, typeof(DatabaseVersion) },
+            { EntityType.DeploymentPackage, typeof(DeploymentPackage) },
+            { EntityType.DiskVolume, typeof(DiskVolume) },
+            { EntityType.Domain, typeof(Domain) },
+            { EntityType.Federation, typeof(Federation) },
+            { EntityType.FileGroup, typeof(FileGroup) },
+            { EntityType.JobDefinition, typeof(JobDefinition) },
+            { EntityType.JobInstance, typeof(JobInstance) },
+            { EntityType.JobInstanceDependency, typeof(JobInstanceDependency) },
+            { EntityType.Machine, typeof(Machine) },
+            { EntityType.MachineRole, typeof(MachineRole) },
+            { EntityType.Partition, typeof(Partition) },
+            { EntityType.QueueDefinition, typeof(QueueDefinition) },
+            { EntityType.QueueInstance, typeof(QueueInstance) },
+            { EntityType.RemoteDatabase, typeof(RemoteDatabase) },
+            { EntityType.ServerInstance, typeof(ServerInstance) },
+            { EntityType.ServerVersion, typeof(ServerVersion) },
+            { EntityType.Slice, typeof(Slice) },
+            { EntityType.User, typeof(User) },
+            { EntityType.UserDatabaseInstance, typeof(UserDatabaseInstance) },
+            { EntityType.UserIdentity, typeof(UserIdentity) },
+            { EntityType.UserGroup, typeof(UserGroup) },
+            { EntityType.UserGroupMembership, typeof(UserGroupMembership) },
+            { EntityType.UserRole, typeof(UserRole) },
+            { EntityType.UserRoleMembership, typeof(UserRoleMembership) },
+        };
+
         public static readonly Dictionary<EntityType, string> EntityNames_Singular = new Dictionary<EntityType, string>()
         { 
             { EntityType.Unknown, EntityNames.Unknown_Singular},
@@ -85,6 +120,8 @@ namespace Jhu.Graywulf.Registry
             { EntityType.UserGroup, EntityNames.UserGroup_Singular},
             { EntityType.User, EntityNames.User_Singular},
             { EntityType.UserGroupMembership, EntityNames.UserGroupMembership_Singular},
+            { EntityType.UserRole, EntityNames.UserRole_Singular},
+            { EntityType.UserRoleMembership, EntityNames.UserRoleMembership_Singular},
             { EntityType.UserIdentity, EntityNames.UserIdentity_Singular},
             { EntityType.Domain, EntityNames.Domain_Singular},
             { EntityType.Federation, EntityNames.Federation_Singular},
@@ -118,6 +155,8 @@ namespace Jhu.Graywulf.Registry
             { EntityType.UserGroup, EntityNames.UserGroup_Plural},
             { EntityType.User, EntityNames.User_Plural},
             { EntityType.UserGroupMembership, EntityNames.UserGroupMembership_Plural},
+            { EntityType.UserRole, EntityNames.UserRole_Plural},
+            { EntityType.UserRoleMembership, EntityNames.UserRoleMembership_Plural},
             { EntityType.UserIdentity, EntityNames.UserIdentity_Plural},
             { EntityType.Domain, EntityNames.Domain_Plural},
             { EntityType.Federation, EntityNames.Federation_Plural},

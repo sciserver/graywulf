@@ -173,7 +173,7 @@ ORDER BY rn
         public IEnumerable<T> FindChildren<T>(Entity parent)
             where T : Entity, new()
         {
-            var childrentype = Entity.EntityTypeMap[typeof(T)];
+            var childrentype = Constants.EntityTypeMap[typeof(T)];
 
             var sql = @"
 WITH q AS
@@ -374,7 +374,7 @@ ORDER BY Number";
         public T LoadEntity<T>(params string[] nameParts)
             where T : Entity
         {
-            return (T)LoadEntity(Entity.EntityTypeMap[typeof(T)], nameParts);
+            return (T)LoadEntity(Constants.EntityTypeMap[typeof(T)], nameParts);
         }
 
         private Entity LoadStronglyTypedEntity(EntityType entityType, Guid guid)

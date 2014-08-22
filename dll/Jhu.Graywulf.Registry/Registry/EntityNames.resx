@@ -291,4 +291,16 @@
   <data name="JobInstanceDependency_Singular" xml:space="preserve">
     <value>Job Dependeny</value>
   </data>
+  <data name="UserRoleMembership_Plural" xml:space="preserve">
+    <value>User Role Memberships</value>
+  </data>
+  <data name="UserRoleMembership_Singular" xml:space="preserve">
+    <value>User Role Membership</value>
+  </data>
+  <data name="UserRole_Plural" xml:space="preserve">
+    <value>User Roles</value>
+  </data>
+  <data name="UserRole_Singular" xml:space="preserve">
+    <value>User Role</value>
+  </data>
 </root>
