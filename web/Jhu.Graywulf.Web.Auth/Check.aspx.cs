@@ -17,10 +17,11 @@ namespace Jhu.Graywulf.Web.Auth
             Checks.Routines.Add(new DatabaseCheck(Jhu.Graywulf.Registry.AppSettings.ConnectionString));
             Checks.Routines.Add(new DatabaseCheck(Jhu.Graywulf.Logging.AppSettings.ConnectionString));
 
-            Checks.Routines.Add(new EmailCheck(RegistryContext.Domain.Email));
-
             Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.AppSettings.ClusterName));
             Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.AppSettings.DomainName));
+
+            Checks.Routines.Add(new EmailCheck(RegistryContext.Domain.Email));
+            Checks.Routines.Add(new IdentityProviderCheck());
         }
     }
 }

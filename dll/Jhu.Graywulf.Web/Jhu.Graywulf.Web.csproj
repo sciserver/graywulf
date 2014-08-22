@@ -96,6 +96,7 @@
     <Compile Include="Web\Check\EntityCheck.cs" />
     <Compile Include="Web\Check\AssemblyCheck.cs" />
     <Compile Include="Web\Check\IdentityCheck.cs" />
+    <Compile Include="Web\Check\IdentityProviderCheck.cs" />
     <Compile Include="Web\Check\UrlCheck.cs" />
     <Compile Include="Web\Controls\CaptchaImage.cs" />
     <Compile Include="Web\Controls\CaptchaValidator.cs" />

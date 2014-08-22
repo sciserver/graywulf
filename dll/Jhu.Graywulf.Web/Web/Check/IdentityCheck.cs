@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Web.Check
         {
             page.Response.Output.WriteLine("Testing user identity");
             page.Response.Output.WriteLine(
-                "Identity is of type {0} and is{1} authenticated.",
+                "Identity is of type {0} and is {1} authenticated.",
                 page.User.Identity.GetType().Name,
                 page.Request.IsAuthenticated ? "" : " not");
             if (page.Request.IsAuthenticated)

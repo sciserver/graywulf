@@ -109,6 +109,7 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
+            this.@default = false;
         }
 
         /// <summary>
@@ -117,6 +118,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="old">A <b>User Role</b> object to create the deep copy from.</param>
         private void CopyMembers(UserRole old)
         {
+            this.@default = old.@default;
         }
 
         public override object Clone()
