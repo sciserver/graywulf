@@ -158,24 +158,31 @@ namespace Jhu.Graywulf.Web.Security
             // Create user in keystone
             var keystoneUser = KeystoneClient.Create(ConvertUser(user));
 
+            // Create and associated project (tenant)
+            var keystoneProject = new Keystone.Project
+            {
+                Name = user.Name,
+                DomainID = settings.Domain,
+            };
+            keystoneProject = KeystoneClient.Create(keystoneProject);
+
             // Create user locally
             base.OnCreateUser(user);
 
-            // Grant user a role on the default project. This is necessary to
+            // Grant user roles on the project just created. This is necessary to
             // gain access to services like swift.
             // Project has no equivalent in graywulf (because users are not associated
             // with federations but only with domains). Hence, project name is simply
-            // taken from settings.
-            // Roles are taken from graywulf user groups.
-            var project = KeystoneClient.FindProjects(settings.Domain, settings.Project, true, false)[0];
+            // taken from the username.
 
+            // TODO: modify this to use roles instead of user groups:
             foreach (var userGroup in user.UserGroupMemberships.Values)
             {
                 var role = KeystoneClient.FindRoles(settings.Domain, userGroup.Name, true, false)[0];
-                KeystoneClient.GrantRole(project, keystoneUser, role);
+                KeystoneClient.GrantRole(keystoneProject, keystoneUser, role);
             }
 
-            // Add identity to local user
+            // Add identity to local principal
             var principal = settings.CreateAuthenticatedPrincipal(keystoneUser, true);
             AddUserIdentity(user, principal.Identity);
         }
@@ -240,14 +247,16 @@ namespace Jhu.Graywulf.Web.Security
 
         public override AuthenticationResponse VerifyPassword(AuthenticationRequest request)
         {
-            // User needs to be authenticated in the scope of a project
+            // User needs to be authenticated in the scope of a project (tenant).
+            // Since a tenant with the same name is generated for each user in keystone, we
+            // use the username as project name.
             var project = new Keystone.Project()
             {
                 Domain = new Keystone.Domain()
                 {
                     Name = settings.Domain
                 },
-                Name = settings.Project,
+               Name = request.Username
             };
 
             // Verify user password in Keystone, we don't use
