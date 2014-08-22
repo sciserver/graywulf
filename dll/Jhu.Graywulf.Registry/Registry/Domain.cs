@@ -16,13 +16,6 @@ namespace Jhu.Graywulf.Registry
     /// </summary>
     public partial class Domain : Entity
     {
-        public enum ReferenceType : int
-        {
-            // TODO: modify this to user role and add flags to the role instead
-            // meaning default
-            DefaultUserGroup = 1,
-        }
-
         #region Member Variables
 
         // --- Background storage for properties ---
@@ -98,14 +91,6 @@ namespace Jhu.Graywulf.Registry
             set { disclaimer = value; }
         }
 
-        // TODO: remove this
-        [XmlIgnore]
-        public UserGroup StandardUserGroup
-        {
-            get { return StandardUserGroupReference.Value; }
-            set { StandardUserGroupReference.Value = value; }
-        }
-
         #endregion
         #region Validation Properties
         #endregion
@@ -122,24 +107,6 @@ namespace Jhu.Graywulf.Registry
         public Cluster Cluster
         {
             get { return (Cluster)ParentReference.Value; }
-        }
-
-        // TODO: delete
-        [XmlIgnore]
-        public EntityReference<UserGroup> StandardUserGroupReference
-        {
-            get { return (EntityReference<UserGroup>)EntityReferences[(int)ReferenceType.DefaultUserGroup]; }
-        }
-
-        // TODO: delete
-        /// <summary>
-        /// For internal use only.
-        /// </summary>
-        [XmlElement("StandardUserGroup")]
-        public string StandardUserGroup_ForXml
-        {
-            get { return StandardUserGroupReference.Name; }
-            set { StandardUserGroupReference.Name = value; }
         }
 
         [XmlIgnore]
@@ -246,15 +213,6 @@ namespace Jhu.Graywulf.Registry
         public override object Clone()
         {
             return new Domain(this);
-        }
-
-        protected override IEntityReference[] CreateEntityReferences()
-        {
-            return new IEntityReference[]
-            {
-                // TODO: delete this
-                new EntityReference<UserGroup>((int)ReferenceType.DefaultUserGroup),
-            };
         }
 
         protected override EntityType[] CreateChildTypes()

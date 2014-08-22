@@ -27,14 +27,6 @@
                 <asp:Label ID="Email" runat="server" Text="Label"></asp:Label>
             </td>
         </tr>
-        <tr>
-            <td class="FormLabel">
-                <asp:Label ID="StandardUserGroupLabel" runat="server" Text="Standard User Group:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <jgwac:EntityLink ID="StandardUserGroup" runat="server" />
-            </td>
-        </tr>
     </table>
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="FormButtons">

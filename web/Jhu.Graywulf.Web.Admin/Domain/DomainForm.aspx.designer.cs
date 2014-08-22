@@ -137,32 +137,5 @@ namespace Jhu.Graywulf.Web.Admin.Domain {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox AuthenticatorFactory;
-        
-        /// <summary>
-        /// StandardUserGroupRow control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow StandardUserGroupRow;
-        
-        /// <summary>
-        /// StandardUserGroupLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label StandardUserGroupLabel;
-        
-        /// <summary>
-        /// StandardUserGroup control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList StandardUserGroup;
     }
 }

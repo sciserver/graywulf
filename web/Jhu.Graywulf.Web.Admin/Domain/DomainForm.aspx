@@ -59,14 +59,5 @@
                 <asp:TextBox ID="AuthenticatorFactory" runat="server" />
             </td>
         </tr>
-        <tr runat="server" id="StandardUserGroupRow">
-            <td class="FormLabel">
-                <asp:Label ID="StandardUserGroupLabel" runat="server" Text="Standard User Group:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <asp:DropDownList ID="StandardUserGroup" runat="server" CssClass="FormField">
-                </asp:DropDownList>
-            </td>
-        </tr>
     </table>
 </asp:Content>

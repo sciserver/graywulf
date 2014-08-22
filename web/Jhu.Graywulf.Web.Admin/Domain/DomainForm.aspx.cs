@@ -34,8 +34,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain
         {
             base.OnUpdateForm();
 
-            RefreshStandardUserGroupList();
-
             IdentityProvider.Text = Item.IdentityProvider;
             AuthenticatorFactory.Text = Item.AuthenticatorFactory;
             ShortTitle.Text = Item.ShortTitle;
@@ -43,12 +41,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain
             Email.Text = Item.Email;
             Copyright.Text = Item.Copyright;
             Disclaimer.Text = Item.Disclaimer;
-            StandardUserGroup.SelectedValue = Item.StandardUserGroupReference.Guid.ToString();
-
-            if (!Item.IsExisting)
-            {
-                StandardUserGroupRow.Visible = false;
-            }
         }
 
         protected override void OnSaveForm()
@@ -62,7 +54,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain
             Item.Email = Email.Text;
             Item.Copyright = Copyright.Text;
             Item.Disclaimer = Disclaimer.Text;
-            Item.StandardUserGroupReference.Guid = new Guid(StandardUserGroup.SelectedValue);
         }
 
         protected override void OnSaveFormCompleted(bool newentity)
@@ -71,18 +62,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain
             {
                 var i = new DomainInstaller(Item);
                 i.GenerateDefaultChildren();
-            }
-        }
-
-        protected void RefreshStandardUserGroupList()
-        {
-            StandardUserGroup.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
-
-            Item.LoadUserGroups(false);
-
-            foreach (UserGroup ug in Item.UserGroups.Values)
-            {
-                StandardUserGroup.Items.Add(new ListItem(ug.Name, ug.Guid.ToString()));
             }
         }
     }
