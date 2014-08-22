@@ -99,7 +99,7 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
         protected void SignIn(Cluster cluster)
         {
             cluster.LoadDomains(false);
-            var domain = cluster.Domains[Registry.Constants.SharedDomainName];
+            var domain = cluster.Domains[Registry.Constants.SystemDomainName];
 
             var uu = new UserFactory(cluster.Context);
             uu.LoginUser(domain, userName, password);

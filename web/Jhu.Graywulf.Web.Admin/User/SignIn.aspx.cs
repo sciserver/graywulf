@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.Web.Admin.User
                 cluster.Load();
 
                 cluster.LoadDomains(false);
-                var domain = cluster.Domains[Registry.Constants.SharedDomainName];
+                var domain = cluster.Domains[Registry.Constants.SystemDomainName];
 
                 var uu = new UserFactory(RegistryContext);
                 user = uu.LoginUser(domain, Username.Text, Password.Text);

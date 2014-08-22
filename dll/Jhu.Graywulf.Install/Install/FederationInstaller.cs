@@ -44,10 +44,10 @@ namespace Jhu.Graywulf.Install
             cluster.LoadMachineRoles(false);
 
             cluster.LoadDomains(false);
-            var shareddomain = cluster.Domains[Constants.SharedDomainName];
+            var shareddomain = cluster.Domains[Constants.SystemDomainName];
 
             shareddomain.LoadFederations(false);
-            var sharedfederation = shareddomain.Federations[Constants.SharedFederationName];
+            var sharedfederation = shareddomain.Federations[Constants.SystemFederationName];
 
             sharedfederation.LoadDatabaseDefinitions(false);
 

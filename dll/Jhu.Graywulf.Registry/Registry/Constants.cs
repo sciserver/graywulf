@@ -28,6 +28,7 @@ namespace Jhu.Graywulf.Registry
         public const string MachineHostName = "localhost";
         public const string MachineAdminUrl = @"http://[$HostName]/gwcontrol";
         public const string MachineDeployUncPath = @"\\[$HostName]\GWCode\";
+        public const string DiskVolumeName = "Data";
         public const string DiskVolumeLocalPath = @"C:\Data\[$Name]\";
         public const string DiskVolumeUncPath = @"\\[$Parent.HostName]\Data\[$Name]\";
 
@@ -49,10 +50,11 @@ namespace Jhu.Graywulf.Registry
         public const string HotDatabaseVersionName = "HOT";
         public const string StatDatabaseVersionName = "STAT";
 
-        public const string SharedDomainName = "Shared";
-        public const string SharedFederationName = "Shared";
+        public const string SystemDomainName = "System";
+        public const string SystemFederationName = "System";
 
-        public const string StandardUserGroupName = "StandardUser";
+        public const string DefaultUserGroupName = "Public";
+        public const string DefaultUserRoleName = "User";
 
         public const string TempDbName = "TEMP";
         public const string TempDbInstanceNamePattern = "[$DatabaseDefinition.Name]_[$ServerInstance.Machine.Name]_[$ServerInstance.Name]";

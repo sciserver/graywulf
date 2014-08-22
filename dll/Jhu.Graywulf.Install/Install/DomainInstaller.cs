@@ -50,12 +50,19 @@ namespace Jhu.Graywulf.Install
         public void GenerateDefaultChildren()
         {
             // Create standard user group
-            UserGroup ug = new UserGroup(domain);
-            ug.Name = Constants.StandardUserGroupName;
+            var ug = new UserGroup(domain)
+            {
+                Name = Constants.DefaultUserGroupName
+            };
             ug.Save();
 
-            domain.StandardUserGroup = ug;
-            domain.Save();
+            // Create standard user role
+            var ur = new UserRole(domain)
+            {
+                Name = Constants.DefaultUserRoleName,
+                Default = true
+            };
+            ur.Save();
         }
 
         private string GenerateKey(int numBytes)
@@ -64,7 +71,7 @@ namespace Jhu.Graywulf.Install
             var buff = new byte[numBytes];
 
             rng.GetBytes(buff);
-            
+
             return BytesToHexString(buff);
         }
 
@@ -76,7 +83,7 @@ namespace Jhu.Graywulf.Install
             {
                 hexString.Append(String.Format("{0:X2}", bytes[counter]));
             }
-            
+
             return hexString.ToString();
         }
     }

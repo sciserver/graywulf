@@ -145,9 +145,9 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             {
                 var c = Item.Domain.Cluster;
                 c.LoadDomains(false);
-                var d = c.Domains[Registry.Constants.SharedDomainName];
+                var d = c.Domains[Registry.Constants.SystemDomainName];
                 d.LoadFederations(false);
-                var f = d.Federations[Registry.Constants.SharedFederationName];
+                var f = d.Federations[Registry.Constants.SystemFederationName];
 
                 TempDatabaseVersion.ChildEntityTypes = new[] { EntityType.DatabaseDefinition, EntityType.DatabaseVersion };
                 TempDatabaseVersion.ParentEntity = f;

@@ -88,20 +88,29 @@ namespace Jhu.Graywulf.Install
             nodesv.Save();
 
             //      -- Create a node
-            /*
-            Machine mnode = new Machine(Context, mrnode);
-            mnode.Name = Constants.NodeMachineName;
+            var mnode = new Machine(mrnode)
+            {
+                Name = Constants.NodeMachineRoleName + "00"
+            };
             mnode.Save();
 
-            si = new ServerInstance(Context, mnode);
-            si.Name = Constants.ServerInstanceName;
-            si.ServerVersionReference.Value = sv;
-            si.Save();*/
+            var sinode = new ServerInstance(mnode)
+            {
+                Name = Constants.ServerInstanceName,
+                ServerVersion = sv,
+            };
+            sinode.Save();
+
+            var dnode = new DiskVolume(mnode)
+            {
+                Name = Constants.DiskVolumeName + "0",
+            };
+            dnode.Save();
 
             // Create the shared domain for cluster level databases and users
             var domain = new Domain(cluster)
             {
-                Name = Constants.SharedDomainName,
+                Name = Constants.SystemDomainName,
                 Email = email,
                 System = system,
             };
@@ -114,7 +123,7 @@ namespace Jhu.Graywulf.Install
             // Create the shared feredation
             var federation = new Federation(domain)
             {
-                Name = Constants.SharedFederationName,
+                Name = Constants.SystemFederationName,
                 Email = email,
                 System = system,
                 ControllerMachine = mcont,
@@ -151,7 +160,7 @@ namespace Jhu.Graywulf.Install
             QueueInstance qi = new QueueInstance(mcont)
             {
                 Name = Constants.MaintenanceQueueName,
-                System = system,
+                System = true,
                 Hidden = true,
                 RunningState = Registry.RunningState.Running,
             };
@@ -214,7 +223,7 @@ namespace Jhu.Graywulf.Install
         private void GenerateAdminGroup(bool system)
         {
             cluster.LoadDomains(true);
-            var domain = cluster.Domains[Constants.SharedDomainName];
+            var domain = cluster.Domains[Constants.SystemDomainName];
 
             var ug = new UserGroup(domain)
             {
@@ -227,7 +236,7 @@ namespace Jhu.Graywulf.Install
         public void GenerateAdmin(bool system, string username, string email, string password)
         {
             cluster.LoadDomains(true);
-            var domain = cluster.Domains[Constants.SharedDomainName];
+            var domain = cluster.Domains[Constants.SystemDomainName];
 
             domain.LoadUserGroups(true);
             var ug = domain.UserGroups[Constants.ClusterAdministratorUserGroupName];
