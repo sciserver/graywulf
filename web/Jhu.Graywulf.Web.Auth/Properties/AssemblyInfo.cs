@@ -7,29 +7,14 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("Jhu.Graywulf.Web.Auth")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Jhu.Graywulf.Web.Auth")]
-[assembly: AssemblyCopyright("Copyright ©  2012")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+[assembly: AssemblyConfiguration(Jhu.Graywulf.Copyright.InfoConfiguration)]
+[assembly: AssemblyCompany(Jhu.Graywulf.Copyright.InfoCompany)]
+[assembly: AssemblyProduct(Jhu.Graywulf.Copyright.InfoProduct)]
+[assembly: AssemblyCopyright(Jhu.Graywulf.Copyright.InfoCopyright)]
+[assembly: AssemblyTrademark(Jhu.Graywulf.Copyright.InfoTrademark)]
+[assembly: AssemblyCulture(Jhu.Graywulf.Copyright.InfoCulture)]
 
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
+[assembly: AssemblyVersion(Jhu.Graywulf.Copyright.AssemblyVersion)]
+
 [assembly: ComVisible(false)]
-
-// The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("0a804b38-8a67-40e6-8cca-a57b55f085b3")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]

@@ -13,9 +13,10 @@ namespace Jhu.Graywulf
         public const string InfoConfiguration = "Release";
 #endif
         public const string InfoProduct = "Graywulf";
-        public const string InfoCompany = "ELTE/JHU IDIES";
-        public const string InfoCopyright = "Copyright (c) 2008-2014 László Dobos, Eötvös University, The Johns Hopkins University";
+        public const string InfoCompany = "JHU IDIES / ELTE";
+        public const string InfoCopyright = "Copyright (c) 2008-2014 László Dobos, IDIES, The Johns Hopkins University, Eötvös University";
         public const string InfoTrademark = "";
         public const string InfoCulture = "";
+        public const string AssemblyVersion = "1.0.*";
     }
 }
