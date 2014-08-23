@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Security
             get { return roles; }
         }
 
-        internal GraywulfPrincipal(GraywulfIdentity identity)
+        public GraywulfPrincipal(GraywulfIdentity identity)
         {
             this.roles = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
             this.identity = identity;

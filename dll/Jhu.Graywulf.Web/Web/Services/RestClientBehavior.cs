@@ -11,7 +11,6 @@ using System.ServiceModel.Configuration;
 using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Web;
-using System.Net.Http.Headers;
 
 namespace Jhu.Graywulf.Web.Services
 {

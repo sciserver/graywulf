@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.Web.Security
         public bool IsMasterAuthority
         {
             get { return isMasterAuthority; }
-            internal set { isMasterAuthority = value; }
+            set { isMasterAuthority = value; }
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace Jhu.Graywulf.Web.Security
         public bool IsAuthenticated
         {
             get { return isAuthenticated; }
-            internal set { isAuthenticated = value; }
+            set { isAuthenticated = value; }
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace Jhu.Graywulf.Web.Security
             set { userReference.Value = value; }
         }
 
-        internal GraywulfIdentity()
+        public GraywulfIdentity()
         {
             InitializeMembers(new StreamingContext());
         }

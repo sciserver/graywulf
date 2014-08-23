@@ -56,9 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Security\AuthenticatorSettingsTest.cs" />
     <Compile Include="Security\GraywulfIdentityProviderTest.cs" />
-    <Compile Include="Security\KeystoneIdentityProviderTest.cs" />
     <Compile Include="Web\Api\V1\ApiTestBase.cs" />
     <Compile Include="Web\Api\V1\AuthServiceTest.cs" />
     <Compile Include="Web\Api\V1\DataServiceTest.cs" />
