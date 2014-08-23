@@ -56,21 +56,9 @@
     <Compile Include="Web\Security\KeystoneIdentityProviderTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\keystone-client\src\Jhu.Graywulf.Keystone\Jhu.Graywulf.Keystone.csproj">
-      <Project>{fb1b903b-cba6-4e7e-8c03-c7d8c49e2471}</Project>
-      <Name>Jhu.Graywulf.Keystone</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\rest-client\src\Jhu.Graywulf.SimpleRestClient\Jhu.Graywulf.SimpleRestClient.csproj">
-      <Project>{8ec7930c-ccc4-47d3-99bd-39e54eb405a9}</Project>
-      <Name>Jhu.Graywulf.SimpleRestClient</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{abb4c403-720a-47e1-9485-cfaadd696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Plugins\Jhu.Graywulf.Plugins.csproj">
-      <Project>{644dcdc2-729e-4f84-84d0-ad9c2f49a8c8}</Project>
-      <Name>Jhu.Graywulf.Plugins</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry.Enum\Jhu.Graywulf.Registry.Enum.sqlproj">
       <Project>{d0cbe71f-b0fc-4911-b5ec-ddddea10656e}</Project>

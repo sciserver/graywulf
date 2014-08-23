@@ -64,14 +64,6 @@
     <Compile Include="Web\Api\V1\ObjectSerializationTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\keystone-client\src\Jhu.Graywulf.Keystone\Jhu.Graywulf.Keystone.csproj">
-      <Project>{FB1B903B-CBA6-4E7E-8C03-C7D8C49E2471}</Project>
-      <Name>Jhu.Graywulf.Keystone</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\rest-client\src\Jhu.Graywulf.SimpleRestClient\Jhu.Graywulf.SimpleRestClient.csproj">
-      <Project>{8EC7930C-CCC4-47D3-99BD-39E54EB405A9}</Project>
-      <Name>Jhu.Graywulf.SimpleRestClient</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>

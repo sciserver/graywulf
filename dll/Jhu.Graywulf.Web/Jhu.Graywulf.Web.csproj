@@ -167,14 +167,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\keystone-client\src\Jhu.Graywulf.Keystone\Jhu.Graywulf.Keystone.csproj">
-      <Project>{FB1B903B-CBA6-4E7E-8C03-C7D8C49E2471}</Project>
-      <Name>Jhu.Graywulf.Keystone</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\rest-client\src\Jhu.Graywulf.SimpleRestClient\Jhu.Graywulf.SimpleRestClient.csproj">
-      <Project>{8EC7930C-CCC4-47D3-99BD-39E54EB405A9}</Project>
-      <Name>Jhu.Graywulf.SimpleRestClient</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
       <Project>{57392DA3-E280-48EE-80C8-64E09FD8AFB5}</Project>
       <Name>Jhu.Graywulf.Activities</Name>
