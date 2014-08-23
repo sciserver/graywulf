@@ -829,7 +829,14 @@ mklink /D $(ProjectDir)Templates $(ProjectDir)..\Jhu.Graywulf.Web.Shared\Templat
 
 IF EXIST $(ProjectDir)Docs\pages rmdir $(ProjectDir)Docs\pages /s /q
 mklink /D $(ProjectDir)Docs\pages $(SolutionDir)docs\pages
-</PreBuildEvent>
+
+REM Create symlinks to directories under packages
+
+IF EXIST $(ProjectDir)Scripts\CodeMirror rmdir $(ProjectDir)Scripts\CodeMirror /s /q
+mklink /D $(ProjectDir)Scripts\CodeMirror $(SolutionDir)packages\CodeMirror.NuGet.3.20.01\content\Scripts\CodeMirror
+
+IF EXIST $(ProjectDir)Scripts\SyntaxHighlighter rmdir $(ProjectDir)Scripts\SyntaxHighlighter /s /q
+mklink /D $(ProjectDir)Scripts\SyntaxHighlighter $(SolutionDir)packages\SyntaxHighlighter.NuGet.3.0.83.01\content\Scripts\SyntaxHighlighter</PreBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
