@@ -75,3 +75,9 @@ CREATE TABLE [dbo].[UserRoleMembership]
 )
 
 GO
+
+-- Repace old 'Shared' cluster and federation name with the more appropriate System
+
+UPDATE Entity
+SET Name = 'System'
+WHERE Name = 'Shared'
