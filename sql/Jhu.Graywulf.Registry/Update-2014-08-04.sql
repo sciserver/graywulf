@@ -12,7 +12,7 @@ CREATE TABLE [dbo].[JobInstanceDependency]
 
 GO
 
--- Add new column IdentityProvider to domain
+-- Update Domain Table
 
 CREATE TABLE dbo.Tmp_Domain
 	(
@@ -48,6 +48,51 @@ ALTER TABLE dbo.Domain ADD CONSTRAINT
 	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 
 GO
+
+-- Update Federation table
+
+CREATE TABLE dbo.Tmp_Federation
+	(
+		[EntityGuid] [uniqueidentifier] NOT NULL,
+		[SchemaManager] [nvarchar](1024) NOT NULL,
+		[QueryFactory] [nvarchar](1024) NOT NULL,
+		[FileFormatFactory] [nvarchar](1024) NOT NULL,
+		[StreamFactory] [nvarchar](1024) NOT NULL,
+		[ShortTitle] [nvarchar](50) NOT NULL,
+		[LongTitle] [nvarchar](256) NOT NULL,
+		[Email] [nvarchar](128) NOT NULL,
+		[Copyright] [nvarchar](1024) NOT NULL,
+		[Disclaimer] [nvarchar](1024) NOT NULL,
+	)  ON [PRIMARY]
+GO
+
+
+INSERT INTO dbo.Tmp_Federation 
+	(EntityGuid, SchemaManager, QueryFactory, FileFormatFactory, StreamFactory, ShortTitle, LongTitle, Email, Copyright, Disclaimer)
+SELECT 
+	EntityGuid, 'Jhu.Graywulf.Schema.GraywulfSchemaManager, Jhu.Graywulf.Registry',
+	QueryFactory, FileFormatFactory, StreamFactory,
+	ShortTitle, LongTitle, Email, Copyright, Disclaimer
+FROM dbo.Federation WITH (HOLDLOCK TABLOCKX)
+
+GO
+
+DROP TABLE dbo.Federation
+
+GO
+
+EXECUTE sp_rename N'dbo.Tmp_Federation', N'Federation', 'OBJECT' 
+
+GO
+
+ALTER TABLE dbo.Federation ADD CONSTRAINT
+	PK_Federation PRIMARY KEY CLUSTERED 
+	(
+	EntityGuid
+	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+
+GO
+
 
 -- Create user role table
 

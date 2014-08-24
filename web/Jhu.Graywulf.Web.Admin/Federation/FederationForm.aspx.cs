@@ -34,6 +34,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
             RefreshLists();
 
+            SchemaManager.Text = Item.SchemaManager;
             QueryFactory.Text = Item.QueryFactory;
             FileFormatFactory.Text = Item.FileFormatFactory;
             StreamFactory.Text = Item.StreamFactory;
@@ -55,6 +56,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.OnSaveForm();
 
+            Item.SchemaManager = SchemaManager.Text;
             Item.QueryFactory = QueryFactory.Text;
             Item.FileFormatFactory = FileFormatFactory.Text;
             Item.StreamFactory = StreamFactory.Text;

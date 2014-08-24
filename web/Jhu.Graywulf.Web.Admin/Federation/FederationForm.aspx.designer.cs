@@ -103,6 +103,24 @@ namespace Jhu.Graywulf.Web.Admin.Federation {
         protected global::System.Web.UI.WebControls.TextBox Disclaimer;
         
         /// <summary>
+        /// SchemaManagerLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label SchemaManagerLabel;
+        
+        /// <summary>
+        /// SchemaManager control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox SchemaManager;
+        
+        /// <summary>
         /// QueryFactoryLabel control.
         /// </summary>
         /// <remarks>

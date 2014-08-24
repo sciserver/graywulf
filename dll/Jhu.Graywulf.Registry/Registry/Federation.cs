@@ -28,6 +28,7 @@ namespace Jhu.Graywulf.Registry
         #region Member Variables
 
         // --- Background storage for properties ---
+        private string schemaManager;
         private string queryFactory;
         private string fileFormatFactory;
         private string streamFactory;
@@ -50,6 +51,13 @@ namespace Jhu.Graywulf.Registry
         public override EntityGroup EntityGroup
         {
             get { return EntityGroup.Federation; }
+        }
+
+        [DBColumn(Size = 1024)]
+        public string SchemaManager
+        {
+            get { return schemaManager; }
+            set { schemaManager = value; }
         }
 
         [DBColumn(Size = 1024)]
@@ -323,6 +331,7 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
+            this.schemaManager = String.Empty;
             this.queryFactory = String.Empty;
             this.fileFormatFactory = String.Empty;
             this.streamFactory = String.Empty;
@@ -339,6 +348,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="old">A <b>Federation</b> object to create the deep copy from.</param>
         private void CopyMembers(Federation old)
         {
+            this.schemaManager = old.schemaManager;
             this.queryFactory = old.queryFactory;
             this.fileFormatFactory = old.fileFormatFactory;
             this.streamFactory = old.streamFactory;

@@ -45,6 +45,14 @@
         </tr>
         <tr>
             <td class="FormLabel">
+                <asp:Label ID="SchemaManagerLabel" runat="server" Text="Schema Manager:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:TextBox ID="SchemaManager" runat="server" />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabel">
                 <asp:Label ID="QueryFactoryLabel" runat="server" Text="Query Factory:"></asp:Label>
             </td>
             <td class="FormField">

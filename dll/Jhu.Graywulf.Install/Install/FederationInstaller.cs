@@ -89,6 +89,7 @@ namespace Jhu.Graywulf.Install
             //LongTitle
             //Email
 
+            federation.SchemaManager = typeof(Jhu.Graywulf.Schema.GraywulfSchemaManager).AssemblyQualifiedName;
             federation.QueryFactory = typeof(Jhu.Graywulf.Jobs.Query.SqlQueryFactory).AssemblyQualifiedName;
             federation.FileFormatFactory = typeof(Jhu.Graywulf.Format.FileFormatFactory).AssemblyQualifiedName;
             federation.StreamFactory = typeof(Jhu.Graywulf.IO.StreamFactory).AssemblyQualifiedName;
