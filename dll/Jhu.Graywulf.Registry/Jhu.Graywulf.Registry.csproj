@@ -61,6 +61,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Install\DatabaseInstanceInstaller.cs" />
+    <Compile Include="Install\UserDatabaseInstanceInstaller.cs" />
     <Compile Include="Registry\AppSettings.cs" />
     <Compile Include="Registry\FederationContext.cs" />
     <Compile Include="Registry\JobInstanceDependency.cs" />
@@ -194,9 +196,10 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Registry\WebEntityFactory.cs" />
-    <Compile Include="Schema\DatasetFactory.cs" />
     <Compile Include="Schema\GraywulfDataset.cs" />
     <Compile Include="Schema\GraywulfSchemaManager.cs" />
+    <Compile Include="Schema\GraywulfUserDatabaseFactory.cs" />
+    <Compile Include="Schema\UserDatabaseFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Registry\EntityNames.resx">

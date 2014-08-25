@@ -691,7 +691,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 case ExecutionMode.SingleServer:
                     return new Schema.SqlServer.SqlServerSchemaManager();
                 case ExecutionMode.Graywulf:
-                    return new GraywulfSchemaManager(context, federationReference.Name);
+                    return GraywulfSchemaManager.Create(federationReference.Value);
                 default:
                     throw new NotImplementedException();
             }

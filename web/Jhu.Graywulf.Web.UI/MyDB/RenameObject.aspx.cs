@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
             // Make sure it's in MYDB
             // *** TODO: implement security logic and replace this
-            if (StringComparer.InvariantCultureIgnoreCase.Compare(obj.DatasetName, FederationContext.MyDBDatabaseDefinition.Name) != 0)
+            if (StringComparer.InvariantCultureIgnoreCase.Compare(obj.DatasetName, FederationContext.MyDBDataset.Name) != 0)
             {
                 throw new InvalidOperationException();  // *** TODO
             }

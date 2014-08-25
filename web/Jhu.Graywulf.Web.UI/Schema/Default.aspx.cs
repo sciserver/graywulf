@@ -70,7 +70,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
             // Add MyDB as the first item
 
-            var mydbli = new ListItem(FederationContext.MyDBDatabaseDefinition.Name, FederationContext.MyDBDatabaseDefinition.Name);
+            var mydbli = new ListItem(FederationContext.MyDBDataset.Name, FederationContext.MyDBDataset.Name);
             mydbli.Attributes.Add("class", "ToolbarControlHighlight");
             DatasetList.Items.Add(mydbli);
 
@@ -83,7 +83,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
             // Add other registered catalogs            
 
             FederationContext.SchemaManager.Datasets.LoadAll();
-            foreach (var dsd in FederationContext.SchemaManager.Datasets.Values.Where(k => k.Name != FederationContext.MyDBDatabaseDefinition.Name).OrderBy(k => k.Name))
+            foreach (var dsd in FederationContext.SchemaManager.Datasets.Values.Where(k => k.Name != FederationContext.MyDBDataset.Name).OrderBy(k => k.Name))
             {
                 DatasetList.Items.Add(dsd.Name);
             }

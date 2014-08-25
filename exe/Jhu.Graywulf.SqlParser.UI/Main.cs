@@ -69,9 +69,7 @@ namespace Jhu.Graywulf.Parser.Test
 
 
                     Jhu.Graywulf.Schema.SchemaManager sm =
-                        new Jhu.Graywulf.Schema.GraywulfSchemaManager(context,
-                            Jhu.Graywulf.Registry.AppSettings.FederationName);
-
+                        GraywulfSchemaManager.Create(context.Federation);
 
                     // *** Add test datasets here
                     sm.Datasets["MYDB"] = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset("MYDB", "Data Source=localhost;Integrated Security=true;Initial Catalog=GraywulfSchemaTest");

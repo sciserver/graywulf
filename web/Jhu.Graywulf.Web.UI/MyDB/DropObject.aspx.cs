@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                 var obj = FederationContext.SchemaManager.GetDatabaseObjectByKey(objid);
 
                 // Make sure it's in MYDB
-                if (StringComparer.InvariantCultureIgnoreCase.Compare(obj.DatasetName, FederationContext.MyDBDatabaseDefinition.Name) != 0)
+                if (StringComparer.InvariantCultureIgnoreCase.Compare(obj.DatasetName, FederationContext.MyDBDataset.Name) != 0)
                 {
                     throw new InvalidOperationException();  // *** TODO
                 }

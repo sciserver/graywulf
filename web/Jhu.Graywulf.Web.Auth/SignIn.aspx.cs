@@ -274,6 +274,10 @@ namespace Jhu.Graywulf.Web.Auth
                 // Load failed logon attempt
                 LogError(ex);
 
+#if DEBUG
+                System.Diagnostics.Debugger.Break();
+#endif
+
                 // TODO: there five different exceptions thrown by different parts of
                 // the code when access is denied. Sort these out for once.
 
