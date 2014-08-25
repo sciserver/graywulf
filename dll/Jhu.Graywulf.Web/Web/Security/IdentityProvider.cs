@@ -73,10 +73,10 @@ namespace Jhu.Graywulf.Web.Security
                 type = Type.GetType(domain.IdentityProvider);
             }
 
-            // Fall back logic if config is invalid
+            // There is no fall-back alternative if configuration is incorrect
             if (type == null)
             {
-                type = typeof(GraywulfIdentityProvider);
+                throw new Exception("Cannot load IdentityProvider specified in domain settings.");    // TODO ***
             }
 
             return (IdentityProvider)Activator.CreateInstance(type, new object [] { domain });

@@ -40,10 +40,10 @@ namespace Jhu.Graywulf.Schema
                 type = Type.GetType(federation.UserDatabaseFactory);
             }
 
-            // Fall back logic if config is invalid
+            // There is no fall-back alternative if configuration is incorrect
             if (type == null)
             {
-                type = typeof(UserDatabaseFactory);
+                throw new Exception("Cannot load UserDatabaseFactory specified in federation settings.");    // TODO ***
             }
 
             return (UserDatabaseFactory)Activator.CreateInstance(type, new object[] { federation });
