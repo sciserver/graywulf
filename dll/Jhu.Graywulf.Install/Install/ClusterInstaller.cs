@@ -97,7 +97,7 @@ namespace Jhu.Graywulf.Install
             var sinode = new ServerInstance(mnode)
             {
                 Name = Constants.ServerInstanceName,
-                ServerVersion = sv,
+                ServerVersion = nodesv,
             };
             sinode.Save();
 
