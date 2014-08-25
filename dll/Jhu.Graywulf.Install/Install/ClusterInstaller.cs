@@ -104,6 +104,7 @@ namespace Jhu.Graywulf.Install
             var dnode = new DiskVolume(mnode)
             {
                 Name = Constants.DiskVolumeName + "0",
+                DiskVolumeType = DiskVolumeType.Data | DiskVolumeType.Log | DiskVolumeType.Temporary,
             };
             dnode.Save();
 
