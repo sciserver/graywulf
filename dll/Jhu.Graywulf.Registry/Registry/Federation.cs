@@ -29,6 +29,7 @@ namespace Jhu.Graywulf.Registry
 
         // --- Background storage for properties ---
         private string schemaManager;
+        private string userDatabaseFactory;
         private string queryFactory;
         private string fileFormatFactory;
         private string streamFactory;
@@ -58,6 +59,13 @@ namespace Jhu.Graywulf.Registry
         {
             get { return schemaManager; }
             set { schemaManager = value; }
+        }
+
+        [DBColumn(Size = 1024)]
+        public string UserDatabaseFactory
+        {
+            get { return userDatabaseFactory; }
+            set { userDatabaseFactory = value; }
         }
 
         [DBColumn(Size = 1024)]
@@ -332,6 +340,7 @@ namespace Jhu.Graywulf.Registry
         private void InitializeMembers()
         {
             this.schemaManager = String.Empty;
+            this.userDatabaseFactory = String.Empty;
             this.queryFactory = String.Empty;
             this.fileFormatFactory = String.Empty;
             this.streamFactory = String.Empty;

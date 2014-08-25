@@ -53,6 +53,14 @@
         </tr>
         <tr>
             <td class="FormLabel">
+                <asp:Label ID="UserDatabaseFactoryLabel" runat="server" Text="User database factory:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:TextBox ID="UserDatabaseFactory" runat="server" />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabel">
                 <asp:Label ID="QueryFactoryLabel" runat="server" Text="Query Factory:"></asp:Label>
             </td>
             <td class="FormField">

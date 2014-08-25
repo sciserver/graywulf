@@ -200,6 +200,7 @@ CREATE TABLE [dbo].[Federation]
 (
 		[EntityGuid] [uniqueidentifier] NOT NULL,
 		[SchemaManager] [nvarchar](1024) NOT NULL,
+		[UserDatabaseFactory] [nvarchar](1024) NOT NULL,
 		[QueryFactory] [nvarchar](1024) NOT NULL,
 		[FileFormatFactory] [nvarchar](1024) NOT NULL,
 		[StreamFactory] [nvarchar](1024) NOT NULL,

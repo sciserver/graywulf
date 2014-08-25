@@ -55,6 +55,7 @@ CREATE TABLE dbo.Tmp_Federation
 	(
 		[EntityGuid] [uniqueidentifier] NOT NULL,
 		[SchemaManager] [nvarchar](1024) NOT NULL,
+		[UserDatabaseFactory] [nvarchar](1024) NOT NULL,
 		[QueryFactory] [nvarchar](1024) NOT NULL,
 		[FileFormatFactory] [nvarchar](1024) NOT NULL,
 		[StreamFactory] [nvarchar](1024) NOT NULL,
@@ -68,9 +69,11 @@ GO
 
 
 INSERT INTO dbo.Tmp_Federation 
-	(EntityGuid, SchemaManager, QueryFactory, FileFormatFactory, StreamFactory, ShortTitle, LongTitle, Email, Copyright, Disclaimer)
+	(EntityGuid, SchemaManager, UserDatabaseFactory, QueryFactory, FileFormatFactory, StreamFactory, ShortTitle, LongTitle, Email, Copyright, Disclaimer)
 SELECT 
-	EntityGuid, 'Jhu.Graywulf.Schema.GraywulfSchemaManager, Jhu.Graywulf.Registry',
+	EntityGuid,
+	'Jhu.Graywulf.Schema.GraywulfSchemaManager, Jhu.Graywulf.Registry',
+	'Jhu.Graywulf.Schema.GraywulfUserDatabaseFactory, Jhu.Graywulf.Registry',
 	QueryFactory, FileFormatFactory, StreamFactory,
 	ShortTitle, LongTitle, Email, Copyright, Disclaimer
 FROM dbo.Federation WITH (HOLDLOCK TABLOCKX)
