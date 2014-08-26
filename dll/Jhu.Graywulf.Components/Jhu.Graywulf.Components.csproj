@@ -59,6 +59,8 @@
     <Compile Include="Components\AppSettings.cs" />
     <Compile Include="Components\AssemblyNameComparer.cs" />
     <Compile Include="Components\CacheItem.cs" />
+    <Compile Include="Components\CacheItemCollectedEventArgs.cs" />
+    <Compile Include="Components\CacheItemCollectingEventArgs.cs" />
     <Compile Include="Components\DelayedRetryLoop.cs" />
     <Compile Include="Components\Cache.cs" />
     <Compile Include="Components\DefaultDateTimeAttribute.cs" />

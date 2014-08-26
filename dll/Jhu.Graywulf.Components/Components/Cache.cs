@@ -17,6 +17,8 @@ namespace Jhu.Graywulf.Components
     {
         #region Private member variables
 
+        private object syncRoot;
+
         private IEqualityComparer<TKey> comparer;
         private ConcurrentDictionary<TKey, CacheItem<TValue>> cache;
         protected Timer collectionTimer;
@@ -24,6 +26,12 @@ namespace Jhu.Graywulf.Components
         private TimeSpan defaultLifetime;
         private bool autoExtendLifetime;
         private TimeSpan collectionInterval;
+
+        #endregion
+        #region Events
+
+        public event EventHandler<CacheItemCollectingEventArgs<TKey, TValue>> ItemCollecting;
+        public event EventHandler<CacheItemCollectedEventArgs<TKey, TValue>> ItemCollected;
 
         #endregion
         #region Properties
@@ -97,6 +105,8 @@ namespace Jhu.Graywulf.Components
 
         private void InitializeMembers()
         {
+            this.syncRoot = new object();
+
             this.defaultLifetime = new TimeSpan(0, 5, 0);
             this.autoExtendLifetime = true;
             this.collectionInterval = new TimeSpan(0, 5, 0);
@@ -129,23 +139,61 @@ namespace Jhu.Graywulf.Components
         /// <param name="state"></param>
         private void CollectionTimerCallback(object state)
         {
-            lock (this)
-            {
-                var delete = new HashSet<TKey>(this.comparer);
-                var now = DateTime.Now;
+            var delete = new HashSet<TKey>(this.comparer);
+            var now = DateTime.Now;
 
-                foreach (var item in cache)
+            // Get a dictionary of the current keys. This will be a snapshot
+            // of the current contents of the cache.
+            var keys = cache.Keys;
+
+            foreach (var key in keys)
+            {
+                var item = cache[key];
+
+                if (item.ExpiresAt <= now)
                 {
-                    if (item.Value.ExpiresAt <= now)
+                    if (ItemCollecting != null)
                     {
-                        delete.Add(item.Key);
+                        var e = new CacheItemCollectingEventArgs<TKey, TValue>()
+                        {
+                            Key = key,
+                            Item = item.Value,
+                        };
+
+                        ItemCollecting(this, e);
+
+                        // Only mark for delete if cancel is not requested
+                        if (!e.Cancel)
+                        {
+                            delete.Add(key);
+                        }
+                    }
+                    else
+                    {
+                        // If no event was fired mark it for delete anyway
+                        delete.Add(key);
                     }
                 }
+            }
 
-                foreach (var key in delete)
+            // Collect expired items from the cache
+            foreach (var key in delete)
+            {
+                CacheItem<TValue> item;
+
+                if (cache.TryRemove(key, out item))
                 {
-                    CacheItem<TValue> item;
-                    cache.TryRemove(key, out item);
+                    // Fire event if necessary
+                    if (ItemCollected != null)
+                    {
+                        var e = new CacheItemCollectedEventArgs<TKey, TValue>()
+                        {
+                            Key = key,
+                            Item = item.Value,
+                        };
+
+                        ItemCollected(this, e);
+                    }
                 }
             }
 
