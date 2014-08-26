@@ -288,9 +288,6 @@ namespace Jhu.Graywulf.Web.Auth
 
         private void RedirectAuthenticatedUser()
         {
-            // TODO return cookies and headers here
-            // TODO: solve disabled keystone user problem here
-
             var user = authResponse.Principal.Identity.User;
 
             if (user.IsActivated)
@@ -300,8 +297,6 @@ namespace Jhu.Graywulf.Web.Auth
 
                 var url = authResponse.GetReturnUrl();
                 Response.Redirect(url);
-
-                //FormsAuthentication.RedirectFromLoginPage(user.GetFullyQualifiedName(), Remember.Checked);
             }
             else
             {
