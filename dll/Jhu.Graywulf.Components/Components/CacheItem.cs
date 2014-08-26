@@ -22,6 +22,11 @@ namespace Jhu.Graywulf.Components
             set { expiresAt = value; }
         }
 
+        public bool IsExpired
+        {
+            get { return expiresAt < DateTime.Now; }
+        }
+
         public CacheItem(T value, DateTime expiresAt)
         {
             this.value = value;

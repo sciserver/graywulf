@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Components
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public class Cache<TKey, TValue>
+    public class Cache<TKey, TValue> : IDisposable
     {
         #region Private member variables
 
@@ -28,18 +28,28 @@ namespace Jhu.Graywulf.Components
         #endregion
         #region Properties
 
+        /// <summary>
+        /// Gets or sets the default lifetime of objects in cache.
+        /// </summary>
         public TimeSpan DefaultLifetime
         {
             get { return defaultLifetime; }
             set { defaultLifetime = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the value indicating whether object expiration time
+        /// is extended automatically when the objects are accessed.
+        /// </summary>
         public bool AutoExtendLifetime
         {
             get { return autoExtendLifetime; }
             set { autoExtendLifetime = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the garbage collection interval.
+        /// </summary>
         public TimeSpan CollectionInterval
         {
             get { return collectionInterval; }
@@ -101,9 +111,22 @@ namespace Jhu.Graywulf.Components
             this.cache = new ConcurrentDictionary<TKey, CacheItem<TValue>>(comparer);
         }
 
+        public void Dispose()
+        {
+            if (collectionTimer != null)
+            {
+                collectionTimer.Dispose();
+                collectionTimer = null;
+            }
+        }
+
         #endregion
         #region Cache collection logic
 
+        /// <summary>
+        /// Called by the timer to perform the garbage collection.
+        /// </summary>
+        /// <param name="state"></param>
         private void CollectionTimerCallback(object state)
         {
             lock (this)
@@ -129,6 +152,9 @@ namespace Jhu.Graywulf.Components
             StartTimer();
         }
 
+        /// <summary>
+        /// Starts or restarts the garbage collection timer.
+        /// </summary>
         private void StartTimer()
         {
             // Reschedule the timer, but turn of periodic firing.
@@ -157,19 +183,41 @@ namespace Jhu.Graywulf.Components
         /// <returns></returns>
         public bool TryAdd(TKey key, TValue value, TimeSpan lifetime)
         {
+            var expiresAt = DateTime.Now.Add(lifetime);
+            return TryAdd(key, value, expiresAt);
+        }
+
+        /// <summary>
+        /// Adds an item to the cache with a given expiration time.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expiresAt"></param>
+        /// <returns></returns>
+        public bool TryAdd(TKey key, TValue value, DateTime expiresAt)
+        {
             // Check if item is already in the cache. This test will also
             // cause the expiration time to extend.
 
             CacheItem<TValue> olditem;
-            if (!cache.TryGetValue(key, out olditem))
+            if (cache.TryGetValue(key, out olditem))
             {
-                var expiresAt = DateTime.Now.Add(lifetime);
-                var item = new CacheItem<TValue>(value, expiresAt);
-
-                return cache.TryAdd(key, item);
+                // Check if it's expired, if it has, simply throw away and
+                // add new item
+                if (olditem.IsExpired)
+                {
+                    cache.TryRemove(key, out olditem);
+                }
+                else
+                {
+                    // Cannot add new item, an unexpired old one still exists
+                    return false;
+                }
             }
 
-            return false;
+            // Now it's safe to try to add the new item
+            var item = new CacheItem<TValue>(value, expiresAt);
+            return cache.TryAdd(key, item);
         }
 
         /// <summary>
