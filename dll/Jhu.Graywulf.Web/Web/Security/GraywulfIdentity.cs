@@ -9,11 +9,15 @@ using Jhu.Graywulf.Registry;
 namespace Jhu.Graywulf.Web.Security
 {
     /// <summary>
-    /// Implements an identity for Graywulf authentication schemes.
+    /// Implements an identity for Graywulf authentication schemes that
+    /// carries information about the identified used and the method of
+    /// authentication.
     /// </summary>
     [Serializable]
     public class GraywulfIdentity : IIdentity
     {
+        #region Private member variables
+
         private string protocol;
         private string authorityName;
         private string authorityUri;
@@ -21,6 +25,9 @@ namespace Jhu.Graywulf.Web.Security
         private string identifier;
         private bool isAuthenticated;
         private EntityReference<User> userReference;
+
+        #endregion
+        #region Properties
 
         /// <summary>
         /// Gets the name of the authentication type
@@ -101,10 +108,10 @@ namespace Jhu.Graywulf.Web.Security
         }
 
         /// <summary>
-        /// Gets the name of the registry user.
+        /// Gets the (non-qualified) name of the registry user.
         /// </summary>
         /// <remarks>
-        /// Required by the IIdentity
+        /// Required by the IIdentity interface
         /// </remarks>
         public string Name
         {
@@ -119,6 +126,9 @@ namespace Jhu.Graywulf.Web.Security
             get { return userReference.Value; }
             set { userReference.Value = value; }
         }
+
+        #endregion
+        #region Constructors and initializers
 
         public GraywulfIdentity()
         {
@@ -150,6 +160,8 @@ namespace Jhu.Graywulf.Web.Security
             this.isAuthenticated = old.isAuthenticated;
             this.userReference = new EntityReference<User>(null, old.userReference);
         }
+
+        #endregion
 
         /// <summary>
         /// Compares two identities by protocol, authority and identifier.

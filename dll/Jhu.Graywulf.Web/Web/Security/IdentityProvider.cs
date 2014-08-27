@@ -11,12 +11,15 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
 {
+    /// <summary>
+    /// When implmented in derived classes, offers function to manipulate and
+    /// authenticate users.
+    /// </summary>
     public abstract class IdentityProvider
     {
         #region Member Variables
 
         private Context context;
-
         private bool isActivationRequired;
 
         #endregion
@@ -62,8 +65,14 @@ namespace Jhu.Graywulf.Web.Security
             InitializeMembers(new StreamingContext());
 
             this.context = context;
+            this.isActivationRequired = true;
         }
 
+        /// <summary>
+        /// Creates a new identity provider based on the domain configuration.
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <returns></returns>
         public static IdentityProvider Create(Domain domain)
         {
             Type type = null;
@@ -106,6 +115,12 @@ namespace Jhu.Graywulf.Web.Security
         /// </remarks>
         public abstract User GetUserByUserName(string username);
 
+        /// <summary>
+        /// Returns a user identified by e-mail. This function can be used
+        /// for password recovery emails.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
         public abstract User GetUserByEmail(string email);
 
         /// <summary>
@@ -128,8 +143,19 @@ namespace Jhu.Graywulf.Web.Security
             OnCreateUser(user);
         }
 
+        /// <summary>
+        /// Called by CreateUser. When implemented in derived classes, creates a new
+        /// user.
+        /// </summary>
+        /// <param name="user"></param>
         protected abstract void OnCreateUser(User user);
 
+        /// <summary>
+        /// Appends an identity (OpenID, etc.) to the user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="identity"></param>
+        /// <returns></returns>
         public abstract UserIdentity AddUserIdentity(User user, GraywulfIdentity identity);
 
         /// <summary>
@@ -216,22 +242,19 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region User group membership
 
+        /// <summary>
+        /// Makes a user a member of a given group.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="group"></param>
         public abstract void MakeMemberOf(User user, UserGroup group);
 
+        /// <summary>
+        /// Removes a user from a given group.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="group"></param>
         public abstract void RevokeMemberOf(User user, UserGroup group);
-
-        #endregion
-        #region Authentication token functions
-
-#if false
-        public abstract Token IssueToken(User user, DateTime expiresAt);
-
-        public abstract Token RenewToken(User user, Token token, DateTime expiresAt);
-
-        public abstract void RevokeToken(User user, Token token);
-
-        // TODO: create long-living token
-#endif
 
         #endregion
     }

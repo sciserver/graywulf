@@ -10,13 +10,16 @@ using Jhu.Graywulf.Registry;
 namespace Jhu.Graywulf.Web.Security
 {
     /// <summary>
-    /// Implement functions to authenticate web requests using a set
+    /// Implements functions to authenticate web requests using a custom set
     /// of authenticators.
     /// </summary>
     /// <remarks>
     /// This class is a base for two implementations: for one to authenticate
-    /// web page request based on the HTTP request header and for another
-    /// 
+    /// web page request based on the HTTP request header and for another to
+    /// authenticate WCF REST request.
+    /// Because REST clients are less likely to support session cookies, the
+    /// implementation uses a static cache to store suer informations, this way
+    /// reducing registry access.
     /// </remarks>
     public abstract class AuthenticationModuleBase : IDisposable
     {
@@ -37,7 +40,6 @@ namespace Jhu.Graywulf.Web.Security
             {
                 AutoExtendLifetime = true,
                 CollectionInterval = new TimeSpan(0, 1, 0),     // one minute
-                // TODO: implement per token expiration...
                 DefaultLifetime = new TimeSpan(0, 20, 0),       // twenty minutes
             };
         }
@@ -72,6 +74,9 @@ namespace Jhu.Graywulf.Web.Security
         /// <summary>
         /// Registers request authenticators.
         /// </summary>
+        /// <remarks>
+        /// This function should be called by the various implementations.
+        /// </remarks>
         /// <param name="authenticators"></param>
         protected void RegisterAuthenticators(IEnumerable<Authenticator> authenticators)
         {
@@ -79,7 +84,7 @@ namespace Jhu.Graywulf.Web.Security
         }
 
         /// <summary>
-        /// Calls all registered request authenticators on.
+        /// Calls all registered request authenticators.
         /// </summary>
         /// <param name="context"></param>
         protected virtual AuthenticationResponse Authenticate(AuthenticationRequest request)

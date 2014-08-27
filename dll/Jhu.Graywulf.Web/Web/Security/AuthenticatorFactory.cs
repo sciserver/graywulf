@@ -13,9 +13,11 @@ namespace Jhu.Graywulf.Web.Security
     /// </summary>
     public class AuthenticatorFactory
     {
+        #region Static members to cache authenticators
+
         private static readonly object syncRoot = new object();
         private static bool initialized;
-        
+
         private static List<Authenticator> allAuthenticators;
         private static List<Authenticator> webInteractiveAuthenticators;
         private static List<Authenticator> webRequestAuthenticators;
@@ -99,16 +101,32 @@ namespace Jhu.Graywulf.Web.Security
             }
         }
 
+        #endregion
+        #region Constructors and initializers
+
         protected AuthenticatorFactory()
         {
         }
 
+        #endregion
+
+        /// <summary>
+        /// Returns all authenticators requiring interactive authentication as
+        /// an enumerable.
+        /// </summary>
+        /// <returns></returns>
         public virtual IEnumerable<Authenticator> GetInteractiveAuthenticators()
         {
             return webInteractiveAuthenticators;
         }
 
-        // TODO: delete this and add logic to somewhere else
+        /// <summary>
+        /// Returns an interactive authenticator (i.e. on requiring redirection to a web page)
+        /// identified by the protocol name and authority url.
+        /// </summary>
+        /// <param name="protocol"></param>
+        /// <param name="authority"></param>
+        /// <returns></returns>
         public Authenticator GetInteractiveAuthenticator(string protocol, string authority)
         {
             foreach (var a in GetInteractiveAuthenticators())
@@ -123,11 +141,21 @@ namespace Jhu.Graywulf.Web.Security
             return null;
         }
 
+        /// <summary>
+        /// Returns all authenticators capable of authenticating HTTP web requests
+        /// as an enumerable.
+        /// </summary>
+        /// <returns></returns>
         public virtual IEnumerable<Authenticator> GetWebRequestAuthenticators()
         {
             return webRequestAuthenticators;
         }
 
+        /// <summary>
+        /// Returns all authenticators capable of authenticating REST requests
+        /// as an enumerable.
+        /// </summary>
+        /// <returns></returns>
         public virtual IEnumerable<Authenticator> GetRestRequestAuthenticators()
         {
             yield return new FormsTicketAuthenticator();

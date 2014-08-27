@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Web.Security
 {
     /// <summary>
     /// When overriden in derived classes, performs per request
-    /// authentication based on form data, HTTP headers or cookies.
+    /// authentication based on form data, query parameters, HTTP headers or cookies.
     /// </summary>
     public abstract class Authenticator
     {
@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Web.Security
         }
 
         /// <summary>
-        /// Gets or sets if the authenticator is accepter as a master authority
+        /// Gets or sets if the authenticator is accepted as a master authority
         /// </summary>
         [XmlElement]
         public bool IsMasterAuthority
@@ -126,6 +126,11 @@ namespace Jhu.Graywulf.Web.Security
             return new GraywulfPrincipal(identity);
         }
 
+        /// <summary>
+        /// When implemented in derived classes, this function redirects the web browser
+        /// to the authentication page associated with the authenticator. This is typically
+        /// an OpenID provider.
+        /// </summary>
         public virtual void RedirectToLoginPage()
         {
             if ((ProtocolType & AuthenticatorProtocolType.WebInteractive) == 0)

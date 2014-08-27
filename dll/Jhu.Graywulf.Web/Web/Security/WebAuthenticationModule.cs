@@ -114,14 +114,6 @@ namespace Jhu.Graywulf.Web.Security
             // the web server (from Forms ticket, windows authentication, etc.)
             // In this case, the principal provided by the framework needs to
             // be converted to a graywulf principal
-
-            /* TODO: delete
-            var httpContext = HttpContext.Current;
-            
-            var principal = DispatchPrincipal(httpContext.User);
-
-            System.Threading.Thread.CurrentPrincipal = principal;
-            HttpContext.Current.User = principal;*/
         }
 
         private void OnPostAuthenticateRequest(object sender, EventArgs e)

@@ -13,8 +13,6 @@ namespace Jhu.Graywulf.Web.Security
         public const string ProtocolNameForms = "Forms";
         public const string ProtocolNameWindows = "Windows";
 
-        public const string UserRole = "User";
-
         public const string SettingsAuthenticators = "Authenticators";
 
         public const string HttpContextAuthenticationResponse = "Jhu.Graywulf.Web.Security.AuthenticationResponse";
