@@ -54,6 +54,14 @@ namespace Jhu.Graywulf.Web.Security
         private Authenticator[] authenticators;
 
         #endregion
+        #region Properties
+
+        protected Authenticator[] Authenticators
+        {
+            get { return authenticators; }
+        }
+
+        #endregion
         #region Constructors and initializers
 
         protected AuthenticationModuleBase()

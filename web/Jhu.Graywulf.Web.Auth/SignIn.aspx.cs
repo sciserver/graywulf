@@ -24,6 +24,20 @@ namespace Jhu.Graywulf.Web.Auth
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // The are various ways a user can arrive to this page:
+            //
+            // 1. When a user owns no authentication ticket or cookie and wants to access
+            //    a restricted resource they are redirected here.
+            // 2. The same happens when the user owns a ticket but the web site requires
+            //    it in a different form. For instance, instead of a cookie, in the form of
+            //    a query string parameter. It is a common practice when cross-domain
+            //    authentication should happen which isn't supported by the domain-specific
+            //    cookies.
+            // 3. When a user is trying to sing in using third-party identity providers, for
+            //    example OpenID. In this case the user is redirected back to this page by
+            //    the third party after successful authentication. In this case the session holds
+            //    a reference to the authenticator object used to send the user to the third party.
+
             // First try to authenticate by headers and cookies in the request only.
             // If that works, the user will be redirected back to the URL they were
             // coming from and execution will not get to the update form stage.
@@ -33,6 +47,8 @@ namespace Jhu.Graywulf.Web.Auth
             }
             else
             {
+                // If the identity of the user is already known
+
                 // If the authentication is unsuccessful based on request data,
                 // we need to display the form
                 UpdateForm();
@@ -292,7 +308,11 @@ namespace Jhu.Graywulf.Web.Auth
 
             if (user.IsActivated)
             {
-                authResponse.AddFormsAuthenticationTicket(Remember.Checked);
+                if (FormsAuthentication.IsEnabled)
+                {
+                    authResponse.AddFormsAuthenticationTicket(Remember.Checked);
+                }
+                
                 authResponse.SetResponseHeaders(Response);
 
                 var url = authResponse.GetReturnUrl();

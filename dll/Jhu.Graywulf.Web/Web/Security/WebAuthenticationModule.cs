@@ -74,6 +74,8 @@ namespace Jhu.Graywulf.Web.Security
             application.PostAuthenticateRequest += new EventHandler(OnPostAuthenticateRequest);
             // --- Identify authenticated user
             application.PostAcquireRequestState += new EventHandler(OnPostAcquireRequestState);
+            // --- Handle failed authentication
+            application.EndRequest += new EventHandler(OnEndRequest);
         }
 
         #endregion
@@ -185,6 +187,24 @@ namespace Jhu.Graywulf.Web.Security
                     httpContext.Session.Abandon();
                 }
             }
+        }
+
+        private void OnEndRequest(object sender, EventArgs e)
+        {
+            // Here we need to handle the case of a failed authentication and redirect
+            // the user a login page, if possible
+
+            var application = (HttpApplication)sender;
+            var context = application.Context;
+
+            // If response is not access denied we don't have to do anything
+            if (context.Response.StatusCode != 401)
+            {
+                return;
+            }
+
+            // Use the first authenticator in the list for redirect
+            Authenticators[0].RedirectToLoginPage();
         }
 
         #endregion
