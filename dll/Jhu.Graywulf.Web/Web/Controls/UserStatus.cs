@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Web.UI;
+using Jhu.Graywulf.Web.Security;
 
 namespace Jhu.Graywulf.Web.Controls
 {
@@ -95,22 +97,12 @@ namespace Jhu.Graywulf.Web.Controls
 
             var returl = Server.UrlEncode(Request.RawUrl);
 
-            // Get FormsAuthentication URL from config
-            var url = System.Web.Security.FormsAuthentication.LoginUrl;
-            var i = url.LastIndexOf('/');
-            if (i >= 0)
-            {
-                url = url.Substring(0, i + 1);
-            }
-            else
-            {
-                url += "/";
-            }
+            var wam = (WebAuthenticationModule)HttpContext.Current.ApplicationInstance.Modules["WebAuthenticationModule"];
 
-            account.NavigateUrl = String.Format("{0}User.aspx?ReturnUrl={1}", url, returl);
-            signOut.NavigateUrl = String.Format("{0}SignOut.aspx?ReturnUrl={1}", url, returl);
-            signIn.NavigateUrl = String.Format("{0}SignIn.aspx?ReturnUrl={1}", url, returl);
-            register.NavigateUrl = String.Format("{0}User.aspx?ReturnUrl={1}", url, returl);
+            account.NavigateUrl = wam.GetUserAccountUrl();
+            signOut.NavigateUrl = wam.GetSignOutUrl();
+            signIn.NavigateUrl = wam.GetSignInUrl();
+            register.NavigateUrl = wam.GetUserAccountUrl();
         }
 
         protected override void Render(System.Web.UI.HtmlTextWriter writer)

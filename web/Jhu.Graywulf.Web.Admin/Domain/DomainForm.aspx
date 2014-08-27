@@ -59,5 +59,13 @@
                 <asp:TextBox ID="AuthenticatorFactory" runat="server" />
             </td>
         </tr>
+        <tr>
+            <td class="FormLabel">
+                <asp:Label ID="AuthBaseUriLabel" runat="server" Text="Authentication base URL:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:TextBox ID="AuthBaseUri" runat="server" />
+            </td>
+        </tr>
     </table>
 </asp:Content>

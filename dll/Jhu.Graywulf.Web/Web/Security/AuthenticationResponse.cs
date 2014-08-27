@@ -104,6 +104,24 @@ namespace Jhu.Graywulf.Web.Security
             }
         }
 
+        public void DeleteResponseHeaders(HttpResponse response)
+        {
+            foreach (string key in headers.Keys)
+            {
+                response.Headers.Remove(key);
+            }
+
+            foreach (string key in cookies)
+            {
+                response.Cookies.Remove(key);
+
+                // Reset cookie and add back to collection
+                var cookie = new HttpCookie(key, "");
+                cookie.Expires = DateTime.Now.AddDays(-1);
+                response.Cookies.Add(cookie);
+            }
+        }
+
         public void SetResponseHeaders(System.ServiceModel.Web.OutgoingWebResponseContext response)
         {
             foreach (string key in headers.Keys)

@@ -137,5 +137,23 @@ namespace Jhu.Graywulf.Web.Admin.Domain {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox AuthenticatorFactory;
+        
+        /// <summary>
+        /// AuthBaseUriLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label AuthBaseUriLabel;
+        
+        /// <summary>
+        /// AuthBaseUri control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox AuthBaseUri;
     }
 }

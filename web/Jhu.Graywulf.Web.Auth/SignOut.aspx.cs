@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.Security;
+using Jhu.Graywulf.Web.Security;
 
 namespace Jhu.Graywulf.Web.Auth
 {
@@ -17,7 +18,15 @@ namespace Jhu.Graywulf.Web.Auth
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            FormsAuthentication.SignOut();
+            if (FormsAuthentication.IsEnabled)
+            {
+                FormsAuthentication.SignOut();
+            }
+
+            // Sign out from authenticators
+            var wam = (WebAuthenticationModule)HttpContext.Current.ApplicationInstance.Modules["WebAuthenticationModule"];
+            wam.DeleteAuthResponseHeaders();
+
             Session.Abandon();
 
             ShortTitle.Text = (string)Application[Jhu.Graywulf.Web.UI.Constants.ApplicationShortTitle];

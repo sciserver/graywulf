@@ -19,6 +19,7 @@ CREATE TABLE dbo.Tmp_Domain
 	EntityGuid uniqueidentifier NOT NULL,
 	IdentityProvider nvarchar(1024) NOT NULL,
 	AuthenticatorFactory nvarchar(1024) NOT NULL,
+	AuthBaseUri nvarchar(1024) NOT NULL,
 	ShortTitle nvarchar(50) NOT NULL,
 	LongTitle nvarchar(256) NOT NULL,
 	Email nvarchar(128) NOT NULL,
@@ -28,8 +29,8 @@ CREATE TABLE dbo.Tmp_Domain
 GO
 
 
-INSERT INTO dbo.Tmp_Domain (EntityGuid, IdentityProvider, AuthenticatorFactory, ShortTitle, LongTitle, Email, Copyright, Disclaimer)
-SELECT EntityGuid, 'Jhu.Graywulf.Web.Security.GraywulfIdentityProvider, Jhu.Graywulf.Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null', AuthenticatorFactory, ShortTitle, LongTitle, Email, Copyright, Disclaimer FROM dbo.Domain WITH (HOLDLOCK TABLOCKX)
+INSERT INTO dbo.Tmp_Domain (EntityGuid, IdentityProvider, AuthenticatorFactory, AuthBaseUri, ShortTitle, LongTitle, Email, Copyright, Disclaimer)
+SELECT EntityGuid, 'Jhu.Graywulf.Web.Security.GraywulfIdentityProvider, Jhu.Graywulf.Web', '', AuthenticatorFactory, ShortTitle, LongTitle, Email, Copyright, Disclaimer FROM dbo.Domain WITH (HOLDLOCK TABLOCKX)
 
 GO
 

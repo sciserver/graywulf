@@ -21,6 +21,7 @@ namespace Jhu.Graywulf.Registry
         // --- Background storage for properties ---
         private string identityProvider;
         private string authenticatorFactory;
+        private string authBaseUri;
         private string shortTitle;
         private string longTitle;
         private string email;
@@ -54,6 +55,13 @@ namespace Jhu.Graywulf.Registry
         {
             get { return authenticatorFactory; }
             set { authenticatorFactory = value; }
+        }
+
+        [DBColumn(Size = 1024)]
+        public string AuthBaseUri
+        {
+            get { return authBaseUri; }
+            set { authBaseUri = value; }
         }
 
         [DBColumn(Size = 50)]
@@ -188,6 +196,7 @@ namespace Jhu.Graywulf.Registry
         {
             this.identityProvider = String.Empty;
             this.authenticatorFactory = String.Empty;
+            this.authBaseUri = String.Empty;
             this.shortTitle = String.Empty;
             this.longTitle = String.Empty;
             this.email = String.Empty;
@@ -203,6 +212,7 @@ namespace Jhu.Graywulf.Registry
         {
             this.identityProvider = old.identityProvider;
             this.authenticatorFactory = old.authenticatorFactory;
+            this.authBaseUri = old.authBaseUri;
             this.shortTitle = old.shortTitle;
             this.longTitle = old.longTitle;
             this.email = old.email;

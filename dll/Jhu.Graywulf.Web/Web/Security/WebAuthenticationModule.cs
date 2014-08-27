@@ -21,6 +21,20 @@ namespace Jhu.Graywulf.Web.Security
     /// </remarks>
     public class WebAuthenticationModule : AuthenticationModuleBase, IHttpModule
     {
+        #region Private member variables
+
+        private Uri authBaseUri;
+
+        #endregion
+        #region Properties
+
+        public Uri AuthBaseUri
+        {
+            get { return authBaseUri; }
+            set { authBaseUri = value; }
+        }
+
+        #endregion
         #region Constructors and initializers
 
         public WebAuthenticationModule()
@@ -30,6 +44,7 @@ namespace Jhu.Graywulf.Web.Security
 
         private void InitializeMembers()
         {
+            this.authBaseUri = new Uri("/auth", UriKind.Relative);
         }
 
         public override void Dispose()
@@ -59,8 +74,13 @@ namespace Jhu.Graywulf.Web.Security
                 // special case has to be handled here
                 if (context.Domain != null)
                 {
-                    // Initialize authenticators            
+                    // Initialize module
+                    if (!String.IsNullOrWhiteSpace(context.Domain.AuthBaseUri))
+                    {
+                        this.authBaseUri = new Uri(context.Domain.AuthBaseUri, UriKind.RelativeOrAbsolute);
+                    }
 
+                    // Initialize authenticators            
                     var af = AuthenticatorFactory.Create(context.Domain);
                     RegisterAuthenticators(af.GetWebRequestAuthenticators());
                 }
@@ -122,15 +142,7 @@ namespace Jhu.Graywulf.Web.Security
         {
             // (4.) Called after the web request is authenticated
 
-            var context = HttpContext.Current;
-            var response = (AuthenticationResponse)context.Items[Constants.HttpContextAuthenticationResponse];
-
-            // Write out headers set by authenticators
-
-            if (response != null)
-            {
-                response.SetResponseHeaders(context.Response);
-            }
+            SetAuthResponseHeaders();
         }
 
         private void OnPostAcquireRequestState(object sender, EventArgs e)
@@ -204,9 +216,79 @@ namespace Jhu.Graywulf.Web.Security
             }
 
             // Use the first authenticator in the list for redirect
-            Authenticators[0].RedirectToLoginPage();
+            RedirectToLoginPage();
         }
 
         #endregion
+
+        public void SetAuthResponseHeaders()
+        {
+            var context = HttpContext.Current;
+            var response = (AuthenticationResponse)context.Items[Constants.HttpContextAuthenticationResponse];
+
+            // Write out headers set by authenticators
+
+            if (response != null)
+            {
+                response.SetResponseHeaders(context.Response);
+            }
+        }
+
+        public void DeleteAuthResponseHeaders()
+        {
+            var context = HttpContext.Current;
+            var response = (AuthenticationResponse)context.Items[Constants.HttpContextAuthenticationResponse];
+
+            // Delete headers set by authenticators
+
+            if (response != null)
+            {
+                response.DeleteResponseHeaders(context.Response);
+            }
+        }
+
+        public string GetSignInUrl()
+        {
+            var url = authBaseUri.ToString();
+
+            if (!url.EndsWith("/"))
+            {
+                url += "/";
+            }
+
+            url += "signin.aspx?ReturnUrl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.ToString());
+            return url;
+        }
+
+        public string GetSignOutUrl()
+        {
+            var url = authBaseUri.ToString();
+
+            if (!url.EndsWith("/"))
+            {
+                url += "/";
+            }
+
+            url += "signout.aspx?ReturnUrl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.ToString());
+            return url;
+        }
+
+        public string GetUserAccountUrl()
+        {
+            var url = authBaseUri.ToString();
+
+            if (!url.EndsWith("/"))
+            {
+                url += "/";
+            }
+
+            url += "user.aspx?ReturnUrl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.ToString());
+            return url;
+        }
+
+        private void RedirectToLoginPage()
+        {
+            HttpContext.Current.Response.Redirect(GetSignInUrl());
+        }
     }
 }
