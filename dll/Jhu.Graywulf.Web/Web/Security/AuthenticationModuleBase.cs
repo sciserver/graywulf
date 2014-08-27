@@ -93,7 +93,7 @@ namespace Jhu.Graywulf.Web.Security
 
             // If user is not authenticated yet, try to authenticate them now using
             // various types of authenticators
-            if (response.Principal == null && authenticators != null)
+            if (authenticators != null)
             {
                 // Try each authentication protocol
                 for (int i = 0; i < authenticators.Length; i++)
