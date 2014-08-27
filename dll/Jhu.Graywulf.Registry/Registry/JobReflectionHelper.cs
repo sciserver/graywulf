@@ -20,6 +20,7 @@ namespace Jhu.Graywulf.Registry
             {
                 AppDomain ad;
                 Components.AppDomainManager.Instance.GetAppDomainForType(workflowTypeName, true, out ad);
+                // TODO: try to create type without version info
 
                 basedir = ad.BaseDirectory;
 
