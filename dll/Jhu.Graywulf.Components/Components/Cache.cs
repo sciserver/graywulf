@@ -17,8 +17,6 @@ namespace Jhu.Graywulf.Components
     {
         #region Private member variables
 
-        private object syncRoot;
-
         private IEqualityComparer<TKey> comparer;
         private ConcurrentDictionary<TKey, CacheItem<TValue>> cache;
         protected Timer collectionTimer;
@@ -87,7 +85,6 @@ namespace Jhu.Graywulf.Components
         #region Constructors and initializers
 
         public Cache()
-            : base()
         {
             InitializeMembers();
             InitializeCache(EqualityComparer<TKey>.Default);
@@ -105,8 +102,6 @@ namespace Jhu.Graywulf.Components
 
         private void InitializeMembers()
         {
-            this.syncRoot = new object();
-
             this.defaultLifetime = new TimeSpan(0, 5, 0);
             this.autoExtendLifetime = true;
             this.collectionInterval = new TimeSpan(0, 5, 0);
