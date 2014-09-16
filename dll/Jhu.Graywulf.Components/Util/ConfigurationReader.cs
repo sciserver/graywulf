@@ -7,6 +7,7 @@ using System.Configuration;
 
 namespace Jhu.Graywulf.Util
 {
+    // TODO: delete once config manager is implemented
     public static class ConfigurationReader
     {
         public static string GetValue(string group, string key)
