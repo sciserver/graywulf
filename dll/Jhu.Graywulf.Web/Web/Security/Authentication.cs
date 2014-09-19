@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Web.Security
     /// When overriden in derived classes, performs per request
     /// authentication based on form data, query parameters, HTTP headers or cookies.
     /// </summary>
-    public abstract class Authenticator
+    public abstract class Authentication
     {
         #region Private member variables
 
@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region Constructors and initializers
 
-        protected Authenticator()
+        protected Authentication()
         {
             InitializeMembers();
         }

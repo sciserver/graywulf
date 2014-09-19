@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Install
         public void GenerateDefaultSettings()
         {
             domain.IdentityProvider = typeof(Jhu.Graywulf.Web.Security.GraywulfIdentityProvider).AssemblyQualifiedName;
-            domain.AuthenticatorFactory = typeof(Jhu.Graywulf.Web.Security.AuthenticatorFactory).AssemblyQualifiedName;
+            domain.AuthenticatorFactory = typeof(Jhu.Graywulf.Web.Security.AuthenticationFactory).AssemblyQualifiedName;
 
             GenerateWebConfig();
         }

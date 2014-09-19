@@ -81,8 +81,8 @@ namespace Jhu.Graywulf.Web.Security
                     }
 
                     // Initialize authenticators            
-                    var af = AuthenticatorFactory.Create(context.Domain);
-                    RegisterAuthenticators(af.GetWebRequestAuthenticators());
+                    var af = AuthenticationFactory.Create(context.Domain);
+                    RegisterAuthentications(af.CreateAuthentications(context.Domain, AuthenticatorProtocolType.WebRequest));
                 }
             }
 

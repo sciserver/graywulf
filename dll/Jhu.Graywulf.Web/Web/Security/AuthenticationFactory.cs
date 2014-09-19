@@ -11,12 +11,11 @@ namespace Jhu.Graywulf.Web.Security
     /// Implements functionality to manage authenticator and
     /// protocols
     /// </summary>
-    public class AuthenticatorFactory
+    public class AuthenticationFactory
     {
         #region Static members to cache authenticators
 
-        private static readonly object syncRoot = new object();
-        private static bool initialized;
+        /*private static readonly object syncRoot = new object();
 
         private static List<Authenticator> allAuthenticators;
         private static List<Authenticator> webInteractiveAuthenticators;
@@ -29,7 +28,7 @@ namespace Jhu.Graywulf.Web.Security
             webInteractiveAuthenticators = new List<Authenticator>();
             webRequestAuthenticators = new List<Authenticator>();
             restRequestAuthenticators = new List<Authenticator>();
-        }
+        }*/
 
         /// <summary>
         /// Creates an authenticator factory class from the
@@ -37,7 +36,7 @@ namespace Jhu.Graywulf.Web.Security
         /// </summary>
         /// <param name="typename"></param>
         /// <returns></returns>
-        public static AuthenticatorFactory Create(Domain domain)
+        public static AuthenticationFactory Create(Domain domain)
         {
             Type type = null;
 
@@ -49,67 +48,58 @@ namespace Jhu.Graywulf.Web.Security
             // If config is incorrect, fall back to known types.
             if (type == null)
             {
-                type = typeof(AuthenticatorFactory);
+                type = typeof(AuthenticationFactory);
             }
 
-            if (!initialized)
-            {
-                lock (syncRoot)
-                {
-                    LoadAuthenticators(domain);
-                    initialized = true;
-                }
-            }
-
-            return (AuthenticatorFactory)Activator.CreateInstance(
+            var factory = (AuthenticationFactory)Activator.CreateInstance(
                 type,
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                 null,
                 null,
                 null);
+
+
+            /*lock (syncRoot)
+            {
+                allAuthenticators = new List<Authenticator>(factory.CreateAuthenticators(domain));
+            }*/
+
+            return factory;
         }
 
-        private static void LoadAuthenticators(Domain domain)
+        public virtual IEnumerable<Authentication> CreateAuthentications(Domain domain, AuthenticatorProtocolType protocolType)
         {
-            // Only load authenticators if settings are set
-            if (domain.Settings.ContainsKey(Constants.SettingsAuthenticators))
+            var all = (Authentication[])domain.Settings[Constants.SettingsAuthenticators].Value;
+
+            return all.Where(i => (i.ProtocolType & protocolType) != 0);
+        }
+
+        public virtual Authentication GetAuthentication(Domain domain, string protocol, string authority)
+        {
+            var all = (Authentication[])domain.Settings[Constants.SettingsAuthenticators].Value;
+
+            foreach (var a in all)
             {
-                allAuthenticators.Clear();
-                webInteractiveAuthenticators.Clear();
-                webRequestAuthenticators.Clear();
-                restRequestAuthenticators.Clear();
-
-                // Load authenticators from settings
-                allAuthenticators.AddRange(
-                    (Authenticator[])domain.Settings[Constants.SettingsAuthenticators].Value);
-
-                // Initialize all authenticators
-                foreach (var a in allAuthenticators)
+                if (StringComparer.InvariantCultureIgnoreCase.Compare(a.ProtocolName, protocol) == 0 &&
+                        StringComparer.InvariantCultureIgnoreCase.Compare(a.AuthorityUri, authority) == 0)
                 {
-                    a.Initialize(domain);
+                    return a;
                 }
-
-                // Sort authenticators by type
-                webInteractiveAuthenticators.AddRange(
-                    allAuthenticators.Where(i => (i.ProtocolType & AuthenticatorProtocolType.WebInteractive) != 0));
-
-                webRequestAuthenticators.AddRange(
-                    allAuthenticators.Where(i => (i.ProtocolType & AuthenticatorProtocolType.WebRequest) != 0));
-
-                restRequestAuthenticators.AddRange(
-                    allAuthenticators.Where(i => (i.ProtocolType & AuthenticatorProtocolType.RestRequest) != 0));
             }
+
+            return null;
         }
 
         #endregion
         #region Constructors and initializers
 
-        protected AuthenticatorFactory()
+        protected AuthenticationFactory()
         {
         }
 
         #endregion
 
+#if false
         /// <summary>
         /// Returns all authenticators requiring interactive authentication as
         /// an enumerable.
@@ -165,6 +155,6 @@ namespace Jhu.Graywulf.Web.Security
                 yield return a;
             }
         }
-
+#endif
     }
 }

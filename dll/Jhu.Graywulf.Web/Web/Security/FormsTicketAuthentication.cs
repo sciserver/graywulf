@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Web.Security
     /// This is used by WCF services to accept and process the same
     /// tickets that FormsAuthentication uses.
     /// </remarks>
-    public class FormsTicketAuthenticator : Authenticator
+    public class FormsTicketAuthentication : Authentication
     {
         #region Properties
 
@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region Constructors and initializers
 
-        public FormsTicketAuthenticator()
+        public FormsTicketAuthentication()
         {
             InitializeMembers();
             FormsAuthentication.Initialize();

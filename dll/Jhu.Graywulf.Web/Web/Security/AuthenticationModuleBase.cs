@@ -51,14 +51,14 @@ namespace Jhu.Graywulf.Web.Security
         /// Holds a list of authenticators that are tried to identify a user
         /// from a web request.
         /// </summary>
-        private Authenticator[] authenticators;
+        private Authentication[] authentications;
 
         #endregion
         #region Properties
 
-        protected Authenticator[] Authenticators
+        protected Authentication[] Authentications
         {
-            get { return authenticators; }
+            get { return authentications; }
         }
 
         #endregion
@@ -85,10 +85,10 @@ namespace Jhu.Graywulf.Web.Security
         /// <remarks>
         /// This function should be called by the various implementations.
         /// </remarks>
-        /// <param name="authenticators"></param>
-        protected void RegisterAuthenticators(IEnumerable<Authenticator> authenticators)
+        /// <param name="authentications"></param>
+        protected void RegisterAuthentications(IEnumerable<Authentication> authentications)
         {
-            this.authenticators = authenticators.ToArray();
+            this.authentications = authentications.ToArray();
         }
 
         /// <summary>
@@ -106,12 +106,12 @@ namespace Jhu.Graywulf.Web.Security
 
             // If user is not authenticated yet, try to authenticate them now using
             // various types of authenticators
-            if (authenticators != null)
+            if (authentications != null)
             {
                 // Try each authentication protocol
-                for (int i = 0; i < authenticators.Length; i++)
+                for (int i = 0; i < authentications.Length; i++)
                 {
-                    authenticators[i].Authenticate(request, response);
+                    authentications[i].Authenticate(request, response);
                 }
             }
 

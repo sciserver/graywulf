@@ -46,8 +46,8 @@ namespace Jhu.Graywulf.Web.Services
             // is created an attached to the WCF service endpoints
 
             // Create authenticators
-            var af = AuthenticatorFactory.Create(domain);
-            RegisterAuthenticators(af.GetRestRequestAuthenticators());
+            var af = AuthenticationFactory.Create(domain);
+            RegisterAuthentications(af.CreateAuthentications(domain, AuthenticatorProtocolType.RestRequest));
         }
 
         #endregion

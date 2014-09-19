@@ -137,8 +137,8 @@ namespace Jhu.Graywulf.Web.Auth
             {
                 var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
 
-                var af = AuthenticatorFactory.Create(RegistryContext.Domain);
-                var auth = af.GetInteractiveAuthenticator(identity.Protocol, identity.AuthorityUri);
+                var af = AuthenticationFactory.Create(RegistryContext.Domain);
+                var auth = af.GetAuthentication(RegistryContext.Domain, identity.Protocol, identity.AuthorityUri);
 
                 AuthorityName.Text = auth.DisplayName;
                 Identifier.Text = identity.Identifier;
@@ -156,22 +156,22 @@ namespace Jhu.Graywulf.Web.Auth
         #endregion
         #region Third party authenticators
 
-        private Authenticator CreateAuthenticator(string key)
+        private Authentication CreateAuthenticator(string key)
         {
             var parts = key.Split('|');
-            var af = AuthenticatorFactory.Create(RegistryContext.Domain);
-            var a = af.GetInteractiveAuthenticator(parts[0], parts[1]);
+            var af = AuthenticationFactory.Create(RegistryContext.Domain);
+            var a = af.GetAuthentication(RegistryContext.Domain, parts[0], parts[1]);
 
             return a;
         }
 
         private void CreateAuthenticatorButtons()
         {
-            var af = AuthenticatorFactory.Create(RegistryContext.Domain);
+            var af = AuthenticationFactory.Create(RegistryContext.Domain);
 
             Authenticators.Controls.Add(new LiteralControl("<ul>"));
 
-            foreach (var au in af.GetInteractiveAuthenticators())
+            foreach (var au in af.CreateAuthentications(RegistryContext.Domain, AuthenticatorProtocolType.WebInteractive))
             {
                 var b = new LinkButton()
                 {

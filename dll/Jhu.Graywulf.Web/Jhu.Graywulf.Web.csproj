@@ -82,23 +82,24 @@
     </Compile>
     <Compile Include="Web\Controls\ExpressionPropertyField.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Web\Security\Authentication.cs" />
+    <Compile Include="Web\Security\AuthenticationConfiguration.cs" />
+    <Compile Include="Web\Security\AuthenticationFactory.cs" />
     <Compile Include="Web\Security\AuthenticationModuleBase.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Web\Security\AuthenticationResponse.cs" />
-    <Compile Include="Web\Security\Authenticator.cs" />
     <Compile Include="Web\Security\Enum.cs" />
     <Compile Include="Web\Security\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="Web\Security\FormsTicketAuthentication.cs" />
     <Compile Include="Web\Security\GraywulfIdentityProvider.cs" />
     <Compile Include="Web\Security\IdentityProvider.cs" />
     <Compile Include="Web\Security\IdentityProviderException.cs" />
-    <Compile Include="Web\Security\AuthenticatorFactory.cs" />
     <Compile Include="Web\Security\Constants.cs" />
-    <Compile Include="Web\Security\FormsTicketAuthenticator.cs" />
     <Compile Include="Web\Security\GraywulfIdentity.cs" />
     <Compile Include="Web\Security\GraywulfPrincipal.cs" />
     <Compile Include="Web\Security\AuthenticationRequest.cs" />
