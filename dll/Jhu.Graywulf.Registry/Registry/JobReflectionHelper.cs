@@ -96,7 +96,7 @@ namespace Jhu.Graywulf.Registry
                         var par = new Parameter()
                         {
                             Name = pinfo.Name,
-                            TypeName = pinfo.PropertyType.GetGenericArguments()[0].AssemblyQualifiedName,
+                            TypeName = Util.TypeNameFormatter.ToUnversionedAssemblyQualifiedName(pinfo.PropertyType.GetGenericArguments()[0]),
                             Direction = dir,
                             XmlValue = null
                         };

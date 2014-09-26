@@ -92,7 +92,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var root = parser.Execute(queryString);
 
             QueryBase q = CreateQueryBase((Node)root);
-            q.QueryFactoryTypeName = this.GetType().AssemblyQualifiedName;
+            q.QueryFactoryTypeName = Util.TypeNameFormatter.ToUnversionedAssemblyQualifiedName(this.GetType());
             q.ExecutionMode = mode;
 
             switch (mode)

@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Install
 
         protected string GetUnversionedTypeName(Type type)
         {
-            return String.Format("{0}, {1}", type.FullName, type.Assembly.FullName);
+            return Util.TypeNameFormatter.ToUnversionedAssemblyQualifiedName(type);
         }
     }
 }

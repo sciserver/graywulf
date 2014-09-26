@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         {
 
             var jd = new JobDefinition();
-            jd.WorkflowTypeName = typeof(Jhu.Graywulf.Jobs.Query.SqlQueryJob).AssemblyQualifiedName;
+            jd.WorkflowTypeName = Util.TypeNameFormatter.ToUnversionedAssemblyQualifiedName(typeof(Jhu.Graywulf.Jobs.Query.SqlQueryJob));
             jd.DiscoverWorkflowParameters();
         }
 

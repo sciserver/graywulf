@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Registry
             var par2 = new Parameter()
             {
                 Name = "param2",
-                TypeName = typeof(string).AssemblyQualifiedName,
+                TypeName = Util.TypeNameFormatter.ToUnversionedAssemblyQualifiedName(typeof(string)),
                 Direction = ParameterDirection.In
             };
             pars.Parameters.Add(par2);
