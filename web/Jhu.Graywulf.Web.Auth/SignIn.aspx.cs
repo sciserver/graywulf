@@ -138,7 +138,7 @@ namespace Jhu.Graywulf.Web.Auth
                 var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
 
                 var af = AuthenticationFactory.Create(RegistryContext.Domain);
-                var auth = af.GetAuthentication(RegistryContext.Domain, identity.Protocol, identity.AuthorityUri);
+                var auth = af.GetAuthentication(identity.Protocol, identity.AuthorityUri);
 
                 AuthorityName.Text = auth.DisplayName;
                 Identifier.Text = identity.Identifier;
@@ -160,7 +160,7 @@ namespace Jhu.Graywulf.Web.Auth
         {
             var parts = key.Split('|');
             var af = AuthenticationFactory.Create(RegistryContext.Domain);
-            var a = af.GetAuthentication(RegistryContext.Domain, parts[0], parts[1]);
+            var a = af.GetAuthentication(parts[0], parts[1]);
 
             return a;
         }
@@ -171,7 +171,7 @@ namespace Jhu.Graywulf.Web.Auth
 
             Authenticators.Controls.Add(new LiteralControl("<ul>"));
 
-            foreach (var au in af.CreateAuthentications(RegistryContext.Domain, AuthenticatorProtocolType.WebInteractive))
+            foreach (var au in af.GetAuthentications(AuthenticatorProtocolType.WebInteractive))
             {
                 var b = new LinkButton()
                 {

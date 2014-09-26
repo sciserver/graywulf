@@ -21,6 +21,7 @@ namespace Jhu.Graywulf.Web.Security
         private Uri authorityUri;
         private bool isMasterAuthority;
         private string displayName;
+        private bool isEnabled;
 
         #endregion
         #region Properties
@@ -35,7 +36,6 @@ namespace Jhu.Graywulf.Web.Security
         /// <summary>
         /// Gets the name of the authentication authority.
         /// </summary>
-        [XmlElement]
         public string AuthorityName
         {
             get { return authorityName; }
@@ -45,7 +45,6 @@ namespace Jhu.Graywulf.Web.Security
         /// <summary>
         /// Gets or sets the URL of the authority.
         /// </summary>
-        [XmlElement]
         public Uri AuthorityUri
         {
             get { return authorityUri; }
@@ -55,7 +54,6 @@ namespace Jhu.Graywulf.Web.Security
         /// <summary>
         /// Gets or sets if the authenticator is accepted as a master authority
         /// </summary>
-        [XmlElement]
         public bool IsMasterAuthority
         {
             get { return isMasterAuthority; }
@@ -65,11 +63,16 @@ namespace Jhu.Graywulf.Web.Security
         /// <summary>
         /// Gets or sets the display name of the authority.
         /// </summary>
-        [XmlElement]
         public string DisplayName
         {
             get { return displayName; }
             set { displayName = value; }
+        }
+
+        public bool IsEnabled
+        {
+            get { return isEnabled; }
+            set { isEnabled = value; }
         }
 
         #endregion
@@ -86,6 +89,7 @@ namespace Jhu.Graywulf.Web.Security
             this.authorityUri = null;
             this.isMasterAuthority = false;
             this.displayName = null;
+            this.isEnabled = true;
         }
 
         #endregion

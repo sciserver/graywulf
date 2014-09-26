@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using System.Web.Security;
+using System.Configuration;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
@@ -13,22 +15,11 @@ namespace Jhu.Graywulf.Web.Security
     /// </summary>
     public class AuthenticationFactory
     {
-        #region Static members to cache authenticators
+        #region Constructors and initializers
 
-        /*private static readonly object syncRoot = new object();
-
-        private static List<Authenticator> allAuthenticators;
-        private static List<Authenticator> webInteractiveAuthenticators;
-        private static List<Authenticator> webRequestAuthenticators;
-        private static List<Authenticator> restRequestAuthenticators;
-
-        static AuthenticatorFactory()
+        protected AuthenticationFactory()
         {
-            allAuthenticators = new List<Authenticator>();
-            webInteractiveAuthenticators = new List<Authenticator>();
-            webRequestAuthenticators = new List<Authenticator>();
-            restRequestAuthenticators = new List<Authenticator>();
-        }*/
+        }
 
         /// <summary>
         /// Creates an authenticator factory class from the
@@ -58,103 +49,29 @@ namespace Jhu.Graywulf.Web.Security
                 null,
                 null);
 
-
-            /*lock (syncRoot)
-            {
-                allAuthenticators = new List<Authenticator>(factory.CreateAuthenticators(domain));
-            }*/
-
             return factory;
         }
 
-        public virtual IEnumerable<Authentication> CreateAuthentications(Domain domain, AuthenticatorProtocolType protocolType)
-        {
-            var all = (Authentication[])domain.Settings[Constants.SettingsAuthenticators].Value;
-
-            return all.Where(i => (i.ProtocolType & protocolType) != 0);
-        }
-
-        public virtual Authentication GetAuthentication(Domain domain, string protocol, string authority)
-        {
-            var all = (Authentication[])domain.Settings[Constants.SettingsAuthenticators].Value;
-
-            foreach (var a in all)
-            {
-                if (StringComparer.InvariantCultureIgnoreCase.Compare(a.ProtocolName, protocol) == 0 &&
-                        StringComparer.InvariantCultureIgnoreCase.Compare(a.AuthorityUri, authority) == 0)
-                {
-                    return a;
-                }
-            }
-
-            return null;
-        }
-
-        #endregion
-        #region Constructors and initializers
-
-        protected AuthenticationFactory()
-        {
-        }
-
         #endregion
 
-#if false
-        /// <summary>
-        /// Returns all authenticators requiring interactive authentication as
-        /// an enumerable.
-        /// </summary>
-        /// <returns></returns>
-        public virtual IEnumerable<Authenticator> GetInteractiveAuthenticators()
+        protected virtual IEnumerable<Authentication> CreateAuthentications()
         {
-            return webInteractiveAuthenticators;
-        }
-
-        /// <summary>
-        /// Returns an interactive authenticator (i.e. on requiring redirection to a web page)
-        /// identified by the protocol name and authority url.
-        /// </summary>
-        /// <param name="protocol"></param>
-        /// <param name="authority"></param>
-        /// <returns></returns>
-        public Authenticator GetInteractiveAuthenticator(string protocol, string authority)
-        {
-            foreach (var a in GetInteractiveAuthenticators())
+            if (FormsAuthentication.IsEnabled)
             {
-                if (StringComparer.InvariantCultureIgnoreCase.Compare(a.ProtocolName, protocol) == 0 &&
-                        StringComparer.InvariantCultureIgnoreCase.Compare(a.AuthorityUri, authority) == 0)
-                {
-                    return a;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Returns all authenticators capable of authenticating HTTP web requests
-        /// as an enumerable.
-        /// </summary>
-        /// <returns></returns>
-        public virtual IEnumerable<Authenticator> GetWebRequestAuthenticators()
-        {
-            return webRequestAuthenticators;
-        }
-
-        /// <summary>
-        /// Returns all authenticators capable of authenticating REST requests
-        /// as an enumerable.
-        /// </summary>
-        /// <returns></returns>
-        public virtual IEnumerable<Authenticator> GetRestRequestAuthenticators()
-        {
-            yield return new FormsTicketAuthenticator();
-
-            foreach (var a in restRequestAuthenticators)
-            {
-                yield return a;
+                yield return new FormsTicketAuthentication();
             }
         }
-#endif
+
+        public IEnumerable<Authentication> GetAuthentications(AuthenticatorProtocolType protocolType)
+        {
+            return CreateAuthentications().Where(i => (i.ProtocolType & protocolType) != 0);
+        }
+
+        public Authentication GetAuthentication(string protocol, string authority)
+        {
+            return CreateAuthentications().Where(i =>
+                StringComparer.InvariantCultureIgnoreCase.Compare(i.ProtocolName, protocol) == 0 &&
+                StringComparer.InvariantCultureIgnoreCase.Compare(i.AuthorityUri, authority) == 0).FirstOrDefault();
+        }
     }
 }

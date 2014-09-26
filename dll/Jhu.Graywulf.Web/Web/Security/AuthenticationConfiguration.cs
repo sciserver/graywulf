@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Web.Security
 
         private static ConfigurationPropertyCollection properties;
 
-        private static readonly ConfigurationProperty propEnabled = new ConfigurationProperty(
+        private static readonly ConfigurationProperty propIsEnabled = new ConfigurationProperty(
             "enabled", typeof(bool), false, ConfigurationPropertyOptions.None);
 
         private static readonly ConfigurationProperty propAuthorityName = new ConfigurationProperty(
@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Web.Security
         {
             properties = new ConfigurationPropertyCollection();
 
-            properties.Add(propEnabled);
+            properties.Add(propIsEnabled);
             properties.Add(propAuthorityName);
             properties.Add(propAuthorityUri);
             properties.Add(propIsMasterAuthority);
@@ -41,10 +41,10 @@ namespace Jhu.Graywulf.Web.Security
 
         #endregion
         [ConfigurationProperty("enabled", DefaultValue=false)]
-        public bool Enabled
+        public bool IsEnabled
         {
-            get { return (bool)base[propEnabled]; }
-            set { base[propEnabled] = value; }
+            get { return (bool)base[propIsEnabled]; }
+            set { base[propIsEnabled] = value; }
         }
 
         [ConfigurationProperty("authorityName")]

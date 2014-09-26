@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.Web.Services
 
             // Create authenticators
             var af = AuthenticationFactory.Create(domain);
-            RegisterAuthentications(af.CreateAuthentications(domain, AuthenticatorProtocolType.RestRequest));
+            RegisterAuthentications(af.GetAuthentications(AuthenticatorProtocolType.RestRequest));
         }
 
         #endregion
