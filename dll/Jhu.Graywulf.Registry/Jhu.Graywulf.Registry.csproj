@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Install\DatabaseInstanceInstaller.cs" />
+    <Compile Include="Install\InstallerBase.cs" />
     <Compile Include="Install\UserDatabaseInstanceInstaller.cs" />
     <Compile Include="Registry\AppSettings.cs" />
     <Compile Include="Registry\FederationContext.cs" />

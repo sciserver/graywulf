@@ -9,7 +9,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Install
 {
-    public class DomainInstaller : ContextObject
+    public class DomainInstaller : InstallerBase
     {
         private Domain domain;
 
@@ -21,8 +21,8 @@ namespace Jhu.Graywulf.Install
 
         public void GenerateDefaultSettings()
         {
-            domain.IdentityProvider = typeof(Jhu.Graywulf.Web.Security.GraywulfIdentityProvider).AssemblyQualifiedName;
-            domain.AuthenticatorFactory = typeof(Jhu.Graywulf.Web.Security.AuthenticationFactory).AssemblyQualifiedName;
+            domain.IdentityProvider = GetUnversionedTypeName(typeof(Jhu.Graywulf.Web.Security.GraywulfIdentityProvider));
+            domain.AuthenticatorFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Web.Security.AuthenticationFactory));
 
             GenerateWebConfig();
         }

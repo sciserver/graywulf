@@ -6,7 +6,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Install
 {
-    public class FederationInstaller : ContextObject
+    public class FederationInstaller : InstallerBase
     {
         private Cluster cluster;
         private Federation federation;
@@ -89,10 +89,10 @@ namespace Jhu.Graywulf.Install
             //LongTitle
             //Email
 
-            federation.SchemaManager = typeof(Jhu.Graywulf.Schema.GraywulfSchemaManager).AssemblyQualifiedName;
-            federation.QueryFactory = typeof(Jhu.Graywulf.Jobs.Query.SqlQueryFactory).AssemblyQualifiedName;
-            federation.FileFormatFactory = typeof(Jhu.Graywulf.Format.FileFormatFactory).AssemblyQualifiedName;
-            federation.StreamFactory = typeof(Jhu.Graywulf.IO.StreamFactory).AssemblyQualifiedName;
+            federation.SchemaManager = GetUnversionedTypeName(typeof(Jhu.Graywulf.Schema.GraywulfSchemaManager));
+            federation.QueryFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Jobs.Query.SqlQueryFactory));
+            federation.FileFormatFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Format.FileFormatFactory));
+            federation.StreamFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.IO.StreamFactory));
             federation.Copyright = Jhu.Graywulf.Copyright.InfoCopyright;
             federation.Disclaimer = ""; // TODO ***
         }

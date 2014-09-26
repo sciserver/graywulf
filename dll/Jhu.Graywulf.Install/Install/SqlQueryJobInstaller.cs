@@ -7,7 +7,7 @@ using Jhu.Graywulf.Jobs.Query;
 
 namespace Jhu.Graywulf.Install
 {
-    public class SqlQueryJobInstaller : ContextObject
+    public class SqlQueryJobInstaller : InstallerBase
     {
         private Federation federation;
 
@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Install
             {
                 Name = typeof(Jobs.Query.SqlQueryJob).Name,
                 System = federation.System,
-                WorkflowTypeName = typeof(Jobs.Query.SqlQueryJob).AssemblyQualifiedName,
+                WorkflowTypeName = GetUnversionedTypeName(typeof(Jobs.Query.SqlQueryJob)),
                 Settings = new SqlQueryJobSettings()
                 {
                     HotDatabaseVersionName = Registry.Constants.HotDatabaseVersionName,

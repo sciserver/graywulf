@@ -7,7 +7,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Install
 {
-    public class ClusterInstaller : ContextObject
+    public class ClusterInstaller : InstallerBase
     {
         Cluster cluster;
 
@@ -203,7 +203,7 @@ namespace Jhu.Graywulf.Install
             {
                 Name = typeof(Jhu.Graywulf.Jobs.MirrorDatabase.MirrorDatabaseJob).Name,
                 System = system,
-                WorkflowTypeName = typeof(Jhu.Graywulf.Jobs.MirrorDatabase.MirrorDatabaseJob).AssemblyQualifiedName,
+                WorkflowTypeName = GetUnversionedTypeName(typeof(Jhu.Graywulf.Jobs.MirrorDatabase.MirrorDatabaseJob)),
             };
             jd.DiscoverWorkflowParameters();
             jd.Save();
@@ -213,7 +213,7 @@ namespace Jhu.Graywulf.Install
             {
                 Name = typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name,
                 System = system,
-                WorkflowTypeName = typeof(Jhu.Graywulf.Jobs.Test.TestJob).AssemblyQualifiedName,
+                WorkflowTypeName = GetUnversionedTypeName(typeof(Jhu.Graywulf.Jobs.Test.TestJob)),
             };
             jd.DiscoverWorkflowParameters();
             jd.Save();

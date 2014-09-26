@@ -7,7 +7,7 @@ using Jhu.Graywulf.Jobs.ExportTables;
 
 namespace Jhu.Graywulf.Install
 {
-    public class ExportTablesJobInstaller : ContextObject
+    public class ExportTablesJobInstaller : InstallerBase
     {
         private Federation federation;
 
@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Install
             {
                 Name = typeof(Jobs.ExportTables.ExportTablesJob).Name,
                 System = federation.System,
-                WorkflowTypeName = typeof(Jobs.ExportTables.ExportTablesJob).AssemblyQualifiedName,
+                WorkflowTypeName = GetUnversionedTypeName(typeof(Jobs.ExportTables.ExportTablesJob)),
                 Settings = new ExportTablesJobSettings()
                 {
                     // TODO: use installer parameter instead

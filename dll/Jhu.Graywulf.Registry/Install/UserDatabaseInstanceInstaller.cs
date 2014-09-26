@@ -6,7 +6,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Install
 {
-    public class UserDatabaseInstanceInstaller : ContextObject
+    public class UserDatabaseInstanceInstaller : InstallerBase
     {
         public UserDatabaseInstanceInstaller(Context context)
             :base(context)

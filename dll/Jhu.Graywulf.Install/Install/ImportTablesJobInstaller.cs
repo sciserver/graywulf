@@ -7,7 +7,7 @@ using Jhu.Graywulf.Jobs.ImportTables;
 
 namespace Jhu.Graywulf.Install
 {
-    public class ImportTablesJobInstaller : ContextObject
+    public class ImportTablesJobInstaller : InstallerBase
     {
         private Federation federation;
 
@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Install
             {
                 Name = typeof(ImportTablesJob).Name,
                 System = federation.System,
-                WorkflowTypeName = typeof(ImportTablesJob).AssemblyQualifiedName,
+                WorkflowTypeName = GetUnversionedTypeName(typeof(ImportTablesJob)),
                 Settings = new ImportTablesJobSettings()
             };
 

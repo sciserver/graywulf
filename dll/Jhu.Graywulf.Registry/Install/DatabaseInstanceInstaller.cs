@@ -6,7 +6,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Install
 {
-    public class DatabaseInstanceInstaller : ContextObject
+    public class DatabaseInstanceInstaller : InstallerBase
     {
         private DatabaseDefinition databaseDefinition;
 
