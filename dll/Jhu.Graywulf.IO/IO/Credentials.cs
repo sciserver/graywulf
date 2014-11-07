@@ -96,7 +96,7 @@ namespace Jhu.Graywulf.IO
             this.userName = null;
             this.password = null;
             this.ticket = null;
-            this.headers = new Dictionary<string, string>();
+            this.headers = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         }
 
         private void CopyMembers(Credentials old)
