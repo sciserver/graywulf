@@ -76,6 +76,11 @@ namespace Jhu.Graywulf.Util
             return Path.GetFileNameWithoutExtension(path);
         }
 
+        public static Uri Combine(Uri baseUri, string relativeUri)
+        {
+            return Combine(baseUri, new Uri(relativeUri, UriKind.Relative));
+        }
+
         public static Uri Combine(Uri baseUri, Uri relativeUri)
         {
             if (relativeUri.IsAbsoluteUri)
