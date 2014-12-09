@@ -140,13 +140,15 @@ namespace Jhu.Graywulf.Install
             DatabaseVersion tempDatabaseVersion,
             ServerInstance schemaSourceServerInstance)
         {
-            federation = new Federation(Context)
+            federation = new Federation(domain)
             {
                 Name = name,
                 ControllerMachine = controllerMachine,
                 TempDatabaseVersion = tempDatabaseVersion,
                 SchemaSourceServerInstance = schemaSourceServerInstance,
             };
+
+            federation.Save();
         }
 
         public virtual void GenerateDefaultSettings()
