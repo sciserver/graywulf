@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Util
             var i = assemblyName.IndexOf(',');
             if (i > 0)
             {
-                assemblyName = assemblyName.Substring(i);
+                assemblyName = assemblyName.Substring(0, i);
             }
 
             return String.Format("{0}, {1}", typeName, assemblyName);
