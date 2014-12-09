@@ -97,7 +97,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var mydbds = new GraywulfDataset(Context);
             mydbds.Name = settings.DefaultDatasetName;
             mydbds.DefaultSchemaName = settings.DefaultSchemaName;
-            mydbds.DatabaseInstanceReference.Value = federation.MyDBDatabaseVersion.GetUserDatabaseInstance(user);
+            mydbds.DatabaseInstanceReference.Value = federation.UserDatabaseVersion.GetUserDatabaseInstance(user);
             mydbds.CacheSchemaConnectionString();
             mydbds.IsMutable = true;
             query.CustomDatasets.Add(mydbds);

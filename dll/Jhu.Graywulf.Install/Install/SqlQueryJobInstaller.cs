@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Install
                     HotDatabaseVersionName = Registry.Constants.HotDatabaseVersionName,
                     StatDatabaseVersionName = Registry.Constants.StatDatabaseVersionName,
                     DefaultSchemaName = Registry.Constants.DefaultSchemaName,
-                    DefaultDatasetName = Registry.Constants.MyDbName,
+                    DefaultDatasetName = Registry.Constants.UserDbName,
                     QueryTimeout = 7200,    // TODO
                 }
             };

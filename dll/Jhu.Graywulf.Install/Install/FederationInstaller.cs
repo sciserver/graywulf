@@ -100,7 +100,7 @@ namespace Jhu.Graywulf.Install
         public void GenerateDefaultChildren(ServerVersion myDbServerVersion, ServerVersion nodeServerVersion)
         {
             // Generate database definitions
-            GenerateMyDBDefinition(myDbServerVersion);
+            GenerateUserDbDefinition(myDbServerVersion);
             GenerateCodeDBDefinition(nodeServerVersion);
 
             // Job definitions
@@ -119,25 +119,25 @@ namespace Jhu.Graywulf.Install
             federation.Save();
         }
 
-        private void GenerateMyDBDefinition(ServerVersion myDbServerVersion)
+        private void GenerateUserDbDefinition(ServerVersion userDatabaseServerVersion)
         {
             DatabaseDefinition mydbdd = new DatabaseDefinition(federation)
             {
-                Name = Constants.MyDbName,
+                Name = Constants.UserDbName,
                 System = federation.System,
                 LayoutType = DatabaseLayoutType.Monolithic,
-                DatabaseInstanceNamePattern = Constants.MyDbInstanceNamePattern,
-                DatabaseNamePattern = Constants.MyDbNamePattern,
+                DatabaseInstanceNamePattern = Constants.UserDbInstanceNamePattern,
+                DatabaseNamePattern = Constants.UserDbNamePattern,
                 SliceCount = 1,
                 PartitionCount = 1,
             };
             mydbdd.Save();
 
             var mydbddi = new DatabaseDefinitionInstaller(mydbdd);
-            mydbddi.GenerateDefaultChildren(myDbServerVersion, Constants.MyDbName);
+            mydbddi.GenerateDefaultChildren(userDatabaseServerVersion, Constants.UserDbName);
 
             mydbdd.LoadDatabaseVersions(true);
-            federation.MyDBDatabaseVersion = mydbdd.DatabaseVersions[Constants.MyDbName];
+            federation.UserDatabaseVersion = mydbdd.DatabaseVersions[Constants.UserDbName];
         }
 
         private void GenerateCodeDBDefinition(ServerVersion nodeServerVersion)

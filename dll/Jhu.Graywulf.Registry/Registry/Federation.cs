@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Registry
         {
             ControllerMachine = 1,
             SchemaSourceServerInstance = 2,
-            MyDBDatabaseVersion = 3,
+            UserDatabaseVersion = 3,
             TempDatabaseVersion = 4,
             CodeDatabaseVersion = 5,
         }
@@ -125,10 +125,10 @@ namespace Jhu.Graywulf.Registry
         }
 
         [XmlIgnore]
-        public DatabaseVersion MyDBDatabaseVersion
+        public DatabaseVersion UserDatabaseVersion
         {
-            get { return MyDBDatabaseVersionReference.Value; }
-            set { MyDBDatabaseVersionReference.Value = value; }
+            get { return UserDatabaseVersionReference.Value; }
+            set { UserDatabaseVersionReference.Value = value; }
         }
 
         [XmlIgnore]
@@ -182,19 +182,19 @@ namespace Jhu.Graywulf.Registry
         }
 
         [XmlIgnore]
-        public EntityReference<DatabaseVersion> MyDBDatabaseVersionReference
+        public EntityReference<DatabaseVersion> UserDatabaseVersionReference
         {
-            get { return (EntityReference<DatabaseVersion>)EntityReferences[(int)ReferenceType.MyDBDatabaseVersion]; }
+            get { return (EntityReference<DatabaseVersion>)EntityReferences[(int)ReferenceType.UserDatabaseVersion]; }
         }
 
         /// <summary>
         /// For internal use only.
         /// </summary>
-        [XmlElement("MyDBDatabaseVersion")]
-        public string MyDBDatabaseVersion_ForXml
+        [XmlElement("UserDatabaseVersion")]
+        public string UserDatabaseVersion_ForXml
         {
-            get { return MyDBDatabaseVersionReference.Name; }
-            set { MyDBDatabaseVersionReference.Name = value; }
+            get { return UserDatabaseVersionReference.Name; }
+            set { UserDatabaseVersionReference.Name = value; }
         }
 
         [XmlIgnore]
@@ -377,7 +377,7 @@ namespace Jhu.Graywulf.Registry
         {
             return new IEntityReference[]
             {
-                new EntityReference<DatabaseVersion>((int)ReferenceType.MyDBDatabaseVersion),
+                new EntityReference<DatabaseVersion>((int)ReferenceType.UserDatabaseVersion),
                 new EntityReference<DatabaseVersion>((int)ReferenceType.TempDatabaseVersion),
                 new EntityReference<DatabaseVersion>((int)ReferenceType.CodeDatabaseVersion),
                 new EntityReference<Machine>((int)ReferenceType.ControllerMachine),

@@ -184,7 +184,7 @@ namespace Jhu.Graywulf.Test
                 var ef = new EntityFactory(context);
                 var federation = ef.LoadEntity<Federation>(Registry.AppSettings.FederationName);
                 var user = SignInTestUser(context);
-                var di = federation.MyDBDatabaseVersion.GetUserDatabaseInstance(user);
+                var di = federation.UserDatabaseVersion.GetUserDatabaseInstance(user);
 
                 DropTable(di.GetConnectionString().ConnectionString, "dbo", "SqlQueryTest_SimpleQueryTest");
             }

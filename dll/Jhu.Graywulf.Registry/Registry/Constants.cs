@@ -70,9 +70,9 @@ namespace Jhu.Graywulf.Registry
         /// <summary>
         /// MyDB is generated for each federation and contains user data
         /// </summary>
-        public const string MyDbName = "MYDB";
-        public const string MyDbInstanceNamePattern = "[$DatabaseDefinition.Name]_[@Username]";
-        public const string MyDbNamePattern = "[$DatabaseDefinition.Federation.Name]_[$DatabaseDefinition.Name]_[@Username]";
+        public const string UserDbName = "MYDB";
+        public const string UserDbInstanceNamePattern = "[$DatabaseDefinition.Name]_[@Username]";
+        public const string UserDbNamePattern = "[$DatabaseDefinition.Federation.Name]_[$DatabaseDefinition.Name]_[@Username]";
 
         public const string DefaultSchemaName = "dbo";
 

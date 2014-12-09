@@ -103,7 +103,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
                 // Show or hide buttons that are applicable to mydb objects only
 
-                var mydbbuttonsenabled = GraywulfSchemaManager.Comparer.Compare(dbobj.DatasetName, Page.RegistryContext.Federation.MyDBDatabaseVersion.Name) == 0;
+                var mydbbuttonsenabled = GraywulfSchemaManager.Comparer.Compare(dbobj.DatasetName, Page.RegistryContext.Federation.UserDatabaseVersion.Name) == 0;
                 Export.Enabled = Rename.Enabled = Drop.Enabled = mydbbuttonsenabled;
                 // TODO: funtions etc cannot be exported or peeked into!
 

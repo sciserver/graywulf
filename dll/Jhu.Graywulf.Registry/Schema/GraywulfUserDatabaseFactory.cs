@@ -17,15 +17,15 @@ namespace Jhu.Graywulf.Schema
         public override void EnsureUserDatabaseExists(User user)
         {
             var udii = new UserDatabaseInstanceInstaller(Federation.Context);
-            udii.EnsureUserDatabaseInstanceExists(user, Federation.MyDBDatabaseVersion);
+            udii.EnsureUserDatabaseInstanceExists(user, Federation.UserDatabaseVersion);
         }
 
         protected override DatasetBase OnGetUserDatabase(User user)
         {
-            var di = Federation.MyDBDatabaseVersion.GetUserDatabaseInstance(user);
+            var di = Federation.UserDatabaseVersion.GetUserDatabaseInstance(user);
             var ds = di.GetDataset();
 
-            ds.Name = Jhu.Graywulf.Registry.Constants.MyDbName;
+            ds.Name = Jhu.Graywulf.Registry.Constants.UserDbName;
             ds.IsCacheable = false;
             ds.IsMutable = true;
 

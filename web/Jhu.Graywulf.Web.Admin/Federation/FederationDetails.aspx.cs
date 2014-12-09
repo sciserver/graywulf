@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             ShortTitle.Text = Item.ShortTitle;
             LongTitle.Text = Item.LongTitle;
             Email.Text = Item.Email;
-            MyDbDatabaseVersion.EntityReference.Value = Item.MyDBDatabaseVersion;
+            MyDbDatabaseVersion.EntityReference.Value = Item.UserDatabaseVersion;
             TempDatabaseVersion.EntityReference.Value = Item.TempDatabaseVersion;
             CodeDatabaseVersion.EntityReference.Value = Item.CodeDatabaseVersion;
             ControllerMachine.EntityReference.Value = Item.ControllerMachine;
