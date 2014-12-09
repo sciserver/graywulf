@@ -669,8 +669,6 @@ AS
 	DELETE FileGroup
 	DELETE JobDefinition
 	DELETE JobInstance
-	DELETE JobInstanceCheckpoint
-	DELETE JobInstanceParameter
 	DELETE Machine
 	DELETE MachineRole
 	DELETE Partition
