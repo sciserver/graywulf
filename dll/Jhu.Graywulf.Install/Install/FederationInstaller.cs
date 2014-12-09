@@ -8,27 +8,70 @@ namespace Jhu.Graywulf.Install
 {
     public class FederationInstaller : InstallerBase
     {
+        #region Private member variables
+
         private Cluster cluster;
+        private Domain domain;
         private Federation federation;
 
-        public FederationInstaller(Cluster cluster)
-            : base(cluster.Context)
+        #endregion
+        #region Properties
+
+        protected Cluster Cluster
         {
-            this.cluster = cluster;
+            get { return cluster; }
         }
 
+        protected Domain Domain
+        {
+            get { return domain; }
+        }
+
+        protected Federation Federation
+        {
+            get { return federation; }
+        }
+
+        #endregion
+        #region Constructors and initializers
+
+        /// <summary>
+        /// Initializes the class to create a new federation
+        /// within a domain.
+        /// </summary>
+        /// <param name="domain"></param>
+        public FederationInstaller(Domain domain)
+            : base(domain.Context)
+        {
+            InitializeMembers();
+
+            this.cluster = domain.Cluster;
+            this.domain = domain;
+        }
+
+        /// <summary>
+        /// Initializes the class to manage an existing federation.
+        /// </summary>
+        /// <param name="federation"></param>
         public FederationInstaller(Federation federation)
             : base(federation.Context)
         {
+            InitializeMembers();
+
+            this.cluster = federation.Domain.Cluster;
+            this.domain = federation.Domain;
             this.federation = federation;
         }
 
-        public Federation Install()
+        private void InitializeMembers()
         {
-            // TODO *** use default name constant
-            return Install("MyFederation");
+            this.cluster = null;
+            this.domain = null;
+            this.federation = null;
         }
 
+        #endregion
+        
         /// <summary>
         /// 
         /// </summary>
@@ -39,8 +82,6 @@ namespace Jhu.Graywulf.Install
         /// </remarks>
         public Federation Install(string name)
         {
-            // TODO: fill in other settings from default constants.
-            
             cluster.LoadMachineRoles(false);
 
             cluster.LoadDomains(false);
@@ -53,7 +94,7 @@ namespace Jhu.Graywulf.Install
 
             var tempdbdd = sharedfederation.DatabaseDefinitions[Constants.TempDbName];
             tempdbdd.LoadDatabaseVersions(false);
-            
+
             var controllerRole = cluster.MachineRoles[Constants.ControllerMachineRoleName];
             controllerRole.LoadServerVersions(false);
             controllerRole.LoadMachines(false);
@@ -64,14 +105,11 @@ namespace Jhu.Graywulf.Install
             var nodeRole = cluster.MachineRoles[Constants.NodeMachineRoleName];
             nodeRole.LoadServerVersions(false);
 
-            federation = new Federation(Context)
-            {
-                Name = name,
-
-                ControllerMachine = controller,
-                TempDatabaseVersion = tempdbdd.DatabaseVersions[Constants.TempDbName],
-                SchemaSourceServerInstance = controller.ServerInstances[Constants.ServerInstanceName],
-            };
+            GenerateFederation(
+                name,
+                controller,
+                tempdbdd.DatabaseVersions[Constants.TempDbName],
+                controller.ServerInstances[Constants.ServerInstanceName]);
 
             GenerateDefaultSettings();
 
@@ -81,28 +119,65 @@ namespace Jhu.Graywulf.Install
             return federation;
         }
 
-        public void GenerateDefaultSettings()
+        public Federation Install(
+            string name,
+            Machine controllerMachine,
+            DatabaseVersion tempDatabaseVersion,
+            ServerInstance schemaSourceServerInstance,
+            ServerVersion userDatabaseServerVersion,
+            ServerVersion nodeServerVersion)
         {
-            // TODO ***
+            GenerateFederation(name, controllerMachine, tempDatabaseVersion, schemaSourceServerInstance);
+            GenerateDefaultSettings();
+            GenerateDefaultChildren(userDatabaseServerVersion, nodeServerVersion);
 
-            //ShortTitle
-            //LongTitle
-            //Email
+            return federation;
+        }
 
+        protected virtual void GenerateFederation(
+            string name,
+            Machine controllerMachine,
+            DatabaseVersion tempDatabaseVersion,
+            ServerInstance schemaSourceServerInstance)
+        {
+            federation = new Federation(Context)
+            {
+                Name = name,
+                ControllerMachine = controllerMachine,
+                TempDatabaseVersion = tempDatabaseVersion,
+                SchemaSourceServerInstance = schemaSourceServerInstance,
+            };
+        }
+
+        public virtual void GenerateDefaultSettings()
+        {
             federation.SchemaManager = GetUnversionedTypeName(typeof(Jhu.Graywulf.Schema.GraywulfSchemaManager));
+            federation.UserDatabaseFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Schema.UserDatabaseFactory));
             federation.QueryFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Jobs.Query.SqlQueryFactory));
             federation.FileFormatFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Format.FileFormatFactory));
             federation.StreamFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.IO.StreamFactory));
+
+            federation.ShortTitle = "";
+            federation.LongTitle = "";
             federation.Copyright = Jhu.Graywulf.Copyright.InfoCopyright;
-            federation.Disclaimer = ""; // TODO ***
+            federation.Disclaimer = domain.Disclaimer;
+            federation.Email = domain.Email;
         }
 
-        public void GenerateDefaultChildren(ServerVersion myDbServerVersion, ServerVersion nodeServerVersion)
+        public virtual void GenerateDefaultChildren(ServerVersion myDbServerVersion, ServerVersion nodeServerVersion)
         {
             // Generate database definitions
-            GenerateUserDbDefinition(myDbServerVersion);
-            GenerateCodeDBDefinition(nodeServerVersion);
+            GenerateUserDatabaseDefinition(myDbServerVersion);
+            GenerateCodeDatabaseDefinition(nodeServerVersion);
 
+            GenerateDefaultJobs();
+            GenerateQueryJobs();
+
+            federation.Save();
+        }
+
+        protected virtual void GenerateDefaultJobs()
+        {
             // Job definitions
             var eji = new ExportTablesJobInstaller(federation);
             eji.Install();
@@ -112,14 +187,15 @@ namespace Jhu.Graywulf.Install
 
             var iji = new ImportTablesJobInstaller(federation);
             iji.Install();
-
-            var jdi = new SqlQueryJobInstaller(federation);
-            jdi.Install();
-
-            federation.Save();
         }
 
-        private void GenerateUserDbDefinition(ServerVersion userDatabaseServerVersion)
+        protected virtual void GenerateQueryJobs()
+        {
+            var jdi = new SqlQueryJobInstaller(federation);
+            jdi.Install();
+        }
+
+        protected void GenerateUserDatabaseDefinition(ServerVersion userDatabaseServerVersion)
         {
             DatabaseDefinition mydbdd = new DatabaseDefinition(federation)
             {
@@ -140,7 +216,7 @@ namespace Jhu.Graywulf.Install
             federation.UserDatabaseVersion = mydbdd.DatabaseVersions[Constants.UserDbName];
         }
 
-        private void GenerateCodeDBDefinition(ServerVersion nodeServerVersion)
+        protected void GenerateCodeDatabaseDefinition(ServerVersion nodeServerVersion)
         {
             DatabaseDefinition codedbdd = new DatabaseDefinition(federation)
             {
