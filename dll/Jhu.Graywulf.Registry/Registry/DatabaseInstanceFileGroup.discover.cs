@@ -69,7 +69,6 @@ namespace Jhu.Graywulf.Registry
             if (smodb != null)
             {
                 LoadFromSmo(smodb);
-                smodb.Discover();
             }
 
             DiscoverDatabaseDefinitionFileGroup();
