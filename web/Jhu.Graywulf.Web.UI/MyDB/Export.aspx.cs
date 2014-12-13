@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             {
                 if (df.CanWrite)
                 {
-                    var li = new ListItem(df.DisplayName, df.Extension);
+                    var li = new ListItem(df.DisplayName, df.MimeType);
                     FileFormat.Items.Add(li);
                 }
             }
