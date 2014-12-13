@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Schema
             udii.EnsureUserDatabaseInstanceExists(user, Federation.UserDatabaseVersion);
         }
 
-        protected override DatasetBase OnGetUserDatabase(User user)
+        protected override SqlServer.SqlServerDataset OnGetUserDatabase(User user)
         {
             var di = Federation.UserDatabaseVersion.GetUserDatabaseInstance(user);
             var ds = di.GetDataset();
