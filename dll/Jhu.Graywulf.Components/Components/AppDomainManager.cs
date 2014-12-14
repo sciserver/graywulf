@@ -123,6 +123,10 @@ namespace Jhu.Graywulf.Components
 
             if (applicationBase == null)
             {
+#if DEBUG
+                System.Diagnostics.Debugger.Break();
+#endif
+
                 throw new FileNotFoundException("Assembly not found.");     // *** TODO
             }
 
