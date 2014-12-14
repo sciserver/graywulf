@@ -102,11 +102,9 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <remarks>
         /// The initialized object will be the input parameter of a query job.
         /// </remarks>
-        protected override void GetInitializedQuery_Graywulf(QueryBase query, string queryString, string outputTable)
+        protected override void InitializeQuery(QueryBase query, string queryString)
         {
             var ef = new EntityFactory(Context);
-
-            var federation = ef.LoadEntity<Federation>(Registry.AppSettings.FederationName);
             var jd = ef.LoadEntity<JobDefinition>(Registry.AppSettings.FederationName, typeof(SqlQueryJob).Name);
 
             var settings = new SqlQueryJobSettings(jd.Settings);
@@ -126,74 +124,25 @@ namespace Jhu.Graywulf.Jobs.Query
 
             // TODO: modify this to allow myscratch, group membership, etc.
 
-            var udf = UserDatabaseFactory.Create(federation);
+            var udf = UserDatabaseFactory.Create(Federation);
             var mydbds = udf.GetUserDatabase(user);
 
             mydbds.IsMutable = true;
             query.CustomDatasets.Add(mydbds);
-
             query.DefaultDataset = mydbds;
-
-            // Set up MYDB for destination
-            // ****** TODO add output table name to settings */
-            query.Destination = new DestinationTable(
-                mydbds,
-                mydbds.DatabaseName,
-                settings.DefaultSchemaName,
-                String.IsNullOrWhiteSpace(outputTable) ? "outputtable" : outputTable,
-                TableInitializationOptions.Drop | TableInitializationOptions.Create);
 
             // Set up temporary database
             var tempds = new GraywulfDataset(Context);
             tempds.Name = Registry.Constants.TempDbName;
             tempds.IsOnLinkedServer = false;
-            tempds.DatabaseVersionReference.Value = federation.TempDatabaseVersion;
+            tempds.DatabaseVersionReference.Value = Federation.TempDatabaseVersion;
             query.TemporaryDataset = tempds;
 
             // Set up code database
             var codeds = new GraywulfDataset(Context);
             codeds.Name = Registry.Constants.CodeDbName;
             codeds.IsOnLinkedServer = false;
-            codeds.DatabaseVersionReference.Value = federation.CodeDatabaseVersion;
-            query.CodeDataset = codeds;
-        }
-
-        /// <summary>
-        /// Initializes a query object for execution outside the Graywulf framework.
-        /// </summary>
-        /// <param name="query"></param>
-        /// <param name="queryString"></param>
-        /// <param name="outputTable"></param>
-        /// <param name="mydbds"></param>
-        /// <param name="tempds"></param>
-        /// <param name="codeds"></param>
-        protected override void GetInitializedQuery_SingleServer(QueryBase query, string queryString, string outputTable, SqlServerDataset mydbds, SqlServerDataset tempds, SqlServerDataset codeds)
-        {
-            // TODO: factor it out to a new class
-
-            query.ExecutionMode = ExecutionMode.SingleServer;
-            query.QueryString = queryString;
-
-            query.QueryTimeout = 7200;
-
-            if (mydbds != null)
-            {
-                query.DefaultDataset = mydbds;
-
-                // Add MyDB as custom source
-                query.CustomDatasets.Add(mydbds);
-
-                // Set up MYDB for destination
-                query.Destination = new DestinationTable(
-                    mydbds,
-                    mydbds.DatabaseName,
-                    mydbds.DefaultSchemaName,
-                    "",  // *** TODO ?
-                    TableInitializationOptions.Drop | TableInitializationOptions.Create);
-            }
-
-            // Set up temporary and code database
-            query.TemporaryDataset = tempds;
+            codeds.DatabaseVersionReference.Value = Federation.CodeDatabaseVersion;
             query.CodeDataset = codeds;
         }
 
@@ -216,42 +165,6 @@ namespace Jhu.Graywulf.Jobs.Query
             job.Parameters[Constants.JobParameterQuery].Value = query;
 
             return job;
-        }
-
-        /// <summary>
-        /// Creates a workflow job that can be used to execute the query.
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// Overrides of this function might return different types of workflows based on
-        /// query type. This function is used by the single-server mode command-line utility only.
-        /// </remarks>
-        public virtual Activity GetAsWorkflow(QueryBase query)
-        {
-            // TODO: move this to another class
-
-            return new SqlQueryJob();
-        }
-
-        /// <summary>
-        /// Returns a disctionary of parameters used to configure a query job.
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// This function is used by the single-server mode command-line utility only.
-        /// </remarks>
-        public virtual Dictionary<string, object> GetWorkflowParameters(QueryBase query)
-        {
-            // TODO: move this to another class
-
-            return new Dictionary<string, object>()
-            {
-                { Constants.JobParameterQuery, query },
-                { Constants.JobParameterUserGuid, Guid.Empty },
-                { Constants.JobParameterJobGuid, Guid.Empty },
-            };
         }
     }
 }

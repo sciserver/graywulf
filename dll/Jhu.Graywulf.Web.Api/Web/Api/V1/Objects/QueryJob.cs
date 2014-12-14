@@ -93,10 +93,12 @@ namespace Jhu.Graywulf.Web.Api.V1
         public QueryBase CreateQuery(FederationContext context)
         {
             var qf = QueryFactory.Create(context.Federation);
-            var q = qf.CreateQuery(query, ExecutionMode.Graywulf);
+            var q = qf.CreateQuery(query);
 
             // TODO: Target table settings will need to be modified
             // once multi-select queries are implemented
+            q.BatchName = null;
+            q.QueryName = this.Name;
 
             switch (Queue)
             {
@@ -117,7 +119,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                         DatabaseName = context.MyDBDataset.DatabaseName,
                         SchemaName = context.MyDBDataset.DefaultSchemaName,
                         TableNamePattern = Jhu.Graywulf.Jobs.Constants.DefaultLongResultsTableNamePattern,
-                        Options = TableInitializationOptions.Create
+                        Options = TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName
                     };
                     break;
                 default:

@@ -36,7 +36,6 @@ namespace Jhu.Graywulf.Parser.Test
 
             try
             {
-                // *** TODO: load query factory type from registry
                 //queryFactory = new Jhu.SkyQuery.Jobs.Query.XMatchQueryFactory();
                 queryFactory = new Jhu.Graywulf.Jobs.Query.SqlQueryFactory();
 

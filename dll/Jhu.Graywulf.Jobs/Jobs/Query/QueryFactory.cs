@@ -24,17 +24,39 @@ namespace Jhu.Graywulf.Jobs.Query
     {
         #region Static members
 
-        public static QueryFactory Create(Federation federation)
+        private static QueryFactory Create(string typeName)
         {
-            // Load federation and get query factory name from settings
-            var ft = Type.GetType(federation.QueryFactory);
-            return (QueryFactory)Activator.CreateInstance(ft, federation.Context);
+            var ft = Type.GetType(typeName);
+            var res = (QueryFactory)Activator.CreateInstance(ft, true);
+
+            return res;
         }
 
-        #endregion
+        public static QueryFactory Create(Federation federation)
+        {
+            var res = Create(federation.QueryFactory);
+            res.Context = federation.Context;
+            res.Federation = federation;
+
+            return res;
+        }
 
         [NonSerialized]
         private static Type[] queryTypes = null;
+
+        #endregion
+        #region Private member variables
+
+        private Federation federation;
+
+        #endregion
+        #region Properties
+
+        protected Federation Federation
+        {
+            get { return federation; }
+            private set { federation = value; }
+        }
 
         public Type[] QueryTypes
         {
@@ -52,6 +74,9 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        #endregion
+        #region Constructors and initializers
+
         protected QueryFactory()
             : base()
         {
@@ -64,48 +89,32 @@ namespace Jhu.Graywulf.Jobs.Query
             InitializeMembers(new StreamingContext());
         }
 
+        protected QueryFactory(Federation federation)
+            : base(federation.Context)
+        {
+            InitializeMembers(new StreamingContext());
+
+            this.federation = federation;
+        }
+
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
+            this.federation = null;
         }
+
+        #endregion
 
         protected abstract Type[] LoadQueryTypes();
 
         public QueryBase CreateQuery(string queryString)
-        {
-            return CreateQuery(queryString, ExecutionMode.Graywulf, null, null, null, null);
-        }
-
-        public QueryBase CreateQuery(string queryString, ExecutionMode mode)
-        {
-            return CreateQuery(queryString, mode, null, null, null, null);
-        }
-
-        public QueryBase CreateQuery(string queryString, ExecutionMode mode, string outputTable)
-        {
-            return CreateQuery(queryString, mode, outputTable, null, null, null);
-        }
-
-        public QueryBase CreateQuery(string queryString, ExecutionMode mode, string outputTable, DatasetBase mydbds, DatasetBase tempds, DatasetBase codeds)
         {
             var parser = CreateParser();
             var root = parser.Execute(queryString);
 
             QueryBase q = CreateQueryBase((Node)root);
             q.QueryFactoryTypeName = Util.TypeNameFormatter.ToUnversionedAssemblyQualifiedName(this.GetType());
-            q.ExecutionMode = mode;
-
-            switch (mode)
-            {
-                case ExecutionMode.Graywulf:
-                    GetInitializedQuery_Graywulf(q, queryString, outputTable);
-                    break;
-                case ExecutionMode.SingleServer:
-                    GetInitializedQuery_SingleServer(q, queryString, outputTable, (SqlServerDataset)mydbds, (SqlServerDataset)tempds, (SqlServerDataset)codeds);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
+            InitializeQuery(q, queryString);
 
             return q;
         }
@@ -118,9 +127,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected abstract QueryBase CreateQueryBase(Node root);
 
-        protected abstract void GetInitializedQuery_Graywulf(QueryBase query, string queryString, string outputTable);
-
-        protected abstract void GetInitializedQuery_SingleServer(QueryBase query, string queryString, string outputTable, SqlServerDataset mydbds, SqlServerDataset tempds, SqlServerDataset codeds);
+        protected abstract void InitializeQuery(QueryBase query, string queryString);
 
         #region Job scheduling functions
 
