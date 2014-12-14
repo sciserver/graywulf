@@ -228,13 +228,20 @@ namespace Jhu.Graywulf.SqlParser
         {
             foreach (var tr in qs.EnumerateSourceTableReferences(false))
             {
-                if (tr.IsTableOrView)
+                try
                 {
-                    tr.SubstituteDefaults(SchemaManager, defaultTableDatasetName);
+                    if (tr.IsTableOrView)
+                    {
+                        tr.SubstituteDefaults(SchemaManager, defaultTableDatasetName);
+                    }
+                    else if (tr.IsUdf)
+                    {
+                        tr.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
+                    }
                 }
-                else if (tr.IsUdf)
+                catch (KeyNotFoundException ex)
                 {
-                    tr.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
+                    throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, tr.DatasetName, tr.Node);
                 }
             }
         }
@@ -243,7 +250,14 @@ namespace Jhu.Graywulf.SqlParser
         {
             foreach (var fi in node.EnumerateDescendantsRecursive<FunctionIdentifier>())
             {
-                fi.FunctionReference.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
+                try
+                {
+                    fi.FunctionReference.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, fi.FunctionReference.DatasetName, fi);
+                }
             }
         }
 
