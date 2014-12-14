@@ -74,6 +74,9 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         private string queryString;
 
+        private string batchName;
+        private string queryName;
+
         /// <summary>
         /// The dataset to be assumed when no DATASET: part in
         /// table names appear.
@@ -231,6 +234,20 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             get { return queryString; }
             set { queryString = value; }
+        }
+
+        [DataMember]
+        public string BatchName
+        {
+            get { return batchName; }
+            set { batchName = value; }
+        }
+
+        [DataMember]
+        public string QueryName
+        {
+            get { return queryName; }
+            set { queryName = value; }
         }
 
         /// <summary>
@@ -411,6 +428,8 @@ namespace Jhu.Graywulf.Jobs.Query
             this.federationReference = new EntityReference<Federation>(this);
 
             this.queryString = null;
+            this.batchName = null;
+            this.queryName = null;
 
             this.defaultDataset = null;
             this.temporaryDataset = null;
@@ -456,6 +475,8 @@ namespace Jhu.Graywulf.Jobs.Query
             this.federationReference = new EntityReference<Registry.Federation>(this, old.federationReference);
 
             this.queryString = old.queryString;
+            this.batchName = old.batchName;
+            this.queryName = old.queryName;
 
             this.defaultDataset = old.defaultDataset;
             this.temporaryDataset = old.temporaryDataset;

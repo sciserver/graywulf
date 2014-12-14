@@ -489,7 +489,8 @@ namespace Jhu.Graywulf.Jobs.Query
                                 var source = GetOutputSourceQuery();
 
                                 // TODO: generate resultset name here
-                                var table = query.Destination.GetTable(null, null, null, null);
+                                // TODO: figure out metadata from query
+                                var table = query.Destination.GetTable(query.BatchName, query.QueryName, null, null);
                                 table.Initialize(source.GetColumns(), query.Destination.Options);
                             }
 
