@@ -148,7 +148,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Cannot determine system database", ex); // TODO ***
+                    throw new Exception(String.Format("Cannot find instance of system database: {0}", dataset.Name), ex); // TODO ***
                 }
             }
             else if (AssignedServerInstanceReference.IsEmpty)
@@ -488,7 +488,8 @@ namespace Jhu.Graywulf.Jobs.Query
                             {
                                 var source = GetOutputSourceQuery();
 
-                                var table = query.Destination.GetTable();
+                                // TODO: generate resultset name here
+                                var table = query.Destination.GetTable(null, null, null, null);
                                 table.Initialize(source.GetColumns(), query.Destination.Options);
                             }
 
