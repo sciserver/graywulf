@@ -130,20 +130,6 @@ namespace Jhu.Graywulf.Jobs.Query
             mydbds.IsMutable = true;
             query.CustomDatasets.Add(mydbds);
             query.DefaultDataset = mydbds;
-
-            // Set up temporary database
-            var tempds = new GraywulfDataset(Context);
-            tempds.Name = Registry.Constants.TempDbName;
-            tempds.IsOnLinkedServer = false;
-            tempds.DatabaseVersionReference.Value = Federation.TempDatabaseVersion;
-            query.TemporaryDataset = tempds;
-
-            // Set up code database
-            var codeds = new GraywulfDataset(Context);
-            codeds.Name = Registry.Constants.CodeDbName;
-            codeds.IsOnLinkedServer = false;
-            codeds.DatabaseVersionReference.Value = Federation.CodeDatabaseVersion;
-            query.CodeDataset = codeds;
         }
 
         /// <summary>

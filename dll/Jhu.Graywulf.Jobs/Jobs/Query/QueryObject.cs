@@ -265,7 +265,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Gets or sets the temporary dataset to be used to store temporary.
         /// tables.
         /// </summary>
-        [DataMember]
+        [IgnoreDataMember]
         public SqlServerDataset TemporaryDataset
         {
             get { return temporaryDataset; }
@@ -275,7 +275,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <summary>
         /// Gets or sets the code database to be used by default to resolve function calls.
         /// </summary>
-        [DataMember]
+        [IgnoreDataMember]
         public SqlServerDataset CodeDataset
         {
             get { return codeDataset; }
@@ -500,6 +500,8 @@ namespace Jhu.Graywulf.Jobs.Query
             this.codeDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this, old.codeDatabaseInstanceReference);
         }
 
+        public abstract object Clone();
+
         #endregion
 
         /// <summary>
@@ -562,6 +564,7 @@ namespace Jhu.Graywulf.Jobs.Query
                             break;
                         case ExecutionMode.Graywulf:
                             LoadAssignedServerInstance(forceReinitialize);
+                            LoadDatasets(forceReinitialize);
                             break;
                         default:
                             throw new NotImplementedException();
@@ -617,6 +620,31 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 assignedServerInstanceReference.LoadEntity();
                 assignedServerInstanceReference.Value.GetConnectionString();
+            }
+        }
+
+        protected void LoadDatasets(bool forceReinitialize)
+        {
+            // Initialize temporary database
+            if (temporaryDataset == null || forceReinitialize)
+            {
+                var tempds = new GraywulfDataset(Context);
+                tempds.Name = Registry.Constants.TempDbName;
+                tempds.IsOnLinkedServer = false;
+                tempds.DatabaseVersionReference.Value = FederationReference.Value.TempDatabaseVersion;
+
+                temporaryDataset = tempds;
+            }
+
+            // Initialize code database
+            if (codeDataset == null || forceReinitialize)
+            {
+                var codeds = new GraywulfDataset(Context);
+                codeds.Name = Registry.Constants.CodeDbName;
+                codeds.IsOnLinkedServer = false;
+                codeds.DatabaseVersionReference.Value = FederationReference.Value.CodeDatabaseVersion;
+
+                codeDataset = codeds;
             }
         }
 
@@ -725,6 +753,8 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <returns></returns>
         protected virtual SqlNameResolver CreateNameResolver(bool forceReinitialize)
         {
+            LoadDatasets(forceReinitialize);
+
             var nr = queryFactory.Value.CreateNameResolver();
             nr.SchemaManager = GetSchemaManager();
 
@@ -1125,7 +1155,5 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
-
-        public abstract object Clone();
     }
 }
