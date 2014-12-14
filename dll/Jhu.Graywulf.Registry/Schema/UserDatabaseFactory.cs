@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Schema
 
         public abstract void EnsureUserDatabaseExists(User user);
 
-        public DatasetBase GetUserDatabase(User user)
+        public SqlServer.SqlServerDataset GetUserDatabase(User user)
         {
             DatasetBase ds;
 
@@ -86,9 +86,9 @@ namespace Jhu.Graywulf.Schema
                 userDatabaseCache.TryAdd(user.Name, ds, DateTime.Now.AddMinutes(10));
             }
 
-            return ds;
+            return (SqlServer.SqlServerDataset)ds;
         }
 
-        protected abstract DatasetBase OnGetUserDatabase(User user);
+        protected abstract SqlServer.SqlServerDataset OnGetUserDatabase(User user);
     }
 }

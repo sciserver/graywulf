@@ -10,9 +10,10 @@
                         You can use the following REST services to access functionality from your scripts
                         and programs.</p>
                     <ul>
-                        <li><a href="Jobs/help">Jobs</a>: schedule queries, table import and export jobs.</li>
-                        <li><a href="Tables/help">Table</a>: Upload and download tables directly.</li>
-                        <li><a href="Schema/help">Schema</a>: Browse the schema.</li>
+                        <li><a href="V1/Data.svc/help">Data</a>: access table data in various formats.</li>
+                        <li><a href="V1/Jobs.svc/help">Jobs</a>: schedule queries, table import and export jobs.</li>
+                        <li><a href="V1/Schema.svc/help">Schema</a>: Browse the schema.</li>
+                        <li><a href="V1/Test.svc/help">Test</a>: Test service, will be removed.</li>
                     </ul>
                     <p>
                         Please note, that you need to be registered and signed in in order to access the

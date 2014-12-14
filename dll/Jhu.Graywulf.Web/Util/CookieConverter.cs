@@ -53,6 +53,16 @@ namespace Jhu.Graywulf.Util
             return cookie;
         }
 
+        public static string ToCommaSeparatedCookieList(string cookies)
+        {
+            // Browsers send back cookies separated by semicolons while
+            // CookieContainer expects a comma separated list
+
+            // TODO: verify this function
+
+            return cookies.Replace(';', ',');
+        }
+
         public static string ToSetCookieHeader(HttpCookie httpCookie)
         {
             return ToSetCookieHeader(ToCookie(httpCookie));

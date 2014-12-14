@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         private static HashSet<string> ReservedDatabaseDefinitions = new HashSet<string>(SchemaManager.Comparer)
         {
-            Registry.Constants.MyDbName,
+            Registry.Constants.UserDbName,
             Registry.Constants.CodeDbName,
             Registry.Constants.TempDbName,
         };

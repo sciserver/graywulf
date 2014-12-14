@@ -17,24 +17,31 @@ namespace Jhu.Graywulf.Install
             this.federation = federation;
         }
 
-        public void Install()
+        public virtual JobDefinition Install()
+        {
+            return GenerateJobDefinition(typeof(Jobs.Query.SqlQueryJob));
+        }
+
+        protected virtual JobDefinition GenerateJobDefinition(Type jobType)
         {
             var jd = new JobDefinition(federation)
             {
-                Name = typeof(Jobs.Query.SqlQueryJob).Name,
+                Name = jobType.Name,
                 System = federation.System,
-                WorkflowTypeName = GetUnversionedTypeName(typeof(Jobs.Query.SqlQueryJob)),
+                WorkflowTypeName = GetUnversionedTypeName(jobType),
                 Settings = new SqlQueryJobSettings()
                 {
                     HotDatabaseVersionName = Registry.Constants.HotDatabaseVersionName,
                     StatDatabaseVersionName = Registry.Constants.StatDatabaseVersionName,
                     DefaultSchemaName = Registry.Constants.DefaultSchemaName,
-                    DefaultDatasetName = Registry.Constants.MyDbName,
+                    DefaultDatasetName = Registry.Constants.UserDbName,
                     QueryTimeout = 7200,    // TODO
                 }
             };
             jd.DiscoverWorkflowParameters();
             jd.Save();
+
+            return jd;
         }
     }
 }

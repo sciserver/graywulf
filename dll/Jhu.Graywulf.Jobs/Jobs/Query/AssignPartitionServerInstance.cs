@@ -50,9 +50,13 @@ namespace Jhu.Graywulf.Jobs.Query
                         {
                             // use MyDB's server
                             var ef = new EntityFactory(context);
+                            
                             var federation = queryPartition.FederationReference.Value;
                             var user = ef.LoadEntity<User>(context.UserGuid);
-                            var di = federation.MyDBDatabaseVersion.GetUserDatabaseInstance(user);
+
+                            // TODO: this doesn't work if user database is not tied to
+                            // server instance but specified as a connection string only!
+                            var di = federation.UserDatabaseVersion.GetUserDatabaseInstance(user);
 
                             queryPartition.AssignedServerInstance = di.ServerInstance;
                         }

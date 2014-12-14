@@ -29,7 +29,11 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 var ef = new EntityFactory(context);
                 var federation = ef.LoadEntity<Federation>(Registry.AppSettings.FederationName);
 
-                var mydbds = federation.MyDBDatabaseVersion.GetUserDatabaseInstance(user).GetDataset();
+                // TODO: delete after testing
+                //var mydbds = federation.UserDatabaseVersion.GetUserDatabaseInstance(user).GetDataset();
+
+                var udf = UserDatabaseFactory.Create(federation);
+                var mydbds = udf.GetUserDatabase(user);
 
                 var source = new Jhu.Graywulf.Schema.Table()
                 {

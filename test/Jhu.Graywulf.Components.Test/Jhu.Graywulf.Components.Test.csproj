@@ -61,6 +61,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\TypeNameFormatterTest.cs" />
     <Compile Include="Util\ConfigXmlMergerTest.cs" />
   </ItemGroup>
   <ItemGroup>

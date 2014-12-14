@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Importing xml file failed.");
+                    Console.WriteLine("Creating the cluster failed.");  // TODO ***
                     Console.WriteLine(ex.Message);
 
                     context.RollbackTransaction();

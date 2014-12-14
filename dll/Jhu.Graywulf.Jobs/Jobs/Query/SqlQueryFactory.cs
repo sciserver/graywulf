@@ -93,12 +93,11 @@ namespace Jhu.Graywulf.Jobs.Query
 
             query.QueryTimeout = settings.QueryTimeout;
 
-            // Add MyDB as custom source
-            var mydbds = new GraywulfDataset(Context);
-            mydbds.Name = settings.DefaultDatasetName;
-            mydbds.DefaultSchemaName = settings.DefaultSchemaName;
-            mydbds.DatabaseInstanceReference.Value = federation.MyDBDatabaseVersion.GetUserDatabaseInstance(user);
-            mydbds.CacheSchemaConnectionString();
+            // TODO: modify this to allow myscratch, group membership, etc.
+
+            var udf = UserDatabaseFactory.Create(federation);
+            var mydbds = udf.GetUserDatabase(user);
+
             mydbds.IsMutable = true;
             query.CustomDatasets.Add(mydbds);
 

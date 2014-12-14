@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
             ControllerMachine.SelectedValue = Item.ControllerMachine;
             SchemaSourceServerInstance.SelectedValue = Item.SchemaSourceServerInstance;
-            MyDbDatabaseVersion.SelectedValue = Item.MyDBDatabaseVersion;
+            MyDbDatabaseVersion.SelectedValue = Item.UserDatabaseVersion;
             TempDatabaseVersion.SelectedValue = Item.TempDatabaseVersion;
             CodeDatabaseVersion.SelectedValue = Item.CodeDatabaseVersion;
 
@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             Item.Disclaimer = Disclaimer.Text;
 
             Item.ControllerMachine = (Machine) ControllerMachine.SelectedValue;
-            Item.MyDBDatabaseVersion = (DatabaseVersion)MyDbDatabaseVersion.SelectedValue;
+            Item.UserDatabaseVersion = (DatabaseVersion)MyDbDatabaseVersion.SelectedValue;
             Item.TempDatabaseVersion = (DatabaseVersion)TempDatabaseVersion.SelectedValue;
             Item.CodeDatabaseVersion = (DatabaseVersion) CodeDatabaseVersion.SelectedValue;
             Item.SchemaSourceServerInstance = (ServerInstance)SchemaSourceServerInstance.SelectedValue;

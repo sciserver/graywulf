@@ -118,10 +118,10 @@ namespace Jhu.Graywulf.Web.Security
             this.headers = context.Headers;
 
             // Web services don't parse cookies, so we do it now
-            var cookie = headers[Services.Constants.HttpHeaderCookie];
-            if (cookie != null)
+            var cookies = headers[Services.Constants.HttpHeaderCookie];
+            if (cookies != null)
             {
-                this.cookies.SetCookies(uri, headers[Services.Constants.HttpHeaderCookie]);
+                this.cookies.SetCookies(uri, Util.CookieConverter.ToCommaSeparatedCookieList(cookies));
             }
         }
 

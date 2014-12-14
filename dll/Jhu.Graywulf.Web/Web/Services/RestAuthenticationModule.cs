@@ -66,7 +66,8 @@ namespace Jhu.Graywulf.Web.Services
 
             try
             {
-                var response = Authenticate(new AuthenticationRequest(WebOperationContext.Current.IncomingRequest));
+                var authreq = new AuthenticationRequest(WebOperationContext.Current.IncomingRequest);
+                var response = Authenticate(authreq);
 
                 // TODO: session handling could be added here, if necessary
                 // would be nice to detect user arrival, etc.

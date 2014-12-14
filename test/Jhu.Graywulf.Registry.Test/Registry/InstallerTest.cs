@@ -32,9 +32,12 @@ namespace Jhu.Graywulf.Registry
                 var ci = new ClusterInstaller(context);
                 var cluster = ci.Install();
 
+                cluster.LoadDomains(true);
+                var domain = cluster.Domains[Constants.SystemDomainName];
+
                 // Create a federation
-                var fi = new FederationInstaller(cluster);
-                var federation = fi.Install();
+                var fi = new FederationInstaller(domain);
+                var federation = fi.Install("Test federation");
             }
 
             //dbi.DropDatabase(true);
