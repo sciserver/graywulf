@@ -28,6 +28,9 @@ namespace Jhu.Graywulf.Registry
         [TestMethod]
         public void SaveRegistryTest()
         {
+            // If this test fails with an XML serialization error, make sure
+            // to modify EntityFactory.Registry
+
             SaveRegistry("EntityFactoryTest_SaveRegistryTest.xml");
         }
 
