@@ -94,6 +94,10 @@
       <Project>{AADA04EE-F578-4628-8AE0-D423BB94C738}</Project>
       <Name>Jhu.Graywulf.Sql</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
+      <Project>{e9d182cf-746e-4e40-b01c-74a32fb70749}</Project>
+      <Name>Jhu.Graywulf.Web</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\exe\Jhu.Graywulf.RemoteService.Server\Jhu.Graywulf.RemoteService.Server.csproj">
       <Project>{3AC81304-44BA-4D55-A872-469BC11C9CBC}</Project>
       <Name>Jhu.Graywulf.RemoteService.Server</Name>

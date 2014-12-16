@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
+using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Test
@@ -42,14 +43,15 @@ namespace Jhu.Graywulf.Test
 
         protected User SignInTestUser(Context context)
         {
-            // TODO: throw exception on logon failure
-            var ef = new EntityFactory(context);
+            var ip = IdentityProvider.Create(context.Domain);
+            ip.VerifyPassword(new AuthenticationRequest("test", "alma"));
 
-            //var c = ef.LoadEntity<Cluster>(Cluster.AppSettings.ClusterName);
-            var d = ef.LoadEntity<Domain>(Registry.AppSettings.DomainName);
+            var user = ip.GetUserByUserName("test");
 
-            var uu = new UserFactory(context);
-            return uu.LoginUser(d, "test", "alma");
+            context.UserGuid = user.Guid;
+            context.UserName = user.Name;
+
+            return user;
         }
 
         protected void PurgeTestJobs()
@@ -177,16 +179,16 @@ namespace Jhu.Graywulf.Test
             }
         }
 
-        protected void DropMyDBTable(string schemaName, string tableName)
+        protected void DropUserDatabaseTable(string schemaName, string tableName)
         {
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                var ef = new EntityFactory(context);
-                var federation = ef.LoadEntity<Federation>(Registry.AppSettings.FederationName);
                 var user = SignInTestUser(context);
-                var di = federation.UserDatabaseVersion.GetUserDatabaseInstance(user);
 
-                DropTable(di.GetConnectionString().ConnectionString, "dbo", "SqlQueryTest_SimpleQueryTest");
+                var udf = UserDatabaseFactory.Create(context.Federation);
+                var userdb = udf.GetUserDatabase(user);
+
+                DropTable(userdb.ConnectionString, "dbo", "SqlQueryTest_SimpleQueryTest");
             }
         }
 

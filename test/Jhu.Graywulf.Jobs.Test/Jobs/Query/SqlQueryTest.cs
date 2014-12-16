@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         {
             using (SchedulerTester.Instance.GetToken())
             {
-                DropMyDBTable("dbo", "SqlQueryTest_SimpleQueryTest");
+                DropUserDatabaseTable("dbo", "SqlQueryTest_SimpleQueryTest");
 
                 SchedulerTester.Instance.EnsureRunning();
                 using (RemoteServiceTester.Instance.GetToken())
