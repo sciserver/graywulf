@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Parser.Test
             try
             {
                 //queryFactory = new Jhu.SkyQuery.Jobs.Query.XMatchQueryFactory();
-                queryFactory = new Jhu.Graywulf.Jobs.Query.SqlQueryFactory();
+                queryFactory = QueryFactory.Create(typeof(Jhu.Graywulf.Jobs.Query.SqlQueryFactory).AssemblyQualifiedName, null);
 
                 Jhu.Graywulf.ParserLib.Parser parser = queryFactory.CreateParser();
 
@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Parser.Test
                     //sm.Datasets.Add(new Jhu.Graywulf.Schema.MySqlDataset("MYSQL", "..."));
 
 
-                    var qf = new Jhu.Graywulf.Jobs.Query.SqlQueryFactory();
+                    var qf = QueryFactory.Create(typeof(Jhu.Graywulf.Jobs.Query.SqlQueryFactory).AssemblyQualifiedName, null);
                     var nr = qf.CreateNameResolver();
                     nr.SchemaManager = sm;
 
