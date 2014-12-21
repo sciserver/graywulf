@@ -123,13 +123,7 @@ namespace Jhu.Graywulf.Jobs.Query
             query.QueryTimeout = settings.QueryTimeout;
 
             // TODO: modify this to allow myscratch, group membership, etc.
-
-            var udf = UserDatabaseFactory.Create(Federation);
-            var mydbds = udf.GetUserDatabase(user);
-
-            mydbds.IsMutable = true;
-            query.CustomDatasets.Add(mydbds);
-            query.DefaultDataset = mydbds;
+            // TODO: delete, moved to userdatabasefactory
         }
 
         /// <summary>

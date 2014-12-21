@@ -24,39 +24,26 @@ namespace Jhu.Graywulf.Jobs.Query
     {
         #region Static members
 
-        private static QueryFactory Create(string typeName)
-        {
-            var ft = Type.GetType(typeName);
-            var res = (QueryFactory)Activator.CreateInstance(ft, true);
-
-            return res;
-        }
-
         public static QueryFactory Create(Federation federation)
         {
-            var res = Create(federation.QueryFactory);
-            res.Context = federation.Context;
-            res.Federation = federation;
-
-            return res;
+            return Create(federation.QueryFactory, federation.Context);
         }
 
+        public static QueryFactory Create(string typeName, Context context)
+        {
+            var ft = Type.GetType(typeName);
+            var res = (QueryFactory)Activator.CreateInstance(ft, new object[] { context });
+            return res;
+        }
+        
         [NonSerialized]
         private static Type[] queryTypes = null;
 
         #endregion
         #region Private member variables
 
-        private Federation federation;
-
         #endregion
         #region Properties
-
-        protected Federation Federation
-        {
-            get { return federation; }
-            private set { federation = value; }
-        }
 
         public Type[] QueryTypes
         {
@@ -89,18 +76,9 @@ namespace Jhu.Graywulf.Jobs.Query
             InitializeMembers(new StreamingContext());
         }
 
-        protected QueryFactory(Federation federation)
-            : base(federation.Context)
-        {
-            InitializeMembers(new StreamingContext());
-
-            this.federation = federation;
-        }
-
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.federation = null;
         }
 
         #endregion
@@ -128,6 +106,13 @@ namespace Jhu.Graywulf.Jobs.Query
         protected abstract QueryBase CreateQueryBase(Node root);
 
         protected abstract void InitializeQuery(QueryBase query, string queryString);
+
+        public void AppendUserDatabase(QueryBase query, SqlServerDataset userDatabase)
+        {
+            userDatabase.IsMutable = true;
+            query.CustomDatasets.Add(userDatabase);
+            query.DefaultDataset = userDatabase;
+        }
 
         #region Job scheduling functions
 
