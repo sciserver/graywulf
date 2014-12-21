@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             return UserDatabaseFactory.Create(
                 typeof(GraywulfUserDatabaseFactory).AssemblyQualifiedName,
-                context);
+                context.Federation);
         }
 
         protected virtual QueryFactory CreateQueryFactory(Context context)
@@ -37,10 +37,11 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 var udf = CreateUserDatabaseFactory(context);
                 var mydb = udf.GetUserDatabase(user);
+                var mysi = udf.GetUserDatabaseServerInstance(user);
 
                 var qf = CreateQueryFactory(context);
                 var q = qf.CreateQuery(query);
-                qf.AppendUserDatabase(q, mydb);
+                qf.AppendUserDatabase(q, mydb, mysi);
 
                 q.Destination = new Jhu.Graywulf.IO.Tasks.DestinationTable()
                 {

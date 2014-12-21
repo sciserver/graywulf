@@ -107,11 +107,12 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected abstract void InitializeQuery(QueryBase query, string queryString);
 
-        public void AppendUserDatabase(QueryBase query, SqlServerDataset userDatabase)
+        public void AppendUserDatabase(QueryBase query, SqlServerDataset userDatabase, ServerInstance serverInstance)
         {
             userDatabase.IsMutable = true;
             query.CustomDatasets.Add(userDatabase);
             query.DefaultDataset = userDatabase;
+            query.AssignedServerInstance = serverInstance;
         }
 
         #region Job scheduling functions

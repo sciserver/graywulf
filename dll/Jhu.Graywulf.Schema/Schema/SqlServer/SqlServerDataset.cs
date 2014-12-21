@@ -101,7 +101,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
                 }
                 else
                 {
-                    return csb.DataSource;
+                    return String.Empty;
                 }
             }
         }

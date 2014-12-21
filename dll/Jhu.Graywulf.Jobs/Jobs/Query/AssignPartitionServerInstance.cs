@@ -41,24 +41,14 @@ namespace Jhu.Graywulf.Jobs.Query
                         var dss = queryPartition.FindRequiredDatasets();
 
                         // Check if there are any Graywulf datasets referenced in the query
-                        var assignmydb = (dss.Values.FirstOrDefault(ds => !ds.IsSpecificInstanceRequired) == null);
+                        var assignDefault = (dss.Values.FirstOrDefault(ds => !ds.IsSpecificInstanceRequired) == null);
 
                         // *** TODO: replace this whole thing to use JOIN graphs
                         // If no graywulf datasets are used, use the server containing myDB,
                         // otherwise ask the scheduler for an appropriate server
-                        if (dss.Count == 0 || assignmydb)
+                        if (!queryPartition.Query.AssignedServerInstanceReference.IsEmpty && (dss.Count == 0 || assignDefault))
                         {
-                            // use MyDB's server
-                            var ef = new EntityFactory(context);
-                            
-                            var federation = queryPartition.FederationReference.Value;
-                            var user = ef.LoadEntity<User>(context.UserGuid);
-
-                            // TODO: this doesn't work if user database is not tied to
-                            // server instance but specified as a connection string only!
-                            var di = federation.UserDatabaseVersion.GetUserDatabaseInstance(user);
-
-                            queryPartition.AssignedServerInstance = di.ServerInstance;
+                            queryPartition.AssignedServerInstance = queryPartition.Query.AssignedServerInstance;
                         }
                         else
                         {

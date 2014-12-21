@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Schema
 
         public override void EnsureUserDatabaseExists(User user)
         {
-            var udii = new UserDatabaseInstanceInstaller(Federation.Context);
+            var udii = new UserDatabaseInstanceInstaller(Context);
             udii.EnsureUserDatabaseInstanceExists(user, Federation.UserDatabaseVersion);
         }
 
@@ -30,6 +30,12 @@ namespace Jhu.Graywulf.Schema
             ds.IsMutable = true;
 
             return ds;
+        }
+
+        protected override ServerInstance OnGetUserDatabaseServerInstance(User user)
+        {
+            var di = Federation.UserDatabaseVersion.GetUserDatabaseInstance(user);
+            return di.ServerInstance;
         }
     }
 }

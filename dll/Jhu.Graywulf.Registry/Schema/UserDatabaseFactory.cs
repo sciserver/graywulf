@@ -8,7 +8,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Schema
 {
-    public abstract class UserDatabaseFactory
+    public abstract class UserDatabaseFactory : ContextObject
     {
         #region Static cache implementation
 
@@ -20,46 +20,51 @@ namespace Jhu.Graywulf.Schema
         }
 
         #endregion
-        #region Private member variables
+        #region
 
         private Federation federation;
 
         #endregion
         #region Properties
 
-        public Federation Federation
+        protected Federation Federation
         {
             get { return federation; }
-            set { federation = value; }
         }
 
         #endregion
         #region Constructors and initializers
 
-        // TODO: add assigned server instance
-        protected UserDatabaseFactory(Federation federation)
+        public static UserDatabaseFactory Create(Federation federation)
         {
-            InitializeMembers(new StreamingContext());
-
-            this.federation = federation;
+            return Create(federation.UserDatabaseFactory, federation);
         }
 
-        public static UserDatabaseFactory Create(Federation federation)
+        public static UserDatabaseFactory Create(string typeName, Federation federation)
         {
             Type type = null;
 
-            if (!String.IsNullOrWhiteSpace(federation.UserDatabaseFactory))
+            if (!String.IsNullOrWhiteSpace(typeName))
             {
-                type = Type.GetType(federation.UserDatabaseFactory);
+                type = Type.GetType(typeName);
             }
 
             // There is no fall-back alternative if configuration is incorrect
             if (type == null)
             {
-                throw new Exception("Cannot load UserDatabaseFactory specified in federation settings.");    // TODO ***
+                throw new Exception("Cannot load UserDatabaseFactory.");    // TODO ***
             }
 
             return (UserDatabaseFactory)Activator.CreateInstance(type, new object[] { federation });
+        }
+
+        // TODO: add assigned server instance
+        protected UserDatabaseFactory(Federation federation)
+            :base(federation.Context)
+        {
+            InitializeMembers(new StreamingContext());
+
+            this.federation = federation;
         }
 
         /// <summary>
@@ -89,6 +94,13 @@ namespace Jhu.Graywulf.Schema
             return (SqlServer.SqlServerDataset)ds;
         }
 
+        public ServerInstance GetUserDatabaseServerInstance(User user)
+        {
+            return OnGetUserDatabaseServerInstance(user);
+        }
+
         protected abstract SqlServer.SqlServerDataset OnGetUserDatabase(User user);
+
+        protected abstract ServerInstance OnGetUserDatabaseServerInstance(User user);
     }
 }

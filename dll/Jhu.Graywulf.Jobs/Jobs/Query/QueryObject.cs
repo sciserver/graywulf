@@ -331,7 +331,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <summary>
         /// Gets or sets the reference to the assigned server instance registry object.
         /// </summary>
-        [IgnoreDataMember]
+        [DataMember]
         public EntityReference<ServerInstance> AssignedServerInstanceReference
         {
             get { return assignedServerInstanceReference; }
