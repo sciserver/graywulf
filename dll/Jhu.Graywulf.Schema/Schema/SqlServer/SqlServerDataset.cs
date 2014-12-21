@@ -71,7 +71,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
         }
 
         [IgnoreDataMember]
-        public string Host
+        public string HostName
         {
             get
             {
@@ -79,7 +79,25 @@ namespace Jhu.Graywulf.Schema.SqlServer
                 int i = csb.DataSource.IndexOf('\\');
                 if (i > -1)
                 {
-                    return csb.DataSource.Substring(i);
+                    return csb.DataSource.Substring(0, i);
+                }
+                else
+                {
+                    return csb.DataSource;
+                }
+            }
+        }
+
+        [IgnoreDataMember]
+        public string InstanceName
+        {
+            get
+            {
+                var csb = new SqlConnectionStringBuilder(ConnectionString);
+                int i = csb.DataSource.IndexOf('\\');
+                if (i > -1)
+                {
+                    return csb.DataSource.Substring(i + 1);
                 }
                 else
                 {

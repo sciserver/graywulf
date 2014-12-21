@@ -171,7 +171,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
             // (requires trimming the sql server instance name)
             // This will be the database server responsible for executing the import
             var dataset = (Jhu.Graywulf.Schema.SqlServer.SqlServerDataset)destinations[0].Dataset;
-            var host = dataset.Host;
+            var host = dataset.HostName;
 
             // Import works in two modes: single file and archive mode.
             // In archive mode, the file is imported using ImportTableArchive task whereas

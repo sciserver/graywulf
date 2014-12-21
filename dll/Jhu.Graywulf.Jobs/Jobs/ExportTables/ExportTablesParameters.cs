@@ -161,7 +161,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             // (requires trimming the sql server instance name)
             // This will be the database server responsible for executing the export
             // What
-            string host = ((Jhu.Graywulf.Schema.SqlServer.SqlServerDataset)sources[0].Dataset).Host;
+            string host = ((Jhu.Graywulf.Schema.SqlServer.SqlServerDataset)sources[0].Dataset).HostName;
 
             var ss = new SourceTableQuery[sources.Length];
             for (int i = 0; i < sources.Length; i++)
