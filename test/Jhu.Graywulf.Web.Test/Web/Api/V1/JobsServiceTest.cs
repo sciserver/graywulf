@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             {
                 var client = CreateClient(session);
                 var queues = client.ListQueues();
-                Assert.AreEqual(2, queues.Queues.Length);
+                Assert.AreEqual(3, queues.Queues.Length);
             }
         }
 
