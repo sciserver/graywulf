@@ -571,6 +571,11 @@ namespace Jhu.Graywulf.Scheduler
                                 WorkflowEvent(this, new HostEventArgs(WorkflowEventType.TimedOut, e.InstanceId));
                                 break;
                             case JobStatus.Failed:
+
+#if DEBUG
+                                System.Diagnostics.Debugger.Break();
+#endif
+
                                 WorkflowEvent(this, new HostEventArgs(WorkflowEventType.Failed, e.InstanceId, workflow.LastException.Message));
                                 break;
                             default:
