@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 {
                     WebOperationContext.Current.OutgoingRequest.ContentType = Jhu.Graywulf.Format.Constants.MimeTypeCsv;
 
-                    using (var infile = new FileStream(@"..\..\..\graywulf\test\files\csv_numbers.csv", FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (var infile = new FileStream(@"..\..\..\..\..\graywulf\test\files\csv_numbers.csv", FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
                         client.UploadTable("MYDB", "file_upload_test", infile);
                     }

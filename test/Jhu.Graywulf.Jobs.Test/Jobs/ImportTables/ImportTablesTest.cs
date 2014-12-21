@@ -100,7 +100,8 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 {
                     RemoteServiceTester.Instance.EnsureRunning();
 
-                    var path = @"..\..\..\graywulf\test\files\csv_numbers.csv";
+
+                    var path = String.Format(@"\\{0}\graywulf\test\files\csv_numbers.csv", System.Net.Dns.GetHostName());
 
                     var guid = ScheduleImportTableJob(path, "SimpleImportJobTest_" + IO.Constants.ResultsetNameToken, QueueType.Long);
 
@@ -127,7 +128,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 {
                     RemoteServiceTester.Instance.EnsureRunning();
 
-                    var path = @"..\..\..\graywulf\test\files\archive.zip";
+                    var path = String.Format(@"\\{0}\graywulf\test\files\archive.zip", System.Net.Dns.GetHostName());
 
                     var guid = ScheduleImportTableJob(path, "ImportArchiveJobTest_" + IO.Constants.ResultsetNameToken, QueueType.Long);
 
