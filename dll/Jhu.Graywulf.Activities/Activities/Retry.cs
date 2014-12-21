@@ -102,6 +102,10 @@ namespace Jhu.Graywulf.Activities
             faultContext.Track(record);
             */
 
+#if DEBUG
+            System.Diagnostics.Debugger.Break();
+#endif
+
             // Handle exception
             int r = retries.Get(faultContext);
             retries.Set(faultContext, ++r);
