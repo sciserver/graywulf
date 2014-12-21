@@ -95,6 +95,11 @@ namespace Jhu.Graywulf.Web.Api.V1
             var qf = QueryFactory.Create(context.Federation);
             var q = qf.CreateQuery(query);
 
+            var udf = UserDatabaseFactory.Create(context.Federation);
+            var udb = udf.GetUserDatabase(context.RegistryUser);
+
+            qf.AppendUserDatabase(q, udb);
+
             // TODO: Target table settings will need to be modified
             // once multi-select queries are implemented
             q.BatchName = null;
