@@ -630,8 +630,8 @@ namespace Jhu.Graywulf.Schema
             // specific dataset types override this function
 
             Type type;
-            string name; 
-            int length; 
+            string name;
+            int length;
             byte precision, scale;
             bool isNullable;
 
@@ -656,7 +656,15 @@ namespace Jhu.Graywulf.Schema
 
             if (dt.HasLength)
             {
-                dt.Length = length;
+                // SQL server returns byte size but certain types store
+                // items on multiple bytes
+                dt.Length = length / dt.ByteSize;
+            }
+
+            if (length < 0)
+            {
+                dt.Length = Int32.MaxValue;
+                dt.MaxLength = -1;
             }
 
             if (dt.HasScale)
@@ -701,11 +709,11 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="dr"></param>
         /// <returns></returns>
-        internal virtual Column CreateColumn(DataRow dr)
+        private Column CreateColumn(DataRow dr)
         {
             var column = new Column()
             {
-                ID = (int)dr[SchemaTableColumn.ColumnOrdinal],
+                ID = (int)dr[SchemaTableColumn.ColumnOrdinal] + 1,  // To be the same as returned by the system views
                 Name = (string)dr[SchemaTableColumn.ColumnName],
                 IsIdentity = dr[SchemaTableColumn.IsUnique] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.IsUnique],  //
                 IsKey = dr[SchemaTableColumn.IsKey] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.IsKey],  //
@@ -717,7 +725,7 @@ namespace Jhu.Graywulf.Schema
             return column;
         }
 
-        #endregion     
+        #endregion
 
         public abstract IDbConnection OpenConnection();
     }

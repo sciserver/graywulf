@@ -666,7 +666,7 @@ namespace Jhu.Graywulf.Schema
             res &= this.type == other.type;
             res &= this.scale == other.scale;
             res &= this.precision == other.precision;
-            res &= !this.HasLength || (this.length == other.length);
+            res &= !this.HasLength || (this.IsMaxLength && other.IsMaxLength) || (this.length == other.length);
             res &= this.isNullable == other.isNullable;
 
             return res;

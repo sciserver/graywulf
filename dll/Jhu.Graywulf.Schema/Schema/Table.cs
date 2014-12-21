@@ -102,8 +102,7 @@ namespace Jhu.Graywulf.Schema
             for (int i = 0; i < columns.Count; i++)
             {
                 var nc = (Column)columns[i].Clone();
-                nc.ID = i;
-                Columns.TryAdd(columns[i].Name, nc);
+                Columns.TryAdd(nc.Name, nc);
             }
 
             if ((options & TableInitializationOptions.Append) != 0)
