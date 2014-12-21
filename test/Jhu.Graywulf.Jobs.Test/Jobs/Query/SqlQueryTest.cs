@@ -13,7 +13,7 @@ using Jhu.Graywulf.Jobs.Query;
 namespace Jhu.Graywulf.Test.Jobs.Query
 {
     [TestClass]
-    public class SqlQueryTest : QueryTestBase
+    public class SqlQueryTest : SqlQueryTestBase
     {
         [TestMethod]
         public void DiscoverParametersTest()
