@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Registry
 
         public const string TempDbName = "TEMP";
         public const string TempDbInstanceNamePattern = "[$DatabaseDefinition.Name]_[$ServerInstance.Machine.Name]_[$ServerInstance.Name]";
-        public const string TempDbNamePattern = "[$DatabaseDefinition.Cluster.Name]_[$DatabaseDefinition.Name]";
+        public const string TempDbNamePattern = "[$DatabaseDefinition.Federation.Domain.Cluster.Name]_[$DatabaseDefinition.Name]";
 
         /// <summary>
         /// CodeDB is generated for each federation and contains functions
