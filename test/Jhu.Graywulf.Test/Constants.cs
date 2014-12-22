@@ -17,6 +17,6 @@ namespace Jhu.Graywulf.Test
         public static readonly string RemoteHost1 = "localhost";
         public static readonly string RemoteHost2 = "localhost";
 
-        public static readonly string TestDirectory = @"\graywulf\test";
+        public static readonly string TestDirectory = @"graywulf\test";
     }
 }

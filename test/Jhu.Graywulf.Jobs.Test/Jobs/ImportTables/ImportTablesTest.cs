@@ -36,7 +36,8 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                     Dataset = ds,
                     DatabaseName = ds.DatabaseName,
                     SchemaName = ds.DefaultSchemaName,
-                    TableNamePattern = tableName
+                    TableNamePattern = tableName,
+                    Options = TableInitializationOptions.Drop | TableInitializationOptions.Create
                 };
 
                 var itf = ImportTablesJobFactory.Create(context.Federation);
@@ -100,8 +101,8 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 {
                     RemoteServiceTester.Instance.EnsureRunning();
 
-
-                    var path = String.Format(@"\\{0}\graywulf\test\files\csv_numbers.csv", System.Net.Dns.GetHostName());
+                    var path = String.Format(@"\\{0}\{1}\files\csv_numbers.csv",
+                        Jhu.Graywulf.Test.Constants.Localhost, Jhu.Graywulf.Test.Constants.TestDirectory);
 
                     var guid = ScheduleImportTableJob(path, "SimpleImportJobTest_" + IO.Constants.ResultsetNameToken, QueueType.Long);
 
@@ -128,7 +129,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 {
                     RemoteServiceTester.Instance.EnsureRunning();
 
-                    var path = String.Format(@"\\{0}\graywulf\test\files\archive.zip", System.Net.Dns.GetHostName());
+                    var path = String.Format(@"\\{0}\{1}\files\archive.zip", Jhu.Graywulf.Test.Constants.Localhost, Jhu.Graywulf.Test.Constants.TestDirectory);
 
                     var guid = ScheduleImportTableJob(path, "ImportArchiveJobTest_" + IO.Constants.ResultsetNameToken, QueueType.Long);
 
