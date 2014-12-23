@@ -87,20 +87,6 @@ namespace Jhu.Graywulf.Activities
 
         private void OnTryFaulted(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
         {
-            // TODO: delete
-            // Write event into the log
-            // This is necessary here because the trace log won't be available later
-            /*var record = new CustomTrackingRecord("OnTryFaulted", System.Diagnostics.TraceLevel.Error)
-            {
-                Data =
-                {
-                    { "Exception", propagatedException },
-                    { "JobGuid", JobGuid.Get(faultContext) },
-                    { "UserGuid", UserGuid.Get(faultContext) },
-                }
-            };
-            faultContext.Track(record);
-            */
 
 #if DEBUG
             System.Diagnostics.Debugger.Break();
