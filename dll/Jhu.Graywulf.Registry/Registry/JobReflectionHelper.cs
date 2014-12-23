@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Registry
             catch (Exception ex)
             {
                 // **** TODO
-                throw new Exception(String.Format("Cannot create type {0} based in {1}", workflowTypeName, basedir), ex);
+                throw new Exception(String.Format("Cannot create type '{0}' based in '{1}': {2}", workflowTypeName, basedir, ex.Message), ex);
             }
         }
 
