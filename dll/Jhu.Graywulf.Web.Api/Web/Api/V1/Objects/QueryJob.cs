@@ -106,29 +106,24 @@ namespace Jhu.Graywulf.Web.Api.V1
             q.BatchName = null;
             q.QueryName = this.Name;
 
+            q.Destination = new IO.Tasks.DestinationTable()
+            {
+                Dataset = context.MyDBDataset,
+                DatabaseName = context.MyDBDataset.DatabaseName,
+                SchemaName = context.MyDBDataset.DefaultSchemaName,
+                TableNamePattern = Jhu.Graywulf.Jobs.Constants.DefaultQuickResultsTableNamePattern,
+            };
+
             switch (Queue)
             {
                 case JobQueue.Quick:
-                    q.Destination = new IO.Tasks.DestinationTable()
-                    {
-                        Dataset = context.MyDBDataset,
-                        DatabaseName = context.MyDBDataset.DatabaseName,
-                        SchemaName = context.MyDBDataset.DefaultSchemaName,
-                        TableNamePattern = Jhu.Graywulf.Jobs.Constants.DefaultQuickResultsTableNamePattern,
-                        Options = TableInitializationOptions.Drop | TableInitializationOptions.Create
-                    };
+                    q.Destination.Options = TableInitializationOptions.Drop | TableInitializationOptions.Create;
                     break;
                 case JobQueue.Long:
-                    q.Destination = new IO.Tasks.DestinationTable()
-                    {
-                        Dataset = context.MyDBDataset,
-                        DatabaseName = context.MyDBDataset.DatabaseName,
-                        SchemaName = context.MyDBDataset.DefaultSchemaName,
-                        TableNamePattern = Jhu.Graywulf.Jobs.Constants.DefaultLongResultsTableNamePattern,
-                        Options = TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName
-                    };
+                    q.Destination.Options = TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName;
                     break;
                 default:
+                    // This option is used when only parsing queries
                     break;
             }
 
@@ -150,7 +145,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             // Schedule as a job
             var qf = QueryFactory.Create(context.Federation);
-            
+
             this.JobInstance = qf.ScheduleAsJob(this.Name, query, GetQueueName(context), Comments);
             this.JobInstance.Save();
 
