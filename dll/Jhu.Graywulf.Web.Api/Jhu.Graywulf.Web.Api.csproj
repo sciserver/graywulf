@@ -34,6 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO">
       <HintPath>..\..\..\packages\Microsoft.Bcl.1.1.9\lib\net40\System.IO.dll</HintPath>

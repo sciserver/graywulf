@@ -105,7 +105,7 @@ namespace Jhu.Graywulf.Jobs.Query
         protected override void InitializeQuery(QueryBase query, string queryString)
         {
             var ef = new EntityFactory(Context);
-            var jd = ef.LoadEntity<JobDefinition>(Registry.AppSettings.FederationName, typeof(SqlQueryJob).Name);
+            var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.FederationName, typeof(SqlQueryJob).Name);
 
             var settings = new SqlQueryJobSettings(jd.Settings);
 
@@ -114,7 +114,7 @@ namespace Jhu.Graywulf.Jobs.Query
             user.Load();
 
             query.ExecutionMode = ExecutionMode.Graywulf;
-            query.FederationReference.Name = Registry.AppSettings.FederationName;
+            query.FederationReference.Name = Registry.ContextManager.Configuration.FederationName;
             query.QueryString = queryString;
 
             query.SourceDatabaseVersionName = settings.HotDatabaseVersionName;
@@ -138,7 +138,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             var job = CreateJobInstance(
                 jobName,
-                EntityFactory.CombineName(EntityType.JobDefinition, Registry.AppSettings.FederationName, typeof(SqlQueryJob).Name),
+                EntityFactory.CombineName(EntityType.JobDefinition, Registry.ContextManager.Configuration.FederationName, typeof(SqlQueryJob).Name),
                 queueName,
                 comments);
 

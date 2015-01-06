@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Test
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var ef = new EntityFactory(context);
-                var jd = ef.LoadEntity<JobDefinition>(Registry.AppSettings.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
+                var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
 
                 var jf = new JobInstanceFactory(context);
                 jf.UserGuid = Guid.Empty;
@@ -79,7 +79,7 @@ namespace Jhu.Graywulf.Test
                 SignInTestUser(context);
 
                 var ef = new EntityFactory(context);
-                var jd = ef.LoadEntity<JobDefinition>(Registry.AppSettings.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
+                var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
 
                 var queue = String.Format("QueueInstance:Graywulf.Controller.Controller.{0}", queueType.ToString());
 

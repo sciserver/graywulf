@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Activities;
+using System.Configuration;
 using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Registry
@@ -18,11 +19,21 @@ namespace Jhu.Graywulf.Registry
     /// </remarks>
     public class ContextManager
     {
+        #region Static members
+        public static RegistryConfiguration Configuration
+        {
+            get
+            {
+                return (RegistryConfiguration)ConfigurationManager.GetSection("jhu.graywulf/registry");
+            }
+        }
+
         /// <summary>
         /// Singleton object of <see cref="ContextManager"/> to be used for creating new <see cref="Context"/> objects.
         /// </summary>
         public static readonly ContextManager Instance = new ContextManager();  // Singleton
 
+        #endregion
         #region Member Variables
 
         private object syncRoot = new object();
@@ -78,15 +89,15 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         private void InitializeMembers()
         {
-            this.connectionString = AppSettings.ConnectionString;
+            this.connectionString = Configuration.ConnectionString;
             this.smtpString = string.Empty;
 
             this.userGuid = Guid.Empty;
             this.userName = null;
 
-            this.clusterName = AppSettings.ClusterName;
-            this.domainName = AppSettings.DomainName;
-            this.federationName = AppSettings.FederationName;
+            this.clusterName = Configuration.ClusterName;
+            this.domainName = Configuration.DomainName;
+            this.federationName = Configuration.FederationName;
         }
 
         #endregion

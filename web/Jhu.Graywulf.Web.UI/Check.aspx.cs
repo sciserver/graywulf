@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Web.UI
 
             // Test registry and log databases
 
-            Checks.Routines.Add(new DatabaseCheck(Jhu.Graywulf.Registry.AppSettings.ConnectionString));
+            Checks.Routines.Add(new DatabaseCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.ConnectionString));
             Checks.Routines.Add(new DatabaseCheck(Jhu.Graywulf.Logging.AppSettings.ConnectionString));
 
             // Test SMTP and target email addresses
@@ -39,9 +39,9 @@ namespace Jhu.Graywulf.Web.UI
             
             Checks.Routines.Add(new UrlCheck("Download", System.Net.HttpStatusCode.Forbidden)); // No directory browsing allowed
 
-            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.AppSettings.ClusterName));
-            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.AppSettings.DomainName));
-            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.AppSettings.FederationName));
+            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName));
+            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.DomainName));
+            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.FederationName));
 
             var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Jhu.Graywulf.Components.AppDomainManager.Configuration.AssemblyPath);
 

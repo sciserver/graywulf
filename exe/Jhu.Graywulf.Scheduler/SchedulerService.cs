@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Scheduler
 
         protected override void OnStart(string[] args)
         {
-            QueueManager.Instance.Start(Registry.AppSettings.ClusterName, false);
+            QueueManager.Instance.Start(Registry.ContextManager.Configuration.ClusterName, false);
         }
 
         protected override void OnStop()

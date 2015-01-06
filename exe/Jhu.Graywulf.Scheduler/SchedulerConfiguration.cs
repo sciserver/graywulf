@@ -104,7 +104,7 @@ namespace Jhu.Graywulf.Scheduler
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var ef = new EntityFactory(context);
-                ef.LoadEntity<Registry.Cluster>(Registry.AppSettings.ClusterName);
+                ef.LoadEntity<Registry.Cluster>(Registry.ContextManager.Configuration.ClusterName);
             }
         }
     }

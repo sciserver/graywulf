@@ -90,7 +90,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
         private string GetJobDefinitionName()
         {
-            return EntityFactory.CombineName(EntityType.JobDefinition, Registry.AppSettings.FederationName, typeof(ExportTablesJob).Name);
+            return EntityFactory.CombineName(EntityType.JobDefinition, Registry.ContextManager.Configuration.FederationName, typeof(ExportTablesJob).Name);
         }
 
         public ExportTablesJobSettings GetJobDefinitionSettings()

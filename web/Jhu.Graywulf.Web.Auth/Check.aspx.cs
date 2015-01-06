@@ -14,11 +14,11 @@ namespace Jhu.Graywulf.Web.Auth
     {
         protected void Page_Load()
         {
-            Checks.Routines.Add(new DatabaseCheck(Jhu.Graywulf.Registry.AppSettings.ConnectionString));
+            Checks.Routines.Add(new DatabaseCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.ConnectionString));
             Checks.Routines.Add(new DatabaseCheck(Jhu.Graywulf.Logging.AppSettings.ConnectionString));
 
-            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.AppSettings.ClusterName));
-            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.AppSettings.DomainName));
+            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName));
+            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.DomainName));
 
             Checks.Routines.Add(new EmailCheck(RegistryContext.Domain.Email));
             Checks.Routines.Add(new IdentityProviderCheck());

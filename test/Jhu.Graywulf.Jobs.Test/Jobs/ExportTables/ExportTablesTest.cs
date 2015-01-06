@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 var user = SignInTestUser(context);
 
                 var ef = new EntityFactory(context);
-                var federation = ef.LoadEntity<Federation>(Registry.AppSettings.FederationName);
+                var federation = ef.LoadEntity<Federation>(Registry.ContextManager.Configuration.FederationName);
 
                 // TODO: delete after testing
                 //var mydbds = federation.UserDatabaseVersion.GetUserDatabaseInstance(user).GetDataset();

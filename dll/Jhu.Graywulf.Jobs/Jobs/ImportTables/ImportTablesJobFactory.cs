@@ -99,7 +99,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
 
         private string GetJobDefinitionName()
         {
-            return EntityFactory.CombineName(EntityType.JobDefinition, Registry.AppSettings.FederationName, typeof(ImportTablesJob).Name);
+            return EntityFactory.CombineName(EntityType.JobDefinition, Registry.ContextManager.Configuration.FederationName, typeof(ImportTablesJob).Name);
         }
 
         public ImportTablesJobSettings GetJobDefinitionSettings()

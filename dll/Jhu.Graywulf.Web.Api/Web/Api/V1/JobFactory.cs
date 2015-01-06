@@ -174,7 +174,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             importJobDefinitionsByName = new ConcurrentDictionary<string, JobDefinition>();
 
             var ef = new EntityFactory(Context);
-            var f = ef.LoadEntity<Federation>(Jhu.Graywulf.Registry.AppSettings.FederationName);
+            var f = ef.LoadEntity<Federation>(Jhu.Graywulf.Registry.ContextManager.Configuration.FederationName);
 
             f.LoadJobDefinitions(true);
 
