@@ -69,8 +69,8 @@ namespace Jhu.Graywulf.RemoteService
             // user (group) name or member of the given group (role).
 
             if (OperationContext.Current != null &&
-                StringComparer.InvariantCultureIgnoreCase.Compare(Thread.CurrentPrincipal.Identity.Name, AppSettings.UserGroup) != 0 &&
-                !Thread.CurrentPrincipal.IsInRole(AppSettings.UserGroup))
+                StringComparer.InvariantCultureIgnoreCase.Compare(Thread.CurrentPrincipal.Identity.Name, RemoteServiceBase.Configuration.UserGroup) != 0 &&
+                !Thread.CurrentPrincipal.IsInRole(RemoteServiceBase.Configuration.UserGroup))
             {
                 throw new SecurityException("Access denied.");  // TODO
             }

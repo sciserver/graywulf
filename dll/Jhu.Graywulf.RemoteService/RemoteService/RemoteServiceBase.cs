@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Security;
 using System.ServiceModel;
+using System.Configuration;
 using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.RemoteService
@@ -17,6 +18,17 @@ namespace Jhu.Graywulf.RemoteService
         IncludeExceptionDetailInFaults = true)]
     public abstract class RemoteServiceBase : CancelableTask, IRemoteService
     {
+        #region Static members
+        public static RemoteServiceConfiguration Configuration
+        {
+            get
+            {
+                return (RemoteServiceConfiguration)ConfigurationManager.GetSection("jhu.graywulf/remoteService");
+            }
+        }
+
+        #endregion
+
         public override bool IsCanceled
         {
             [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]

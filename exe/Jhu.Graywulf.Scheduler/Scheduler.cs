@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Activities.Hosting;
+using System.Configuration;
 using Jhu.Graywulf.Logging;
 using gw = Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
@@ -14,6 +15,14 @@ namespace Jhu.Graywulf.Scheduler
     /// </summary>
     public class Scheduler : MarshalByRefObject, IScheduler
     {
+        public static SchedulerConfiguration Configuration
+        {
+            get
+            {
+                return (SchedulerConfiguration)ConfigurationManager.GetSection("jhu.graywulf/scheduler");
+            }
+        }
+
         private object syncRoot;
         private QueueManager queueManager;
 

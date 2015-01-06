@@ -50,7 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppDomainHost.cs" />
-    <Compile Include="AppSettings.cs" />
     <Compile Include="Cluster.cs" />
     <Compile Include="DatabaseDefinition.cs" />
     <Compile Include="DatabaseInstance.cs" />
@@ -75,6 +74,7 @@
     <Compile Include="QueueManager.cs" />
     <Compile Include="RegistryObject.cs" />
     <Compile Include="Scheduler.cs" />
+    <Compile Include="SchedulerConfiguration.cs" />
     <Compile Include="SchedulerService.cs">
       <SubType>Component</SubType>
     </Compile>

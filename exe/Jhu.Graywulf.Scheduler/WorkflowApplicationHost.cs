@@ -151,7 +151,7 @@ namespace Jhu.Graywulf.Scheduler
             graywulfLogger = new Jhu.Graywulf.Activities.GraywulfTrackingParticipant();
 
             // Initialize persistence participant
-            workflowInstanceStore = new SqlWorkflowInstanceStore(AppSettings.PersistenceConnectionString);
+            workflowInstanceStore = new SqlWorkflowInstanceStore(Scheduler.Configuration.PersistenceConnectionString);
         }
 
         /// <summary>
@@ -477,7 +477,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             // *** TODO: handle timeout exception here
             workflows[instanceId].Job.Status = JobStatus.Cancelled;
-            workflows[instanceId].WorkflowApplication.Cancel(AppSettings.CancelTimeout);
+            workflows[instanceId].WorkflowApplication.Cancel(Scheduler.Configuration.CancelTimeout);
             //workflows[instanceId].WorkflowApplication.Cancel();
 
             return instanceId;
@@ -487,7 +487,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             // *** TODO: handle timeout exception here
             workflows[instanceId].Job.Status = JobStatus.TimedOut;
-            workflows[instanceId].WorkflowApplication.Cancel(AppSettings.CancelTimeout);
+            workflows[instanceId].WorkflowApplication.Cancel(Scheduler.Configuration.CancelTimeout);
 
             return instanceId;
         }
@@ -497,7 +497,7 @@ namespace Jhu.Graywulf.Scheduler
             // *** TODO: this might sometime throw a KeyNotFoundException (after persist and cancel?)
             // *** TODO: handle timeout exception here
             workflows[instanceId].Job.Status = JobStatus.Persisted;
-            workflows[instanceId].WorkflowApplication.Unload(AppSettings.PersistTimeout);
+            workflows[instanceId].WorkflowApplication.Unload(Scheduler.Configuration.PersistTimeout);
 
             return instanceId;
         }

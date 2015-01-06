@@ -90,7 +90,7 @@ namespace Jhu.Graywulf.RemoteService
                     new Uri(String.Format(
                         "net.tcp://{0}:{1}/{2}",
                         RemoteServiceHelper.GetFullyQualifiedDnsName(Jhu.Graywulf.Test.Constants.Localhost),
-                        AppSettings.TcpPort,
+                        RemoteServiceBase.Configuration.TcpPort,
                         typeof(CancelableDelay).FullName)),
                     uri);
 

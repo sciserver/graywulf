@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="args"></param>
         public static void Main(string[] args)
         {
-            AppSettings.RunSanityCheck();
+            Scheduler.Configuration.RunSanityCheck();
 
             // Switch between interactive (command-line) and service modes.
             if (Environment.UserInteractive)
@@ -57,7 +57,7 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         internal static void StartDebug()
         {
-            AppSettings.RunSanityCheck();
+            Scheduler.Configuration.RunSanityCheck();
 
             QueueManager.Instance.Start(Jhu.Graywulf.Registry.AppSettings.ClusterName, false);
         }

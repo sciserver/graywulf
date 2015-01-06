@@ -142,7 +142,7 @@ namespace Jhu.Graywulf.RemoteService
 
         public static Uri CreateEndpointUri(string host, string service)
         {
-            return new Uri(String.Format("net.tcp://{0}:{1}/{2}", host, AppSettings.TcpPort, service));
+            return new Uri(String.Format("net.tcp://{0}:{1}/{2}", host, RemoteServiceBase.Configuration.TcpPort, service));
         }
 
         /// <summary>

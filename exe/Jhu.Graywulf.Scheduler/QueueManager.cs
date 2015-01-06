@@ -42,16 +42,6 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         private bool interactive;
 
-        /// <summary>
-        /// Polling period
-        /// </summary>
-        private TimeSpan pollingInterval;
-
-        /// <summary>
-        /// AppDomain idle interval
-        /// </summary>
-        private TimeSpan appDomainIdleTime;
-
         #endregion
         #region Private member varibles
 
@@ -118,24 +108,6 @@ namespace Jhu.Graywulf.Scheduler
         }
 
         /// <summary>
-        /// Gets or sets the interval between two polling events.
-        /// </summary>
-        public TimeSpan PollingInterval
-        {
-            get { return pollingInterval; }
-            set { pollingInterval = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the period of time after which an idle AppDomain gets unloaded.
-        /// </summary>
-        public TimeSpan AppDomainIdleTime
-        {
-            get { return appDomainIdleTime; }
-            set { appDomainIdleTime = value; }
-        }
-
-        /// <summary>
         /// Gets a dictionary of the running jobs.
         /// </summary>
         public Dictionary<Guid, Job> RunningJobs
@@ -176,8 +148,6 @@ namespace Jhu.Graywulf.Scheduler
 
             this.pollerStopRequested = false;
             this.pollerThread = null;
-            this.pollingInterval = AppSettings.PollingInterval;
-            this.appDomainIdleTime = AppSettings.AppDomainIdle;
 
             this.eventOrder = 0;
             this.contextGuid = Guid.Empty;
@@ -424,7 +394,7 @@ namespace Jhu.Graywulf.Scheduler
 
                 pollRetry.Execute(Poll);
 
-                Thread.Sleep(pollingInterval);
+                Thread.Sleep(Scheduler.Configuration.PollingInterval);
             }
 
             // Signal the completion event
@@ -902,10 +872,10 @@ namespace Jhu.Graywulf.Scheduler
                     var adh = appDomains[id];
 
                     // Unload if idle for more than a minute
-                    if ((DateTime.Now - adh.LastTimeActive) > appDomainIdleTime)
+                    if ((DateTime.Now - adh.LastTimeActive) > Scheduler.Configuration.AppDomainIdle)
                     {
                         // This shutdown should happen quickly
-                        adh.Stop(AppSettings.AppDomainShutdownTimeout, interactive);
+                        adh.Stop(Scheduler.Configuration.AppDomainShutdownTimeout, interactive);
                         Components.AppDomainManager.Instance.UnloadAppDomain(id);
                         appDomains.Remove(id);
                     }
