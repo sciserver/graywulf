@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.IO;
+using System.Configuration;
 
 namespace Jhu.Graywulf.Components
 {
@@ -35,6 +36,17 @@ namespace Jhu.Graywulf.Components
             }
         }
 
+        #region Static members
+        public static AppDomainConfiguration Configuration
+        {
+            get
+            {
+                return (AppDomainConfiguration)ConfigurationManager.GetSection("jhu.graywulf/appDomain");
+            }
+        }
+
+        #endregion
+
         #endregion
 
         private class AppDomainHandle
@@ -59,7 +71,7 @@ namespace Jhu.Graywulf.Components
 
         private void InitializeMembers()
         {
-            this.baseDirectory = Components.AppSettings.AssemblyPath;
+            this.baseDirectory = Configuration.AssemblyPath;
             this.appDomains = new Dictionary<int, AppDomainHandle>();
         }
 
