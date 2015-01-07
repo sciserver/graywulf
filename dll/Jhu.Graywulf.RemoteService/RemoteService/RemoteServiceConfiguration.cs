@@ -29,12 +29,14 @@ namespace Jhu.Graywulf.RemoteService
         #endregion
         #region Properties
 
+        [ConfigurationProperty("tcpPort")]
         public int TcpPort
         {
             get { return (int)base[propTcpPort]; }
             set { base[propTcpPort] = value; }
         }
 
+        [ConfigurationProperty("userGroup")]
         public string UserGroup
         {
             get { return (string)base[propUserGroup]; }
