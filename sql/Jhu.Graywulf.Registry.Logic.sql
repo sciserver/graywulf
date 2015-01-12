@@ -487,18 +487,22 @@ AS
 	SET @RowCount = @@ROWCOUNT
 GO
 
+IF OBJECT_ID('[dbo].[spFindJobInstance_Next]') IS NOT NULL
+DROP PROC [dbo].[spFindJobInstance_Next]
+
+GO
 
 CREATE PROC [dbo].[spFindJobInstance_Next]
-	@UserGuid uniqueidentifier,
-	@QueueInstanceGuid uniqueidentifier,
-	@JobInstanceGuid uniqueidentifier OUTPUT
+	@UserGuid uniqueidentifier,					-- Job poller context (scheduler)
+	@QueueInstanceGuid uniqueidentifier,		-- Queue instance being polled
+	@LastUserGuid uniqueidentifier,				-- User of last job scheduler (for round-robin)
+	@JobInstanceGuid uniqueidentifier OUTPUT	-- GUID of next job in queue
 AS
 	-- Default return value is null
 	SET @JobInstanceGuid = NULL
 
-	DECLARE @cnt int;
-
 	-- Resumed (previously suspended) or suspended but timed out workflow
+
 	SELECT TOP 1 @JobInstanceGuid = Entity.Guid
 	FROM Entity
 	INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
@@ -507,11 +511,14 @@ AS
 			((JobExecutionStatus & dbo.JobExecutionState::Persisted) != 0
 			 OR (JobExecutionStatus & dbo.JobExecutionState::Suspended) != 0
 			 AND SuspendTimeout < GETDATE())
-		AND Deleted = 0;
+		--- ****** AND Entity.UserGuidOwner > @LastUserGuid	-- Make sure
+		AND Deleted = 0
+	ORDER BY Entity.UserGuidOwner DESC;		-- ***
 
 	IF (@JobInstanceGuid IS NOT NULL) RETURN;
 
 	-- Job scheduled at a given time
+
 	SELECT TOP 1 @JobInstanceGuid = Entity.Guid
 	FROM Entity
 	INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
@@ -525,6 +532,7 @@ AS
 
 	
 	-- Queued job
+
 	SELECT TOP 1 @JobInstanceGuid = Entity.Guid
 	FROM Entity
 	INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid

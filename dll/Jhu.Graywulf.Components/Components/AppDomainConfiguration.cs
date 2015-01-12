@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Components
         private static ConfigurationPropertyCollection properties;
 
         private static readonly ConfigurationProperty propAssemblyPath = new ConfigurationProperty(
-            "assemblyPath", typeof(string), null, ConfigurationPropertyOptions.None);
+            "assemblyPath", typeof(string), ".", ConfigurationPropertyOptions.None);
 
         static AppDomainConfiguration()
         {

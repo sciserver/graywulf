@@ -18,7 +18,11 @@ namespace Jhu.Graywulf.Registry
         /// Gets the next available job from the queue.
         /// </summary>
         /// <returns>The next available job or null if there are no queued jobs.</returns>
-        public JobInstance GetNextJobInstance()
+        /// <remarks>
+        /// This function takes the user the last scheduled job was associated with to
+        /// implement a round-robin scheduling.
+        /// </remarks>
+        public JobInstance GetNextJobInstance(Guid lastUserGuid)
         {
             string sql = "spFindJobInstance_Next";
 
@@ -26,6 +30,7 @@ namespace Jhu.Graywulf.Registry
             {
                 cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
                 cmd.Parameters.Add("@QueueInstanceGuid", SqlDbType.UniqueIdentifier).Value = this.Guid;
+                cmd.Parameters.Add("@LastUserGuid", SqlDbType.UniqueIdentifier).Value = lastUserGuid;
                 cmd.Parameters.Add("@JobInstanceGuid", SqlDbType.UniqueIdentifier).Direction = ParameterDirection.Output;
 
                 cmd.ExecuteNonQuery();

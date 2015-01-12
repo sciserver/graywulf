@@ -535,7 +535,7 @@ namespace Jhu.Graywulf.Scheduler
                     qi.Guid = queue.Guid;
                     qi.Load();
 
-                    var ji = qi.GetNextJobInstance();
+                    var ji = qi.GetNextJobInstance(Guid.NewGuid());       // TODO: modify this to implement round-robin, keep track of last user
 
                     if (ji != null)
                     {
