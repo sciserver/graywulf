@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.Check
                 try
                 {
                     output.WriteLine();
-                    output.WriteLine("Test {0}/{1}:", success + failed, routines.Count);
+                    output.WriteLine("Test {0}:", success + failed + 1);
 
                     r.Execute(output);
 
