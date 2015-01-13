@@ -3,48 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
-using Jhu.Graywulf.Web.UI;
+using System.IO;
+using Jhu.Graywulf.Check;
 
 namespace Jhu.Graywulf.Web.Check
 {
     public class UrlCheck : CheckRoutineBase
     {
-        public Uri uri;
-        public HttpStatusCode ExpectedStatus;
+        public Uri Uri { get; set; }
+        private HttpStatusCode ExpectedStatus;
 
-        public UrlCheck(string url)
+        public UrlCheck(string uri)
         {
             InitializeMembers();
 
-            this.uri = new Uri(url, UriKind.RelativeOrAbsolute);
+            this.Uri = new Uri(uri, UriKind.RelativeOrAbsolute);
         }
 
-        public UrlCheck(string url, HttpStatusCode expectedStatus)
+        public UrlCheck(string uri, HttpStatusCode expectedStatus)
         {
             InitializeMembers();
 
-            this.uri = new Uri(url, UriKind.RelativeOrAbsolute);
+            this.Uri = new Uri(uri, UriKind.RelativeOrAbsolute);
             this.ExpectedStatus = expectedStatus;
         }
 
         private void InitializeMembers()
         {
-            this.uri = null;
+            this.Uri = null;
             this.ExpectedStatus = HttpStatusCode.OK;
         }
 
-        public override void Execute(PageBase page)
+        public override void Execute(TextWriter output)
         {
-            var absurl = Util.UriConverter.Combine(page.Request.Url, uri).ToString();
-
-            page.Response.Output.WriteLine(
+            output.WriteLine(
                 "Testing URL {0} expecting HTTP status {1}",
-                absurl,
+                Uri,
                 (int)ExpectedStatus);
 
             try
             {
-                var req = HttpWebRequest.Create(absurl);
+                var req = HttpWebRequest.Create(Uri);
                 var res = req.GetResponse();
 
                 var status = ((HttpWebResponse)res).StatusCode;
@@ -62,7 +61,7 @@ namespace Jhu.Graywulf.Web.Check
                 }
             }
 
-            page.Response.Output.WriteLine("Page retrieved successfully.");
+            output.WriteLine("Page retrieved successfully.");
         }
     }
 }

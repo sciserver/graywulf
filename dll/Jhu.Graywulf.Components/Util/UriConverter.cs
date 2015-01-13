@@ -78,7 +78,16 @@ namespace Jhu.Graywulf.Util
 
         public static Uri Combine(Uri baseUri, string relativeUri)
         {
-            return Combine(baseUri, new Uri(relativeUri, UriKind.Relative));
+            var reluri = new Uri(relativeUri, UriKind.RelativeOrAbsolute);
+
+            if (reluri.IsAbsoluteUri)
+            {
+                return reluri;
+            }
+            else
+            {
+                return Combine(baseUri, reluri);
+            }
         }
 
         public static Uri Combine(Uri baseUri, Uri relativeUri)

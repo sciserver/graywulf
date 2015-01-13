@@ -7,6 +7,8 @@ using System.Web.UI.WebControls;
 using System.Web.Security;
 using System.IO;
 using Jhu.Graywulf.Web.Security;
+using Jhu.Graywulf.Check;
+using Jhu.Graywulf.Registry.Check;
 using Jhu.Graywulf.Web.Check;
 using Jhu.Graywulf.Schema;
 
@@ -16,6 +18,7 @@ namespace Jhu.Graywulf.Web.UI
     {
         protected void Page_Load()
         {
+            Checks.Routines.Add(new IisCheck());
             Checks.Routines.Add(new IdentityCheck());
 
             // Test registry and log databases
@@ -25,28 +28,32 @@ namespace Jhu.Graywulf.Web.UI
 
             // Test SMTP and target email addresses
 
-            Checks.Routines.Add(new EmailCheck(RegistryContext.Domain.Email));
-            Checks.Routines.Add(new EmailCheck(RegistryContext.Federation.Email));
+            Checks.Routines.Add(new EmailCheck(RegistryContext.Domain.ShortTitle, RegistryContext.Domain.Email, RegistryContext.Domain.Email));
+            Checks.Routines.Add(new EmailCheck(RegistryContext.Federation.ShortTitle, RegistryContext.Federation.Email, RegistryContext.Federation.Email));
 
+            // Send an email to a specified address
             if (Request.QueryString["email"] != null)
             {
-                Checks.Routines.Add(new EmailCheck((string)Request.QueryString["email"]));
+                Checks.Routines.Add(new EmailCheck(
+                    RegistryContext.Domain.ShortTitle,
+                    RegistryContext.Domain.Email,
+                    Request.QueryString["email"]));
             }
             
             // Test graywulf registry entries
 
-            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName));
-            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.DomainName));
-            Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.FederationName));
+            Checks.Routines.Add(new EntityCheck(RegistryContext, Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName));
+            Checks.Routines.Add(new EntityCheck(RegistryContext, Jhu.Graywulf.Registry.ContextManager.Configuration.DomainName));
+            Checks.Routines.Add(new EntityCheck(RegistryContext, Jhu.Graywulf.Registry.ContextManager.Configuration.FederationName));
 
             // Test sign-in URL
-
             var wam = (WebAuthenticationModule)HttpContext.Current.ApplicationInstance.Modules["WebAuthenticationModule"];
-            Checks.Routines.Add(new UrlCheck(wam.GetSignInUrl()));
+            var authuri = Util.UriConverter.Combine(Request.Url, wam.GetSignInUrl()).ToString();
+            Checks.Routines.Add(new UrlCheck(authuri));
 
             // Test download URL TODO: this one needs update, take url from export job?
-
-            Checks.Routines.Add(new UrlCheck("Download", System.Net.HttpStatusCode.Forbidden)); // No directory browsing allowed
+            var downloaduri = Util.UriConverter.Combine(Request.Url, "Download").ToString();
+            Checks.Routines.Add(new UrlCheck(downloaduri, System.Net.HttpStatusCode.Forbidden)); // No directory browsing allowed
 
             // Test DLLs
 
