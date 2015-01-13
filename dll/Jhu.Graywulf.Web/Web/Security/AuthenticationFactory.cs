@@ -79,7 +79,13 @@ namespace Jhu.Graywulf.Web.Security
 
         public virtual IEnumerable<CheckRoutineBase> GetCheckRoutines()
         {
-            yield break;
+            foreach (var auth in CreateAuthentications())
+            {
+                foreach (var c in auth.GetCheckRoutines())
+                {
+                    yield return c;
+                }
+            }
         }
 
         #endregion

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using System.Web;
+using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
@@ -13,7 +14,7 @@ namespace Jhu.Graywulf.Web.Security
     /// When overriden in derived classes, performs per request
     /// authentication based on form data, query parameters, HTTP headers or cookies.
     /// </summary>
-    public abstract class Authentication
+    public abstract class Authentication : ICheckable
     {
         #region Private member variables
 
@@ -142,5 +143,11 @@ namespace Jhu.Graywulf.Web.Security
                 throw new InvalidOperationException();
             }
         }
+
+        #region Checkable routines
+
+        public abstract IEnumerable<CheckRoutineBase> GetCheckRoutines();
+
+        #endregion
     }
 }

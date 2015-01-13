@@ -5,6 +5,8 @@ using System.Text;
 using System.Net;
 using System.Web;
 using System.Web.Security;
+using Jhu.Graywulf.Check;
+using Jhu.Graywulf.Web.Check;
 
 namespace Jhu.Graywulf.Web.Security
 {
@@ -15,7 +17,7 @@ namespace Jhu.Graywulf.Web.Security
     /// This is used by WCF services to accept and process the same
     /// tickets that FormsAuthentication uses.
     /// </remarks>
-    public class FormsTicketAuthentication : Authentication
+    public class FormsTicketAuthentication : Authentication, ICheckable
     {
         #region Properties
 
@@ -152,6 +154,11 @@ namespace Jhu.Graywulf.Web.Security
             identity.UserReference.Name = ticket.Name;
             
             return principal;
+        }
+
+        public override IEnumerable<CheckRoutineBase> GetCheckRoutines()
+        {
+            yield return new UrlCheck(FormsAuthentication.LoginUrl);
         }
     }
 }
