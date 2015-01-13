@@ -46,6 +46,7 @@
     <Compile Include="Check\CheckRoutineBase.cs" />
     <Compile Include="Check\CheckRoutineExecutor.cs" />
     <Compile Include="Check\DatabaseCheck.cs" />
+    <Compile Include="Check\TypeCheck.cs" />
     <Compile Include="CommandLineParser\ArgumentParser.cs" />
     <Compile Include="CommandLineParser\ArgumentParserException.cs" />
     <Compile Include="CommandLineParser\ExceptionMessages.Designer.cs">
