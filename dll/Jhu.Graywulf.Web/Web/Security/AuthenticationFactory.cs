@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using System.Web.Security;
 using System.Configuration;
+using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
@@ -13,7 +14,7 @@ namespace Jhu.Graywulf.Web.Security
     /// Implements functionality to manage authenticator and
     /// protocols
     /// </summary>
-    public class AuthenticationFactory
+    public class AuthenticationFactory : ICheckable
     {
         #region Constructors and initializers
 
@@ -73,5 +74,14 @@ namespace Jhu.Graywulf.Web.Security
                 StringComparer.InvariantCultureIgnoreCase.Compare(i.ProtocolName, protocol) == 0 &&
                 StringComparer.InvariantCultureIgnoreCase.Compare(i.AuthorityUri, authority) == 0).FirstOrDefault();
         }
+
+        #region Check routines
+
+        public virtual IEnumerable<CheckRoutineBase> GetCheckRoutines()
+        {
+            yield break;
+        }
+
+        #endregion
     }
 }

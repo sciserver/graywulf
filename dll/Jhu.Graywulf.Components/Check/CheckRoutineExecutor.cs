@@ -43,11 +43,8 @@ namespace Jhu.Graywulf.Check
             int success = 0;
             int failed = 0;
 
-            int i = 0;
-            while (i < routines.Count)
+            foreach (var r in routines)
             {
-                var r = routines[i];
-
                 try
                 {
                     output.WriteLine();
@@ -56,14 +53,6 @@ namespace Jhu.Graywulf.Check
                     r.Execute(output);
 
                     output.WriteLine("<font color=\"green\">Success</font>");
-
-                    // Schedule additional tests
-                    int k = i + 1;
-                    foreach (var rr in r.GetAdditionalChecks())
-                    {
-                        routines.Insert(k, rr);
-                        k++;
-                    }
 
                     success++;
                 }
@@ -80,8 +69,6 @@ namespace Jhu.Graywulf.Check
                         throw;
                     }
                 }
-
-                i++;
             }
 
             output.WriteLine();

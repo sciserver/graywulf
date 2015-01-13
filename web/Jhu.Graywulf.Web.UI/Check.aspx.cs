@@ -72,7 +72,10 @@ namespace Jhu.Graywulf.Web.UI
 
             // Test plugins
 
-            // AuthenticationFactory
+            // -- AuthenticationFactory
+            var af = AuthenticationFactory.Create(RegistryContext.Domain);
+
+            // 
             // IdentityProvider
             // UserDatabaseFactory
             // SchemaManager
