@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Security;
+using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
 {
-    public class GraywulfIdentityProvider : IdentityProvider
+    public class GraywulfIdentityProvider : IdentityProvider, ICheckable
     {
         #region Constructors and initializers
 
@@ -331,6 +332,14 @@ namespace Jhu.Graywulf.Web.Security
         {
             // TODO: implement this if necessary
             throw new NotImplementedException();
+        }
+
+        #endregion
+        #region Check routines
+
+        public override IEnumerable<CheckRoutineBase> GetCheckRoutines()
+        {
+            yield break;
         }
 
         #endregion

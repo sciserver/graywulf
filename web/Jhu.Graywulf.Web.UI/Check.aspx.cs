@@ -73,9 +73,8 @@ namespace Jhu.Graywulf.Web.UI
             // Test plugins
 
             Checks.Routines.Add(new AuthenticationCheck(RegistryContext));
-
-            // -- AuthenticationFactory
-            //Checks.Routines.AddRange(AuthenticationFactory.Create(RegistryContext.Domain).GetCheckRoutines());
+            Checks.Routines.Add(new IdentityProviderCheck(RegistryContext));
+            
             //Checks.Routines.AddRange(IdentityProvider.Create(RegistryContext.Domain).GetCheckRoutines());
             //Checks.Routines.AddRange(UserDatabaseFactory.Create(RegistryContext.Federation).GetCheckRoutines());
             //Checks.Routines.AddRange(

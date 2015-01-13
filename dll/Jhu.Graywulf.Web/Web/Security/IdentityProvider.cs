@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Web;
 using System.Web.Security;
 using System.Reflection;
+using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
@@ -15,7 +16,7 @@ namespace Jhu.Graywulf.Web.Security
     /// When implmented in derived classes, offers function to manipulate and
     /// authenticate users.
     /// </summary>
-    public abstract class IdentityProvider
+    public abstract class IdentityProvider : ICheckable
     {
         #region Member Variables
 
@@ -255,6 +256,11 @@ namespace Jhu.Graywulf.Web.Security
         /// <param name="user"></param>
         /// <param name="group"></param>
         public abstract void RevokeMemberOf(User user, UserGroup group);
+
+        #endregion
+        #region Check routines
+
+        public abstract IEnumerable<CheckRoutineBase> GetCheckRoutines();
 
         #endregion
     }
