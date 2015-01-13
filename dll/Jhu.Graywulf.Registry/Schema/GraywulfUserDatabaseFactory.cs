@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Install;
 
 namespace Jhu.Graywulf.Schema
 {
-    public class GraywulfUserDatabaseFactory : UserDatabaseFactory
+    public class GraywulfUserDatabaseFactory : UserDatabaseFactory, ICheckable
     {
         public GraywulfUserDatabaseFactory(Federation federation)
             : base(federation)
@@ -36,6 +37,12 @@ namespace Jhu.Graywulf.Schema
         {
             var di = Federation.UserDatabaseVersion.GetUserDatabaseInstance(user);
             return di.ServerInstance;
+        }
+
+        public override IEnumerable<Check.CheckRoutineBase> GetCheckRoutines()
+        {
+            // This class should work out of the box
+            yield break;
         }
     }
 }

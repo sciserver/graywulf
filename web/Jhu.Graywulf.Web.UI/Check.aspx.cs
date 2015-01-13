@@ -74,6 +74,7 @@ namespace Jhu.Graywulf.Web.UI
 
             Checks.Routines.Add(new AuthenticationCheck(RegistryContext));
             Checks.Routines.Add(new IdentityProviderCheck(RegistryContext));
+            Checks.Routines.Add(new UserDatabaseCheck(RegistryContext));
             
             Checks.Routines.Add(new TypeCheck(RegistryContext.Federation.SchemaManager));
             Checks.Routines.Add(new TypeCheck(RegistryContext.Federation.QueryFactory));

@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Components;
+using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Schema
 {
-    public abstract class UserDatabaseFactory : ContextObject
+    public abstract class UserDatabaseFactory : ContextObject, ICheckable
     {
         #region Static cache implementation
 
@@ -102,5 +103,11 @@ namespace Jhu.Graywulf.Schema
         protected abstract SqlServer.SqlServerDataset OnGetUserDatabase(User user);
 
         protected abstract ServerInstance OnGetUserDatabaseServerInstance(User user);
+
+        #region Check routines
+
+        public abstract IEnumerable<CheckRoutineBase> GetCheckRoutines();
+
+        #endregion
     }
 }

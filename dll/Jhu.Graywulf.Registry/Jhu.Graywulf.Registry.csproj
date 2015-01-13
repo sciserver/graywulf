@@ -201,6 +201,7 @@
     <Compile Include="Schema\GraywulfDataset.cs" />
     <Compile Include="Schema\GraywulfSchemaManager.cs" />
     <Compile Include="Schema\GraywulfUserDatabaseFactory.cs" />
+    <Compile Include="Schema\UserDatabaseCheck.cs" />
     <Compile Include="Schema\UserDatabaseFactory.cs" />
   </ItemGroup>
   <ItemGroup>
