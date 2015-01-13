@@ -8,6 +8,7 @@ using System.Web.Security;
 using System.IO;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Web.Check;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI
 {
@@ -32,16 +33,22 @@ namespace Jhu.Graywulf.Web.UI
                 Checks.Routines.Add(new EmailCheck((string)Request.QueryString["email"]));
             }
             
-            // Test sign-in URL
-            var wam = (WebAuthenticationModule)HttpContext.Current.ApplicationInstance.Modules["WebAuthenticationModule"];
-            Checks.Routines.Add(new UrlCheck(wam.GetSignInUrl()));
-            
-            
-            Checks.Routines.Add(new UrlCheck("Download", System.Net.HttpStatusCode.Forbidden)); // No directory browsing allowed
+            // Test graywulf registry entries
 
             Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName));
             Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.DomainName));
             Checks.Routines.Add(new EntityCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.FederationName));
+
+            // Test sign-in URL
+
+            var wam = (WebAuthenticationModule)HttpContext.Current.ApplicationInstance.Modules["WebAuthenticationModule"];
+            Checks.Routines.Add(new UrlCheck(wam.GetSignInUrl()));
+
+            // Test download URL TODO: this one needs update, take url from export job?
+
+            Checks.Routines.Add(new UrlCheck("Download", System.Net.HttpStatusCode.Forbidden)); // No directory browsing allowed
+
+            // Test DLLs
 
             var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Jhu.Graywulf.Components.AppDomainManager.Configuration.AssemblyPath);
 
@@ -55,6 +62,16 @@ namespace Jhu.Graywulf.Web.UI
             Checks.Routines.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Schema.dll")));
             Checks.Routines.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Sql.dll")));
             Checks.Routines.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Web.dll")));
+
+            // Test plugins
+
+            // AuthenticationFactory
+            // IdentityProvider
+            // UserDatabaseFactory
+            // SchemaManager
+            // QueryFactory
+            // StreamFactory
+            // FileFormatFactory
         }
     }
 }

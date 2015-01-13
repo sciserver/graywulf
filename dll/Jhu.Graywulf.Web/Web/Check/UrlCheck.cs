@@ -9,33 +9,33 @@ namespace Jhu.Graywulf.Web.Check
 {
     public class UrlCheck : CheckRoutineBase
     {
-        public string Url;
+        public Uri uri;
         public HttpStatusCode ExpectedStatus;
 
         public UrlCheck(string url)
         {
             InitializeMembers();
 
-            this.Url = url;
+            this.uri = new Uri(url, UriKind.RelativeOrAbsolute);
         }
 
         public UrlCheck(string url, HttpStatusCode expectedStatus)
         {
             InitializeMembers();
 
-            this.Url = url;
+            this.uri = new Uri(url, UriKind.RelativeOrAbsolute);
             this.ExpectedStatus = expectedStatus;
         }
 
         private void InitializeMembers()
         {
-            this.Url = "";
+            this.uri = null;
             this.ExpectedStatus = HttpStatusCode.OK;
         }
 
         public override void Execute(PageBase page)
         {
-            var absurl = Util.UrlFormatter.ToAbsoluteUrl(Url);
+            var absurl = Util.UriConverter.Combine(page.Request.Url, uri).ToString();
 
             page.Response.Output.WriteLine(
                 "Testing URL {0} expecting HTTP status {1}",
