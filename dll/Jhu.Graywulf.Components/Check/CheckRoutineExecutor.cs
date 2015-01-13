@@ -43,8 +43,11 @@ namespace Jhu.Graywulf.Check
             int success = 0;
             int failed = 0;
 
-            foreach (var r in routines)
+            int i = 0;
+            while (i < routines.Count)
             {
+                var r = routines[i];
+
                 try
                 {
                     output.WriteLine();
@@ -54,10 +57,22 @@ namespace Jhu.Graywulf.Check
 
                     output.WriteLine("<font color=\"green\">Success</font>");
 
+                    // Schedule additional tests
+                    int k = i + 1;
+                    foreach (var rr in r.GetCheckRoutines())
+                    {
+                        routines.Insert(k, rr);
+                        k++;
+                    }
+
                     success++;
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
+                    System.Diagnostics.Debugger.Break();
+#endif
+
                     output.Write("<font color=\"red\">Error:</font> ");
                     output.WriteLine(ex.Message);
                     output.WriteLine("---");
@@ -69,6 +84,8 @@ namespace Jhu.Graywulf.Check
                         throw;
                     }
                 }
+
+                i++;
             }
 
             output.WriteLine();
