@@ -256,7 +256,7 @@ namespace Jhu.Graywulf.Web.Security
                 url += "/";
             }
 
-            url += "signin.aspx?ReturnUrl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.ToString());
+            url += "signin.aspx?ReturnUrl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.OriginalString);
             return url;
         }
 
@@ -269,7 +269,7 @@ namespace Jhu.Graywulf.Web.Security
                 url += "/";
             }
 
-            url += "signout.aspx?ReturnUrl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.ToString());
+            url += "signout.aspx?ReturnUrl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.OriginalString);
             return url;
         }
 
@@ -282,7 +282,7 @@ namespace Jhu.Graywulf.Web.Security
                 url += "/";
             }
 
-            url += "user.aspx?ReturnUrl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.ToString());
+            url += "user.aspx?ReturnUrl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.OriginalString);
             return url;
         }
 
