@@ -77,15 +77,13 @@ namespace Jhu.Graywulf.Web.Api.V1
             {
                 var client = CreateClient(session);
 
-                var job = new QueryJob()
-                {
-                    Query = "SELECT * FROM TEST:SampleData",
-                    Comments = "test comments",
-                };
-
                 var request = new JobRequest()
                 {
-                    QueryJob = job
+                    QueryJob = new QueryJob()
+                    {
+                        Query = "SELECT * FROM TEST:SampleData",
+                        Comments = "test comments",
+                    }
                 };
 
                 var response = client.SubmitJob("quick", request);
@@ -96,23 +94,21 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                 // Now create another job depending on this one
 
-                job = new QueryJob()
-                {
-                    Query = "SELECT * FROM TEST:SampleData -- JOB 2",
-                    Comments = "test comments",
-                    Dependencies = new JobDependency[]
-                {
-                    new JobDependency()
-                    {
-                        Condition = JobDependencyCondition.Completed,
-                        PredecessorJobGuid = nj.QueryJob.Guid
-                    }
-                }
-                };
-
                 request = new JobRequest()
                 {
-                    QueryJob = job
+                    QueryJob = new QueryJob()
+                    {
+                        Query = "SELECT * FROM TEST:SampleData -- JOB 2",
+                        Comments = "test comments",
+                        Dependencies = new JobDependency[]
+                        {
+                            new JobDependency()
+                            {
+                                Condition = JobDependencyCondition.Completed,
+                                PredecessorJobGuid = nj.QueryJob.Guid
+                            }
+                        }
+                    }
                 };
 
                 response = client.SubmitJob("quick", request);
