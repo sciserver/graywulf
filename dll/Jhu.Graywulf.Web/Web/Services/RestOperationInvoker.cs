@@ -54,8 +54,11 @@ namespace Jhu.Graywulf.Web.Services
 #endif
                 // TODO: this won't catch exceptions from IEnumerator that occur
                 // in MoveNext, so they won't be logged.
-                svc.OnError(operationName, ex);
-                throw;
+                var logevent = svc.OnError(operationName, ex);
+
+                // Wrap up exception into a RestOperationException which will convey it to
+                // the error handler implementation
+                throw new RestOperationException(ex, logevent.EventId.ToString());
             }
 
             svc.OnAfterInvoke();

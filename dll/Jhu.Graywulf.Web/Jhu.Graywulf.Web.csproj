@@ -110,8 +110,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Web\Services\RestClientSession.cs" />
+    <Compile Include="Web\Services\RestError.cs" />
     <Compile Include="Web\Services\RestErrorHandler.cs" />
     <Compile Include="Web\Services\RestOperationBehavior.cs" />
+    <Compile Include="Web\Services\RestOperationException.cs" />
     <Compile Include="Web\Services\RestOperationInvoker.cs" />
     <Compile Include="Web\Services\RestServiceBase.cs" />
     <Compile Include="Web\Services\RestServiceBehavior.cs" />

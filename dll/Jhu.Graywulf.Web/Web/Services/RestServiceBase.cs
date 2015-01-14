@@ -124,9 +124,9 @@ namespace Jhu.Graywulf.Web.Services
             }
         }
 
-        internal void OnError(string operationName, Exception ex)
+        internal Logging.Event OnError(string operationName, Exception ex)
         {
-            LogError(operationName, ex);
+            return LogError(operationName, ex);
 
             if (registryContext != null)
             {

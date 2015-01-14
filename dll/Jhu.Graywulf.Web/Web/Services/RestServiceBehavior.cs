@@ -68,6 +68,7 @@ namespace Jhu.Graywulf.Web.Services
                 if (whb != null)
                 {
                     whb.HelpEnabled = true;
+                    whb.AutomaticFormatSelectionEnabled = true;
                 }
             }
         }
