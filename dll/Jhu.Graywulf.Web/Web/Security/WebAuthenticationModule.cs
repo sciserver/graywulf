@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Configuration;
 using System.Security.Principal;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Web.UI;
@@ -21,21 +22,16 @@ namespace Jhu.Graywulf.Web.Security
     /// </remarks>
     public class WebAuthenticationModule : AuthenticationModuleBase, IHttpModule
     {
-        #region Private member variables
+        #region Static declarations
 
-        private Uri authBaseUri;
-
-        #endregion
-        #region Properties
-
-        public Uri AuthBaseUri
+        public static FormsAuthenticationConfiguration Configuration
         {
-            get { return authBaseUri; }
-            set { authBaseUri = value; }
+            get { return (FormsAuthenticationConfiguration)ConfigurationManager.GetSection("jhu.graywulf/authentication/forms"); }
         }
 
         #endregion
         #region Constructors and initializers
+
 
         public WebAuthenticationModule()
         {
@@ -44,7 +40,6 @@ namespace Jhu.Graywulf.Web.Security
 
         private void InitializeMembers()
         {
-            this.authBaseUri = new Uri("/auth", UriKind.Relative);
         }
 
         public override void Dispose()
@@ -74,12 +69,6 @@ namespace Jhu.Graywulf.Web.Security
                 // special case has to be handled here
                 if (context.Domain != null)
                 {
-                    // Initialize module
-                    if (!String.IsNullOrWhiteSpace(context.Domain.AuthBaseUri))
-                    {
-                        this.authBaseUri = new Uri(context.Domain.AuthBaseUri, UriKind.RelativeOrAbsolute);
-                    }
-
                     // Initialize authenticators            
                     var af = AuthenticationFactory.Create(context.Domain);
                     RegisterAuthentications(af.GetAuthentications(AuthenticatorProtocolType.WebRequest));
@@ -249,7 +238,7 @@ namespace Jhu.Graywulf.Web.Security
 
         public string GetSignInUrl()
         {
-            var url = authBaseUri.ToString();
+            var url = Configuration.BaseUri.ToString();
 
             if (!url.EndsWith("/"))
             {
@@ -262,7 +251,7 @@ namespace Jhu.Graywulf.Web.Security
 
         public string GetSignOutUrl()
         {
-            var url = authBaseUri.ToString();
+            var url = Configuration.BaseUri.ToString();
 
             if (!url.EndsWith("/"))
             {
@@ -275,7 +264,7 @@ namespace Jhu.Graywulf.Web.Security
 
         public string GetUserAccountUrl()
         {
-            var url = authBaseUri.ToString();
+            var url = Configuration.BaseUri.ToString();
 
             if (!url.EndsWith("/"))
             {
