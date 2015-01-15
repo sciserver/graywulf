@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                         if (job.JobExecutionStatus == JobExecutionState.Completed)
                         {
                             // Get query details
-                            var ej = new ExportJob(job);
+                            var ej = ExportJob.FromJobInstance(job);
 
                             Response.Redirect(GetExportUrl(ej));
                         }

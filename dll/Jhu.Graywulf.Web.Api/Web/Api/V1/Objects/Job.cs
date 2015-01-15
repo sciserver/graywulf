@@ -198,11 +198,12 @@ namespace Jhu.Graywulf.Web.Api.V1
             CopyMembers(old);
         }
 
-        public Job(JobInstance jobInstance)
+        public static Job FromJobInstance(JobInstance jobInstance)
         {
-            InitializeMembers();
+            var job = new Job();
+            job.LoadFromRegistryObject(jobInstance);
 
-            LoadFromRegistryObject(jobInstance);
+            return job;
         }
 
         private void InitializeMembers()

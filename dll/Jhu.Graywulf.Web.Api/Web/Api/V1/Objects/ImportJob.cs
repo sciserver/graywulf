@@ -55,10 +55,12 @@ namespace Jhu.Graywulf.Web.Api.V1
             InitializeMembers();
         }
 
-        public ImportJob(JobInstance jobInstance)
-            : base(jobInstance)
+        public static ImportJob FromJobInstance(JobInstance jobInstance)
         {
-            InitializeMembers();
+            var job = new ImportJob();
+            job.LoadFromRegistryObject(jobInstance);
+
+            return job;
         }
 
         private void InitializeMembers()

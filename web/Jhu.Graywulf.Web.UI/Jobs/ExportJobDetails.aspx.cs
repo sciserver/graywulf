@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             }
 
             // Get query details
-            exportJob = new ExportJob(jobInstance);
+            exportJob = ExportJob.FromJobInstance(jobInstance);
         }
 
         private void UpdateForm()

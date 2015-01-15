@@ -344,24 +344,24 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                 if (queryJobDefinitionsByGuid.ContainsKey(jdguid))
                 {
-                    return new QueryJob(jobInstance);
+                    return QueryJob.FromJobInstance(jobInstance);
                 }
                 else if (exportJobDefinitionsByGuid.ContainsKey(jdguid))
                 {
-                    return new ExportJob(jobInstance);
+                    return ExportJob.FromJobInstance(jobInstance);
                 }
                 else if (importJobDefinitionsByGuid.ContainsKey(jdguid))
                 {
-                    return new ImportJob(jobInstance);
+                    return ImportJob.FromJobInstance(jobInstance);
                 }
                 else
                 {
-                    job = new Job(jobInstance);
+                    job = Job.FromJobInstance(jobInstance);
                 }
             }
             catch (Exception)
             {
-                // Something went wrong but at lease we can set the Guid and name
+                // Something went wrong but at least we can set the Guid and name
                 job = new Job()
                 {
                     Guid = jobInstance.Guid,

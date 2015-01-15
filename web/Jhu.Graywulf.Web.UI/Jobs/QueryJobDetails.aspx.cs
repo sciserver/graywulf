@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             }
 
             // Get query details
-            queryJob = new QueryJob(jobInstance);
+            queryJob = QueryJob.FromJobInstance(jobInstance);
         }
 
         private void UpdateForm()

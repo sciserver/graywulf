@@ -49,10 +49,12 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.Queue = queue;
         }
 
-        public QueryJob(JobInstance jobInstance)
-            : base(jobInstance)
+        public static QueryJob FromJobInstance(JobInstance jobInstance)
         {
-            InitializeMembers();
+            var job = new QueryJob();
+            job.LoadFromRegistryObject(jobInstance);
+
+            return job;
         }
 
         private void InitializeMembers()

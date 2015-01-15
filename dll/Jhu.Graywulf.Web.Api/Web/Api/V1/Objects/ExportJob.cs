@@ -103,10 +103,12 @@ namespace Jhu.Graywulf.Web.Api.V1
             InitializeMembers();
         }
 
-        public ExportJob(JobInstance jobInstance)
-            : base(jobInstance)
+        public static ExportJob FromJobInstance(JobInstance jobInstance)
         {
-            InitializeMembers();
+            var job = new ExportJob();
+            job.LoadFromRegistryObject(jobInstance);
+
+            return job;
         }
 
         private void InitializeMembers()
