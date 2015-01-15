@@ -36,7 +36,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain
 
             IdentityProvider.Text = Item.IdentityProvider;
             AuthenticatorFactory.Text = Item.AuthenticatorFactory;
-            AuthBaseUri.Text = Item.AuthBaseUri;
             ShortTitle.Text = Item.ShortTitle;
             LongTitle.Text = Item.LongTitle;
             Email.Text = Item.Email;
@@ -50,7 +49,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain
 
             Item.IdentityProvider = IdentityProvider.Text;
             Item.AuthenticatorFactory = AuthenticatorFactory.Text;
-            Item.AuthBaseUri = AuthBaseUri.Text;
             Item.ShortTitle = ShortTitle.Text;
             Item.LongTitle = LongTitle.Text;
             Item.Email = Email.Text;

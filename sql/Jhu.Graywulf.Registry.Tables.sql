@@ -182,7 +182,6 @@ CREATE TABLE [dbo].[Domain]
 	[EntityGuid] [uniqueidentifier] NOT NULL,
 	[IdentityProvider] [nvarchar](1024) NOT NULL,
 	[AuthenticatorFactory] [nvarchar](1024) NOT NULL,
-	[AuthBaseUri] [nvarchar](1024) NOT NULL,
 	[ShortTitle] [nvarchar](50) NOT NULL,
 	[LongTitle] [nvarchar](256) NOT NULL,
 	[Email] [nvarchar](128) NOT NULL,
