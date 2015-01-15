@@ -64,7 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Activate.aspx" />
-    <Content Include="Api\Auth.svc" />
+    <Content Include="Api\V1\Auth.svc" />
     <Content Include="App_Themes\Basic\Css\codemirror.css" />
     <Content Include="App_Themes\Basic\Css\docs.css" />
     <Content Include="App_Themes\Basic\Css\fonts.css" />
