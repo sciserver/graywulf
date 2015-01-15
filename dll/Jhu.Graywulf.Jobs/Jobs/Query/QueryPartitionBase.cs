@@ -148,7 +148,12 @@ namespace Jhu.Graywulf.Jobs.Query
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(String.Format("Cannot find instance of system database: {0}", dataset.Name), ex); // TODO ***
+                    throw new Exception(
+                        String.Format(
+                            "Cannot find instance of system database: {0} ({1}) on server {2}{3} ({4}).",
+                            dataset.Name, dataset.DatabaseName,
+                            AssignedServerInstance.Machine.Name, AssignedServerInstance.Name, AssignedServerInstance.GetCompositeName()),
+                        ex); // TODO ***
                 }
             }
             else if (AssignedServerInstanceReference.IsEmpty)
@@ -279,36 +284,36 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private string GetEscapedUniqueName(TableReference table)
         {
-                if (table.IsSubquery || table.IsComputed)
+            if (table.IsSubquery || table.IsComputed)
+            {
+                return EscapeIdentifierName(table.Alias);
+            }
+            else
+            {
+                string res = String.Empty;
+
+                if (table.DatasetName != null)
                 {
-                    return EscapeIdentifierName(table.Alias);
+                    res += String.Format("{0}_", EscapeIdentifierName(table.DatasetName));
                 }
-                else
+
+                if (table.DatabaseName != null)
                 {
-                    string res = String.Empty;
-
-                    if (table.DatasetName != null)
-                    {
-                        res += String.Format("{0}_", EscapeIdentifierName(table.DatasetName));
-                    }
-
-                    if (table.DatabaseName != null)
-                    {
-                        res += String.Format("{0}_", EscapeIdentifierName(table.DatabaseName));
-                    }
-
-                    if (table.SchemaName != null)
-                    {
-                        res += String.Format("{0}_", EscapeIdentifierName(table.SchemaName));
-                    }
-
-                    if (table.DatabaseObjectName != null)
-                    {
-                        res += String.Format("{0}", EscapeIdentifierName(table.DatabaseObjectName));
-                    }
-
-                    return res;
+                    res += String.Format("{0}_", EscapeIdentifierName(table.DatabaseName));
                 }
+
+                if (table.SchemaName != null)
+                {
+                    res += String.Format("{0}_", EscapeIdentifierName(table.SchemaName));
+                }
+
+                if (table.DatabaseObjectName != null)
+                {
+                    res += String.Format("{0}", EscapeIdentifierName(table.DatabaseObjectName));
+                }
+
+                return res;
+            }
         }
 
         /// <summary>
@@ -388,7 +393,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var dest = new DestinationTable(
                 temptable,
                 TableInitializationOptions.Drop | TableInitializationOptions.Create);
-            
+
             var tc = CreateTableCopyTask(source, dest, false);
 
             var guid = Guid.NewGuid();
