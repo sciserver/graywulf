@@ -112,17 +112,18 @@ namespace Jhu.Graywulf.Web.Api.V1
             {
                 Dataset = context.MyDBDataset,
                 DatabaseName = context.MyDBDataset.DatabaseName,
-                SchemaName = context.MyDBDataset.DefaultSchemaName,
-                TableNamePattern = Jhu.Graywulf.Jobs.Constants.DefaultQuickResultsTableNamePattern,
+                SchemaName = context.MyDBDataset.DefaultSchemaName
             };
 
             switch (Queue)
             {
                 case JobQueue.Quick:
                     q.Destination.Options = TableInitializationOptions.Drop | TableInitializationOptions.Create;
+                    q.Destination.TableNamePattern = Jhu.Graywulf.Jobs.Constants.DefaultQuickResultsTableNamePattern;
                     break;
                 case JobQueue.Long:
                     q.Destination.Options = TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName;
+                    q.Destination.TableNamePattern = Jhu.Graywulf.Jobs.Constants.DefaultLongResultsTableNamePattern;
                     break;
                 default:
                     // This option is used when only parsing queries

@@ -98,11 +98,11 @@ namespace Jhu.Graywulf.Schema
             }
 
             // Copy columns
-            Columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
+            this.Columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
             for (int i = 0; i < columns.Count; i++)
             {
                 var nc = (Column)columns[i].Clone();
-                Columns.TryAdd(nc.Name, nc);
+                this.Columns.TryAdd(nc.Name, nc);
             }
 
             if ((options & TableInitializationOptions.Append) != 0)

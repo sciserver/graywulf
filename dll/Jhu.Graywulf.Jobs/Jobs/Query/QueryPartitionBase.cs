@@ -493,10 +493,14 @@ namespace Jhu.Graywulf.Jobs.Query
                             {
                                 var source = GetOutputSourceQuery();
 
-                                // TODO: generate resultset name here
                                 // TODO: figure out metadata from query
                                 var table = query.Destination.GetTable(query.BatchName, query.QueryName, null, null);
                                 table.Initialize(source.GetColumns(), query.Destination.Options);
+
+                                // At this point the name of the destination is determined (in case of unique resultset naming)
+                                // so replace pattern with actual name.
+                                query.Destination.SchemaName = table.SchemaName;
+                                query.Destination.TableNamePattern = table.TableName;
                             }
 
                             query.IsDestinationTableInitialized = true;

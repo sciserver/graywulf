@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Jobs
         public const string JobParameterExport = "Parameters";
         public const string JobParameterImport = "Parameters";
 
-        public const string DefaultQuickResultsTableNamePattern = "quickResults";
+        public const string DefaultQuickResultsTableNamePattern = "QuickResults";
         public const string DefaultLongResultsTableNamePattern = "Results";
     }
 }

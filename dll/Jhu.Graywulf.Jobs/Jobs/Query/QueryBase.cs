@@ -225,6 +225,9 @@ namespace Jhu.Graywulf.Jobs.Query
                     this.destination.TableNamePattern = into.TableReference.DatabaseObjectName;
                 }
 
+                // Turn off unique name generation in case an into clause is used
+                this.destination.Options &= ~TableInitializationOptions.GenerateUniqueName;
+
                 // remove into clause from query
                 into.Parent.Stack.Remove(into);
             }
