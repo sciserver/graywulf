@@ -109,7 +109,10 @@ namespace Jhu.Graywulf.Schema
             {
                 if (!VerifyColumns(true))
                 {
-                    throw new SchemaException("Table is to be appended but schemas do not match.");  // *** TODO
+                    throw new SchemaException(
+                        String.Format(
+                            "Table is to be appended but schemas do not match: {0}:{1}.{2}.{3}",
+                            Dataset.Name, DatabaseName, SchemaName, TableName));  // *** TODO
                 }
             }
             else if ((options & TableInitializationOptions.Create) != 0)
