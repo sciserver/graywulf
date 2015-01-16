@@ -59,5 +59,14 @@ namespace Jhu.Graywulf.Components
                 this.isValueLoaded = true;
             }
         }
+
+        public void Clear()
+        {
+            lock (this)
+            {
+                this.isValueLoaded = false;
+                this.value = default(T);
+            }
+        }
     }
 }

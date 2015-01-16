@@ -728,5 +728,16 @@ namespace Jhu.Graywulf.Schema
         #endregion
 
         public abstract IDbConnection OpenConnection();
+
+        public void FlushCache()
+        {
+            this.tables.Clear();
+            this.views.Clear();
+            this.tableValuedFunctions.Clear();
+            this.scalarFunctions.Clear();
+            this.storedProcedures.Clear();
+            this.statistics.Clear();
+            this.metadata.Clear();
+        }
     }
 }

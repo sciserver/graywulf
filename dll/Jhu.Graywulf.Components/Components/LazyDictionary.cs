@@ -160,6 +160,8 @@ namespace Jhu.Graywulf.Components
             {
                 OnItemRemoved(i.Key, i.Value);
             }
+
+            isAllLoaded = false;
         }
 
         public bool ContainsKey(TKey key)

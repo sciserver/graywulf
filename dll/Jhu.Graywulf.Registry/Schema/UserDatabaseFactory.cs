@@ -92,6 +92,11 @@ namespace Jhu.Graywulf.Schema
                 userDatabaseCache.TryAdd(user.Name, ds, DateTime.Now.AddMinutes(10));
             }
 
+            if (!ds.IsCacheable)
+            {
+                ds.FlushCache();
+            }
+
             return (SqlServer.SqlServerDataset)ds;
         }
 
