@@ -113,6 +113,7 @@
     <Compile Include="Web\Services\RestClientSession.cs" />
     <Compile Include="Web\Services\RestError.cs" />
     <Compile Include="Web\Services\RestErrorHandler.cs" />
+    <Compile Include="Web\Services\RestErrorResponse.cs" />
     <Compile Include="Web\Services\RestOperationBehavior.cs" />
     <Compile Include="Web\Services\RestOperationException.cs" />
     <Compile Include="Web\Services\RestOperationInvoker.cs" />

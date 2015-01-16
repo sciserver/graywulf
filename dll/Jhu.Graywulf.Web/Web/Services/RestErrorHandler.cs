@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Web.Services
         {
             var restError = GetRestError(error);
             fault = SerializeRestError(restError);
-            //SetHttpResponseStatus(restError.InnerException);
+            SetHttpResponseStatus(restError.InnerException);
         }
 
         private RestError GetRestError(Exception ex)
@@ -66,7 +66,11 @@ namespace Jhu.Graywulf.Web.Services
                 if (Jhu.Graywulf.Util.MediaTypeComparer.Compare(accept[i].MediaType, "text/json") ||
                     Jhu.Graywulf.Util.MediaTypeComparer.Compare(accept[i].MediaType, "application/json"))
                 {
-                    return WebOperationContext.Current.CreateJsonResponse<RestError>(ex);
+                    var wrapped = new RestErrorResponse()
+                    {
+                        RestError = ex,
+                    };
+                    return WebOperationContext.Current.CreateJsonResponse<RestErrorResponse>(wrapped);
                 }
                 else if (Jhu.Graywulf.Util.MediaTypeComparer.Compare(accept[i].MediaType, MediaTypeNames.Text.Plain))
                 {
