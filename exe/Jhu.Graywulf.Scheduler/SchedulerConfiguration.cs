@@ -18,19 +18,19 @@ namespace Jhu.Graywulf.Scheduler
         private static ConfigurationPropertyCollection properties;
 
         private static readonly ConfigurationProperty propPollingInterval = new ConfigurationProperty(
-            "pollingInterval", typeof(TimeSpan), null, ConfigurationPropertyOptions.IsRequired);
+            "pollingInterval", typeof(TimeSpan), new TimeSpan(0, 0, 5), ConfigurationPropertyOptions.None);
 
         private static readonly ConfigurationProperty propAppDomainIdle = new ConfigurationProperty(
-            "appDomainIdle", typeof(TimeSpan), null, ConfigurationPropertyOptions.IsRequired);
+            "appDomainIdle", typeof(TimeSpan), new TimeSpan(0, 5, 0), ConfigurationPropertyOptions.None);
 
         private static readonly ConfigurationProperty propAppDomainShutdownTimeout = new ConfigurationProperty(
-            "appDomainShutdownTimeout", typeof(TimeSpan), null, ConfigurationPropertyOptions.IsRequired);
+            "appDomainShutdownTimeout", typeof(TimeSpan), new TimeSpan(0, 0, 30), ConfigurationPropertyOptions.None);
 
         private static readonly ConfigurationProperty propCancelTimeout = new ConfigurationProperty(
-            "cancelTimeout", typeof(TimeSpan), null, ConfigurationPropertyOptions.IsRequired);
+            "cancelTimeout", typeof(TimeSpan), new TimeSpan(0, 1, 30), ConfigurationPropertyOptions.None);
 
         private static readonly ConfigurationProperty propPersistTimeout = new ConfigurationProperty(
-            "persistTimeout", typeof(TimeSpan), null, ConfigurationPropertyOptions.IsRequired);
+            "persistTimeout", typeof(TimeSpan), new TimeSpan(0, 1, 30), ConfigurationPropertyOptions.None);
 
         static SchedulerConfiguration()
         {
