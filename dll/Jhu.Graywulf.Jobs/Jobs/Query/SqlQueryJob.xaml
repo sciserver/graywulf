@@ -2,7 +2,7 @@
   <x:Members>
     <x:Property Name="UserGuid" Type="InArgument(s:Guid)" />
     <x:Property Name="JobGuid" Type="InArgument(s:Guid)" />
-    <x:Property Name="Query" Type="InArgument(local:QueryBase)" />
+    <x:Property Name="Query" Type="InOutArgument(local:QueryBase)" />
   </x:Members>
   <sap:VirtualizedContainerService.HintSize>460,2146</sap:VirtualizedContainerService.HintSize>
   <mva:VisualBasic.Settings>Assembly references and imported namespaces for internal implementation</mva:VisualBasic.Settings>
