@@ -107,6 +107,7 @@
     <Compile Include="Jobs\Query\GeneratePartitions.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Jobs\Query\IJob.cs" />
     <Compile Include="Jobs\Query\InitializeQuery.cs">
       <SubType>Code</SubType>
     </Compile>
