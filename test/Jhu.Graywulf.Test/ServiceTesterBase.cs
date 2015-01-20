@@ -24,7 +24,7 @@ namespace Jhu.Graywulf
             get { return syncRoot; }
         }
 
-        protected bool IsRunning
+        public bool IsRunning
         {
             get
             {

@@ -14,8 +14,8 @@ namespace Jhu.Graywulf.Scheduler.Test
     [TestClass]
     public class SchedulerTest : TestClassBase
     {
-        [TestInitialize]
-        public void Initialize()
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
         {
             using (SchedulerTester.Instance.GetExclusiveToken())
             {
@@ -23,12 +23,15 @@ namespace Jhu.Graywulf.Scheduler.Test
             }
         }
 
-        [TestCleanup]
-        public void CleanUp()
+        [ClassCleanup]
+        public static void CleanUp()
         {
             using (SchedulerTester.Instance.GetExclusiveToken())
             {
-                SchedulerTester.Instance.DrainStop();
+                if (SchedulerTester.Instance.IsRunning)
+                {
+                    SchedulerTester.Instance.DrainStop();
+                }
 
                 PurgeTestJobs();
             }
@@ -137,13 +140,12 @@ namespace Jhu.Graywulf.Scheduler.Test
                 SchedulerTester.Instance.EnsureRunning();
 
                 // Time must be longer than the time-out of quick queue!
-                var guid = ScheduleTestJob(new TimeSpan(0, 1, 0), JobType.CancelableDelay, QueueType.Quick);
+                var guid = ScheduleTestJob(new TimeSpan(0, 1, 20), JobType.CancelableDelay, QueueType.Quick);
 
                 WaitJobComplete(guid, TimeSpan.FromSeconds(10));
 
                 var ji = LoadJob(guid);
-                Assert.IsTrue(ji.JobExecutionStatus == JobExecutionState.TimedOut ||
-                    ji.JobExecutionStatus == JobExecutionState.Completed);
+                Assert.AreEqual(JobExecutionState.TimedOut, ji.JobExecutionStatus);
             }
         }
 
@@ -162,8 +164,15 @@ namespace Jhu.Graywulf.Scheduler.Test
                 WaitJobComplete(guid, TimeSpan.FromSeconds(10));
 
                 var ji = LoadJob(guid);
-                Assert.IsTrue(ji.JobExecutionStatus == JobExecutionState.TimedOut ||
-                    ji.JobExecutionStatus == JobExecutionState.Completed);
+
+                // TODO: It is not clear whether the job gets cancelled or timed out
+                // Most of the time it gets cancelled before it could competed when
+                // but this is a timing issue that needs further investigation.
+                // Nevertheless, job status is accurate
+
+                Assert.IsTrue(
+                    ji.JobExecutionStatus == JobExecutionState.Completed ||
+                    ji.JobExecutionStatus == JobExecutionState.TimedOut);
             }
         }
 
@@ -175,7 +184,7 @@ namespace Jhu.Graywulf.Scheduler.Test
                 SchedulerTester.Instance.EnsureRunning();
 
                 // Time must be longer than the time-out of quick queue!
-                var guid = ScheduleTestJob(new TimeSpan(0, 0, 20), JobType.MultipleDelay, QueueType.Long);
+                var guid = ScheduleTestJob(new TimeSpan(0, 0, 30), JobType.MultipleDelay, QueueType.Long);
 
                 WaitJobStarted(guid, TimeSpan.FromSeconds(10));
 
@@ -199,14 +208,14 @@ namespace Jhu.Graywulf.Scheduler.Test
         }
 
         [TestMethod]
-        public void PersistAndCancelTest()
+        public void PersistAndCancelJobTest()
         {
             using (SchedulerTester.Instance.GetExclusiveToken())
             {
                 SchedulerTester.Instance.EnsureRunning();
 
                 // Time must be longer than the time-out of quick queue!
-                var guid = ScheduleTestJob(new TimeSpan(0, 0, 20), JobType.MultipleDelay, QueueType.Long);
+                var guid = ScheduleTestJob(new TimeSpan(0, 0, 30), JobType.MultipleDelay, QueueType.Long);
 
                 WaitJobStarted(guid, TimeSpan.FromSeconds(10));
 
@@ -233,7 +242,9 @@ namespace Jhu.Graywulf.Scheduler.Test
                 WaitJobComplete(guid, TimeSpan.FromSeconds(10));
 
                 ji = LoadJob(guid);
-                Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
+                Assert.IsTrue(
+                    ji.JobExecutionStatus == JobExecutionState.Cancelled ||
+                    ji.JobExecutionStatus == JobExecutionState.Completed);
             }
         }
 
@@ -270,6 +281,51 @@ namespace Jhu.Graywulf.Scheduler.Test
 
                 Assert.AreEqual(JobExecutionState.Failed, job.JobExecutionStatus);
                 Assert.AreEqual(null, job.Parameters["Result"].Value);
+            }
+        }
+
+        [TestMethod]
+        public void AsyncExceptionWithRetryTest()
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                SchedulerTester.Instance.EnsureRunning();
+
+                var guid = ScheduleTestJob(JobType.AsyncExceptionWithRetry, QueueType.Long);
+
+                WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+
+                var job = LoadJob(guid);
+
+                Assert.AreEqual(JobExecutionState.Failed, job.JobExecutionStatus);
+                Assert.AreEqual(null, job.Parameters["Result"].Value);
+            }
+        }
+
+        [TestMethod]
+        public void AsyncExceptionWithStopTest()
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                SchedulerTester.Instance.EnsureRunning();
+
+                var guid = ScheduleTestJob(JobType.AsyncExceptionWithRetry, QueueType.Long);
+
+                WaitJobStarted(guid, TimeSpan.FromSeconds(10));
+
+                SchedulerTester.Instance.Stop();
+
+                var job = LoadJob(guid);
+
+                Assert.AreEqual(JobExecutionState.Persisted, job.JobExecutionStatus);
+
+                SchedulerTester.Instance.EnsureRunning();
+
+                WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+
+                job = LoadJob(guid);
+
+                Assert.AreEqual(JobExecutionState.Failed, job.JobExecutionStatus);
             }
         }
     }

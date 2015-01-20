@@ -39,6 +39,7 @@ namespace Jhu.Graywulf.Test
             MultipleDelay,
             Exception,
             AsyncException,
+            AsyncExceptionWithRetry
         }
 
         protected Task scheduler;
@@ -56,7 +57,7 @@ namespace Jhu.Graywulf.Test
             return user;
         }
 
-        protected void PurgeTestJobs()
+        public static void PurgeTestJobs()
         {
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {

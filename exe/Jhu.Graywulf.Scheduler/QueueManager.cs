@@ -18,7 +18,7 @@ using Jhu.Graywulf.Logging;
 namespace Jhu.Graywulf.Scheduler
 {
     /// <summary>
-    /// Implements the main functions of the scheduler.
+    /// Implements the main functions of the job queue and polling.
     /// </summary>
     /// <remarks>
     /// This class is instantiated as a singleton and is accessed via the
@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.Scheduler
         #region Private member varibles
 
         /// <summary>
-        /// AppDomain stored by their IDs
+        /// AppDomains stored by their IDs.
         /// </summary>
         /// <remarks>
         /// AppDomain.Id, AppDomainHost
@@ -318,12 +318,13 @@ namespace Jhu.Graywulf.Scheduler
             // Do it in parallel to save time: jobs will slowly become idle
             lock (appDomains)
             {
-                Parallel.ForEach(appDomains.Values, ad =>
+                Parallel.ForEach(appDomains.Keys, id =>
                 {
-                    ad.Stop(timeout, interactive);
-                });
+                    var ad = appDomains[id];
 
-                //TODO: Unload stopped AppDomains
+                    ad.Stop(timeout, interactive);
+                    Components.AppDomainManager.Instance.UnloadAppDomain(id);
+                });
             }
         }
 
@@ -408,15 +409,15 @@ namespace Jhu.Graywulf.Scheduler
         {
             UnloadOldAppdomains();
 
-            new DelayedRetryLoop(5).Execute(
+            new DelayedRetryLoop(1).Execute(
                 ProcessTimedOutJobs,
                 ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Poll[ProcessTimedOutJobs]", ex)));
 
-            new DelayedRetryLoop(5).Execute(
+            new DelayedRetryLoop(1).Execute(
                 PollNewJobs,
                 ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Poll[PollNewJobs]", ex)));
 
-            new DelayedRetryLoop(5).Execute(
+            new DelayedRetryLoop(1).Execute(
                 PollCancellingJobs,
                 ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Poll[PollCancellingJobs]", ex)));
         }
@@ -432,7 +433,7 @@ namespace Jhu.Graywulf.Scheduler
             {
                 foreach (Job job in runningJobs.Values)
                 {
-                    if (job.HasTimedOut(Cluster.Queues[job.QueueGuid].Timeout))
+                    if (job.IsTimedOut(Cluster.Queues[job.QueueGuid].Timeout))
                     {
                         temp.Add(job);
                     }
@@ -687,7 +688,6 @@ namespace Jhu.Graywulf.Scheduler
             job.Status = JobStatus.Executing;
             job.AppDomainID = adh.ID;
 
-            // TODO: this has to happen before starting the job
             lock (runningJobs)
             {
                 runningJobs.Add(job.WorkflowInstanceId, job);
