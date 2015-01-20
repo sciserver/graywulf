@@ -14,6 +14,26 @@ namespace Jhu.Graywulf.Scheduler.Test
     [TestClass]
     public class SchedulerTest : TestClassBase
     {
+        [TestInitialize]
+        public void Initialize()
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                PurgeTestJobs();
+            }
+        }
+
+        [TestCleanup]
+        public void CleanUp()
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                SchedulerTester.Instance.DrainStop();
+
+                PurgeTestJobs();
+            }
+        }
+
         [TestMethod]
         public void StartStopTest()
         {
@@ -214,6 +234,42 @@ namespace Jhu.Graywulf.Scheduler.Test
 
                 ji = LoadJob(guid);
                 Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
+            }
+        }
+
+        [TestMethod]
+        public void ExceptionTest()
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                SchedulerTester.Instance.EnsureRunning();
+
+                var guid = ScheduleTestJob(JobType.Exception, QueueType.Long);
+
+                WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+
+                var job = LoadJob(guid);
+
+                Assert.AreEqual(JobExecutionState.Failed, job.JobExecutionStatus);
+                Assert.AreEqual(null, job.Parameters["Result"].Value);
+            }
+        }
+
+        [TestMethod]
+        public void AsyncExceptionTest()
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                SchedulerTester.Instance.EnsureRunning();
+
+                var guid = ScheduleTestJob(JobType.AsyncException, QueueType.Long);
+
+                WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+
+                var job = LoadJob(guid);
+
+                Assert.AreEqual(JobExecutionState.Failed, job.JobExecutionStatus);
+                Assert.AreEqual(null, job.Parameters["Result"].Value);
             }
         }
     }

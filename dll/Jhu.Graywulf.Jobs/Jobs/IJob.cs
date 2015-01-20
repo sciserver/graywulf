@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Activities;
 
-namespace Jhu.Graywulf.Jobs.Query
+namespace Jhu.Graywulf.Jobs
 {
     public interface IJob
     {

@@ -61,6 +61,7 @@
     <Compile Include="Jobs\ExportTables\ExportTablesJobSettings.cs" />
     <Compile Include="Jobs\ExportTables\ExportTablesParameters.cs" />
     <Compile Include="Jobs\ExportTables\IExportTablesJob.cs" />
+    <Compile Include="Jobs\IJob.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesJob.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesJobFactory.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesJobSettings.cs" />
@@ -107,7 +108,6 @@
     <Compile Include="Jobs\Query\GeneratePartitions.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Jobs\Query\IJob.cs" />
     <Compile Include="Jobs\Query\InitializeQuery.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -142,6 +142,8 @@
     <Compile Include="Jobs\Query\SqlQueryPartition.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Jobs\Test\TestAsyncException.cs" />
+    <Compile Include="Jobs\Test\TestJob.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Jobs\Test\TestDelay.cs" />
   </ItemGroup>

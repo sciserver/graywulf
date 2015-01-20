@@ -37,6 +37,8 @@ namespace Jhu.Graywulf.Test
             AtomicDelay,
             CancelableDelay,
             MultipleDelay,
+            Exception,
+            AsyncException,
         }
 
         protected Task scheduler;
@@ -70,6 +72,11 @@ namespace Jhu.Graywulf.Test
                     job.Cancel();
                 }
             }
+        }
+
+        protected Guid ScheduleTestJob(JobType jobType, QueueType queueType)
+        {
+            return ScheduleTestJob(TimeSpan.Zero, jobType, queueType);
         }
 
         protected Guid ScheduleTestJob(TimeSpan delayPeriod, JobType jobType, QueueType queueType)
