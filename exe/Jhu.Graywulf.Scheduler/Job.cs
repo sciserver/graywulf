@@ -103,16 +103,28 @@ namespace Jhu.Graywulf.Scheduler
         /// not the status of the workflow. Mainly used by the poller to queue newly
         /// picked up jobs for execution and to report time outs.
         /// </remarks>
-        public JobStatus Status;
-
-        public bool HasTimedOut(TimeSpan timeout)
+        public JobStatus Status
         {
-            return (DateTime.Now - timeStarted) > timeout &&
+            get { return status; }
+            set { status = value; }
+        }
+
+        public bool IsTimedOut(TimeSpan timeout)
+        {
+            var runtime = DateTime.Now - timeStarted;
+
+            return runtime > timeout &&
                    timeout != TimeSpan.Zero &&
                    status == JobStatus.Executing;
         }
 
         public Job()
+        {
+            InitializeMembers(new StreamingContext());
+        }
+
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
         {
             this.guid = Guid.Empty;
             this.jobID = null;
@@ -124,11 +136,6 @@ namespace Jhu.Graywulf.Scheduler
             this.workflowInstanceId = Guid.Empty;
             this.timeStarted = DateTime.MinValue;
             this.status = JobStatus.Unknown;
-        }
-
-        [OnDeserializing]
-        private void InitializeMembers(StreamingContext context)
-        {
         }
 
         public override object InitializeLifetimeService()
