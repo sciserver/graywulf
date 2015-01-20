@@ -25,6 +25,13 @@ namespace Jhu.Graywulf.Registry
         #region Member Variables
 
         /// <summary>
+        /// Parent object of the referenced entity that
+        /// has a valid context
+        /// </summary>
+        [NonSerialized]
+        protected IContextObject referencingObject;
+
+        /// <summary>
         /// Guid of the referenced entity
         /// </summary>
         private Guid guid;
@@ -33,13 +40,6 @@ namespace Jhu.Graywulf.Registry
         /// Name of the referenced entity
         /// </summary>
         private string name;
-
-        /// <summary>
-        /// Parent object of the referenced entity that
-        /// has a valid context
-        /// </summary>
-        [NonSerialized]
-        protected IContextObject referencingObject;
 
         /// <summary>
         /// The referenced entity itself.
@@ -55,8 +55,15 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
+        public IContextObject ReferencingObject
+        {
+            get { return referencingObject; }
+            set { referencingObject = value; }
+        }
+
         /// <summary>
-        /// Returns true if the reference is empty.
+        /// Returns true if the reference is empty, i.e. it
+        /// has no value in the name, guid and value fields.
         /// </summary>
         [IgnoreDataMember]
         public bool IsEmpty
@@ -79,12 +86,12 @@ namespace Jhu.Graywulf.Registry
                 }
                 else if (guid == Guid.Empty)
                 {
-                    if (value == null && !IsEmpty)
-                    {
-                        LoadEntity();
-                    }
+                    EnsureEntityLoaded();
 
-                    guid = value.Guid;
+                    if (value != null)
+                    {
+                        guid = value.Guid;
+                    }
                 }
 
                 return guid;
@@ -105,12 +112,13 @@ namespace Jhu.Graywulf.Registry
         {
             get
             {
-                if (name == null)
+                if (IsEmpty)
                 {
-                    if (value == null && !IsEmpty)
-                    {
-                        LoadEntity();
-                    }
+                    return null;
+                }
+                else if (name == null)
+                {
+                    EnsureEntityLoaded();
 
                     if (value != null)
                     {
@@ -127,12 +135,6 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
-        public IContextObject ReferencingObject
-        {
-            get { return referencingObject; }
-            set { referencingObject = value; }
-        }
-
         /// <summary>
         /// Gets or sets the referenced entity.
         /// </summary>
@@ -146,29 +148,17 @@ namespace Jhu.Graywulf.Registry
         {
             get
             {
-                if (this.value == null && !IsEmpty)
-                {
-                    LoadEntity();
-                }
-
-                // Update context before returning the entity
-                if (this.value != null && this.referencingObject != null)
-                {
-                    this.value.Context = this.referencingObject.Context;
-                }
-
+                EnsureEntityLoaded();
                 return this.value;
             }
             set
             {
                 this.value = value;
+
                 if (this.value != null)
                 {
+                    // Cache guid but name will be lazy-loaded
                     this.guid = this.value.Guid;
-                    
-                    // TODO: remove this and use lazy-loading of full name
-                    // for performance reasons
-                    //this.name = this.value.GetFullyQualifiedName();
                     this.name = null;
                 }
                 else
@@ -196,10 +186,10 @@ namespace Jhu.Graywulf.Registry
         }
 
         [XmlIgnore]
-        Guid IEntityReference.ReferencedEntityGuid
+        object IEntityReference.Value
         {
-            get { return Guid; }
-            set { Guid = value; }
+            get { return Value; }
+            set { Value = (T)value; }
         }
 
         #endregion
@@ -241,9 +231,9 @@ namespace Jhu.Graywulf.Registry
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
+            this.referencingObject = null;
             this.guid = Guid.Empty;
             this.name = null;
-            this.referencingObject = null;
             this.value = null;
             this.referenceType = -1;
         }
@@ -276,51 +266,56 @@ namespace Jhu.Graywulf.Registry
 
         #endregion
 
-        public void LoadEntity()
+
+        /// <summary>
+        /// Loads the entity from the registry using the context of the
+        /// referencing object.
+        /// </summary>
+        internal void EnsureEntityLoaded()
         {
-            Context context;
-            if (referencingObject == null)
+            if (!IsEmpty)
             {
-                context = null;
-            }
-            else
-            {
-                context = referencingObject.Context;
-            }
+                // Get a fresh context from the referencing object
 
-            if (this.value == null)
-            {
-                var ef = new EntityFactory(context);
+                Context context = null;
 
-                if (this.guid != Guid.Empty)
+                if (referencingObject != null && referencingObject.Context != null)
                 {
-                    this.value = ef.LoadEntity<T>(this.guid);
-
-                    // TODO: remove this and use lazy loading for performance
-                    //this.name = this.value.GetFullyQualifiedName();
-                    this.name = null;
+                    context = referencingObject.Context;
                 }
-                else if (this.name != null)
+                else if (value != null && value.Context != null)
                 {
-                    this.value = ef.LoadEntity<T>(this.name);
-                    this.guid = this.value.Guid;
+                    context = this.value.Context;
+                }
+
+                // Load or update entity
+                // A null value means the referenced entity has not been loaded yet.
+                // In this case, load it based on GUID or name.
+
+                if (this.value == null)
+                {
+                    var ef = new EntityFactory(context);
+
+                    if (this.guid != Guid.Empty)
+                    {
+                        this.value = ef.LoadEntity<T>(this.guid);
+                        this.name = null;
+                    }
+                    else if (this.name != null)
+                    {
+                        this.value = ef.LoadEntity<T>(this.name);
+                        this.guid = this.value.Guid;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException();
+                    }
                 }
                 else
                 {
-                    throw new InvalidOperationException();
+                    // Update context
+                    this.value.Context = context;
                 }
-            }
-            else
-            {
-                // Update context
-                this.value.Context = context;
-
-                // Update IDs
-                this.guid = this.value.Guid;
-
-                // TODO: remove this and use lazy-loading for performance
-                // this.name = this.value.GetFullyQualifiedName();
-                this.name = null;
             }
         }
     }

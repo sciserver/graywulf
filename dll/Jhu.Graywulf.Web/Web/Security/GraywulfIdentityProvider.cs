@@ -93,7 +93,8 @@ namespace Jhu.Graywulf.Web.Security
             identity.IsAuthenticated = true;
             identity.UserReference.Value = user;
 
-            // Cache name for later
+            // Cache name for later, make sure it has a valid context
+            identity.UserReference.Value.Context = Context;
             identity.UserReference.Value.GetFullyQualifiedName();
 
             return user;

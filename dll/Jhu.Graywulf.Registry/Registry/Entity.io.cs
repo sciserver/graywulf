@@ -130,7 +130,7 @@ namespace Jhu.Graywulf.Registry
                             var type = dr.GetByte(1);
                             var guid = dr.GetGuid(2);
 
-                            entityReferences[type].ReferencedEntityGuid = guid;
+                            entityReferences[type].Guid = guid;
                         }
                     }
                 }
@@ -321,7 +321,7 @@ namespace Jhu.Graywulf.Registry
             {
                 foreach (var er in entityReferences.Values)
                 {
-                    var referencedGuid = er.IsEmpty ? Guid.Empty : er.ReferencedEntityGuid;
+                    var referencedGuid = er.Guid;
 
                     refdt.Rows.Add(this.guid, er.ReferenceType, referencedGuid);
                 }

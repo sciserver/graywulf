@@ -25,12 +25,10 @@ namespace Jhu.Graywulf.Registry
 
         Guid Guid { get; set; }
 
-        Guid ReferencedEntityGuid { get; set; }
+        object Value { get; set; }
 
         bool IsEmpty { get; }
 
         IEntityReference Clone();
-
-        void LoadEntity();
     }
 }

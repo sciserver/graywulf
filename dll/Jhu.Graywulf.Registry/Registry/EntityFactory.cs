@@ -617,7 +617,7 @@ ORDER BY Number";
 
         private void ResolveParentReference(Entity entity)
         {
-            entity.ParentReference.LoadEntity();
+            entity.ParentReference.EnsureEntityLoaded();
         }
 
         /// <summary>
@@ -632,7 +632,8 @@ ORDER BY Number";
             {
                 if (!r.IsEmpty)
                 {
-                    r.LoadEntity();
+                    // Make sure entity reference is loaded by retrieving its value
+                    var o = r.Value;
                 }
             }
 
