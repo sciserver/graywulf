@@ -151,6 +151,11 @@ namespace Jhu.Graywulf.Activities
 
         private UnhandledExceptionAction wfapp_OnUnhandledException(WorkflowApplicationUnhandledExceptionEventArgs e)
         {
+
+#if DEBUG
+            System.Diagnostics.Debugger.Break();
+#endif
+
             lock (syncRoot)
             {
                 var workflow = workflows[e.InstanceId];

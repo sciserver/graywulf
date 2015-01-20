@@ -51,6 +51,14 @@ namespace Jhu.Graywulf.Scheduler
             return null;
         }
 
+        /// <summary>
+        /// Extract information from a running job to set the parameters of a registry context.
+        /// </summary>
+        /// <param name="workflowInstanceId"></param>
+        /// <param name="userGuid"></param>
+        /// <param name="userName"></param>
+        /// <param name="jobGuid"></param>
+        /// <param name="jobID"></param>
         public void GetContextInfo(Guid workflowInstanceId, out Guid userGuid, out string userName, out Guid jobGuid, out string jobID)
         {
             Job job;

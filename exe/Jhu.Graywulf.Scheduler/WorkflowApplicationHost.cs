@@ -113,6 +113,9 @@ namespace Jhu.Graywulf.Scheduler
         //*** TODO: move this to an appdomainhelper class
         void ad_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+#if DEBUG
+            System.Diagnostics.Debugger.Break();
+#endif
             // **** TODO: handle app domain level exception here
             // to prevent failing of the entire scheduler
             throw (Exception)e.ExceptionObject;

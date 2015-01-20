@@ -11,13 +11,17 @@ namespace Jhu.Graywulf.Scheduler
     /// Wraps an AppDomain that can be unloaded when idle.
     /// </summary>
     /// <remarks>
-    /// Every WorkflowApplication is started in separate AppDomains if
+    /// Every WorkflowApplication is started in a separate AppDomain if
     /// the workflow is in an assembly that has not been loaded yet.
     /// AppDomains are reused if the same assembly is required.
     /// </remarks>
     class AppDomainHost : MarshalByRefObject
     {
         private Guid contextGuid;
+
+        /// <summary>
+        /// Last time the AppDomain was touched. Used to measure idle time.
+        /// </summary>
         private DateTime lastTimeActive;
 
         /// <summary>
@@ -138,9 +142,6 @@ namespace Jhu.Graywulf.Scheduler
             workflowHost.Stop(timeout);
 
             workflowHost = null;
-
-            // TODO: implement this using the AppDomainManager
-            //AppDomain.Unload(appDomain);
         }
 
         #endregion
@@ -177,6 +178,8 @@ namespace Jhu.Graywulf.Scheduler
         {
             lastTimeActive = DateTime.Now;
             workflowHost.RunJob(job);
+
+            // *** TODO: handle errors here
         }
 
         /// <summary>
@@ -188,6 +191,8 @@ namespace Jhu.Graywulf.Scheduler
         {
             lastTimeActive = DateTime.Now;
             workflowHost.CancelJob(job);
+
+            // *** TODO: handle errors here
         }
 
         /// <summary>
@@ -198,6 +203,8 @@ namespace Jhu.Graywulf.Scheduler
         {
             lastTimeActive = DateTime.Now;
             workflowHost.TimeOutJob(job);
+
+            // *** TODO: handle errors here
         }
 
         /// <summary>
@@ -208,6 +215,8 @@ namespace Jhu.Graywulf.Scheduler
         {
             lastTimeActive = DateTime.Now;
             workflowHost.PersistJob(job);
+
+            // *** TODO: handle errors here
         }
 
         #endregion
