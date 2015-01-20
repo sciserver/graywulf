@@ -287,7 +287,17 @@ namespace Jhu.Graywulf.Scheduler
 
                 foreach (var name in outputs.Keys)
                 {
-                    ji.Parameters[name].Value = outputs[name];
+                    var par = outputs[name];
+
+                    // If the parameter support or requires a registry context, set it now
+                    // so serialization in the next step can proceed
+
+                    if (par is IContextObject)
+                    {
+                        ((IContextObject)par).Context = context;
+                    }
+
+                    ji.Parameters[name].Value = par;
                 }
 
                 ji.Save();

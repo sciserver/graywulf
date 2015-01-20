@@ -185,7 +185,10 @@ namespace Jhu.Graywulf.Jobs.Query
         public Context Context
         {
             get { return context; }
-            set { context = value; }
+            set
+            {
+                UpdateContext(value);
+            }
         }
 
         /// <summary>
@@ -525,6 +528,11 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        protected virtual void UpdateContext(Context context)
+        {
+            this.context = context;
+        }
+
         /// <summary>
         /// Initializes the query object by loading registry objects, if necessary.
         /// </summary>
@@ -556,7 +564,7 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 if (context != null)
                 {
-                    Context = context;
+                    UpdateContext(context);
 
                     switch (executionMode)
                     {
@@ -618,7 +626,6 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             if (!assignedServerInstanceReference.IsEmpty || forceReinitialize)
             {
-                assignedServerInstanceReference.LoadEntity();
                 assignedServerInstanceReference.Value.GetConnectionString();
             }
         }

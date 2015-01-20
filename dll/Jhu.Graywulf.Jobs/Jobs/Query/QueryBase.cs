@@ -235,16 +235,6 @@ namespace Jhu.Graywulf.Jobs.Query
             base.FinishInterpret(forceReinitialize);
         }
 
-        public override void InitializeQueryObject(Context context, IScheduler scheduler, bool forceReinitialize)
-        {
-            if (context != null)
-            {
-                this.Context = context;
-            }
-
-            base.InitializeQueryObject(context, scheduler, forceReinitialize);
-        }
-
         protected void AssertValidContext()
         {
             // This call requires a live context

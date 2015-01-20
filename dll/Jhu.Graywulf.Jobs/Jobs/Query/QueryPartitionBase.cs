@@ -252,11 +252,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public override void InitializeQueryObject(Context context, IScheduler scheduler, bool forceReinitialize)
         {
-
-            if (context != null)
-            {
-                Context = context;
-            }
+            base.InitializeQueryObject(context, scheduler, forceReinitialize);
 
             switch (ExecutionMode)
             {
@@ -269,8 +265,6 @@ namespace Jhu.Graywulf.Jobs.Query
                 default:
                     throw new NotImplementedException();
             }
-
-            base.InitializeQueryObject(context, scheduler, forceReinitialize);
         }
 
         #region Remote table caching functions
