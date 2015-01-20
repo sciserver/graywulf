@@ -113,15 +113,22 @@ namespace Jhu.Graywulf.Activities
             // If retry is possible, 
             if (r < MaxRetries.Get(faultContext))
             {
-                // absorb error
+                // Absorb error
                 faultContext.HandleFault();
 
                 faultContext.ScheduleActivity(this.Try, OnTryComplete, OnTryFaulted);
             }
             else
             {
-                // fault
-                throw propagatedException;
+                // Fault
+                if (propagatedException is AggregateException)
+                {
+                    throw ((AggregateException)propagatedException).InnerExceptions[0];
+                }
+                else
+                {
+                    throw propagatedException;
+                }
             }
         }
 
