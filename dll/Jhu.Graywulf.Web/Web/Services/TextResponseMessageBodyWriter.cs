@@ -94,7 +94,7 @@ namespace Jhu.Graywulf.Web.Services
                     q++;
                 }
             }
-            Console.WriteLine();
+            writer.WriteLine();
 
             // Write rows
             var values = new object[reader.FieldCount];
@@ -116,7 +116,7 @@ namespace Jhu.Graywulf.Web.Services
                         q++;
                     }
                 }
-                Console.WriteLine();
+                writer.WriteLine();
             }
         }
 
