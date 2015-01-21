@@ -38,6 +38,7 @@ namespace Jhu.Graywulf.Scheduler.Test
         }
 
         [TestMethod]
+        [TestCategory("Scheduler")]
         public void StartStopTest()
         {
             using (SchedulerTester.Instance.GetExclusiveToken())
@@ -51,6 +52,7 @@ namespace Jhu.Graywulf.Scheduler.Test
         }
 
         [TestMethod]
+        [TestCategory("Scheduler")]
         public void SimpleJobTest()
         {
             using (SchedulerTester.Instance.GetToken())
@@ -70,6 +72,7 @@ namespace Jhu.Graywulf.Scheduler.Test
 
 
         [TestMethod]
+        [TestCategory("Scheduler")]
         public void CancelAtomicJobTest()
         {
             using (SchedulerTester.Instance.GetToken())
@@ -90,6 +93,7 @@ namespace Jhu.Graywulf.Scheduler.Test
         }
 
         [TestMethod]
+        [TestCategory("Scheduler")]
         public void CancelCancelableJobTest()
         {
             using (SchedulerTester.Instance.GetToken())
@@ -111,6 +115,7 @@ namespace Jhu.Graywulf.Scheduler.Test
         }
 
         [TestMethod]
+        [TestCategory("Scheduler")]
         public void KillSchedulerTest()
         {
             using (SchedulerTester.Instance.GetExclusiveToken())
@@ -133,6 +138,7 @@ namespace Jhu.Graywulf.Scheduler.Test
         }
 
         [TestMethod]
+        [TestCategory("Scheduler")]
         public void TimeOutCancelableTest()
         {
             using (SchedulerTester.Instance.GetToken())
@@ -150,6 +156,7 @@ namespace Jhu.Graywulf.Scheduler.Test
         }
 
         [TestMethod]
+        [TestCategory("Scheduler")]
         public void TimeOutAtomicJobTest()
         {
             using (SchedulerTester.Instance.GetToken())
@@ -177,6 +184,7 @@ namespace Jhu.Graywulf.Scheduler.Test
         }
 
         [TestMethod]
+        [TestCategory("Scheduler")]
         public void PersistAndResumeJobTest()
         {
             using (SchedulerTester.Instance.GetExclusiveToken())
@@ -208,6 +216,7 @@ namespace Jhu.Graywulf.Scheduler.Test
         }
 
         [TestMethod]
+        [TestCategory("Scheduler")]
         public void PersistAndCancelJobTest()
         {
             using (SchedulerTester.Instance.GetExclusiveToken())
@@ -249,6 +258,7 @@ namespace Jhu.Graywulf.Scheduler.Test
         }
 
         [TestMethod]
+        [TestCategory("Scheduler")]
         public void ExceptionTest()
         {
             using (SchedulerTester.Instance.GetExclusiveToken())
@@ -267,6 +277,7 @@ namespace Jhu.Graywulf.Scheduler.Test
         }
 
         [TestMethod]
+        [TestCategory("Scheduler")]
         public void AsyncExceptionTest()
         {
             using (SchedulerTester.Instance.GetExclusiveToken())
@@ -285,6 +296,7 @@ namespace Jhu.Graywulf.Scheduler.Test
         }
 
         [TestMethod]
+        [TestCategory("Scheduler")]
         public void AsyncExceptionWithRetryTest()
         {
             using (SchedulerTester.Instance.GetExclusiveToken())
@@ -303,6 +315,7 @@ namespace Jhu.Graywulf.Scheduler.Test
         }
 
         [TestMethod]
+        [TestCategory("Scheduler")]
         public void AsyncExceptionWithStopTest()
         {
             using (SchedulerTester.Instance.GetExclusiveToken())
