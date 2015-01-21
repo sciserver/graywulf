@@ -499,48 +499,62 @@ CREATE PROC [dbo].[spFindJobInstance_Next]
 	@JobInstanceGuid uniqueidentifier OUTPUT	-- GUID of next job in queue
 AS
 	-- Default return value is null
-	SET @JobInstanceGuid = NULL
+	SET @JobInstanceGuid = NULL;
+
+	-- To make sure jobs are picked up in a round-robin manner first we try
+	-- UserGuid > LastUserGuid then UserGuid <= LastUserGuid
+	DECLARE @attempt int = 0;
 
 	-- Resumed (previously suspended) or suspended but timed out workflow
+	WHILE (@attempt < 2)
+	BEGIN
 
-	SELECT TOP 1 @JobInstanceGuid = Entity.Guid
-	FROM Entity
-	INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
-	WHERE Entity.ParentGuid = @QueueInstanceGuid
-		AND
-			((JobExecutionStatus & dbo.JobExecutionState::Persisted) != 0
-			 OR (JobExecutionStatus & dbo.JobExecutionState::Suspended) != 0
-			 AND SuspendTimeout < GETDATE())
-		--- ****** AND Entity.UserGuidOwner > @LastUserGuid	-- Make sure
-		AND Deleted = 0
-	ORDER BY Entity.UserGuidOwner DESC;		-- ***
+		SELECT TOP 1 @JobInstanceGuid = Entity.Guid
+		FROM Entity
+		INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
+		WHERE Entity.ParentGuid = @QueueInstanceGuid
+			AND
+				((JobExecutionStatus & dbo.JobExecutionState::Persisted) != 0
+				 OR (JobExecutionStatus & dbo.JobExecutionState::Suspended) != 0
+				 AND SuspendTimeout < GETDATE())
+			AND Deleted = 0
+			AND (@attempt = 0 AND Entity.UserGuidOwner > @LastUserGuid OR
+			     @attempt = 1 AND Entity.UserGuidOwner <= @LastUserGuid);
 
-	IF (@JobInstanceGuid IS NOT NULL) RETURN;
+		IF (@JobInstanceGuid IS NOT NULL) RETURN;
 
-	-- Job scheduled at a given time
+		-- Job scheduled at a given time
 
-	SELECT TOP 1 @JobInstanceGuid = Entity.Guid
-	FROM Entity
-	INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
-	WHERE Entity.ParentGuid = @QueueInstanceGuid
-		AND (JobExecutionStatus & dbo.JobExecutionState::Scheduled != 0)
-		AND ScheduleType = dbo.ScheduleType::Timed
-		AND ScheduleTime <= GETDATE()		-- Earlier or now
-		AND Deleted = 0;
+		SELECT TOP 1 @JobInstanceGuid = Entity.Guid
+		FROM Entity
+		INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
+		WHERE Entity.ParentGuid = @QueueInstanceGuid
+			AND (JobExecutionStatus & dbo.JobExecutionState::Scheduled != 0)
+			AND ScheduleType = dbo.ScheduleType::Timed
+			AND ScheduleTime <= GETDATE()		-- Earlier or now
+			AND Deleted = 0
+			AND (@attempt = 0 AND Entity.UserGuidOwner > @LastUserGuid OR
+			     @attempt = 1 AND Entity.UserGuidOwner <= @LastUserGuid);
 
-	IF (@JobInstanceGuid IS NOT NULL) RETURN;
+		IF (@JobInstanceGuid IS NOT NULL) RETURN;
 
 	
-	-- Queued job
+		-- Queued job
 
-	SELECT TOP 1 @JobInstanceGuid = Entity.Guid
-	FROM Entity
-	INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
-	WHERE Entity.ParentGuid = @QueueInstanceGuid
-		AND (JobExecutionStatus & dbo.JobExecutionState::Scheduled) != 0
-		AND ScheduleType = dbo.ScheduleType::Queued 
-		AND Entity.Deleted = 0
-	ORDER BY Entity.Number;				-- The next one in the queue
+		SELECT TOP 1 @JobInstanceGuid = Entity.Guid
+		FROM Entity
+		INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
+		WHERE Entity.ParentGuid = @QueueInstanceGuid
+			AND (JobExecutionStatus & dbo.JobExecutionState::Scheduled) != 0
+			AND ScheduleType = dbo.ScheduleType::Queued 
+			AND Entity.Deleted = 0
+			AND (@attempt = 0 AND Entity.UserGuidOwner > @LastUserGuid OR
+			     @attempt = 1 AND Entity.UserGuidOwner <= @LastUserGuid)
+		ORDER BY Entity.Number;				-- The next one in the queue
+
+		SET @attempt = @attempt + 1;
+
+	END
 GO
 
 
