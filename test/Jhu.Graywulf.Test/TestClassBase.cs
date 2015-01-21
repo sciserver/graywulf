@@ -130,7 +130,14 @@ namespace Jhu.Graywulf.Test
 
         protected void WaitJobComplete(Guid guid, TimeSpan pollingInterval)
         {
-            while (true)
+            WaitJobComplete(guid, pollingInterval, new TimeSpan(0, 2, 0));
+        }
+
+        protected void WaitJobComplete(Guid guid, TimeSpan pollingInterval, TimeSpan timeout)
+        {
+            var start = DateTime.Now;
+
+            while ((DateTime.Now - start) < timeout)
             {
                 Thread.Sleep(pollingInterval);
 
@@ -138,16 +145,18 @@ namespace Jhu.Graywulf.Test
 
                 if ((ji.JobExecutionStatus == JobExecutionState.Scheduled))
                 {
-                    throw new InvalidOperationException();
+                    throw new Exception("Unexpected job outcome");
                 }
 
                 if ((ji.JobExecutionStatus &
                     (JobExecutionState.Cancelled | JobExecutionState.Completed | JobExecutionState.Failed |
                      JobExecutionState.Persisted | JobExecutionState.TimedOut)) != 0)
                 {
-                    break;
+                    return;
                 }
             }
+
+            throw new Exception("Test job has not finished in a reasonable time.");
         }
 
         protected void WaitJobStarted(Guid guid, TimeSpan pollingInterval)
