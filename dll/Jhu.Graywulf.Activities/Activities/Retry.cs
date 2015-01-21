@@ -123,7 +123,7 @@ namespace Jhu.Graywulf.Activities
                 // Fault
                 if (propagatedException is AggregateException)
                 {
-                    throw ((AggregateException)propagatedException).InnerExceptions[0];
+                    throw ((AggregateException)propagatedException).InnerException;
                 }
                 else
                 {
