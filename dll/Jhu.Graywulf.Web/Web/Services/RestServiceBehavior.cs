@@ -77,21 +77,28 @@ namespace Jhu.Graywulf.Web.Services
         {
             // (3.)
 
+            const string OptionsMethodName = "HandleHttpOptionsRequest";
+
             var rob = new RestOperationBehavior();
             var reh = new RestErrorHandler();
             var ram = new RestAuthenticationModule();
+            var romi = new RestCorsMessageInspector();
 
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 ram.Init(context.Domain);
             }
 
-            // Automatically add custom operation behavior to all operations
+            // Automatically add custom operation behavior to all operations except the one
+            // that handles the OPTIONS verb
             foreach (var ep in serviceDescription.Endpoints)
             {
                 foreach (var op in ep.Contract.Operations)
                 {
-                    op.Behaviors.Add(rob);
+                    if (StringComparer.InvariantCultureIgnoreCase.Compare(op.Name, OptionsMethodName) != 0)
+                    {
+                        op.Behaviors.Add(rob);
+                    }
                 }
             }
 
@@ -115,9 +122,16 @@ namespace Jhu.Graywulf.Web.Services
                 // Normaly an authentication manager would be used but this
                 // approach is more similar to web page authentication and
                 // almost the same code can be reused.
+
+                // At the same time, we add a RestCorsMessageInspector to the
+                // operations which will be responsible for setting the right
+                // http response headers for cross-domain client-side scripting.
+
                 foreach (EndpointDispatcher ep in cd.Endpoints)
                 {
                     ep.DispatchRuntime.MessageInspectors.Add(ram);
+                    ep.DispatchRuntime.MessageInspectors.Add(romi);
+
                     foreach (DispatchOperation op in ep.DispatchRuntime.Operations)
                     {
                         op.ParameterInspectors.Add(ram);

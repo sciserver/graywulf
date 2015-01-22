@@ -91,6 +91,13 @@ namespace Jhu.Graywulf.Web.Services
         }
 
         /// <summary>
+        /// Dummy function to handle requests to OPTIONS
+        /// </summary>
+        public void HandleHttpOptionsRequest()
+        {
+        }
+
+        /// <summary>
         /// Gets an initialized registry context.
         /// </summary>
         public Context CreateRegistryContext()

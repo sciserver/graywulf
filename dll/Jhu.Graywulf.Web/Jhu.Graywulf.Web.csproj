@@ -117,6 +117,7 @@
     <Compile Include="Web\Services\RestOperationBehavior.cs" />
     <Compile Include="Web\Services\RestOperationException.cs" />
     <Compile Include="Web\Services\RestOperationInvoker.cs" />
+    <Compile Include="Web\Services\RestCorsMessageInspector.cs" />
     <Compile Include="Web\Services\RestServiceBase.cs" />
     <Compile Include="Web\Services\RestServiceBehavior.cs" />
     <Compile Include="Web\Services\TextResponseMessageBodyWriter.cs" />
