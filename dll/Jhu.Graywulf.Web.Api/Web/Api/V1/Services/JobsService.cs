@@ -19,6 +19,10 @@ namespace Jhu.Graywulf.Web.Api.V1
     public interface IJobsService
     {
         [OperationContract]
+        [WebInvoke(UriTemplate = "*", Method = "OPTIONS")]
+        void HandleHttpOptionsRequest();
+
+        [OperationContract]
         [WebGet(UriTemplate = "/queues")]
         [Description("Returns a list of all available job queues.")]
         QueueListResponse ListQueues();
@@ -69,7 +73,6 @@ namespace Jhu.Graywulf.Web.Api.V1
 
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
-    [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
     [RestServiceBehavior]
     public class JobsService : RestServiceBase, IJobsService
     {
@@ -86,6 +89,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         #endregion
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public QueueListResponse ListQueues()
         {
             var jobFactory = new JobFactory(RegistryContext);
@@ -93,6 +97,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             return new QueueListResponse(jobFactory.SelectQueue());
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public QueueResponse GetQueue(string queue)
         {
             var jobFactory = new JobFactory(RegistryContext);
@@ -103,6 +108,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             return new QueueResponse(q);
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public JobListResponse ListJobs(string queue, string type, string from, string max)
         {
             var jobFactory = new JobFactory(RegistryContext);
@@ -152,6 +158,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             return new JobListResponse(jobFactory.SelectJobs(f, Math.Min(m, 50)));
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public JobResponse GetJob(string guid)
         {
             var jobFactory = new JobFactory(RegistryContext);
@@ -159,6 +166,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             return new JobResponse(jobFactory.GetJob(new Guid(guid)));
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public JobResponse SubmitJob(string queue, JobRequest jobRequest)
         {
             var job = jobRequest.GetValue();
@@ -173,6 +181,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             return new JobResponse(job);
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public JobResponse CancelJob(string guid)
         {
             // Load job

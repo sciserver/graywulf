@@ -18,6 +18,10 @@ namespace Jhu.Graywulf.Web.Api.V1
     public interface ISchemaService
     {
         [OperationContract]
+        [WebInvoke(UriTemplate = "*", Method = "OPTIONS")]
+        void HandleHttpOptionsRequest();
+
+        [OperationContract]
         [DynamicResponseFormat]
         [WebGet(UriTemplate = "/datasets")]
         [Description("Returns a list of all available datasets.")]
@@ -62,7 +66,6 @@ namespace Jhu.Graywulf.Web.Api.V1
 
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
-    [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
     [RestServiceBehavior]
     public class SchemaService : RestServiceBase, ISchemaService
     {
@@ -78,16 +81,19 @@ namespace Jhu.Graywulf.Web.Api.V1
             return dataset.Tables[dataset.DatabaseName, parts[0], parts[1]];
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public DatasetListResponse ListDatasets()
         {
             return new DatasetListResponse(FederationContext.SchemaManager.Datasets.Values);
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public Dataset GetDataset(string datasetName)
         {
             return new Dataset(GetDatasetInternal(datasetName));
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public TableListResponse ListTables(string datasetName)
         {
             var dataset = GetDatasetInternal(datasetName);
@@ -96,12 +102,14 @@ namespace Jhu.Graywulf.Web.Api.V1
             return new TableListResponse(dataset.Tables.Values);
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public Table GetTable(string datasetName, string tableName)
         {
             var table = GetTableInternal(datasetName, tableName);
             return new Table(table);
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public ColumnListResponse ListTableColumns(string datasetName, string tableName)
         {
             var table = GetTableInternal(datasetName, tableName);

@@ -27,6 +27,10 @@ namespace Jhu.Graywulf.Web.Api.V1
     public interface IDataService
     {
         [OperationContract]
+        [WebInvoke(UriTemplate = "*", Method = "OPTIONS")]
+        void HandleHttpOptionsRequest();
+
+        [OperationContract]
         [WebGet(UriTemplate = "/{datasetName}/{tableName}?top={top}")]
         [Description("Downloads a table in any supported data format.")]
         Message DownloadTable(
@@ -58,11 +62,11 @@ namespace Jhu.Graywulf.Web.Api.V1
     }
 
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
-    [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     [RestServiceBehavior]
     public class DataService : RestServiceBase, IDataService
     {
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public Message DownloadTable(string datasetName, string tableName, string top)
         {
             int toplimit = top == null ? int.MaxValue : int.Parse(top);
@@ -112,6 +116,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             return message;
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public void UploadTable(string datasetName, string tableName, Stream data)
         {
             // Get dataset name from the parameters
@@ -152,6 +157,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             import.Execute();
         }
 
+        [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public void DropTable(string datasetName, string tableName)
         {
             // Get table from the schema

@@ -17,6 +17,10 @@ namespace Jhu.Graywulf.Web.Api.V1
     public interface ITestService
     {
         [OperationContract]
+        [WebInvoke(UriTemplate = "*", Method = "OPTIONS")]
+        void HandleHttpOptionsRequest();
+
+        [OperationContract]
         [WebGet(UriTemplate = "/exception")]
         void ThrowException();
     }
