@@ -16,6 +16,10 @@ namespace Jhu.Graywulf.Web.Api.V1
     public interface IAuthService
     {
         [OperationContract]
+        [WebInvoke(UriTemplate = "*", Method = "OPTIONS")]
+        void HandleHttpOptionsRequest();
+
+        [OperationContract]
         [WebInvoke(Method = HttpMethod.Post, UriTemplate = "/")]
         [Description("Authenticates a user based on the submitted credentials.")]
         void Authenticate(
@@ -27,7 +31,6 @@ namespace Jhu.Graywulf.Web.Api.V1
     [RestServiceBehavior]
     public class AuthService : RestServiceBase, IAuthService
     {
-
         public void Authenticate(AuthRequest authRequest)
         {
             var principal = System.Threading.Thread.CurrentPrincipal as GraywulfPrincipal;
