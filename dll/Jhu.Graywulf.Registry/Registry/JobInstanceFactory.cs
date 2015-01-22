@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Registry
         private HashSet<Guid> queueInstanceGuids;
         private HashSet<Guid> jobDefinitionGuids;
         private JobExecutionState jobExecutionStatus;
-        
+
         #endregion
         #region Properties
 
@@ -129,6 +129,42 @@ namespace Jhu.Graywulf.Registry
             cmd.Parameters.Add("@QueueInstanceGuids", SqlDbType.Structured).Value = CreateGuidListTable(queueInstanceGuids);
             cmd.Parameters.Add("@JobDefinitionGuids", SqlDbType.Structured).Value = CreateGuidListTable(jobDefinitionGuids);
             cmd.Parameters.Add("@JobExecutionStatus", SqlDbType.Int).Value = jobExecutionStatus;
+        }
+
+        /// <summary>
+        /// Gets at set of waiting jobs from the queue
+        /// </summary>
+        /// <returns>The next available job or null if there are no queued jobs.</returns>
+        /// <remarks>
+        /// This function takes the user the last scheduled job was associated with to
+        /// implement a round-robin scheduling.
+        /// </remarks>
+        public List<JobInstance> FindNextJobInstances(Guid queueInstanceGuid, Guid lastUserGuid, int max)
+        {
+            var res = new List<JobInstance>();
+
+            string sql = "spFindJobInstance_Next";
+
+            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
+            {
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
+                cmd.Parameters.Add("@QueueInstanceGuid", SqlDbType.UniqueIdentifier).Value = queueInstanceGuid;
+                cmd.Parameters.Add("@LastUserGuid", SqlDbType.UniqueIdentifier).Value = lastUserGuid;
+                cmd.Parameters.Add("@MaxJobs", SqlDbType.Int).Value = max;
+
+                using (var dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        JobInstance j = new JobInstance(Context);
+                        j.LoadFromDataReader(dr);
+
+                        res.Add(j);
+                    }
+                }
+            }
+
+            return res;
         }
 
         #endregion

@@ -532,13 +532,19 @@ namespace Jhu.Graywulf.Scheduler
 
                 foreach (var queue in Cluster.Queues.Values)
                 {
-                    var qi = new QueueInstance(context);
-                    qi.Guid = queue.Guid;
-                    qi.Load();
+                    // The number of jobs to be requested from the queue is the
+                    // number of maximum outstanding jobs minus the number of
+                    // already running jobs
 
-                    var ji = qi.GetNextJobInstance(Guid.NewGuid());       // TODO: modify this to implement round-robin, keep track of last user
+                    var maxjobs = queue.MaxOutstandingJobs - queue.Jobs.Count;
 
-                    if (ji != null)
+                    var jf = new JobInstanceFactory(context);
+                    var jis = jf.FindNextJobInstances(
+                        queue.Guid,
+                        queue.LastUserGuid,
+                        maxjobs);
+
+                    foreach (var ji in jis)
                     {
                         var user = new User(context);
                         user.Guid = ji.UserGuidOwner;
@@ -693,6 +699,15 @@ namespace Jhu.Graywulf.Scheduler
                 runningJobs.Add(job.WorkflowInstanceId, job);
             }
 
+            // Update job queue last user, so round-robin scheduling will work
+            var queue = cluster.Queues[job.QueueGuid];
+
+            lock (queue)
+            {
+                queue.LastUserGuid = job.UserGuid;                
+            }
+
+            // Send job for execution in the designated AppDomain
             adh.RunJob(job);
         }
 

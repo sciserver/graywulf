@@ -12,8 +12,10 @@ namespace Jhu.Graywulf.Scheduler
     public class Queue
     {
         private Guid guid;
+        private int maxOutstandingJobs;
         private Dictionary<Guid, Job> jobs;
         private TimeSpan timeout;
+        private Guid lastUserGuid;
 
         /// <summary>
         /// Unique ID of the queue, equals to QueueInstance.Guid
@@ -21,6 +23,15 @@ namespace Jhu.Graywulf.Scheduler
         public Guid Guid
         {
             get { return guid; }
+        }
+
+        /// <summary>
+        /// Gets the maximum jobs that can be executed in parallel from
+        /// the queue.
+        /// </summary>
+        public int MaxOutstandingJobs
+        {
+            get { return maxOutstandingJobs; }
         }
 
         /// <summary>
@@ -33,11 +44,20 @@ namespace Jhu.Graywulf.Scheduler
         }
 
         /// <summary>
-        /// Job timeout interval in this queue.
+        /// Gets the job timeout period of the queue.
         /// </summary>
         public TimeSpan Timeout
         {
             get { return timeout; }
+        }
+
+        /// <summary>
+        /// Gets the GUID of the user owning the last scheduled job.
+        /// </summary>
+        public Guid LastUserGuid
+        {
+            get { return lastUserGuid; }
+            set { lastUserGuid = value; }
         }
 
         public Queue()
@@ -48,8 +68,10 @@ namespace Jhu.Graywulf.Scheduler
         private void InitializeMembers()
         {
             this.guid = Guid.Empty;
+            this.maxOutstandingJobs = -1;
             this.jobs = new Dictionary<Guid, Job>();
             this.timeout = TimeSpan.Zero;
+            this.lastUserGuid = Guid.Empty;
         }
 
         /// <summary>
@@ -60,6 +82,7 @@ namespace Jhu.Graywulf.Scheduler
         public void Update(QueueInstance q)
         {
             this.guid = q.Guid;
+            this.maxOutstandingJobs = q.MaxOutstandingJobs;
             this.timeout = TimeSpan.FromSeconds(q.Timeout);
         }
     }

@@ -496,65 +496,102 @@ CREATE PROC [dbo].[spFindJobInstance_Next]
 	@UserGuid uniqueidentifier,					-- Job poller context (scheduler)
 	@QueueInstanceGuid uniqueidentifier,		-- Queue instance being polled
 	@LastUserGuid uniqueidentifier,				-- User of last job scheduler (for round-robin)
-	@JobInstanceGuid uniqueidentifier OUTPUT	-- GUID of next job in queue
+	@MaxJobs int								-- Maximum number of jobs to return
 AS
-	-- Default return value is null
-	SET @JobInstanceGuid = NULL;
+	SET NOCOUNT ON
+	
+	-- Jobs will be collected in a temp table
+	CREATE TABLE ##jobs
+	(
+		JobInstanceGuid uniqueidentifier
+	)
 
 	-- To make sure jobs are picked up in a round-robin manner first we try
 	-- UserGuid > LastUserGuid then UserGuid <= LastUserGuid
 	DECLARE @attempt int = 0;
 
-	-- Resumed (previously suspended) or suspended but timed out workflow
 	WHILE (@attempt < 2)
 	BEGIN
 
-		SELECT TOP 1 @JobInstanceGuid = Entity.Guid
-		FROM Entity
-		INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
-		WHERE Entity.ParentGuid = @QueueInstanceGuid
-			AND
-				((JobExecutionStatus & dbo.JobExecutionState::Persisted) != 0
-				 OR (JobExecutionStatus & dbo.JobExecutionState::Suspended) != 0
-				 AND SuspendTimeout < GETDATE())
-			AND Deleted = 0
-			AND (@attempt = 0 AND Entity.UserGuidOwner > @LastUserGuid OR
-			     @attempt = 1 AND Entity.UserGuidOwner <= @LastUserGuid);
+		-- Resumed (previously suspended) or suspended but timed out workflow
 
-		IF (@JobInstanceGuid IS NOT NULL) RETURN;
+		WITH q AS
+		(
+			SELECT Entity.Guid AS JobInstanceGuid, ROW_NUMBER() OVER (ORDER BY Number) AS rn
+			FROM Entity
+			INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
+			WHERE Entity.ParentGuid = @QueueInstanceGuid
+				AND
+					((JobExecutionStatus & dbo.JobExecutionState::Persisted) != 0
+					 OR (JobExecutionStatus & dbo.JobExecutionState::Suspended) != 0
+					 AND SuspendTimeout < GETDATE())
+				AND Deleted = 0
+				AND (@attempt = 0 AND Entity.UserGuidOwner > @LastUserGuid OR
+					 @attempt = 1 AND Entity.UserGuidOwner <= @LastUserGuid)
+		)
+		INSERT ##jobs
+		SELECT JobInstanceGuid FROM q WHERE rn < @MaxJobs;
+
+		SELECT @MaxJobs = @MaxJobs - COUNT(*) FROM ##jobs;
+
+		IF (@MaxJobs <= 0) BREAK;
 
 		-- Job scheduled at a given time
 
-		SELECT TOP 1 @JobInstanceGuid = Entity.Guid
-		FROM Entity
-		INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
-		WHERE Entity.ParentGuid = @QueueInstanceGuid
-			AND (JobExecutionStatus & dbo.JobExecutionState::Scheduled != 0)
-			AND ScheduleType = dbo.ScheduleType::Timed
-			AND ScheduleTime <= GETDATE()		-- Earlier or now
-			AND Deleted = 0
-			AND (@attempt = 0 AND Entity.UserGuidOwner > @LastUserGuid OR
-			     @attempt = 1 AND Entity.UserGuidOwner <= @LastUserGuid);
+		WITH q AS
+		(
+			SELECT Entity.Guid AS JobInstanceGuid, ROW_NUMBER() OVER (ORDER BY Number) AS rn
+			FROM Entity
+			INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
+			WHERE Entity.ParentGuid = @QueueInstanceGuid
+				AND (JobExecutionStatus & dbo.JobExecutionState::Scheduled != 0)
+				AND ScheduleType = dbo.ScheduleType::Timed
+				AND ScheduleTime <= GETDATE()		-- Earlier or now
+				AND Deleted = 0
+				AND (@attempt = 0 AND Entity.UserGuidOwner > @LastUserGuid OR
+					 @attempt = 1 AND Entity.UserGuidOwner <= @LastUserGuid)
+		)
+		INSERT ##jobs
+		SELECT JobInstanceGuid FROM q WHERE rn < @MaxJobs;
 
-		IF (@JobInstanceGuid IS NOT NULL) RETURN;
+		SELECT @MaxJobs = @MaxJobs - COUNT(*) FROM ##jobs;
 
+		IF (@MaxJobs <= 0) BREAK;
 	
 		-- Queued job
 
-		SELECT TOP 1 @JobInstanceGuid = Entity.Guid
-		FROM Entity
-		INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
-		WHERE Entity.ParentGuid = @QueueInstanceGuid
-			AND (JobExecutionStatus & dbo.JobExecutionState::Scheduled) != 0
-			AND ScheduleType = dbo.ScheduleType::Queued 
-			AND Entity.Deleted = 0
-			AND (@attempt = 0 AND Entity.UserGuidOwner > @LastUserGuid OR
-			     @attempt = 1 AND Entity.UserGuidOwner <= @LastUserGuid)
-		ORDER BY Entity.Number;				-- The next one in the queue
+		WITH q AS
+		(
+			SELECT Entity.Guid AS JobInstanceGuid, ROW_NUMBER() OVER (ORDER BY Number) AS rn
+			FROM Entity
+			INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
+			WHERE Entity.ParentGuid = @QueueInstanceGuid
+				AND (JobExecutionStatus & dbo.JobExecutionState::Scheduled) != 0
+				AND ScheduleType = dbo.ScheduleType::Queued 
+				AND Entity.Deleted = 0
+				AND (@attempt = 0 AND Entity.UserGuidOwner > @LastUserGuid OR
+					 @attempt = 1 AND Entity.UserGuidOwner <= @LastUserGuid)
+		)
+		INSERT ##jobs
+		SELECT JobInstanceGuid FROM q WHERE rn < @MaxJobs;
+
+		SELECT @MaxJobs = @MaxJobs - COUNT(*) FROM ##jobs;
+
+		IF (@MaxJobs <= 0) BREAK;
+
+		-- If not enough jobs found, proceed to second attempt which allows
+		-- for picking up jobs from the last user
 
 		SET @attempt = @attempt + 1;
-
 	END
+
+	SET NOCOUNT OFF
+
+	SELECT * FROM Entity
+	INNER JOIN JobInstance ON JobInstance.EntityGuid = Entity.Guid
+	WHERE Guid IN (SELECT JobInstanceGuid FROM ##jobs)
+
+	DROP TABLE ##jobs
 GO
 
 
