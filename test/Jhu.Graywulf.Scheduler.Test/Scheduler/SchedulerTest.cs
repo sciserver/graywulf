@@ -70,6 +70,28 @@ namespace Jhu.Graywulf.Scheduler.Test
             }
         }
 
+        [TestMethod]
+        [TestCategory("Scheduler")]
+        public void ManySimpleJobsTest()
+        {
+            using (SchedulerTester.Instance.GetToken())
+            {
+                SchedulerTester.Instance.EnsureRunning();
+
+                Parallel.For(0, 20, i =>
+                {
+                    var guid = ScheduleTestJob(new TimeSpan(0, 0, 1), JobType.AtomicDelay, QueueType.Quick);
+
+                    WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+
+                    var job = LoadJob(guid);
+
+                    Assert.AreEqual(JobExecutionState.Completed, job.JobExecutionStatus);
+                    Assert.AreEqual("OK", (string)job.Parameters["Result"].Value);
+                });
+            }
+        }
+
 
         [TestMethod]
         [TestCategory("Scheduler")]
