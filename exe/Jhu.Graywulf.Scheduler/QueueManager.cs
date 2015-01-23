@@ -114,14 +114,6 @@ namespace Jhu.Graywulf.Scheduler
         }
 
         /// <summary>
-        /// Gets a dictionary of the running jobs.
-        /// </summary>
-        public ConcurrentDictionary<Guid, Job> RunningJobs
-        {
-            get { return runningJobs; }
-        }
-
-        /// <summary>
         /// Gets a cached version of the cluster configuration
         /// </summary>
         public Cluster Cluster
@@ -800,6 +792,28 @@ namespace Jhu.Graywulf.Scheduler
                     Console.WriteLine("Finishing job: {0}", ji.Guid);
                 }
             }
+        }
+
+        /// <summary>
+        /// Looks up information about a job necessary to configure a registry context
+        /// </summary>
+        /// <remarks>
+        /// This function is called by the workflow framework via IScheduler when creating
+        /// a new context to access the registry.
+        /// </remarks>
+        /// <param name="workflowInstanceId"></param>
+        /// <param name="userGuid"></param>
+        /// <param name="userName"></param>
+        /// <param name="jobGuid"></param>
+        /// <param name="jobID"></param>
+        internal void GetContextInfo(Guid workflowInstanceId, out Guid userGuid, out string userName, out Guid jobGuid, out string jobID)
+        {
+            var job = runningJobs[workflowInstanceId];
+            
+            userGuid = job.UserGuid;
+            userName = job.UserName;
+            jobGuid = job.Guid;
+            jobID = job.JobID;
         }
 
         #endregion

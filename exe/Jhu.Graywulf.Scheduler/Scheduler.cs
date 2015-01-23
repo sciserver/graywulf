@@ -61,16 +61,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="jobID"></param>
         public void GetContextInfo(Guid workflowInstanceId, out Guid userGuid, out string userName, out Guid jobGuid, out string jobID)
         {
-            Job job;
-            lock (queueManager.RunningJobs)
-            {
-                job = queueManager.RunningJobs[workflowInstanceId];
-            }
-
-            userGuid = job.UserGuid;
-            userName = job.UserName;
-            jobGuid = job.Guid;
-            jobID = job.JobID;
+            queueManager.GetContextInfo(workflowInstanceId, out userGuid, out userName, out jobGuid, out jobID);            
         }
 
         public Guid GetNextServerInstance(Guid[] databaseDefinitions, string databaseVersion, Guid[] databaseInstances)
