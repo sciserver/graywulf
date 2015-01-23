@@ -530,7 +530,7 @@ AS
 					 @attempt = 1 AND Entity.UserGuidOwner <= @LastUserGuid)
 		)
 		INSERT ##jobs
-		SELECT JobInstanceGuid FROM q WHERE rn < @MaxJobs;
+		SELECT JobInstanceGuid FROM q WHERE rn <= @MaxJobs;
 
 		SELECT @MaxJobs = @MaxJobs - COUNT(*) FROM ##jobs;
 
@@ -552,7 +552,7 @@ AS
 					 @attempt = 1 AND Entity.UserGuidOwner <= @LastUserGuid)
 		)
 		INSERT ##jobs
-		SELECT JobInstanceGuid FROM q WHERE rn < @MaxJobs;
+		SELECT JobInstanceGuid FROM q WHERE rn <= @MaxJobs;
 
 		SELECT @MaxJobs = @MaxJobs - COUNT(*) FROM ##jobs;
 
@@ -573,7 +573,7 @@ AS
 					 @attempt = 1 AND Entity.UserGuidOwner <= @LastUserGuid)
 		)
 		INSERT ##jobs
-		SELECT JobInstanceGuid FROM q WHERE rn < @MaxJobs;
+		SELECT JobInstanceGuid FROM q WHERE rn <= @MaxJobs;
 
 		SELECT @MaxJobs = @MaxJobs - COUNT(*) FROM ##jobs;
 
