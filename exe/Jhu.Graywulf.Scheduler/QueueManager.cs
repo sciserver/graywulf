@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -46,12 +47,17 @@ namespace Jhu.Graywulf.Scheduler
         #region Private member varibles
 
         /// <summary>
+        /// Used for synchronization when app domains are managed
+        /// </summary>
+        private object syncRoot = new object();
+
+        /// <summary>
         /// AppDomains stored by their IDs.
         /// </summary>
         /// <remarks>
         /// AppDomain.Id, AppDomainHost
         /// </remarks>
-        private Dictionary<int, AppDomainHost> appDomains;
+        private ConcurrentDictionary<int, AppDomainHost> appDomains;
 
         /// <summary>
         /// All jobs listed by their workflow instance IDs
@@ -59,7 +65,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <remarks>
         /// WorkflowInstanceId, Job
         /// </remarks>
-        private Dictionary<Guid, Job> runningJobs;
+        private ConcurrentDictionary<Guid, Job> runningJobs;
 
         /// <summary>
         /// Thread to run the poller on
@@ -110,7 +116,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <summary>
         /// Gets a dictionary of the running jobs.
         /// </summary>
-        public Dictionary<Guid, Job> RunningJobs
+        public ConcurrentDictionary<Guid, Job> RunningJobs
         {
             get { return runningJobs; }
         }
@@ -200,8 +206,8 @@ namespace Jhu.Graywulf.Scheduler
             // Initialize Queue Manager
             this.interactive = interactive;
 
-            this.appDomains = new Dictionary<int, AppDomainHost>();
-            this.runningJobs = new Dictionary<Guid, Job>();
+            this.appDomains = new ConcurrentDictionary<int, AppDomainHost>();
+            this.runningJobs = new ConcurrentDictionary<Guid, Job>();
             this.eventOrder = 0;
             this.contextGuid = Guid.NewGuid();
 
@@ -258,11 +264,7 @@ namespace Jhu.Graywulf.Scheduler
 
             if (requestPersist)
             {
-                Job[] jobs;
-                lock (runningJobs)
-                {
-                    jobs = runningJobs.Values.ToArray();
-                }
+                var jobs = runningJobs.Values.ToArray();
 
                 foreach (var job in jobs)
                 {
@@ -289,11 +291,7 @@ namespace Jhu.Graywulf.Scheduler
             StopPoller();
 
             // Cancel all jobs
-            Job[] jobs;
-            lock (runningJobs)
-            {
-                jobs = runningJobs.Values.ToArray();
-            }
+            var jobs = runningJobs.Values.ToArray();
 
             foreach (var job in jobs)
             {
@@ -316,7 +314,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             // Shut down all the AppDomains
             // Do it in parallel to save time: jobs will slowly become idle
-            lock (appDomains)
+            lock (syncRoot)
             {
                 Parallel.ForEach(appDomains.Keys, id =>
                 {
@@ -427,24 +425,16 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         private void ProcessTimedOutJobs()
         {
-            List<Job> temp = new List<Job>();
+            var jobs = runningJobs.Values.ToArray();
 
-            lock (runningJobs)
+            foreach (Job job in jobs)
             {
-                foreach (Job job in runningJobs.Values)
+                if (job.IsTimedOut(Cluster.Queues[job.QueueGuid].Timeout))
                 {
-                    if (job.IsTimedOut(Cluster.Queues[job.QueueGuid].Timeout))
-                    {
-                        temp.Add(job);
-                    }
-                }
-            }
-
-            foreach (var job in temp)
-            {
-                new DelayedRetryLoop(5).Execute(
+                    new DelayedRetryLoop(5).Execute(
                     () => { CancelOrTimeOutJob(job, true); },
                     ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.ProcessTimedOutJobs[CancelOrTimeOutJob]", ex)));
+                }
             }
         }
 
@@ -580,12 +570,10 @@ namespace Jhu.Graywulf.Scheduler
 
                         ji.Save();
 
-                        lock (queue)
+                        if (queue.Jobs.TryAdd(job.Guid, job))
                         {
-                            queue.Jobs.Add(job.Guid, job);
+                            temp.Add(job);
                         }
-
-                        temp.Add(job);
                     }
                 }
             }
@@ -615,12 +603,10 @@ namespace Jhu.Graywulf.Scheduler
 
                     foreach (var ji in jf.FindJobInstances())
                     {
-                        lock (queue)
+                        Job job;
+                        if (queue.Jobs.TryGetValue(ji.Guid, out job))
                         {
-                            if (queue.Jobs.ContainsKey(ji.Guid))
-                            {
-                                temp.Add(queue.Jobs[ji.Guid]);
-                            }
+                            temp.Add(job);
                         }
                     }
                 }
@@ -694,17 +680,11 @@ namespace Jhu.Graywulf.Scheduler
             job.Status = JobStatus.Executing;
             job.AppDomainID = adh.ID;
 
-            lock (runningJobs)
+            if (runningJobs.TryAdd(job.WorkflowInstanceId, job))
             {
-                runningJobs.Add(job.WorkflowInstanceId, job);
-            }
-
-            // Update job queue last user, so round-robin scheduling will work
-            var queue = cluster.Queues[job.QueueGuid];
-
-            lock (queue)
-            {
-                queue.LastUserGuid = job.UserGuid;                
+                // Update job queue last user, so round-robin scheduling will work
+                var queue = cluster.Queues[job.QueueGuid];
+                queue.LastUserGuid = job.UserGuid;
             }
 
             // Send job for execution in the designated AppDomain
@@ -809,14 +789,10 @@ namespace Jhu.Graywulf.Scheduler
                 ji.RescheduleIfRecurring();
 
                 // Do local bookkeeping
-                lock (runningJobs)
+                Job j;
+                if (cluster.Queues[job.QueueGuid].Jobs.TryRemove(job.Guid, out j))
                 {
-                    lock (Cluster.Queues[job.QueueGuid].Jobs)
-                    {
-                        Cluster.Queues[job.QueueGuid].Jobs.Remove(job.Guid);
-                    }
-
-                    runningJobs.Remove(job.WorkflowInstanceId);
+                    runningJobs.TryRemove(job.WorkflowInstanceId, out j);
                 }
 
                 if (interactive)
@@ -849,7 +825,7 @@ namespace Jhu.Graywulf.Scheduler
                 var adh = new AppDomainHost(ad, contextGuid);
                 adh.WorkflowEvent += new EventHandler<HostEventArgs>(adh_WorkflowEvent);
 
-                appDomains.Add(ad.Id, adh);
+                appDomains.TryAdd(ad.Id, adh);
 
                 adh.Start(Scheduler, interactive);
 
@@ -868,7 +844,9 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         private void UnloadOldAppdomains()
         {
-            lock (runningJobs)
+            // TODO: Here we need to synchronize but make
+            // sure it's on a syncRoot object, not runningjobs
+            lock (syncRoot)
             {
                 // Find app domains with no running jobs
                 var adids = new HashSet<int>(appDomains.Keys);
@@ -892,7 +870,9 @@ namespace Jhu.Graywulf.Scheduler
                         // This shutdown should happen quickly
                         adh.Stop(Scheduler.Configuration.AppDomainShutdownTimeout, interactive);
                         Components.AppDomainManager.Instance.UnloadAppDomain(id);
-                        appDomains.Remove(id);
+
+                        AppDomainHost a;
+                        appDomains.TryRemove(id, out a);
                     }
                 }
             }
@@ -906,11 +886,7 @@ namespace Jhu.Graywulf.Scheduler
         void adh_WorkflowEvent(object sender, HostEventArgs e)
         {
             // Find job by e.InstanceId
-            Job job;
-            lock (runningJobs)
-            {
-                job = runningJobs[e.InstanceId];
-            }
+            var job = runningJobs[e.InstanceId];
 
             new DelayedRetryLoop(5).Execute(
                 () => { FinishJob(job, e); },

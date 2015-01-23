@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using Jhu.Graywulf.Registry;
@@ -13,7 +14,7 @@ namespace Jhu.Graywulf.Scheduler
     {
         private Guid guid;
         private int maxOutstandingJobs;
-        private Dictionary<Guid, Job> jobs;
+        private ConcurrentDictionary<Guid, Job> jobs;
         private TimeSpan timeout;
         private Guid lastUserGuid;
 
@@ -38,7 +39,7 @@ namespace Jhu.Graywulf.Scheduler
         /// Jobs associated with the queue and already loaded by
         /// the poller.
         /// </summary>
-        public Dictionary<Guid, Job> Jobs
+        public ConcurrentDictionary<Guid, Job> Jobs
         {
             get { return jobs; }
         }
@@ -69,7 +70,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             this.guid = Guid.Empty;
             this.maxOutstandingJobs = -1;
-            this.jobs = new Dictionary<Guid, Job>();
+            this.jobs = new ConcurrentDictionary<Guid, Job>();
             this.timeout = TimeSpan.Zero;
             this.lastUserGuid = Guid.Empty;
         }
