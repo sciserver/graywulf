@@ -36,7 +36,6 @@ namespace Jhu.Graywulf.Components
             }
         }
 
-        #region Static members
         public static AppDomainConfiguration Configuration
         {
             get
@@ -47,22 +46,46 @@ namespace Jhu.Graywulf.Components
 
         #endregion
 
-        #endregion
-
         private class AppDomainHandle
         {
             public AppDomain AppDomain { get; set; }
             public AppDomainHelper Helper { get; set; }
         }
 
-        private string baseDirectory;
+        #region Private member variables
+
+        /// <summary>
+        /// Used for synchronizing member functions
+        /// </summary>
+        private object syncRoot;
+
+        /// <summary>
+        /// A collection of AppDomains managed by the class
+        /// </summary>
         private Dictionary<int, AppDomainHandle> appDomains;
 
+        /// <summary>
+        /// New AppDomains are created with this directory as base
+        /// </summary>
+        private string baseDirectory;
+
+        #endregion
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the base directory for the newly created AppDomain.
+        /// </summary>
+        /// <remarks>
+        /// The BaseDirectory determines the assembly search path.
+        /// </remarks>
         public string BaseDirectory
         {
             get { return baseDirectory; }
             set { baseDirectory = value; }
         }
+
+        #endregion
+        #region Constructors and initializers
 
         private AppDomainManager()
         {
@@ -71,9 +94,12 @@ namespace Jhu.Graywulf.Components
 
         private void InitializeMembers()
         {
-            this.baseDirectory = Configuration.AssemblyPath;
+            this.syncRoot = new object();
             this.appDomains = new Dictionary<int, AppDomainHandle>();
+            this.baseDirectory = Configuration.AssemblyPath;
         }
+
+        #endregion
 
         /// <summary>
         /// Returns an AppDomain for the given type.
@@ -92,18 +118,21 @@ namespace Jhu.Graywulf.Components
             // generic type is taken into account, no generic parameters are
             // considered.
 
-            var an = GetAssemblyNameFromTypeName(typeName);
-            var assemblyName = new AssemblyName(an);
-            return GetAppDomainForAssembly(assemblyName, create, out appDomain);
+            lock (syncRoot)
+            {
+                var an = GetAssemblyNameFromTypeName(typeName);
+                var assemblyName = new AssemblyName(an);
+                return GetAppDomainForAssembly(assemblyName, create, out appDomain);
+            }
         }
 
-        public bool GetAppDomainForAssembly(string assemblyName, bool create, out AppDomain appDomain)
+        private bool GetAppDomainForAssembly(string assemblyName, bool create, out AppDomain appDomain)
         {
             var an = new AssemblyName(assemblyName);
             return GetAppDomainForAssembly(an, create, out appDomain);
         }
 
-        public bool GetAppDomainForAssembly(AssemblyName assemblyName, bool create, out AppDomain appDomain)
+        private bool GetAppDomainForAssembly(AssemblyName assemblyName, bool create, out AppDomain appDomain)
         {
             appDomain = FindAppDomainWithAssembly(assemblyName);
 
@@ -120,8 +149,11 @@ namespace Jhu.Graywulf.Components
 
         public void UnloadAppDomain(int id)
         {
-            AppDomain.Unload(appDomains[id].AppDomain);
-            appDomains.Remove(id);
+            lock (syncRoot)
+            {
+                AppDomain.Unload(appDomains[id].AppDomain);
+                appDomains.Remove(id);
+            }
         }
 
         /// <summary>
