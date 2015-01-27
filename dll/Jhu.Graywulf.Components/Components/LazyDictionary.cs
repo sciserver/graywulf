@@ -318,13 +318,18 @@ namespace Jhu.Graywulf.Components
         {
             if (OnItemLoading(key, out value))
             {
-                if (TryAddInternal(key, value, false, out value))
-                {
-                    return true;
-                }
-            }
+                // Try to add to the collection but it's not a problem
+                // if it cannot be added, it just means that the item with
+                // the same key already exists (has been added very recently)
 
-            return false;
+                TryAddInternal(key, value, false, out value);
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
