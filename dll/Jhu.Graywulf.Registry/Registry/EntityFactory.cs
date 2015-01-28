@@ -431,7 +431,6 @@ ORDER BY Number";
             using (var cmd = Context.CreateStoredProcedureCommand(sql))
             {
                 cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-                cmd.Parameters.Add("@EntityType", SqlDbType.Int).Value = entityType;
                 cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = entityGuid == Guid.Empty ? (object)DBNull.Value : entityGuid;
                 cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parentEntityGuid;
                 cmd.Parameters.Add("@Name", SqlDbType.NVarChar, 128).Value = name.Trim();

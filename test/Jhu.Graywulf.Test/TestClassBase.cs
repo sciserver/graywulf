@@ -16,6 +16,7 @@ namespace Jhu.Graywulf.Test
 {
     public abstract class TestClassBase
     {
+        private Random rnd = new Random();
         private SqlServerDataset ioTestDataset = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString);
 
         protected SqlServerDataset IOTestDataset
@@ -96,7 +97,10 @@ namespace Jhu.Graywulf.Test
                 job.Parameters["DelayPeriod"].Value = (int)delayPeriod.TotalMilliseconds;
                 job.Parameters["TestMethod"].Value = jobType.ToString();
 
-                job.Name = String.Format("{0}_{1}", "test", DateTime.Now.ToString("yyMMddHHmmssff"));
+                lock (rnd)
+                {
+                    job.Name = String.Format("{0}_{1}_{2}", "test", DateTime.Now.ToString("yyMMddHHmmssff"), rnd.Next(1000));
+                }
 
                 job.Save();
 
@@ -143,10 +147,12 @@ namespace Jhu.Graywulf.Test
 
                 var ji = LoadJob(guid);
 
+                /* 
+                // This can be used for debugging but otherwise not necessary anymore
                 if ((ji.JobExecutionStatus == JobExecutionState.Scheduled))
                 {
                     throw new Exception("Unexpected job outcome");
-                }
+                }*/
 
                 if ((ji.JobExecutionStatus &
                     (JobExecutionState.Cancelled | JobExecutionState.Completed | JobExecutionState.Failed |

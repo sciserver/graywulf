@@ -37,6 +37,68 @@ GO
 
 -- ENTITY FUNCTIONS --
 
+IF OBJECT_ID('[dbo].[spCheckEntityConcurrency]') IS NOT NULL
+DROP PROC [dbo].[spCheckEntityConcurrency]
+
+GO
+
+CREATE PROC [dbo].[spCheckEntityConcurrency]
+	@UserGuid uniqueidentifier,
+	@Guid uniqueidentifier,
+	@LockOwner uniqueidentifier,
+	@ConcurrencyVersion binary(8)
+AS
+
+	DECLARE @v int, @l uniqueidentifier
+
+	SELECT @v = ConcurrencyVersion, @l = LockOwner
+	FROM Entity
+	WHERE GUID = @GUID
+
+	IF (@v <> @ConcurrencyVersion)
+	BEGIN
+		RETURN -1
+	END
+	
+	IF (@l IS NOT NULL AND @l <> @LockOwner)
+	BEGIN
+		RETURN -2
+	END
+	
+	RETURN 0
+GO
+
+
+IF OBJECT_ID('[dbo].[spCheckEntityDuplicate]') IS NOT NULL
+DROP PROC [dbo].[spCheckEntityDuplicate]
+
+GO
+
+CREATE PROC [dbo].[spCheckEntityDuplicate]
+	@UserGuid uniqueidentifier,
+	@Guid uniqueidentifier,
+	@ParentGuid uniqueidentifier,
+	@Name nvarchar(128)
+AS
+	DECLARE @count int;
+
+	SELECT @count = COUNT(*)
+	FROM Entity
+	WHERE
+		(@Guid IS NULL OR Guid <> @Guid)
+		AND Entity.ParentGuid = @ParentGuid
+		AND Entity.Name = @Name
+		AND Deleted = 0;
+		
+	RETURN ISNULL(@count, 0);
+GO
+
+
+IF OBJECT_ID('[dbo].[spCreateEntity]') IS NOT NULL
+DROP PROC [dbo].[spCreateEntity]
+
+GO
+
 CREATE PROC [dbo].[spCreateEntity]
 	@UserGuid uniqueidentifier,
 	
@@ -57,16 +119,30 @@ CREATE PROC [dbo].[spCreateEntity]
 	@Comments nvarchar(max),
 	@EntityReferences EntityReferenceList READONLY
 AS
-	-- Determine order number
-	SELECT @Number = MAX(Number) + 1
-	FROM Entity WITH (UPDLOCK)
-	WHERE ParentGuid = @ParentGuid AND EntityType = @EntityType AND Deleted = 0;
-	
-	IF (@Number IS NULL)
+
+	SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+
+	-- Check entity duplicate
+	DECLARE @duplicate int
+
+	SELECT @duplicate = ISNULL(COUNT(*), 0)
+	FROM Entity WITH (XLOCK)
+	WHERE Entity.ParentGuid = @ParentGuid
+		AND Entity.Name = @Name
+		AND (@Guid IS NULL OR Guid <> @Guid)
+		AND Deleted = 0;
+
+	IF @duplicate > 0
 	BEGIN
-		SET @Number = 0;
+		THROW 51000, 'Duplicate entity name', 0;
 	END;
-	
+
+	-- Determine order number
+	SELECT @Number = ISNULL(MAX(Number), 0) + 1
+	FROM Entity WITH (XLOCK)
+	WHERE ParentGuid = @ParentGuid AND EntityType = @EntityType AND
+		  Deleted = 0
+
 	-- Insert new entity
 	INSERT Entity
 		(Guid, ParentGuid, EntityType, 
@@ -89,8 +165,14 @@ AS
 		(EntityGuid, ReferenceType, ReferencedEntityGuid)
 	SELECT @Guid, ReferenceType, ReferencedEntityGuid
 	FROM @EntityReferences
+
 GO
 
+
+IF OBJECT_ID('[dbo].[spModifyEntity]') IS NOT NULL
+DROP PROC [dbo].[spModifyEntity]
+
+GO
 
 CREATE PROC [dbo].[spModifyEntity]
 	@UserGuid uniqueidentifier,
@@ -108,6 +190,36 @@ CREATE PROC [dbo].[spModifyEntity]
 	@Comments nvarchar(max),
 	@EntityReferences EntityReferenceList READONLY
 AS	
+	
+	SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+
+	-- Check if name has changed, if so, verify duplicates
+
+	DECLARE @parentGuid uniqueidentifier;
+	DECLARE @oldName nvarchar(128);
+
+	SELECT @parentGuid = ParentGuid, @oldName = Name
+	FROM Entity WITH (XLOCK)
+	WHERE Guid = @Guid
+
+	IF (@Name <> @oldName)
+	BEGIN
+		-- Check entity duplicate
+		DECLARE @duplicate int
+
+		SELECT @duplicate = ISNULL(COUNT(*), 0)
+		FROM Entity WITH (XLOCK)
+		WHERE Entity.ParentGuid = @ParentGuid
+			AND Entity.Name = @Name
+			AND (@Guid IS NULL OR Guid <> @Guid)
+			AND Deleted = 0;
+
+		IF @duplicate > 0
+		BEGIN
+			THROW 51000, 'Duplicate entity name', 0;
+		END;
+	END;
+
 	UPDATE Entity
 	SET Name = @Name,
 		Version = @Version,
@@ -130,6 +242,7 @@ AS
 	WHEN NOT MATCHED THEN
 		INSERT (EntityGuid, ReferenceType, ReferencedEntityGuid)
 		VALUES (ner.EntityGuid, ner.ReferenceType, ner.ReferencedEntityGuid);
+
 GO
 
 
@@ -138,13 +251,15 @@ CREATE PROC [dbo].[spDeleteEntity]
 	@Guid uniqueidentifier,
 	@ConcurrencyVersion binary(8) OUTPUT
 AS
+
+	SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+
 	DECLARE @Number int, @ParentGuid uniqueidentifier, @EntityType int
 
-	SELECT @ConcurrencyVersion = ConcurrencyVersion + 1,
-		   @Number = Number,
+	SELECT @Number = Number,
 		   @ParentGuid = ParentGuid,
 		   @EntityType = EntityType
-	FROM Entity
+	FROM Entity WITH(XLOCK)
 	WHERE GUID = @GUID
 
 	UPDATE Entity
@@ -163,6 +278,7 @@ AS
 		  Number > @Number AND
 		  Deleted = 0
 GO
+
 
 CREATE PROC [dbo].[spHideEntity]
 	@UserGuid uniqueidentifier,
@@ -195,55 +311,6 @@ AS
 	WHERE GUID = @GUID
 	
 	SET @ConcurrencyVersion = @@DBTS;
-GO
-
-
-CREATE PROC [dbo].[spCheckEntityConcurrency]
-	@UserGuid uniqueidentifier,
-	@Guid uniqueidentifier,
-	@LockOwner uniqueidentifier,
-	@ConcurrencyVersion binary(8)
-AS
-
-	DECLARE @v int, @l uniqueidentifier
-
-	SELECT @v = ConcurrencyVersion, @l = LockOwner
-	FROM Entity
-	WHERE GUID = @GUID
-
-	IF (@v <> @ConcurrencyVersion)
-	BEGIN
-		RETURN -1
-	END
-	
-	IF (@l IS NOT NULL AND @l <> @LockOwner)
-	BEGIN
-		RETURN -2
-	END
-	
-	RETURN 0
-GO
-
-
-CREATE PROC [dbo].[spCheckEntityDuplicate]
-	@UserGuid uniqueidentifier,
-	@EntityType int,
-	@Guid uniqueidentifier,
-	@ParentGuid uniqueidentifier,
-	@Name nvarchar(128)
-AS
-	DECLARE @count int;
-
-	SELECT @count = COUNT(*)
-	FROM Entity
-	WHERE
-		-- Entity.EntityType = @EntityType AND
-		(@Guid IS NULL OR Guid <> @Guid)
-		AND Entity.ParentGuid = @ParentGuid
-		AND Entity.Name = @Name
-		AND Deleted = 0;
-		
-	RETURN ISNULL(@count, 0);
 GO
 
 
@@ -321,6 +388,8 @@ CREATE PROC [dbo].[spObtainEntityLock]
 	@LockOwner uniqueidentifier,
 	@ConcurrencyVersion binary(8) OUTPUT
 AS
+	SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+
 	-- Set lock and increase concurrency version
 	
 	UPDATE Entity
@@ -339,6 +408,8 @@ CREATE PROC [dbo].[spReleaseEntityLock]
 	@LockOwner uniqueidentifier,
 	@ConcurrencyVersion binary(8) OUTPUT
 AS
+	SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+
 	-- Reset lock and increase concurrency version
 	
 	UPDATE Entity
@@ -486,6 +557,7 @@ AS
 
 	SET @RowCount = @@ROWCOUNT
 GO
+
 
 IF OBJECT_ID('[dbo].[spFindJobInstance_Next]') IS NOT NULL
 DROP PROC [dbo].[spFindJobInstance_Next]

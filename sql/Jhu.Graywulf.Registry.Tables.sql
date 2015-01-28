@@ -27,13 +27,37 @@ CREATE TABLE [dbo].[Entity]
 	[UserGuidDeleted] [uniqueidentifier] NULL,
 	[Settings] [xml] NULL,
 	[Comments] [nvarchar](max) NOT NULL,
-	CONSTRAINT [PK_Entity] PRIMARY KEY CLUSTERED 
-	(
-		[Guid] ASC
-	)
 )
 
 GO
+
+IF OBJECT_ID('[PK_Entity]') IS NOT NULL
+ALTER TABLE [dbo].[Entity]
+DROP CONSTRAINT [PK_Entity]
+
+GO
+
+ALTER TABLE [dbo].[Entity]
+ADD CONSTRAINT [PK_Entity] PRIMARY KEY CLUSTERED 
+(
+	[ParentGuid] ASC,
+	[EntityType] ASC,
+	[Number] ASC,
+	[Guid] ASC
+)
+
+GO
+
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Entity_Guid] ON [dbo].[Entity]
+(
+	[Guid] ASC
+)
+WITH (FILLFACTOR = 60)
+
+GO
+
+
+
 
 
 CREATE TABLE [dbo].[EntityReference]

@@ -174,13 +174,6 @@ namespace Jhu.Graywulf.Registry
 
             var parentGuid = this.parentReference.IsEmpty ? Guid.Empty : this.parentReference.Guid;
 
-            if (ef.CheckEntityDuplicate(this.EntityType, this.Guid, parentGuid, this.name))
-            {
-                Jhu.Graywulf.Logging.Event e = new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.CheckConcurrency", this.guid); ;
-                e.Message = String.Format(LogMessages.DuplicateName, name);
-                throw new DuplicateNameException();
-            }
-
             if (!IsExisting)
             {
                 Create();
