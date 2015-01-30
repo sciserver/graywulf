@@ -673,6 +673,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected void Validate()
         {
+            // Perform validation on the query string
+
             var validator = queryFactory.Value.CreateValidator();
             validator.Execute(selectStatement);
         }

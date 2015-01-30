@@ -135,9 +135,11 @@ namespace Jhu.Graywulf.Web.Api.V1
                 var xml = new XmlDocument();
                 xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Jobs.Constants.JobParameterExport].XmlValue);
 
+                var xr = new Util.XmlReader(xml);
+
                 this.tables = new string[] { "xxx" };
-                this.mimeType = GetAttribute(xml, "/ExportTablesParameters/Destinations/DataFileBase", "z:Type");
-                this.uri = new Uri(GetXmlInnerText(xml, "ExportTablesParameters/Uri"));
+                this.mimeType = xr.GetAttribute("/ExportTablesParameters/Destinations/DataFileBase", "z:Type");
+                this.uri = new Uri(xr.GetXmlInnerText("ExportTablesParameters/Uri"));
 
                 // TODO:
                 // jobDescription.SchemaName = GetXmlInnerText(xml, "ExportTables/Sources/TableOrView/SchemaName");

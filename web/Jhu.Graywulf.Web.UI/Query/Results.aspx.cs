@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Web.UI.Query
 
             var codegen = new SqlServerCodeGenerator();
 
-            string sql = codegen.GenerateSelectStarQuery(q.Destination.GetTable(), 100);
+            string sql = codegen.GenerateSelectStarQuery(q.Output, 100);
 
             using (var cn = FederationContext.MyDBDataset.OpenConnection())
             {

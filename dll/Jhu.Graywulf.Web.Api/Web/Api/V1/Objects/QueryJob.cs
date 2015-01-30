@@ -20,6 +20,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         #region Private member variables
 
         private string query;
+        private string output;
 
         #endregion
         #region Properties
@@ -30,6 +31,15 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             get { return query; }
             set { query = value; }
+        }
+
+        [DataMember(Name = "output", EmitDefaultValue=false)]
+        [DefaultValue(null)]
+        [Description("Output table")]
+        public string Output
+        {
+            get { return output; }
+            set { output = value; }
         }
 
         #endregion
@@ -49,7 +59,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.Queue = queue;
         }
 
-        public static QueryJob FromJobInstance(JobInstance jobInstance)
+        public static new QueryJob FromJobInstance(JobInstance jobInstance)
         {
             var job = new QueryJob();
             job.LoadFromRegistryObject(jobInstance);
@@ -78,7 +88,39 @@ namespace Jhu.Graywulf.Web.Api.V1
                 var xml = new XmlDocument();
                 xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Jobs.Constants.JobParameterQuery].XmlValue);
 
-                this.query = GetXmlInnerText(xml, "Query/QueryString");
+                var xr = new Util.XmlReader(xml);
+
+                this.query = xr.GetXmlInnerText("Query/QueryString");
+
+                var datasetName = xr.GetXmlInnerText("Query/Output/Dataset/Name");
+                var schemaName = xr.GetXmlInnerText("Query/Output/SchemaName");
+                var tableName = xr.GetXmlInnerText("Query/Output/ObjectName");
+
+                string name = String.Empty;
+
+                if (datasetName != null)
+                {
+                    name += datasetName + ":";
+                }
+
+                if (schemaName != null)
+                {
+                    name += schemaName + ".";
+                }
+
+                if (tableName != null)
+                {
+                    name += tableName;
+                }
+
+                if (name.Length > 0)
+                {
+                    this.output = name;
+                }
+                else
+                {
+                    this.output = null;
+                }
             }
             else
             {

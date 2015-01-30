@@ -468,6 +468,11 @@ namespace Jhu.Graywulf.Jobs.Query
         /// This has to be in the QueryPartition class because the Query class does not
         /// have information about the database server the partition is executing on and
         /// the temporary tables are required to generate the destination table schema.
+        /// 
+        /// The destination table is created by the very first partition that gets to
+        /// the point of copying results. This is when the name of the target table is
+        /// determined in case only a table name pattern is specified and automatic
+        /// unique naming is turned on.
         /// </remarks>
         public void PrepareDestinationTable(Context context, IScheduler scheduler)
         {
@@ -491,10 +496,9 @@ namespace Jhu.Graywulf.Jobs.Query
                                 var table = query.Destination.GetTable(query.BatchName, query.QueryName, null, null);
                                 table.Initialize(source.GetColumns(), query.Destination.Options);
 
-                                // At this point the name of the destination is determined (in case of unique resultset naming)
-                                // so replace pattern with actual name.
-                                query.Destination.SchemaName = table.SchemaName;
-                                query.Destination.TableNamePattern = table.TableName;
+                                // At this point the name of the destination is determined
+                                // mark it as the output
+                                query.Output = table;
                             }
 
                             query.IsDestinationTableInitialized = true;
@@ -557,12 +561,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     {
                         var source = GetOutputSourceQuery();
 
-                        var destination = new DestinationTable(Query.Destination)
-                        {
-                            // Change destination to Append, output table has already been created,
-                            // partitions only append to it
-                            Options = TableInitializationOptions.Append
-                        };
+                        var destination = new DestinationTable(Query.Output, TableInitializationOptions.Append);
 
                         DumpSqlCommand(source.Query);
 

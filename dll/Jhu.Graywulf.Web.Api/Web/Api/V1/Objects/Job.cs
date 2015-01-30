@@ -320,37 +320,6 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        protected string GetAttribute(XmlDocument xml, string path, string attribute)
-        {
-            return xml.SelectNodes(path)[0].Attributes[attribute].Value;
-        }
-
-        protected string GetXmlInnerText(XmlDocument xml, string path)
-        {
-            return GetXmlInnerText(xml.ChildNodes, path.Split('/'), 0);
-        }
-
-        private string GetXmlInnerText(XmlNodeList nodes, string[] path, int i)
-        {
-            for (int k = 0; k < nodes.Count; k++)
-            {
-                var n = nodes[k];
-                if (StringComparer.InvariantCultureIgnoreCase.Compare(n.LocalName, path[i]) == 0)
-                {
-                    if (i == path.Length - 1)
-                    {
-                        return n.InnerText;
-                    }
-                    else
-                    {
-                        return GetXmlInnerText(n.ChildNodes, path, i + 1);
-                    }
-                }
-            }
-
-            throw new KeyNotFoundException();
-        }
-
         public virtual bool Validate()
         {
             throw new NotImplementedException();

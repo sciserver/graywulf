@@ -25,22 +25,62 @@ namespace Jhu.Graywulf.Jobs.Query
     {
         #region Property storage member variables
 
+        /// <summary>
+        /// Individual query time-out, overall job timeout is enforced by
+        /// the scheduler in a different way.
+        /// </summary>
         private int queryTimeout;
 
+        /// <summary>
+        /// Destination table including target table naming pattern.
+        /// Output table names are either automatically generater or
+        /// taken from the INTO clause.
+        /// </summary>
         private DestinationTable destination;
+
+        /// <summary>
+        /// If true, query destination table has already been initialized.
+        /// TODO: this will need to be changed for multi-select queries
+        /// </summary>
         private bool isDestinationTableInitialized;
 
+        /// <summary>
+        /// Points to the output table of the query.
+        /// </summary>
+        private Table output;
+
+        /// <summary>
+        /// Database version to be used to execute the queries (HOT)
+        /// </summary>
         private string sourceDatabaseVersionName;
+
+        /// <summary>
+        /// Database version to be used to calculate statistics (STAT)
+        /// </summary>
         private string statDatabaseVersionName;
 
+        /// <summary>
+        /// Holds table statistics gathered for all the tables in the query
+        /// </summary>
         private List<TableReference> tableStatistics;
+
+        /// <summary>
+        /// Holds the individual partitions. Usually many, but for simple queries
+        /// only one.
+        /// </summary>
         private List<QueryPartitionBase> partitions;
 
-        #endregion
-        #region Member variables
-
+        /// <summary>
+        /// Name of the table used for partitioning
+        /// TODO: use Table class or TableReference here!
+        /// </summary>
         [NonSerialized]
         private string partitioningTable;
+
+        /// <summary>
+        /// Name of the column to partition on
+        /// TODO: use ColumnReference here
+        /// </summary>
         [NonSerialized]
         private string partitioningKey;
 
@@ -51,7 +91,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Gets or sets the timeout of individual queries
         /// </summary>
         /// <remarks>
-        /// The overall timeout period is set by the timeout of the job.
+        /// The overall timeout period is enforced by the scheduler.
         /// </remarks>
         [DataMember]
         public int QueryTimeout
@@ -78,6 +118,13 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             get { return isDestinationTableInitialized; }
             internal set { isDestinationTableInitialized = value; }
+        }
+
+        [DataMember]
+        public Table Output
+        {
+            get { return output; }
+            set { output = value; }
         }
 
         [DataMember]
@@ -137,10 +184,13 @@ namespace Jhu.Graywulf.Jobs.Query
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.queryTimeout = 60; // TODO ***
+            // TODO: take from constants
+            // this is overwritten most of the time by job settings
+            this.queryTimeout = 60;
 
             this.destination = null;
             this.isDestinationTableInitialized = false;
+            this.output = null;
 
             this.sourceDatabaseVersionName = String.Empty;
             this.statDatabaseVersionName = String.Empty;
@@ -158,6 +208,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             this.destination = old.destination;
             this.isDestinationTableInitialized = old.isDestinationTableInitialized;
+            this.output = old.output;
 
             this.sourceDatabaseVersionName = old.sourceDatabaseVersionName;
             this.statDatabaseVersionName = old.statDatabaseVersionName;
@@ -172,7 +223,7 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Parsing functions
 
-        public void Verify()
+        public virtual void Verify()
         {
             Parse(true);
             Interpret(true);
@@ -181,6 +232,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public bool Verify(out string message)
         {
+            // TODO: make sure only query-related exceptions are handled here
+
             try
             {
                 Verify();
@@ -200,6 +253,12 @@ namespace Jhu.Graywulf.Jobs.Query
             }
             catch (ParserException ex)
             {
+                message = String.Format("Query error: {0}", ex.Message);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // TODO: remove this case once all exceptions are handled correctly
                 message = String.Format("Query error: {0}", ex.Message);
                 return false;
             }
@@ -233,12 +292,6 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             base.FinishInterpret(forceReinitialize);
-        }
-
-        protected void AssertValidContext()
-        {
-            // This call requires a live context
-            System.Diagnostics.Debug.Assert(this.ExecutionMode != ExecutionMode.Graywulf || Context != null && Context.IsValid);
         }
 
         #endregion
@@ -386,24 +439,19 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
-        #region Query execution functions
 
         public virtual void CheckDestinationTable()
         {
-            AssertValidContext();
-
             var table = destination.GetTable();
             var exists = table.IsExisting;
 
             if (exists && (destination.Options & TableInitializationOptions.Drop) == 0)
             {
-                if ((destination.Options & TableInitializationOptions.Create) == 0)
+                if (!isDestinationTableInitialized && (destination.Options & TableInitializationOptions.Create) == 0)
                 {
                     throw new Exception("Output table already exists.");    // *** TODO
                 }
             }
         }
-
-        #endregion
     }
 }
