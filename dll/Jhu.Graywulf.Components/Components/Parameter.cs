@@ -207,7 +207,7 @@ namespace Jhu.Graywulf.Components
                 new StreamingContext(),
                 int.MaxValue,
                 false,
-                System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full,
+                System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple,
                 null);
 
             return res;
