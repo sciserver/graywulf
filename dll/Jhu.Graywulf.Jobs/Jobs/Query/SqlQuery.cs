@@ -16,6 +16,8 @@ namespace Jhu.Graywulf.Jobs.Query
     [DataContract(Name = "Query", Namespace = "")]
     public class SqlQuery : QueryBase
     {
+        #region Properties
+
         /// <summary>
         /// Gets whether the query is partitioned
         /// </summary>
@@ -25,6 +27,7 @@ namespace Jhu.Graywulf.Jobs.Query
             get { return SelectStatement.IsPartitioned; }
         }
 
+        #endregion
         #region Constructors and initializer
 
         protected SqlQuery()
@@ -60,6 +63,13 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
+
+        public override void Verify()
+        {
+            base.Verify();
+
+            Destination.CheckTableExistence();
+        }
 
         public override void CollectTablesForStatistics()
         {

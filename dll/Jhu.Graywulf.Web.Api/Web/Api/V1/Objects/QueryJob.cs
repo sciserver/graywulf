@@ -159,6 +159,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             switch (Queue)
             {
+                default:
                 case JobQueue.Quick:
                     q.Destination.Options = TableInitializationOptions.Drop | TableInitializationOptions.Create;
                     q.Destination.TableNamePattern = Jhu.Graywulf.Jobs.Constants.DefaultQuickResultsTableNamePattern;
@@ -166,9 +167,6 @@ namespace Jhu.Graywulf.Web.Api.V1
                 case JobQueue.Long:
                     q.Destination.Options = TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName;
                     q.Destination.TableNamePattern = Jhu.Graywulf.Jobs.Constants.DefaultLongResultsTableNamePattern;
-                    break;
-                default:
-                    // This option is used when only parsing queries
                     break;
             }
 

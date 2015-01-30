@@ -381,7 +381,7 @@ WHERE o.type IN ({0}) AND
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    return cmd.ExecuteScalar() != null;
+                    return cmd.ExecuteScalar() != DBNull.Value;
                 }
             }
         }

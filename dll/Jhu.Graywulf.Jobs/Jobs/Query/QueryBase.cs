@@ -439,19 +439,5 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
-
-        public virtual void CheckDestinationTable()
-        {
-            var table = destination.GetTable();
-            var exists = table.IsExisting;
-
-            if (exists && (destination.Options & TableInitializationOptions.Drop) == 0)
-            {
-                if (!isDestinationTableInitialized && (destination.Options & TableInitializationOptions.Create) == 0)
-                {
-                    throw new Exception("Output table already exists.");    // *** TODO
-                }
-            }
-        }
     }
 }

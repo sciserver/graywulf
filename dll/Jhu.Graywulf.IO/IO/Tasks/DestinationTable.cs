@@ -236,5 +236,33 @@ namespace Jhu.Graywulf.IO.Tasks
 
             // TODO: attach metadata to table
         }
+
+        /// <summary>
+        /// Tests whether the destination table exists before query execution.
+        /// </summary>
+        public void CheckTableExistence()
+        {
+            var table = GetTable();
+            var exists = table.IsExisting;
+
+            if (exists)
+            {
+                // Make sure table isn't in the way
+                if ((options & TableInitializationOptions.Append) == 0 &&
+                    (options & TableInitializationOptions.Drop) == 0 &&
+                    (options & TableInitializationOptions.GenerateUniqueName) == 0)
+                {
+                    throw new TableCopyException(ExceptionMessages.DestinationTableExists);
+                }
+            }
+            if (!exists)
+            {
+                // Make sure query is parameterized to create the table
+                if ((options & TableInitializationOptions.Create) == 0)
+                {
+                    throw new TableCopyException(ExceptionMessages.DestinationTableNotExists);
+                }
+            }
+        }
     }
 }

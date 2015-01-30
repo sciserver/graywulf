@@ -34,6 +34,7 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         }
 
         [TestMethod]
+        [TestCategory("Query")]
         public void SimpleQueryTest()
        { 
             using (SchedulerTester.Instance.GetToken())
@@ -55,6 +56,44 @@ namespace Jhu.Graywulf.Test.Jobs.Query
                     Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
                 }
             }
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        [ExpectedException(typeof(IO.Tasks.TableCopyException))]
+        public void CheckDestinationTableNewTest()
+        {
+            DropUserDatabaseTable("dbo", "SqlQueryTest_CheckDestinationTableTest");
+
+            var sql = "SELECT TOP 10 * INTO SqlQueryTest_CheckDestinationTableTest FROM TEST:SampleData";
+            var q = CreateQuery(sql);
+            q.Destination.Options = Schema.TableInitializationOptions.Drop;
+
+            // Should throw an exception because table isn't there
+            q.Destination.CheckTableExistence();
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        [ExpectedException(typeof(IO.Tasks.TableCopyException))]
+        public void CheckDestinationTableExistingTest()
+        {
+            DropUserDatabaseTable("dbo", "SqlQueryTest_CheckDestinationTableTest");
+
+            var sql = "SELECT TOP 10 * INTO SqlQueryTest_CheckDestinationTableTest FROM TEST:SampleData";
+            var q = CreateQuery(sql);
+            q.Destination.Options = Schema.TableInitializationOptions.Create;
+
+            // Create destination table manually
+            var table = q.Destination.GetTable();
+            table.Initialize(
+                new Schema.Column[] {
+                    new Schema.Column("ID", Schema.DataTypes.Int32)
+                },
+                Schema.TableInitializationOptions.Create);
+
+            // Now check if it's there which should throw an exception
+            q.Destination.CheckTableExistence();
         }
     }
 }

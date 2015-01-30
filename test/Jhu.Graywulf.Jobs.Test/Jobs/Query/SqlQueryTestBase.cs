@@ -22,9 +22,44 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected virtual QueryFactory CreateQueryFactory(Context context)
         {
-            return QueryFactory.Create(
-                typeof(SqlQueryFactory).AssemblyQualifiedName,
-                context);
+            var qf = QueryFactory.Create(typeof(SqlQueryFactory).AssemblyQualifiedName, context);
+            return qf;
+        }
+
+        protected QueryBase CreateQuery(string query)
+        {
+            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            {
+                var qf = CreateQueryFactory(context);
+                var q = CreateQuery(qf, query);
+
+                return q;
+            }
+        }
+
+        private QueryBase CreateQuery(QueryFactory qf, string query)
+        {
+            var user = SignInTestUser(qf.Context);
+
+            var udf = CreateUserDatabaseFactory(qf.Context);
+            var mydb = udf.GetUserDatabase(user);
+            var mysi = udf.GetUserDatabaseServerInstance(user);
+
+            var q = qf.CreateQuery(query);
+            qf.AppendUserDatabase(q, mydb, mysi);
+
+            q.Destination = new Jhu.Graywulf.IO.Tasks.DestinationTable()
+            {
+                Dataset = mydb,
+                DatabaseName = mydb.DatabaseName,
+                SchemaName = mydb.DefaultSchemaName,
+                TableNamePattern = "testtable",     // will be overwritten by INTO queries
+                Options = TableInitializationOptions.Create | TableInitializationOptions.Drop
+            };
+
+            q.InitializeQueryObject(qf.Context);
+
+            return q;
         }
 
         protected Guid ScheduleQueryJob(string query, QueueType queueType)
@@ -33,24 +68,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                var user = SignInTestUser(context);
-
-                var udf = CreateUserDatabaseFactory(context);
-                var mydb = udf.GetUserDatabase(user);
-                var mysi = udf.GetUserDatabaseServerInstance(user);
-
                 var qf = CreateQueryFactory(context);
-                var q = qf.CreateQuery(query);
-                qf.AppendUserDatabase(q, mydb, mysi);
-
-                q.Destination = new Jhu.Graywulf.IO.Tasks.DestinationTable()
-                {
-                    Dataset = mydb,
-                    DatabaseName = mydb.DatabaseName,
-                    SchemaName = mydb.DefaultSchemaName,
-                    TableNamePattern = "testtable",     // will be overwritten by INTO queries
-                    Options = TableInitializationOptions.Create | TableInitializationOptions.Drop
-                };
+                var q = CreateQuery(qf, query);      
 
                 var ji = qf.ScheduleAsJob(null, q, queue, "testjob");
 
