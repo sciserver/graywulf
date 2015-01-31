@@ -31,19 +31,6 @@ namespace Jhu.Graywulf.Logging
 
         public void LogEvent(Event e)
         {
-            // Unwrap aggregate exceptions
-            if (e.Exception != null && e.Exception is AggregateException)
-            {
-                Exception ex = e.Exception;
-                while (ex != null && ex is AggregateException)
-                {
-                    ex = ex.InnerException;
-                }
-
-                e.Exception = ex;
-                e.ExceptionType = ex.GetType().ToString();
-            }
-
             lock (this)
             {
                 foreach (LogWriter writer in writers)

@@ -143,17 +143,8 @@ namespace Jhu.Graywulf.Logging
             set
             {
                 exception = value;
-                if (exception != null)
-                {
-                    ReadFromException();
-                }
-                else
-                {
-                    message = null;
-                    site = null;
-                    stackTrace = null;
-                    exceptionType = null;
-                }
+
+                ReadFromException();
             }
         }
 
@@ -262,10 +253,27 @@ namespace Jhu.Graywulf.Logging
 
         private void ReadFromException()
         {
-            message = exception.Message;
+            message = null;
             site = null;
-            stackTrace = exception.StackTrace;
-            exceptionType = exception.GetType().ToString();
+            stackTrace = null;
+            exceptionType = null;
+
+            // Unwrap aggregate exceptions
+            var ex = exception;
+
+            while (ex != null && ex is AggregateException)
+            {
+                ex = ex.InnerException;
+            }
+
+            exception = ex;
+
+            if (exception != null)
+            {
+                message = exception.Message;
+                stackTrace = exception.StackTrace;
+                exceptionType = exception.GetType().ToString();
+            }
 
             if (exception is SqlException)
             {

@@ -6,6 +6,7 @@ using System.Activities;
 using System.Activities.Tracking;
 using System.ComponentModel;
 using System.Windows.Markup;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.Logging;
 
 namespace Jhu.Graywulf.Activities
@@ -14,6 +15,32 @@ namespace Jhu.Graywulf.Activities
     [ContentProperty("Try")]
     public class Retry : NativeActivity, IGraywulfActivity
     {
+        [DataContract]
+        class RetryState
+        {
+            [DataMember(EmitDefaultValue = false)]
+            public int Retries
+            {
+                get;
+                set;
+            }
+
+            [DataMember(EmitDefaultValue = false)]
+            public Exception Exception
+            {
+                get;
+                set;
+            }
+
+            [DataMember(EmitDefaultValue = false)]
+            public bool SuppressCancel
+            {
+                get;
+                set;
+            }
+        }
+
+
         [RequiredArgument]
         public InArgument<Guid> JobGuid { get; set; }
         [RequiredArgument]
@@ -25,7 +52,7 @@ namespace Jhu.Graywulf.Activities
         [RequiredArgument]
         public InArgument<int> MaxRetries { get; set; }
 
-        protected Variable<int> retries = new Variable<int>();
+        private Variable<RetryState> state = new Variable<RetryState>();
 
         public Retry()
         {
@@ -34,7 +61,7 @@ namespace Jhu.Graywulf.Activities
         protected override void CacheMetadata(NativeActivityMetadata metadata)
         {
             RuntimeArgument argument;
-            
+
             argument = new RuntimeArgument("JobGuid", typeof(Guid), ArgumentDirection.In);
             metadata.Bind(this.JobGuid, argument);
             metadata.AddArgument(argument);
@@ -47,6 +74,7 @@ namespace Jhu.Graywulf.Activities
             {
                 metadata.AddChild(this.Try);
             }
+
             if (this.Finally != null)
             {
                 metadata.AddChild(this.Finally);
@@ -56,16 +84,16 @@ namespace Jhu.Graywulf.Activities
             metadata.Bind(this.MaxRetries, argument);
             metadata.AddArgument(argument);
 
-            metadata.AddImplementationVariable(this.retries);
+            metadata.AddImplementationVariable(this.state);
         }
 
         protected override void Execute(NativeActivityContext context)
         {
-            retries.Set(context, 0);
+            state.Set(context, new RetryState());
 
             if (Try != null)
             {
-                context.ScheduleActivity(Try, OnTryComplete, OnTryFaulted);
+                context.ScheduleActivity(Try, new CompletionCallback(OnTryComplete), new FaultCallback(OnTryFaulted));
             }
             else
             {
@@ -73,11 +101,43 @@ namespace Jhu.Graywulf.Activities
             }
         }
 
+        protected override void Cancel(NativeActivityContext context)
+        {
+            var state = this.state.Get(context);
+            if (!state.SuppressCancel)
+            {
+                context.CancelChildren();
+            }
+
+            context.CancelChildren();
+        }
+
         private void OnTryComplete(NativeActivityContext context, ActivityInstance completedInstance)
         {
-            if (Finally != null)
+            var state = this.state.Get(context);
+
+            if (state.Exception != null)
             {
-                context.ScheduleActivity(this.Finally, OnFinallyComplete, OnFinallyFaulted);
+                // If retry is possible, 
+                if (state.Retries < MaxRetries.Get(context) - 1)
+                {
+                    state.Retries++;
+
+                    // Reschedule Try block
+                    state.Exception = null;
+                    context.ScheduleActivity(this.Try, OnTryComplete, OnTryFaulted);
+
+                    return;
+                }
+            }
+
+            // Only the try block can be canceled.
+            state.SuppressCancel = true;
+
+            // Schedule the finally block
+            if (this.Finally != null)
+            {
+                context.ScheduleActivity(this.Finally, new CompletionCallback(OnFinallyComplete), new FaultCallback(OnFinallyFaulted));
             }
             else
             {
@@ -87,64 +147,30 @@ namespace Jhu.Graywulf.Activities
 
         private void OnTryFaulted(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
         {
+            var state = this.state.Get(faultContext);
+            state.Exception = propagatedException;
 
-#if DEBUG
-            System.Diagnostics.Debugger.Break();
-#endif
-
-            // Handle exception
-            int r = retries.Get(faultContext);
-            retries.Set(faultContext, ++r);
-
-            faultContext.CancelChild(propagatedFrom);
-            faultContext.HandleFault();
-
-
-            // Run the finally block before doing anything else
-            if (Finally != null)
-            {
-                faultContext.ScheduleActivity(this.Finally, OnFinallyComplete, OnFinallyFaulted);
-            }
-            else
-            {
-                OnFinallyComplete(faultContext, null);
-            }
-
-            // If retry is possible, 
-            if (r < MaxRetries.Get(faultContext))
+            if (state.Retries < MaxRetries.Get(faultContext) - 1)
             {
                 // Absorb error
+                faultContext.CancelChild(propagatedFrom);
                 faultContext.HandleFault();
-
-                faultContext.ScheduleActivity(this.Try, OnTryComplete, OnTryFaulted);
-            }
-            else
-            {
-                // Fault
-                if (propagatedException is AggregateException)
-                {
-                    throw ((AggregateException)propagatedException).InnerException;
-                }
-                else
-                {
-                    throw propagatedException;
-                }
             }
         }
 
         private void OnFinallyComplete(NativeActivityContext context, ActivityInstance completedInstance)
         {
-
+            if (context.IsCancellationRequested)
+            {
+                context.MarkCanceled();
+            }
         }
 
         private void OnFinallyFaulted(NativeActivityFaultContext faultContext, Exception propagatedException, ActivityInstance propagatedFrom)
         {
-
-        }
-
-        protected override void Cancel(NativeActivityContext context)
-        {
-            context.CancelChildren();
+            var state = this.state.Get(faultContext);
+            state.Exception = propagatedException;
+            state.SuppressCancel = false;
         }
     }
 }

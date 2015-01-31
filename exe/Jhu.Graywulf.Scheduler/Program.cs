@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             Scheduler.Configuration.RunSanityCheck();
 
-            QueueManager.Instance.Start(Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName, false);
+            QueueManager.Instance.Start(Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName, true);
         }
 
         /// <summary>

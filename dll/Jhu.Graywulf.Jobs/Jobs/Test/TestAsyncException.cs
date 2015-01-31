@@ -17,19 +17,24 @@ namespace Jhu.Graywulf.Jobs.Test
     {
         [RequiredArgument]
         public InArgument<Guid> JobGuid { get; set; }
+
         [RequiredArgument]
         public InArgument<Guid> UserGuid { get; set; }
+
+        [RequiredArgument]
+        public InArgument<string> Message { get; set; }
 
         protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
         {
             Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
             string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId), callback, state);
+            string message = activityContext.GetValue(Message);
+            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, message), callback, state);
         }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId)
+        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, string message)
         {
-            throw new Exception("Async test exception thrown");
+            throw new Exception(message);
         }
     }
 }

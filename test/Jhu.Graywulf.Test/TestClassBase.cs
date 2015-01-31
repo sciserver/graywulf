@@ -40,7 +40,9 @@ namespace Jhu.Graywulf.Test
             MultipleDelay,
             Exception,
             AsyncException,
-            AsyncExceptionWithRetry
+            AsyncExceptionWithRetry,
+            RetryWithFaultInFinally,
+            RetryWithFaultInCancel
         }
 
         protected Task scheduler;
@@ -211,7 +213,7 @@ namespace Jhu.Graywulf.Test
                 var udf = UserDatabaseFactory.Create(context.Federation);
                 var userdb = udf.GetUserDatabase(user);
 
-                DropTable(userdb.ConnectionString, "dbo", "SqlQueryTest_SimpleQueryTest");
+                DropTable(userdb.ConnectionString, schemaName, tableName);
             }
         }
 

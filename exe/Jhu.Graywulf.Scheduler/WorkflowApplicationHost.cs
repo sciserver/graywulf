@@ -78,7 +78,6 @@ namespace Jhu.Graywulf.Scheduler
         public WorkflowApplicationHost()
         {
             InitializeMembers();
-            InitializeAppDomain();
         }
 
         private void InitializeMembers()
@@ -96,32 +95,6 @@ namespace Jhu.Graywulf.Scheduler
             // Prevent remoting timeouts
             return null;
         }
-
-        /// <summary>
-        /// Initializes the AppDomain.
-        /// </summary>
-        private void InitializeAppDomain()
-        {
-            AppDomain ad = AppDomain.CurrentDomain;
-
-            // All other events will be handled by the ReflectionHelperInternal class when initialized
-            ad.UnhandledException += new UnhandledExceptionEventHandler(ad_UnhandledException);
-        }
-
-        #region AppDomain event handlers
-
-        //*** TODO: move this to an appdomainhelper class
-        void ad_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-#if DEBUG
-            System.Diagnostics.Debugger.Break();
-#endif
-            // **** TODO: handle app domain level exception here
-            // to prevent failing of the entire scheduler
-            throw (Exception)e.ExceptionObject;
-        }
-
-        #endregion
 
         private void EnsureNotStopping()
         {
@@ -429,6 +402,8 @@ namespace Jhu.Graywulf.Scheduler
             wfapp.Completed = wfapp_WorkflowCompleted;
             wfapp.Unloaded = wfapp_WorkflowUnloaded;
             wfapp.Aborted = wfapp_WorkflowAborted;
+            wfapp.Idle = wfapp_WorkflowIdle;
+            wfapp.PersistableIdle = fwapp_PersistableIdle;
 
             return wfapp;
         }
@@ -633,10 +608,20 @@ namespace Jhu.Graywulf.Scheduler
                 workflow = workflows[e.InstanceId];
             }
 
-            // TODO: this might be needed here for Kill to work correctly, needs testing
-            //WorkflowEvent(this, new HostEventArgs(WorkflowEventType.Failed, e.InstanceId, workflow.LastException.Message));
+            // Workflows are aborted when an exception is thrown during cancellation
+
+            WorkflowEvent(this, new HostEventArgs(WorkflowEventType.Failed, e.InstanceId, workflow.LastException.Message));
 
             FinishWorkflow(e.InstanceId);
+        }
+
+        private void wfapp_WorkflowIdle(WorkflowApplicationIdleEventArgs e)
+        {
+        }
+
+        private PersistableIdleAction fwapp_PersistableIdle(WorkflowApplicationIdleEventArgs e)
+        {
+            return PersistableIdleAction.Persist;
         }
 
         #endregion

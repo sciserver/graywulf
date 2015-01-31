@@ -9,7 +9,7 @@ using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.Test;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Scheduler.Test
+namespace Jhu.Graywulf.Scheduler
 {
     [TestClass]
     public class SchedulerTest : TestClassBase
@@ -145,7 +145,7 @@ namespace Jhu.Graywulf.Scheduler.Test
                 SchedulerTester.Instance.EnsureRunning();
 
                 // Make delay long enough but cancelable
-                var guid = ScheduleTestJob(new TimeSpan(0, 10, 0), JobType.CancelableDelay, QueueType.Long);
+                var guid = ScheduleTestJob(new TimeSpan(0, 2, 0), JobType.CancelableDelay, QueueType.Long);
 
                 WaitJobStarted(guid, TimeSpan.FromSeconds(10));
 
@@ -326,6 +326,44 @@ namespace Jhu.Graywulf.Scheduler.Test
                 SchedulerTester.Instance.EnsureRunning();
 
                 var guid = ScheduleTestJob(JobType.AsyncExceptionWithRetry, QueueType.Long);
+
+                WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+
+                var job = LoadJob(guid);
+
+                Assert.AreEqual(JobExecutionState.Failed, job.JobExecutionStatus);
+                Assert.AreEqual(null, job.Parameters["Result"].Value);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Scheduler")]
+        public void RetryWithFaultInFinallyTest()
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                SchedulerTester.Instance.EnsureRunning();
+
+                var guid = ScheduleTestJob(JobType.RetryWithFaultInFinally, QueueType.Long);
+
+                WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+
+                var job = LoadJob(guid);
+
+                Assert.AreEqual(JobExecutionState.Failed, job.JobExecutionStatus);
+                Assert.AreEqual(null, job.Parameters["Result"].Value);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Scheduler")]
+        public void RetryWithFaultInCancelTest()
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                SchedulerTester.Instance.EnsureRunning();
+
+                var guid = ScheduleTestJob(JobType.RetryWithFaultInCancel, QueueType.Long);
 
                 WaitJobComplete(guid, TimeSpan.FromSeconds(10));
 

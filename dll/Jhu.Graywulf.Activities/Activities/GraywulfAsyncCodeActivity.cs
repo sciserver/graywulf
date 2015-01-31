@@ -8,7 +8,7 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Activities
 {
-    public class GraywulfAsyncCodeActivity : AsyncCodeActivity
+    public abstract class GraywulfAsyncCodeActivity : AsyncCodeActivity
     {
         // Holds a list of tasks that can be cancelled
         private Dictionary<string, ICancelableTask> cancelableTasks;
@@ -26,11 +26,6 @@ namespace Jhu.Graywulf.Activities
         }
 
         #endregion
-
-        protected override IAsyncResult BeginExecute(AsyncCodeActivityContext context, AsyncCallback callback, object state)
-        {
-            throw new NotImplementedException();
-        }
 
         protected Task EnqueueAsync(Action<object> action, AsyncCallback callback, object state)
         {
@@ -53,7 +48,7 @@ namespace Jhu.Graywulf.Activities
                 }
                 else
                 {
-                    throw;
+                    throw ex.InnerException;
                 }
             }
         }
@@ -110,7 +105,10 @@ namespace Jhu.Graywulf.Activities
             }
 
             // This is absolutely important here:
-            context.MarkCanceled();
+            if (context.IsCancellationRequested)
+            {
+                context.MarkCanceled();
+            }
 
             base.Cancel(context);
         }

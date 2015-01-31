@@ -14,9 +14,13 @@ namespace Jhu.Graywulf.Components
     {
         public static AppDomainHelper CreateInstanceAndUnwrap(AppDomain ad)
         {
-            return (AppDomainHelper)ad.CreateInstanceAndUnwrap(
+            var adh = (AppDomainHelper)ad.CreateInstanceAndUnwrap(
                 typeof(AppDomainHelper).Assembly.FullName,
                 typeof(AppDomainHelper).FullName);
+
+            adh.InitializeAppDomain();
+
+            return adh;
         }
 
         public AppDomainHelper()
@@ -28,6 +32,30 @@ namespace Jhu.Graywulf.Components
             // Prevent object from automatic destruction
             return null;
         }
+
+        public void InitializeAppDomain()
+        {
+            var ad = AppDomain.CurrentDomain;
+
+            ad.UnhandledException += new UnhandledExceptionEventHandler(ad_UnhandledException);
+        }
+
+        #region AppDomain event handlers
+
+        void ad_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+#if DEBUG
+            System.Diagnostics.Debugger.Break();
+#endif
+
+            Console.WriteLine("UNHANDLED EXCEPTION");
+
+            // **** TODO: handle app domain level exception here
+            // to prevent failing of the entire scheduler
+            throw (Exception)e.ExceptionObject;
+        }
+
+        #endregion
 
         /// <summary>
         /// Returns the names of assemblies already loaded into the

@@ -29,9 +29,9 @@
     <x:Property Name="DelayPeriod" Type="InArgument(x:Int32)" />
     <x:Property Name="Result" Type="OutArgument(x:String)" />
   </x:Members>
-  <sap:VirtualizedContainerService.HintSize>516,688</sap:VirtualizedContainerService.HintSize>
+  <sap:VirtualizedContainerService.HintSize>516,954</sap:VirtualizedContainerService.HintSize>
   <mva:VisualBasic.Settings>Assembly references and imported namespaces for internal implementation</mva:VisualBasic.Settings>
-  <Switch x:TypeArguments="x:String" Expression="[TestMethod]" sad:XamlDebuggerXmlReader.FileName="C:\Data\dobos\project\skyquery-all\graywulf\dll\Jhu.Graywulf.Jobs\Jobs\Test\TestJob.xaml" sap:VirtualizedContainerService.HintSize="476,608">
+  <Switch x:TypeArguments="x:String" Expression="[TestMethod]" sad:XamlDebuggerXmlReader.FileName="C:\Data\dobos\project\skyquery-all\graywulf\dll\Jhu.Graywulf.Jobs\Jobs\Test\TestJob.xaml" sap:VirtualizedContainerService.HintSize="476,874">
     <Switch.Default>
       <Throw Exception="[New NotImplementedException()]" sap:VirtualizedContainerService.HintSize="455,100" />
     </Switch.Default>
@@ -85,17 +85,54 @@
       </Assign>
     </Sequence>
     <Throw x:Key="Exception" Exception="[New Exception(&quot;Test exception thrown.&quot;)]" sap:VirtualizedContainerService.HintSize="200,22" />
-    <local:TestAsyncException x:Key="AsyncException" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
-    <jga:Retry Finally="{x:Null}" x:Key="AsyncExceptionWithRetry" sap:VirtualizedContainerService.HintSize="236,314" JobGuid="[JobGuid]" MaxRetries="3" UserGuid="[UserGuid]">
-      <Sequence sap:VirtualizedContainerService.HintSize="222,208">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg3:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-          </scg3:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-        <local:TestDelay Cancelable="True" DelayPeriod="5000" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
-        <local:TestAsyncException sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
-      </Sequence>
-    </jga:Retry>
+    <local:TestAsyncException x:Key="AsyncException" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Message="From simple test" UserGuid="[UserGuid]" />
+    <CancellationScope x:Key="AsyncExceptionWithRetry" sap:VirtualizedContainerService.HintSize="272,536">
+      <jga:Retry Finally="{x:Null}" sap:VirtualizedContainerService.HintSize="236,314" JobGuid="[JobGuid]" MaxRetries="3" UserGuid="[UserGuid]">
+        <Sequence sap:VirtualizedContainerService.HintSize="222,208">
+          <sap:WorkflowViewStateService.ViewState>
+            <scg3:Dictionary x:TypeArguments="x:String, x:Object">
+              <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            </scg3:Dictionary>
+          </sap:WorkflowViewStateService.ViewState>
+          <local:TestAsyncException sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Message="From try" UserGuid="[UserGuid]" />
+          <local:TestDelay Cancelable="True" DelayPeriod="5000" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
+        </Sequence>
+      </jga:Retry>
+    </CancellationScope>
+    <CancellationScope x:Key="RetryWithFaultInFinally" sap:VirtualizedContainerService.HintSize="272,550">
+      <jga:Retry sap:VirtualizedContainerService.HintSize="236,321" JobGuid="[JobGuid]" MaxRetries="3" UserGuid="[UserGuid]">
+        <jga:Retry.Finally>
+          <local:TestAsyncException sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Message="From finally" UserGuid="[JobGuid]" />
+        </jga:Retry.Finally>
+        <Sequence sap:VirtualizedContainerService.HintSize="222,208">
+          <sap:WorkflowViewStateService.ViewState>
+            <scg3:Dictionary x:TypeArguments="x:String, x:Object">
+              <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            </scg3:Dictionary>
+          </sap:WorkflowViewStateService.ViewState>
+          <local:TestAsyncException sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Message="From try" UserGuid="[UserGuid]" />
+          <local:TestDelay Cancelable="True" DelayPeriod="5000" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
+        </Sequence>
+      </jga:Retry>
+      <CancellationScope.CancellationHandler>
+        <local:TestAsyncException sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Message="From cancel" UserGuid="[JobGuid]" />
+      </CancellationScope.CancellationHandler>
+    </CancellationScope>
+    <CancellationScope x:Key="RetryWithFaultInCancel" sap:VirtualizedContainerService.HintSize="272,543">
+      <jga:Retry Finally="{x:Null}" sap:VirtualizedContainerService.HintSize="236,314" JobGuid="[JobGuid]" MaxRetries="3" UserGuid="[UserGuid]">
+        <Sequence sap:VirtualizedContainerService.HintSize="222,208">
+          <sap:WorkflowViewStateService.ViewState>
+            <scg3:Dictionary x:TypeArguments="x:String, x:Object">
+              <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            </scg3:Dictionary>
+          </sap:WorkflowViewStateService.ViewState>
+          <local:TestAsyncException sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Message="From try" UserGuid="[UserGuid]" />
+          <local:TestDelay Cancelable="True" DelayPeriod="5000" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
+        </Sequence>
+      </jga:Retry>
+      <CancellationScope.CancellationHandler>
+        <local:TestAsyncException sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Message="From cancel" UserGuid="[JobGuid]" />
+      </CancellationScope.CancellationHandler>
+    </CancellationScope>
   </Switch>
 </Activity>

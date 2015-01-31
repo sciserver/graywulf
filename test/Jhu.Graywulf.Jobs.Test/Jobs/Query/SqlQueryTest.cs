@@ -36,7 +36,7 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         [TestMethod]
         [TestCategory("Query")]
         public void SimpleQueryTest()
-       { 
+        {
             using (SchedulerTester.Instance.GetToken())
             {
                 DropUserDatabaseTable("dbo", "SqlQueryTest_SimpleQueryTest");
@@ -57,7 +57,7 @@ namespace Jhu.Graywulf.Test.Jobs.Query
                 }
             }
         }
-
+        
         [TestMethod]
         [TestCategory("Query")]
         [ExpectedException(typeof(IO.Tasks.TableCopyException))]
