@@ -378,6 +378,9 @@ namespace Jhu.Graywulf.Scheduler
         [TestCategory("Scheduler")]
         public void AsyncExceptionWithStopTest()
         {
+            // TODO: this workflow fails too quickly to get persisted.
+            // needs more testing but it's not a major issue
+            
             using (SchedulerTester.Instance.GetExclusiveToken())
             {
                 SchedulerTester.Instance.EnsureRunning();

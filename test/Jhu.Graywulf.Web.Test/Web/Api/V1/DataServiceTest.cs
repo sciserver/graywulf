@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 // We create a raw HTTP request here to stream data back.
                 // The WCF interface apparently doesn't support this
 
-                var uri = new Uri("http://localhost/gwui/api/v1/data.svc/MYDB/TestData");
+                var uri = new Uri("http://localhost/gwui/api/v1/data.svc/MYDB/SampleData");
 
                 var req = (HttpWebRequest)WebRequest.Create(uri);
 

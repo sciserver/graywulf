@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 }
             };
 
-            var client = session.CreateClient<IAuthService>(new Uri("http://localhost/gwauth/api/auth.svc"));
+            var client = session.CreateClient<IAuthService>(new Uri("http://localhost/gwauth/api/v1/auth.svc"));
 
             client.Authenticate(auth);
         }

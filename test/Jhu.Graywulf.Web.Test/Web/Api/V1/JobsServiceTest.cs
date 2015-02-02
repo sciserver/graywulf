@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             {
                 var client = CreateClient(session);
                 var queues = client.ListQueues();
-                Assert.AreEqual(3, queues.Queues.Length);
+                Assert.AreEqual(2, queues.Queues.Length);   // Quick and long
             }
         }
 
@@ -132,7 +132,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                     ContentType = "text/csv",
                     Tables = new string[]
                     {
-                        "testdata"
+                        "SampleData"
                     },
                     Comments = "test comments",
                 };
