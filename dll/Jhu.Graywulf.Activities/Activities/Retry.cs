@@ -104,12 +104,11 @@ namespace Jhu.Graywulf.Activities
         protected override void Cancel(NativeActivityContext context)
         {
             var state = this.state.Get(context);
+            
             if (!state.SuppressCancel)
             {
                 context.CancelChildren();
             }
-
-            context.CancelChildren();
         }
 
         private void OnTryComplete(NativeActivityContext context, ActivityInstance completedInstance)
