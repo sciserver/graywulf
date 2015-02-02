@@ -34,15 +34,15 @@ namespace Jhu.Graywulf.Registry
             {
                 LoadFromSmo(smofile);
             }
-            
-            DiscoverDiskVolume();
+
+            DiscoverDiskVolume(smofile);
         }
 
         internal void DiscoverLogFile(smo::LogFile smofile, List<Entity> update, List<Entity> delete, List<Entity> create)
         {
             InitializeDiscovery(update, delete, create);
             LoadFromSmo(smofile);
-            DiscoverDiskVolume();
+            DiscoverDiskVolume(smofile);
         }
 
         private void InitializeDiscovery(List<Entity> update, List<Entity> delete, List<Entity> create)
@@ -57,16 +57,27 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
-        private void DiscoverDiskVolume()
+        private void DiscoverDiskVolume(smo::DatabaseFile smofile)
         {
             var m = DatabaseInstanceFileGroup.DatabaseInstance.ServerInstance.Machine;
             m.LoadDiskVolumes(true);
 
-            DiskVolume = m.DiskVolumes.Values.FirstOrDefault(i => Filename.StartsWith(i.LocalPath.ResolvedValue, StringComparison.InvariantCultureIgnoreCase));
+            var dv = m.DiskVolumes.Values.FirstOrDefault(i => Filename.StartsWith(i.LocalPath.ResolvedValue, StringComparison.InvariantCultureIgnoreCase));
 
-            if (DiskVolumeReference.IsEmpty)
+            // Check if file could be associated with a disk volume
+            if (smofile != null && dv == null)
             {
+                // If the database exists but it's under a path that cannot be reached from
+                // any of the known disk volumes, simply throw and exception
+
                 throw new DiscoveryException("File cannot be associated with disk volume.");   // TODO
+            }
+            else if (dv != null)
+            {
+                // Only set the disk volume value if it could be associated with one.
+                // If the database doesn't exists, we simply keep the old settings
+
+                DiskVolume = dv;
             }
 
             // Make path relative to disk volume

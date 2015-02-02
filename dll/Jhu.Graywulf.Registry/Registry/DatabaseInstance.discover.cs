@@ -15,17 +15,18 @@ namespace Jhu.Graywulf.Registry
             if (IsExisting)
             {
                 var smodb = GetSmoDatabase();
+
                 Discover(smodb, update, delete, create);
 
-                if (smodb == null)
-                {
-                    this.DeploymentState = Registry.DeploymentState.Deployed;
-                    this.RunningState = Registry.RunningState.Detached;     // TODO
-                }
-                else
+                if (smodb != null)
                 {
                     this.DeploymentState = Registry.DeploymentState.Deployed;
                     this.RunningState = Registry.RunningState.Attached;
+                }
+                else
+                {
+                    this.DeploymentState = Registry.DeploymentState.Undeployed;
+                    this.RunningState = Registry.RunningState.Detached;     // TODO
                 }
             }
             else
