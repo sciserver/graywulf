@@ -584,21 +584,47 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Clean-up functions
 
-        public void DropTemporaryTables()
+        public void DropTemporaryTables(bool suppressErrors)
         {
             foreach (var table in TemporaryTables.Values)
             {
-                table.Drop();
+                // This function is called in the cancel branch of certain workflows
+                // where it's not supposed to fail in any circumstances.
+
+                try
+                {
+                    table.Drop();
+                }
+                catch (Exception)
+                {
+                    if (!suppressErrors)
+                    {
+                        throw;
+                    }
+                }
             }
 
             TemporaryTables.Clear();
         }
 
-        public void DropTemporaryViews()
+        public void DropTemporaryViews(bool suppressErrors)
         {
             foreach (var view in TemporaryViews.Values)
             {
-                view.Drop();
+                // This function is called in the cancel branch of certain workflows
+                // where it's not supposed to fail in any circumstances.
+
+                try
+                {
+                    view.Drop();
+                }
+                catch (Exception)
+                {
+                    if (!suppressErrors)
+                    {
+                        throw;
+                    }
+                }
             }
 
             TemporaryViews.Clear();

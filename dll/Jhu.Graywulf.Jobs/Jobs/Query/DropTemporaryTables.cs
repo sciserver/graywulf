@@ -18,6 +18,9 @@ namespace Jhu.Graywulf.Jobs.Query
         [RequiredArgument]
         public InArgument<QueryPartitionBase> QueryPartition { get; set; }
 
+        [RequiredArgument]
+        public InArgument<bool> SuppressErrors { get; set; }
+
         protected override void Execute(CodeActivityContext activityContext)
         {
             QueryPartitionBase querypartition = QueryPartition.Get(activityContext);
@@ -27,8 +30,10 @@ namespace Jhu.Graywulf.Jobs.Query
                 querypartition.InitializeQueryObject(context);
             }
 
-            querypartition.DropTemporaryTables();
-            querypartition.DropTemporaryViews();
+            var suppressErrors = SuppressErrors.Get(activityContext);
+
+            querypartition.DropTemporaryTables(suppressErrors);
+            querypartition.DropTemporaryViews(suppressErrors);
         }
     }
 }
