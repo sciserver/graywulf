@@ -712,6 +712,9 @@ ORDER BY 1";
                                 case Constants.MetaExample:
                                     metadata.Example = value;
                                     break;
+                                case Constants.MetaClass:
+                                    metadata.Class = value;
+                                    break;
                                 default:
                                     break;
                             }
@@ -1149,15 +1152,24 @@ END",
 
         protected override DataType CreateDataType(string name)
         {
+            // Try to interpret as SQL Server type. Certain aliases are not in the
+            // enum, so handle them separately.
+
+            // TODO: this doesn't work with complex types and special types
+
             SqlDbType sqltype;
             if (Enum.TryParse<SqlDbType>(name, true, out sqltype))
             {
                 // This can be interpreted as a SQL Server type
                 return CreateDataType(sqltype);
             }
+            else if (StringComparer.InvariantCultureIgnoreCase.Compare("numeric", name) == 0)
+            {
+                return CreateDataType(SqlDbType.Decimal);
+            }
             else
             {
-                return base.CreateDataType(name);
+                throw new NotImplementedException();
             }
         }
 

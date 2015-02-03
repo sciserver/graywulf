@@ -901,7 +901,7 @@ WHERE nspname = @schemaName and proname= @objectName;";
                 case Constants.TypeNameCString:
                     return DataTypes.SqlNVarChar;       //check is it correct
                 default:
-                    return base.CreateDataType(name);
+                    throw new NotImplementedException();
             }
         }
 

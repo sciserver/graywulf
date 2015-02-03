@@ -11,9 +11,16 @@ namespace Jhu.Graywulf.Schema
     [DataContract(Namespace = "")]
     public class VariableMetadata : Metadata, ICloneable
     {
+        [NonSerialized]
         private string @class;
+
+        [NonSerialized]
         private string quantity;
+
+        [NonSerialized]
         private string unit;
+
+        [NonSerialized]
         private string format;
 
         [DataMember]

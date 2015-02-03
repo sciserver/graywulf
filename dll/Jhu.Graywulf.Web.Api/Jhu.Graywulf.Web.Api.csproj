@@ -80,6 +80,7 @@
     <Compile Include="Web\Api\V1\JobFactory.cs" />
     <Compile Include="Web\Api\V1\Objects\Column.cs" />
     <Compile Include="Web\Api\V1\Objects\Credentials.cs" />
+    <Compile Include="Web\Api\V1\Objects\DatabaseObject.cs" />
     <Compile Include="Web\Api\V1\Objects\Dataset.cs" />
     <Compile Include="Web\Api\V1\Objects\ExportJob.cs" />
     <Compile Include="Web\Api\V1\Objects\Headers.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Web\Api\V1\Objects\JobDependency.cs" />
     <Compile Include="Web\Api\V1\Objects\QueryJob.cs" />
     <Compile Include="Web\Api\V1\Objects\Queue.cs" />
+    <Compile Include="Web\Api\V1\Objects\View.cs" />
     <Compile Include="Web\Api\V1\Objects\Table.cs" />
     <Compile Include="Web\Api\V1\Requests\AuthRequest.cs" />
     <Compile Include="Web\Api\V1\Requests\JobRequest.cs" />
@@ -97,6 +99,7 @@
     <Compile Include="Web\Api\V1\Responses\JobResponse.cs" />
     <Compile Include="Web\Api\V1\Responses\QueueListResponse.cs" />
     <Compile Include="Web\Api\V1\Responses\QueueResponse.cs" />
+    <Compile Include="Web\Api\V1\Responses\ViewListResponse.cs" />
     <Compile Include="Web\Api\V1\Responses\TableListResponse.cs" />
     <Compile Include="Web\Api\V1\Services\AuthService.cs" />
     <Compile Include="Web\Api\V1\Services\DataService.cs" />

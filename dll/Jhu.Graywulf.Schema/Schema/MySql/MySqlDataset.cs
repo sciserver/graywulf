@@ -787,7 +787,7 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
                 case Constants.TypeNameXml:
                     return DataTypes.SqlXml;
                 default:
-                    return base.CreateDataType(name);
+                    throw new NotImplementedException();
             }
         }
 

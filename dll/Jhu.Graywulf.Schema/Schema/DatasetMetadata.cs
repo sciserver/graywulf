@@ -10,7 +10,10 @@ namespace Jhu.Graywulf.Schema
     [DataContract(Namespace = "")]
     public class DatasetMetadata : Metadata, ICloneable
     {
+        [NonSerialized]
         private DateTime dateCreated;
+
+        [NonSerialized]
         private DateTime dateModified;
 
         [DataMember]

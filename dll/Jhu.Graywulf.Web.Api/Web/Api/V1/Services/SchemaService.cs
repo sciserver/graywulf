@@ -62,6 +62,34 @@ namespace Jhu.Graywulf.Web.Api.V1
             string datasetName,
             [Description("Name of the table.")]
             string tableName);
+
+        [OperationContract]
+        [DynamicResponseFormat]
+        [WebGet(UriTemplate = "/datasets/{datasetName}/views")]
+        [Description("Returns a list of the views of a dataset.")]
+        ViewListResponse ListViews(
+            [Description("Name of the dataset.")]
+            string datasetName);
+
+        [OperationContract]
+        [DynamicResponseFormat]
+        [WebGet(UriTemplate = "/datasets/{datasetName}/views/{viewName}")]
+        [Description("Returns information about a single view.")]
+        View GetView(
+            [Description("Name of the dataset.")]
+            string datasetName,
+            [Description("Name of the view.")]
+            string viewName);
+
+        [OperationContract]
+        [DynamicResponseFormat]
+        [WebGet(UriTemplate = "/datasets/{datasetName}/views/{viewName}/columns")]
+        [Description("Returns the list of columns of a view")]
+        ColumnListResponse ListViewColumns(
+            [Description("Name of the dataset.")]
+            string datasetName,
+            [Description("Name of the view.")]
+            string viewName);
     }
 
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
@@ -69,21 +97,19 @@ namespace Jhu.Graywulf.Web.Api.V1
     [RestServiceBehavior]
     public class SchemaService : RestServiceBase, ISchemaService
     {
+        #region Dataset functions
+
         private Schema.DatasetBase GetDatasetInternal(string datasetName)
         {
             return FederationContext.SchemaManager.Datasets[datasetName];
         }
 
-        private Schema.Table GetTableInternal(string datasetName, string tableName)
-        {
-            var parts = tableName.Split('.');
-            var dataset = FederationContext.SchemaManager.Datasets[datasetName];
-            return dataset.Tables[dataset.DatabaseName, parts[0], parts[1]];
-        }
-
         [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public DatasetListResponse ListDatasets()
         {
+            // Load all datasets and refresh cache by getting all items in list
+            FederationContext.SchemaManager.Datasets.LoadAll();
+
             return new DatasetListResponse(FederationContext.SchemaManager.Datasets.Values);
         }
 
@@ -91,6 +117,16 @@ namespace Jhu.Graywulf.Web.Api.V1
         public Dataset GetDataset(string datasetName)
         {
             return new Dataset(GetDatasetInternal(datasetName));
+        }
+
+        #endregion
+        #region Table functions
+
+        private Schema.Table GetTableInternal(string datasetName, string tableName)
+        {
+            var parts = tableName.Split('.');
+            var dataset = FederationContext.SchemaManager.Datasets[datasetName];
+            return dataset.Tables[dataset.DatabaseName, parts[0], parts[1]];
         }
 
         [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
@@ -115,5 +151,37 @@ namespace Jhu.Graywulf.Web.Api.V1
             var table = GetTableInternal(datasetName, tableName);
             return new ColumnListResponse(table.Columns.Values);
         }
+
+        #endregion
+        #region View functions
+
+        private Schema.View GetViewInternal(string datasetName, string viewName)
+        {
+            var parts = viewName.Split('.');
+            var dataset = FederationContext.SchemaManager.Datasets[datasetName];
+            return dataset.Views[dataset.DatabaseName, parts[0], parts[1]];
+        }
+
+        public ViewListResponse ListViews(string datasetName)
+        {
+            var dataset = GetDatasetInternal(datasetName);
+            dataset.Views.LoadAll();
+
+            return new ViewListResponse(dataset.Views.Values);
+        }
+
+        public View GetView(string datasetName, string viewName)
+        {
+            var view = GetViewInternal(datasetName, viewName);
+            return new View(view);
+        }
+
+        public ColumnListResponse ListViewColumns(string datasetName, string viewName)
+        {
+            var view = GetViewInternal(datasetName, viewName);
+            return new ColumnListResponse(view.Columns.Values);
+        }
+
+        #endregion
     }
 }

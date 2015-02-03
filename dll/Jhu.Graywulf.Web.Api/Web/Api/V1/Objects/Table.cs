@@ -10,12 +10,8 @@ namespace Jhu.Graywulf.Web.Api.V1
 {
     [DataContract(Name="table")]
     [Description("Represents a database table.")]
-    public class Table
+    public class Table : DatabaseObject
     {
-        [DataMember(Name="name")]
-        [Description("Name of the table.")]
-        public string Name { get; set; }
-
         [DataMember(Name = "columns")]
         [Description("An array of columns of the table.")]
         public Column[] Columns { get; set; }
@@ -25,8 +21,8 @@ namespace Jhu.Graywulf.Web.Api.V1
         }
 
         public Table(Jhu.Graywulf.Schema.Table table)
+            :base(table)
         {
-            this.Name = table.DisplayName;
             this.Columns = table.Columns.Values.Select(c => new Column(c)).ToArray();
         }
     }

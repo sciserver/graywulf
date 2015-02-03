@@ -10,10 +10,20 @@ namespace Jhu.Graywulf.Schema
     [DataContract(Namespace="")]
     public class DatabaseObjectMetadata : Metadata, ICloneable
     {
+        [NonSerialized]
         private string example;
+
+        [NonSerialized]
         private bool system;
+
+        [NonSerialized]
         private DateTime dateCreated;
+
+        [NonSerialized]
         private DateTime dateModified;
+
+        [NonSerialized]
+        private string @class;
 
         [DataMember]
         public string Example
@@ -43,6 +53,13 @@ namespace Jhu.Graywulf.Schema
             set { dateModified = value; }
         }
 
+        [DataMember]
+        public string Class
+        {
+            get { return @class; }
+            set { @class = value; }
+        }
+
         public DatabaseObjectMetadata()
         {
             InitializeMembers();
@@ -59,6 +76,7 @@ namespace Jhu.Graywulf.Schema
             this.system = false;
             this.dateCreated = DateTime.MinValue;
             this.dateModified = DateTime.MinValue;
+            this.@class = String.Empty;
         }
 
         private void CopyMembers(DatabaseObjectMetadata old)
@@ -67,6 +85,7 @@ namespace Jhu.Graywulf.Schema
             this.system = old.system;
             this.dateCreated = old.dateCreated;
             this.dateModified = old.dateModified;
+            this.@class = old.@class;
         }
 
         public object Clone()

@@ -10,7 +10,10 @@ namespace Jhu.Graywulf.Schema
     [DataContract(Namespace = "")]
     public abstract class Metadata
     {
+        [NonSerialized]
         private string summary;
+
+        [NonSerialized]
         private string remarks;
 
         [DataMember]

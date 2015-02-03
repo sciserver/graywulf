@@ -645,10 +645,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        protected virtual DataType CreateDataType(string name)
-        {
-            throw new NotImplementedException();
-        }
+        protected abstract DataType CreateDataType(string name);
 
         internal DataType CreateDataType(string name, int length, byte scale, byte precision, bool isNullable)
         {
