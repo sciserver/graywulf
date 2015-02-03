@@ -71,6 +71,7 @@
     <Compile Include="Schema\SerializationTest.cs" />
     <Compile Include="Schema\SqlServer\SqlServerDatasetTest.cs" />
     <Compile Include="Schema\SqlServer\SqlServerMetadataTest.cs" />
+    <Compile Include="Schema\SqlServer\SqlServerTestBase.cs" />
     <Compile Include="SqlCodeGen\MySqlCodeGeneratorTest.cs" />
     <Compile Include="SqlCodeGen\SqlServerCodeGeneratorTest.cs" />
   </ItemGroup>

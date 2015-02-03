@@ -168,7 +168,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
-        protected override void LoadObject<T>(T obj)
+        protected override void LoadDatabaseObject<T>(T obj)
         {
             var sql = String.Empty;
             switch (Schema.Constants.DatabaseObjectTypes[typeof(T)])

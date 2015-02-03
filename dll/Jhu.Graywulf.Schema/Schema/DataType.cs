@@ -125,35 +125,7 @@ namespace Jhu.Graywulf.Schema
 
             return dt;
         }
-
-        /* TODO: delete
-        public static DataType Create(DataRow dr)
-        {
-            // Get .Net type and other parameters
-            var type = (Type)dr[SchemaTableColumn.DataType];
-            var length = Convert.ToInt32(dr[SchemaTableColumn.ColumnSize]);
-            var precision = Convert.ToByte(dr[SchemaTableColumn.NumericPrecision]);
-            var scale = Convert.ToByte(dr[SchemaTableColumn.NumericScale]);
-            var isnullable = Convert.ToBoolean(dr[SchemaTableColumn.AllowDBNull]);
-
-            DataType dt;
-
-            // Try to interpret provider type as sql server type
-            SqlDbType sqltype;
-            if (Enum.TryParse<SqlDbType>((string)dr["DataTypeName"], true, out sqltype))
-            {
-                // This can be interpreted as a SQL Server type
-                dt = Create(sqltype, length, precision, scale, isnullable);
-            }
-            else
-            {
-                // This is a .Net type, might not be supported by SqlServer
-                dt = Create(type, length);
-            }
-
-            return dt;
-        }*/
-
+        
         #endregion
         #region Private variables for property storage
 

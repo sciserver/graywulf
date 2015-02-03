@@ -149,7 +149,7 @@ namespace Jhu.Graywulf.Schema.MySql
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
-        protected override void LoadObject<T>(T obj)
+        protected override void LoadDatabaseObject<T>(T obj)
         {
             string sql;
 

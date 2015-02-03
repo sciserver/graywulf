@@ -5,9 +5,10 @@
     <Columns>
         <jgwc:BoundField DataField="Name" HeaderText="Name" ItemStyle-Width="180px"/>
         <jgwc:BoundField DataField="DataType.NameWithLength" HeaderText="Type" ItemStyle-Width="100px" />
-        <jgwc:BoundField DataField="DataType.ByteSize" HeaderText="Size" ItemStyle-Width="30px" ItemStyle-HorizontalAlign="Right" />
-        <jgwc:BoundField DataField="Metadata.Content" HeaderText="Content" ItemStyle-Width="100px" />
-        <jgwc:BoundField DataField="Metadata.Unit" HeaderText="Unit" ItemStyle-Width="30px" />
+        <jgwc:BoundField DataField="DataType.ByteSize" HeaderText="Bytes" ItemStyle-Width="30px" ItemStyle-HorizontalAlign="Right" />
+        <jgwc:BoundField DataField="Metadata.Class" HeaderText="Class" ItemStyle-Width="150px" />
+        <jgwc:BoundField DataField="Metadata.Quantity" HeaderText="Quantity" ItemStyle-Width="150px" />
+        <jgwc:BoundField DataField="Metadata.Unit" HeaderText="Unit" ItemStyle-Width="75px" />
         <jgwc:BoundField DataField="Metadata.Summary" HeaderText="Summary" ItemStyle-CssClass="GridViewSpan" />
     </Columns>
 </jgwc:MultiSelectGridView>

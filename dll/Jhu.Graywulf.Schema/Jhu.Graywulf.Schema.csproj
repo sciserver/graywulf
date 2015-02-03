@@ -73,6 +73,7 @@
     <Compile Include="Schema\Index.cs" />
     <Compile Include="Schema\IndexColumn.cs" />
     <Compile Include="Schema\IParameters.cs" />
+    <Compile Include="Schema\Metadata.cs" />
     <Compile Include="Schema\MySql\Constants.cs" />
     <Compile Include="Schema\MySql\MySqlDataset.cs" />
     <Compile Include="Schema\Parameter.cs" />

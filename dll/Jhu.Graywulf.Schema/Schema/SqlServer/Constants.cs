@@ -45,9 +45,10 @@ namespace Jhu.Graywulf.Schema.SqlServer
         public const string MetaSummary = "meta.summary";
         public const string MetaRemarks = "meta.remarks";
         public const string MetaExample = "meta.example";
-        public const string MetaContent = "meta.content";
+        public const string MetaClass = "meta.class";
+        public const string MetaQuantity = "meta.quantity";
         public const string MetaUnit = "meta.unit";
-
+        public const string MetaFormat = "meta.format";
 
 
         public const string TypeNameUnknown = "unknown";

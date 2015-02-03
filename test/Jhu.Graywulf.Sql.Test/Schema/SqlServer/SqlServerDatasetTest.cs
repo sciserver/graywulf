@@ -11,20 +11,8 @@ using Jhu.Graywulf.Schema.SqlServer;
 namespace Jhu.Graywulf.Schema.SqlServer.Test
 {
     [TestClass]
-    public class SqlServerDatasetTest
+    public class SqlServerDatasetTest : SqlServerTestBase
     {
-        private SqlServerDataset CreateTestDataset()
-        {
-            var csb = new SqlConnectionStringBuilder(Jhu.Graywulf.Schema.Test.AppSettings.SqlServerConnectionString);
-
-            var ds = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, csb.ConnectionString)
-            {
-                DatabaseName = csb.InitialCatalog
-            };
-
-            return ds;
-        }
-
         #region Dataset tests
 
         [TestMethod]

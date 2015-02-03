@@ -322,8 +322,8 @@ namespace Jhu.Graywulf.Schema.SqlServer
         /// Loads the schema of a database object belonging to the dataset.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="obj"></param>
-        protected override void LoadObject<T>(T obj)
+        /// <param name="databaseObject"></param>
+        protected override void LoadDatabaseObject<T>(T databaseObject)
         {
             var sql = @"
 SELECT s.name, o.name, o.type
@@ -334,25 +334,25 @@ WHERE o.type IN ({0}) AND
     (s.name = @schemaName OR @schemaName IS NULL) AND o.name = @objectName
 ";
 
-            sql = String.Format(sql, GetObjectTypeIdListString(obj.ObjectType));
+            sql = String.Format(sql, GetObjectTypeIdListString(databaseObject.ObjectType));
 
             using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = String.IsNullOrWhiteSpace(obj.SchemaName) ? (object)DBNull.Value : (object)obj.SchemaName;
-                    cmd.Parameters.Add("@objectName", SqlDbType.NVarChar, 128).Value = obj.ObjectName;
+                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = String.IsNullOrWhiteSpace(databaseObject.SchemaName) ? (object)DBNull.Value : (object)databaseObject.SchemaName;
+                    cmd.Parameters.Add("@objectName", SqlDbType.NVarChar, 128).Value = databaseObject.ObjectName;
 
                     using (var dr = cmd.ExecuteReader())
                     {
                         int q = 0;
                         while (dr.Read())
                         {
-                            obj.Dataset = this;
-                            obj.DatabaseName = DatabaseName;
-                            obj.SchemaName = dr.GetString(0);
-                            obj.ObjectName = dr.GetString(1);
-                            obj.ObjectType = Constants.SqlServerObjectTypeIds[dr.GetString(2).Trim()];
+                            databaseObject.Dataset = this;
+                            databaseObject.DatabaseName = DatabaseName;
+                            databaseObject.SchemaName = dr.GetString(0);
+                            databaseObject.ObjectName = dr.GetString(1);
+                            databaseObject.ObjectType = Constants.SqlServerObjectTypeIds[dr.GetString(2).Trim()];
 
                             q++;
                         }
@@ -360,7 +360,7 @@ WHERE o.type IN ({0}) AND
                         // No records
                         if (q == 0)
                         {
-                            ThrowInvalidObjectNameException(obj);
+                            ThrowInvalidObjectNameException(databaseObject);
                         }
                         else if (q > 1)
                         {
@@ -631,14 +631,24 @@ ORDER BY p.parameter_id";
         /// <returns></returns>
         internal protected override DatabaseObjectMetadata LoadDatabaseObjectMetadata(DatabaseObject databaseObject)
         {
+            var meta = new DatabaseObjectMetadata();
+
+            LoadDatabaseObjectProperties(databaseObject, meta);
+            LoadDatabaseObjectExtendedProperties(databaseObject, meta);
+
+            return meta;
+        }
+
+        private void LoadDatabaseObjectProperties(DatabaseObject databaseObject, DatabaseObjectMetadata metadata)
+        {
             var sql = @"
-SELECT p.name, p.value
-FROM sys.extended_properties p
-WHERE p.class = 1 -- OBJECT_OR_COLUMN
-    AND p.major_id = OBJECT_ID(@schemaName + '.' + @objectName)
-    AND p.minor_id = 0  -- only objects
-    AND p.name LIKE 'meta.%'
-ORDER BY p.name";
+SELECT is_ms_shipped, o.create_date, o.modify_date
+FROM sys.objects o
+INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
+WHERE o.type IN ({0}) AND
+      (s.name = @schemaName OR @schemaName IS NULL) AND o.name = @objectName";
+
+            sql = String.Format(sql, GetObjectTypeIdListString(databaseObject.ObjectType));
 
             using (var cn = OpenConnectionInternal())
             {
@@ -649,8 +659,43 @@ ORDER BY p.name";
 
                     using (var dr = cmd.ExecuteReader())
                     {
-                        var meta = new DatabaseObjectMetadata();
+                        while (dr.Read())
+                        {
+                            metadata.System = dr.GetBoolean(0);
+                            metadata.DateCreated = dr.GetDateTime(1);
+                            metadata.DateModified = dr.GetDateTime(2);
+                        }
+                    }
+                }
+            }
+        }
 
+        private void LoadDatabaseObjectExtendedProperties(DatabaseObject databaseObject, DatabaseObjectMetadata metadata)
+        {
+            var sql = @"
+SELECT p.name, p.value
+FROM sys.objects o
+INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
+INNER JOIN sys.extended_properties p ON o.object_id = p.major_id
+WHERE o.type IN ({0}) AND
+      (s.name = @schemaName OR @schemaName IS NULL) AND o.name = @objectName AND
+      p.class = 1 -- OBJECT_OR_COLUMN
+      AND p.major_id = o.object_id
+      AND p.minor_id = 0  -- only objects
+      AND p.name LIKE 'meta.%'
+ORDER BY 1";
+
+            sql = String.Format(sql, GetObjectTypeIdListString(databaseObject.ObjectType));
+
+            using (var cn = OpenConnectionInternal())
+            {
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar).Value = databaseObject.SchemaName;
+                    cmd.Parameters.Add("@objectName", SqlDbType.NVarChar).Value = databaseObject.ObjectName;
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
                         while (dr.Read())
                         {
                             var name = dr.GetString(0);
@@ -659,20 +704,18 @@ ORDER BY p.name";
                             switch (name)
                             {
                                 case Constants.MetaSummary:
-                                    meta.Summary = value;
+                                    metadata.Summary = value;
                                     break;
                                 case Constants.MetaRemarks:
-                                    meta.Remarks = value;
+                                    metadata.Remarks = value;
                                     break;
                                 case Constants.MetaExample:
-                                    meta.Example = value;
+                                    metadata.Example = value;
                                     break;
                                 default:
                                     break;
                             }
                         }
-
-                        return meta;
                     }
                 }
             }
@@ -697,9 +740,11 @@ ORDER BY p.name";
             var sql = @"
 SELECT c.name, p.name metaname, p.value
 FROM sys.columns c
+INNER JOIN sys.objects o ON c.object_id = o.object_id
+INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
 INNER JOIN sys.extended_properties p ON p.major_id = c.object_id AND p.minor_id = c.column_id
-WHERE p.major_id = OBJECT_ID(@schemaName + '.' + @objectName)
-    AND p.name LIKE 'meta.%'
+WHERE (s.name = @schemaName OR @schemaName IS NULL) AND o.name = @objectName
+      AND p.name LIKE 'meta.%'
 ORDER BY c.name, p.name";
 
             LoadAllVariableMetadata(sql, databaseObject, ((IColumns)databaseObject).Columns);
@@ -711,12 +756,16 @@ ORDER BY c.name, p.name";
         /// <param name="databaseObject"></param>
         protected override void LoadAllParameterMetadata(DatabaseObject databaseObject)
         {
+            // TODO: test this
+
             var sql = @"
 SELECT c.name, p.name metaname, p.value
-FROM sys.parameters c
-INNER JOIN sys.extended_properties p ON p.major_id = c.object_id AND p.minor_id = c.parameter_id
-WHERE p.major_id = OBJECT_ID(@schemaName + '.' + @objectName)
-    AND p.name LIKE 'meta.%'
+FROM sys.columns c
+INNER JOIN sys.objects o ON c.object_id = o.object_id
+INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
+INNER JOIN sys.extended_properties p ON p.major_id = c.object_id AND p.minor_id = c.column_id
+WHERE (s.name = @schemaName OR @schemaName IS NULL) AND o.name = @objectName
+      AND p.name LIKE 'meta.%'
 ORDER BY c.name, p.name";
 
             LoadAllVariableMetadata(sql, databaseObject, ((IParameters)databaseObject).Parameters);
@@ -759,11 +808,20 @@ ORDER BY c.name, p.name";
                                 case Constants.MetaSummary:
                                     meta.Summary = value;
                                     break;
-                                case Constants.MetaContent:
-                                    meta.Content = value;
+                                case Constants.MetaRemarks:
+                                    meta.Remarks = value;
+                                    break;
+                                case Constants.MetaClass:
+                                    meta.Class = value;
+                                    break;
+                                case Constants.MetaQuantity:
+                                    meta.Quantity = value;
                                     break;
                                 case Constants.MetaUnit:
                                     meta.Unit = value;
+                                    break;
+                                case Constants.MetaFormat:
+                                    meta.Format = value;
                                     break;
                                 default:
                                     break;

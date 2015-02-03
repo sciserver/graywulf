@@ -422,7 +422,7 @@ namespace Jhu.Graywulf.Schema
 
             try
             {
-                LoadObject<T>(obj);
+                LoadDatabaseObject<T>(obj);
 
                 e.Value = obj;
                 e.Key = GetObjectUniqueKey(obj);
@@ -446,7 +446,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="databaseObject"></param>
-        protected abstract void LoadObject<T>(T databaseObject)
+        protected abstract void LoadDatabaseObject<T>(T databaseObject)
             where T : DatabaseObject, new();
 
         internal abstract bool IsObjectExisting(DatabaseObject databaseObject);

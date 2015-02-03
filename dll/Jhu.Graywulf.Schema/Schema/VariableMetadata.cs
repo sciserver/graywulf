@@ -9,25 +9,25 @@ namespace Jhu.Graywulf.Schema
 {
     [Serializable]
     [DataContract(Namespace = "")]
-    public class VariableMetadata
+    public class VariableMetadata : Metadata, ICloneable
     {
-        [NonSerialized]
-        private string summary;
-
-        [NonSerialized]
+        private string @class;
+        private string quantity;
         private string unit;
-
-        [NonSerialized]
-        private string content;
-
-        [NonSerialized]
         private string format;
 
         [DataMember]
-        public string Summary
+        public string Class
         {
-            get { return summary; }
-            set { summary = value; }
+            get { return @class; }
+            set { @class = value; }
+        }
+
+        [DataMember]
+        public string Quantity
+        {
+            get { return quantity; }
+            set { quantity = value; }
         }
 
         [DataMember]
@@ -35,13 +35,6 @@ namespace Jhu.Graywulf.Schema
         {
             get { return unit; }
             set { unit = value; }
-        }
-
-        [DataMember]
-        public string Content
-        {
-            get { return content; }
-            set { content = value; }
         }
 
         [DataMember]
@@ -63,18 +56,23 @@ namespace Jhu.Graywulf.Schema
 
         private void InitializeMembers()
         {
-            this.summary = String.Empty;
+            this.@class = String.Empty;
+            this.quantity = String.Empty;
             this.unit = String.Empty;
-            this.content = String.Empty;
             this.format = "{0}";
         }
 
         private void CopyMembers(VariableMetadata old)
         {
-            this.summary = old.summary;
+            this.@class = old.@class;
+            this.quantity = old.quantity;
             this.unit = old.unit;
-            this.content = old.content;
             this.format = old.format;
+        }
+
+        public object Clone()
+        {
+            return new VariableMetadata(this);
         }
     }
 }

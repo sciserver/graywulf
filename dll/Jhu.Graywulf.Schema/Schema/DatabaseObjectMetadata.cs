@@ -8,36 +8,39 @@ namespace Jhu.Graywulf.Schema
 {
     [Serializable]
     [DataContract(Namespace="")]
-    public class DatabaseObjectMetadata : ICloneable
+    public class DatabaseObjectMetadata : Metadata, ICloneable
     {
-        [NonSerialized]
-        private string summary;
-
-        [NonSerialized]
-        private string remarks;
-
-        [NonSerialized]
         private string example;
-
-        [DataMember]
-        public string Summary 
-        {
-            get { return summary; }
-            set { summary = value; }
-        }
-
-        [DataMember]
-        public string Remarks 
-        {
-            get { return remarks; }
-            set { remarks = value; }
-        }
+        private bool system;
+        private DateTime dateCreated;
+        private DateTime dateModified;
 
         [DataMember]
         public string Example
         {
             get { return example; }
             set { example = value; }
+        }
+
+        [DataMember]
+        public bool System
+        {
+            get { return system; }
+            set { system = value; }
+        }
+
+        [DataMember]
+        public DateTime DateCreated
+        {
+            get { return dateCreated; }
+            set { dateCreated = value; }
+        }
+
+        [DataMember]
+        public DateTime DateModified
+        {
+            get { return dateModified; }
+            set { dateModified = value; }
         }
 
         public DatabaseObjectMetadata()
@@ -52,16 +55,18 @@ namespace Jhu.Graywulf.Schema
 
         private void InitializeMembers()
         {
-            this.summary = String.Empty;
-            this.remarks = String.Empty;
             this.example = String.Empty;
+            this.system = false;
+            this.dateCreated = DateTime.MinValue;
+            this.dateModified = DateTime.MinValue;
         }
 
         private void CopyMembers(DatabaseObjectMetadata old)
         {
-            this.summary = old.summary;
-            this.remarks = old.remarks;
             this.example = old.example;
+            this.system = old.system;
+            this.dateCreated = old.dateCreated;
+            this.dateModified = old.dateModified;
         }
 
         public object Clone()

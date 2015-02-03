@@ -8,26 +8,23 @@ namespace Jhu.Graywulf.Schema
 {
     [Serializable]
     [DataContract(Namespace = "")]
-    public class DatasetMetadata : ICloneable
+    public class DatasetMetadata : Metadata, ICloneable
     {
-        [NonSerialized]
-        private string summary;
-
-        [NonSerialized]
-        private string remarks;
+        private DateTime dateCreated;
+        private DateTime dateModified;
 
         [DataMember]
-        public string Summary
+        public DateTime DateCreated
         {
-            get { return summary; }
-            set { summary = value; }
+            get { return dateCreated; }
+            set { dateCreated = value; }
         }
 
         [DataMember]
-        public string Remarks
+        public DateTime DateModified
         {
-            get { return remarks; }
-            set { remarks = value; }
+            get { return dateModified; }
+            set { dateModified = value; }
         }
 
         public DatasetMetadata()
@@ -42,14 +39,14 @@ namespace Jhu.Graywulf.Schema
 
         private void InitializeMembers()
         {
-            this.summary = String.Empty;
-            this.remarks = String.Empty;
+            this.dateCreated = DateTime.MinValue;
+            this.dateModified = DateTime.MinValue;
         }
 
         private void CopyMembers(DatasetMetadata old)
         {
-            this.summary = old.summary;
-            this.remarks = old.remarks;
+            this.dateCreated = old.dateCreated;
+            this.dateModified = old.dateModified;
         }
 
         public object Clone()
