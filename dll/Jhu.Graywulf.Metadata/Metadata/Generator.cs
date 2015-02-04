@@ -40,6 +40,11 @@ namespace Jhu.Graywulf.Metadata
             xml.Load(input);
         }
 
+        public void LoadXml(XmlDocument xml)
+        {
+            this.xml = xml;
+        }
+
         private void OpenConnection()
         {
             if (connectionString.IntegratedSecurity)
@@ -75,13 +80,7 @@ namespace Jhu.Graywulf.Metadata
                 throw new Exception("Xml document must be loaded first.");
             }
 
-            // Create required tables, if necessary
-            //CreateMetaSchema();
-            //CreateEnumTable();
-
-            databaseTransaction.Commit();
-
-            XmlElement root = xml.DocumentElement;
+            var root = xml.DocumentElement;
 
             // Go through all top level tags - table, procedure, view, function
             foreach (XmlElement e in root.ChildNodes)
@@ -95,7 +94,7 @@ namespace Jhu.Graywulf.Metadata
                         ProcessVersion(e);
                         break;
                     default:
-                        ObjectType ot = (ObjectType)Enum.Parse(typeof(ObjectType), e.Name, true);
+                        var ot = (ObjectType)Enum.Parse(typeof(ObjectType), e.Name, true);
                         IExtendedProperties smoobject;
 
                         string schema, name;
@@ -208,71 +207,79 @@ namespace Jhu.Graywulf.Metadata
         private void ProcessObject(XmlElement xmlElement, ObjectType objectType, IExtendedProperties smoObject)
         {
             // Delete old ExtendedProperties
-            while (smoObject.ExtendedProperties.Count > 0) smoObject.ExtendedProperties[0].Drop();
+            while (smoObject.ExtendedProperties.Count > 0)
+            {
+                smoObject.ExtendedProperties[0].Drop();
+            }
 
             // Dictionary to hold new properties, required for mergin multiple tags
-            Dictionary<string, string> properties = new Dictionary<string, string>();
+            var properties = new Dictionary<string, string>();
 
-            foreach (XmlElement e in xmlElement.ChildNodes)
+            foreach (XmlNode n in xmlElement.ChildNodes)
             {
-                // Try to parse as subitem (column, param)
-                ParameterType pt = ParameterType.Unknown;
-                bool subitem = Enum.TryParse<ParameterType>(e.Name, true, out pt);
-
-                if (subitem)
+                if (n is XmlElement)
                 {
-                    // Process tag as subitem
-                    if (!Constants.TagPairs[objectType].Contains(pt))
-                    {
-                        throw new Exception(String.Format("Invalid tag found, '{0}' cannot be part of '{1}'", pt.ToString(), objectType.ToString()));
-                    }
+                    var e = (XmlElement)n;
 
-                    IExtendedProperties paramobject;
+                    // Try to parse as subitem (column, param)
+                    var pt = ParameterType.Unknown;
+                    bool subitem = Enum.TryParse<ParameterType>(e.Name, true, out pt);
 
-                    string name = e.Attributes[Constants.AttributeName].Value.Trim('[', ']');
+                    if (subitem)
+                    {
+                        // Process tag as subitem
+                        if (!Constants.TagPairs[objectType].Contains(pt))
+                        {
+                            throw new Exception(String.Format("Invalid tag found, '{0}' cannot be part of '{1}'", pt.ToString(), objectType.ToString()));
+                        }
 
-                    switch (objectType)
-                    {
-                        case ObjectType.Table:
-                            paramobject = ((Table)smoObject).Columns[name];
-                            break;
-                        case ObjectType.View:
-                            paramobject = ((View)smoObject).Columns[name];
-                            break;
-                        case ObjectType.Procedure:
-                            paramobject = ((StoredProcedure)smoObject).Parameters[name];
-                            break;
-                        case ObjectType.Function:
-                            switch (pt)
-                            {
-                                case ParameterType.Param:
-                                    paramobject = ((UserDefinedFunction)smoObject).Parameters[name];
-                                    break;
-                                case ParameterType.Column:
-                                    paramobject = ((UserDefinedFunction)smoObject).Columns[name];
-                                    break;
-                                default:
-                                    throw new NotImplementedException();
-                            }
-                            break;
-                        default:
-                            throw new Exception("Invalid tag found.");
-                    }
-                    ProcessParameter(e, paramobject);
-                }
-                else
-                {
-                    if (properties.Keys.Contains<string>(e.Name))
-                    {
-                        // merge
-                        string s = properties[e.Name];
-                        s += Environment.NewLine + e.InnerXml;
-                        properties[e.Name] = s;
+                        IExtendedProperties paramobject;
+
+                        var name = e.Attributes[Constants.AttributeName].Value.Trim('[', ']');
+
+                        switch (objectType)
+                        {
+                            case ObjectType.Table:
+                                paramobject = ((Table)smoObject).Columns[name];
+                                break;
+                            case ObjectType.View:
+                                paramobject = ((View)smoObject).Columns[name];
+                                break;
+                            case ObjectType.Procedure:
+                                paramobject = ((StoredProcedure)smoObject).Parameters[name];
+                                break;
+                            case ObjectType.Function:
+                                switch (pt)
+                                {
+                                    case ParameterType.Param:
+                                        paramobject = ((UserDefinedFunction)smoObject).Parameters[name];
+                                        break;
+                                    case ParameterType.Column:
+                                        paramobject = ((UserDefinedFunction)smoObject).Columns[name];
+                                        break;
+                                    default:
+                                        throw new NotImplementedException();
+                                }
+                                break;
+                            default:
+                                throw new Exception("Invalid tag found.");
+                        }
+                        ProcessParameter(e, paramobject);
                     }
                     else
                     {
-                        // new
-                        properties.Add(e.Name, e.InnerXml);
+                        if (properties.Keys.Contains<string>(e.Name))
+                        {
+                            // merge
+                            var s = properties[e.Name];
+                            s += Environment.NewLine + e.InnerXml;
+                            properties[e.Name] = s;
+                        }
+                        else
+                        {
+                            // new
+                            properties.Add(e.Name, e.InnerXml);
+                        }
                     }
                 }
             }
@@ -287,10 +294,21 @@ namespace Jhu.Graywulf.Metadata
         private void ProcessParameter(XmlElement xmlElement, IExtendedProperties smoObject)
         {
             // Delete old ExtendedProperties
-            while (smoObject.ExtendedProperties.Count > 0) smoObject.ExtendedProperties[0].Drop();
+            while (smoObject.ExtendedProperties.Count > 0)
+            {
+                smoObject.ExtendedProperties[0].Drop();
+            }
 
-            //
-            AddExtendedProperty("summary", xmlElement.InnerText, smoObject);
+            foreach (var node in xmlElement.ChildNodes)
+            {
+                if (node is XmlElement)
+                {
+                    var e = (XmlElement)node;
+
+                    AddExtendedProperty(e.Name, e.InnerText, smoObject);
+                }
+            }
+            
             foreach (XmlAttribute attribute in xmlElement.Attributes)
             {
                 if (attribute.Name != Constants.AttributeName)

@@ -32,22 +32,35 @@ namespace Jhu.Graywulf.Metadata.CmdLineUtil
 
         public override void Run()
         {
-            string meta = File.ReadAllText(inputFilename);
+            XmlDocument xml;
+            var meta = File.ReadAllText(inputFilename);
 
             // Load input
             if (Path.GetExtension(inputFilename) == ".sql")
             {
                 Console.Write("Parsing SQL script... ");
-                Parser p = new Parser();
-                meta = p.Parse(meta);
+
+                var p = new Parser();
+                xml = p.Parse(meta);
+                
                 Console.WriteLine("done.");
             }
+            else if (Path.GetExtension(inputFilename) == ".xml")
+            {
+                Console.Write("Loading XML... ");
 
-            Generator g = new Generator(GetConnectionString());
+                xml = new XmlDocument();
+                xml.LoadXml(meta);
 
-            Console.Write("Loading XML... ");
-            g.LoadXml(meta);
-            Console.WriteLine("done.");
+                Console.WriteLine("done.");
+            }
+            else
+            {
+                throw new Exception("Unknown file extension");
+            }
+
+            var g = new Generator(GetConnectionString());
+            g.LoadXml(xml);
 
             Console.Write("Creating metadata... ");
             g.CreateMetadata();

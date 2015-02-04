@@ -41,12 +41,16 @@ namespace Jhu.Graywulf.Metadata.CmdLineUtil
 
         public override void Run()
         {
-            string meta = File.ReadAllText(inputFilename);
+            
 
             // Load input
             Console.Write("Parsing SQL script... ");
-            Parser p = new Parser();
-            meta = p.Parse(meta);
+
+            var meta = File.ReadAllText(inputFilename);
+
+            var p = new Parser();
+            var xml = p.Parse(meta);
+            
             Console.WriteLine("done.");
 
             string filename;
@@ -61,9 +65,8 @@ namespace Jhu.Graywulf.Metadata.CmdLineUtil
 
             Console.Write("Saving XML... ");
 
-            XmlDocument xml = new XmlDocument();
-            xml.LoadXml(meta);
             xml.Save(filename);
+
             Console.WriteLine("done.");
         }
     }

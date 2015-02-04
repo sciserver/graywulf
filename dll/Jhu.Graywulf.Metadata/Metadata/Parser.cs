@@ -4,9 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Xml;
 
 namespace Jhu.Graywulf.Metadata
 {
+    /// <summary>
+    /// Implements functionality to scan a sql file for embedded XML comments.
+    /// </summary>
+    /// <remarks>
+    /// The class works by scanning the SQL code for object definitions and
+    /// tries to look up object and column names from the code which are
+    /// automatically added to the XML tags as attributes. This way object names
+    /// appear only once in the code and the corresponding xml tags always
+    /// follow the objects' or the columns' definition.
+    /// </remarks>
     public class Parser
     {
         private const string SingleLineComment = "--";
@@ -14,17 +25,35 @@ namespace Jhu.Graywulf.Metadata
         private const string MultiLineCommentEnd = "*/";
         private const string MagicToken = "/";
 
+        // Matches a single line starting with the magic token --/
+        // group 1: the part containing xml tags
+        private const string XmlComment = @"\G\s*--/(.*)";
+        private static readonly Regex XmlCommentRegex = new Regex(XmlComment, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private const string AnyLine = @"\G.*";
+        private static readonly Regex AnyLineRegex = new Regex(AnyLine, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private const string EmptyLine = @"\G\s*$";
+        private static readonly Regex EmptyLineRegex = new Regex(EmptyLine, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         private const string Identifier = @"(?:[a-z_][a-z_0-9]*)";
         private const string QuotedIdentifier = @"(@*(?:\[[^]]+\])|@*" + Identifier + @")";
         private const string ObjectName = QuotedIdentifier + @"(?:\." + QuotedIdentifier + @")*";
         private static readonly Regex ObjectNameRegex = new Regex(ObjectName, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private static readonly Regex CreateObjectRegex = new Regex(@"CREATE\s+([a-z]+)\s+(" + ObjectName + @")\s*\(", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex CreateObjectRegex = new Regex(@"\G\s*CREATE\s+([a-z]+)\s+(" + ObjectName + @")\s*\(", RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
         private static readonly Regex ReturnsTableRegex = new Regex(@"\s*RETURNS\s+" + QuotedIdentifier + @"\s+TABLE\s*\(", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        private const string XmlTag = @"<\s*([a-z]+)(\s+[a-z]+\s*=\s*((""[^""]*"")|(\S+)))*>";
-        private static readonly Regex XmlTagRegex = new Regex(XmlTag, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private const string XmlTag = @"<([a-z]+)(?:(?:\s+[a-z]+)\s*=\s*(?:""[^""]*""))*\s*(/>|>.*</\1>)";
+        private static readonly Regex XmlTagRegex = new Regex(XmlTag, RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
 
-        private static readonly Regex ParamNameRegex = new Regex(@"\s*" + QuotedIdentifier, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex ParamNameRegex = new Regex(@"\G\s*(" + QuotedIdentifier + @").*", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        enum ExtractMode
+        {
+            Object,
+            Column,
+            Parameter
+        }
 
         /// <summary>
         /// Extracts xml comments from the source file.
@@ -36,22 +65,26 @@ namespace Jhu.Graywulf.Metadata
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public string Parse(string input)
+        public XmlDocument Parse(string input)
         {
-            StringWriter buffer = new StringWriter();
-            StringWriter buffer2 = new StringWriter();
-            StringWriter buffer3 = new StringWriter();
+            var buffer = new StringWriter();
+            var buffer2 = new StringWriter();
+            var buffer3 = new StringWriter();
 
             RemoveMultilineComments(new StringReader(input), buffer);
             RemoveSinglelineComments(new StringReader(buffer.ToString()), buffer2);
 
-            StringBuilder script = new StringBuilder(buffer2.ToString());
-            InsertObjectTags(script);
+            //var script = new StringBuilder(buffer2.ToString());
+            //InsertObjectTags(script);
 
-            ExtractXmlComments(new StringReader(script.ToString()), buffer3);
+            //ExtractXmlComments(new StringReader(script.ToString()), buffer3);
 
-            return buffer3.ToString();
+            //return buffer3.ToString();
+
+            return ExtractXmlComments(buffer2.ToString());
         }
+
+        #region Standard comment removal functions
 
         /// <summary>
         /// Removes multi-line comments from the source
@@ -73,6 +106,7 @@ namespace Jhu.Graywulf.Metadata
                     if (inside)
                     {
                         int i = line.IndexOf(MultiLineCommentEnd, pos);
+
                         if (i >= 0)
                         {
                             // Skip comment part
@@ -90,8 +124,11 @@ namespace Jhu.Graywulf.Metadata
 
                         // Make sure that no single line comment token preceding the multi line comment
                         int j = line.IndexOf(SingleLineComment);
+
                         if (j != -1 && j < i)
+                        {
                             break;
+                        }
 
 
                         if (i >= 0)
@@ -128,6 +165,7 @@ namespace Jhu.Graywulf.Metadata
             while ((line = input.ReadLine()) != null)
             {
                 int i = line.IndexOf(SingleLineComment);
+
                 if (i != -1)
                 {
                     // Look for magic token after comment token
@@ -150,128 +188,173 @@ namespace Jhu.Graywulf.Metadata
             }
         }
 
-        /// <summary>
-        /// Extract xml from source by looking for comment + magic token combinations.
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="output"></param>
-        private void ExtractXmlComments(TextReader input, TextWriter output)
+        #endregion
+
+        private XmlDocument ExtractXmlComments(string script)
         {
-            output.WriteLine("<{0}>", Constants.TagMetadata);
+            var doc = new XmlDocument();
+            var metadata = doc.CreateElement("metadata");
 
-            string line;
+            doc.AppendChild(metadata);
 
-            while ((line = input.ReadLine()) != null)
-            {
-                int i = line.IndexOf(SingleLineComment + MagicToken);
-                if (i != -1)
-                    output.WriteLine(line.Substring(i + SingleLineComment.Length + MagicToken.Length));
-            }
+            ExtractXmlComments(script, 0, script.Length, ExtractMode.Object, metadata);
 
-            output.WriteLine("</{0}>", Constants.TagMetadata);
+            return doc;
         }
 
-        /// <summary>
-        /// Adds xml tags for tables, functions etc.
-        /// </summary>
-        /// <remarks>
-        /// This is for MSSQL scripts only.
-        /// </remarks>
-        /// <param name="script"></param>
-        private void InsertObjectTags(StringBuilder script)
-        {
-            int i = 0;
-            Match m;
-
-            while ((m = CreateObjectRegex.Match(script.ToString(), i)).Success)
-            {
-                string tagname = m.Groups[1].Value.ToLower();
-                ObjectType ot = (ObjectType)Enum.Parse(typeof(ObjectType), tagname, true);      //*** TODO: support
-                string tag = "\r\n" + SingleLineComment + MagicToken + " <" + tagname + " name=\"" + QuoteObjectName(m.Groups[2].Value) + "\">\r\n";
-                script.Insert(m.Index + m.Length, tag);
-
-                // Find matching closing bracket
-                int ct = FindClosingBracket(script, m.Index + m.Length);
-
-                i = UpdateParamTags(script, Constants.TagPairs[ot], m.Index + m.Length, ct);
-
-                // Look for RETURN @table TABLE sequence right after the closing bracket in case of table valued functions
-                Match mm = ReturnsTableRegex.Match(script.ToString(), i + 1);
-                if (mm.Success && mm.Index == i + 1)
-                {
-                    ct = FindClosingBracket(script, mm.Index + mm.Length);
-                    i = UpdateParamTags(script, Constants.TagPairs[ObjectType.Table], mm.Index + mm.Length, ct);
-                }
-
-                tag = "\r\n" + SingleLineComment + MagicToken + " </" + tagname + ">\r\n";
-                script.Insert(i, tag);
-                i += tag.Length;
-            }
-        }
-
-        /// <summary>
-        /// Adds xml tags for columns, paramters etc.
-        /// </summary>
-        /// <remarks>
-        /// This is for MSSQL scripts only.
-        /// </remarks>
-        /// <param name="script"></param>
-        /// <param name="tagname"></param>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <returns></returns>
-        private int UpdateParamTags(StringBuilder script, List<ParameterType> tagnames, int start, int end)
+        private void ExtractXmlComments(string script, int start, int end, ExtractMode mode, XmlElement element)
         {
             int i = start;
             Match m;
 
-            while ((m = XmlTagRegex.Match(script.ToString(), i, end - i)).Success)
+            var buffer = new StringBuilder();
+
+            while (i < end)
             {
-                i = m.Index + m.Length;
+                // Try to match an xml comment line starting from the current character
 
-                ParameterType pt;
+                m = XmlCommentRegex.Match(script, i);
 
-                if (Enum.TryParse<ParameterType>(m.Groups[1].Value, true, out pt))
+                if (m.Success)
                 {
-                    if (tagnames.Contains(pt))
+                    // the line contains an xml comment, add it to the buffer
+                    buffer.AppendLine(m.Groups[1].Value.Trim());
+
+                    i = m.Index + m.Length + 1;
+                    continue;
+                }
+
+                if (mode == ExtractMode.Object)
+                {
+                    // Try to match a CREATE ... command
+
+                    m = CreateObjectRegex.Match(script, i);
+
+                    if (m.Success)
                     {
-                        // Find first token in the row, that's the name of the column
+                        var r = FindClosingBracket(script, i + m.Length);
 
-                        // Find end of the line
-                        int j = script.ToString().LastIndexOf("\r\n", i);
-                        if (j == -1)
-                            j = 0;
-                        else
-                            j += 2; // skip \r\n
+                        if (r < 0)
+                        {
+                            throw new Exception("Error in SQL script. Closing bracket was expected.");
+                        }
 
-                        Match mn = ParamNameRegex.Match(script.ToString(), j);
+                        // Create a tag around the object and parse the inner script
+                        var tagname = m.Groups[1].Value.ToLower();
+                        var name = QuoteObjectName(m.Groups[2].Value);
 
-                        string attribute = " name=\"" + mn.Groups[1].Value + "\"";
+                        var ot = GetObjectType(tagname);
+                        var tag = element.OwnerDocument.CreateElement(ot.ToString().ToLower());
+                        tag.SetAttribute("name", name);
+                        tag.InnerXml = buffer.ToString();
 
-                        script.Insert(m.Groups[1].Index + m.Groups[1].Length, attribute);
+                        // Reset the buffer
+                        buffer.Clear();
 
-                        end += attribute.Length;
-                        i += attribute.Length;
+                        // Inner element parsing depends on the object type
+                        ExtractMode innermode;
+
+                        switch (ot)
+                        {
+                            case ObjectType.Table:
+                            case ObjectType.View:
+                                innermode = ExtractMode.Column;
+                                break;
+                            case ObjectType.Procedure:
+                            case ObjectType.Function:
+                                innermode = ExtractMode.Parameter;
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+
+                        // Call recursively for parameters of the object
+                        ExtractXmlComments(script, i + m.Length + 1, r, innermode, tag);
+
+                        element.AppendChild(tag);
+
+                        i = r + 1;
+                        continue;
                     }
+
+                    // This is a line we can't do anything with, simply skip it
+                    m = AnyLineRegex.Match(script, i);
+
+                    if (m.Success)
+                    {
+                        i = m.Index + m.Length + 1;
+                        continue;
+                    }
+
+                    // End of script is reached
+                    break;
+                }
+                else if (mode == ExtractMode.Column || mode == ExtractMode.Parameter)
+                {
+                    // Try to match a CREATE ... command
+
+                    // Skip all line containing any whitespace
+                    m = EmptyLineRegex.Match(script, i);
+
+                    if (m.Success)
+                    {
+                        i = m.Index + m.Length + 1;
+                        continue;
+                    }
+
+                    // Match any line, the first token is the name of the parameter
+                    m = ParamNameRegex.Match(script, i);
+
+                    // We only consider those line which are preceded by xml comment tags
+                    if (m.Success && buffer.Length > 0)
+                    {
+                        var tagname = mode.ToString().ToLower();
+                        var name = m.Groups[1].Value;
+
+                        var tag = element.OwnerDocument.CreateElement(tagname);
+                        tag.SetAttribute("name", name);
+                        tag.InnerXml = buffer.ToString();
+
+                        // Reset the buffer
+                        buffer.Clear();
+
+                        element.AppendChild(tag);
+
+                        i = m.Index + m.Length + 1;
+                        continue;
+                    }
+
+                    // This is a line we can't do anything with, simply skip it
+                    m = AnyLineRegex.Match(script, i);
+
+                    if (m.Success)
+                    {
+                        i = m.Index + m.Length + 1;
+                        continue;
+                    }
+
+                    // End of script is reached
+                    break;
                 }
             }
-
-            return end;
         }
 
-        private int FindClosingBracket(StringBuilder script, int start)
+        private int FindClosingBracket(string script, int start)
         {
             int bcount = 1;
 
             int i = start;
             while (i < script.Length)
             {
-                // Skip comments
+                // We need to skip comments here because magic token
+                // comments are still in the script
+
                 if (script[i] == SingleLineComment[0]
                     && i + SingleLineComment.Length < script.Length
-                    && script.ToString().Substring(i, SingleLineComment.Length) == SingleLineComment)
+                    && script.Substring(i, SingleLineComment.Length) == SingleLineComment)
                 {
                     i = script.ToString().IndexOf("\r\n", i);
+
                     if (i == -1)
                     {
                         // end reached, everything was comment
@@ -286,18 +369,39 @@ namespace Jhu.Graywulf.Metadata
 
 
                 if (script[i] == '(')
+                {
                     bcount++;
+                }
                 else if (script[i] == ')')
+                {
                     bcount--;
+                }
 
                 // closing bracket found
                 if (bcount == 0)
+                {
                     return i;
+                }
 
                 i++;
             }
 
             return -1;
+        }
+
+        private ObjectType GetObjectType(string tagname)
+        {
+            ObjectType ot;
+
+            if (!Enum.TryParse(tagname, out ot))
+            {
+                if (StringComparer.InvariantCultureIgnoreCase.Compare("PROC", tagname) == 0)
+                {
+                    ot = ObjectType.Procedure;
+                }
+            }
+
+            return ot;
         }
 
         private string QuoteObjectName(string name)
@@ -309,7 +413,10 @@ namespace Jhu.Graywulf.Metadata
             {
                 if (m.Groups[i].Value != string.Empty)
                 {
-                    if (i > 1) res += ".";
+                    if (i > 1)
+                    {
+                        res += ".";
+                    }
 
                     if (m.Groups[i].Value.StartsWith("["))
                     {
