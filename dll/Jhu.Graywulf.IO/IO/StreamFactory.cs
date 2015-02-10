@@ -50,6 +50,8 @@ namespace Jhu.Graywulf.IO
         private DataFileMode mode;
         private DataFileCompression compression;
         private DataFileArchival archival;
+        private int bufferSize;
+        private FileOptions options;
 
         /// <summary>
         /// Gets or sets the URI to open
@@ -97,6 +99,18 @@ namespace Jhu.Graywulf.IO
             set { archival = value; }
         }
 
+        public int BufferSize
+        {
+            get { return bufferSize; }
+            set { bufferSize = value; }
+        }
+
+        public FileOptions Options
+        {
+            get { return options; }
+            set { options = value; }
+        }
+
         #region Constructors and initialzers
 
         /// <summary>
@@ -117,6 +131,8 @@ namespace Jhu.Graywulf.IO
             this.mode = DataFileMode.Read;
             this.compression = DataFileCompression.Automatic;
             this.archival = DataFileArchival.Automatic;
+            this.bufferSize = 0x10000;  // 64k
+            this.options = FileOptions.None;
         }
 
         #endregion
@@ -509,7 +525,7 @@ namespace Jhu.Graywulf.IO
             switch (mode)
             {
                 case DataFileMode.Read:
-                    return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, options);
                 case DataFileMode.Write:
                     // Create directory first
                     var dir = Path.GetDirectoryName(path);
@@ -517,7 +533,7 @@ namespace Jhu.Graywulf.IO
                     {
                         Directory.CreateDirectory(dir);
                     }
-                    return new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
+                    return new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize, options);
                 default:
                     throw new NotImplementedException();
             }

@@ -22,6 +22,9 @@ namespace Jhu.Graywulf.Format
         [NonSerialized]
         private SqlServerNativeBinaryWriter nativeWriter;
 
+        [NonSerialized]
+        private bool generateSqlScripts;
+
         #endregion
         #region Properties
 
@@ -29,6 +32,12 @@ namespace Jhu.Graywulf.Format
         internal SqlServerNativeBinaryWriter NativeWriter
         {
             get { return nativeWriter; }
+        }
+
+        public bool GenerateSqlScripts
+        {
+            get { return generateSqlScripts; }
+            set { generateSqlScripts = value; }
         }
 
         #endregion
@@ -80,6 +89,7 @@ namespace Jhu.Graywulf.Format
             };
 
             this.nativeWriter = null;
+            this.generateSqlScripts = false;
         }
 
         private void CopyMembers(SqlServerNativeDataFile old)
@@ -98,18 +108,13 @@ namespace Jhu.Graywulf.Format
         protected override void OpenForRead()
         {
             base.OpenForRead();
-
-            if (!IsArchive)
-            {
-                throw new Exception("Must be an archive");  // **** TODO
-            }
         }
 
         protected override void OpenForWrite()
         {
             base.OpenForWrite();
 
-            if (!IsArchive)
+            if (generateSqlScripts && !IsArchive)
             {
                 throw new Exception("Must be an archive");  // **** TODO
             }

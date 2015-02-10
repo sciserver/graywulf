@@ -110,8 +110,11 @@ namespace Jhu.Graywulf.Format
             // Native files are always stored in an archive as they consist of
             // multiple files
 
-            WriteCreateScript();
-            WriteBulkInsertScript();
+            if (File.GenerateSqlScripts)
+            {
+                WriteCreateScript();
+                WriteBulkInsertScript();
+            }
         }
 
         private void WriteTextFileEntry(string extension, string text)

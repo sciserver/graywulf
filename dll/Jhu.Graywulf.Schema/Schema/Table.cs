@@ -92,37 +92,49 @@ namespace Jhu.Graywulf.Schema
 
         public void Initialize(IList<Column> columns, TableInitializationOptions options)
         {
+            // If the table needs to be dropped do it now
             if ((options & TableInitializationOptions.Drop) != 0)
             {
                 Drop();
             }
 
-            // Copy columns
-            this.Columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
-            for (int i = 0; i < columns.Count; i++)
+            // If the destination table is supposed to be existing take columns
+            // from there, otherwise take from input data reader
+            if ((options & TableInitializationOptions.Append) == 0 &&
+                (options & TableInitializationOptions.Create) == 0)
             {
-                var nc = (Column)columns[i].Clone();
-                this.Columns.TryAdd(nc.Name, nc);
-            }
-
-            if ((options & TableInitializationOptions.Append) != 0)
-            {
-                if (!VerifyColumns(true))
-                {
-                    throw new SchemaException(
-                        String.Format(
-                            "Table is to be appended but schemas do not match: {0}:{1}.{2}.{3}",
-                            Dataset.Name, DatabaseName, SchemaName, TableName));  // *** TODO
-                }
-            }
-            else if ((options & TableInitializationOptions.Create) != 0)
-            {
-                Create();
+                // Destination table columns are already loaded
             }
             else
             {
-                // *** TODO: implement other options
-                throw new NotImplementedException();
+                // Copy columns from source data reader
+                this.Columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
+                
+                for (int i = 0; i < columns.Count; i++)
+                {
+                    var nc = (Column)columns[i].Clone();
+                    this.Columns.TryAdd(nc.Name, nc);
+                }
+
+                if ((options & TableInitializationOptions.Append) != 0)
+                {
+                    if (!VerifyColumns(true))
+                    {
+                        throw new SchemaException(
+                            String.Format(
+                                "Table is to be appended but schemas do not match: {0}:{1}.{2}.{3}",
+                                Dataset.Name, DatabaseName, SchemaName, TableName));  // *** TODO
+                    }
+                }
+                else if ((options & TableInitializationOptions.Create) != 0)
+                {
+                    Create();
+                }
+                else
+                {
+                    // *** TODO: implement other options
+                    throw new NotImplementedException();
+                }
             }
 
             if ((options & TableInitializationOptions.Clear) != 0)

@@ -165,13 +165,18 @@ namespace Jhu.Graywulf.Format
         {
             GetFileExtensions(uri, out filename, out extension, out compression);
 
-            var res = TryCreateFileFromExtension(extension, out file);
+            if (TryCreateFileFromExtension(extension, out file))
+            {
+                file.Name = Path.GetFileNameWithoutExtension(filename);
+                file.Uri = Util.UriConverter.FromFilePath(filename);
+                file.Compression = compression;
 
-            file.Name = Util.UriConverter.ToFileNameWithoutExtension(uri);
-            file.Uri = uri;
-            file.Compression = compression;
-
-            return res;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public DataFileBase CreateFileFromExtension(string extension)

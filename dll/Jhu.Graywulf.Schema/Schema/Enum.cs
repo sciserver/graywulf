@@ -54,6 +54,7 @@ namespace Jhu.Graywulf.Schema
     [Flags]
     public enum TableInitializationOptions
     {
+        None = 0,
         Drop = 1,
         Create = 2,
         Clear = 4,
