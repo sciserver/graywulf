@@ -135,7 +135,7 @@ namespace Jhu.Graywulf.Web.Security
         }
 
         private void OnPostAcquireRequestState(object sender, EventArgs e)
-        {   
+        {
             // (5.) This is where we get the session object the first time
 
             // To detect whether a user has left or a new user arrived we
@@ -238,41 +238,56 @@ namespace Jhu.Graywulf.Web.Security
 
         public string GetSignInUrl()
         {
-            var url = Configuration.BaseUri.ToString();
+            var path = AddReturnUrl(Configuration.SignInUri);
 
-            if (!url.EndsWith("/"))
-            {
-                url += "/";
-            }
-
-            url += "signin.aspx?ReturnUrl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.OriginalString);
-            return url;
+            return Util.UriConverter.Combine(Configuration.BaseUri, path).OriginalString;
         }
 
         public string GetSignOutUrl()
         {
-            var url = Configuration.BaseUri.ToString();
+            var path = AddReturnUrl(Configuration.SignOutUri);
 
-            if (!url.EndsWith("/"))
-            {
-                url += "/";
-            }
+            return Util.UriConverter.Combine(Configuration.BaseUri, path).OriginalString;
+        }
 
-            url += "signout.aspx?ReturnUrl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.OriginalString);
-            return url;
+        public string GetRegisternUrl()
+        {
+            var path = AddReturnUrl(Configuration.RegisterUri);
+
+            return Util.UriConverter.Combine(Configuration.BaseUri, path).OriginalString;
         }
 
         public string GetUserAccountUrl()
         {
-            var url = Configuration.BaseUri.ToString();
+            var path = AddReturnUrl(Configuration.AccountUri);
 
-            if (!url.EndsWith("/"))
+            return Util.UriConverter.Combine(Configuration.BaseUri, path).OriginalString;
+        }
+
+        private string AddReturnUrl(Uri uri)
+        {
+            var returnurl = HttpUtility.UrlEncode(HttpContext.Current.Request.Url.OriginalString);
+            var path = uri.IsAbsoluteUri ? uri.PathAndQuery : uri.OriginalString;
+
+            if (path.Contains("[$ReturnUrl]"))
             {
-                url += "/";
+                path = path.Replace("[$ReturnUrl]", returnurl);
+            }
+            else
+            {
+                if (path.IndexOf('?') < 0)
+                {
+                    path += "?";
+                }
+                else
+                {
+                    path += "&";
+                }
+
+                path += "ReturnUrl=" + returnurl;
             }
 
-            url += "user.aspx?ReturnUrl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.Url.OriginalString);
-            return url;
+            return path;
         }
 
         private void RedirectToLoginPage()

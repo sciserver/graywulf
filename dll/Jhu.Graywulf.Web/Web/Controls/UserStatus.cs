@@ -102,7 +102,7 @@ namespace Jhu.Graywulf.Web.Controls
             account.NavigateUrl = wam.GetUserAccountUrl();
             signOut.NavigateUrl = wam.GetSignOutUrl();
             signIn.NavigateUrl = wam.GetSignInUrl();
-            register.NavigateUrl = wam.GetUserAccountUrl();
+            register.NavigateUrl = wam.GetRegisternUrl();
         }
 
         protected override void Render(System.Web.UI.HtmlTextWriter writer)
