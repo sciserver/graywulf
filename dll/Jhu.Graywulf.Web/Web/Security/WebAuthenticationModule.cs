@@ -238,35 +238,50 @@ namespace Jhu.Graywulf.Web.Security
 
         public string GetSignInUrl()
         {
-            var path = AddReturnUrl(Configuration.SignInUri);
-
-            return Util.UriConverter.Combine(Configuration.BaseUri, path).OriginalString;
+            return AddReturnUrl(Configuration.SignInUri);
         }
 
         public string GetSignOutUrl()
         {
-            var path = AddReturnUrl(Configuration.SignOutUri);
-
-            return Util.UriConverter.Combine(Configuration.BaseUri, path).OriginalString;
+            return AddReturnUrl(Configuration.SignOutUri);
         }
 
         public string GetRegisternUrl()
         {
-            var path = AddReturnUrl(Configuration.RegisterUri);
-
-            return Util.UriConverter.Combine(Configuration.BaseUri, path).OriginalString;
+            return AddReturnUrl(Configuration.RegisterUri);
         }
 
         public string GetUserAccountUrl()
         {
-            var path = AddReturnUrl(Configuration.AccountUri);
-
-            return Util.UriConverter.Combine(Configuration.BaseUri, path).OriginalString;
+            return AddReturnUrl(Configuration.AccountUri);
         }
 
         private string AddReturnUrl(Uri uri)
         {
-            var returnurl = HttpUtility.UrlEncode(HttpContext.Current.Request.Url.OriginalString);
+            var baseuri = Configuration.BaseUri;
+
+            // Check if the redirect should be made to another host. If so, then the return
+            // url should contain the host name, if not, it is enough to use path only
+            string returnurl;
+
+            if (baseuri.IsAbsoluteUri)
+            {
+                // Different host, use full URL with scheme and host name
+
+                // TODO: figure out how it would work with reverse-proxy, without
+                // URL rewrite...
+
+                returnurl = HttpContext.Current.Request.Url.OriginalString;
+            }
+            else
+            {
+                // Same host, use path and query only
+                returnurl = HttpContext.Current.Request.Url.PathAndQuery;
+            }
+
+            returnurl = HttpUtility.UrlEncode(returnurl);
+
+            // Append return url to the path
             var path = uri.IsAbsoluteUri ? uri.PathAndQuery : uri.OriginalString;
 
             if (path.Contains("[$ReturnUrl]"))
@@ -287,7 +302,7 @@ namespace Jhu.Graywulf.Web.Security
                 path += "ReturnUrl=" + returnurl;
             }
 
-            return path;
+            return Util.UriConverter.Combine(Configuration.BaseUri, path).OriginalString;
         }
 
         private void RedirectToLoginPage()
