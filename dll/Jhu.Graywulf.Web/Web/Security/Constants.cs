@@ -15,6 +15,9 @@ namespace Jhu.Graywulf.Web.Security
 
         public const string SettingsAuthenticators = "Authenticators";
 
+        public const string WebAuthenticationModule = "WebAuthenticationModule";
+
+        public const string HttpContextAuthenticationRequest = "Jhu.Graywulf.Web.Security.AuthenticationRequest";
         public const string HttpContextAuthenticationResponse = "Jhu.Graywulf.Web.Security.AuthenticationResponse";
     }
 }

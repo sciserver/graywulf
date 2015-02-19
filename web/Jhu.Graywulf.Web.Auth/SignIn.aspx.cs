@@ -41,14 +41,20 @@ namespace Jhu.Graywulf.Web.Auth
             // First try to authenticate by headers and cookies in the request only.
             // If that works, the user will be redirected back to the URL they were
             // coming from and execution will not get to the update form stage.
-            if (AuthenticateByRequest())
+
+            if (User.Identity is GraywulfIdentity && User.Identity.IsAuthenticated)
             {
+                // The user is already authenticated
+                RedirectAuthenticatedUser();
+            }
+            else if (AuthenticateByRequest())
+            {
+                // The user is authenticated by a third party and returning now
+                // with a valid ticket
                 RedirectAuthenticatedUser();
             }
             else
             {
-                // If the identity of the user is already known
-
                 // If the authentication is unsuccessful based on request data,
                 // we need to display the form
                 UpdateForm();
@@ -304,6 +310,14 @@ namespace Jhu.Graywulf.Web.Auth
 
         private void RedirectAuthenticatedUser()
         {
+            // If the user is authenticated automatically authResponce needs to
+            // be taken from the responsible http module
+            if (authResponse == null)
+            {
+                var wam = (WebAuthenticationModule)HttpContext.Current.ApplicationInstance.Modules["WebAuthenticationModule"];
+                authResponse = wam.AuthenticationResponse;
+            }
+
             var user = authResponse.Principal.Identity.User;
 
             if (user.IsActivated)

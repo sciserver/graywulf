@@ -30,6 +30,19 @@ namespace Jhu.Graywulf.Web.Security
         }
 
         #endregion
+        #region Properties
+
+        public AuthenticationRequest AuthenticationRequest
+        {
+            get { return (AuthenticationRequest)HttpContext.Current.Items[Constants.HttpContextAuthenticationRequest]; }
+        }
+
+        public AuthenticationResponse AuthenticationResponse
+        {
+            get { return (AuthenticationResponse)HttpContext.Current.Items[Constants.HttpContextAuthenticationResponse]; }
+        }
+
+        #endregion
         #region Constructors and initializers
 
 
@@ -95,7 +108,11 @@ namespace Jhu.Graywulf.Web.Security
             // (1.) Called when a new page request is made and the built in
             // security module has established the identity of the user.
 
-            Authenticate(new AuthenticationRequest(HttpContext.Current));
+            var request = new AuthenticationRequest(HttpContext.Current);
+
+            HttpContext.Current.Items[Constants.HttpContextAuthenticationRequest] = request;
+
+            Authenticate(request);
         }
 
         protected override void OnAuthenticated(AuthenticationResponse response)
