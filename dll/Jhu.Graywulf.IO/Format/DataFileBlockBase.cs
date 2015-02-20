@@ -183,6 +183,12 @@ namespace Jhu.Graywulf.Format
                 this.columnTypeMappings.Add(null);
             }
 
+            // Renumber columns
+            for (int i = 0; i < this.columns.Count; i ++)
+            {
+                this.columns[i].ID = i + 1;
+            }
+
             OnColumnsCreated();
         }
 
