@@ -19,7 +19,17 @@ namespace Jhu.Graywulf.Registry
         /// <returns></returns>
         public Database GetSmoDatabase()
         {
-            Server s = this.Federation.SchemaSourceServerInstance.GetSmoServer();
+            Server s;
+
+            if (!this.SchemaSourceServerInstanceReference.IsEmpty)
+            {
+                s = this.SchemaSourceServerInstance.GetSmoServer();
+            }
+            else
+            {
+                s = this.Federation.SchemaSourceServerInstance.GetSmoServer();
+            }
+
             return s.Databases[this.SchemaSourceDatabaseName];
         }
 
