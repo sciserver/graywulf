@@ -133,6 +133,13 @@ namespace Jhu.Graywulf.Format
                 File.BufferedReader.RewindLineBuffer();
                 File.BufferedReader.StopLineBuffer();
 
+                // Now the stream is rewound but we skip the very first line
+                // if it contains the column names
+                if (File.ColumnNamesInFirstLine)
+                {
+                    ReadNextRowParts(out parts, false);
+                }
+
                 CreateColumns(columns);
             }
             else

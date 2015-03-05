@@ -272,6 +272,38 @@ testline
             Assert.AreEqual(1, dr["first"]);
         }
 
+        /// <summary>
+        /// Detect column names from the first line and make
+        /// sure the line is skipped. No hashmark in the first
+        /// line, because it's skipped anyway.
+        /// </summary>
+        [TestMethod]
+        public void DetectColumnNamesNohashTest()
+        {
+            var csv =
+@"first, second, third, fourth
+1,2,3,4";
+
+            var f = new DelimitedTextDataFile(new StringReader(csv));
+            f.ColumnNamesInFirstLine = true;
+            f.AutoDetectColumns = true;
+            f.AutoDetectColumnsCount = 100;
+            f.GenerateIdentityColumn = true;
+
+            var cmd = new FileCommand(f);
+            var dr = cmd.ExecuteReader();
+
+            Assert.AreEqual("__ID", dr.GetName(0));
+            Assert.AreEqual("first", dr.GetName(1));
+            Assert.AreEqual("second", dr.GetName(2));
+            Assert.AreEqual("third", dr.GetName(3));
+            Assert.AreEqual("fourth", dr.GetName(4));
+
+            dr.Read();
+
+            Assert.AreEqual(1, dr["first"]);
+        }
+
         [TestMethod] 
         public void DetectAllTypesTest()
         {
