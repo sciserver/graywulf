@@ -133,32 +133,21 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
             return file;
         }
-        
+
         protected DestinationTable GetDestinationTable()
         {
-            DestinationTable destination;
-
-            if (DetailsPanel.Visible)
-            {
-                destination = new DestinationTable(
-                    FederationContext.MyDBDataset,
-                    FederationContext.MyDBDataset.DatabaseName,
-                    SchemaName.Text,
-                    TableNamePrefix.Text + "_" + IO.Constants.ResultsetNameToken,
-                    TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName);
-            }
-            else
-            {
-                // TODO: move unique name logic to importer class
-                //var tableName = Util.UriConverter.ToFileNameWithoutExtension(uri).Replace('.', '_');
-                //GetUniqueTableName(FederationContext.MyDBDataset.DefaultSchemaName, ref tableName);
-
-                destination = new DestinationTable(
+            var destination = new DestinationTable(
                     FederationContext.MyDBDataset,
                     FederationContext.MyDBDataset.DatabaseName,
                     FederationContext.MyDBDataset.DefaultSchemaName,
                     IO.Constants.ResultsetNameToken,        // generate table names automatically
                     TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName);
+
+            if (DetailsPanel.Visible)
+            {
+                destination.SchemaName = SchemaName.Text;
+                destination.TableNamePattern = TableNamePrefix.Text + "_" + IO.Constants.ResultsetNameToken;
+                destination.Options = TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName;
             }
 
             return destination;
