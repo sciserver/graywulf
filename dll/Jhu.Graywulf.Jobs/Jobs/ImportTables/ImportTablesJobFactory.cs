@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
         private void InitializeMembers(StreamingContext context)
         {
         }
-        
+
         /// <summary>
         /// Creates parameters for a single file or single-archive import job
         /// </summary>
@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
 
                 return new ImportTablesParameters()
                 {
-                    Sources = new [] { source },
+                    Sources = new[] { source },
                     Destinations = new[] { destination },
                     Archival = DataFileArchival.None,
                     FileFormatFactoryType = federation.FileFormatFactory,
@@ -87,7 +87,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
 
                 return new ImportTablesParameters()
                 {
-                    Sources = null,
+                    Sources = source == null ? null : new[] { source },
                     Destinations = new[] { destination },
                     Archival = archival,
                     Uri = uri,
