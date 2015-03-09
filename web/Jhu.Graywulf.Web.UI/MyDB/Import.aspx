@@ -20,10 +20,8 @@
                     Import single files or archives from any location.
                 </p>
 
-                <asp:RadioButtonList runat="server" ID="importMode" AutoPostBack="true" OnSelectedIndexChanged="ImportMode_SelectedIndexChanged">
+                <asp:RadioButtonList runat="server" ID="importMethod" AutoPostBack="true" OnSelectedIndexChanged="ImportMethod_SelectedIndexChanged">
                     <asp:ListItem Text="Upload via browser" Value="upload" Selected="True" />
-                    <asp:ListItem Text="Import from URL" Value="fetch" />
-                    <asp:ListItem Text="Import from SciDrive" Value="scidrive" />
                 </asp:RadioButtonList>
 
                 <jgwc:UploadForm runat="server" ID="uploadForm" />

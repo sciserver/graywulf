@@ -31,13 +31,13 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::Jhu.Graywulf.Web.Controls.Form importForm;
         
         /// <summary>
-        /// importMode control.
+        /// importMethod control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButtonList importMode;
+        protected global::System.Web.UI.WebControls.RadioButtonList importMethod;
         
         /// <summary>
         /// uploadForm control.

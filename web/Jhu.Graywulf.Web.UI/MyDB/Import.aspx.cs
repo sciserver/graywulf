@@ -20,27 +20,30 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         #region Event handlers
 
-        protected void ImportMode_SelectedIndexChanged(object sender, EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
-            switch (importMode.SelectedValue)
+            if (!IsPostBack)
             {
-                case "upload":
-                    uploadForm.Visible = true;
-                    uriForm.Visible = false;
-                    credentialsForm.Visible = false;
-                    break;
-                case "fetch":
-                    uploadForm.Visible = false;
-                    uriForm.Visible = true;
-                    credentialsForm.Visible = true;
-                    break;
-                case "scidrive":
-                    uploadForm.Visible = false;
-                    uriForm.Visible = true;
-                    credentialsForm.Visible = false;
-                    break;
-                default:
-                    throw new NotImplementedException();
+                RefreshImportMethodList();
+            }
+        }
+
+        protected void ImportMethod_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (importMethod.SelectedValue == "upload")
+            {
+                uploadForm.Visible = true;
+                uriForm.Visible = false;
+                credentialsForm.Visible = false;
+            }
+            else
+            {
+                var factory = ImportTablesJobFactory.Create(RegistryContext.Federation);
+                var method = factory.GetMethod(importMethod.SelectedValue);
+
+                uploadForm.Visible = false;
+                uriForm.Visible = true;
+                credentialsForm.Visible = method.HasCredentials;
             }
         }
 
@@ -57,26 +60,20 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                 toggleAdvanced.Text = "advanced mode";
             }
         }
-        
+
         protected void Ok_Click(object sender, EventArgs e)
         {
             if (IsValid)
             {
-                switch (importMode.SelectedValue)
+                if (importMethod.SelectedValue == "upload")
                 {
-                    case "upload":
-                        ImportUploadedFile();
-                        uploadResultsForm.Visible = true;
-                        break;
-                    case "fetch":
-                        ScheduleImportJob();
-                        jobResultsForm.Visible = true;
-                        break;
-                    case "scidrive":
-                        
-                        break;
-                    default:
-                        throw new NotImplementedException();
+                    ImportUploadedFile();
+                    uploadResultsForm.Visible = true;
+                }
+                else
+                {
+                    ScheduleImportJob();
+                    jobResultsForm.Visible = true;
                 }
 
                 importForm.Visible = false;
@@ -94,6 +91,16 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         }
 
         #endregion
+
+        private void RefreshImportMethodList()
+        {
+            var factory = ImportTablesJobFactory.Create(RegistryContext.Federation);
+
+            foreach (var method in factory.EnumerateMethods())
+            {
+                importMethod.Items.Add(new ListItem(method.Description, method.ID));
+            }
+        }
 
         private void ImportUploadedFile()
         {

@@ -71,6 +71,11 @@ namespace Jhu.Graywulf.Jobs.ImportTables
             };
         }
 
+        public ImportTablesMethod GetMethod(string id)
+        {
+            return EnumerateMethods().First(i => i.ID == id);
+        }
+
         /// <summary>
         /// Creates parameters for a single file or single-archive import job
         /// </summary>
