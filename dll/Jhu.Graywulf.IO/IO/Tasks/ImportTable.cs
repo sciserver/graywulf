@@ -135,7 +135,7 @@ namespace Jhu.Graywulf.IO.Tasks
             // Prepare results
             var result = new TableCopyResult()
             {
-                FileName = source.Uri == null ? null : Util.UriConverter.ToFileName(source.Uri),
+                FileName = source.Uri == null ? null : Util.UriConverter.ToPath(source.Uri),
             };
 
             Results.Add(result);

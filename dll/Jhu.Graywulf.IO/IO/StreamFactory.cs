@@ -620,7 +620,7 @@ namespace Jhu.Graywulf.IO
         {
             // TODO: We could use mime type here if stream comes from HTTP
 
-            var path = Util.UriConverter.ToFileName(uri);
+            var path = Util.UriConverter.ToPath(uri);
 
             var extension = Path.GetExtension(path).ToLowerInvariant();
             DataFileCompression cm;
@@ -666,7 +666,7 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         public virtual DataFileArchival GetArchivalMethod(Uri uri)
         {
-            var path = Util.UriConverter.ToFileName(uri);
+            var path = Util.UriConverter.ToPath(uri);
             DataFileArchival am;
 
             var firstExtension = Path.GetExtension(path);

@@ -119,7 +119,7 @@ namespace Jhu.Graywulf.Format
 
         private void WriteTextFileEntry(string extension, string text)
         {
-            var filename = Util.UriConverter.ToFileName(File.Uri);
+            var filename = Util.UriConverter.ToPath(File.Uri);
             var dir = Path.GetDirectoryName(filename);
 
             // Strip the extension of the archive
@@ -169,7 +169,7 @@ namespace Jhu.Graywulf.Format
 
         private void WriteBulkInsertScript()
         {
-            var filename = Util.UriConverter.ToFileName(File.Uri);
+            var filename = Util.UriConverter.ToPath(File.Uri);
             // Strip the extension of the archive
             filename = Path.GetFileNameWithoutExtension(filename);
 
