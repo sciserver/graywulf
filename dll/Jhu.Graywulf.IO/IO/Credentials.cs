@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Runtime.Serialization;
+using System.ComponentModel;
 
 namespace Jhu.Graywulf.IO
 {
@@ -32,7 +33,7 @@ namespace Jhu.Graywulf.IO
         /// <summary>
         /// Holds headers used for authentication, if necessary
         /// </summary>
-        private Dictionary<string, string> headers;
+        private AuthenticationHeaderCollection authenticationHeaders;
 
         #endregion
         #region Properties
@@ -71,10 +72,34 @@ namespace Jhu.Graywulf.IO
         /// Gets a collection of headers that is used to authenticate the
         /// request to access the URI
         /// </summary>
-        [DataMember]
-        public Dictionary<string, string> AuthenticationHeaders
+        [IgnoreDataMember]
+        public AuthenticationHeaderCollection AuthenticationHeaders
         {
-            get { return headers; }
+            get { return authenticationHeaders; }
+        }
+
+        [DataMember(Name = "AuthenticationHeaders", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public AuthenticationHeader[] AuthenticationHeaders_ForXml
+        {
+            get
+            {
+                if (authenticationHeaders.Count == 0)
+                {
+                    return null;
+                }
+                else
+                {
+                    return authenticationHeaders.Values.ToArray();
+                }
+            }
+            set
+            {
+                if (value != null && value.Length > 0)
+                {
+                    authenticationHeaders.AddRange(value);
+                }
+            }
         }
 
         #endregion
@@ -96,7 +121,7 @@ namespace Jhu.Graywulf.IO
             this.userName = null;
             this.password = null;
             this.ticket = null;
-            this.headers = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            this.authenticationHeaders = new AuthenticationHeaderCollection();
         }
 
         private void CopyMembers(Credentials old)
@@ -104,7 +129,7 @@ namespace Jhu.Graywulf.IO
             this.userName = old.userName;
             this.password = old.password;
             this.ticket = old.ticket;
-            this.headers = Util.DeepCloner.CloneDictionary(old.headers);
+            this.authenticationHeaders = new AuthenticationHeaderCollection(old.AuthenticationHeaders);
         }
 
         public object Clone()
@@ -137,13 +162,13 @@ namespace Jhu.Graywulf.IO
 
         public WebHeaderCollection GetWebHeaders()
         {
-            if (headers != null && headers.Count > 0)
+            if (authenticationHeaders != null && authenticationHeaders.Count > 0)
             {
                 var whc = new WebHeaderCollection();
 
-                foreach (string name in headers.Keys)
+                foreach (var header in authenticationHeaders.Values)
                 {
-                    whc.Add(name, headers[name]);
+                    whc.Add(header.Name, header.Value);
                 }
 
                 return whc;

@@ -45,6 +45,8 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 var parameters = itf.CreateParameters(
                     context.Federation,
                     Util.UriConverter.FromFilePath(path),
+                    null,
+                    null,
                     destination);
 
                 var ji = itf.ScheduleAsJob(parameters, queue, "comments");

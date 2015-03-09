@@ -7,10 +7,11 @@ using Jhu.Graywulf.Jobs.ImportTables;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
+using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
-    public partial class Import : CopyTablePage
+    public partial class Import : CustomPageBase
     {
         public static string GetUrl()
         {
@@ -19,34 +20,66 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         #region Event handlers
 
-        protected void Page_Load(object sender, EventArgs e)
+        protected void ImportMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!IsPostBack)
+            switch (importMode.SelectedValue)
             {
-                RefreshFileFormatLists();
-                RefreshForm();
+                case "upload":
+                    uploadForm.Visible = true;
+                    uriForm.Visible = false;
+                    credentialsForm.Visible = false;
+                    break;
+                case "fetch":
+                    uploadForm.Visible = false;
+                    uriForm.Visible = true;
+                    credentialsForm.Visible = true;
+                    break;
+                case "scidrive":
+                    uploadForm.Visible = false;
+                    uriForm.Visible = true;
+                    credentialsForm.Visible = false;
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
         }
 
         protected void ToggleAdvanced_Click(object sender, EventArgs e)
         {
-            DetailsTable.Visible = !DetailsTable.Visible;
-            RefreshForm();
-        }
+            detailsPanel.Visible = !detailsPanel.Visible;
 
-        protected void FileFormat_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            RefreshForm();
+            if (detailsPanel.Visible)
+            {
+                toggleAdvanced.Text = "simple mode";
+            }
+            else
+            {
+                toggleAdvanced.Text = "advanced mode";
+            }
         }
-
+        
         protected void Ok_Click(object sender, EventArgs e)
         {
             if (IsValid)
             {
-                // TODO: do work here
+                switch (importMode.SelectedValue)
+                {
+                    case "upload":
+                        ImportUploadedFile();
+                        uploadResultsForm.Visible = true;
+                        break;
+                    case "fetch":
+                        ScheduleImportJob();
+                        jobResultsForm.Visible = true;
+                        break;
+                    case "scidrive":
+                        
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
 
-                ImportForm.Visible = false;
-                ResultsForm.Visible = true;
+                importForm.Visible = false;
             }
         }
 
@@ -62,46 +95,40 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         #endregion
 
-        protected void RefreshForm()
+        private void ImportUploadedFile()
         {
-            if (DetailsTable.Visible)
-            {
-                ToggleAdvanced.Text = "simple mode";
-            }
-            else
-            {
-                ToggleAdvanced.Text = "advanced mode";
-            }
-        }
+            var uri = uploadForm.Uri;
+            var file = fileFormatForm.GetDataFile(uri);
+            var table = destinationTableForm.GetDestinationTable();
+            var importer = uploadForm.GetTableImporter(file, table);
 
-        private void RefreshFileFormatLists()
-        {
-            var dfs = FederationContext.FileFormatFactory.EnumerateFileFormatDescriptions();
+            importer.Execute();
 
-            foreach (var df in dfs)
+            foreach (var r in importer.Results)
             {
-                if (df.CanRead)
+                var li = new ListItem()
                 {
-                    var li = new ListItem(df.DisplayName, df.Extension);
-                    FileFormatList.Items.Add(li);
-                    SupportedFormatsList.Items.Add(li);
-                }
+                    Text = String.Format("{0} > {1} ({2})", r.FileName, r.TableName, r.Status)
+                };
+
+                resultTableList.Items.Add(li);
             }
         }
 
-        private JobInstance ScheduleImportJob()
+        private void ScheduleImportJob()
         {
-            var itf = ImportTablesJobFactory.Create(RegistryContext.Federation);
+            var job = new ImportJob()
+            {
+                Uri = uriForm.Uri,
+                FileFormat = fileFormatForm.GetFormat(),
+                Destination = destinationTableForm.GetTableName(),
+                Credentials = credentialsForm.GetCredentials(),
 
-            var uri = new Uri(Uri.Text);
-            var destination = GetDestinationTable();
-            var parameters = itf.CreateParameters(RegistryContext.Federation, uri, destination);
+                Comments = commentsForm.Comments,
+                Queue = JobQueue.Long,
+            };
 
-            var ji = itf.ScheduleAsJob(parameters, Jhu.Graywulf.Registry.Constants.LongQueueName, Comments.Text);
-
-            ji.Save();
-
-            return ji;
+            job.Schedule(FederationContext);
         }
     }
 }

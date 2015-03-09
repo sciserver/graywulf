@@ -159,7 +159,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 var job = new ImportJob()
                 {
                     Uri = new Uri("http://test/test.zip"),
-                    Table = "importtable",
+                    Destination = "importtable",
                     Comments = "test comments",
                 };
 

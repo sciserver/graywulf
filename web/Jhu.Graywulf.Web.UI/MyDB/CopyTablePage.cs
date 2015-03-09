@@ -12,9 +12,12 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 {
     public class CopyTablePage : CustomPageBase
     {
+        protected LinkButton toggleAdvanced;
+        protected Panel detailsPanel;
+
+
+        //
         protected ListBox TableList;
-        protected LinkButton ToggleAdvanced;
-        protected Panel DetailsPanel;
         protected TextBox TableNamePrefix;
         protected TextBox SchemaName;
         protected BulletedList SupportedFormatsList;
@@ -26,41 +29,24 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         protected void ToggleAdvanced_Click(object sender, EventArgs e)
         {
-            DetailsPanel.Visible = !DetailsPanel.Visible;
+            detailsPanel.Visible = !detailsPanel.Visible;
 
-            if (DetailsPanel.Visible)
+            if (detailsPanel.Visible)
             {
-                ToggleAdvanced.Text = "simple mode";
+                toggleAdvanced.Text = "simple mode";
             }
             else
             {
-                ToggleAdvanced.Text = "advanced mode";
+                toggleAdvanced.Text = "advanced mode";
             }
+
+            RefreshForm();
         }
 
         #endregion
 
-        protected void RefreshFileFormatLists(bool canRead, bool canWrite)
+        protected virtual void RefreshForm()
         {
-            var dfs = FederationContext.FileFormatFactory.EnumerateFileFormatDescriptions();
-
-            foreach (var df in dfs)
-            {
-                if (canRead && df.CanRead || canWrite && df.CanWrite)
-                {
-                    var li = new ListItem(df.DisplayName, df.Extension);
-
-                    if (FileFormatList != null)
-                    {
-                        FileFormatList.Items.Add(li);
-                    }
-
-                    if (SupportedFormatsList != null)
-                    {
-                        SupportedFormatsList.Items.Add(li);
-                    }
-                }
-            }
         }
 
         protected void RefreshTableList()
@@ -105,11 +91,12 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             return destinations;
         }
 
+        // TODO: delete
         protected DataFileBase GetSourceDataFile(Uri uri)
         {
             DataFileBase file;
 
-            if (DetailsPanel.Visible)
+            if (detailsPanel.Visible)
             {
                 // Create a specific file type
                 file = FederationContext.FileFormatFactory.CreateFileFromExtension(FileFormatList.SelectedValue);
@@ -143,7 +130,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                     IO.Constants.ResultsetNameToken,        // generate table names automatically
                     TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName);
 
-            if (DetailsPanel.Visible)
+            if (detailsPanel.Visible)
             {
                 destination.SchemaName = SchemaName.Text;
                 destination.TableNamePattern = TableNamePrefix.Text + "_" + IO.Constants.ResultsetNameToken;

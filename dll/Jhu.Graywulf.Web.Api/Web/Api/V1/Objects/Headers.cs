@@ -5,16 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.ComponentModel;
+using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [CollectionDataContract(Name="headers")]
     [Description("Represents a collection of headers used for user authentication.")]
-    public class Headers : Dictionary<string, string>
+    public class Headers : NameValueCollection
     {
-        public Headers(Dictionary<string, string> collection)
-            :base(collection)
+        public Headers(AuthenticationHeaderCollection collection)
         {
+            throw new NotImplementedException();
         }
     }
 }

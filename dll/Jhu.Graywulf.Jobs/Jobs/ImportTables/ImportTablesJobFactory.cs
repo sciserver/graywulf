@@ -40,13 +40,14 @@ namespace Jhu.Graywulf.Jobs.ImportTables
         private void InitializeMembers(StreamingContext context)
         {
         }
-
+        
         /// <summary>
         /// Creates parameters for a single file or single-archive import job
         /// </summary>
-        public ImportTablesParameters CreateParameters(Federation federation, Uri uri, DestinationTable destination)
+        public ImportTablesParameters CreateParameters(Federation federation, Uri uri, Credentials credentials, DataFileBase source, DestinationTable destination)
         {
             var sf = StreamFactory.Create(federation.StreamFactory);
+            var ff = FileFormatFactory.Create(federation.FileFormatFactory);
 
             // Check if input file is an archive
             var archival = sf.GetArchivalMethod(uri);
@@ -57,8 +58,12 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                 // In single file mode the source file and destination must
                 // be set explicitly
 
-                var ff = FileFormatFactory.Create(federation.FileFormatFactory);
-                var source = ff.CreateFile(uri);
+                // If source file is not passed as a parameter, create it automatically
+                // from file extension
+                if (source == null)
+                {
+                    source = ff.CreateFile(uri);
+                }
 
                 return new ImportTablesParameters()
                 {
@@ -66,6 +71,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                     Destinations = new[] { destination },
                     Archival = DataFileArchival.None,
                     Uri = uri,
+                    Credentials = credentials,
                     FileFormatFactoryType = federation.FileFormatFactory,
                     StreamFactoryType = federation.StreamFactory,
                 };
@@ -78,10 +84,11 @@ namespace Jhu.Graywulf.Jobs.ImportTables
 
                 return new ImportTablesParameters()
                 {
-                    Sources = null, 
+                    Sources = null,
                     Destinations = new[] { destination },
                     Archival = archival,
                     Uri = uri,
+                    Credentials = credentials,
                     FileFormatFactoryType = federation.FileFormatFactory,
                     StreamFactoryType = federation.StreamFactory,
                 };

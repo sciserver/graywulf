@@ -22,148 +22,94 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::Jhu.Graywulf.Web.UI.MyDB.Tabs MyDbTabs;
         
         /// <summary>
-        /// ImportForm control.
+        /// importForm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.Form ImportForm;
+        protected global::Jhu.Graywulf.Web.Controls.Form importForm;
         
         /// <summary>
-        /// UriLabel control.
+        /// importMode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label UriLabel;
+        protected global::System.Web.UI.WebControls.RadioButtonList importMode;
         
         /// <summary>
-        /// Uri control.
+        /// uploadForm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox Uri;
+        protected global::Jhu.Graywulf.Web.UI.MyDB.UploadForm uploadForm;
         
         /// <summary>
-        /// DetailsTable control.
+        /// uriForm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTable DetailsTable;
+        protected global::Jhu.Graywulf.Web.UI.MyDB.UriForm uriForm;
         
         /// <summary>
-        /// UsernameLabel control.
+        /// toggleAdvanced control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label UsernameLabel;
+        protected global::System.Web.UI.WebControls.LinkButton toggleAdvanced;
         
         /// <summary>
-        /// Username control.
+        /// detailsPanel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox Username;
+        protected global::System.Web.UI.WebControls.Panel detailsPanel;
         
         /// <summary>
-        /// PasswordLabel control.
+        /// destinationTableForm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label PasswordLabel;
+        protected global::Jhu.Graywulf.Web.UI.MyDB.DestinationTableForm destinationTableForm;
         
         /// <summary>
-        /// Password control.
+        /// fileFormatForm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox Password;
+        protected global::Jhu.Graywulf.Web.UI.MyDB.FileFormatForm fileFormatForm;
         
         /// <summary>
-        /// DetailsTable2 control.
+        /// credentialsForm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTable DetailsTable2;
+        protected global::Jhu.Graywulf.Web.UI.MyDB.CredentialsForm credentialsForm;
         
         /// <summary>
-        /// SchemaNameLabel control.
+        /// commentsForm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label SchemaNameLabel;
-        
-        /// <summary>
-        /// TableNamePrefixLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label TableNamePrefixLabel;
-        
-        /// <summary>
-        /// FileFormatLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label FileFormatLabel;
-        
-        /// <summary>
-        /// AutoDetectColumnsRow control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow AutoDetectColumnsRow;
-        
-        /// <summary>
-        /// GenerateIdentityRow control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow GenerateIdentityRow;
-        
-        /// <summary>
-        /// CommentsLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label CommentsLabel;
-        
-        /// <summary>
-        /// Comments control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox Comments;
+        protected global::Jhu.Graywulf.Web.UI.MyDB.CommentsForm commentsForm;
         
         /// <summary>
         /// Ok control.
@@ -184,13 +130,40 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::System.Web.UI.WebControls.Button Cancel;
         
         /// <summary>
-        /// ResultsForm control.
+        /// uploadResultsForm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.Form ResultsForm;
+        protected global::Jhu.Graywulf.Web.Controls.Form uploadResultsForm;
+        
+        /// <summary>
+        /// resultTableList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.BulletedList resultTableList;
+        
+        /// <summary>
+        /// Button1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button Button1;
+        
+        /// <summary>
+        /// jobResultsForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Controls.Form jobResultsForm;
         
         /// <summary>
         /// Back control.

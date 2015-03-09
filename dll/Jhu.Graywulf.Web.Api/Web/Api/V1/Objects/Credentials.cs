@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.ComponentModel;
+using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
@@ -35,6 +36,22 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.Username = credentials.UserName;
             this.Password = credentials.Password;
             this.Headers = new Headers(credentials.AuthenticationHeaders);
+        }
+
+        public IO.Credentials GetCredentials(FederationContext context)
+        {
+            var credentials = new IO.Credentials()
+            {
+                UserName = Username,
+                Password = Password,
+            };
+
+            if (Headers != null)
+            {
+                credentials.AuthenticationHeaders.AddRange(Headers);
+            }
+
+            return credentials;
         }
     }
 }

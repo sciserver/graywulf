@@ -111,11 +111,13 @@
     <Compile Include="Format\XmlDataFileBlock.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IO\AuthenticationHeaderCollection.cs" />
     <Compile Include="IO\BufferedTextReader.cs" />
     <Compile Include="IO\Constants.cs" />
     <Compile Include="IO\Credentials.cs" />
     <Compile Include="IO\DetachedStream.cs" />
     <Compile Include="IO\Enum.cs" />
+    <Compile Include="IO\AuthenticationHeader.cs" />
     <Compile Include="IO\IArchiveEntry.cs" />
     <Compile Include="IO\IArchiveInputStream.cs" />
     <Compile Include="IO\IArchiveOutputStream.cs" />
