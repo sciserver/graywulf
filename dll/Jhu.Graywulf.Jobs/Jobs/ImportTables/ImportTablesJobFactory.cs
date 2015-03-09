@@ -19,10 +19,27 @@ namespace Jhu.Graywulf.Jobs.ImportTables
 
         public static ImportTablesJobFactory Create(Federation federation)
         {
-            return new ImportTablesJobFactory(federation.Context);
+            Type type = null;
+
+            if (federation.ImportTablesJobFactory != null)
+            {
+                type = Type.GetType(federation.ImportTablesJobFactory);
+            }
+
+            // Fall back logic if config is invalid
+            if (type == null)
+            {
+                type = typeof(ImportTablesJobFactory);
+            }
+
+            var factory = (ImportTablesJobFactory)Activator.CreateInstance(type, true);
+            factory.Context = federation.Context;
+
+            return factory;
         }
 
         #endregion
+        #region Constrcutors and initializers
 
         protected ImportTablesJobFactory()
             : base()
@@ -41,10 +58,23 @@ namespace Jhu.Graywulf.Jobs.ImportTables
         {
         }
 
+        #endregion
+
+        public virtual IEnumerable<ImportTablesMethod> EnumerateMethods()
+        {
+            yield return new ImportTablesMethod()
+            {
+                ID = "uri",
+                Description = "Import from URL",
+                BaseUri = null,
+                HasCredentials = true,
+            };
+        }
+
         /// <summary>
         /// Creates parameters for a single file or single-archive import job
         /// </summary>
-        public ImportTablesParameters CreateParameters(Federation federation, Uri uri, Credentials credentials, DataFileBase source, DestinationTable destination)
+        public virtual ImportTablesParameters CreateParameters(Federation federation, Uri uri, Credentials credentials, DataFileBase source, DestinationTable destination)
         {
             var sf = StreamFactory.Create(federation.StreamFactory);
             var ff = FileFormatFactory.Create(federation.FileFormatFactory);

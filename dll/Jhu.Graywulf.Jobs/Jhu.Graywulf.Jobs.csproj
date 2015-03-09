@@ -65,6 +65,7 @@
     <Compile Include="Jobs\ImportTables\ImportTablesJob.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesJobFactory.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesJobSettings.cs" />
+    <Compile Include="Jobs\ImportTables\ImportTablesMethod.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesParameters.cs" />
     <Compile Include="Jobs\ImportTables\IImportTablesJob.cs" />
     <Compile Include="Jobs\JobFactoryBase.cs" />
