@@ -27,17 +27,12 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         public DataFileBase GetDataFile(FederationContext context, Uri uri)
         {
-            DataFileBase file;
+            DataFileBase file = null;
 
             if (MimeType != null)
             {
                 // Create a specific file type
                 file = context.FileFormatFactory.CreateFileFromMimeType(MimeType);
-            }
-            else
-            {
-                // Figure out file type from extensions
-                file = context.FileFormatFactory.CreateFile(uri);
             }
 
             // TODO: add compression option for export

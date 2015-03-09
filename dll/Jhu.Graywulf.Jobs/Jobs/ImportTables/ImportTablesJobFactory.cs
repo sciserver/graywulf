@@ -49,6 +49,8 @@ namespace Jhu.Graywulf.Jobs.ImportTables
             var sf = StreamFactory.Create(federation.StreamFactory);
             var ff = FileFormatFactory.Create(federation.FileFormatFactory);
 
+            // TODO: this only supports single file imports
+
             // Check if input file is an archive
             var archival = sf.GetArchivalMethod(uri);
 
@@ -65,13 +67,14 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                     source = ff.CreateFile(uri);
                 }
 
+                // For single file imports, credentials need to be set of the file level
+                source.Credentials = credentials;
+
                 return new ImportTablesParameters()
                 {
                     Sources = new [] { source },
                     Destinations = new[] { destination },
                     Archival = DataFileArchival.None,
-                    Uri = uri,
-                    Credentials = credentials,
                     FileFormatFactoryType = federation.FileFormatFactory,
                     StreamFactoryType = federation.StreamFactory,
                 };

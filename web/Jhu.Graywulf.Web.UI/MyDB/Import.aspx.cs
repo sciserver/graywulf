@@ -117,11 +117,16 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         private void ScheduleImportJob()
         {
+            var uri = uriForm.Uri;
+            var file = fileFormatForm.GetFormat();
+            var table = destinationTableForm.GetTableName();
+            var credentials = credentialsForm.GetCredentials();
+
             var job = new ImportJob()
             {
-                Uri = uriForm.Uri,
-                FileFormat = fileFormatForm.GetFormat(),
-                Destination = destinationTableForm.GetTableName(),
+                Uri = uri,
+                FileFormat = file,
+                Destination = table,
                 Credentials = credentialsForm.GetCredentials(),
 
                 Comments = commentsForm.Comments,
