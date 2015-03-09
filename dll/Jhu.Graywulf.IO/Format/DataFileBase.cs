@@ -333,7 +333,7 @@ namespace Jhu.Graywulf.Format
             this.compression = DataFileCompression.None;
             this.uri = null;
             this.credentials = null;
-            this.generateIdentityColumn = false;
+            this.generateIdentityColumn = true;
             this.name = null;
             this.metadata = null;
 
