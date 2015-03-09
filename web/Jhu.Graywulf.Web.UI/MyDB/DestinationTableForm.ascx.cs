@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         public string GetTableName()
         {
-            if (this.Visible)
+            if (this.Visible && !String.IsNullOrWhiteSpace(tableName.Text))
             {
                 string destination = "";
 

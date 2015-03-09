@@ -12,12 +12,4 @@
             <asp:DropDownList runat="server" ID="fileFormatList" CssClass="FormField" AutoPostBack="True" OnSelectedIndexChanged="FileFormat_SelectedIndexChanged" />
         </td>
     </tr>
-    <tr runat="server" id="generateIdentityRow">
-        <td class="FormLabel">&nbsp;
-        </td>
-        <td class="FormField">
-            <asp:CheckBox runat="server" ID="generateIdentity" CssClass="FormField" Text="Generate identity column"
-                Checked="true" />
-        </td>
-    </tr>
 </table>

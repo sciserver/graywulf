@@ -20,10 +20,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         [Description("MIME type of file. Overrides type infered from extension.")]
         public string MimeType { get; set; }
 
-        [DataMember(Name = "generateIdentity", EmitDefaultValue = false)]
-        [DefaultValue(true)]
-        [Description("Generate identity column.")]
-        public bool GenerateIdentity { get; set; }
+        // TODO: additional file options
 
         public DataFileBase GetDataFile(FederationContext context, Uri uri)
         {

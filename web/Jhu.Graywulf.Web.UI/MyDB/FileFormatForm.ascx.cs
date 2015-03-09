@@ -28,7 +28,18 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         protected void FileFormat_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
+            if (String.IsNullOrWhiteSpace(fileFormatList.SelectedValue))
+            {
+                
+            }
+            else
+            {
+                var file = FederationContext.FileFormatFactory.CreateFileFromMimeType(fileFormatList.SelectedValue);
+
+                // TODO: generate identity?
+                // file.Description.CanDetectColumnNames
+                // file.Description.CanHoldMultipleDatasets
+            }
         }
 
         protected void RefreshFileFormatLists()
@@ -67,7 +78,6 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             var format = new FileFormat()
             {
                 MimeType = mimeType,
-                GenerateIdentity = generateIdentity.Checked,
             };
 
             return format;
