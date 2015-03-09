@@ -175,6 +175,42 @@ namespace Jhu.Graywulf.Web.Admin.Federation {
         protected global::System.Web.UI.WebControls.TextBox StreamFactory;
         
         /// <summary>
+        /// ImportTablesJobFactoryLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label ImportTablesJobFactoryLabel;
+        
+        /// <summary>
+        /// ImportTablesJobFactory control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox ImportTablesJobFactory;
+        
+        /// <summary>
+        /// ExportTablesJobFactoryLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label ExportTablesJobFactoryLabel;
+        
+        /// <summary>
+        /// ExportTablesJobFactory control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox ExportTablesJobFactory;
+        
+        /// <summary>
         /// FileFormatFactoryLabel control.
         /// </summary>
         /// <remarks>

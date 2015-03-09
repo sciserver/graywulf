@@ -77,6 +77,22 @@
         </tr>
         <tr>
             <td class="FormLabel">
+                <asp:Label ID="ImportTablesJobFactoryLabel" runat="server" Text="Import Factory:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:TextBox ID="ImportTablesJobFactory" runat="server" />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabel">
+                <asp:Label ID="ExportTablesJobFactoryLabel" runat="server" Text="Export Factory:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:TextBox ID="ExportTablesJobFactory" runat="server" />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabel">
                 <asp:Label ID="FileFormatFactoryLabel" runat="server" Text="File Format Factory:"></asp:Label>
             </td>
             <td class="FormField">

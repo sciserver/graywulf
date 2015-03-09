@@ -39,6 +39,8 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             QueryFactory.Text = Item.QueryFactory;
             FileFormatFactory.Text = Item.FileFormatFactory;
             StreamFactory.Text = Item.StreamFactory;
+            ImportTablesJobFactory.Text = Item.ImportTablesJobFactory;
+            ExportTablesJobFactory.Text = Item.ExportTablesJobFactory;
             ShortTitle.Text = Item.ShortTitle;
             LongTitle.Text = Item.LongTitle;
             Email.Text = Item.Email;
@@ -62,6 +64,8 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             Item.QueryFactory = QueryFactory.Text;
             Item.FileFormatFactory = FileFormatFactory.Text;
             Item.StreamFactory = StreamFactory.Text;
+            Item.ImportTablesJobFactory = ImportTablesJobFactory.Text;
+            Item.ExportTablesJobFactory = ExportTablesJobFactory.Text;
             Item.ShortTitle = ShortTitle.Text;
             Item.LongTitle = LongTitle.Text;
             Item.Email = Email.Text;

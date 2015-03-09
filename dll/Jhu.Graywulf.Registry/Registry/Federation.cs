@@ -33,6 +33,8 @@ namespace Jhu.Graywulf.Registry
         private string queryFactory;
         private string fileFormatFactory;
         private string streamFactory;
+        private string importTablesJobFactory;
+        private string exportTablesJobFactory;
         private string shortTitle;
         private string longTitle;
         private string email;
@@ -87,6 +89,20 @@ namespace Jhu.Graywulf.Registry
         {
             get { return streamFactory; }
             set { streamFactory = value; }
+        }
+
+        [DBColumn(Size = 1024)]
+        public string ImportTablesJobFactory
+        {
+            get { return importTablesJobFactory; }
+            set { importTablesJobFactory = value; }
+        }
+
+        [DBColumn(Size = 1024)]
+        public string ExportTablesJobFactory
+        {
+            get { return exportTablesJobFactory; }
+            set { exportTablesJobFactory = value; }
         }
 
         [DBColumn(Size = 50)]
@@ -344,6 +360,8 @@ namespace Jhu.Graywulf.Registry
             this.queryFactory = String.Empty;
             this.fileFormatFactory = String.Empty;
             this.streamFactory = String.Empty;
+            this.importTablesJobFactory = String.Empty;
+            this.exportTablesJobFactory = String.Empty;
             this.shortTitle = String.Empty;
             this.longTitle = String.Empty;
             this.email = String.Empty;
@@ -361,6 +379,8 @@ namespace Jhu.Graywulf.Registry
             this.queryFactory = old.queryFactory;
             this.fileFormatFactory = old.fileFormatFactory;
             this.streamFactory = old.streamFactory;
+            this.importTablesJobFactory = old.importTablesJobFactory;
+            this.exportTablesJobFactory = old.exportTablesJobFactory;
             this.shortTitle = old.shortTitle;
             this.longTitle = old.longTitle;
             this.email = old.email;

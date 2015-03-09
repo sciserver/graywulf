@@ -158,6 +158,8 @@ namespace Jhu.Graywulf.Install
             federation.QueryFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Jobs.Query.SqlQueryFactory));
             federation.FileFormatFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Format.FileFormatFactory));
             federation.StreamFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.IO.StreamFactory));
+            federation.ImportTablesJobFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Jobs.ImportTables.ImportTablesJobFactory));
+            federation.ExportTablesJobFactory = GetUnversionedTypeName(typeof(Jhu.Graywulf.Jobs.ExportTables.ExportTablesJobFactory));
 
             federation.ShortTitle = "";
             federation.LongTitle = "";
