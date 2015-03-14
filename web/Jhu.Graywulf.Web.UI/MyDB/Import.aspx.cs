@@ -176,7 +176,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             var job = new ImportJob()
             {
                 Uri = uri,
-                Credentials = new Web.Api.V1.Credentials(credentials),
+                Credentials = credentials == null ? null : new Web.Api.V1.Credentials(credentials),
                 FileFormat = file,
                 Destination = table,
 
