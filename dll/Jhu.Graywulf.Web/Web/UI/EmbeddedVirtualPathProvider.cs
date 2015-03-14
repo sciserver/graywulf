@@ -11,12 +11,17 @@ namespace Jhu.Graywulf.Web.UI
     {
         private static readonly StringComparer comparer = StringComparer.InvariantCultureIgnoreCase;
 
-        private Dictionary<string, string> virtualFiles = new Dictionary<string, string>(comparer)
+        private Dictionary<string, string> virtualFiles;
+
+        public EmbeddedVirtualPathProvider()
         {
-            { "~/Captcha.aspx", "Jhu.Graywulf.Web.UI.Captcha.aspx"},
-            { "~/Feedback.aspx", "Jhu.Graywulf.UI.Web.Feedback.aspx"},
-            { "~/Error.aspx", "Jhu.Graywulf.Web.UI.Error.aspx"},
-        };
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
+        {
+            this.virtualFiles = new Dictionary<string, string>(comparer);
+        }
 
         public override bool FileExists(string virtualPath)
         {
@@ -41,5 +46,25 @@ namespace Jhu.Graywulf.Web.UI
 
             return base.GetFile(virtualPath);
         }
+
+        public override System.Web.Caching.CacheDependency GetCacheDependency(string virtualPath, System.Collections.IEnumerable virtualPathDependencies, DateTime utcStart)
+        {
+            var apprelpath = VirtualPathUtility.ToAppRelative(virtualPath);
+
+            if (virtualFiles.ContainsKey(apprelpath))
+            {
+                return null;
+            }
+            else
+            {
+                return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
+            }
+        }
+        
+        public void RegisterVirtualPath(string appRelativePath, string embeddedResourceName)
+        {
+            virtualFiles.Add(appRelativePath, embeddedResourceName);
+        }
+
     }
 }

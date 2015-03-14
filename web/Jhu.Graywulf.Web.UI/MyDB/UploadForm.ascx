@@ -1,5 +1,8 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="UploadForm.ascx.cs" Inherits="Jhu.Graywulf.Web.UI.MyDB.UploadForm" %>
 
+<p>
+    Select a file for upload from your local computer
+</p>
 <table class="FormTable">
     <tr>
         <td class="FormLabel" style="width: 50px">

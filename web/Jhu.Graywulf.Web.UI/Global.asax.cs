@@ -18,6 +18,23 @@ namespace Jhu.Graywulf.Web.UI
 {
     public class Global : FederationApplicationBase
     {
+        protected override void Application_Start(object sender, EventArgs e)
+        {
+            base.Application_Start(sender, e);
+
+            // Register custom pages from DLLs
+
+            using (var context = CreateRegistryContext())
+            {
+                var itf = Jhu.Graywulf.Jobs.ImportTables.ImportTablesJobFactory.Create(context.Federation);
+
+                foreach (var m in itf.EnumerateMethods())
+                {
+                    m.RegisterVirtualPaths(this.VirtualPathProvider);
+                }
+            }
+        }
+
         protected override void OnUserArrived(GraywulfPrincipal principal)
         {
             using (var context = CreateRegistryContext())

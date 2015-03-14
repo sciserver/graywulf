@@ -62,13 +62,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
 
         public virtual IEnumerable<ImportTablesMethod> EnumerateMethods()
         {
-            yield return new ImportTablesMethod()
-            {
-                ID = "uri",
-                Description = "Import from URL",
-                BaseUri = null,
-                HasCredentials = true,
-            };
+            yield return new ImportTablesFromUriMethod();
         }
 
         public ImportTablesMethod GetMethod(string id)

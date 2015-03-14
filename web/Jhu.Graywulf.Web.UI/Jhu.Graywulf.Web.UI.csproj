@@ -143,33 +143,12 @@
     <Compile Include="MyDB\ExportList.aspx.designer.cs">
       <DependentUpon>ExportList.aspx</DependentUpon>
     </Compile>
-    <Compile Include="MyDB\CredentialsForm.ascx.cs">
-      <DependentUpon>CredentialsForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\CredentialsForm.ascx.designer.cs">
-      <DependentUpon>CredentialsForm.ascx</DependentUpon>
-    </Compile>
     <Compile Include="MyDB\UploadForm.ascx.cs">
       <DependentUpon>UploadForm.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MyDB\UploadForm.ascx.designer.cs">
       <DependentUpon>UploadForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\SciDriveForm.ascx.cs">
-      <DependentUpon>SciDriveForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\SciDriveForm.ascx.designer.cs">
-      <DependentUpon>SciDriveForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\UriForm.ascx.cs">
-      <DependentUpon>UriForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\UriForm.ascx.designer.cs">
-      <DependentUpon>UriForm.ascx</DependentUpon>
     </Compile>
     <Compile Include="UI.master.cs">
       <DependentUpon>UI.master</DependentUpon>
@@ -398,15 +377,12 @@
     <Content Include="MyDB\FileFormatForm.ascx" />
     <Content Include="MyDB\Import.aspx" />
     <Content Include="MyDB\ExportList.aspx" />
-    <Content Include="MyDB\CredentialsForm.ascx" />
     <Content Include="MyDB\Default.aspx" />
     <Content Include="MyDB\DropObject.aspx" />
     <Content Include="MyDB\RenameObject.aspx" />
     <Content Include="MyDB\Tables.aspx" />
     <Content Include="MyDB\Tabs.ascx" />
     <Content Include="MyDB\UploadForm.ascx" />
-    <Content Include="MyDB\SciDriveForm.ascx" />
-    <Content Include="MyDB\UriForm.ascx" />
     <Content Include="Query\Default.aspx" />
     <Content Include="Query\Results.aspx" />
     <Content Include="Schema\ColumnList.ascx" />

@@ -1,5 +1,18 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="CredentialsForm.ascx.cs" Inherits="Jhu.Graywulf.Web.UI.MyDB.CredentialsForm" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="ImportTablesFromUriForm.ascx.cs" Inherits="Jhu.Graywulf.Jobs.ImportTables.ImportTablesFromUriForm" %>
 
+<p>
+    Specify a URI to pull a data file from
+</p>
+<table class="FormTable">
+    <tr>
+        <td class="FormLabel" style="width: 50px">
+            <asp:Label runat="server" ID="uriLabel">URI:</asp:Label>&nbsp;&nbsp;
+        </td>
+        <td class="FormField" style="width: 420px">
+            <asp:TextBox runat="server" ID="uri" CssClass="FormField" Width="420px" />
+        </td>
+    </tr>
+</table>
 <p>
     To fetch data from a remote source you may need to specify credentials:
 </p>

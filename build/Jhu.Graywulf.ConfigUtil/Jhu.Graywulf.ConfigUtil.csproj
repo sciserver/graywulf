@@ -11,7 +11,8 @@
     <RootNamespace>Jhu.Graywulf.ConfigUtil</RootNamespace>
     <AssemblyName>gwconfig</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -86,6 +87,9 @@
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

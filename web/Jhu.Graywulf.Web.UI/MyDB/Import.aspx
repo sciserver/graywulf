@@ -3,8 +3,6 @@
 
 <%@ Register Src="~/MyDb/Tabs.ascx" TagPrefix="jgwc" TagName="MyDbTabs" %>
 <%@ Register Src="~/MyDB/UploadForm.ascx" TagPrefix="jgwc" TagName="UploadForm" %>
-<%@ Register Src="~/MyDB/UriForm.ascx" TagPrefix="jgwc" TagName="UriForm" %>
-<%@ Register Src="~/MyDB/CredentialsForm.ascx" TagPrefix="jgwc" TagName="CredentialsForm" %>
 <%@ Register Src="~/MyDB/FileFormatForm.ascx" TagPrefix="jgwc" TagName="FileFormatForm" %>
 <%@ Register Src="~/MyDB/DestinationTableForm.ascx" TagPrefix="jgwc" TagName="DestinationTableForm" %>
 <%@ Register Src="~/MyDB/CommentsForm.ascx" TagPrefix="jgwc" TagName="CommentsForm" %>
@@ -25,7 +23,7 @@
                 </asp:RadioButtonList>
 
                 <jgwc:UploadForm runat="server" ID="uploadForm" />
-                <jgwc:UriForm runat="server" ID="uriForm" Visible="false" />
+                <asp:PlaceHolder runat="server" ID="importFormPlaceholder" />
 
                 <p style="text-align: center">
                     <asp:LinkButton runat="server" ID="toggleAdvanced" OnClick="ToggleAdvanced_Click">advanced mode</asp:LinkButton>
@@ -34,7 +32,6 @@
                 <asp:Panel runat="server" ID="detailsPanel" Visible="false">
                     <jgwc:DestinationTableForm runat="server" ID="destinationTableForm" />
                     <jgwc:FileFormatForm runat="server" ID="fileFormatForm" />
-                    <jgwc:CredentialsForm runat="server" ID="credentialsForm" />
                     <jgwc:CommentsForm runat="server" ID="commentsForm" />
                 </asp:Panel>
             </FormTemplate>

@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jhu.Graywulf.Web.UI;
+using Jhu.Graywulf.IO;
 
 namespace Jhu.Graywulf.Jobs.ImportTables
 {
-    public abstract class ImportTablesMethod : PluginBase
+    public interface IImportTablesForm
     {
+        Uri Uri { get; set; }
+
+        Credentials Credentials { get; set; }
     }
 }

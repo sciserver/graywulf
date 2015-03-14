@@ -7,10 +7,28 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Jhu.Graywulf.Web.UI.MyDB {
+namespace Jhu.Graywulf.Jobs.ImportTables {
     
     
-    public partial class CredentialsForm {
+    public partial class ImportTablesFromUriForm {
+        
+        /// <summary>
+        /// uriLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label uriLabel;
+        
+        /// <summary>
+        /// uri control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox uri;
         
         /// <summary>
         /// usernameLabel control.

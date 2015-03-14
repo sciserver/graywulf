@@ -129,8 +129,6 @@
     </Compile>
     <Compile Include="Web\UI\Constants.cs" />
     <Compile Include="Web\UI\DomainApplicationBase.cs" />
-    <Compile Include="Web\UI\EmbeddedVirtualFile.cs" />
-    <Compile Include="Web\UI\EmbeddedVirtualPathProvider.cs" />
     <Compile Include="Web\UI\Error.aspx.cs">
       <DependentUpon>Error.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

@@ -11,7 +11,8 @@
     <RootNamespace>Jhu.Graywulf.SqlParser.Generator</RootNamespace>
     <AssemblyName>gwsqlpgen</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -89,6 +90,9 @@
       <Project>{4039B7D0-F8E5-49D8-A770-133DBED2EA75}</Project>
       <Name>Jhu.Graywulf.ParserLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

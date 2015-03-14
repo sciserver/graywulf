@@ -22,15 +22,6 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::Jhu.Graywulf.Web.UI.MyDB.Tabs MyDbTabs;
         
         /// <summary>
-        /// importForm control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.Form importForm;
-        
-        /// <summary>
         /// importMethod control.
         /// </summary>
         /// <remarks>
@@ -49,13 +40,13 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::Jhu.Graywulf.Web.UI.MyDB.UploadForm uploadForm;
         
         /// <summary>
-        /// uriForm control.
+        /// importFormPlaceholder control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.MyDB.UriForm uriForm;
+        protected global::System.Web.UI.WebControls.PlaceHolder importFormPlaceholder;
         
         /// <summary>
         /// toggleAdvanced control.
@@ -92,15 +83,6 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::Jhu.Graywulf.Web.UI.MyDB.FileFormatForm fileFormatForm;
-        
-        /// <summary>
-        /// credentialsForm control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.MyDB.CredentialsForm credentialsForm;
         
         /// <summary>
         /// commentsForm control.

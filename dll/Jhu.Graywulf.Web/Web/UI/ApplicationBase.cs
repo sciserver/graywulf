@@ -13,6 +13,13 @@ namespace Jhu.Graywulf.Web.UI
 {
     public abstract class ApplicationBase : System.Web.HttpApplication
     {
+        private EmbeddedVirtualPathProvider virtualPathProvider;
+
+        protected EmbeddedVirtualPathProvider VirtualPathProvider
+        {
+            get { return virtualPathProvider; }
+        }
+
         /// <summary>
         /// Gets an initialized registry context.
         /// </summary>
@@ -62,11 +69,20 @@ namespace Jhu.Graywulf.Web.UI
         {
             get { return ((GraywulfIdentity)User.Identity).User; }
         }
-        
+
         protected virtual void Application_Start(object sender, EventArgs e)
         {
             // Initialize virtual paths
-            HostingEnvironment.RegisterVirtualPathProvider(new EmbeddedVirtualPathProvider());
+            virtualPathProvider = new EmbeddedVirtualPathProvider();
+
+            // Register controls
+            virtualPathProvider.RegisterVirtualPath("~/Captcha.aspx", "Jhu.Graywulf.Web.UI.Captcha.aspx, Jhu.Graywulf.Web");
+            virtualPathProvider.RegisterVirtualPath("~/Feedback.aspx", "Jhu.Graywulf.UI.Web.Feedback.aspx, Jhu.Graywulf.Web");
+            virtualPathProvider.RegisterVirtualPath("~/Error.aspx", "Jhu.Graywulf.Web.UI.Error.aspx, Jhu.Graywulf.Web");
+
+            HostingEnvironment.RegisterVirtualPathProvider(virtualPathProvider);
+
+
 
             // Start logger
             Logger.Instance.Writers.Add(new SqlLogWriter());

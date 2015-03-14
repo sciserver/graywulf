@@ -40,6 +40,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -62,12 +63,21 @@
     <Compile Include="Jobs\ExportTables\ExportTablesParameters.cs" />
     <Compile Include="Jobs\ExportTables\IExportTablesJob.cs" />
     <Compile Include="Jobs\IJob.cs" />
+    <Compile Include="Jobs\ImportTables\ImportTablesFromUriMethod.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesJob.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesJobFactory.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesJobSettings.cs" />
+    <Compile Include="Jobs\ImportTables\IImportTablesForm.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesMethod.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesParameters.cs" />
     <Compile Include="Jobs\ImportTables\IImportTablesJob.cs" />
+    <Compile Include="Jobs\ImportTables\ImportTablesFromUriForm.ascx.cs">
+      <DependentUpon>ImportTablesFromUriForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Jobs\ImportTables\ImportTablesFromUriForm.ascx.designer.cs">
+      <DependentUpon>ImportTablesFromUriForm.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Jobs\JobFactoryBase.cs" />
     <Compile Include="Jobs\MirrorDatabase\AttachDatabase.cs" />
     <Compile Include="Jobs\MirrorDatabase\DetachDatabase.cs" />
@@ -221,6 +231,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Jobs\ImportTables\ImportTablesFromUriForm.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

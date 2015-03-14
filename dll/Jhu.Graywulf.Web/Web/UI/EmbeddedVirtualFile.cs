@@ -19,8 +19,25 @@ namespace Jhu.Graywulf.Web.UI
 
         public override System.IO.Stream Open()
         {
-            var a = Assembly.GetExecutingAssembly();
-            return a.GetManifestResourceStream(embeddedResourceName);
+            Assembly a;
+            string rname;
+            var idx = embeddedResourceName.IndexOf(',');
+
+            if (idx < 0)
+            {
+                rname = embeddedResourceName;
+                a = Assembly.GetExecutingAssembly();
+            }
+            else
+            {
+                var aname = new AssemblyName(embeddedResourceName.Substring(idx + 1));
+                rname = embeddedResourceName.Substring(0, idx);
+                a = Assembly.Load(aname);
+            }
+
+            var s = a.GetManifestResourceStream(rname);
+
+            return s;
         }
         
     }
