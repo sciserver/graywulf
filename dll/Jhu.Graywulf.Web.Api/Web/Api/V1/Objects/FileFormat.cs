@@ -31,6 +31,11 @@ namespace Jhu.Graywulf.Web.Api.V1
                 // Create a specific file type
                 file = context.FileFormatFactory.CreateFileFromMimeType(MimeType);
             }
+            else
+            {
+                //
+                file = context.FileFormatFactory.CreateFileFromExtension(Jhu.Graywulf.Util.UriConverter.ToExtension(uri));
+            }
 
             // TODO: add compression option for export
 

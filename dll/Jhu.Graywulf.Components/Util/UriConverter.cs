@@ -69,10 +69,22 @@ namespace Jhu.Graywulf.Util
             }
         }
 
+        public static string ToFileName(Uri uri)
+        {
+            var path = ToPath(uri);
+            return Path.GetFileName(path);
+        }
+
         public static string ToFileNameWithoutExtension(Uri uri)
         {
             var path = ToPath(uri);
             return Path.GetFileNameWithoutExtension(path);
+        }
+
+        public static string ToExtension(Uri uri)
+        {
+            var path = ToPath(uri);
+            return Path.GetExtension(path);
         }
 
         public static Uri Combine(Uri baseUri, string relativeUri)

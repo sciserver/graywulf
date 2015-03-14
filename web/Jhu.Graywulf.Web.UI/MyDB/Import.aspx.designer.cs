@@ -22,6 +22,15 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::Jhu.Graywulf.Web.UI.MyDB.Tabs MyDbTabs;
         
         /// <summary>
+        /// importForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Controls.Form importForm;
+        
+        /// <summary>
         /// importMethod control.
         /// </summary>
         /// <remarks>

@@ -104,7 +104,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                     jobResultsForm.Visible = true;
                 }
 
-                // TODO: hide forms
+                importForm.Visible = false;
             }
         }
 
@@ -166,11 +166,17 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         private void ScheduleImportJob()
         {
+            var form =(IImportTablesForm)importForms[importMethod.SelectedValue];
+
+            var uri = form.Uri;
+            var credentials = form.Credentials;
             var file = fileFormatForm.GetFormat();
             var table = destinationTableForm.GetTableName();
 
             var job = new ImportJob()
             {
+                Uri = uri,
+                Credentials = new Web.Api.V1.Credentials(credentials),
                 FileFormat = file,
                 Destination = table,
 

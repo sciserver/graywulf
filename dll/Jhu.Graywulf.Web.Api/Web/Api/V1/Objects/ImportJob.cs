@@ -97,12 +97,12 @@ namespace Jhu.Graywulf.Web.Api.V1
                     IO.Constants.ResultsetNameToken,        // generate table names automatically
                     TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName);
 
-            if (schemaName != null)
+            if (!String.IsNullOrWhiteSpace(schemaName))
             {
                 destination.SchemaName = schemaName;
             }
 
-            if (tableName != null)
+            if (!String.IsNullOrWhiteSpace(tableName))
             {
                 destination.TableNamePattern = tableName;   // TODO: handle patterns?
             }
