@@ -48,7 +48,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        protected void ImportFileHelper(string uri, string comments)
+        protected virtual void ImportFileHelper(string uri, string comments)
         {
             using (SchedulerTester.Instance.GetToken())
             {
