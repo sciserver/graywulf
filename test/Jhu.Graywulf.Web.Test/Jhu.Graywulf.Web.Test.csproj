@@ -60,6 +60,7 @@
     <Compile Include="Web\Api\V1\ApiTestBase.cs" />
     <Compile Include="Web\Api\V1\AuthServiceTest.cs" />
     <Compile Include="Web\Api\V1\DataServiceTest.cs" />
+    <Compile Include="Web\Api\V1\ImportTest.cs" />
     <Compile Include="Web\Api\V1\JobsServiceTest.cs" />
     <Compile Include="Web\Api\V1\ObjectSerializationTest.cs" />
   </ItemGroup>
@@ -87,6 +88,10 @@
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
       <Project>{E9D182CF-746E-4E40-B01C-74A32FB70749}</Project>
       <Name>Jhu.Graywulf.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Test\Jhu.Graywulf.Test.csproj">
+      <Project>{ea6164ba-b283-46c2-874b-348d6bad41ad}</Project>
+      <Name>Jhu.Graywulf.Test</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

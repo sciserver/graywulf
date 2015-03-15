@@ -6,10 +6,11 @@ using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.Net;
 using Jhu.Graywulf.Web.Services;
+using Jhu.Graywulf.Test;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
-    public class ApiTestBase
+    public class ApiTestBase : TestClassBase
     {
         protected ApiTestBase()
         {
@@ -20,7 +21,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
         }
 
-        protected void AuthenticateUser(RestClientSession session)
+        protected void AuthenticateTestUser(RestClientSession session)
         {
             var auth = new AuthRequest()
             {

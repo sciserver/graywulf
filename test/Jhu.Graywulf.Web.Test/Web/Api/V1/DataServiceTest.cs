@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Web.Api.V1
     {
         protected IDataService CreateClient(RestClientSession session)
         {
-            AuthenticateUser(session);
+            AuthenticateTestUser(session);
             var client = session.CreateClient<IDataService>(new Uri("http://localhost/gwui/api/v1/data.svc"));
             return client;
         }
@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             using (var session = new RestClientSession())
             {
-                AuthenticateUser(session);
+                AuthenticateTestUser(session);
 
                 // We create a raw HTTP request here to stream data back.
                 // The WCF interface apparently doesn't support this

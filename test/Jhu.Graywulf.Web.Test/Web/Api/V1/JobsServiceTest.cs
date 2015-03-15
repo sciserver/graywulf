@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Web.Api.V1
     {
         protected IJobsService CreateClient(RestClientSession session)
         {
-            AuthenticateUser(session);
+            AuthenticateTestUser(session);
             var client = session.CreateClient<IJobsService>(new Uri("http://localhost/gwui/api/v1/jobs.svc"));
             return client;
         }

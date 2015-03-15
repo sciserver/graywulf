@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             using (var session = new RestClientSession())
             {
-                AuthenticateUser(session);
+                AuthenticateTestUser(session);
             }
         }
     }
