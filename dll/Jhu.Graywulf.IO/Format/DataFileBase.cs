@@ -80,7 +80,14 @@ namespace Jhu.Graywulf.Format
         [NonSerialized]
         private bool generateIdentityColumn;
 
+        /// <summary>
+        /// Name of the data file to be used as the dataset name by SmartDataReader
+        /// and consequently in table naming patterns.
+        /// </summary>
+        [NonSerialized]
         private string name;
+
+        [NonSerialized]
         private DatasetMetadata metadata;
 
         /// <summary>
@@ -209,8 +216,9 @@ namespace Jhu.Graywulf.Format
 
         /// <summary>
         /// Gets or sets the name of this file that can be used
-        /// by the FileDataReader.
+        /// by the FileDataReader as dataset name.
         /// </summary>
+        [DataMember]
         public string Name
         {
             get { return name; }
@@ -220,9 +228,11 @@ namespace Jhu.Graywulf.Format
         /// <summary>
         /// Gets or sets metadata associated with this file
         /// </summary>
+        [DataMember]
         public DatasetMetadata Metadata
         {
             get { return metadata; }
+            set { metadata = value; }
         }
 
         /// <summary>
@@ -565,7 +575,8 @@ namespace Jhu.Graywulf.Format
         protected internal virtual void OnSetMetadata()
         {
             // TODO: where to get name from if uri is not set?
-            this.name = uri == null ? "" : Util.UriConverter.ToFileNameWithoutExtension(uri);
+            // TODO: remove compressed file's extension?
+            this.name = uri == null ? "" : Util.UriConverter.ToFileNameWithoutExtension(uri).Replace(".", "_");
             this.metadata = null;    // TODO: set metadata
         }
 
