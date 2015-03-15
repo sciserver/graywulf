@@ -186,6 +186,7 @@ namespace Jhu.Graywulf.IO
         public Stream Open(Uri uri, Credentials credentials, DataFileMode mode)
         {
             this.uri = uri;
+            this.credentials = credentials;
             this.mode = mode;
 
             return Open();
@@ -194,6 +195,7 @@ namespace Jhu.Graywulf.IO
         public Stream Open(Uri uri, Credentials credentials, DataFileMode mode, DataFileCompression compression)
         {
             this.uri = uri;
+            this.credentials = credentials;
             this.mode = mode;
             this.compression = compression;
 
@@ -211,6 +213,7 @@ namespace Jhu.Graywulf.IO
         public Stream Open(Uri uri, Credentials credentials, DataFileMode mode, DataFileCompression compression, DataFileArchival archival)
         {
             this.uri = uri;
+            this.credentials = credentials;
             this.mode = mode;
             this.compression = compression;
             this.archival = archival;
