@@ -207,9 +207,11 @@ namespace Jhu.Graywulf.Jobs.ImportTables
 
                 task.BatchName = Util.UriConverter.ToFileNameWithoutExtension(this.uri);
                 task.Uri = this.uri;
+                task.Credentials = this.credentials;
                 task.Destination = this.destinations[0];
                 task.FileFormatFactoryType = this.fileFormatFactoryType;
                 task.StreamFactoryType = this.streamFactoryType;
+                task.Timeout = this.timeout;
 
                 return task;
             }
