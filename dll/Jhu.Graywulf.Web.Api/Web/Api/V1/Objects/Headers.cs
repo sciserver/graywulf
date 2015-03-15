@@ -13,9 +13,16 @@ namespace Jhu.Graywulf.Web.Api.V1
     [Description("Represents a collection of headers used for user authentication.")]
     public class Headers : NameValueCollection
     {
+        public Headers()
+        {
+        }
+
         public Headers(AuthenticationHeaderCollection collection)
         {
-            throw new NotImplementedException();
+            foreach (var header in collection)
+            {
+                this.Add(header.Value.Name, header.Value.Value);
+            }
         }
     }
 }
