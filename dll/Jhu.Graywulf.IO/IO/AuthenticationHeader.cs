@@ -26,6 +26,7 @@ namespace Jhu.Graywulf.IO
             set { name = value; }
         }
 
+        [DataMember]
         public string Value
         {
             get { return this.value; }
