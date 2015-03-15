@@ -101,6 +101,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
 
                 return new ImportTablesParameters()
                 {
+                    Uri = null,                     // Only set for archives
                     Sources = new[] { source },
                     Destinations = new[] { destination },
                     Archival = DataFileArchival.None,
@@ -116,10 +117,10 @@ namespace Jhu.Graywulf.Jobs.ImportTables
 
                 return new ImportTablesParameters()
                 {
+                    Uri = uri,                      // Only set for archives
                     Sources = source == null ? null : new[] { source },
                     Destinations = new[] { destination },
                     Archival = archival,
-                    Uri = uri,
                     Credentials = credentials,
                     FileFormatFactoryType = federation.FileFormatFactory,
                     StreamFactoryType = federation.StreamFactory,

@@ -25,16 +25,34 @@ namespace Jhu.Graywulf.Web.Api.V1
         public DataFileBase GetDataFile(FederationContext context, Uri uri)
         {
             DataFileBase file = null;
+            var archival = context.StreamFactory.GetArchivalMethod(uri);
 
-            if (MimeType != null)
+            // If it is not an archive, URI must be set directly on the file
+            // TODO: uri might also be set directly when exporting into an archive
+            if (archival == DataFileArchival.None)
             {
-                // Create a specific file type
-                file = context.FileFormatFactory.CreateFileFromMimeType(MimeType);
+                if (MimeType != null)
+                {
+                    // Create a specific file type
+                    file = context.FileFormatFactory.CreateFileFromMimeType(MimeType);
+                }
+                else
+                {
+                    //
+                    file = context.FileFormatFactory.CreateFile(uri);
+                }
+
+                file.Uri = uri;
             }
             else
             {
-                //
-                file = context.FileFormatFactory.CreateFileFromExtension(Jhu.Graywulf.Util.UriConverter.ToExtension(uri));
+                if (MimeType != null)
+                {
+                    // Create a specific file type
+                    file = context.FileFormatFactory.CreateFileFromMimeType(MimeType);
+                }
+
+                // TODO: it might be a single compressed file... test
             }
 
             // TODO: add compression option for export
