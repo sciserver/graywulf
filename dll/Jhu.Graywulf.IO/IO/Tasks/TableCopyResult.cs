@@ -9,6 +9,7 @@ namespace Jhu.Graywulf.IO.Tasks
     [Serializable]
     public class TableCopyResult
     {
+        public string SchemaName { get; set; }
         public string TableName { get; set; }
         public string FileName { get; set; }
         public long RecordsAffected { get; set; }

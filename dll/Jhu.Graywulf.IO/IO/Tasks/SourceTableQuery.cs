@@ -20,6 +20,7 @@ namespace Jhu.Graywulf.IO.Tasks
         #region Private member variables
 
         private DatasetBase dataset;
+        private string sourceSchemaName;
         private string sourceObjectName;
         private string query;
 
@@ -33,6 +34,16 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             get { return dataset; }
             set { dataset = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the schema name of the table or view from
+        /// which data is to be returned.
+        /// </summary>
+        public string SourceSchemaName
+        {
+            get { return sourceSchemaName; }
+            set { sourceSchemaName = value; }
         }
 
         /// <summary>
@@ -78,7 +89,8 @@ namespace Jhu.Graywulf.IO.Tasks
             return new SourceTableQuery()
             {
                 Dataset = table.Dataset,
-                SourceObjectName = table.DisplayName,
+                SourceSchemaName = table.SchemaName,
+                SourceObjectName = table.ObjectName,
                 Query = cg.GenerateSelectStarQuery(table, top)
             };
         }
@@ -86,6 +98,7 @@ namespace Jhu.Graywulf.IO.Tasks
         private void InitializeMembers()
         {
             this.dataset = null;
+            this.sourceSchemaName = null;
             this.sourceObjectName = null;
             this.query = null;
         }
@@ -93,6 +106,7 @@ namespace Jhu.Graywulf.IO.Tasks
         private void CopyMembers(SourceTableQuery old)
         {
             this.dataset = Util.DeepCloner.CloneObject(old.dataset);
+            this.sourceSchemaName = old.sourceSchemaName;
             this.sourceObjectName = old.sourceObjectName;
             this.query = old.query;
         }

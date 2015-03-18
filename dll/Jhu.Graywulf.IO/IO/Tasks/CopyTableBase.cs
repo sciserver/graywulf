@@ -282,7 +282,8 @@ namespace Jhu.Graywulf.IO.Tasks
                     var table = destination.GetTable(batchName, cmd.Name, sdr.Name, sdr.Metadata);
                     table.Initialize(sdr.Columns, destination.Options);
 
-                    result.TableName = table.DisplayName;
+                    result.SchemaName = table.SchemaName;
+                    result.TableName = table.ObjectName;
 
                     ExecuteBulkCopy(dr, table, result);
                 //}
