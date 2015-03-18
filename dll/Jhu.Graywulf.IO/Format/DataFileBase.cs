@@ -532,7 +532,11 @@ namespace Jhu.Graywulf.Format
 
             if (ownsBaseStream && baseStream != null)
             {
-                baseStream.Flush();
+                if (baseStream.CanWrite)
+                {
+                    baseStream.Flush();
+                }
+
                 baseStream.Close();
                 baseStream.Dispose();
                 baseStream = null;
