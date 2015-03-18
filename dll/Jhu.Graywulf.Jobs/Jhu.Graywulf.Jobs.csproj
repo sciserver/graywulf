@@ -62,6 +62,16 @@
     <Compile Include="Jobs\ExportTables\ExportTablesJobSettings.cs" />
     <Compile Include="Jobs\ExportTables\ExportTablesParameters.cs" />
     <Compile Include="Jobs\ExportTables\IExportTablesJob.cs" />
+    <Compile Include="Jobs\ExportTables\ExportTablesMethod.cs" />
+    <Compile Include="Jobs\ExportTables\ExportTablesToUriMethod.cs" />
+    <Compile Include="Jobs\ExportTables\ExportTablesToUriForm.ascx.cs">
+      <DependentUpon>ExportTablesToUriForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Jobs\ExportTables\ExportTablesToUriForm.ascx.designer.cs">
+      <DependentUpon>ExportTablesToUriForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Jobs\ExportTables\IExportTablesForm.cs" />
     <Compile Include="Jobs\IJob.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesFromUriMethod.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesJob.cs" />
@@ -234,6 +244,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Jobs\ImportTables\ImportTablesFromUriForm.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Jobs\ExportTables\ExportTablesToUriForm.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </EmbeddedResource>
   </ItemGroup>

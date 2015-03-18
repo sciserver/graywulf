@@ -158,8 +158,6 @@ namespace Jhu.Graywulf.IO.Tasks
                 sf.Mode = fileMode;
                 sf.Archival = archival;
 
-                // TODO: add authentication options here
-
                 baseStream = sf.Open();
                 ownsBaseStream = true;
             }
@@ -212,6 +210,7 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             if (ownsBaseStream && baseStream != null)
             {
+                baseStream.Close();
                 baseStream.Dispose();
                 baseStream = null;
                 ownsBaseStream = false;

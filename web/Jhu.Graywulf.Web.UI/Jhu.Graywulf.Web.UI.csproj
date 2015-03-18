@@ -143,6 +143,13 @@
     <Compile Include="MyDB\ExportList.aspx.designer.cs">
       <DependentUpon>ExportList.aspx</DependentUpon>
     </Compile>
+    <Compile Include="MyDB\SourceTableForm.ascx.cs">
+      <DependentUpon>SourceTableForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MyDB\SourceTableForm.ascx.designer.cs">
+      <DependentUpon>SourceTableForm.ascx</DependentUpon>
+    </Compile>
     <Compile Include="MyDB\UploadForm.ascx.cs">
       <DependentUpon>UploadForm.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -380,6 +387,7 @@
     <Content Include="MyDB\Default.aspx" />
     <Content Include="MyDB\DropObject.aspx" />
     <Content Include="MyDB\RenameObject.aspx" />
+    <Content Include="MyDB\SourceTableForm.ascx" />
     <Content Include="MyDB\Tables.aspx" />
     <Content Include="MyDB\Tabs.ascx" />
     <Content Include="MyDB\UploadForm.ascx" />

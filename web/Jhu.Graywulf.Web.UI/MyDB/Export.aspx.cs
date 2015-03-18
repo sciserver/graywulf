@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.IO;
+using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Collections.Generic;
 using Jhu.Graywulf.Jobs.ExportTables;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
@@ -22,51 +24,159 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             return String.Format("~/MyDb/Export.aspx?objid={0}", objid);
         }
 
-        protected override void OnLoad(EventArgs e)
+        #region Private member variables
+
+        private Dictionary<string, Control> exportForms;
+
+        #endregion
+
+        public Export()
+        {
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
+        {
+            this.exportForms = new Dictionary<string, Control>();
+        }
+
+        #region Event handlers
+
+        protected void Page_Init(object sender, EventArgs e)
+        {
+            CreateExportMethodForms();
+        }
+
+        protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
                 DownloadLink.NavigateUrl = ExportList.GetUrl();
 
-                RefreshFileFormatList();
-                RefreshTableList();
+                RefreshExportMethodList();
 
+                /* TODO:
                 string objid = Request.QueryString["objid"];
                 if (objid != null)
                 {
                     TableName.SelectedValue = objid;
                 }
-            }
-
-            base.OnLoad(e);
-        }
-
-        private void RefreshTableList()
-        {
-            FederationContext.MyDBDataset.Tables.LoadAll();
-
-            foreach (var table in FederationContext.MyDBDataset.Tables.Values.OrderBy(t => t.UniqueKey))
-            {
-                TableName.Items.Add(new ListItem(table.DisplayName, table.UniqueKey));
+                 * */
             }
         }
 
-        private void RefreshFileFormatList()
+        protected void ExportMethod_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var dfs = FederationContext.FileFormatFactory.EnumerateFileFormatDescriptions();
-
-            foreach (var df in dfs)
+            if (exportMethod.SelectedValue == "download")
             {
-                if (df.CanWrite)
+                // Set all plugin forms invisible
+                foreach (var control in exportForms)
                 {
-                    var li = new ListItem(df.DisplayName, df.MimeType);
-                    FileFormat.Items.Add(li);
+                    control.Value.Visible = false;
+                }
+            }
+            else
+            {
+                foreach (var control in exportForms)
+                {
+                    control.Value.Visible = StringComparer.InvariantCultureIgnoreCase.Compare(control.Key, exportMethod.SelectedValue) == 0;
                 }
             }
         }
 
-        private void ScheduleExportTableJob()
+        protected void ToggleAdvanced_Click(object sender, EventArgs e)
         {
+            detailsPanel.Visible = !detailsPanel.Visible;
+
+            if (detailsPanel.Visible)
+            {
+                toggleAdvanced.Text = "simple mode";
+            }
+            else
+            {
+                toggleAdvanced.Text = "advanced mode";
+            }
+        }
+
+        protected void Ok_Click(object sender, EventArgs e)
+        {
+            if (IsValid)
+            {
+                if (exportMethod.SelectedValue == "download")
+                {
+                    // TODO
+                    //ImportUploadedFile();
+                    //uploadResultsForm.Visible = true;
+                }
+                else
+                {
+                    ScheduleExportJob();
+                    jobResultsForm.Visible = true;
+                }
+
+                exportForm.Visible = false;
+            }
+        }
+
+        protected void Cancel_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(OriginalReferer);
+        }
+
+        protected void Back_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(Jhu.Graywulf.Web.UI.MyDB.Tables.GetUrl());
+        }
+
+        #endregion
+
+        private void CreateExportMethodForms()
+        {
+            var factory = ExportTablesJobFactory.Create(RegistryContext.Federation);
+
+            foreach (var method in factory.EnumerateMethods())
+            {
+                var control = LoadControl(method.GetForm());
+
+                control.Visible = false;
+                exportFormPlaceholder.Controls.Add(control);
+                exportForms.Add(method.ID, control);
+            }
+        }
+
+        private void RefreshExportMethodList()
+        {
+            var factory = ExportTablesJobFactory.Create(RegistryContext.Federation);
+
+            foreach (var method in factory.EnumerateMethods())
+            {
+                exportMethod.Items.Add(new ListItem(method.Description, method.ID));
+            }
+        }
+        
+        private void ScheduleExportJob()
+        {
+            var form = (IExportTablesForm)exportForms[exportMethod.SelectedValue];
+
+            var uri = form.Uri;
+            var credentials = form.Credentials;
+            var file = fileFormatForm.GetFormat();
+            var table = sourceTableForm.GetTable();
+
+            var job = new ExportJob()
+            {
+                Uri = uri,
+                Credentials = credentials == null ? null : new Web.Api.V1.Credentials(credentials),
+                //Source = ...
+                //FileFormat = 
+
+                Comments = commentsForm.Comments,
+                Queue = JobQueue.Long,
+            };
+
+            job.Schedule(FederationContext);
+
+            /* TODO: delete
             var ef = ExportTablesJobFactory.Create(FederationContext.Federation);
             var settings = ef.GetJobDefinitionSettings();
 
@@ -92,17 +202,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             };
 
             ej.Schedule(FederationContext);
-        }
-
-        protected void Ok_Click(object sender, EventArgs e)
-        {
-            ScheduleExportTableJob();
-            Response.Redirect(Jhu.Graywulf.Web.UI.Jobs.Default.GetUrl());
-        }
-
-        protected void Cancel_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(OriginalReferer);
+            */
         }
     }
 }

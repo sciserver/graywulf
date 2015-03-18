@@ -10,6 +10,7 @@ namespace Jhu.Graywulf.Web.Api.V1
     [TestClass]
     public class JobsServiceTest : ApiTestBase
     {
+
         protected IJobsService CreateClient(RestClientSession session)
         {
             AuthenticateTestUser(session);
@@ -129,7 +130,10 @@ namespace Jhu.Graywulf.Web.Api.V1
                 var job = new ExportJob()
                 {
                     Uri = new Uri("http://test/test.zip"),
-                    ContentType = "text/csv",
+                    FileFormat = new FileFormat()
+                    {
+                        MimeType = "text/csv",
+                    },
                     Tables = new string[]
                     {
                         "SampleData"
@@ -159,7 +163,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 var job = new ImportJob()
                 {
                     Uri = new Uri("http://test/test.zip"),
-                    Destination = "importtable",
+                    Table = "importtable",
                     Comments = "test comments",
                 };
 

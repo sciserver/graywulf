@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
             var ff = FileFormatFactory.Create(null);
 
-            var source = ff.CreateFile(path);
+            var source = ff.CreateFile(new Uri(path, UriKind.RelativeOrAbsolute));
            
             var destination = new DestinationTable()
             {
@@ -75,6 +75,26 @@ namespace Jhu.Graywulf.IO.Tasks
 
                 it.Destination.GetTable().Drop();
             }
+        }
+
+        [TestMethod]
+        public void ImportFromHttpTest()
+        {
+            var path = @"http://localhost/graywulf_io_test/csv_numbers.csv";
+            var table = "TableImportTest_ImportFromHttpTest";
+            var it = GetImportTableTask(path, table, false);
+
+            try
+            {
+                it.Destination.GetTable().Drop();
+            }
+            catch (Exception)
+            {
+            }
+
+            it.Execute();
+
+            it.Destination.GetTable().Drop();
         }
     }
 }

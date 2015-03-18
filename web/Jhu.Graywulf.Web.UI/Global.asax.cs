@@ -32,6 +32,13 @@ namespace Jhu.Graywulf.Web.UI
                 {
                     m.RegisterVirtualPaths(this.VirtualPathProvider);
                 }
+
+                var etf = Jhu.Graywulf.Jobs.ExportTables.ExportTablesJobFactory.Create(context.Federation);
+
+                foreach (var m in etf.EnumerateMethods())
+                {
+                    m.RegisterVirtualPaths(this.VirtualPathProvider);
+                }
             }
         }
 

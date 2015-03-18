@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Web.Api.V1
     /// operations initiated from the web interface or the REST services.
     /// </summary>
     [TestClass]
-    public class ImportTest : JobsServiceTest
+    public class ExportTest : JobsServiceTest
     {
         [ClassInitialize]
         public static void Initialize(TestContext context)
@@ -48,12 +48,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        protected virtual void ImportFileHelper(string uri, string comments)
-        {
-            ImportFileHelper(uri, null, comments);
-        }
-
-        protected virtual void ImportFileHelper(string uri, string table, string comments)
+        protected virtual void ExportFileHelper(string[] tables, string uri, string mimeType, string comments)
         {
             using (SchedulerTester.Instance.GetToken())
             {
@@ -69,23 +64,27 @@ namespace Jhu.Graywulf.Web.Api.V1
                     {
                         var client = CreateClient(session);
 
-                        var job = new ImportJob()
+                        var job = new ExportJob()
                         {
+                            Tables = tables,
                             Uri = new Uri(uri),
                             Comments = comments,
-                            Table = table,
+                            FileFormat = new FileFormat()
+                            {
+                                MimeType = mimeType,
+                            }
                         };
 
                         var request = new JobRequest()
                         {
-                            ImportJob = job
+                            ExportJob = job
                         };
 
                         var response = client.SubmitJob("quick", request);
                         
                         // Try to get newly scheduled job
-                        var nj = client.GetJob(response.ImportJob.Guid.ToString());
-                        var guid = nj.ImportJob.Guid;
+                        var nj = client.GetJob(response.ExportJob.Guid.ToString());
+                        var guid = nj.ExportJob.Guid;
 
                         WaitJobComplete(guid, TimeSpan.FromSeconds(10));
 
@@ -96,30 +95,6 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        [TestMethod]
-        public void ImportFileFromHttpTest()
-        {
-            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.csv", "ImportFileFromHttpTest");
-        }
-
-        // TODO: add FTP
-
-        [TestMethod]
-        public void ImportFileWithTableNameTest()
-        {
-            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.csv", "csv_numbers", "ImportFileWithTableNameTest");
-        }
-
-        [TestMethod]
-        public void ImportCompressedTest()
-        {
-            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.csv.gz", "ImportCompressedTest");
-        }
-
-        [TestMethod]
-        public void ImportArchiveTest()
-        {
-            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.zip", "ImportArchiveTest");
-        }
+        
     }
 }

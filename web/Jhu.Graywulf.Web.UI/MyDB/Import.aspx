@@ -31,7 +31,7 @@
 
                 <asp:Panel runat="server" ID="detailsPanel" Visible="false">
                     <jgwc:DestinationTableForm runat="server" ID="destinationTableForm" />
-                    <jgwc:FileFormatForm runat="server" ID="fileFormatForm" />
+                    <jgwc:FileFormatForm runat="server" ID="fileFormatForm" FileMode="Read" />
                     <jgwc:CommentsForm runat="server" ID="commentsForm" />
                 </asp:Panel>
             </FormTemplate>

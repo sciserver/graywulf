@@ -2,42 +2,60 @@
     Inherits="Jhu.Graywulf.Web.UI.MyDB.Export" CodeBehind="Export.aspx.cs" %>
 
 <%@ Register Src="~/MyDb/Tabs.ascx" TagPrefix="jgwc" TagName="MyDbTabs" %>
+<%@ Register Src="~/MyDB/FileFormatForm.ascx" TagPrefix="jgwc" TagName="FileFormatForm" %>
+<%@ Register Src="~/MyDB/CommentsForm.ascx" TagPrefix="jgwc" TagName="CommentsForm" %>
+<%@ Register Src="~/MyDB/SourceTableForm.ascx" TagPrefix="jgwc" TagName="SourceTableForm" %>
+
+
 <asp:Content runat="server" ContentPlaceHolderID="middle">
     <div class="dock-top">
         <jgwc:MyDbTabs ID="MyDbTabs" runat="server" SelectedTab="Export" />
     </div>
     <div class="TabFrame dock-fill dock-container">
-        <jgwc:Form runat="server" Text="Export table" SkinID="ExportTable">
+        <jgwc:Form runat="server" ID="exportForm" Text="Export tables" SkinID="ExportTable">
             <FormTemplate>
                 <p>
-                    Export tables from MyDB into various data file formats for download.</p>
-                <table class="FormTable">
-                    <tr>
-                        <td class="FormLabel">
-                            <asp:Label runat="server" ID="TableNameLable">Table name:</asp:Label>
-                        </td>
-                        <td class="FormField">
-                            <asp:DropDownList runat="server" ID="TableName" CssClass="FormField" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="FormLabel">
-                            <asp:Label runat="server" ID="FileFormatLabel">File format:</asp:Label>
-                        </td>
-                        <td class="FormField">
-                            <asp:DropDownList runat="server" ID="FileFormat" CssClass="FormField" />
-                        </td>
-                    </tr>
-                </table>
+                    Export tables from MyDB into various data file formats for download.
+                </p>
                 <ul>
                     <li>All exported files are automatically compressed with zip compression.</li>
-                    <li>Exported tables are available for <asp:HyperLink runat="server" ID="DownloadLink">download here</asp:Hyperlink>.</li>
+                    <li>Exported tables are available for
+                        <asp:HyperLink runat="server" ID="DownloadLink">download here</asp:HyperLink>.</li>
                 </ul>
+
+                <jgwc:SourceTableForm runat="server" id="sourceTableForm" />
+
+                <asp:RadioButtonList runat="server" ID="exportMethod" AutoPostBack="true" OnSelectedIndexChanged="ExportMethod_SelectedIndexChanged">
+                    <asp:ListItem Text="Download via browser" Value="download" Selected="True" />
+                </asp:RadioButtonList>
+
+                <asp:PlaceHolder runat="server" ID="exportFormPlaceholder" />
+
+                <jgwc:FileFormatForm runat="server" ID="fileFormatForm" FileMode="Write" />
+
+                <p style="text-align: center">
+                    <asp:LinkButton runat="server" ID="toggleAdvanced" OnClick="ToggleAdvanced_Click">advanced mode</asp:LinkButton>
+                </p>
+
+                <asp:Panel runat="server" ID="detailsPanel" Visible="false">
+                    <jgwc:CommentsForm runat="server" ID="commentsForm" />
+                </asp:Panel>
             </FormTemplate>
             <ButtonsTemplate>
                 <asp:Button ID="Ok" runat="server" Text="OK" CssClass="FormButton" OnClick="Ok_Click" />&nbsp;
                 <asp:Button ID="Cancel" runat="server" Text="Cancel" CssClass="FormButton" CausesValidation="false"
                     OnClick="Cancel_Click" />
+            </ButtonsTemplate>
+        </jgwc:Form>
+        <jgwc:Form ID="jobResultsForm" runat="server" Text="File export results" SkinID="ExportTable"
+            Visible="false">
+            <FormTemplate>
+                <p>
+                    The file export job has been scheduled and will be executed shortly.
+                </p>
+            </FormTemplate>
+            <ButtonsTemplate>
+                <asp:Button ID="Back" runat="server" Text="OK" OnClick="Back_Click" CssClass="FormButton" />&nbsp;
             </ButtonsTemplate>
         </jgwc:Form>
     </div>

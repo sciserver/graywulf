@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
     {
         #region Private member variables
 
-        private TableOrView[] sources;
+        private SourceTableQuery[] sources;
         private DataFileBase[] destinations;
         private Uri uri;
         private Credentials credentials;
@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         /// Gets or sets an array of tables that will be exported.
         /// </summary>
         [DataMember]
-        public TableOrView[] Sources
+        public SourceTableQuery[] Sources
         {
             get { return sources; }
             set { sources = value; }
@@ -163,19 +163,14 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             // What
             string host = ((Jhu.Graywulf.Schema.SqlServer.SqlServerDataset)sources[0].Dataset).HostName;
 
-            var ss = new SourceTableQuery[sources.Length];
-            for (int i = 0; i < sources.Length; i++)
-            {
-                ss[i] = SourceTableQuery.Create(sources[i]);
-            }
-
             // Create bulk operation
             var task = RemoteServiceHelper.CreateObject<IExportTableArchive>(host);
 
-            task.Sources = ss;
+            task.Sources = sources;
             task.Destinations = destinations;
             task.BatchName = Util.UriConverter.ToFileNameWithoutExtension(uri);
             task.Uri = uri;
+            task.Credentials = credentials;
             task.FileFormatFactoryType = fileFormatFactoryType;
             task.StreamFactoryType = streamFactoryType;
             task.Timeout = timeout;
@@ -184,6 +179,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         }
 
         /*
+        TODO: add this back for export maintenance tasks?
         public void DeleteOutput()
         {
             // Find all files starting with destinationFile

@@ -12,6 +12,7 @@ using Jhu.Graywulf.Jobs.ExportTables;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Test;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.ExportTables
 {
@@ -29,13 +30,10 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 var ef = new EntityFactory(context);
                 var federation = ef.LoadEntity<Federation>(Registry.ContextManager.Configuration.FederationName);
 
-                // TODO: delete after testing
-                //var mydbds = federation.UserDatabaseVersion.GetUserDatabaseInstance(user).GetDataset();
-
                 var udf = UserDatabaseFactory.Create(federation);
                 var mydbds = udf.GetUserDatabase(user);
 
-                var source = new Jhu.Graywulf.Schema.Table()
+                var table = new Jhu.Graywulf.Schema.Table()
                 {
                     Dataset = IOTestDataset,
                     DatabaseName = IOTestDataset.DatabaseName,
@@ -43,6 +41,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                     TableName = tableName
                 };
 
+                var source = SourceTableQuery.Create(table);
 
                 // Set the file name (within the archive)
                 var destination = new Jhu.Graywulf.Format.DelimitedTextDataFile();
@@ -50,7 +49,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
                 var parameters = new ExportTablesParameters()
                 {
-                    Sources = new TableOrView[] { source },
+                    Sources = new SourceTableQuery[] { source },
                     Destinations = new DataFileBase[] { destination },
                     Uri = Util.UriConverter.FromFilePath(path),
                 };

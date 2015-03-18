@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
+using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Jobs.ExportTables
@@ -18,10 +19,27 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
         public static ExportTablesJobFactory Create(Federation federation)
         {
-            return new ExportTablesJobFactory(federation.Context);
+            Type type = null;
+
+            if (federation.ExportTablesJobFactory != null)
+            {
+                type = Type.GetType(federation.ExportTablesJobFactory);
+            }
+
+            // Fall back logic if config is invalid
+            if (type == null)
+            {
+                type = typeof(ExportTablesJobFactory);
+            }
+
+            var factory = (ExportTablesJobFactory)Activator.CreateInstance(type, true);
+            factory.Context = federation.Context;
+
+            return factory;
         }
 
         #endregion
+        #region Constructors and initializers
 
         protected ExportTablesJobFactory()
             : base()
@@ -40,18 +58,31 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         {
         }
 
-        public ExportTablesParameters CreateParameters(Federation federation, TableOrView[] sources, Uri uri, string mimeType, string queueName, string comments)
-        {
-            var ff = FileFormatFactory.Create(federation.FileFormatFactory);
+        #endregion
 
+        public virtual IEnumerable<ExportTablesMethod> EnumerateMethods()
+        {
+            yield return new ExportTablesToUriMethod();
+        }
+
+        public ExportTablesMethod GetMethod(string id)
+        {
+            return EnumerateMethods().First(i => i.ID == id);
+        }
+
+        public virtual ExportTablesParameters CreateParameters(Federation federation, Uri uri, Credentials credentials, SourceTableQuery[] sources, string mimeType)
+        {
             // Create destination files
             // One file per source
+
+            var ff = FileFormatFactory.Create(federation.FileFormatFactory);
+
             var destinations = new DataFileBase[sources.Length];
             for (int i = 0; i < sources.Length; i++)
             {
                 // TODO: use file extensions instead of type?
                 var destination = ff.CreateFileFromMimeType(mimeType);
-                destination.Uri = Util.UriConverter.FromFilePath(sources[i].ObjectName + destination.Description.Extension);
+                destination.Uri = Util.UriConverter.FromFilePath(sources[i].SourceObjectName + destination.Description.Extension);
 
                 // special initialization in case of a text file
                 if (destination is TextDataFileBase)
@@ -66,19 +97,18 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 destinations[i] = destination;
             }
 
-            var ep = new ExportTablesParameters()
+            return new ExportTablesParameters()
             {
                 Sources = sources,
                 Destinations = destinations,
-                Archival = DataFileArchival.Zip,
+                Archival = DataFileArchival.Zip,        // TODO: change for single file exports
                 Uri = uri,
+                Credentials = credentials,
                 FileFormatFactoryType = federation.FileFormatFactory,
                 StreamFactoryType = federation.StreamFactory,
             };
-
-            return ep;
         }
-
+        
         public JobInstance ScheduleAsJob(ExportTablesParameters parameters, string queueName, string comments)
         {
             JobInstance job = CreateJobInstance(null, GetJobDefinitionName(), queueName, comments);

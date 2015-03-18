@@ -12,6 +12,8 @@ using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Jobs.ExportTables;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.Web.UI;
+using Jhu.Graywulf.IO;
+using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
@@ -22,7 +24,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         #region Private member variables
 
         private string[] tables;
-        private string mimeType;
+        private FileFormat fileFormat;
         private Uri uri;
         private Credentials credentials;
 
@@ -37,12 +39,13 @@ namespace Jhu.Graywulf.Web.Api.V1
             set { tables = value; }
         }
 
-        [DataMember(Name = "mimeType")]
-        [Description("Mime type of the target data format.")]
-        public string ContentType
+        [DataMember(Name = "fileFormat", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        [Description("Format of the files. Overrides format infered from extension.")]
+        public FileFormat FileFormat
         {
-            get { return mimeType; }
-            set { mimeType = value; }
+            get { return fileFormat; }
+            set { fileFormat = value; }
         }
 
         [DataMember(Name = "uri")]
@@ -116,7 +119,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             base.Type = JobType.Export;
 
             this.tables = null;
-            this.mimeType = null;
+            this.fileFormat = null;
             this.uri = null;
             this.credentials = null;
         }
@@ -137,8 +140,12 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                 var xr = new Util.XmlReader(xml);
 
+                // TODO:
                 this.tables = new string[] { "xxx" };
-                this.mimeType = xr.GetAttribute("/ExportTablesParameters/Destinations/DataFileBase", "z:Type");
+                this.fileFormat = new FileFormat()
+                {
+                    MimeType = xr.GetAttribute("/ExportTablesParameters/Destinations/DataFileBase", "z:Type")
+                };
                 this.uri = new Uri(xr.GetXmlInnerText("ExportTablesParameters/Uri"));
 
                 // TODO:
@@ -150,7 +157,39 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         public ExportTablesParameters CreateParameters(FederationContext context)
         {
-            var ef = ExportTablesJobFactory.Create(context.Federation);
+            SourceTableQuery[] sources = null;
+            IO.Credentials credentials = null;
+
+            // Verify file format
+            if (FileFormat == null || String.IsNullOrWhiteSpace(FileFormat.MimeType))
+            {
+                throw new ArgumentException("File format must be specified for export"); // TODO ***
+            }
+
+            // Verify source list
+            if (tables == null || tables.Length == 0)
+            {
+                throw new ArgumentException("At least one table must be specified"); // TODO ***
+            }
+
+            sources = new SourceTableQuery[tables.Length];
+            for (int i = 0; i < tables.Length; i++)
+            {
+                TableOrView table;
+                ParseTableName(context, tables[i], out table);
+                sources[i] = SourceTableQuery.Create(table);
+            }
+
+            if (Credentials != null)
+            {
+                credentials = Credentials.GetCredentials(context);
+            }
+
+            var ff = ExportTablesJobFactory.Create(context.Federation);
+            return ff.CreateParameters(context.Federation, uri, credentials, sources, FileFormat.MimeType);
+
+            // TODO: delete
+            /*var ef = ExportTablesJobFactory.Create(context.Federation);
 
             // Add tables and destination files
             var ts = new TableOrView[tables.Length];
@@ -170,7 +209,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 ts[i] = context.MyDBDataset.Tables[tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName];
             }
 
-            return ef.CreateParameters(context.Federation, ts, uri, mimeType, GetQueueName(context), Comments);
+            return ef.CreateParameters(context.Federation, ts, uri, mimeType, GetQueueName(context), Comments);*/
         }
 
         public override void Schedule(FederationContext context)

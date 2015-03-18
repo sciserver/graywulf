@@ -9,7 +9,6 @@ using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Jobs.ImportTables;
-using Jhu.Graywulf.SqlParser;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
@@ -18,10 +17,10 @@ namespace Jhu.Graywulf.Web.Api.V1
     {
         #region Private member variables
 
-        private string destination;
         private Uri uri;
-        private FileFormat fileFormat;
         private Credentials credentials;
+        private FileFormat fileFormat;
+        private string table;
 
         #endregion
         #region Properties
@@ -34,15 +33,6 @@ namespace Jhu.Graywulf.Web.Api.V1
             set { uri = value; }
         }
 
-        [DataMember(Name = "fileFormat", EmitDefaultValue = false)]
-        [DefaultValue(null)]
-        [Description("Format of the file. Overrides format infered from extension.")]
-        public FileFormat FileFormat
-        {
-            get { return fileFormat; }
-            set { fileFormat = value; }
-        }
-
         [DataMember(Name = "credentials", EmitDefaultValue = false)]
         [Description("Credentials to access the source URI.")]
         [DefaultValue(null)]
@@ -52,12 +42,21 @@ namespace Jhu.Graywulf.Web.Api.V1
             set { credentials = value; }
         }
 
-        [DataMember(Name = "destination")]
-        [Description("Destination of the import.")]
-        public string Destination
+        [DataMember(Name = "fileFormat", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        [Description("Format of the file. Overrides format infered from extension.")]
+        public FileFormat FileFormat
         {
-            get { return destination; }
-            set { destination = value; }
+            get { return fileFormat; }
+            set { fileFormat = value; }
+        }
+
+        [DataMember(Name = "table")]
+        [Description("Destination table of the import.")]
+        public string Table
+        {
+            get { return table; }
+            set { table = value; }
         }
 
         #endregion
@@ -83,10 +82,17 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.uri = null;
             this.fileFormat = null;
             this.credentials = null;
-            this.destination = null;
+            this.table = null;
         }
 
         #endregion
+
+        protected override void LoadFromRegistryObject(JobInstance jobInstance)
+        {
+            base.LoadFromRegistryObject(jobInstance);
+
+            // TODO: load import specific settings from job instance
+        }
 
         public static DestinationTable GetDestinationTable(FederationContext context, string schemaName, string tableName)
         {
@@ -112,20 +118,12 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         public DestinationTable GetDestinationTable(FederationContext context)
         {
-            if (Destination != null)
+            if (table != null)
             {
-                // Table names are specified as string, so we need to parse them
-                var parser = new SqlParser.SqlParser();
-                var nr = new SqlNameResolver()
-                {
-                    SchemaManager = context.SchemaManager,
-                };
+                string schemaName, tableName;
+                ParseTableName(context, table, out schemaName, out tableName);
 
-                var tn = (SqlParser.TableOrViewName)parser.Execute(new SqlParser.TableOrViewName(), destination);
-                var tr = tn.TableReference;
-                tr.SubstituteDefaults(context.SchemaManager, context.MyDBDataset.Name);
-
-                return GetDestinationTable(context, tr.SchemaName, tr.DatabaseObjectName);
+                return GetDestinationTable(context, schemaName, tableName);
             }
             else
             {

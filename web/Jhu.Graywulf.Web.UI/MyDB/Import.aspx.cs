@@ -157,7 +157,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             {
                 var li = new ListItem()
                 {
-                    Text = String.Format("{0} > {1} ({2})", r.FileName, r.TableName, r.Status)
+                    Text = String.Format("{0} > {1}.{2} ({3})", r.FileName, r.SchemaName, r.TableName, r.Status)
                 };
 
                 resultTableList.Items.Add(li);
@@ -166,7 +166,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         private void ScheduleImportJob()
         {
-            var form =(IImportTablesForm)importForms[importMethod.SelectedValue];
+            var form = (IImportTablesForm)importForms[importMethod.SelectedValue];
 
             var uri = form.Uri;
             var credentials = form.Credentials;
@@ -178,7 +178,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                 Uri = uri,
                 Credentials = credentials == null ? null : new Web.Api.V1.Credentials(credentials),
                 FileFormat = file,
-                Destination = table,
+                Table = table,
 
                 Comments = commentsForm.Comments,
                 Queue = JobQueue.Long,
