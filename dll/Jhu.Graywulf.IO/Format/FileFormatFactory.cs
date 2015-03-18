@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.IO;
-using System.Net.Http.Headers;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.IO;
 
@@ -225,10 +224,13 @@ namespace Jhu.Graywulf.Format
 
             for (int i = 0; i < parts.Length; i++)
             {
-                var accept = new MediaTypeWithQualityHeaderValue(parts[i]);
+                // TODO: this is implemented in System.Net.Http only that
+                // is removed for minimal dependency reasons and because
+                // it doesn't work well in .net 4
+                //var accept = new MediaTypeWithQualityHeaderValue(parts[i]);
 
                 int idx;
-                if (filesByMimeType.TryGetValue(accept.MediaType, out idx))
+                if (filesByMimeType.TryGetValue(parts[i], out idx))
                 {
                     file = (DataFileBase)prototypes[idx].Clone();
                     return true;
