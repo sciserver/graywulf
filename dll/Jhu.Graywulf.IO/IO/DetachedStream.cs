@@ -117,7 +117,7 @@ namespace Jhu.Graywulf.IO
         {
             return baseStream.BeginWrite(buffer, offset, count, callback, state);
         }
-        
+
         public override void Close()
         {
             if (this.baseStream != null)
@@ -136,7 +136,7 @@ namespace Jhu.Graywulf.IO
                 this.baseStream = null;
             }
 
-            // Intentionally do not call it on baseStream
+            // Intentionally do not call Close on baseStream
         }
 
         public override int EndRead(IAsyncResult asyncResult)
@@ -151,7 +151,16 @@ namespace Jhu.Graywulf.IO
 
         public override void Flush()
         {
-            baseStream.Flush();
+            // HACK
+            // Because not all streams support flushing the best we can do here
+            // is to wrap things into a try block and hope it won't cause problems.
+            try
+            {
+                baseStream.Flush();
+            }
+            catch (Exception)
+            {
+            }
         }
 
         public override int Read(byte[] buffer, int offset, int count)

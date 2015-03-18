@@ -208,15 +208,17 @@ namespace Jhu.Graywulf.Format
             {
                 base.OpenForRead();
 
+                var detached = new DetachedStream(base.BaseStream);
+
                 // Open text reader
                 // Wrap underlying stream, so it doesn't get disposed automatically
                 if (base.Encoding == null)
                 {
-                    inputReader = new StreamReader(new DetachedStream(base.BaseStream));
+                    inputReader = new StreamReader(detached);
                 }
                 else
                 {
-                    inputReader = new StreamReader(new DetachedStream(base.BaseStream), base.Encoding);
+                    inputReader = new StreamReader(detached, base.Encoding);
                 }
 
                 this.ownsInputReader = true;
@@ -231,15 +233,17 @@ namespace Jhu.Graywulf.Format
             {
                 base.OpenForWrite();
 
-                // Open TextWriter
                 // Wrap underlying stream, so it doesn't get disposed automatically
+                var detached = new DetachedStream(base.BaseStream);
+
+                // Open TextWriter
                 if (base.Encoding == null)
                 {
-                    outputWriter = new StreamWriter(new DetachedStream(base.BaseStream));
+                    outputWriter = new StreamWriter(detached);
                 }
                 else
                 {
-                    outputWriter = new StreamWriter(new DetachedStream(base.BaseStream), base.Encoding);
+                    outputWriter = new StreamWriter(detached, base.Encoding);
                 }
 
                 ownsOutputWriter = true;
