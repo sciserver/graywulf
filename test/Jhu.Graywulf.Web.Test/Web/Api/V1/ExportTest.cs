@@ -48,7 +48,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        protected virtual void ExportFileHelper(string[] tables, string uri, string mimeType, string comments)
+        protected virtual void ExportFileHelper(string table, string uri, string mimeType, string comments)
         {
             using (SchedulerTester.Instance.GetToken())
             {
@@ -66,7 +66,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                         var job = new ExportJob()
                         {
-                            Tables = tables,
+                            Table = table,
                             Uri = new Uri(uri),
                             Comments = comments,
                             FileFormat = new FileFormat()

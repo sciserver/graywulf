@@ -134,10 +134,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                     {
                         MimeType = "text/csv",
                     },
-                    Tables = new string[]
-                    {
-                        "SampleData"
-                    },
+                    Table = "SampleData",
                     Comments = "test comments",
                 };
 
