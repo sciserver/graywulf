@@ -176,7 +176,10 @@ namespace Jhu.Graywulf.Web.Api.V1
             for (int i = 0; i < tables.Length; i++)
             {
                 TableOrView table;
-                Util.SqlParser.ParseTableName(context, tables[i], out table);
+                if (!Util.SqlParser.TryParseTableName(context, tables[i], out table))
+                {
+                    throw new ArgumentException("Invalid table name");    // TODO ***
+                }
                 sources[i] = SourceTableQuery.Create(table);
             }
 

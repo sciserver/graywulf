@@ -97,9 +97,14 @@ namespace Jhu.Graywulf.Web.Api.V1
         public static DestinationTable GetDestinationTable(FederationContext context, string token)
         {
             string schemaName, tableName;
-
-            Util.SqlParser.ParseTableName(context, token, out schemaName, out tableName);
-            return GetDestinationTable(context, schemaName, tableName);
+            if (Util.SqlParser.TryParseTableName(context, token, out schemaName, out tableName))
+            {
+                return GetDestinationTable(context, schemaName, tableName);
+            }
+            else
+            {
+                return GetDestinationTable(context, null, null);
+            }
         }
 
         public static DestinationTable GetDestinationTable(FederationContext context, string schemaName, string tableName)
@@ -129,17 +134,16 @@ namespace Jhu.Graywulf.Web.Api.V1
             if (table != null)
             {
                 string schemaName, tableName;
-                Util.SqlParser.ParseTableName(context, table, out schemaName, out tableName);
+                if (Util.SqlParser.TryParseTableName(context, table, out schemaName, out tableName))
+                {
+                    return GetDestinationTable(context, schemaName, tableName);
+                }
+            }
 
-                return GetDestinationTable(context, schemaName, tableName);
-            }
-            else
-            {
-                return GetDestinationTable(context, null, null);
-            }
+            return GetDestinationTable(context, null, null);
         }
 
-        
+
 
         public ImportTablesParameters CreateParameters(FederationContext context)
         {
@@ -156,7 +160,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             if (Credentials != null)
             {
-                credentials = Credentials.GetCredentials(context); 
+                credentials = Credentials.GetCredentials(context);
             }
 
 

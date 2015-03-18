@@ -10,30 +10,58 @@ namespace Jhu.Graywulf.Web.Api.Util
 {
     public static class SqlParser
     {
-        public static void ParseTableName(FederationContext context, string token, out TableReference tr)
+        public static bool TryParseTableName(FederationContext context, string token, out TableReference tr)
         {
-            var parser = new Jhu.Graywulf.SqlParser.SqlParser();
-            var tn = (Jhu.Graywulf.SqlParser.TableOrViewName)parser.Execute(new Jhu.Graywulf.SqlParser.TableOrViewName(), token);
+            if (token != null)
+            {
+                try
+                {
+                    var parser = new Jhu.Graywulf.SqlParser.SqlParser();
+                    var tn = (Jhu.Graywulf.SqlParser.TableOrViewName)parser.Execute(new Jhu.Graywulf.SqlParser.TableOrViewName(), token);
 
-            tr = tn.TableReference;
-            tr.SubstituteDefaults(context.SchemaManager, context.MyDBDataset.Name);
+                    tr = tn.TableReference;
+                    tr.SubstituteDefaults(context.SchemaManager, context.MyDBDataset.Name);
+
+                    return true;
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            tr = null;
+            return false;
         }
 
-        public static void ParseTableName(FederationContext context, string token, out string schemaName, out string tableName)
+        public static bool TryParseTableName(FederationContext context, string token, out string schemaName, out string tableName)
         {
             TableReference tr;
-            ParseTableName(context, token, out tr);
-            schemaName = tr.SchemaName;
-            tableName = tr.DatabaseObjectName;
+            if (TryParseTableName(context, token, out tr))
+            {
+                schemaName = tr.SchemaName;
+                tableName = tr.DatabaseObjectName;
+
+                return true;
+            }
+
+            schemaName = null;
+            tableName = null;
+            return false;
         }
 
-        public static void ParseTableName(FederationContext context, string token, out TableOrView table)
+        public static bool TryParseTableName(FederationContext context, string token, out TableOrView table)
         {
             TableReference tr;
-            ParseTableName(context, token, out tr);
+            if (TryParseTableName(context, token, out tr))
+            {
+                var ds = context.SchemaManager.Datasets[tr.DatasetName];
+                table = (TableOrView)ds.GetObject(tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName);
 
-            var ds = context.SchemaManager.Datasets[tr.DatasetName];
-            table = (TableOrView)ds.GetObject(tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName);
+                return true;
+            }
+
+            table = null;
+            return false;
         }
     }
 }
