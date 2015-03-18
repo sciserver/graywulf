@@ -89,6 +89,8 @@
                                         <jgwuc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.Api.V1.JobStatus)Eval("Status") %>' />
                                     </ItemTemplate>
                                 </asp:TemplateField>
+                                <jgwc:BoundField DataField="Uri" HeaderText="Source" ItemStyle-CssClass="GridViewSpan"
+                                    HeaderStyle-CssClass="GridViewSpan" />
                                 <jgwc:BoundField DataField="Comments" HeaderText="Comments" ItemStyle-CssClass="GridViewSpan"
                                     HeaderStyle-CssClass="GridViewSpan" />
                             </Columns>
