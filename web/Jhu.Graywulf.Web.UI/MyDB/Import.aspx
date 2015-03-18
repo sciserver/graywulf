@@ -18,7 +18,8 @@
                     Import single files or archives from any location.
                 </p>
 
-                <asp:RadioButtonList runat="server" ID="importMethod" AutoPostBack="true" OnSelectedIndexChanged="ImportMethod_SelectedIndexChanged">
+                <asp:RadioButtonList runat="server" ID="importMethod" AutoPostBack="true" OnSelectedIndexChanged="ImportMethod_SelectedIndexChanged"
+                    CausesValidation="false">
                     <asp:ListItem Text="Upload via browser" Value="upload" Selected="True" />
                 </asp:RadioButtonList>
 
@@ -26,7 +27,7 @@
                 <asp:PlaceHolder runat="server" ID="importFormPlaceholder" />
 
                 <p style="text-align: center">
-                    <asp:LinkButton runat="server" ID="toggleAdvanced" OnClick="ToggleAdvanced_Click">advanced mode</asp:LinkButton>
+                    <asp:LinkButton runat="server" ID="toggleAdvanced" OnClick="ToggleAdvanced_Click" CausesValidation="false">advanced mode</asp:LinkButton>
                 </p>
 
                 <asp:Panel runat="server" ID="detailsPanel" Visible="false">

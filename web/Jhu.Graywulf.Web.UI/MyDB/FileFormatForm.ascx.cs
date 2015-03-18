@@ -18,6 +18,12 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             set { ViewState["FileMode"] = value; }
         }
 
+        public bool Required
+        {
+            get { return (bool)(ViewState["Required"] ?? false); }
+            set { ViewState["Required"] = value; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -30,7 +36,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (String.IsNullOrWhiteSpace(fileFormatList.SelectedValue))
             {
-                
+
             }
             else
             {
@@ -44,9 +50,14 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         protected void RefreshFileFormatLists()
         {
-            if (fileFormatList != null)
+            fileFormatList.Items.Clear();
+
+            if (Required)
             {
-                fileFormatList.Items.Clear();
+                fileFormatList.Items.Add(new ListItem("(select file format)", ""));
+            }
+            else
+            {
                 fileFormatList.Items.Add(new ListItem("(detect automatically)", ""));
             }
 
@@ -64,6 +75,8 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                     }
                 }
             }
+
+            fileFormatListRequiredValidator.Enabled = Required;
         }
 
         public FileFormat GetFormat()

@@ -10,6 +10,10 @@
         </td>
         <td class="FormField" style="width: 420px">
             <asp:TextBox runat="server" ID="uri" CssClass="FormField" Width="420px" />
+            <asp:RequiredFieldValidator runat="server" ControlToValidate="uri" Display="Dynamic"
+                ErrorMessage="<br />The URI field is required" />
+            <asp:RegularExpressionValidator runat="server" ControlToValidate="uri" Display="Dynamic"
+                ErrorMessage="<br />Invalid URI format" ValidationExpression="(http|https|ftp)://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?" />
         </td>
     </tr>
 </table>
