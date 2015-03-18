@@ -364,6 +364,9 @@ namespace Jhu.Graywulf.IO
             {
                 switch (uri.Scheme.ToLowerInvariant())
                 {
+                    case Constants.UriSchemeHttp:
+                    case Constants.UriSchemeHttps:
+                        return OpenHttpStream();
                     case Constants.UriSchemeFtp:
                         return OpenFtpStream();
                     default:
@@ -548,15 +551,15 @@ namespace Jhu.Graywulf.IO
         /// <returns></returns>
         protected Stream OpenHttpStream()
         {
-            // TODO: add authentication
+            var req = (HttpWebRequest)WebRequest.Create(uri);
 
-            var req = WebRequest.Create(uri);
+            req.AllowAutoRedirect = false;
+            req.KeepAlive = false;
 
             if (credentials != null)
             {
                 req.UseDefaultCredentials = false;
                 req.Credentials = credentials.GetNetworkCredentials();
-
                 req.Headers = credentials.GetWebHeaders();
             }
             else
@@ -564,9 +567,36 @@ namespace Jhu.Graywulf.IO
                 req.UseDefaultCredentials = true;
             }
 
-            var res = req.GetResponse();
+            if (mode == DataFileMode.Read)
+            {
+                // Read mode is simple, just send request
+                // and return response stream 
 
-            return res.GetResponseStream();
+                req.Method = "GET";
+
+                
+                var res = req.GetResponse();
+                return res.GetResponseStream();
+            }
+            else if (mode == DataFileMode.Write)
+            {
+                // In write mode, we get a stream and write data to it.
+                // The stream eventually gets closed by the caller, this is
+                // when the request is finished and the HTTP respose is
+                // read from the server.
+
+                req.Method = "PUT";
+                req.AllowWriteStreamBuffering = false;
+                req.SendChunked = true;
+
+                // TODO: req.ContentType = 
+                
+                return req.GetRequestStream();
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         /// <summary>
