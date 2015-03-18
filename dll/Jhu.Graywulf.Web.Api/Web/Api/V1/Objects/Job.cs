@@ -367,31 +367,5 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             return queuename;
         }
-
-        protected void ParseTableName(FederationContext context, string token, out TableReference tr)
-        {
-            var parser = new SqlParser.SqlParser();
-            var tn = (SqlParser.TableOrViewName)parser.Execute(new SqlParser.TableOrViewName(), token);
-            
-            tr = tn.TableReference;
-            tr.SubstituteDefaults(context.SchemaManager, context.MyDBDataset.Name);
-        }
-
-        protected void ParseTableName(FederationContext context, string token, out string schemaName, out string tableName)
-        {
-            TableReference tr;
-            ParseTableName(context, token, out tr);
-            schemaName = tr.SchemaName;
-            tableName = tr.DatabaseObjectName;
-        }
-
-        protected void ParseTableName(FederationContext context, string token, out TableOrView table)
-        {
-            TableReference tr;
-            ParseTableName(context, token, out tr);
-
-            var ds = context.SchemaManager.Datasets[tr.DatasetName];
-            table = (TableOrView)ds.GetObject(tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName);
-        }
     }
 }

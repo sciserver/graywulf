@@ -6,47 +6,40 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.IO.Tasks;
+using Jhu.Graywulf.Jobs;
 using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
     public partial class DestinationTableForm : CustomUserControlBase
     {
-        protected void Page_Load(object sender, EventArgs e)
+        public string TableName
         {
-
-        }
-
-        public string GetTableName()
-        {
-            if (this.Visible && !String.IsNullOrWhiteSpace(tableName.Text))
+            get
             {
-                string destination = "";
-
-                if (!String.IsNullOrWhiteSpace(schemaName.Text))
+                if (this.Visible && !String.IsNullOrWhiteSpace(tableName.Text))
                 {
-                    destination += String.Format("[{0}]", schemaName.Text);
+                    return tableName.Text;
                 }
-
-
-                if (destination != String.Empty)
+                else
                 {
-                    destination += ".";
+                    return null;
                 }
-
-                destination += String.Format("[{0}]", tableName.Text);
-
-                return destination;
-            }
-            else
-            {
-                return null;
             }
         }
 
-        public DestinationTable GetDestinationTable()
+        protected void TableNameValidator_ServerValidate(object source, ServerValidateEventArgs args)
         {
-            return ImportJob.GetDestinationTable(FederationContext, schemaName.Text, tableName.Text);
+            try
+            {
+                string sn, tn;
+                Jhu.Graywulf.Web.Api.Util.SqlParser.ParseTableName(FederationContext, tableName.Text, out sn, out tn);
+                args.IsValid = true;
+            }
+            catch (Exception)
+            {
+                args.IsValid = false;
+            }
         }
     }
 }

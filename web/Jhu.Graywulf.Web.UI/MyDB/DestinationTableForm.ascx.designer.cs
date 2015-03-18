@@ -13,24 +13,6 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
     public partial class DestinationTableForm {
         
         /// <summary>
-        /// SchemaNameLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label SchemaNameLabel;
-        
-        /// <summary>
-        /// schemaName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox schemaName;
-        
-        /// <summary>
         /// tableNameLabel control.
         /// </summary>
         /// <remarks>
@@ -47,5 +29,14 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox tableName;
+        
+        /// <summary>
+        /// tableNameValidator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CustomValidator tableNameValidator;
     }
 }

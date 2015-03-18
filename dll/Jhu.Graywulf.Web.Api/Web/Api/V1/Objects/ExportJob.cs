@@ -176,7 +176,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             for (int i = 0; i < tables.Length; i++)
             {
                 TableOrView table;
-                ParseTableName(context, tables[i], out table);
+                Util.SqlParser.ParseTableName(context, tables[i], out table);
                 sources[i] = SourceTableQuery.Create(table);
             }
 
@@ -187,29 +187,6 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             var ff = ExportTablesJobFactory.Create(context.Federation);
             return ff.CreateParameters(context.Federation, uri, credentials, sources, FileFormat.MimeType);
-
-            // TODO: delete
-            /*var ef = ExportTablesJobFactory.Create(context.Federation);
-
-            // Add tables and destination files
-            var ts = new TableOrView[tables.Length];
-
-            // Table names are specified as string, so we need to parse them
-            var parser = new SqlParser.SqlParser();
-            var nr = new SqlNameResolver()
-            {
-                SchemaManager = context.SchemaManager
-            };
-
-            for (int i = 0; i < tables.Length; i++)
-            {
-                var tn = (SqlParser.TableOrViewName)parser.Execute(new SqlParser.TableOrViewName(), tables[i]);
-                var tr = tn.TableReference;
-                tr.SubstituteDefaults(context.SchemaManager, context.MyDBDataset.Name);
-                ts[i] = context.MyDBDataset.Tables[tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName];
-            }
-
-            return ef.CreateParameters(context.Federation, ts, uri, mimeType, GetQueueName(context), Comments);*/
         }
 
         public override void Schedule(FederationContext context)
