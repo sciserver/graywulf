@@ -24,11 +24,6 @@ namespace Jhu.Graywulf.Web.Api.Util
             this.nsmgr.AddNamespace("z", "http://schemas.microsoft.com/2003/10/Serialization/");
         }
 
-        public string GetAttribute(string path, string attribute)
-        {
-            return xml.SelectNodes(path)[0].Attributes[attribute].Value;
-        }
-
         public string GetXmlInnerText(string path)
         {
             return GetXmlInnerText(path, true);
@@ -36,10 +31,27 @@ namespace Jhu.Graywulf.Web.Api.Util
 
         public string GetXmlInnerText(string path, bool resolveReferences)
         {
-            return GetXmlInnerText(xml.ChildNodes, path.Split('/'), resolveReferences, 0);
+            var node = GetNode(path, resolveReferences);
+            return node == null ? null : node.InnerText;
         }
 
-        private string GetXmlInnerText(XmlNodeList nodes, string[] path, bool resolveReferences, int i)
+        public string GetAttribute(string path, string attribute)
+        {
+            return GetAttribute(path, attribute, true);
+        }
+
+        public string GetAttribute(string path, string attribute, bool resolveReferences)
+        {
+            var node = GetNode(path, resolveReferences);
+            return node == null ? null : node.Attributes[attribute].Value;
+        }
+
+        private XmlNode GetNode(string path, bool resolveReferences)
+        {
+            return GetNode(xml.ChildNodes, path.Split('/'), resolveReferences, 0);
+        }
+
+        private XmlNode GetNode(XmlNodeList nodes, string[] path, bool resolveReferences, int i)
         {
             for (int k = 0; k < nodes.Count; k++)
             {
@@ -67,12 +79,12 @@ namespace Jhu.Graywulf.Web.Api.Util
                         }
                         else
                         {
-                            return n.InnerText;
+                            return n;
                         }
                     }
                     else
                     {
-                        return GetXmlInnerText(n.ChildNodes, path, resolveReferences, i + 1);
+                        return GetNode(n.ChildNodes, path, resolveReferences, i + 1);
                     }
                 }
             }
