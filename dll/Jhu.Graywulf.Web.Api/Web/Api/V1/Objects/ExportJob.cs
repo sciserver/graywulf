@@ -23,20 +23,29 @@ namespace Jhu.Graywulf.Web.Api.V1
     {
         #region Private member variables
 
-        private string[] tables;
-        private FileFormat fileFormat;
         private Uri uri;
         private Credentials credentials;
+        private FileFormat fileFormat;
+        private string table;
 
         #endregion
         #region Properties
 
-        [DataMember(Name = "tables")]
-        [Description("An array of fully qualified names of tables to be exported.")]
-        public string[] Tables
+        [DataMember(Name = "uri")]
+        [Description("URI of the target file.")]
+        public Uri Uri
         {
-            get { return tables; }
-            set { tables = value; }
+            get { return uri; }
+            set { uri = value; }
+        }
+
+        [DataMember(Name = "credentials", EmitDefaultValue = false)]
+        [Description("Credentials to access the target URI.")]
+        [DefaultValue(null)]
+        public Credentials Credentials
+        {
+            get { return credentials; }
+            set { credentials = value; }
         }
 
         [DataMember(Name = "fileFormat", EmitDefaultValue = false)]
@@ -48,54 +57,12 @@ namespace Jhu.Graywulf.Web.Api.V1
             set { fileFormat = value; }
         }
 
-        [DataMember(Name = "uri")]
-        [Description("URI of the target file.")]
-        public Uri Uri
+        [DataMember(Name = "table")]
+        [Description("Fully qualified name of a table to be exported.")]
+        public string Table
         {
-            get { return uri; }
-            set { uri = value; }
-        }
-
-        [DataMember(Name = "credentials", EmitDefaultValue=false)]
-        [Description("Credentials to access the target URI.")]
-        [DefaultValue(null)]
-        public Credentials Credentials
-        {
-            get { return credentials; }
-            set { credentials = value; }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <remarks>
-        /// Used for displaying the list of tables on the web UI.
-        /// </remarks>
-        [IgnoreDataMember]
-        public string TableList
-        {
-            get
-            {
-                if (tables != null)
-                {
-                    string res = "";
-                    for (int i = 0; i < tables.Length; i++)
-                    {
-                        if (i > 0)
-                        {
-                            res += ", ";
-                        }
-
-                        res += tables[i];
-                    }
-
-                    return res;
-                }
-                else
-                {
-                    return String.Empty;
-                }
-            }
+            get { return table; }
+            set { table = value; }
         }
 
         #endregion
@@ -118,10 +85,10 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             base.Type = JobType.Export;
 
-            this.tables = null;
-            this.fileFormat = null;
             this.uri = null;
+            this.fileFormat = null;
             this.credentials = null;
+            this.table = null;
         }
 
         #endregion
@@ -140,18 +107,20 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                 var xr = new Util.XmlReader(xml);
 
-                // TODO:
-                this.tables = new string[] { "xxx" };
-                this.fileFormat = new FileFormat()
+                // Try to take uri from the root (in case of archives) or from the first destination
+                var uristring = xr.GetXmlInnerText("ExportTablesParameters/Uri");
+                if (String.IsNullOrWhiteSpace(uristring))
                 {
-                    MimeType = xr.GetAttribute("/ExportTablesParameters/Destinations/DataFileBase", "z:Type")
-                };
-                this.uri = new Uri(xr.GetXmlInnerText("ExportTablesParameters/Uri"));
+                    uristring = xr.GetXmlInnerText("ExportTablesParameters/Destinations/DataFileBase/Uri");
+                }
 
-                // TODO:
-                // jobDescription.SchemaName = GetXmlInnerText(xml, "ExportTables/Sources/TableOrView/SchemaName");
-                // jobDescription.ObjectName = GetXmlInnerText(xml, "ExportTables/Sources/TableOrView/ObjectName");
-                // jobDescription.Path = GetXmlInnerText(xml, "ExportTables/Destinations/DataFileBase/Uri");
+                // Take exported table name from the first srouce object
+                var schemaname = xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/SourceSchemaName");
+                var tablename = xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/SourceObjectName");
+
+                this.table = schemaname +
+                    (!String.IsNullOrWhiteSpace(schemaname) ? "." : "") +
+                    tablename;
             }
         }
 
@@ -166,22 +135,20 @@ namespace Jhu.Graywulf.Web.Api.V1
                 throw new ArgumentException("File format must be specified for export"); // TODO ***
             }
 
-            // Verify source list
-            if (tables == null || tables.Length == 0)
+            // Verify source
+            if (String.IsNullOrWhiteSpace(table))
             {
-                throw new ArgumentException("At least one table must be specified"); // TODO ***
+                throw new ArgumentException("Table must be specified"); // TODO ***
             }
 
-            sources = new SourceTableQuery[tables.Length];
-            for (int i = 0; i < tables.Length; i++)
+            // Parse table name and create source object
+            TableOrView tab;
+            if (!Util.SqlParser.TryParseTableName(context, table, out tab))
             {
-                TableOrView table;
-                if (!Util.SqlParser.TryParseTableName(context, tables[i], out table))
-                {
-                    throw new ArgumentException("Invalid table name");    // TODO ***
-                }
-                sources[i] = SourceTableQuery.Create(table);
+                throw new ArgumentException("Invalid table name");    // TODO ***
             }
+
+            sources = new SourceTableQuery[] { SourceTableQuery.Create(tab) };
 
             if (Credentials != null)
             {

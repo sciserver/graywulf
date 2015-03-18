@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using System.Xml;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Format;
@@ -91,7 +92,30 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             base.LoadFromRegistryObject(jobInstance);
 
-            // TODO
+            if (jobInstance.Parameters.ContainsKey(Jhu.Graywulf.Jobs.Constants.JobParameterImport))
+            {
+                var xml = new XmlDocument();
+                xml.LoadXml(jobInstance.Parameters[Jhu.Graywulf.Jobs.Constants.JobParameterImport].XmlValue);
+
+                var xr = new Util.XmlReader(xml);
+
+                // Try to take uri from the root (in case of archives) or from the first source
+                var uristring = xr.GetXmlInnerText("ImportTablesParameters/Uri");
+                if (String.IsNullOrWhiteSpace(uristring))
+                {
+                    uristring = xr.GetXmlInnerText("ImportTablesParameters/Sources/DataFileBase/Uri");
+                }
+
+                this.uri = new Uri(uristring, UriKind.RelativeOrAbsolute);
+
+                // Take target table name from the first destination object
+                var schemaname = xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/SchemaName");
+                var tablename = xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/TableNamePattern");
+
+                this.table = schemaname +
+                    (!String.IsNullOrWhiteSpace(schemaname) ? "." : "") +
+                    tablename;
+            }
         }
 
         public static DestinationTable GetDestinationTable(FederationContext context, string token)
