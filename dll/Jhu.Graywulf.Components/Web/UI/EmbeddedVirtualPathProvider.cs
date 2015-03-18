@@ -63,7 +63,10 @@ namespace Jhu.Graywulf.Web.UI
         
         public void RegisterVirtualPath(string appRelativePath, string embeddedResourceName)
         {
-            virtualFiles.Add(appRelativePath, embeddedResourceName);
+            if (!virtualFiles.ContainsKey(appRelativePath))
+            {
+                virtualFiles.Add(appRelativePath, embeddedResourceName);
+            }
         }
 
     }
