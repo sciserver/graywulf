@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.Common;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Data;
@@ -15,6 +16,7 @@ namespace Jhu.Graywulf.IO.Tasks
     /// that can be used as a source of a data copy operation.
     /// </summary>
     [Serializable]
+    [DataContract]
     public class SourceTableQuery : ICloneable
     {
         #region Private member variables
@@ -30,6 +32,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <summary>
         /// Gets or sets the dataset on which this query can be executed.
         /// </summary>
+        [DataMember]
         public DatasetBase Dataset
         {
             get { return dataset; }
@@ -40,6 +43,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// Gets or sets the schema name of the table or view from
         /// which data is to be returned.
         /// </summary>
+        [DataMember]
         public string SourceSchemaName
         {
             get { return sourceSchemaName; }
@@ -49,6 +53,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <summary>
         /// Gets or sets the name table from which data is returned.
         /// </summary>
+        [DataMember]
         public string SourceObjectName
         {
             get { return sourceObjectName; }
@@ -58,6 +63,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// <summary>
         /// Gets or sets the text of the query.
         /// </summary>
+        [DataMember]
         public string Query
         {
             get { return query; }
