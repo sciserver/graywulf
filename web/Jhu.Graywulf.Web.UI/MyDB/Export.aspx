@@ -37,7 +37,7 @@
 
                 <asp:Panel runat="server" ID="detailsPanel" Visible="false">
                     <jgwc:CompressionForm runat="server" ID="compressionForm" />
-                    <jgwc:CommentsForm runat="server" ID="commentsForm" />
+                    <jgwc:CommentsForm runat="server" ID="commentsForm" Visible="false" />
                 </asp:Panel>
             </formtemplate>
             <buttonstemplate>

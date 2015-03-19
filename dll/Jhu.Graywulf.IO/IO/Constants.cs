@@ -35,5 +35,13 @@ namespace Jhu.Graywulf.IO
             { FileExtensionGz, DataFileCompression.GZip },
             { FileExtensionZip, DataFileCompression.Zip },
         };
+
+        public static readonly Map<string, DataFileCompression> CompressionMimeTypes = new Map<string, DataFileCompression>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            { String.Empty, DataFileCompression.None  },
+            { MimeTypeBz2, DataFileCompression.BZip2 },
+            { MimeTypeGz, DataFileCompression.GZip },
+            { MimeTypeZip, DataFileCompression.Zip },
+        };
     }
 }

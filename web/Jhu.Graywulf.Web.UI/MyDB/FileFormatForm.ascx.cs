@@ -82,10 +82,21 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         public DataFileBase GetDataFile(Uri uri)
         {
+            // This can figure out the file type based on a URI
+
             var format = GetFormat();
             var file = format.GetDataFile(FederationContext, uri);
-
             return file;
         }
+
+        public DataFileBase GetDataFile()
+        {
+            // This is used when the user doesn't need to specify a URI but
+            // the file format is set directly
+
+            var file = FederationContext.FileFormatFactory.CreateFileFromMimeType(fileFormatList.SelectedValue);
+            return file;
+        }
+
     }
 }

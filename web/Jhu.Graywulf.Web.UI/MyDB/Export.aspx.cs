@@ -9,6 +9,8 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Web.Api.V1;
+using Jhu.Graywulf.IO;
+using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Web.UI.MyDB
 {
@@ -65,6 +67,8 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (exportMethod.SelectedValue == "download")
             {
+                commentsForm.Visible = false;
+
                 // Set all plugin forms invisible
                 foreach (var control in exportForms)
                 {
@@ -73,6 +77,8 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             }
             else
             {
+                commentsForm.Visible = true;
+
                 foreach (var control in exportForms)
                 {
                     control.Value.Visible = StringComparer.InvariantCultureIgnoreCase.Compare(control.Key, exportMethod.SelectedValue) == 0;
@@ -150,8 +156,50 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         private void ExportViaBrowser()
         {
-            // TODO
-            throw new NotImplementedException();
+            // TODO: add support for multi-table downloads
+
+            var compression = compressionForm.Visible ? compressionForm.Compression : DataFileCompression.GZip;
+            var file = fileFormatForm.GetDataFile();
+            var table = sourceTableForm.Table;
+            
+            var uri = new Uri(table.ObjectName + file.Description.Extension, UriKind.RelativeOrAbsolute);
+            uri = FederationContext.StreamFactory.AppendCompressionExtension(uri, compression);
+            file.Uri = uri;
+            file.Compression = compression;
+
+            var task = new ExportTable()
+            {
+                BatchName = table.ObjectName,
+                Source = SourceTableQuery.Create(table),
+                Destination = file,
+                StreamFactoryType = RegistryContext.Federation.StreamFactory,
+                FileFormatFactoryType = RegistryContext.Federation.FileFormatFactory,
+            };
+
+            // Set response headers
+            Response.BufferOutput = false;
+
+            if (compression != DataFileCompression.None)
+            {
+                Response.ContentType = Jhu.Graywulf.IO.Constants.CompressionMimeTypes[compression];
+            }
+            else
+            {
+                Response.ContentType = file.Description.MimeType;
+            }
+
+            Response.AppendHeader("Content-Disposition", "attachment; filename=" + uri.ToString());
+
+            // Run export
+            var sf = FederationContext.StreamFactory;
+            using (var stream = sf.Open(Response.OutputStream, DataFileMode.Write, compression, DataFileArchival.None))
+            {
+                file.Open(stream, DataFileMode.Write);
+                task.Execute();
+                stream.Flush();
+            }
+
+            Response.End();
         }
         
         private void ScheduleExportJob()
