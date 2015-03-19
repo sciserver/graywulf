@@ -677,6 +677,21 @@ namespace Jhu.Graywulf.IO
             return cm;
         }
 
+        public virtual Uri AppendCompressionExtension(Uri uri, DataFileCompression compression)
+        {
+            if (compression != DataFileCompression.None && compression != DataFileCompression.Automatic)
+            {
+                var cm = GetCompressionMethod(uri);
+
+                if (cm != compression)
+                {
+                    return new Uri(uri.ToString() + Constants.CompressionExtensions[compression], UriKind.RelativeOrAbsolute);
+                }
+            }
+
+            return uri;
+        }
+
         protected DataFileArchival GetArchivalMethod()
         {
             DataFileArchival am;
