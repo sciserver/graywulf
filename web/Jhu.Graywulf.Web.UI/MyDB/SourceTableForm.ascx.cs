@@ -10,10 +10,16 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 {
     public partial class SourceTableForm : CustomUserControlBase
     {
-        public string SelectedValue
+        public TableOrView Table
         {
-            get { return null; }
-            set { }
+            get
+            {
+                return FederationContext.MyDBDataset.Tables[tableList.SelectedValue];
+            }
+            set
+            {
+                tableList.SelectedValue = value.UniqueKey;
+            }
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -30,13 +36,9 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
             foreach (var table in FederationContext.MyDBDataset.Tables.Values.OrderBy(t => t.UniqueKey))
             {
-                TableName.Items.Add(new ListItem(table.DisplayName, table.UniqueKey));
+                tableList.Items.Add(new ListItem(table.DisplayName, table.UniqueKey));
             }
         }
 
-        public TableOrView GetTable()
-        {
-            return null;
-        }
     }
 }

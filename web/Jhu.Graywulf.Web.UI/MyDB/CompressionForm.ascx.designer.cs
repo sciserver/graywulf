@@ -10,24 +10,24 @@
 namespace Jhu.Graywulf.Web.UI.MyDB {
     
     
-    public partial class SourceTableForm {
+    public partial class CompressionForm {
         
         /// <summary>
-        /// tableListLabel control.
+        /// compressionListLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label tableListLabel;
+        protected global::System.Web.UI.WebControls.Label compressionListLabel;
         
         /// <summary>
-        /// tableList control.
+        /// compressionList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList tableList;
+        protected global::System.Web.UI.WebControls.RadioButtonList compressionList;
     }
 }

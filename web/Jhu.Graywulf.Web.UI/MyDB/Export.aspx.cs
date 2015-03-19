@@ -55,13 +55,11 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
                 RefreshExportMethodList();
 
-                /* TODO:
                 string objid = Request.QueryString["objid"];
                 if (objid != null)
                 {
-                    TableName.SelectedValue = objid;
+                    sourceTableForm.Table = FederationContext.MyDBDataset.Tables[objid];
                 }
-                 * */
             }
         }
 
@@ -104,9 +102,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             {
                 if (exportMethod.SelectedValue == "download")
                 {
-                    // TODO
-                    //ImportUploadedFile();
-                    //uploadResultsForm.Visible = true;
+                    ExportViaBrowser();
                 }
                 else
                 {
@@ -153,6 +149,12 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                 exportMethod.Items.Add(new ListItem(method.Description, method.ID));
             }
         }
+
+        private void ExportViaBrowser()
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
         
         private void ScheduleExportJob()
         {
@@ -160,49 +162,25 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
             var uri = form.Uri;
             var credentials = form.Credentials;
-            var file = fileFormatForm.GetFormat();
-            var table = sourceTableForm.GetTable();
+            var format = fileFormatForm.GetFormat();
+            var compression = compressionForm.Compression;
+            var table = sourceTableForm.Table;
+
+            // Append compression extension, if necessary
+            uri = FederationContext.StreamFactory.AppendCompressionExtension(uri, compression);
 
             var job = new ExportJob()
             {
                 Uri = uri,
                 Credentials = credentials == null ? null : new Web.Api.V1.Credentials(credentials),
-                //Source = ...
-                //FileFormat = 
+                Table = table.DisplayName,
+                FileFormat = format,
 
                 Comments = commentsForm.Comments,
                 Queue = JobQueue.Long,
             };
 
             job.Schedule(FederationContext);
-
-            /* TODO: delete
-            var ef = ExportTablesJobFactory.Create(FederationContext.Federation);
-            var settings = ef.GetJobDefinitionSettings();
-
-            var path = Path.Combine(
-                settings.OutputDirectory,
-                String.Format(
-                    "{0}_{1:yyMMddHHmmssff}{2}",
-                    EntityFactory.GetName(RegistryContext.UserName),
-                    DateTime.Now,
-                    Jhu.Graywulf.IO.Constants.FileExtensionZip));
-
-            // TODO: add support for multiple tables
-            var tables = new string[1];
-            tables[0] = FederationContext.SchemaManager.GetDatabaseObjectByKey(TableName.SelectedValue).DisplayName;
-
-            var ej = new ExportJob()
-            {
-                Tables = tables,
-                ContentType = FileFormat.SelectedValue,
-                Uri = Jhu.Graywulf.Util.UriConverter.FromFilePath(path),
-                Queue = JobQueue.Long,
-                Comments = "",
-            };
-
-            ej.Schedule(FederationContext);
-            */
         }
     }
 }

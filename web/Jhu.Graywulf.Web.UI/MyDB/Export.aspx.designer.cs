@@ -94,6 +94,15 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::System.Web.UI.WebControls.Panel detailsPanel;
         
         /// <summary>
+        /// compressionForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.MyDB.CompressionForm compressionForm;
+        
+        /// <summary>
         /// commentsForm control.
         /// </summary>
         /// <remarks>

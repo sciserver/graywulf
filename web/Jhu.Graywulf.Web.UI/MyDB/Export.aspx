@@ -5,6 +5,8 @@
 <%@ Register Src="~/MyDB/FileFormatForm.ascx" TagPrefix="jgwc" TagName="FileFormatForm" %>
 <%@ Register Src="~/MyDB/CommentsForm.ascx" TagPrefix="jgwc" TagName="CommentsForm" %>
 <%@ Register Src="~/MyDB/SourceTableForm.ascx" TagPrefix="jgwc" TagName="SourceTableForm" %>
+<%@ Register Src="~/MyDB/CompressionForm.ascx" TagPrefix="jgwc" TagName="CompressionForm" %>
+
 
 
 <asp:Content runat="server" ContentPlaceHolderID="middle">
@@ -13,12 +15,11 @@
     </div>
     <div class="TabFrame dock-fill dock-container">
         <jgwc:Form runat="server" ID="exportForm" Text="Export tables" SkinID="ExportTable">
-            <FormTemplate>
+            <formtemplate>
                 <p>
                     Export tables from MyDB into various data file formats for download.
                 </p>
                 <ul>
-                    <li>All exported files are automatically compressed with zip compression.</li>
                     <li>Exported tables are available for
                         <asp:HyperLink runat="server" ID="DownloadLink">download here</asp:HyperLink>.</li>
                 </ul>
@@ -31,32 +32,34 @@
 
                 <asp:PlaceHolder runat="server" ID="exportFormPlaceholder" />
 
-                <jgwc:FileFormatForm runat="server" ID="fileFormatForm" FileMode="Write" />
+                <jgwc:FileFormatForm runat="server" ID="fileFormatForm" FileMode="Write" Required="true" />
 
                 <p style="text-align: center">
-                    <asp:LinkButton runat="server" ID="toggleAdvanced" OnClick="ToggleAdvanced_Click">advanced mode</asp:LinkButton>
+                    <asp:LinkButton runat="server" ID="toggleAdvanced" OnClick="ToggleAdvanced_Click" CausesValidation="false">
+                        advanced mode</asp:LinkButton>
                 </p>
 
                 <asp:Panel runat="server" ID="detailsPanel" Visible="false">
+                    <jgwc:CompressionForm runat="server" ID="compressionForm" />
                     <jgwc:CommentsForm runat="server" ID="commentsForm" />
                 </asp:Panel>
-            </FormTemplate>
-            <ButtonsTemplate>
+            </formtemplate>
+            <buttonstemplate>
                 <asp:Button ID="Ok" runat="server" Text="OK" CssClass="FormButton" OnClick="Ok_Click" />&nbsp;
                 <asp:Button ID="Cancel" runat="server" Text="Cancel" CssClass="FormButton" CausesValidation="false"
                     OnClick="Cancel_Click" />
-            </ButtonsTemplate>
+            </buttonstemplate>
         </jgwc:Form>
         <jgwc:Form ID="jobResultsForm" runat="server" Text="File export results" SkinID="ExportTable"
             Visible="false">
-            <FormTemplate>
+            <formtemplate>
                 <p>
                     The file export job has been scheduled and will be executed shortly.
                 </p>
-            </FormTemplate>
-            <ButtonsTemplate>
+            </formtemplate>
+            <buttonstemplate>
                 <asp:Button ID="Back" runat="server" Text="OK" OnClick="Back_Click" CssClass="FormButton" />&nbsp;
-            </ButtonsTemplate>
+            </buttonstemplate>
         </jgwc:Form>
     </div>
 </asp:Content>

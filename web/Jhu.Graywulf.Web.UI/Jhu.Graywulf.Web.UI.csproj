@@ -105,6 +105,13 @@
     <Compile Include="MyDB\CommentsForm.ascx.designer.cs">
       <DependentUpon>CommentsForm.ascx</DependentUpon>
     </Compile>
+    <Compile Include="MyDB\CompressionForm.ascx.cs">
+      <DependentUpon>CompressionForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MyDB\CompressionForm.ascx.designer.cs">
+      <DependentUpon>CompressionForm.ascx</DependentUpon>
+    </Compile>
     <Compile Include="MyDB\CopyTablePage.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -379,6 +386,7 @@
     <Content Include="Default.aspx" />
     <Content Include="Global.asax" />
     <Content Include="MyDB\CommentsForm.ascx" />
+    <Content Include="MyDB\CompressionForm.ascx" />
     <Content Include="MyDB\DestinationTableForm.ascx" />
     <Content Include="MyDB\Export.aspx" />
     <Content Include="MyDB\FileFormatForm.ascx" />

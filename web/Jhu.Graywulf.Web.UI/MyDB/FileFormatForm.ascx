@@ -9,9 +9,9 @@
             <asp:Label runat="server" ID="fileFormatListLabel">File format:</asp:Label>
         </td>
         <td class="FormField">
-            <asp:DropDownList runat="server" ID="fileFormatList" CssClass="FormField" AutoPostBack="True" OnSelectedIndexChanged="FileFormat_SelectedIndexChanged" />
+            <asp:DropDownList runat="server" ID="fileFormatList" CssClass="FormField"/>
             <asp:RequiredFieldValidator runat="server" ID="fileFormatListRequiredValidator" Display="Dynamic" ControlToValidate="fileFormatList"
-                ErrorMessage="File format must be selected." />
+                ErrorMessage="<br />File format must be selected." />
         </td>
     </tr>
 </table>

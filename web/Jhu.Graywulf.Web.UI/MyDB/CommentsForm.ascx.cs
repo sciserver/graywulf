@@ -11,7 +11,17 @@ namespace Jhu.Graywulf.Web.UI.MyDB
     {
         public string Comments
         {
-            get { return comments.Text; }
+            get 
+            {
+                if (Visible)
+                {
+                    return comments.Text;
+                }
+                else
+                {
+                    return String.Empty;
+                }
+            }
             set { comments.Text = value; }
         }
     }
