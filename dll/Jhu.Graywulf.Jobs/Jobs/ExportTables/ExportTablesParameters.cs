@@ -141,7 +141,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             this.credentials = null;
             this.fileFormatFactoryType = null;
             this.streamFactoryType = null;
-            this.archival = DataFileArchival.Zip;
+            this.archival = DataFileArchival.None;
             this.timeout = 1200;    // *** TODO: get from settings
         }
 
