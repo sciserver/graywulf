@@ -70,45 +70,57 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             return EnumerateMethods().First(i => i.ID == id);
         }
 
-        public virtual ExportTablesParameters CreateParameters(Federation federation, Uri uri, Credentials credentials, SourceTableQuery[] sources, string mimeType)
+        public virtual ExportTablesParameters CreateParameters(Federation federation, Uri uri, Credentials credentials, SourceTableQuery source, string mimeType)
         {
-            // Create destination files
-            // One file per source
-
+            var sf = StreamFactory.Create(federation.StreamFactory);
             var ff = FileFormatFactory.Create(federation.FileFormatFactory);
 
-            var destinations = new DataFileBase[sources.Length];
-            for (int i = 0; i < sources.Length; i++)
+            // TODO: this only supports single file exports
+
+            // Check if output file is an archive
+            var archival = sf.GetArchivalMethod(uri);
+            var destination = ff.CreateFileFromMimeType(mimeType);
+
+            if (archival == DataFileArchival.None)
             {
-                // TODO: use file extensions instead of type?
-                var destination = ff.CreateFileFromMimeType(mimeType);
-                destination.Uri = Util.UriConverter.FromFilePath(sources[i].SourceObjectName + destination.Description.Extension);
-
-                // special initialization in case of a text file
-                if (destination is TextDataFileBase)
-                {
-                    var tf = (TextDataFileBase)destination;
-                    tf.Encoding = Encoding.ASCII;
-                    tf.Culture = System.Globalization.CultureInfo.InvariantCulture;
-                    tf.GenerateIdentityColumn = false;
-                    tf.ColumnNamesInFirstLine = true;
-                }
-
-                destinations[i] = destination;
+                // This is a single file export
+                var compression = sf.GetCompressionMethod(uri);
+                destination.Compression = compression;
+                destination.Uri = uri;
+                destination.Credentials = credentials;
+            }
+            else
+            {
+                destination.Compression = DataFileCompression.None;
+                destination.Uri = new Uri(source.SourceObjectName + destination.Description.Extension, UriKind.RelativeOrAbsolute);
             }
 
-            return new ExportTablesParameters()
+            var export = new ExportTablesParameters()
             {
-                Sources = sources,
-                Destinations = destinations,
-                Archival = DataFileArchival.Zip,        // TODO: change for single file exports
-                Uri = uri,
-                Credentials = credentials,
+                Archival = archival,
+                Sources = new [] { source },
+                Destinations = new [] { destination },
                 FileFormatFactoryType = federation.FileFormatFactory,
                 StreamFactoryType = federation.StreamFactory,
             };
+
+            if (archival == DataFileArchival.None)
+            {
+            }
+            else if (archival == DataFileArchival.Zip)
+            {
+                export.Archival = archival;
+                export.Uri = uri;
+                export.Credentials = credentials;
+            }
+            else
+            {
+                throw new InvalidOperationException("Archival mode not supported for export.");
+            }
+
+            return export;
         }
-        
+
         public JobInstance ScheduleAsJob(ExportTablesParameters parameters, string queueName, string comments)
         {
             JobInstance job = CreateJobInstance(null, GetJobDefinitionName(), queueName, comments);

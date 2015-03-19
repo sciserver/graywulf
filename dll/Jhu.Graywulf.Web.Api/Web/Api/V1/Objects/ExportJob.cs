@@ -126,7 +126,6 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         public ExportTablesParameters CreateParameters(FederationContext context)
         {
-            SourceTableQuery[] sources = null;
             IO.Credentials credentials = null;
 
             // Verify file format
@@ -148,7 +147,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 throw new ArgumentException("Invalid table name");    // TODO ***
             }
 
-            sources = new SourceTableQuery[] { SourceTableQuery.Create(tab) };
+            var source = SourceTableQuery.Create(tab);
 
             if (Credentials != null)
             {
@@ -156,7 +155,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
 
             var ff = ExportTablesJobFactory.Create(context.Federation);
-            return ff.CreateParameters(context.Federation, uri, credentials, sources, FileFormat.MimeType);
+            return ff.CreateParameters(context.Federation, uri, credentials, source, FileFormat.MimeType);
         }
 
         public override void Schedule(FederationContext context)
