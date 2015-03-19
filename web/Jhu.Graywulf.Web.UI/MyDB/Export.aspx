@@ -19,10 +19,6 @@
                 <p>
                     Export tables from MyDB into various data file formats for download.
                 </p>
-                <ul>
-                    <li>Exported tables are available for
-                        <asp:HyperLink runat="server" ID="DownloadLink">download here</asp:HyperLink>.</li>
-                </ul>
 
                 <jgwc:SourceTableForm runat="server" id="sourceTableForm" />
 

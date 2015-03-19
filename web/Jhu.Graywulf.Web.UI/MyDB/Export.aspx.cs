@@ -51,8 +51,6 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         {
             if (!IsPostBack)
             {
-                DownloadLink.NavigateUrl = ExportList.GetUrl();
-
                 RefreshExportMethodList();
 
                 string objid = Request.QueryString["objid"];

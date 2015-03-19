@@ -31,15 +31,6 @@ namespace Jhu.Graywulf.Web.UI.MyDB {
         protected global::Jhu.Graywulf.Web.Controls.Form exportForm;
         
         /// <summary>
-        /// DownloadLink control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink DownloadLink;
-        
-        /// <summary>
         /// sourceTableForm control.
         /// </summary>
         /// <remarks>
