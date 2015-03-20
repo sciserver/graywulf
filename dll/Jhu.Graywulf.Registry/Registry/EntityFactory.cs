@@ -415,7 +415,11 @@ ORDER BY Number";
 
                 using (var dr = cmd.ExecuteReader())
                 {
-                    dr.Read();
+                    if (!dr.Read())
+                    {
+                        throw Error.EntityNotFound(String.Join(".", nameParts));
+                    }
+
                     var e = new Entity(Context);
                     e.LoadFromDataReader(dr);
 

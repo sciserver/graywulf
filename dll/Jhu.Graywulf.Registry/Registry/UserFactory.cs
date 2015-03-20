@@ -116,7 +116,11 @@ namespace Jhu.Graywulf.Registry
 
                 using (var dr = cmd.ExecuteReader())
                 {
-                    dr.Read();
+                    if (!dr.Read())
+                    {
+                        throw new EntityNotFoundException(ExceptionMessages.LoginFailed);
+                    }
+
                     user.LoadFromDataReader(dr);
                     dr.Close();
                 }
@@ -196,7 +200,11 @@ namespace Jhu.Graywulf.Registry
 
                 using (var dr = cmd.ExecuteReader())
                 {
-                    dr.Read();
+                    if (!dr.Read())
+                    {
+                        throw new EntityNotFoundException(ExceptionMessages.LoginFailed);
+                    }
+
                     user.LoadFromDataReader(dr);
                     dr.Close();
                 }

@@ -42,13 +42,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         internal bool LoadFromDataReader(SqlDataReader dr)
         {
-            if (!dr.HasRows)
-            {
-                // TODO: move this outside, we can't determine here how the entity was referenced,
-                // so no way to report invalid guid or name correctly
-                throw new EntityNotFoundException(String.Format(ExceptionMessages.EntityNotFound, String.IsNullOrWhiteSpace(name) ? guid.ToString() : name));
-            }
-
             int o = -1;
 
             this.guid = dr.GetGuid(++o);
@@ -107,7 +100,11 @@ namespace Jhu.Graywulf.Registry
 
                 using (var dr = cmd.ExecuteReader())
                 {
-                    dr.Read();
+                    if (!dr.Read())
+                    {
+                        throw Error.EntityNotFound(guid);
+                    }
+
                     LoadFromDataReader(dr);
                 }
             }
