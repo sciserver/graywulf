@@ -151,8 +151,10 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         /// Returns an initialized table export task based on the job parameters
         /// </summary>
         /// <returns></returns>
-        public IExportTableArchive GetInitializedTableExportTask()
+        public ICopyDataStream GetInitializedTableExportTask()
         {
+            var sf = StreamFactory.Create(streamFactoryType);
+
             // Determine server name from connection string
             // This is required, because bulk copy can go into databases that are only known
             // by their connection string
@@ -160,38 +162,54 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             // Get server name from the very first data source
             // (requires trimming the sql server instance name)
             // This will be the database server responsible for executing the export
-            // What
             string host = ((Jhu.Graywulf.Schema.SqlServer.SqlServerDataset)sources[0].Dataset).HostName;
 
-            // Create bulk operation
-            var task = RemoteServiceHelper.CreateObject<IExportTableArchive>(host);
+            // Export works in two modes: single file and archive mode.
+            // In archive mode, the file is exported using ExportTableArchive task whereas
+            // in single file mode a simpler ExportTable task is created
 
-            task.Sources = sources;
-            task.Destinations = destinations;
-            task.BatchName = Util.UriConverter.ToFileNameWithoutExtension(uri);
-            task.Uri = uri;
-            task.Credentials = credentials;
-            task.FileFormatFactoryType = fileFormatFactoryType;
-            task.StreamFactoryType = streamFactoryType;
-            task.Timeout = timeout;
-
-            return task;
-        }
-
-        /*
-        TODO: add this back for export maintenance tasks?
-        public void DeleteOutput()
-        {
-            // Find all files starting with destinationFile
-            string[] files = Directory.GetFiles(
-                Path.GetDirectoryName(destination.Path),
-                String.Format("{0}.*", Path.GetFileNameWithoutExtension(destination.Path)));
-
-            for (int i = 0; i < files.Length; i++)
+            // If arhival mode is set to automatic, figure out mode from extensions
+            if (this.Archival == DataFileArchival.Automatic)
             {
-                File.Delete(files[i]);
+                this.Archival = sf.GetArchivalMethod(this.Uri);
             }
+
+            if (this.Archival == DataFileArchival.None)
+            {
+                // Single file mode
+                // Use only first item from sources and destinations
+                // TODO: this could be extended but that would mean multiple tasks
+
+                var task = RemoteServiceHelper.CreateObject<IExportTable>(host);
+
+                task.Source = this.sources[0];
+                task.Destination = this.destinations[0];
+                task.FileFormatFactoryType = this.fileFormatFactoryType;
+                task.StreamFactoryType = this.streamFactoryType;
+                task.Timeout = this.timeout;
+
+                return task;
+            }
+            else
+            {
+                // Archive mode
+
+                var task = RemoteServiceHelper.CreateObject<IExportTableArchive>(host);
+
+                task.Sources = sources;
+                task.Destinations = destinations;
+                task.BatchName = Util.UriConverter.ToFileNameWithoutExtension(uri);
+                task.Uri = uri;
+                task.Credentials = credentials;
+                task.FileFormatFactoryType = fileFormatFactoryType;
+                task.StreamFactoryType = streamFactoryType;
+                task.Timeout = timeout;
+
+                return task;
+            }
+
+            
+            
         }
-         * */
     }
 }
