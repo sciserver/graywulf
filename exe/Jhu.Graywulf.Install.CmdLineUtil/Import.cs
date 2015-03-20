@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
         {
             base.Run();
 
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
             {
                 try
                 {
@@ -31,6 +31,8 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
                     {
                         f.Deserialize(infile, IgnoreDuplicates);
                     }
+
+                    context.CommitTransaction();
                 }
                 catch (Exception ex)
                 {
