@@ -51,9 +51,6 @@ namespace Jhu.Graywulf.Web.UI
             var authuri = Util.UriConverter.Combine(Request.Url, wam.GetSignInUrl()).ToString();
             Checks.Routines.Add(new UrlCheck(authuri));
 
-            // Test download URL TODO: this one needs update, take url from export job?
-            var downloaduri = Util.UriConverter.Combine(Request.Url, "Download").ToString();
-            Checks.Routines.Add(new UrlCheck(downloaduri, System.Net.HttpStatusCode.Forbidden)); // No directory browsing allowed
 
             // Test DLLs
 
