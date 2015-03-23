@@ -31,9 +31,10 @@ namespace Jhu.Graywulf.Logging
 
         public override void WriteEvent(Event e)
         {
-            textWriter.WriteLine("{0} : {1} : {2}", e.EventDateTime, e.Operation, e.ExecutionStatus);
+            textWriter.WriteLine("{0} : {1} : {2} : {3}", e.EventOrder,  e.EventDateTime, e.Operation, e.ExecutionStatus);
             if (e.Exception != null)
             {
+                textWriter.WriteLine("   {0}", e.Exception.GetType().FullName);
                 textWriter.WriteLine("   {0}", e.Exception.Message);
             }
         }

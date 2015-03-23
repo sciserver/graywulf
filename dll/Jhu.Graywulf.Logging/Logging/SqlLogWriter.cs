@@ -146,8 +146,8 @@ namespace Jhu.Graywulf.Logging
 
         public override void WriteEvent(Event e)
         {
-            try
-            {
+            //try
+            //{
                 using (SqlConnection cn = new SqlConnection(connectionString))
                 {
                     cn.Open();
@@ -166,29 +166,32 @@ namespace Jhu.Graywulf.Logging
                         }
 
                         // --- write data
-                        using (var cmd = createEventDataCommandPool.Take())
+                        if (e.UserData.Count > 0)
                         {
-                            cmd.Value.Connection = cn;
-                            cmd.Value.Transaction = tn;
-
-                            foreach (string key in e.UserData.Keys)
+                            using (var cmd = createEventDataCommandPool.Take())
                             {
-                                SetCreateEventDataCommandValues(cmd.Value, e.EventId, key, e.UserData[key]);
-                                cmd.Value.ExecuteNonQuery();
+                                cmd.Value.Connection = cn;
+                                cmd.Value.Transaction = tn;
+
+                                foreach (string key in e.UserData.Keys)
+                                {
+                                    SetCreateEventDataCommandValues(cmd.Value, e.EventId, key, e.UserData[key]);
+                                    cmd.Value.ExecuteNonQuery();
+                                }
                             }
                         }
 
                         tn.Commit();
                     }
                 }
-            }
-            catch (SqlException)
-            {
-                if (!skipExceptions)
-                {
-                    throw;
-                }
-            }
+            //}
+            //catch (SqlException)
+            //{
+            //    if (!skipExceptions)
+            //    {
+            //        throw;
+            //    }
+            //}
         }
     }
 }

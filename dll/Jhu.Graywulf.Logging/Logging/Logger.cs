@@ -48,12 +48,8 @@ namespace Jhu.Graywulf.Logging
             var errorEvent = new Logging.Event(operation, Guid.Empty)
             {
                 Exception = ex,
-                ExceptionType = ex.GetType().Name,
-                Message = ex.Message,
-                StackTrace = ex.StackTrace,
                 UserGuid = userGuid,
                 ContextGuid = contextGuid,
-                EventSeverity = Logging.EventSeverity.Error,
                 EventSource = source,
             };
 

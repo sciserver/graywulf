@@ -118,7 +118,8 @@ namespace Jhu.Graywulf.Scheduler
             this.scheduler = scheduler;
 
             // Initialize logging participant
-            // Have to add console logger because it's a new AppDomain
+            Jhu.Graywulf.Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.SqlLogWriter());
+
             if (interactive)
             {
                 Jhu.Graywulf.Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.StreamLogWriter(Console.Out));

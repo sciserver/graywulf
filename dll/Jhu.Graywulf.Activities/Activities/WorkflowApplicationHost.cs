@@ -7,6 +7,12 @@ using System.Threading;
 
 namespace Jhu.Graywulf.Activities
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// This class is used by command-line executor
+    /// </remarks>
     public class WorkflowApplicationHost
     {
         class WorkflowDetails

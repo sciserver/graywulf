@@ -140,12 +140,7 @@ namespace Jhu.Graywulf.Logging
         public Exception Exception
         {
             get { return exception; }
-            set
-            {
-                exception = value;
-
-                ReadFromException();
-            }
+            set { SetException(value); }
         }
 
         public Event()
@@ -170,11 +165,8 @@ namespace Jhu.Graywulf.Logging
         {
             InitializeMembers();
 
-            this.eventSeverity = Logging.EventSeverity.Error;
-            this.exception = ex;
-            this.exceptionType = ex.GetType().FullName;
-            this.message = ex.Message;
-            this.stackTrace = ex.StackTrace;
+            this.operation = operation;
+            SetException(ex);
         }
 
         private void InitializeMembers()
@@ -251,7 +243,7 @@ namespace Jhu.Graywulf.Logging
             return o;
         }
 
-        private void ReadFromException()
+        private void SetException(Exception ex)
         {
             message = null;
             site = null;
@@ -259,8 +251,6 @@ namespace Jhu.Graywulf.Logging
             exceptionType = null;
 
             // Unwrap aggregate exceptions
-            var ex = exception;
-
             while (ex != null && ex is AggregateException)
             {
                 ex = ex.InnerException;
@@ -268,16 +258,17 @@ namespace Jhu.Graywulf.Logging
 
             exception = ex;
 
-            if (exception != null)
+            if (ex != null)
             {
-                message = exception.Message;
-                stackTrace = exception.StackTrace;
-                exceptionType = exception.GetType().ToString();
+                message = ex.Message;
+                stackTrace = ex.StackTrace;
+                exceptionType = ex.GetType().ToString();
+                eventSeverity = Logging.EventSeverity.Error;
             }
 
-            if (exception is SqlException)
+            if (ex is SqlException)
             {
-                var sqlex = (SqlException)exception;
+                var sqlex = (SqlException)ex;
 
                 site = sqlex.Server;
             }
