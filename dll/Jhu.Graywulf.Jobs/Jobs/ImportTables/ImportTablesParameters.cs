@@ -189,7 +189,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                 // Use only first item from sources and destinations
                 // TODO: this could be extended but that would mean multiple tasks
 
-                var task = RemoteServiceHelper.CreateObject<IImportTable>(host);
+                var task = RemoteServiceHelper.CreateObject<IImportTable>(host, true);
 
                 task.Source = this.sources[0];
                 task.Destination = this.destinations[0];
@@ -203,7 +203,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
             {
                 // Archive mode
 
-                var task = RemoteServiceHelper.CreateObject<IImportTableArchive>(host);
+                var task = RemoteServiceHelper.CreateObject<IImportTableArchive>(host, true);
 
                 task.BatchName = Util.UriConverter.ToFileNameWithoutExtension(this.uri);
                 task.Uri = this.uri;

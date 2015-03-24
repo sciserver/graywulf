@@ -108,7 +108,7 @@ namespace Jhu.Graywulf.RemoteService
 
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var delay = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost);
+                var delay = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, false);
 
                 var sc = RemoteServiceHelper.GetControlObject(Jhu.Graywulf.Test.Constants.Localhost);
                 var ss = sc.QueryRegisteredServices();

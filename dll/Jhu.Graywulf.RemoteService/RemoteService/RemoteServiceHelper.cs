@@ -20,6 +20,17 @@ namespace Jhu.Graywulf.RemoteService
     {
         public const ImpersonationOption DefaultImpersonation = ImpersonationOption.Allowed;
 
+        private static readonly string localhost;
+        private static readonly string localhostName;
+        private static readonly string localhostFqdn;
+
+        static RemoteServiceHelper()
+        {
+            localhost = "localhost";
+            localhostName = GetHostName();
+            localhostFqdn = GetFullyQualifiedDnsName();
+        }
+
         #region Remote object creation functions
 
         /// <summary>
@@ -46,14 +57,25 @@ namespace Jhu.Graywulf.RemoteService
         /// If the remote service does not serve the requested type of service yet, the
         /// function registers it before creating a proxy.
         /// </remarks>
-        public static T CreateObject<T>(string host)
+        public static T CreateObject<T>(string host, bool allowInProcess)
             where T : IRemoteService
         {
-            // Get the uri to the requested service from the remote server
-            var sc = RemoteServiceHelper.GetControlObject(GetFullyQualifiedDnsName(host));
-            var uri = sc.GetServiceEndpointUri(typeof(T).AssemblyQualifiedName);
+            var fdqn = GetFullyQualifiedDnsName(host);
 
-            return CreateChannel<T>(CreateNetTcpBinding(), CreateEndpointAddress(uri));
+            if (allowInProcess && IsLocalhost(fdqn))
+            {
+                // Create the object in-process
+                var st = GetServiceType(typeof(T));
+                return (T)Activator.CreateInstance(st);
+            }
+            else
+            {
+                // Get the uri to the requested service from the remote server
+                var sc = RemoteServiceHelper.GetControlObject(fdqn);
+                var uri = sc.GetServiceEndpointUri(typeof(T).AssemblyQualifiedName);
+
+                return CreateChannel<T>(CreateNetTcpBinding(), CreateEndpointAddress(uri));
+            }
         }
 
         /// <summary>
@@ -75,6 +97,43 @@ namespace Jhu.Graywulf.RemoteService
         }
 
         #endregion
+
+        /// <summary>
+        /// Returns the type implementing a service contract. The contract
+        /// needs to be decorated with a RemoteServiceAttribute
+        /// </summary>
+        /// <param name="contract"></param>
+        /// <returns></returns>
+        private static Type GetServiceType(Type contract)
+        {
+            // See if contractType is decorated with the RemoteServiceClassAttribute
+            var attr = contract.GetCustomAttributes(typeof(RemoteServiceAttribute), false);
+
+            if (attr == null || attr.Length != 1)
+            {
+                // TODO
+                throw new InvalidOperationException("Contracts must be decorated with the RemoteServiceClassAttribute for automatic service registration.");
+            }
+
+            var serviceType = ((RemoteServiceAttribute)attr[0]).Type.AssemblyQualifiedName;
+
+            // Attempt to load type
+            var service = Type.GetType(serviceType);
+
+            // Validate service implementation
+            if (!service.IsSubclassOf(typeof(RemoteServiceBase)))
+            {
+                // TODO
+                throw new InvalidOperationException("Service class must derive from Jhu.Graywulf.RemoteService.RemoteServiceBase");
+            }
+
+            if (service == null || contract == null)
+            {
+                throw new Exception("Type not found.");    // TODO
+            }
+
+            return service;
+        }
 
         /// <summary>
         /// Returns a NetTcpBinding object initialized to support Kerberos authentication over TCP
@@ -128,12 +187,14 @@ namespace Jhu.Graywulf.RemoteService
         {
             EndpointAddress ea;
 
-            if (StringComparer.InvariantCultureIgnoreCase.Compare(uri.Host, GetFullyQualifiedDnsName()) == 0)
+            if (StringComparer.InvariantCultureIgnoreCase.Compare(uri.Host, localhost) == 0)
             {
+                // Localhost
                 ea = new EndpointAddress(uri);
             }
             else
             {
+                // Generic
                 ea = new EndpointAddress(uri, new SpnEndpointIdentity("Graywulf/RemoteService"));
             }
 
@@ -152,34 +213,10 @@ namespace Jhu.Graywulf.RemoteService
         /// <returns></returns>
         public static Uri CreateService(Type contract, out ServiceHost host, out ServiceEndpoint endpoint)
         {
-            // See if contractType is decorated with the RemoteServiceClassAttribute
-            var attr = contract.GetCustomAttributes(typeof(RemoteServiceAttribute), false);
-
-            if (attr == null || attr.Length != 1)
-            {
-                // TODO
-                throw new InvalidOperationException("Contracts must be decorated with the RemoteServiceClassAttribute for automatic service registration.");
-            }
-
-            var serviceType = ((RemoteServiceAttribute)attr[0]).Type.AssemblyQualifiedName;
-
-            // Attempt to load type
-            var service = Type.GetType(serviceType);
-
-            if (!service.IsSubclassOf(typeof(RemoteServiceBase)))
-            {
-                // TODO
-                throw new InvalidOperationException("Service class must derive from Jhu.Graywulf.RemoteService.RemoteServiceBase");
-            }
-
-            if (service == null || contract == null)
-            {
-                throw new Exception("Type not found.");    // TODO
-            }
+            var service = GetServiceType(contract);
 
             // Everything is OK, initialize service
-            var fdqn = RemoteServiceHelper.GetFullyQualifiedDnsName();
-            var ep = RemoteServiceHelper.CreateEndpointUri(fdqn, service.FullName);
+            var ep = RemoteServiceHelper.CreateEndpointUri(localhost, service.FullName);
             var tcp = RemoteServiceHelper.CreateNetTcpBinding();
 
             host = new ServiceHost(service, ep);
@@ -189,6 +226,22 @@ namespace Jhu.Graywulf.RemoteService
 
             // Turn on detailed debug info
 #if DEBUG
+            TurnOnDetailedDebugInfo(host);
+#endif
+
+            // Turn on impersonation
+            // TODO: not used, requires setting up SPNs in domain
+            // TurnOnInpersonations(host);
+
+            TurnOnUnthrottling(host);
+
+            host.Open();
+
+            return endpoint.Address.Uri;
+        }
+
+        private static void TurnOnDetailedDebugInfo(ServiceHost host)
+        {
             var sdb = host.Description.Behaviors.Find<ServiceDebugBehavior>();
             if (sdb == null)
             {
@@ -196,10 +249,10 @@ namespace Jhu.Graywulf.RemoteService
                 host.Description.Behaviors.Add(sdb);
             }
             sdb.IncludeExceptionDetailInFaults = true;
-#endif
+        }
 
-            // Turn on impersonation
-            /*
+        private static void TurnOnInpersonation(ServiceHost host)
+        {
             var sab = host.Description.Behaviors.Find<ServiceAuthorizationBehavior>();
             if (sab == null)
             {
@@ -207,8 +260,10 @@ namespace Jhu.Graywulf.RemoteService
                 host.Description.Behaviors.Add(sab);
             }
             sab.ImpersonateCallerForAllOperations = true;
-            */
+        }
 
+        private static void TurnOnUnthrottling(ServiceHost host)
+        {
             // Unthrottle service to increase throughput
             // Service is behind a firewall, no DOS attacks will happen
             // TODO: copy these settings to the control endpoint
@@ -221,10 +276,17 @@ namespace Jhu.Graywulf.RemoteService
             tb.MaxConcurrentCalls = 1024;
             tb.MaxConcurrentInstances = Int32.MaxValue;
             tb.MaxConcurrentSessions = 1024;
+        }
 
-            host.Open();
+        /// <summary>
+        /// Returns the host name of the machine.
+        /// </summary>
+        /// <returns></returns>
+        public static string GetHostName()
+        {
+            var ipprop = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties();
 
-            return endpoint.Address.Uri;
+            return ipprop.HostName;
         }
 
         /// <summary>
@@ -241,12 +303,18 @@ namespace Jhu.Graywulf.RemoteService
         public static string GetFullyQualifiedDnsName()
         {
             var ipprop = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties();
+            string fqdn;
 
-            // TODO: reverse lookup to get FQDN, it fails on current GW config at JHU!
-            /*var name = string.Format("{0}.{1}", ipprop.HostName, ipprop.DomainName);
-            return name;*/
-
-            return ipprop.HostName;
+            try
+            {
+                fqdn = String.Format("{0}.{1}", ipprop.HostName, ipprop.DomainName);
+            }
+            catch (Exception)
+            {
+                fqdn = ipprop.HostName;
+            }
+            
+            return fqdn;
         }
 
         /// <summary>
@@ -262,7 +330,7 @@ namespace Jhu.Graywulf.RemoteService
 
             if (StringComparer.InvariantCultureIgnoreCase.Compare(host, "localhost") == 0)
             {
-                return GetFullyQualifiedDnsName();
+                return localhost;
             }
 
             // TODO: reverse lookup to get FQDN, it fails on current GW config at JHU!
@@ -270,6 +338,33 @@ namespace Jhu.Graywulf.RemoteService
             return name;*/
 
             return host;
+        }
+
+        /// <summary>
+        /// Returns true if the host is the local host
+        /// </summary>
+        /// <param name="fdqn"></param>
+        /// <returns></returns>
+        private static bool IsLocalhost(string fqdn)
+        {
+            var comparer = StringComparer.InvariantCultureIgnoreCase;
+
+            if (comparer.Compare(localhost, fqdn) == 0)
+            {
+                return true;
+            }
+            else if (comparer.Compare(localhostFqdn, fqdn) == 0)
+            {
+                return true;
+            }
+            else if (fqdn.IndexOf('.') > -1 && comparer.Compare(localhostName, fqdn) == 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

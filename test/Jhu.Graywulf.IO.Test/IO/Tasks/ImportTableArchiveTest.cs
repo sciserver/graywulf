@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.IO.Tasks
             IImportTableArchive it = null;
             if (remote)
             {
-                it = RemoteServiceHelper.CreateObject<IImportTableArchive>(Test.Constants.Localhost);
+                it = RemoteServiceHelper.CreateObject<IImportTableArchive>(Test.Constants.Localhost, false);
             }
             else
             {

@@ -180,7 +180,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 // Use only first item from sources and destinations
                 // TODO: this could be extended but that would mean multiple tasks
 
-                var task = RemoteServiceHelper.CreateObject<IExportTable>(host);
+                var task = RemoteServiceHelper.CreateObject<IExportTable>(host, true);
 
                 task.Source = this.sources[0];
                 task.Destination = this.destinations[0];
@@ -194,7 +194,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             {
                 // Archive mode
 
-                var task = RemoteServiceHelper.CreateObject<IExportTableArchive>(host);
+                var task = RemoteServiceHelper.CreateObject<IExportTableArchive>(host, true);
 
                 task.Sources = sources;
                 task.Destinations = destinations;

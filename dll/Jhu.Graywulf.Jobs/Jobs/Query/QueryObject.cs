@@ -1129,7 +1129,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
             else
             {
-                qi = RemoteServiceHelper.CreateObject<ICopyTable>(desthost);
+                qi = RemoteServiceHelper.CreateObject<ICopyTable>(desthost, true);
             }
 
             qi.Source = source;
@@ -1157,9 +1157,16 @@ namespace Jhu.Graywulf.Jobs.Query
                 host = csb.DataSource;
             }
 
-            // The best way to find a served would be to do a reverse lookup but
-            // GW config is always broken, so we use IP address instead
-            //return System.Net.Dns.GetHostEntry(host).HostName;
+            try
+            {
+                // Do a reverse-lookup to get host name
+                host = System.Net.Dns.GetHostEntry(host).HostName;
+            }
+            catch (Exception)
+            {
+                
+            }
+
             return host;
         }
 

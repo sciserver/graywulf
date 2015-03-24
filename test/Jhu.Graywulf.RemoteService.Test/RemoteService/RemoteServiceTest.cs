@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost);
+                var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, false);
                 c.Execute();
 
                 Assert.IsFalse(c.IsCanceled);
@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost);
+                var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, false);
                 c.Period = 10000;
 
                 var start = DateTime.Now;
@@ -69,8 +69,8 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var c1 = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost);
-                var c2 = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost);
+                var c1 = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, false);
+                var c2 = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, false);
 
                 c2.Period = 2;
                 c1.Period = 1;

@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.IO.Tasks
             ICopyTable q = null;
             if (remote)
             {
-                q = RemoteServiceHelper.CreateObject<ICopyTable>(Test.Constants.Localhost);
+                q = RemoteServiceHelper.CreateObject<ICopyTable>(Test.Constants.Localhost, false);
             }
             else
             {

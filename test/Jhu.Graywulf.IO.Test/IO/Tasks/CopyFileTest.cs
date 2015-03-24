@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.IO.Tasks
             ICopyFile fc;
             if (remote)
             {
-                fc = RemoteServiceHelper.CreateObject<ICopyFile>(Test.Constants.Localhost);
+                fc = RemoteServiceHelper.CreateObject<ICopyFile>(Test.Constants.Localhost, false);
             }
             else
             {

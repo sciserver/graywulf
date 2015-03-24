@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.IO.Tasks
             IExportTable te = null;
             if (remote)
             {
-                te = RemoteServiceHelper.CreateObject<IExportTable>(Test.Constants.Localhost);
+                te = RemoteServiceHelper.CreateObject<IExportTable>(Test.Constants.Localhost, false);
             }
             else
             {
