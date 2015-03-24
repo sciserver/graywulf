@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
@@ -9,6 +10,7 @@ using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.Security;
 using System.Security.Principal;
+using System.Management;
 
 namespace Jhu.Graywulf.RemoteService
 {
@@ -23,12 +25,14 @@ namespace Jhu.Graywulf.RemoteService
         private static readonly string localhost;
         private static readonly string localhostName;
         private static readonly string localhostFqdn;
+        private static readonly HashSet<string> localhostIPs;
 
         static RemoteServiceHelper()
         {
             localhost = "localhost";
             localhostName = GetHostName();
             localhostFqdn = GetFullyQualifiedDnsName();
+            localhostIPs = GetIPs();
         }
 
         #region Remote object creation functions
@@ -187,7 +191,7 @@ namespace Jhu.Graywulf.RemoteService
         {
             EndpointAddress ea;
 
-            if (StringComparer.InvariantCultureIgnoreCase.Compare(uri.Host, localhost) == 0)
+            if (IsLocalhost(uri.Host))
             {
                 // Localhost
                 ea = new EndpointAddress(uri);
@@ -289,6 +293,33 @@ namespace Jhu.Graywulf.RemoteService
             return ipprop.HostName;
         }
 
+        private static HashSet<string> GetIPs()
+        {
+            var res = new HashSet<string>();
+            res.Add("127.0.0.1");
+
+            var query = "SELECT * FROM Win32_NetworkAdapterConfiguration WHERE IPEnabled = 'TRUE'";
+            var moSearch = new ManagementObjectSearcher(query);
+            var moCollection = moSearch.Get();
+
+            // Every record in this collection is a network interface
+            foreach (ManagementObject mo in moCollection)
+            {
+                // IPAddresses, probably have more than one value
+                string[] addresses = (string[])mo["IPAddress"];
+
+                for (int i = 0; i < addresses.Length; i++)
+                {
+                    if (!res.Contains(addresses[i]))
+                    {
+                        res.Add(addresses[i]);
+                    }
+                }
+            }
+
+            return res;
+        }
+
         /// <summary>
         /// Returns the DNS name of the current machine.
         /// </summary>
@@ -313,7 +344,7 @@ namespace Jhu.Graywulf.RemoteService
             {
                 fqdn = ipprop.HostName;
             }
-            
+
             return fqdn;
         }
 
@@ -328,16 +359,25 @@ namespace Jhu.Graywulf.RemoteService
             // otherwise windows authentication will not work within the local
             // machine
 
+            // TODO: reverse lookup to get FQDN, it fails on current GW config at JHU!
+
+            string name;
+
             if (StringComparer.InvariantCultureIgnoreCase.Compare(host, "localhost") == 0)
             {
-                return localhost;
+                name = localhostFqdn;
+            }
+            else if (host.IndexOf('.') > -1)
+            {
+                // Assume it's FQDN
+                name = host;
+            }
+            else
+            {
+                name = System.Net.Dns.GetHostEntry(host).HostName;
             }
 
-            // TODO: reverse lookup to get FQDN, it fails on current GW config at JHU!
-            /*var name = System.Net.Dns.GetHostEntry(host).HostName;
-            return name;*/
-
-            return host;
+            return name;
         }
 
         /// <summary>
@@ -358,6 +398,12 @@ namespace Jhu.Graywulf.RemoteService
                 return true;
             }
             else if (fqdn.IndexOf('.') > -1 && comparer.Compare(localhostName, fqdn) == 0)
+            {
+                // localhostName might not be a fully qualified domain name, hence we check
+                // for the dot above
+                return true;
+            }
+            else if (localhostIPs.Contains(fqdn))
             {
                 return true;
             }
