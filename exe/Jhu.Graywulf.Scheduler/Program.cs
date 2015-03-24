@@ -23,8 +23,8 @@ namespace Jhu.Graywulf.Scheduler
             {
                 Console.WriteLine("Graywulf scheduler is starting...");
 
-#if DEBUG
-                Console.WriteLine("Warning: built with DEBUG flag enabled.");
+#if BREAKDEBUG
+                Console.WriteLine("Warning: built with BREAKDEBUG flag enabled.");
 #endif
 
                 QueueManager.Instance.Start(Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName, true);
