@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Web.Services
                 // Wrap everything into a fault exception so that it
                 // is returned to the client nicely packed.
 
-#if DEBUG
+#if BREAKDEBUG
                 System.Diagnostics.Debugger.Break();
 #endif
 

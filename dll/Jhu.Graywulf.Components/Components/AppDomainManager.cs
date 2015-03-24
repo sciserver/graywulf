@@ -167,7 +167,7 @@ namespace Jhu.Graywulf.Components
 
             if (applicationBase == null)
             {
-#if DEBUG
+#if BREAKDEBUG
                 System.Diagnostics.Debugger.Break();
 #endif
 

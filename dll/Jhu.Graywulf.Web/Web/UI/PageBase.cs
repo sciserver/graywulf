@@ -127,7 +127,7 @@ namespace Jhu.Graywulf.Web.UI
         {
             var ex = Server.GetLastError();
 
-#if DEBUG
+#if BREAKDEBUG
             System.Diagnostics.Debugger.Break();
 #endif
 

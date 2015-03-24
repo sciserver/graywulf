@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.Check
                 }
                 catch (Exception ex)
                 {
-#if DEBUG
+#if BREAKDEBUG
                     System.Diagnostics.Debugger.Break();
 #endif
 

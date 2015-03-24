@@ -296,7 +296,7 @@ namespace Jhu.Graywulf.Web.Auth
                 // Load failed logon attempt
                 LogError(ex);
 
-#if DEBUG
+#if BREAKDEBUG
                 System.Diagnostics.Debugger.Break();
 #endif
 

@@ -561,7 +561,7 @@ namespace Jhu.Graywulf.Scheduler
                                 break;
                             case JobStatus.Failed:
 
-#if DEBUG
+#if BREAKDEBUG
                                 System.Diagnostics.Debugger.Break();
 #endif
 

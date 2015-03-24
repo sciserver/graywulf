@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.Web.Services
             }
             catch (Exception ex)
             {
-#if DEBUG
+#if BREAKDEBUG
                 System.Diagnostics.Debugger.Break();
 #endif
                 // TODO: this won't catch exceptions from IEnumerator that occur

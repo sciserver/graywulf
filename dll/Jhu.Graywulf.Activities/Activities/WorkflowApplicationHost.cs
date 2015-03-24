@@ -158,7 +158,7 @@ namespace Jhu.Graywulf.Activities
         private UnhandledExceptionAction wfapp_OnUnhandledException(WorkflowApplicationUnhandledExceptionEventArgs e)
         {
 
-#if DEBUG
+#if BREAKDEBUG
             System.Diagnostics.Debugger.Break();
 #endif
 

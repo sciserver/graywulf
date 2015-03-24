@@ -44,7 +44,7 @@ namespace Jhu.Graywulf.Components
 
         void ad_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-#if DEBUG
+#if BREAKDEBUG
             System.Diagnostics.Debugger.Break();
 #endif
 
