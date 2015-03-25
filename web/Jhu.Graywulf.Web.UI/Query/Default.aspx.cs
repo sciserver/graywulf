@@ -50,15 +50,14 @@ namespace Jhu.Graywulf.Web.UI.Query
         /// <param name="e"></param>
         protected void Check_Click(object sender, EventArgs e)
         {
-            var q = CreateQueryJob(JobQueue.Unknown);
-            VerifyQuery(q);
+            CreateQueryJob(JobQueue.Unknown);
         }
 
         protected void ExecuteQuick_Click(object sender, EventArgs e)
         {
             var q = CreateQueryJob(JobQueue.Quick);
 
-            if (VerifyQuery(q) != null)
+            if (q != null)
             {
                 var ji = ScheduleQuery(q);
 
@@ -73,7 +72,7 @@ namespace Jhu.Graywulf.Web.UI.Query
         {
             var q = CreateQueryJob(JobQueue.Long);
 
-            if (VerifyQuery(q) != null)
+            if (q != null)
             {
                 ScheduleQuery(q);
                 Response.Redirect(Jobs.Default.GetUrl());
@@ -115,32 +114,40 @@ namespace Jhu.Graywulf.Web.UI.Query
         /// <returns></returns>
         private QueryJob CreateQueryJob(JobQueue queue)
         {
-            return new QueryJob(GetQueryString(), queue);
-        }
-
-        /// <summary>
-        /// Create a query, verify it and display errors, if any
-        /// </summary>
-        /// <param name="queue"></param>
-        /// <returns></returns>
-        private QueryBase VerifyQuery(QueryJob queryJob)
-        {
-            var q = queryJob.CreateQuery(FederationContext);
-            string message;
-
-            if (q.Verify(out message))
+            try
             {
+                var queryJob = new QueryJob(GetQueryString(), queue);
+                var query = queryJob.CreateQuery(FederationContext);
+
+                query.Verify();
+
+                Message.Text = "Query OK.";
                 Message.BackColor = Color.Green;
-                Message.Text = message;
-                return q;
+                return queryJob;
             }
-            else
+            catch (ValidatorException ex)
             {
-                Message.BackColor = Color.Red;
-                Message.Text = message;
-                return null;
+                Message.Text = String.Format("Query error: {0}", ex.Message);
             }
+            catch (NameResolverException ex)
+            {
+                Message.Text = String.Format("Query error: {0}", ex.Message);
+            }
+            catch (ParserException ex)
+            {
+                Message.Text = String.Format("Query error: {0}", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // TODO: remove this case once all exceptions are handled correctly
+                Message.Text = String.Format("Query error: {0}", ex.Message);
+            }
+
+            Message.BackColor = Color.Red;
+
+            return null;
         }
+
 
         /// <summary>
         /// Schedules a query for execution.

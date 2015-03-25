@@ -230,40 +230,6 @@ namespace Jhu.Graywulf.Jobs.Query
             Validate();
         }
 
-        public bool Verify(out string message)
-        {
-            // TODO: make sure only query-related exceptions are handled here
-
-            try
-            {
-                Verify();
-
-                message = "Query OK.";
-                return true;
-            }
-            catch (ValidatorException ex)
-            {
-                message = String.Format("Query error: {0}", ex.Message);
-                return false;
-            }
-            catch (NameResolverException ex)
-            {
-                message = String.Format("Query error: {0}", ex.Message);
-                return false;
-            }
-            catch (ParserException ex)
-            {
-                message = String.Format("Query error: {0}", ex.Message);
-                return false;
-            }
-            catch (Exception ex)
-            {
-                // TODO: remove this case once all exceptions are handled correctly
-                message = String.Format("Query error: {0}", ex.Message);
-                return false;
-            }
-        }
-
         protected override void FinishInterpret(bool forceReinitialize)
         {
             // --- Retrieve target table information
