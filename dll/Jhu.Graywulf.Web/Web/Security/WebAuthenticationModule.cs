@@ -275,35 +275,39 @@ namespace Jhu.Graywulf.Web.Security
 
         private string AddReturnUrl(Uri uri)
         {
-            var baseuri = Configuration.BaseUri;
+            var returnUrl = GetReturnUrl();
+            returnUrl = HttpUtility.UrlEncode(returnUrl);
+            var redirectUrl = AppendReturnUrl(uri, returnUrl);
+            return redirectUrl;
+        }
 
+        private string GetReturnUrl()
+        {
             // Check if the redirect should be made to another host. If so, then the return
             // url should contain the host name, if not, it is enough to use path only
-            string returnurl;
-
-            if (baseuri.IsAbsoluteUri)
+            if (Configuration.BaseUri.IsAbsoluteUri)
             {
                 // Different host, use full URL with scheme and host name
 
                 // TODO: figure out how it would work with reverse-proxy, without
                 // URL rewrite...
 
-                returnurl = HttpContext.Current.Request.Url.OriginalString;
+                return HttpContext.Current.Request.Url.OriginalString;
             }
             else
             {
                 // Same host, use path and query only
-                returnurl = HttpContext.Current.Request.Url.PathAndQuery;
+                return HttpContext.Current.Request.Url.PathAndQuery;
             }
+        }
 
-            returnurl = HttpUtility.UrlEncode(returnurl);
-
-            // Append return url to the path
+        private string AppendReturnUrl(Uri uri, string returnUrl)
+        {
             var path = uri.IsAbsoluteUri ? uri.PathAndQuery : uri.OriginalString;
 
             if (path.Contains("[$ReturnUrl]"))
             {
-                path = path.Replace("[$ReturnUrl]", returnurl);
+                path = path.Replace("[$ReturnUrl]", returnUrl);
             }
             else
             {
@@ -316,10 +320,12 @@ namespace Jhu.Graywulf.Web.Security
                     path += "&";
                 }
 
-                path += "ReturnUrl=" + returnurl;
+                path += "ReturnUrl=" + returnUrl;
             }
 
-            return Util.UriConverter.Combine(Configuration.BaseUri, path).OriginalString;
+            uri = Util.UriConverter.Combine(Configuration.BaseUri, path);
+
+            return uri.OriginalString;
         }
 
         private void RedirectToLoginPage()
