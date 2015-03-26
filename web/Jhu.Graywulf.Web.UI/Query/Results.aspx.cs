@@ -26,23 +26,27 @@ namespace Jhu.Graywulf.Web.UI.Query
 
             try
             {
-                var ji = new JobInstance(RegistryContext);
-                ji.Guid = LastQueryJobGuid;
-                ji.Load();
-
-                switch (ji.JobExecutionStatus)
+                // Use lower isolation level for polling
+                using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.DirtyRead))
                 {
-                    case JobExecutionState.Completed:
-                        RenderResults(ji);
-                        break;
-                    case JobExecutionState.Scheduled:
-                    case JobExecutionState.Starting:
-                    case JobExecutionState.Executing:
-                        RenderExecuting();
-                        break;
-                    default:
-                        RenderFailed(ji);
-                        break;
+                    var ji = new JobInstance(context);
+                    ji.Guid = LastQueryJobGuid;
+                    ji.Load();
+
+                    switch (ji.JobExecutionStatus)
+                    {
+                        case JobExecutionState.Completed:
+                            RenderResults(ji);
+                            break;
+                        case JobExecutionState.Scheduled:
+                        case JobExecutionState.Starting:
+                        case JobExecutionState.Executing:
+                            RenderExecuting();
+                            break;
+                        default:
+                            RenderFailed(ji);
+                            break;
+                    }
                 }
             }
             catch (Exception ex)
