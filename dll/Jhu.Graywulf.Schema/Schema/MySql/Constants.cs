@@ -9,6 +9,7 @@ namespace Jhu.Graywulf.Schema.MySql
     public static class Constants
     {
         public const string MySqlProviderName = "MySql.Data.MySqlClient";
+        public const string DefaultSchemaName = "dbo";      // TODO: this is not necessary, some tests still use it though
 
         /// <summary>
         /// MySql object type indentifiers

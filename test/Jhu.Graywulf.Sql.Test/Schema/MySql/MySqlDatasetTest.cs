@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Schema.MySql.Test
         {
             var ds = CreateTestDataset();
 
-            var t = ds.Tables[ds.DatabaseName, "dbo", "Author"];
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.MySql.Constants.DefaultSchemaName, "Author"];
 
             Assert.IsTrue(ds.Tables.Count == 1);
         }
@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Schema.MySql.Test
         {
             var ds = CreateTestDataset();
 
-            var t1 = ds.Tables[ds.DatabaseName, "dbo", "Author"];
+            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.MySql.Constants.DefaultSchemaName, "Author"];
             var t2 = ds.Tables[ds.DatabaseName, "", "Author"];
 
             Assert.IsTrue(ds.Tables.Count == 1);
@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.Schema.MySql.Test
         {
             var ds = CreateTestDataset();
 
-            var t1 = ds.Tables[ds.DatabaseName, "dbo", "Author"];
+            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.MySql.Constants.DefaultSchemaName, "Author"];
             var t2 = ds.Tables[ds.DatabaseName, "", "Author"];
             Table t3 = ds.Tables[ds.DatabaseName, "", "Book"];
 
@@ -209,7 +209,7 @@ namespace Jhu.Graywulf.Schema.MySql.Test
 
             try
             {
-                var t = ds.Views[ds.DatabaseName, "dbo", "NonExistentView"];
+                var t = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.MySql.Constants.DefaultSchemaName, "NonExistentView"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)
@@ -291,7 +291,7 @@ namespace Jhu.Graywulf.Schema.MySql.Test
 
             try
             {
-                var t = ds.StoredProcedures[ds.DatabaseName, "dbo", "NonExistentSp"];
+                var t = ds.StoredProcedures[ds.DatabaseName, Jhu.Graywulf.Schema.MySql.Constants.DefaultSchemaName, "NonExistentSp"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)

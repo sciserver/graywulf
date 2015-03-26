@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var m = ds.Tables[ds.DatabaseName, "dbo", "Author"].Metadata;
+            var m = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Metadata;
         }
     }
 }

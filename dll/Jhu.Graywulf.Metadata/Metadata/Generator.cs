@@ -365,7 +365,7 @@ namespace Jhu.Graywulf.Metadata
 
             if (parts.Length == 1)
             {
-                schema = "dbo";
+                schema = "dbo";                 // TODO: use settings or take from database
                 name = parts[0].Trim('[', ']');
             }
             else if (parts.Length == 2)

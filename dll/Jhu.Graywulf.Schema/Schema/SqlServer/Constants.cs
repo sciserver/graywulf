@@ -9,6 +9,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
     public static class Constants
     {
         public const string SqlServerProviderName = "System.Data.SqlClient";
+        public const string DefaultSchemaName = "dbo";
 
         /// <summary>
         /// SQL Server object type indentifiers, as used in the sys.objects table

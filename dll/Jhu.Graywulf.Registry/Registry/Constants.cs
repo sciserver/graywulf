@@ -74,8 +74,6 @@ namespace Jhu.Graywulf.Registry
         public const string UserDbInstanceNamePattern = "[$DatabaseDefinition.Name]_[@Username]";
         public const string UserDbNamePattern = "[$DatabaseDefinition.Federation.Name]_[$DatabaseDefinition.Name]_[@Username]";
 
-        public const string DefaultSchemaName = "dbo";
-
         internal static Map<EntityType, Type> EntityTypeMap = new Map<EntityType, Type>()
         {
             { EntityType.Cluster, typeof(Cluster) },

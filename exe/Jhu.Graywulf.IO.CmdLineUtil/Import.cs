@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
             var destination = new DestinationTable()
             {
                 Dataset = dataset,
-                SchemaName = "dbo",
+                SchemaName = Schema.SqlServer.Constants.DefaultSchemaName,
                 TableNamePattern = table,
                 Options = TableInitializationOptions.Clear,      
             };

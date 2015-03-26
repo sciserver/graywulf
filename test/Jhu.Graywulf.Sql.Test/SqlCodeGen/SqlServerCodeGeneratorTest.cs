@@ -193,7 +193,7 @@ WHERE ID = 1";
 
             var dest = new Table()
             {
-                SchemaName = "dbo",
+                SchemaName = Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName,
                 TableName = "destination"
             };
 

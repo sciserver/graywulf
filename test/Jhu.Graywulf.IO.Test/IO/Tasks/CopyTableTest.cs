@@ -44,7 +44,7 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 Dataset = ds,
                 DatabaseName = ds.DatabaseName,
-                SchemaName = "dbo",
+                SchemaName = Schema.SqlServer.Constants.DefaultSchemaName,
                 TableNamePattern = tableName,
                 Options = TableInitializationOptions.Create
             };

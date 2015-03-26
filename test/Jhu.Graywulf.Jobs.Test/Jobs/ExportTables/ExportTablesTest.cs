@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var path = String.Format(@"\\{0}\{1}.csv.zip", Jhu.Graywulf.Test.Constants.Localhost, Jhu.Graywulf.Test.Constants.TestDirectory);
-                var guid = ScheduleExportTableJob("dbo", "SampleData", path, QueueType.Long);
+                var guid = ScheduleExportTableJob(Schema.SqlServer.Constants.DefaultSchemaName, "SampleData", path, QueueType.Long);
 
                 var ji = LoadJob(guid);
 
@@ -103,7 +103,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
                     var path = String.Format(@"\\{0}\{1}\SimpleExportTest.csv.zip",
                         Jhu.Graywulf.Test.Constants.Localhost, Jhu.Graywulf.Test.Constants.TestDirectory);
-                    var guid = ScheduleExportTableJob("dbo", "SampleData", path, QueueType.Long);
+                    var guid = ScheduleExportTableJob(Schema.SqlServer.Constants.DefaultSchemaName, "SampleData", path, QueueType.Long);
 
                     WaitJobComplete(guid, TimeSpan.FromSeconds(10));
 

@@ -20,11 +20,11 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, "dbo", "TableWithPrimaryKey"), typeof(Table));
-            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, "dbo", "ViewWithStar"), typeof(View));
-            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, "dbo", "InlineTableValuedFunction"), typeof(TableValuedFunction));
-            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, "dbo", "ScalarFunction"), typeof(ScalarFunction));
-            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, "dbo", "StoredProcedure"), typeof(StoredProcedure));
+            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithPrimaryKey"), typeof(Table));
+            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"), typeof(View));
+            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "InlineTableValuedFunction"), typeof(TableValuedFunction));
+            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ScalarFunction"), typeof(ScalarFunction));
+            Assert.IsInstanceOfType(ds.GetObject(ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "StoredProcedure"), typeof(StoredProcedure));
         }
 
         [TestMethod]
@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var t = ds.Tables[ds.DatabaseName, "dbo", "Author"];
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
             
             Assert.IsTrue(ds.Tables.Count == 1);
         }
@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var t1 = ds.Tables[ds.DatabaseName, "dbo", "Author"];
+            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
             var t2 = ds.Tables[ds.DatabaseName, "", "Author"];
             
             Assert.IsTrue(ds.Tables.Count == 1);
@@ -67,13 +67,13 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var t1 = ds.Tables[ds.DatabaseName, "dbo", "Author"];
+            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
             var t2 = ds.Tables[ds.DatabaseName, "", "Author"];
             Table t3 = ds.Tables[ds.DatabaseName, "", "Book"];
             
             Assert.IsTrue(ds.Tables.Count == 2);
             Assert.AreNotEqual(t1, t3);
-            Assert.AreEqual(t3.SchemaName, "dbo");
+            Assert.AreEqual(t3.SchemaName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName);
 
             // Try to load object that's not a table
 
@@ -87,7 +87,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             try
             {
-                var t = ds.Tables[ds.DatabaseName, "dbo", "NonExistentTable"];
+                var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentTable"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)
@@ -111,14 +111,14 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
 
             // Get a single table
-            var t1 = ds.Tables[ds.DatabaseName, "dbo", "Author"];
+            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
 
             Assert.IsTrue(t1.Columns.Count == 2);
             Assert.IsTrue(t1.Columns["ID"].DataType.Name == "bigint");
 
             // Test cache
-            Assert.AreEqual(t1.Columns, ds.Tables[ds.DatabaseName, "dbo", "Author"].Columns);
-            Assert.AreEqual(t1.Columns["ID"], ds.Tables[ds.DatabaseName, "dbo", "Author"].Columns["ID"]);
+            Assert.AreEqual(t1.Columns, ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Columns);
+            Assert.AreEqual(t1.Columns["ID"], ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Columns["ID"]);
         }
 
         [TestMethod]
@@ -127,14 +127,14 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
 
             // Get a single table
-            var t1 = ds.Tables[ds.DatabaseName, "dbo", "Author"];
+            var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
 
             Assert.IsTrue(t1.Indexes.Count == 1);
             Assert.IsTrue(t1.Indexes["PK_Author"].IsPrimaryKey);
 
             // Test cache
-            Assert.AreEqual(t1.Indexes, ds.Tables[ds.DatabaseName, "dbo", "Author"].Indexes);
-            Assert.AreEqual(t1.Indexes["PK_Author"], ds.Tables[ds.DatabaseName, "dbo", "Author"].Indexes["PK_Author"]);
+            Assert.AreEqual(t1.Indexes, ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Indexes);
+            Assert.AreEqual(t1.Indexes["PK_Author"], ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Indexes["PK_Author"]);
         }
 
         [TestMethod]
@@ -143,11 +143,11 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
 
             // Get a single table
-            var ic = ds.Tables[ds.DatabaseName, "dbo", "Author"].Indexes["PK_Author"].Columns["ID"];
+            var ic = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Indexes["PK_Author"].Columns["ID"];
             Assert.IsTrue(ic.Ordering == IndexColumnOrdering.Ascending);
 
             // Test cache
-            Assert.AreEqual(ic, ds.Tables[ds.DatabaseName, "dbo", "Author"].Indexes["PK_Author"].Columns["ID"]);
+            Assert.AreEqual(ic, ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Indexes["PK_Author"].Columns["ID"]);
         }
 
         [TestMethod]
@@ -155,7 +155,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var t = ds.Tables[ds.DatabaseName, "dbo", "Author"];
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
             Assert.IsTrue(t.Statistics.RowCount == 0);
         }
 
@@ -167,7 +167,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var v = ds.Views[ds.DatabaseName, "dbo", "ViewWithStar"];
+            var v = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"];
 
             Assert.AreEqual(1, ds.Views.Count);
 
@@ -192,7 +192,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             try
             {
-                var t = ds.Views[ds.DatabaseName, "dbo", "NonExistentView"];
+                var t = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentView"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)
@@ -208,7 +208,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var tvf = ds.TableValuedFunctions[ds.DatabaseName, "dbo", "InlineTableValuedFunction"];
+            var tvf = ds.TableValuedFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "InlineTableValuedFunction"];
 
             Assert.AreEqual(2, tvf.Parameters.Count);
             Assert.AreEqual(2, tvf.Columns.Count);
@@ -219,7 +219,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var tvf = ds.TableValuedFunctions[ds.DatabaseName, "dbo", "MultiStatementTableValuedFunction"];
+            var tvf = ds.TableValuedFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "MultiStatementTableValuedFunction"];
 
             Assert.AreEqual(2, tvf.Parameters.Count);
             Assert.AreEqual(2, tvf.Columns.Count);
@@ -248,7 +248,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             try
             {
-                var t = ds.TableValuedFunctions[ds.DatabaseName, "dbo", "NonExistentFunction"];
+                var t = ds.TableValuedFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentFunction"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)
@@ -263,7 +263,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             try
             {
-                var t = ds.TableValuedFunctions[ds.DatabaseName, "dbo", "ScalarFunction"];
+                var t = ds.TableValuedFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ScalarFunction"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)
@@ -279,7 +279,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var f = ds.ScalarFunctions[ds.DatabaseName, "dbo", "ScalarFunction"];
+            var f = ds.ScalarFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ScalarFunction"];
 
             Assert.AreEqual(3, f.Parameters.Count);
         }
@@ -307,7 +307,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             try
             {
-                var t = ds.ScalarFunctions[ds.DatabaseName, "dbo", "NonExistentFunction"];
+                var t = ds.ScalarFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentFunction"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)
@@ -322,7 +322,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             try
             {
-                var t = ds.ScalarFunctions[ds.DatabaseName, "dbo", "InlineTableValuedFunction"];
+                var t = ds.ScalarFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "InlineTableValuedFunction"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)
@@ -338,7 +338,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            var sp = ds.StoredProcedures[ds.DatabaseName, "dbo", "StoredProcedure"];
+            var sp = ds.StoredProcedures[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "StoredProcedure"];
 
             Assert.IsTrue(sp.Parameters.Count == 2);
             Assert.IsTrue(sp.Parameters["@param1"].DataType.Name == "int");
@@ -367,7 +367,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             try
             {
-                var t = ds.StoredProcedures[ds.DatabaseName, "dbo", "NonExistentSp"];
+                var t = ds.StoredProcedures[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentSp"];
                 Assert.Fail();
             }
             catch (KeyNotFoundException)

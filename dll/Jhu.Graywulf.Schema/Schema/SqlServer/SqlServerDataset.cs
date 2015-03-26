@@ -159,7 +159,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.DefaultSchemaName = "dbo";
+            this.DefaultSchemaName = Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName;
 
             this.isOnLinkedServer = false;
             this.isRemoteDataset = false;

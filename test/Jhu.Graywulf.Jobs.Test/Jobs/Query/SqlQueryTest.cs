@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         {
             using (SchedulerTester.Instance.GetToken())
             {
-                DropUserDatabaseTable("dbo", "SqlQueryTest_SimpleQueryTest");
+                DropUserDatabaseTable(Schema.SqlServer.Constants.DefaultSchemaName, "SqlQueryTest_SimpleQueryTest");
 
                 SchedulerTester.Instance.EnsureRunning();
                 using (RemoteServiceTester.Instance.GetToken())
@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         [ExpectedException(typeof(IO.Tasks.TableCopyException))]
         public void CheckDestinationTableNewTest()
         {
-            DropUserDatabaseTable("dbo", "SqlQueryTest_CheckDestinationTableTest");
+            DropUserDatabaseTable(Schema.SqlServer.Constants.DefaultSchemaName, "SqlQueryTest_CheckDestinationTableTest");
 
             var sql = "SELECT TOP 10 * INTO SqlQueryTest_CheckDestinationTableTest FROM TEST:SampleData";
             var q = CreateQuery(sql);
@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         [ExpectedException(typeof(IO.Tasks.TableCopyException))]
         public void CheckDestinationTableExistingTest()
         {
-            DropUserDatabaseTable("dbo", "SqlQueryTest_CheckDestinationTableTest");
+            DropUserDatabaseTable(Schema.SqlServer.Constants.DefaultSchemaName, "SqlQueryTest_CheckDestinationTableTest");
 
             var sql = "SELECT TOP 10 * INTO SqlQueryTest_CheckDestinationTableTest FROM TEST:SampleData";
             var q = CreateQuery(sql);
