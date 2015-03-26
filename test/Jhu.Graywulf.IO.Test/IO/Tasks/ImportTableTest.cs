@@ -14,13 +14,18 @@ namespace Jhu.Graywulf.IO.Tasks
     [TestClass]
     public class ImportTableTest
     {
-        private IImportTable GetImportTableTask(string path, string table, bool remote)
+        protected virtual FileFormatFactory CreateFileFormatFactory()
+        {
+            return FileFormatFactory.Create(null);
+        }
+
+        protected IImportTable GetImportTableTask(string path, string table, bool remote)
         {
             var ds = new Jhu.Graywulf.Schema.SqlServer.SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString);
             ds.IsMutable = true;
 
 
-            var ff = FileFormatFactory.Create(null);
+            var ff = CreateFileFormatFactory();
 
             var source = ff.CreateFile(new Uri(path, UriKind.RelativeOrAbsolute));
            
