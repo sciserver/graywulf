@@ -58,6 +58,11 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
                 ConnectionString = GetConnectionString().ConnectionString,
             };
 
+            if (this.query.EndsWith(".sql", StringComparison.InvariantCultureIgnoreCase))
+            {
+                this.query = System.IO.File.ReadAllText(this.query);
+            }
+
             var source = new SourceTableQuery()
             {
                 Dataset = dataset,
