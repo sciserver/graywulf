@@ -61,7 +61,14 @@
     <Compile Include="Data\SmartDataReader.cs" />
     <Compile Include="Data\TypeMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Schema\MySql\Constants.cs" />
+    <Compile Include="Schema\MySql\MySqlDataset.cs" />
+    <Compile Include="Schema\PostgreSql\Constants.cs" />
+    <Compile Include="Schema\PostgreSql\PostgreSqlDataset.cs" />
+    <Compile Include="Schema\SqlServer\SqlServerDataset.cs" />
+    <Compile Include="Schema\SqlServer\SqlServerSchemaManager.cs" />
     <Compile Include="SqlCodeGen\CodeGeneratorFactory.cs" />
+    <Compile Include="SqlCodeGen\Enum.cs" />
     <Compile Include="SqlCodeGen\MySql\MySqlCodeGenerator.cs" />
     <Compile Include="SqlCodeGen\PostgreSql\PostgreSqlCodeGenerator.cs" />
     <Compile Include="SqlCodeGen\SqlCodeGeneratorBase.cs" />

@@ -18,3 +18,5 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 [assembly: Guid("1ae968ab-f202-44c8-8d44-43f9587255c3")]
+
+[assembly: InternalsVisibleTo("Jhu.Graywulf.Sql")]

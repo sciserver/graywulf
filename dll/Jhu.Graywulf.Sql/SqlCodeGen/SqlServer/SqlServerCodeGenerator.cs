@@ -230,5 +230,118 @@ DROP TABLE ##keys_{4};
         }
 
         #endregion
+
+
+
+        public string GenerateCreateTableQuery(Table table, bool primaryKey, bool indexes)
+        {
+            if (table.Columns.Count == 0)
+            {
+                throw new InvalidOperationException("The table doesn't have any columns.");     // TODO ***
+            }
+
+            var sql = new StringBuilder();
+
+            sql.Append("CREATE TABLE ");
+            sql.Append(GetResolvedTableName(table));
+            sql.AppendLine(" (");
+
+            var columns = GenerateColumnList(
+                table.Columns.Values.OrderBy(ci => ci.ID),
+                null,
+                ColumnListType.CreateTable);
+
+            sql.Append(columns);
+
+            if (primaryKey && table.PrimaryKey != null)
+            {
+                sql.AppendLine(",");
+
+                sql.Append(GeneratePrimaryKeyConstraint(table));
+            }
+
+            sql.AppendLine();
+            sql.AppendLine(" )");
+
+            // TODO: add index generation
+
+            return sql.ToString();
+        }
+
+        private string GeneratePrimaryKeyConstraint(Table table)
+        {
+            var sql = new StringBuilder();
+
+            sql.Append("CONSTRAINT ");
+            sql.Append(QuoteIdentifier(String.Format("PK_{0}_{1}", table.SchemaName, table.TableName)));
+            sql.AppendLine(" PRIMARY KEY (");
+
+            var columns = GenerateColumnList(
+                    table.PrimaryKey.Columns.Values.OrderBy(ci => ci.KeyOrdinal),
+                    null,
+                    ColumnListType.CreateIndex);
+
+            sql.Append(columns);
+
+            sql.AppendLine();
+            sql.AppendLine(" )");
+
+            return sql.ToString();
+        }
+
+        public string GenerateColumnList(IEnumerable<Column> columns, string tableAlias, ColumnListType type)
+        {
+            var columnlist = new StringBuilder();
+            string format = null;
+
+            switch (type)
+            {
+                case ColumnListType.CreateTable:
+                    format = "[{1}] {2} {3}";
+                    break;
+                case ColumnListType.CreateIndex:
+                    format = "[{1}] {4}";
+                    break;
+                case ColumnListType.CreateView:
+                case ColumnListType.Insert:
+                    format = "[{1}]";
+                    break;
+                case ColumnListType.Select:
+                    format = "{0}[{1}]";
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            foreach (var column in columns)
+            {
+                if (columnlist.Length != 0)
+                {
+                    columnlist.Append(", ");
+                }
+
+                var nullspec = "";
+                var orderspec = "";
+
+                if (type == ColumnListType.CreateTable)
+                {
+                    nullspec = column.DataType.IsNullable ? "NULL" : "NOT NULL";
+                }
+
+                if (type == ColumnListType.CreateIndex && column is IndexColumn)
+                {
+                    orderspec = ((IndexColumn)column).Ordering == IndexColumnOrdering.Descending ? "DESC" : "ASC";
+                }
+
+                columnlist.AppendFormat(format,
+                                        tableAlias == null ? String.Empty : String.Format("[{0}].", tableAlias),
+                                        column.Name,
+                                        column.DataType.NameWithLength,
+                                        nullspec,
+                                        orderspec);
+            }
+
+            return columnlist.ToString();
+        }
     }
 }

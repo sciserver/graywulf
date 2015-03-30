@@ -1046,10 +1046,8 @@ END",
                 throw new InvalidOperationException("Operation valid on mutable datasets only.");   // TODO ***
             }
 
-            if (table.Columns.Count == 0)
-            {
-                throw new InvalidOperationException();
-            }
+#if false
+            var codegen = new Jhu.Graywulf.Sq
 
             // Build column list
             var cols = new StringBuilder();
@@ -1071,9 +1069,15 @@ END",
             }
 
             var sql = String.Format(
-                "CREATE TABLE {0} (\r\n{1}\r\n)",
+                @"
+CREATE TABLE {0}
+(
+    {1}
+    {2}
+)",
                 GetObjectFullyResolvedName(table),
-                cols.ToString());
+                cols.ToString(),
+                CreateIndex(table.PrimaryKey));
 
             using (var cn = OpenConnectionInternal())
             {
@@ -1082,6 +1086,7 @@ END",
                     cmd.ExecuteNonQuery();
                 }
             }
+#endif
         }
 
         internal override void TruncateTable(Table table)

@@ -172,6 +172,7 @@ namespace Jhu.Graywulf.Format
             {
                 var col = new Column("__ID", DataTypes.SqlBigInt);  // *** TODO
                 col.IsIdentity = true;
+                col.IsKey = true;
                 this.columns.Add(col);
 
                 this.columnTypeMappings.Add(null);
