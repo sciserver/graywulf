@@ -255,9 +255,27 @@ DROP TABLE ##keys_{4};
 
             if (primaryKey && table.PrimaryKey != null)
             {
+                // If primary is specified directly
                 sql.AppendLine(",");
 
-                sql.Append(GeneratePrimaryKeyConstraint(table));
+                var constraint = GeneratePrimaryKeyConstraint(table, table.PrimaryKey.Columns.Values.OrderBy(ci => ci.KeyOrdinal));
+
+                sql.Append(constraint);
+            }
+            else if (primaryKey)
+            {
+                // If key columns are to be taken as primary key
+
+                var keys = table.Columns.Values.Where(ci => ci.IsKey).OrderBy(ci => ci.ID).ToArray();
+
+                if (keys.Length > 0)
+                {
+                    sql.AppendLine(",");
+
+                    var constraint = GeneratePrimaryKeyConstraint(table, keys);
+
+                    sql.Append(constraint);
+                }
             }
 
             sql.AppendLine();
@@ -268,7 +286,7 @@ DROP TABLE ##keys_{4};
             return sql.ToString();
         }
 
-        private string GeneratePrimaryKeyConstraint(Table table)
+        private string GeneratePrimaryKeyConstraint(Table table, IEnumerable<Column> columns)
         {
             var sql = new StringBuilder();
 
@@ -276,12 +294,12 @@ DROP TABLE ##keys_{4};
             sql.Append(QuoteIdentifier(String.Format("PK_{0}_{1}", table.SchemaName, table.TableName)));
             sql.AppendLine(" PRIMARY KEY (");
 
-            var columns = GenerateColumnList(
-                    table.PrimaryKey.Columns.Values.OrderBy(ci => ci.KeyOrdinal),
+            var collist = GenerateColumnList(
+                    columns,
                     null,
                     ColumnListType.CreateIndex);
 
-            sql.Append(columns);
+            sql.Append(collist);
 
             sql.AppendLine();
             sql.AppendLine(" )");

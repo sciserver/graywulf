@@ -1039,45 +1039,13 @@ END",
 
         internal override void CreateTable(Table table)
         {
-            // TODO: move to codegen
-
             if (!IsMutable)
             {
                 throw new InvalidOperationException("Operation valid on mutable datasets only.");   // TODO ***
             }
 
-#if false
-            var codegen = new Jhu.Graywulf.Sq
-
-            // Build column list
-            var cols = new StringBuilder();
-
-            int q = 0;
-            foreach (var c in table.Columns.Values.OrderBy(ci => ci.ID))
-            {
-                if (q > 0)
-                {
-                    cols.AppendLine(",");
-                }
-
-                cols.AppendFormat("{0} {1} {2}NULL",
-                    QuoteIdentifier(c.Name),
-                    c.DataType.NameWithLength,
-                    c.DataType.IsNullable ? "" : "NOT ");
-
-                q++;
-            }
-
-            var sql = String.Format(
-                @"
-CREATE TABLE {0}
-(
-    {1}
-    {2}
-)",
-                GetObjectFullyResolvedName(table),
-                cols.ToString(),
-                CreateIndex(table.PrimaryKey));
+            var codegen = new Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator();
+            var sql = codegen.GenerateCreateTableQuery(table, true, true);
 
             using (var cn = OpenConnectionInternal())
             {
@@ -1086,7 +1054,6 @@ CREATE TABLE {0}
                     cmd.ExecuteNonQuery();
                 }
             }
-#endif
         }
 
         internal override void TruncateTable(Table table)
