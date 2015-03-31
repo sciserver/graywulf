@@ -14,6 +14,7 @@ using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.SqlCodeGen;
+using Jhu.Graywulf.SqlCodeGen.SqlServer;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
 
@@ -721,5 +722,39 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
+
+        protected SearchCondition GetPartitioningConditions(string column, double buffering)
+        {
+            string format;
+
+            if (!double.IsInfinity(PartitioningKeyFrom) && !double.IsInfinity(PartitioningKeyTo))
+            {
+                format = "({1} <= {0} AND {0} < {2})";
+            }
+            else if (!double.IsInfinity(PartitioningKeyTo))
+            {
+                format = "({0} < {2})";
+            }
+            else if (!double.IsInfinity(PartitioningKeyFrom))
+            {
+                format = "({1} <= {0})";
+            }
+            else
+            {
+                return null;
+            }
+
+            string sql = String.Format(
+                System.Globalization.CultureInfo.InvariantCulture,
+                format,
+                column,
+                PartitioningKeyFrom - buffering,
+                PartitioningKeyTo + buffering);
+
+            var parser = new Jhu.Graywulf.SqlParser.SqlParser();
+            var sc = (SearchCondition)parser.Execute(new SearchCondition(), sql);
+
+            return sc;
+        }
     }
 }

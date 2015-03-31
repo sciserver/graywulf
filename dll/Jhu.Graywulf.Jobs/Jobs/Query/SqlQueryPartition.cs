@@ -78,32 +78,11 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private void AppendPartitioningConditions(QuerySpecification qs, SimpleTableSource ts)
         {
-
             if (!double.IsInfinity(PartitioningKeyFrom) || !double.IsInfinity(PartitioningKeyTo))
             {
                 var cg = new SqlServerCodeGenerator();
-
-                string format;
-                if (double.IsInfinity(PartitioningKeyFrom) && double.IsInfinity(PartitioningKeyTo))
-                {
-                    format = "{1} <= {0} AND {0} < {2}";
-                }
-                else if (double.IsInfinity(PartitioningKeyFrom))
-                {
-                    format = "{0} < {2}";
-                }
-                else
-                {
-                    format = "{1} <= {0}";
-                }
-
-                string sql = String.Format(format,
-                    cg.GetResolvedColumnName(ts.PartitioningColumnReference),
-                    PartitioningKeyFrom.ToString(System.Globalization.CultureInfo.InvariantCulture),
-                    PartitioningKeyTo.ToString(System.Globalization.CultureInfo.InvariantCulture));
-
-                var parser = new Jhu.Graywulf.SqlParser.SqlParser();
-                var sc = (SearchCondition)parser.Execute(new SearchCondition(), sql);
+                var column = cg.GetResolvedColumnName(ts.PartitioningColumnReference);
+                var sc = GetPartitioningConditions(column, 0);
 
                 var where = qs.FindDescendant<WhereClause>();
                 if (where == null)

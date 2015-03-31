@@ -103,6 +103,11 @@ namespace Jhu.Graywulf.SqlParser
                 var where = new WhereClause();
                 where.Stack.AddLast(Keyword.Create("WHERE"));
                 where.Stack.AddLast(Whitespace.Create());
+
+                // Wrap into brackets
+                var scb = SearchConditionBrackets.Create(sc);
+                sc = SearchCondition.Create(false, scb);
+
                 where.Stack.AddLast(sc);
 
                 return where;

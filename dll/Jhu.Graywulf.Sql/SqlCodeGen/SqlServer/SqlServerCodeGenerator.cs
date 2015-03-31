@@ -207,7 +207,7 @@ FROM {0} {1}
 DECLARE @count bigint = @@ROWCOUNT;
 DECLARE @step bigint = @count / @bincount;
 
-IF (@step = 0) SET @step = NULL;
+IF (@step = 0) SET @step = 1;
 
 WITH q AS
 (
@@ -216,7 +216,8 @@ WITH q AS
 )
 SELECT __key, __rn
 FROM q
-WHERE __rn % @step = 1 OR __rn = @count;
+WHERE __rn % @step = 0 OR __rn = @count
+ORDER BY __rn;
 
 DROP TABLE ##keys_{4};
 ",
