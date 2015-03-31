@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.IO.Tasks
             var source = new SourceTableQuery()
             {
                 Dataset = ds,
-                Query = "SELECT 1 AS one, 2 AS two, 3 AS three"
+                Query = "SELECT * FROM SampleData_PrimaryKey"
             };
 
             q.Source = source;
@@ -77,5 +77,6 @@ namespace Jhu.Graywulf.IO.Tasks
                 DropTable(q.Destination.GetTable());
             }
         }
+
     }
 }
