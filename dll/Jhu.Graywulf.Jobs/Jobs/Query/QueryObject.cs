@@ -539,7 +539,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="context"></param>
         public void InitializeQueryObject(Context context)
         {
-            InitializeQueryObject(context, null, false);
+            InitializeQueryObject(context, null, true);
         }
 
         /// <summary>

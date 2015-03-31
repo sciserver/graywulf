@@ -391,8 +391,8 @@ namespace Jhu.Graywulf.Jobs.Query
                         assignedServerInstanceGuid = si.Guid;
 
                         // *** TODO: find optimal number of partitions
-                        // TODO: replace "2" with a value from settings
-                        partitionCount = 2 * scheduler.GetServerInstances(reqds, SourceDatabaseVersionName, spds).Length;
+                        // TODO: replace "4" with a value from settings
+                        partitionCount = 4 * scheduler.GetServerInstances(reqds, SourceDatabaseVersionName, spds).Length;
 
                         // Now have to reinitialize to load the assigned server instances
                         InitializeQueryObject(context, scheduler, true);
