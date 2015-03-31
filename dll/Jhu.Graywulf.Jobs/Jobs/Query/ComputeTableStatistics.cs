@@ -29,22 +29,23 @@ namespace Jhu.Graywulf.Jobs.Query
             var query = Query.Get(activityContext);
             var tableReference = TableReference.Get(activityContext);
             string connectionString, sql;
+            int multiplier;
 
             using (Context context = query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 query.InitializeQueryObject(context, activityContext.GetExtension<IScheduler>(), false);
-                query.PrepareComputeTableStatistics(context, tableReference, out connectionString, out sql);
+                query.PrepareComputeTableStatistics(context, tableReference, out connectionString, out sql, out multiplier);
             }
 
             Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
             string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, query, tableReference, connectionString, sql), callback, state);
+            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, query, tableReference, connectionString, sql, multiplier), callback, state);
         }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, QueryBase query, TableReference tableReference, string connectionString, string sql)
+        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, QueryBase query, TableReference tableReference, string connectionString, string sql, int multiplier)
         {
             RegisterCancelable(workflowInstanceGuid, activityInstanceId, query);
-            query.ComputeTableStatistics(tableReference, connectionString, sql);
+            query.ComputeTableStatistics(tableReference, connectionString, sql, multiplier);
             UnregisterCancelable(workflowInstanceGuid, activityInstanceId, query);
         }
     }

@@ -270,7 +270,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <returns></returns>
         public abstract void CollectTablesForStatistics();
 
-        public void PrepareComputeTableStatistics(Context context, TableReference tr, out string connectionString, out string sql)
+        public void PrepareComputeTableStatistics(Context context, TableReference tr, out string connectionString, out string sql, out int multiplier)
         {
             // Assign a database server to the query
             // TODO: maybe make this function generic
@@ -280,6 +280,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
             if (ds is GraywulfDataset && !((GraywulfDataset)ds).IsSpecificInstanceRequired)
             {
+                // Use the MINI version of the database definition to get statistics
+
                 var gds = (GraywulfDataset)ds;
                 var dd = new DatabaseDefinition(context);
                 dd.Guid = gds.DatabaseDefinitionReference.Guid;
@@ -290,15 +292,20 @@ namespace Jhu.Graywulf.Jobs.Query
                 si.Guid = Scheduler.GetNextServerInstance(new Guid[] { dd.Guid }, StatDatabaseVersionName, null);
                 si.Load();
 
+                // TODO: what happens if no MINI version is available?
+
                 connectionString = si.GetConnectionString().ConnectionString;
 
                 SubstituteDatabaseName(tr, si.Guid, StatDatabaseVersionName);
                 tr.DatabaseObject = null;
+
+                multiplier = 10000; // MINI version is sampled 10000 to 1
             }
             else
             {
                 // Run it on the specific database
                 connectionString = ds.ConnectionString;
+                multiplier = 1;
             }
 
             // Generate statistics query
@@ -310,7 +317,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="tr"></param>
         /// <param name="binSize"></param>
-        public virtual void ComputeTableStatistics(TableReference tr, string connectionString, string sql)
+        public virtual void ComputeTableStatistics(TableReference tr, string connectionString, string sql, int multiplier)
         {
             using (SqlConnection cn = new SqlConnection(connectionString))
             {
@@ -329,9 +336,9 @@ namespace Jhu.Graywulf.Jobs.Query
                             tr.Statistics.KeyValue.Add(dr.GetDouble(0));
                             tr.Statistics.KeyCount.Add(dr.GetInt64(1));
 
-                            rc += dr.GetInt64(1);
+                            rc = dr.GetInt64(1);    // the very last value will give row count
                         }
-                        tr.Statistics.RowCount = rc;
+                        tr.Statistics.RowCount = rc * multiplier;
                     });
                 }
             }
