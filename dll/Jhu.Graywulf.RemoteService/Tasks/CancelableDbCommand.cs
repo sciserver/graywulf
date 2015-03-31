@@ -72,16 +72,21 @@ namespace Jhu.Graywulf.Tasks
             }
         }
 
+        public long ExecuteReader(Action<IDataReader> action)
+        {
+            return ExecuteReader(CommandBehavior.Default, action);
+        }
+
         /// <summary>
         /// Executes the query synchronously by passing the resulting
         /// data reader to a delegate.
         /// </summary>
         /// <param name="action"></param>
-        public long ExecuteReader(Action<IDataReader> action)
+        public long ExecuteReader(CommandBehavior behavior, Action<IDataReader> action)
         {
             try
             {
-                using (var dr = command.ExecuteReader())
+                using (var dr = command.ExecuteReader(behavior))
                 {
                     action(dr);
                     return dr.RecordsAffected;

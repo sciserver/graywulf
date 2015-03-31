@@ -269,7 +269,7 @@ namespace Jhu.Graywulf.IO.Tasks
             var ccmd = new CancelableDbCommand(cmd);
             RegisterCancelable(guid, ccmd);
 
-            ccmd.ExecuteReader(dr =>
+            ccmd.ExecuteReader(CommandBehavior.KeyInfo, dr =>
             {
                 // TODO: implement multi-table copy, might require converting results to a
                 // a collection
