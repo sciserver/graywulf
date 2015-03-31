@@ -123,6 +123,7 @@ namespace Jhu.Graywulf.RemoteService.Server
 
             var uri = RemoteServiceHelper.CreateService(contract, out host, out endpoint);
 
+            // TODO: remove synchronization here
             lock (syncRoot)
             {
                 registeredServiceHosts.Add(contract.FullName, host);
