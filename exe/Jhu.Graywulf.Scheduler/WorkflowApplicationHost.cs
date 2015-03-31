@@ -610,8 +610,14 @@ namespace Jhu.Graywulf.Scheduler
             }
 
             // Workflows are aborted when an exception is thrown during cancellation
-
-            WorkflowEvent(this, new HostEventArgs(WorkflowEventType.Failed, e.InstanceId, workflow.LastException.Message));
+            if (workflow.LastException != null)
+            {
+                WorkflowEvent(this, new HostEventArgs(WorkflowEventType.Failed, e.InstanceId, workflow.LastException.Message));
+            }
+            else
+            {
+                WorkflowEvent(this, new HostEventArgs(WorkflowEventType.Failed, e.InstanceId));
+            }
 
             FinishWorkflow(e.InstanceId);
         }
