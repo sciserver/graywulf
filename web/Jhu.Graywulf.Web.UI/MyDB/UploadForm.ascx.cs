@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
             // Check if uploaded file is an archive
             var archival = FederationContext.StreamFactory.GetArchivalMethod(uri);
             var compression = FederationContext.StreamFactory.GetCompressionMethod(uri);
-            var batchName = Util.UriConverter.ToFileNameWithoutExtension(uri);
+            var batchName = Util.UriConverter.ToFileNameWithoutExtension(uri).Replace('.', '_');
 
             if (archival == DataFileArchival.None)
             {
@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                 // Use simple importer
                 var task = new ImportTable()
                 {
-                    BatchName = batchName,
+                    BatchName = null,       // no batch name for single files
                     Source = file,
                     Destination = table,
                     StreamFactoryType = RegistryContext.Federation.StreamFactory,
