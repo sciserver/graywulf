@@ -170,7 +170,7 @@ namespace Jhu.Graywulf.Format
 
             if (file.FileMode == DataFileMode.Read && file.GenerateIdentityColumn)
             {
-                var col = new Column("__ID", DataTypes.SqlBigInt);  // *** TODO
+                var col = new Column("ID", DataTypes.SqlBigInt);
                 col.IsIdentity = true;
                 col.IsKey = true;
                 this.columns.Add(col);
@@ -190,7 +190,28 @@ namespace Jhu.Graywulf.Format
                 this.columns[i].ID = i + 1;
             }
 
+            MakeColumnNamesUnique();
             OnColumnsCreated();
+        }
+
+        private void MakeColumnNamesUnique()
+        {
+            var names = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+
+            for (int i = 0; i < this.columns.Count; i++)
+            {
+                var name = columns[i].Name;
+
+                int q = 0;
+                while (names.Contains(name))
+                {
+                    q++;
+                    name = String.Format("{0}_{1}", columns[i].Name, q);
+                }
+
+                columns[i].Name = name;
+                names.Add(name);
+            }
         }
 
         /// <summary>
