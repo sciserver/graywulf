@@ -75,7 +75,7 @@
                             </FormTemplate>
                             <ButtonsTemplate>
                                 <asp:Button runat="Server" ID="Cancel" Text="Cancel job" CssClass="FormButton"
-                                    OnClikc="Cancel_Click" />
+                                    OnClick="Cancel_Click" />
                                 <asp:Button runat="Server" ID="Back" Text="Back" CssClass="FormButton" />
                             </ButtonsTemplate>
                         </jgwc:Form>
