@@ -78,6 +78,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             // Import
             if (job is ImportJob)
             {
+                importForm.Job = (ImportJob)job;
             }
             else
             {

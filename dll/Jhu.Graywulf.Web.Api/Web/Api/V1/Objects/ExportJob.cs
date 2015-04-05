@@ -131,12 +131,16 @@ namespace Jhu.Graywulf.Web.Api.V1
                 var ff = FileFormatFactory.Create(jobInstance.Context.Federation.FileFormatFactory);
                 string filename, extension;
                 DataFileCompression compression;
+                DataFileBase file;
                 ff.GetFileExtensions(this.uri, out filename, out extension, out compression);
-                var file = ff.CreateFileFromExtension(extension);
-                this.fileFormat = new V1.FileFormat()
+
+                if (ff.TryCreateFileFromExtension(extension, out file))
                 {
-                    MimeType = file.Description.MimeType
-                };
+                    this.fileFormat = new V1.FileFormat()
+                    {
+                        MimeType = file.Description.MimeType
+                    };
+                }
             }
         }
 

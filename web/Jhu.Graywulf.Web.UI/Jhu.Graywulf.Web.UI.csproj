@@ -105,6 +105,13 @@
     <Compile Include="Jobs\ErrorForm.ascx.designer.cs">
       <DependentUpon>ErrorForm.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Jobs\ImportForm.ascx.cs">
+      <DependentUpon>ImportForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Jobs\ImportForm.ascx.designer.cs">
+      <DependentUpon>ImportForm.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Jobs\JobDetails.aspx.cs">
       <DependentUpon>JobDetails.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -380,6 +387,7 @@
     <Content Include="Jobs\CancelJob.aspx" />
     <Content Include="Jobs\Default.aspx" />
     <Content Include="Jobs\ErrorForm.ascx" />
+    <Content Include="Jobs\ImportForm.ascx" />
     <Content Include="Jobs\JobDetails.aspx" />
     <Content Include="Controls\Menu.ascx" />
     <Content Include="Default.aspx" />

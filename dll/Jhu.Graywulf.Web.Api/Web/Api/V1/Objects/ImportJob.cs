@@ -8,6 +8,7 @@ using System.Xml;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Format;
+using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Jobs.ImportTables;
 
@@ -115,6 +116,21 @@ namespace Jhu.Graywulf.Web.Api.V1
                 this.table = schemaname +
                     (!String.IsNullOrWhiteSpace(schemaname) ? "." : "") +
                     tablename;
+
+                // Format
+                var ff = FileFormatFactory.Create(jobInstance.Context.Federation.FileFormatFactory);
+                string filename, extension;
+                DataFileCompression compression;
+                DataFileBase file;
+                ff.GetFileExtensions(this.uri, out filename, out extension, out compression);
+
+                if (ff.TryCreateFileFromExtension(extension, out file))
+                {
+                    this.fileFormat = new V1.FileFormat()
+                    {
+                        MimeType = file.Description.MimeType
+                    };
+                }
             }
         }
 

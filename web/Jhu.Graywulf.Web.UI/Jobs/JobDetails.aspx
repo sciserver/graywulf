@@ -4,6 +4,8 @@
 <%@ Register Src="~/Jobs/ErrorForm.ascx" TagPrefix="jgwc" TagName="ErrorForm" %>
 <%@ Register Src="~/Jobs/QueryForm.ascx" TagPrefix="jgwc" TagName="QueryForm" %>
 <%@ Register Src="~/Jobs/ExportForm.ascx" TagPrefix="jgwc" TagName="ExportForm" %>
+<%@ Register Src="~/Jobs/ImportForm.ascx" TagPrefix="jgwc" TagName="ImportForm" %>
+
 
 
 <asp:Content runat="server" ContentPlaceHolderID="head">
@@ -85,6 +87,7 @@
                         <jgwc:ExportForm runat="server" ID="exportForm" />
                     </jgwc:TabView>
                     <jgwc:TabView ID="importTab" runat="server" Text="Import">
+                        <jgwc:ImportForm runat="server" id="importForm" />
                     </jgwc:TabView>
                     <jgwc:TabView ID="errorTab" runat="server" Text="Error">
                         <jgwc:ErrorForm runat="server" ID="ErrorForm" />
