@@ -40,7 +40,11 @@ Graywulf.CodeMirror.prototype = {
         cm.setSize(this._width, this._height);
 
         Sys.Application.add_load(function () {
-            cm.refresh();
+            try
+            {
+                cm.refresh();
+            }
+            catch (ex) {}
         });
 
     },
