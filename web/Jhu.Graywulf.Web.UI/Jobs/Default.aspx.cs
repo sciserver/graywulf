@@ -36,25 +36,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
 
         private void RedirectToDetails(Guid guid)
         {
-            var jobInstance = new JobInstance(RegistryContext);
-            jobInstance.Guid = guid;
-            jobInstance.Load();
-
-            var job = JobFactory.CreateJobFromInstance(jobInstance);
-
-            switch (job.Type)
-            {
-                case JobType.Query:
-                    Response.Redirect(QueryJobDetails.GetUrl(guid));
-                    break;
-                case JobType.Export:
-                    Response.Redirect(ExportJobDetails.GetUrl(guid));
-                    break;
-                case JobType.Import:
-                    //Response.Redirect(ImportJobDetails.GetUrl(guid));
-                default:
-                    throw new NotImplementedException();
-            }
+            Response.Redirect(JobDetails.GetUrl(guid));
         }
 
         private MultiSelectGridView GetVisibleListView()

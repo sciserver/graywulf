@@ -98,6 +98,27 @@
     <Compile Include="CustomUserControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Jobs\ErrorForm.ascx.cs">
+      <DependentUpon>ErrorForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Jobs\ErrorForm.ascx.designer.cs">
+      <DependentUpon>ErrorForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Jobs\JobDetails.aspx.cs">
+      <DependentUpon>JobDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Jobs\JobDetails.aspx.designer.cs">
+      <DependentUpon>JobDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Jobs\QueryForm.ascx.cs">
+      <DependentUpon>QueryForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Jobs\QueryForm.ascx.designer.cs">
+      <DependentUpon>QueryForm.ascx</DependentUpon>
+    </Compile>
     <Compile Include="MyDB\CommentsForm.ascx.cs">
       <DependentUpon>CommentsForm.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -198,27 +219,6 @@
     </Compile>
     <Compile Include="Jobs\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Jobs\Error.ascx.cs">
-      <DependentUpon>Error.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Jobs\Error.ascx.designer.cs">
-      <DependentUpon>Error.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Jobs\ExportJobDetails.aspx.cs">
-      <DependentUpon>ExportJobDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Jobs\ExportJobDetails.aspx.designer.cs">
-      <DependentUpon>ExportJobDetails.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Jobs\QueryJobDetails.aspx.cs">
-      <DependentUpon>QueryJobDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Jobs\QueryJobDetails.aspx.designer.cs">
-      <DependentUpon>QueryJobDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Controls\Menu.ascx.cs">
       <DependentUpon>Menu.ascx</DependentUpon>
@@ -372,12 +372,12 @@
     <Content Include="Docs\Default.aspx" />
     <Content Include="Jobs\CancelJob.aspx" />
     <Content Include="Jobs\Default.aspx" />
-    <Content Include="Jobs\Error.ascx" />
-    <Content Include="Jobs\ExportJobDetails.aspx" />
-    <Content Include="Jobs\QueryJobDetails.aspx" />
+    <Content Include="Jobs\ErrorForm.ascx" />
+    <Content Include="Jobs\JobDetails.aspx" />
     <Content Include="Controls\Menu.ascx" />
     <Content Include="Default.aspx" />
     <Content Include="Global.asax" />
+    <Content Include="Jobs\QueryForm.ascx" />
     <Content Include="MyDB\CommentsForm.ascx" />
     <Content Include="MyDB\CompressionForm.ascx" />
     <Content Include="MyDB\DestinationTableForm.ascx" />

@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Web.UI
             return Util.QueryEditorUtil.HasQueryInSession(this);
         }
 
-        protected void SetQueryInSession(string query, int[] selection, bool executeSelectedOnly)
+        public void SetQueryInSession(string query, int[] selection, bool executeSelectedOnly)
         {
             Util.QueryEditorUtil.SetQueryInSession(this, query, selection, executeSelectedOnly);
         }

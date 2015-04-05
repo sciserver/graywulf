@@ -8,32 +8,29 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Jobs
 {
-    public partial class Error : System.Web.UI.UserControl
+    public partial class ErrorForm : System.Web.UI.UserControl
     {
         private Job job;
 
         public Job Job
         {
-            set { this.job = value; }
             get { return this.job; }
-        }
-
-        protected void Inquiry_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(SendInquiry.NavigateUrl);
-        }
-
-        protected override void OnPreRender(EventArgs e)
-        {
-            base.OnPreRender(e);
-
-            UpdateForm();
+            set
+            {
+                this.job = value;
+                UpdateForm();
+            }
         }
 
         private void UpdateForm()
         {
             SendInquiry.NavigateUrl = Jhu.Graywulf.Web.UI.Feedback.GetJobErrorUrl(job.Guid);
             ExceptionMessage.Text = job.Error;
+        }
+
+        protected void Inquiry_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(SendInquiry.NavigateUrl);
         }
     }
 }
