@@ -58,24 +58,6 @@ namespace Jhu.Graywulf.Web.UI.Jobs {
         protected global::System.Web.UI.WebControls.Label Name;
         
         /// <summary>
-        /// Label2 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Label2;
-        
-        /// <summary>
-        /// Comments control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Comments;
-        
-        /// <summary>
         /// Label3 control.
         /// </summary>
         /// <remarks>
@@ -148,6 +130,24 @@ namespace Jhu.Graywulf.Web.UI.Jobs {
         protected global::Jhu.Graywulf.Web.UI.Controls.JobStatus JobExecutionStatus;
         
         /// <summary>
+        /// Label2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Label2;
+        
+        /// <summary>
+        /// Comments control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Comments;
+        
+        /// <summary>
         /// Cancel control.
         /// </summary>
         /// <remarks>
@@ -191,6 +191,15 @@ namespace Jhu.Graywulf.Web.UI.Jobs {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::Jhu.Graywulf.Web.Controls.TabView exportTab;
+        
+        /// <summary>
+        /// exportForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Jobs.ExportForm exportForm;
         
         /// <summary>
         /// importTab control.

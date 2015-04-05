@@ -3,6 +3,8 @@
 
 <%@ Register Src="~/Jobs/ErrorForm.ascx" TagPrefix="jgwc" TagName="ErrorForm" %>
 <%@ Register Src="~/Jobs/QueryForm.ascx" TagPrefix="jgwc" TagName="QueryForm" %>
+<%@ Register Src="~/Jobs/ExportForm.ascx" TagPrefix="jgwc" TagName="ExportForm" %>
+
 
 <asp:Content runat="server" ContentPlaceHolderID="head">
     <link rel="stylesheet" href="../Scripts/CodeMirror/lib/codemirror.css">
@@ -16,7 +18,7 @@
             <div class="TabFrame dock-fill dock-container">
                 <asp:MultiView runat="server" ID="multiView" ActiveViewIndex="0">
                     <jgwc:TabView runat="server" ID="summaryTab" Text="Summary">
-                        <jgwc:Form runat="Server" Text="Query job details" SkinID="QueryJobDetails">
+                        <jgwc:Form runat="Server" Text="Job details" SkinID="JobDetails">
                             <FormTemplate>
                                 <table class="FormTable">
                                     <tr>
@@ -25,14 +27,6 @@
                                         </td>
                                         <td>
                                             <asp:Label ID="Name" runat="server" Text="Label"></asp:Label>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="FormLabel">
-                                            <asp:Label ID="Label2" runat="server" Text="Comments:"></asp:Label>
-                                        </td>
-                                        <td>
-                                            <asp:Label ID="Comments" runat="server" Text="Label"></asp:Label>
                                         </td>
                                     </tr>
                                     <tr>
@@ -67,10 +61,18 @@
                                             <jgwuc:JobStatus runat="server" ID="JobExecutionStatus" />
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td class="FormLabel">
+                                            <asp:Label ID="Label2" runat="server" Text="Comments:"></asp:Label>
+                                        </td>
+                                        <td>
+                                            <asp:Label ID="Comments" runat="server" Text="Label"></asp:Label>
+                                        </td>
+                                    </tr>
                                 </table>
                             </FormTemplate>
                             <ButtonsTemplate>
-                                <asp:Button runat="Server" ID="Cancel" Text="Cancel query" CssClass="FormButton"
+                                <asp:Button runat="Server" ID="Cancel" Text="Cancel job" CssClass="FormButton"
                                     OnClikc="Cancel_Click" />
                                 <asp:Button runat="Server" ID="Back" Text="Back" CssClass="FormButton" />
                             </ButtonsTemplate>
@@ -80,6 +82,7 @@
                         <jgwc:QueryForm runat="server" ID="queryForm" />
                     </jgwc:TabView>
                     <jgwc:TabView ID="exportTab" runat="server" Text="Export">
+                        <jgwc:ExportForm runat="server" ID="exportForm" />
                     </jgwc:TabView>
                     <jgwc:TabView ID="importTab" runat="server" Text="Import">
                     </jgwc:TabView>

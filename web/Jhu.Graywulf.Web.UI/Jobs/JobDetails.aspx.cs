@@ -68,6 +68,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             // Export
             if (job is ExportJob)
             {
+                exportForm.Job = (ExportJob)job;
             }
             else
             {
@@ -84,7 +85,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             }
 
             // Set button actions
-            
+
             Back.OnClientClick = Util.UrlFormatter.GetClientRedirect(OriginalReferer);
         }
 
@@ -92,11 +93,8 @@ namespace Jhu.Graywulf.Web.UI.Jobs
         {
             guid = Guid.Parse(Request.QueryString["guid"]);
 
-            if (!IsPostBack)
-            {
-                LoadJob();
-                UpdateForm();
-            }
+            LoadJob();
+            UpdateForm();
         }
 
         protected void Cancel_Click(object sender, EventArgs e)

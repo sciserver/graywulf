@@ -30,8 +30,10 @@
 <jgwc:Form runat="server" SkinID="MyDb" ImageUrl="Icons/mydb.png" />
 <jgwc:Form runat="server" SkinID="ImportTable" ImageUrl="Icons/importtable.png" />
 <jgwc:Form runat="server" SkinID="ExportTable" ImageUrl="Icons/exporttable.png" />
+<jgwc:Form runat="server" SkinID="JobDetails" ImageUrl="Icons/job.png" />
 <jgwc:Form runat="server" SkinID="QueryJobDetails" ImageUrl="Icons/job.png" />
 <jgwc:Form runat="server" SkinID="ExportJobDetails" ImageUrl="Icons/job.png" />
+<jgwc:Form runat="server" SkinID="ImportJobDetails" ImageUrl="Icons/job.png" />
 <jgwc:Form runat="server" SkinID="CancelJob" ImageUrl="Icons/canceljob.png" />
 <jgwc:Form runat="server" SkinID="ErrorJob" ImageUrl="Icons/error.png" />
 <jgwc:Form runat="server" SkinID="RenameObject" ImageUrl="Icons/renametable.png" />

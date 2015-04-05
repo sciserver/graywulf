@@ -107,13 +107,18 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                 var xr = new Util.XmlReader(xml);
 
+                // URI
                 // Try to take uri from the root (in case of archives) or from the first destination
                 var uristring = xr.GetXmlInnerText("ExportTablesParameters/Uri");
+
                 if (String.IsNullOrWhiteSpace(uristring))
                 {
                     uristring = xr.GetXmlInnerText("ExportTablesParameters/Destinations/DataFileBase/Uri");
                 }
 
+                this.uri = new Uri(uristring, UriKind.RelativeOrAbsolute);
+
+                // Table
                 // Take exported table name from the first srouce object
                 var schemaname = xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/SourceSchemaName");
                 var tablename = xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/SourceObjectName");
@@ -121,6 +126,17 @@ namespace Jhu.Graywulf.Web.Api.V1
                 this.table = schemaname +
                     (!String.IsNullOrWhiteSpace(schemaname) ? "." : "") +
                     tablename;
+
+                // Format
+                var ff = FileFormatFactory.Create(jobInstance.Context.Federation.FileFormatFactory);
+                string filename, extension;
+                DataFileCompression compression;
+                ff.GetFileExtensions(this.uri, out filename, out extension, out compression);
+                var file = ff.CreateFileFromExtension(extension);
+                this.fileFormat = new V1.FileFormat()
+                {
+                    MimeType = file.Description.MimeType
+                };
             }
         }
 

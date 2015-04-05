@@ -112,6 +112,13 @@
     <Compile Include="Jobs\JobDetails.aspx.designer.cs">
       <DependentUpon>JobDetails.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Jobs\ExportForm.ascx.cs">
+      <DependentUpon>ExportForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Jobs\ExportForm.ascx.designer.cs">
+      <DependentUpon>ExportForm.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Jobs\QueryForm.ascx.cs">
       <DependentUpon>QueryForm.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -377,6 +384,7 @@
     <Content Include="Controls\Menu.ascx" />
     <Content Include="Default.aspx" />
     <Content Include="Global.asax" />
+    <Content Include="Jobs\ExportForm.ascx" />
     <Content Include="Jobs\QueryForm.ascx" />
     <Content Include="MyDB\CommentsForm.ascx" />
     <Content Include="MyDB\CompressionForm.ascx" />
