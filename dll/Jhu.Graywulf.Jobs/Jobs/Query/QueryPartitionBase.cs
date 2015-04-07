@@ -151,7 +151,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 {
                     throw new Exception(
                         String.Format(
-                            "Cannot find instance of system database: {0} ({1}) on server {2}{3} ({4}).",
+                            "Cannot find instance of system database: {0} ({1}) on server {2}/{3} ({4}).",
                             dataset.Name, dataset.DatabaseName,
                             AssignedServerInstance.Machine.Name, AssignedServerInstance.Name, AssignedServerInstance.GetCompositeName()),
                         ex); // TODO ***
