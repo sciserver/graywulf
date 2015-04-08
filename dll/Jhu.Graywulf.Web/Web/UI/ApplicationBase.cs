@@ -76,9 +76,9 @@ namespace Jhu.Graywulf.Web.UI
             virtualPathProvider = new EmbeddedVirtualPathProvider();
 
             // Register controls
-            virtualPathProvider.RegisterVirtualPath("~/Captcha.aspx", "Jhu.Graywulf.Web.UI.Captcha.aspx, Jhu.Graywulf.Web");
-            virtualPathProvider.RegisterVirtualPath("~/Feedback.aspx", "Jhu.Graywulf.UI.Web.Feedback.aspx, Jhu.Graywulf.Web");
-            virtualPathProvider.RegisterVirtualPath("~/Error.aspx", "Jhu.Graywulf.Web.UI.Error.aspx, Jhu.Graywulf.Web");
+            virtualPathProvider.RegisterVirtualPath("~/Captcha.aspx", typeof(Jhu.Graywulf.Web.UI.Captcha), ".aspx");
+            virtualPathProvider.RegisterVirtualPath("~/Feedback.aspx", typeof(Jhu.Graywulf.Web.UI.Feedback), ".aspx");
+            virtualPathProvider.RegisterVirtualPath("~/Error.aspx", typeof(Jhu.Graywulf.Web.UI.Error), ".aspx");
 
             HostingEnvironment.RegisterVirtualPathProvider(virtualPathProvider);
 
