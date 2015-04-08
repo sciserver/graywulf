@@ -741,55 +741,59 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         /// <param name="workflowInstanceId"></param>
         /// <param name="eventType"></param>
-        private void FinishJob(Job job, HostEventArgs e)
+        private void FinishJob(Guid instanceID, HostEventArgs e)
         {
-            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            // TODO: certain workflows (probably failing ones) raise more than
+            // one event that mark the job as finished. For now, we do the bookeeping
+            // only once and remove the job from running jobs at the very first event
+
+            Job job;
+            if (runningJobs.TryRemove(instanceID, out job))
             {
-                context.JobGuid = job.Guid;
-                context.ContextGuid = contextGuid;
-
-                JobInstance ji = new JobInstance(context);
-                ji.Guid = job.Guid;
-                ji.Load();
-
-                // Update execution status, error message and finish time
-                switch (e.EventType)
+                using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
                 {
-                    case WorkflowEventType.Completed:
-                        ji.JobExecutionStatus = JobExecutionState.Completed;
-                        break;
-                    case WorkflowEventType.Cancelled:
-                        ji.JobExecutionStatus = JobExecutionState.Cancelled;
-                        break;
-                    case WorkflowEventType.TimedOut:
-                        ji.JobExecutionStatus = JobExecutionState.TimedOut;
-                        break;
-                    case WorkflowEventType.Persisted:
-                        ji.JobExecutionStatus = JobExecutionState.Persisted;
-                        break;
-                    case WorkflowEventType.Failed:
-                        ji.JobExecutionStatus = JobExecutionState.Failed;
-                        ji.ExceptionMessage = e.ExceptionMessage;
-                        break;
-                }
+                    context.JobGuid = job.Guid;
+                    context.ContextGuid = contextGuid;
 
-                // Update registry
-                ji.DateFinished = DateTime.Now;
-                ji.Save();
+                    JobInstance ji = new JobInstance(context);
+                    ji.Guid = job.Guid;
+                    ji.Load();
 
-                ji.ReleaseLock(false);
-                ji.RescheduleIfRecurring();
+                    // Update execution status, error message and finish time
+                    switch (e.EventType)
+                    {
+                        case WorkflowEventType.Completed:
+                            ji.JobExecutionStatus = JobExecutionState.Completed;
+                            break;
+                        case WorkflowEventType.Cancelled:
+                            ji.JobExecutionStatus = JobExecutionState.Cancelled;
+                            break;
+                        case WorkflowEventType.TimedOut:
+                            ji.JobExecutionStatus = JobExecutionState.TimedOut;
+                            break;
+                        case WorkflowEventType.Persisted:
+                            ji.JobExecutionStatus = JobExecutionState.Persisted;
+                            break;
+                        case WorkflowEventType.Failed:
+                            ji.JobExecutionStatus = JobExecutionState.Failed;
+                            ji.ExceptionMessage = e.ExceptionMessage;
+                            break;
+                    }
 
-                // Do local bookkeeping
-                Job j;
-                if (cluster.Queues[job.QueueGuid].Jobs.TryRemove(job.Guid, out j))
-                {
-                    runningJobs.TryRemove(job.WorkflowInstanceId, out j);
-                }
+                    // Update registry
+                    ji.DateFinished = DateTime.Now;
+                    ji.Save();
 
-                if (interactive)
-                {
-                    Console.WriteLine("Finishing job: {0}", ji.Guid);
+                    ji.ReleaseLock(false);
+                    ji.RescheduleIfRecurring();
+
+                    // Do local bookkeeping
+                    cluster.Queues[job.QueueGuid].Jobs.TryRemove(job.Guid, out job);
+
+                    if (interactive)
+                    {
+                        Console.WriteLine("Finishing job: {0}", ji.Guid);
+                    }
                 }
             }
         }
@@ -809,7 +813,7 @@ namespace Jhu.Graywulf.Scheduler
         internal void GetContextInfo(Guid workflowInstanceId, out Guid userGuid, out string userName, out Guid jobGuid, out string jobID)
         {
             var job = runningJobs[workflowInstanceId];
-            
+
             userGuid = job.UserGuid;
             userName = job.UserName;
             jobGuid = job.Guid;
@@ -899,11 +903,8 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="e"></param>
         void adh_WorkflowEvent(object sender, HostEventArgs e)
         {
-            // Find job by e.InstanceId
-            var job = runningJobs[e.InstanceId];
-
             new DelayedRetryLoop(5).Execute(
-                () => { FinishJob(job, e); },
+                () => FinishJob(e.InstanceId, e),
                 ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.adh_WorkflowEvent[FinishJob]", ex)));
         }
 
@@ -916,6 +917,8 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="e"></param>
         private void LogEvent(Event e)
         {
+            // TODO: add guids, etc.
+
             e.UserGuid = Guid.Empty;
             e.EventSource = EventSource.Scheduler;
             e.ExecutionStatus = ExecutionStatus.Closed;
