@@ -129,12 +129,12 @@ namespace Jhu.Graywulf.Web.Admin
 
         protected void EditItem()
         {
-            Response.Redirect(item.GetFormUrl());
+            Response.Redirect(item.GetFormUrl(), false);
         }
 
         protected void DeleteItem()
         {
-            Response.Redirect(Jhu.Graywulf.Web.Admin.Common.Delete.GetUrl(item.Guid));
+            Response.Redirect(Jhu.Graywulf.Web.Admin.Common.Delete.GetUrl(item.Guid), false);
         }
 
         protected void ShowItem()
@@ -151,12 +151,12 @@ namespace Jhu.Graywulf.Web.Admin
 
         protected void SerializeItem()
         {
-            Response.Redirect(Jhu.Graywulf.Web.Admin.Common.Serialize.GetUrl(item.Guid));
+            Response.Redirect(Jhu.Graywulf.Web.Admin.Common.Serialize.GetUrl(item.Guid), false);
         }
 
         protected void DiscoverItem()
         {
-            Response.Redirect(Common.Discover.GetUrl(item.Guid));
+            Response.Redirect(Common.Discover.GetUrl(item.Guid), false);
         }
 
         protected void DeployItem()

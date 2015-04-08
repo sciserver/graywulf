@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
         protected void Edit_Click(object sender, EventArgs e)
         {
             ((CustomPageBase)Page).SetQueryInSession(job.Query, null, true);
-            Response.Redirect(Jhu.Graywulf.Web.UI.Query.Default.GetUrl());
+            Response.Redirect(Jhu.Graywulf.Web.UI.Query.Default.GetUrl(), false);
         }
     }
 }

@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Web.Auth
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect(SignIn.GetUrl(ReturnUrl));
+            Response.Redirect(SignIn.GetUrl(ReturnUrl), false);
         }
 
         protected void Ok_Click(object sender, EventArgs e)

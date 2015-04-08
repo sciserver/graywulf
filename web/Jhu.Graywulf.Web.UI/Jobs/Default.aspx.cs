@@ -34,11 +34,6 @@ namespace Jhu.Graywulf.Web.UI.Jobs
             list.DataSource = JobDataSource;
         }
 
-        private void RedirectToDetails(Guid guid)
-        {
-            Response.Redirect(JobDetails.GetUrl(guid));
-        }
-
         private MultiSelectGridView GetVisibleListView()
         {
             switch ((Views)multiView.ActiveViewIndex)
@@ -101,10 +96,10 @@ namespace Jhu.Graywulf.Web.UI.Jobs
                 switch (e.CommandName)
                 {
                     case "Details":
-                        RedirectToDetails(guids[0]);
+                        Response.Redirect(JobDetails.GetUrl(guids[0]), false);
                         break;
                     case "Cancel":
-                        Response.Redirect(Jobs.CancelJob.GetUrl(guids));
+                        Response.Redirect(Jobs.CancelJob.GetUrl(guids), false);
                         break;
                     default:
                         throw new NotImplementedException();

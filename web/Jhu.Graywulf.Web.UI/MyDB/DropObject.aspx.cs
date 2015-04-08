@@ -49,12 +49,12 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                 obj.Drop();
             }
 
-            Response.Redirect(Tables.GetUrl());
+            Response.Redirect(Tables.GetUrl(), false);
         }
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect(OriginalReferer);
+            Response.Redirect(OriginalReferer, false);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
 
         protected void Inquiry_Click(object sender, EventArgs e)
         {
-            Response.Redirect(SendInquiry.NavigateUrl);
+            Response.Redirect(SendInquiry.NavigateUrl, false);
         }
     }
 }

@@ -49,21 +49,21 @@ namespace Jhu.Graywulf.Web.UI.MyDB
                 switch (e.CommandName)
                 {
                     case "View":
-                        Response.Redirect(Schema.Default.GetUrl(objid));
+                        Response.Redirect(Schema.Default.GetUrl(objid), false);
                         break;
                     //case "Edit":
                     //    break;
                     case "Peek":
-                        Response.Redirect(Schema.Peek.GetUrl(objid));
+                        Response.Redirect(Schema.Peek.GetUrl(objid), false);
                         break;
                     case "Export":
-                        Response.Redirect(MyDB.Export.GetUrl(objid));
+                        Response.Redirect(MyDB.Export.GetUrl(objid), false);
                         break;
                     case "Rename":
-                        Response.Redirect(MyDB.RenameObject.GetUrl(objid));
+                        Response.Redirect(MyDB.RenameObject.GetUrl(objid), false);
                         break;
                     case "Drop":
-                        Response.Redirect(MyDB.DropObject.GetUrl(objids));
+                        Response.Redirect(MyDB.DropObject.GetUrl(objids), false);
                         break;
                     default:
                         throw new NotImplementedException();

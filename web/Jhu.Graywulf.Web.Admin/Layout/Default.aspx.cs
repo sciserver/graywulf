@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Web.Admin.Layout
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            Response.Redirect(ClusterDetails.GetUrl((Guid)Session[Web.UI.Constants.SessionClusterGuid]));
+            Response.Redirect(ClusterDetails.GetUrl((Guid)Session[Web.UI.Constants.SessionClusterGuid]), false);
         }
     }
 }

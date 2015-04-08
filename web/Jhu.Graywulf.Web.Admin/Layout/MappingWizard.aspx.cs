@@ -188,12 +188,12 @@ namespace Jhu.Graywulf.Web.Admin.Layout
                 }
             }
 
-            Response.Redirect(item.GetDetailsUrl(EntityGroup.Layout));
+            Response.Redirect(item.GetDetailsUrl(EntityGroup.Layout), false);
         }
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect(item.GetDetailsUrl(EntityGroup.Layout));
+            Response.Redirect(item.GetDetailsUrl(EntityGroup.Layout), false);
         }
 
 

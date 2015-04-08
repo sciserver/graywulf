@@ -100,7 +100,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect(CancelJob.GetUrl(guid));
+            Response.Redirect(CancelJob.GetUrl(guid), false);
         }
     }
 }

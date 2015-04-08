@@ -149,7 +149,7 @@ namespace Jhu.Graywulf.Web.Admin
                     return;
                 }
 
-                Response.Redirect(item.GetDetailsUrl());
+                Response.Redirect(item.GetDetailsUrl(), false);
             }
         }
 
@@ -157,11 +157,11 @@ namespace Jhu.Graywulf.Web.Admin
         {
             if (item.IsExisting)
             {
-                Response.Redirect(item.GetDetailsUrl());
+                Response.Redirect(item.GetDetailsUrl(), false);
             }
             else
             {
-                Response.Redirect(item.GetParentDetailsUrl());
+                Response.Redirect(item.GetParentDetailsUrl(), false);
             }
         }
     }

@@ -34,12 +34,12 @@ namespace Jhu.Graywulf.Web.UI.MyDB
         protected void Ok_Click(object sender, EventArgs e)
         {
             obj.Rename(ObjectName.Text);
-            Response.Redirect("Default.aspx");      // *** TODO: where to redurect after rename?
+            Response.Redirect("Default.aspx", false);      // *** TODO: where to redurect after rename?
         }
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect(OriginalReferer);
+            Response.Redirect(OriginalReferer, false);
         }
     }
 }

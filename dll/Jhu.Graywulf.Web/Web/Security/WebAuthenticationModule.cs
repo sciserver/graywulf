@@ -330,7 +330,7 @@ namespace Jhu.Graywulf.Web.Security
 
         private void RedirectToLoginPage()
         {
-            HttpContext.Current.Response.Redirect(GetSignInUrl());
+            HttpContext.Current.Response.Redirect(GetSignInUrl(), false);
         }
     }
 }

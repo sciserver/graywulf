@@ -110,12 +110,12 @@ namespace Jhu.Graywulf.Web.UI.MyDB
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect(OriginalReferer);
+            Response.Redirect(OriginalReferer, false);
         }
 
         protected void Back_Click(object sender, EventArgs e)
         {
-            Response.Redirect(Jhu.Graywulf.Web.UI.MyDB.Tables.GetUrl());
+            Response.Redirect(Jhu.Graywulf.Web.UI.MyDB.Tables.GetUrl(), false);
         }
 
         #endregion

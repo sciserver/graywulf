@@ -148,7 +148,7 @@ namespace Jhu.Graywulf.Web.UI
 
             base.OnError(e);
 
-            Response.Redirect(Jhu.Graywulf.Web.UI.Error.GetUrl());
+            Response.Redirect(Jhu.Graywulf.Web.UI.Error.GetUrl(), false);
         }
 
         #endregion

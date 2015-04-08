@@ -150,7 +150,7 @@ namespace Jhu.Graywulf.Web.Auth
                 {
                     CreateUser();
 
-                    Response.Redirect(Activate.GetUrl(ReturnUrl));
+                    Response.Redirect(Activate.GetUrl(ReturnUrl), false);
                 }
                 else
                 {
@@ -165,12 +165,12 @@ namespace Jhu.Graywulf.Web.Auth
 
         protected void ChangePassword_Click(object sender, EventArgs e)
         {
-            Response.Redirect(Jhu.Graywulf.Web.Auth.ChangePassword.GetUrl(ReturnUrl));
+            Response.Redirect(Jhu.Graywulf.Web.Auth.ChangePassword.GetUrl(ReturnUrl), false);
         }
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect(ReturnUrl);
+            Response.Redirect(ReturnUrl, false);
         }
     }
 }

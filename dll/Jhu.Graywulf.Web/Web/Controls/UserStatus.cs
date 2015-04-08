@@ -144,19 +144,19 @@ namespace Jhu.Graywulf.Web.Controls
         void Account_Click(object sender, EventArgs e)
         {
             var url = authenticationModule.GetUserAccountUrl();
-            Response.Redirect(url);
+            Response.Redirect(url, false);
         }
 
         void Register_Click(object sender, EventArgs e)
         {
             var url = authenticationModule.GetRegisternUrl();
-            Response.Redirect(url);
+            Response.Redirect(url, false);
         }
 
         void SignIn_Click(object sender, EventArgs e)
         {
             var url = authenticationModule.GetSignInUrl();
-            Response.Redirect(url);
+            Response.Redirect(url, false);
         }
 
         void SignOut_Click(object sender, EventArgs e)
@@ -168,7 +168,7 @@ namespace Jhu.Graywulf.Web.Controls
 
             authenticationModule.DeleteAuthResponseHeaders();
             Session.Abandon();
-            Response.Redirect(url);
+            Response.Redirect(url, false);
         }
 
         #endregion

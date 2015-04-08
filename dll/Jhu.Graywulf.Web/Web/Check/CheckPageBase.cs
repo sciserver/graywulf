@@ -49,8 +49,6 @@ namespace Jhu.Graywulf.Web.Check
             checks.Execute(Response.Output);
 
             Response.End();
-
-            base.OnLoadComplete(e);
         }
     }
 }

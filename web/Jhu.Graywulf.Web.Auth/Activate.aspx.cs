@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.Web.Auth
 
         protected void SignIn_Click(object sender, EventArgs e)
         {
-            Response.Redirect(Jhu.Graywulf.Web.Auth.SignIn.GetUrl(ReturnUrl));
+            Response.Redirect(Jhu.Graywulf.Web.Auth.SignIn.GetUrl(ReturnUrl), false);
         }
     }
 }

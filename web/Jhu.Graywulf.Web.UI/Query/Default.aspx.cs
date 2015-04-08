@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Web.UI.Query
             if (q != null)
             {
                 ScheduleQuery(q);
-                Response.Redirect(Jobs.Default.GetUrl());
+                Response.Redirect(Jobs.Default.GetUrl(), false);
             }
         }
 

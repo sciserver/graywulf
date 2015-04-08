@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             switch (e.CommandName)
             {
                 case "Map":
-                    Response.Redirect(MappingWizard.GetUrl(Item.Guid));
+                    Response.Redirect(MappingWizard.GetUrl(Item.Guid), false);
                     break;
                 default:
                     base.OnButtonCommand(sender, e);

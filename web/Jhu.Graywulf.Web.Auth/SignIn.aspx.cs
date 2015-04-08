@@ -93,7 +93,7 @@ namespace Jhu.Graywulf.Web.Auth
         /// <param name="e"></param>
         protected void Register_Click(object sender, EventArgs e)
         {
-            Response.Redirect(Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl));
+            Response.Redirect(Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl), false);
         }
 
         /// <summary>
@@ -330,11 +330,11 @@ namespace Jhu.Graywulf.Web.Auth
                 authResponse.SetResponseHeaders(Response);
 
                 var url = authResponse.GetReturnUrl();
-                Response.Redirect(url);
+                Response.Redirect(url, false);
             }
             else
             {
-                Response.Redirect(Activate.GetUrl(ReturnUrl));
+                Response.Redirect(Activate.GetUrl(ReturnUrl), false);
             }
         }
 

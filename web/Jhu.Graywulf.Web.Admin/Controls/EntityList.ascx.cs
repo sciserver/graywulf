@@ -145,7 +145,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
 
             if (copy != null)
             {
-                Response.Redirect(copy.GetFormUrl());
+                Response.Redirect(copy.GetFormUrl(), false);
             }
         }
 
@@ -154,12 +154,12 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             var ef = new EntityFactory(RegistryContext);
             var item = ef.LoadEntity(guid);
 
-            Response.Redirect(item.GetFormUrl());
+            Response.Redirect(item.GetFormUrl(), false);
         }
 
         private void DeleteItem(Guid[] guids)
         {
-            Response.Redirect(Jhu.Graywulf.Web.Admin.Common.Delete.GetUrl(guids));
+            Response.Redirect(Jhu.Graywulf.Web.Admin.Common.Delete.GetUrl(guids), false);
         }
 
         private void MoveItem(Guid guid, EntityMoveDirection dir)

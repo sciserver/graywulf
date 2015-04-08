@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Web.UI.Jobs
 
                 if (jobs.Count == 0)
                 {
-                    Response.Redirect(OriginalReferer);
+                    Response.Redirect(OriginalReferer, false);
                 }
 
                 UpdateForm();
@@ -88,13 +88,13 @@ namespace Jhu.Graywulf.Web.UI.Jobs
                     }
                 }
 
-                Response.Redirect(Jobs.Default.GetUrl());
+                Response.Redirect(Jobs.Default.GetUrl(), false);
             }
         }
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect(OriginalReferer);
+            Response.Redirect(OriginalReferer, false);
         }
     }
 }

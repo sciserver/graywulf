@@ -184,18 +184,18 @@ namespace Jhu.Graywulf.Web.UI
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect(OriginalReferer);
+            Response.Redirect(OriginalReferer, false);
         }
 
         protected void Back_Click(object sender, EventArgs e)
         {
             if (mode == Mode.Error)
             {
-                Response.Redirect("~/");
+                Response.Redirect("~/", false);
             }
             else
             {
-                Response.Redirect(OriginalReferer);
+                Response.Redirect(OriginalReferer, false);
             }
         }
     }

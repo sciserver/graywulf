@@ -57,13 +57,13 @@ namespace Jhu.Graywulf.Web.Admin.Domain
                 LoadItem();
                 user.AddToGroup(new Guid(UserGroup.SelectedValue));
 
-                Response.Redirect(user.GetDetailsUrl());
+                Response.Redirect(user.GetDetailsUrl(), false);
             }
         }
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect(user.GetDetailsUrl());
+            Response.Redirect(user.GetDetailsUrl(), false);
         }
     }
 }

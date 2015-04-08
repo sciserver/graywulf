@@ -122,7 +122,7 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
 
         protected void Log_Click(object sender, EventArgs e)
         {
-            Response.Redirect("~/log/?jobGuid=" + Item.Guid);
+            Response.Redirect("~/log/?jobGuid=" + Item.Guid, false);
         }
     }
 }

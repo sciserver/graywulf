@@ -209,12 +209,12 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
             ddi.GenerateSlices(slicenames, slicelimits, partitionnames, partitionlimits);
 
-            Response.Redirect(item.GetDetailsUrl());
+            Response.Redirect(item.GetDetailsUrl(), false);
         }
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect(item.GetDetailsUrl());
+            Response.Redirect(item.GetDetailsUrl(), false);
         }
 
         #region IEntityForm Members

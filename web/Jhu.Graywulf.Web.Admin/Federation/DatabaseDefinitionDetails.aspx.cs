@@ -56,7 +56,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             switch (e.CommandName)
             {
                 case "Slice":
-                    Response.Redirect(SlicingWizard.GetUrl(Item.Guid));
+                    Response.Redirect(SlicingWizard.GetUrl(Item.Guid), false);
                     break;
                 default:
                     base.OnButtonCommand(sender, e);

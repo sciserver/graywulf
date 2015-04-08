@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Web.Admin.Common
                 var ef = new EntityFactory(RegistryContext);
                 ef.ApplyChanges(update, delete, create);
 
-                Response.Redirect(item.GetDetailsUrl());
+                Response.Redirect(item.GetDetailsUrl(), false);
             }
         }
 
@@ -88,12 +88,12 @@ namespace Jhu.Graywulf.Web.Admin.Common
         {
             if (Request.QueryString["redirect"] != null)
             {
-                Response.Redirect(Request.QueryString["redirect"]);
+                Response.Redirect(Request.QueryString["redirect"], false);
             }
             else
             {
                 LoadItem();
-                Response.Redirect(item.GetDetailsUrl());
+                Response.Redirect(item.GetDetailsUrl(), false);
             }
         }
     }
