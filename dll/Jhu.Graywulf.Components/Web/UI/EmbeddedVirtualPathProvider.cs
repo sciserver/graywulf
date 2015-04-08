@@ -69,5 +69,12 @@ namespace Jhu.Graywulf.Web.UI
             }
         }
 
+        public void RegisterVirtualPath(string appRelativePath, Type resource, string extension)
+        {
+            RegisterVirtualPath(
+                appRelativePath,
+                String.Format("{0}{1}, {2}", resource.FullName, extension, resource.Assembly.FullName));
+        }
+
     }
 }
