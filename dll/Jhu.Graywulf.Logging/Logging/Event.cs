@@ -251,26 +251,100 @@ namespace Jhu.Graywulf.Logging
             exceptionType = null;
 
             // Unwrap aggregate exceptions
+            /*
             while (ex != null && ex is AggregateException)
             {
                 ex = ex.InnerException;
-            }
+            }*/
 
             exception = ex;
 
             if (ex != null)
             {
-                message = ex.Message;
-                stackTrace = ex.StackTrace;
-                exceptionType = ex.GetType().ToString();
+                message = GetMessage(ex);
+                stackTrace = GetStackTrace(ex);
+                exceptionType = GetType(ex);
+                site = GetSite(ex);
                 eventSeverity = Logging.EventSeverity.Error;
+            }
+        }
+
+        private string GetMessage(Exception ex)
+        {
+            if (ex is AggregateException)
+            {
+                return ex.InnerException.Message;
+            }
+            else
+            {
+                return ex.Message;
+            }
+        }
+
+        private string GetType(Exception ex)
+        {
+            if (ex is AggregateException)
+            {
+                return ex.InnerException.GetType().FullName;
+            }
+            else
+            {
+                return ex.GetType().FullName;
+            }
+        }
+
+        /// <summary>
+        /// Returns the stack trace from the exception and all inner exceptions
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <returns></returns>
+        private string GetStackTrace(Exception ex)
+        {
+            var sb = new StringBuilder();
+            var e = ex;
+
+            while (e != null)
+            {
+                sb.AppendFormat("[{0}]", e.GetType().FullName);
+                sb.AppendLine();
+                sb.AppendLine(e.Message);
+                sb.AppendLine(e.StackTrace);
+                sb.AppendLine();
+
+                e = e.InnerException;
+            }
+
+            if (sb.Length == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return sb.ToString();
+            }
+        }
+
+        private string GetSite(Exception ex)
+        {
+            // Unwrap one level
+            if (ex is AggregateException)
+            {
+                ex = ex.InnerException;
             }
 
             if (ex is SqlException)
             {
                 var sqlex = (SqlException)ex;
-
-                site = sqlex.Server;
+                return sqlex.Server;
+            }
+            else if (ex is System.ServiceModel.EndpointNotFoundException)
+            {
+                var smex = (System.ServiceModel.EndpointNotFoundException)ex;
+                return null;
+            }
+            else
+            {
+                return null;
             }
         }
     }

@@ -148,42 +148,42 @@ namespace Jhu.Graywulf.Logging
         {
             //try
             //{
-                using (SqlConnection cn = new SqlConnection(connectionString))
+            using (SqlConnection cn = new SqlConnection(connectionString))
+            {
+                cn.Open();
+                using (SqlTransaction tn = cn.BeginTransaction())
                 {
-                    cn.Open();
-                    using (SqlTransaction tn = cn.BeginTransaction())
+                    // --- write event
+                    using (var cmd = createEventCommandPool.Take())
                     {
-                        // --- write event
-                        using (var cmd = createEventCommandPool.Take())
-                        {
-                            SetCreateEventCommandValues(cmd.Value, e);
+                        SetCreateEventCommandValues(cmd.Value, e);
 
+                        cmd.Value.Connection = cn;
+                        cmd.Value.Transaction = tn;
+
+                        cmd.Value.ExecuteNonQuery();
+                        e.EventId = Convert.ToInt64(cmd.Value.Parameters["@EventId"].Value);
+                    }
+
+                    // --- write data
+                    if (e.UserData.Count > 0)
+                    {
+                        using (var cmd = createEventDataCommandPool.Take())
+                        {
                             cmd.Value.Connection = cn;
                             cmd.Value.Transaction = tn;
 
-                            cmd.Value.ExecuteNonQuery();
-                            e.EventId = Convert.ToInt64(cmd.Value.Parameters["@EventId"].Value);
-                        }
-
-                        // --- write data
-                        if (e.UserData.Count > 0)
-                        {
-                            using (var cmd = createEventDataCommandPool.Take())
+                            foreach (string key in e.UserData.Keys)
                             {
-                                cmd.Value.Connection = cn;
-                                cmd.Value.Transaction = tn;
-
-                                foreach (string key in e.UserData.Keys)
-                                {
-                                    SetCreateEventDataCommandValues(cmd.Value, e.EventId, key, e.UserData[key]);
-                                    cmd.Value.ExecuteNonQuery();
-                                }
+                                SetCreateEventDataCommandValues(cmd.Value, e.EventId, key, e.UserData[key]);
+                                cmd.Value.ExecuteNonQuery();
                             }
                         }
-
-                        tn.Commit();
                     }
+
+                    tn.Commit();
                 }
+            }
             //}
             //catch (SqlException)
             //{

@@ -48,8 +48,8 @@ namespace Jhu.Graywulf.Activities
                 }
                 else
                 {
-                    throw ex.InnerException;
-                }
+                    throw ex;
+                }            
             }
         }
 
