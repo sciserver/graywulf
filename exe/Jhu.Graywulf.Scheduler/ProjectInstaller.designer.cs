@@ -39,7 +39,7 @@
             // serviceInstaller
             // 
             this.serviceInstaller.DisplayName = "Graywulf Scheduler Service";
-            this.serviceInstaller.ServiceName = "SchedulerService";
+            this.serviceInstaller.ServiceName = "gwscheduler";
             this.serviceInstaller.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller
