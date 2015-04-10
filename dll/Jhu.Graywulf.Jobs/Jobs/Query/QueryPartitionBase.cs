@@ -644,22 +644,38 @@ namespace Jhu.Graywulf.Jobs.Query
         {
 #if DUMPQUERIES
             string filename = GetDumpFileName();
+            var sw = new StringWriter();
 
-            File.AppendAllText(filename, String.Format("-- {0}\r\n", DateTime.Now));
+            // Time stamp
+            sw.WriteLine("-- {0}\r\n", DateTime.Now);
+            sw.WriteLine(sql);
+            sw.WriteLine("GO");
+            sw.WriteLine();
 
-            File.AppendAllText(filename, sql + "\r\nGO\r\n");
+            File.AppendAllText(filename, sw.ToString());
 #endif
         }
 
         protected void DumpSqlCommand(SqlCommand cmd)
         {
 #if DUMPQUERIES
-            string filename = GetDumpFileName();
+            var filename = GetDumpFileName();
+            var sw = new StringWriter();
 
-            File.AppendAllText(filename, String.Format("-- {0}\r\n", DateTime.Now));
+            // Time stamp
+            sw.WriteLine("-- {0}\r\n", DateTime.Now);
 
-            StringWriter sw = new StringWriter();
+            // Database name
+            var csb = new SqlConnectionStringBuilder(cmd.Connection.ConnectionString);
+            
+            if (!String.IsNullOrWhiteSpace(csb.InitialCatalog))
+            {
+                sw.WriteLine("USE [{0}]", csb.InitialCatalog);
+                sw.WriteLine("GO");
+                sw.WriteLine();
+            }
 
+            // Command parameters
             foreach (SqlParameter par in cmd.Parameters)
             {
                 sw.WriteLine(String.Format("DECLARE {0} {1} = {2}",
@@ -689,8 +705,6 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected void ExecuteSqlCommandOnTemporaryDatabase(SqlCommand cmd)
         {
-            DumpSqlCommand(cmd);
-
             var csb = GetTemporaryDatabaseConnectionString();
 
             using (SqlConnection cn = new SqlConnection(csb.ConnectionString))
@@ -700,13 +714,14 @@ namespace Jhu.Graywulf.Jobs.Query
                 cmd.Connection = cn;
                 cmd.CommandTimeout = query.QueryTimeout;
 
+                DumpSqlCommand(cmd);
+
                 ExecuteLongCommandNonQuery(cmd);
             }
         }
 
         protected object ExecuteSqlCommandOnTemporaryDatabaseScalar(SqlCommand cmd)
         {
-            DumpSqlCommand(cmd);
 
             var csb = GetTemporaryDatabaseConnectionString();
 
@@ -716,6 +731,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 cmd.Connection = cn;
                 cmd.CommandTimeout = query.QueryTimeout;
+
+                DumpSqlCommand(cmd);
 
                 return ExecuteLongCommandScalar(cmd);
             }
