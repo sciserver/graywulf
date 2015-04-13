@@ -60,28 +60,30 @@ namespace Jhu.Graywulf.Web.Controls
             this.username = new Label();
 
             this.account = new LinkButton();
-            this.account.Text = Labels.Account;
             this.account.CausesValidation = false;
             this.account.Click += Account_Click;
 
             this.signOut = new LinkButton();
-            this.signOut.Text = Labels.SignOut;
             this.signOut.CausesValidation = false;
             this.signOut.Click += SignOut_Click;
 
             this.signIn = new LinkButton();
-            this.signIn.Text = Labels.SignIn;
             this.signIn.CausesValidation = false;
             this.signIn.Click += SignIn_Click;
 
             this.register = new LinkButton();
-            this.register.Text = Labels.Register;
             this.register.CausesValidation = false;
             this.register.Click += Register_Click;
         }
 
         protected override void Render(System.Web.UI.HtmlTextWriter writer)
         {
+            this.account.Text = String.Format(Labels.Account, Page.Application[Web.UI.Constants.ApplicationDomainName]);
+            this.signOut.Text = String.Format(Labels.SignOut, Page.Application[Web.UI.Constants.ApplicationDomainName]);
+            this.signIn.Text = String.Format(Labels.SignIn, Page.Application[Web.UI.Constants.ApplicationDomainName]);
+            this.register.Text = String.Format(Labels.Register, Page.Application[Web.UI.Constants.ApplicationDomainName]);
+
+
             if (DesignMode)
             {
                 writer.Write(Labels.UserStatusDesigner);

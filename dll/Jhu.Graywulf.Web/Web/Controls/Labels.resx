@@ -118,10 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Account" xml:space="preserve">
-    <value>account</value>
+    <value>{0} account</value>
   </data>
   <data name="SignIn" xml:space="preserve">
-    <value>sign in</value>
+    <value>{0} sign in</value>
   </data>
   <data name="SignOut" xml:space="preserve">
     <value>sign out</value>
@@ -133,6 +133,6 @@
     <value>[ user status ]</value>
   </data>
   <data name="Register" xml:space="preserve">
-    <value>register</value>
+    <value>register to {0}</value>
   </data>
 </root>

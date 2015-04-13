@@ -10,6 +10,7 @@ namespace Jhu.Graywulf.Web.UI
         public const string ReturnUrl = "ReturnUrl";
         public const string OriginalReferer = "OriginalReferer";
 
+        public const string ApplicationDomainName = "Jhu.Graywulf.Web.DomainName";
         public const string ApplicationShortTitle = "Jhu.Graywulf.Web.ShortTitle";
         public const string ApplicationLongTitle = "Jhu.Graywulf.Web.LongTitle";
         public const string ApplicationCopyright = "Jhu.Graywulf.Web.Copyright";

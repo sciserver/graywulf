@@ -38,6 +38,7 @@ namespace Jhu.Graywulf.Web.UI
             {
                 var domain = context.Domain;
 
+                Application[Web.UI.Constants.ApplicationDomainName] = domain.ShortTitle;
                 Application[Web.UI.Constants.ApplicationShortTitle] = domain.ShortTitle;
                 Application[Web.UI.Constants.ApplicationLongTitle] = domain.LongTitle;
                 Application[Web.UI.Constants.ApplicationCopyright] = domain.Copyright;
