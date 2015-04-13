@@ -565,7 +565,12 @@ namespace Jhu.Graywulf.Scheduler
                                 System.Diagnostics.Debugger.Break();
 #endif
 
-                                WorkflowEvent(this, new HostEventArgs(WorkflowEventType.Failed, e.InstanceId, workflow.LastException.Message));
+                                WorkflowEvent(
+                                    this,
+                                    new HostEventArgs(
+                                        WorkflowEventType.Failed, 
+                                        e.InstanceId, 
+                                        GetExceptionMessage(workflow.LastException)));
                                 break;
                             default:
                                 throw new NotImplementedException();
@@ -612,7 +617,12 @@ namespace Jhu.Graywulf.Scheduler
             // Workflows are aborted when an exception is thrown during cancellation
             if (workflow.LastException != null)
             {
-                WorkflowEvent(this, new HostEventArgs(WorkflowEventType.Failed, e.InstanceId, workflow.LastException.Message));
+                WorkflowEvent(
+                    this,
+                    new HostEventArgs(
+                        WorkflowEventType.Failed, 
+                        e.InstanceId, 
+                        GetExceptionMessage(workflow.LastException)));
             }
             else
             {
@@ -633,5 +643,16 @@ namespace Jhu.Graywulf.Scheduler
 
         #endregion
 
+        private string GetExceptionMessage(Exception exception)
+        {
+            if (exception is AggregateException)
+            {
+                return exception.InnerException.Message;
+            }
+            else
+            {
+                return exception.Message;
+            }
+        }
     }
 }

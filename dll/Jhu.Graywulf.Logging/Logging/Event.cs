@@ -185,7 +185,7 @@ namespace Jhu.Graywulf.Logging
             this.entityGuidFrom = Guid.Empty;
             this.entityGuidTo = Guid.Empty;
             this.exceptionType = null;
-            this.site = null;
+            this.site = Environment.MachineName;
             this.message = null;
             this.stackTrace = null;
 
@@ -249,13 +249,6 @@ namespace Jhu.Graywulf.Logging
             site = null;
             stackTrace = null;
             exceptionType = null;
-
-            // Unwrap aggregate exceptions
-            /*
-            while (ex != null && ex is AggregateException)
-            {
-                ex = ex.InnerException;
-            }*/
 
             exception = ex;
 
@@ -340,11 +333,13 @@ namespace Jhu.Graywulf.Logging
             else if (ex is System.ServiceModel.EndpointNotFoundException)
             {
                 var smex = (System.ServiceModel.EndpointNotFoundException)ex;
-                return null;
+                return Environment.MachineName;
+
+                // TODO: figure out how to get site from EndpointNotFoundException
             }
             else
             {
-                return null;
+                return Environment.MachineName;
             }
         }
     }

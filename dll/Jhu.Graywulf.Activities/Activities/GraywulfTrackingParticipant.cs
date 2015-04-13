@@ -97,30 +97,7 @@ namespace Jhu.Graywulf.Activities
                     e.ExecutionStatus = ExecutionStatus.Unknown;    //
                 }
 
-                if (record.Arguments.ContainsKey("JobGuid"))
-                {
-                    e.JobGuid = (Guid)record.Arguments["JobGuid"];
-                }
-
-                if (record.Arguments.ContainsKey("UserGuid"))
-                {
-                    e.UserGuid = (Guid)record.Arguments["UserGuid"];
-                }
-
-                if (record.Arguments.ContainsKey("EntityGuid"))
-                {
-                    e.EntityGuid = (Guid)record.Arguments["EntityGuid"];
-                }
-
-                if (record.Arguments.ContainsKey("EntityGuidFrom"))
-                {
-                    e.EntityGuidFrom = (Guid)record.Arguments["EntityGuidFrom"];
-                }
-
-                if (record.Arguments.ContainsKey("EntityGuidTo"))
-                {
-                    e.EntityGuidTo = (Guid)record.Arguments["EntityGuidTo"];
-                }
+                SetEventProperties(e, record.Arguments);
 
                 return e;
             }
@@ -156,36 +133,7 @@ namespace Jhu.Graywulf.Activities
                     e.ExecutionStatus = ExecutionStatus.Unknown;    //
                 }
 
-                if (record.Data.ContainsKey("JobGuid"))
-                {
-                    e.JobGuid = (Guid)record.Data["JobGuid"];
-                }
-
-                if (record.Data.ContainsKey("UserGuid"))
-                {
-                    e.UserGuid = (Guid)record.Data["UserGuid"];
-                }
-
-                if (record.Data.ContainsKey("EntityGuid"))
-                {
-                    e.EntityGuid = (Guid)record.Data["EntityGuid"];
-                }
-
-                if (record.Data.ContainsKey("EntityGuidFrom"))
-                {
-                    e.EntityGuidFrom = (Guid)record.Data["EntityGuidFrom"];
-                }
-
-                if (record.Data.ContainsKey("EntityGuidTo"))
-                {
-                    e.EntityGuidTo = (Guid)record.Data["EntityGuidTo"];
-                }
-
-                if (record.Data.ContainsKey("Exception"))
-                {
-                    e.Exception = (Exception)record.Data["Exception"];
-                    e.ExceptionType = e.Exception.GetType().FullName;
-                }
+                SetEventProperties(e, record.Data);
 
                 return e;
             }
@@ -235,6 +183,40 @@ namespace Jhu.Graywulf.Activities
                     return Logging.EventSeverity.Warning;
                 default:
                     throw new NotImplementedException();
+            }
+        }
+
+        private void SetEventProperties(Event e, IDictionary<string,object> data)
+        {
+            if (data.ContainsKey("JobGuid"))
+            {
+                e.JobGuid = (Guid)data["JobGuid"];
+            }
+
+            if (data.ContainsKey("UserGuid"))
+            {
+                e.UserGuid = (Guid)data["UserGuid"];
+            }
+
+            if (data.ContainsKey("EntityGuid"))
+            {
+                e.EntityGuid = (Guid)data["EntityGuid"];
+            }
+
+            if (data.ContainsKey("EntityGuidFrom"))
+            {
+                e.EntityGuidFrom = (Guid)data["EntityGuidFrom"];
+            }
+
+            if (data.ContainsKey("EntityGuidTo"))
+            {
+                e.EntityGuidTo = (Guid)data["EntityGuidTo"];
+            }
+
+            if (data.ContainsKey("Exception"))
+            {
+                e.Exception = (Exception)data["Exception"];
+                e.ExceptionType = e.Exception.GetType().FullName;
             }
         }
     }
