@@ -24,49 +24,6 @@ namespace Jhu.Graywulf.Web.UI.Schema
         {
         }
 
-        /* TODO: delete?
-        private void GetServerSettings(schema::DatasetBase ds, out string connectionString, out DbProviderFactory dbf)
-        {           
-            EntityFactory ef = new EntityFactory(RegistryContext);
-            Entity db = ef.LoadEntity(EntityType.Unknown, Jhu.Graywulf.Registry.AppSettings.FederationName, ds.Name);
-
-            if (StringComparer.InvariantCultureIgnoreCase.Compare(ds.Name, FederationContext.MyDBDatabaseDefinition.Name) == 0)
-            {
-                // In case of myDB
-                connectionString = ((schema::SqlServer.SqlServerDataset)FederationContext.SchemaManager.Datasets[FederationContext.MyDBDatabaseDefinition.Name]).ConnectionString;
-                dbf = DbProviderFactories.GetFactory(ds.ProviderName);
-            }
-            else if (db is DatabaseDefinition)
-            {
-                // In case of a Graywulf database definition
-                DatabaseDefinition dd = (DatabaseDefinition)db;
-
-                dd.LoadDatabaseVersions(false);
-                DatabaseVersion rs = dd.DatabaseVersions.Values.First(r => r.Name == "HOT");        // ***** TODO: this should come from the job settings...
-
-                dd.LoadDatabaseInstances(false);
-                List<DatabaseInstance> dis = new List<DatabaseInstance>(dd.DatabaseInstances.Values.Where(dii => dii.DatabaseVersionReference.Guid == rs.Guid));
-
-                // Pick a random server
-                Random rnd = new Random();
-                DatabaseInstance di = dis[rnd.Next(dis.Count)];
-
-                connectionString = di.GetConnectionString().ConnectionString;
-                dbf = System.Data.SqlClient.SqlClientFactory.Instance;
-            }
-            else if (db is RemoteDatabase)
-            {
-                RemoteDatabase rd = (RemoteDatabase)db;
-
-                connectionString = ds.GetSpecializedConnectionString(rd.ConnectionString, rd.IntegratedSecurity, rd.Username, rd.Password, false);
-                dbf = DbProviderFactories.GetFactory(ds.ProviderName);
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
-        }*/
-
         protected void RenderTable()
         {
             var tableOrView = (schema::TableOrView)FederationContext.SchemaManager.GetDatabaseObjectByKey(Request.QueryString["objid"]);

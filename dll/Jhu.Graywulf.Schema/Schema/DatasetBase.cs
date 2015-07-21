@@ -653,9 +653,7 @@ namespace Jhu.Graywulf.Schema
 
             if (dt.HasLength)
             {
-                // SQL server returns byte size but certain types store
-                // items on multiple bytes
-                dt.Length = length / dt.ByteSize;
+                dt.Length = length;
             }
 
             if (length < 0)
@@ -687,6 +685,9 @@ namespace Jhu.Graywulf.Schema
         public List<Column> DetectColumns(IDataReader reader)
         {
             // TODO: modify to accept command instead of data reader?
+            // commond then could be executed in schema-only mode without
+            // actual query execution...
+            // or just create an overload that takes a command...
 
             var columns = new List<Column>();
             var st = reader.GetSchemaTable();

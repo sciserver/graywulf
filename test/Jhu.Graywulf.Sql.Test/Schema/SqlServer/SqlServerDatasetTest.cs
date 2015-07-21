@@ -5,8 +5,11 @@ using System.Linq;
 using System.Data;
 using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Jhu.Graywulf.Data;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
+using Jhu.Graywulf.SqlCodeGen;
+using Jhu.Graywulf.SqlCodeGen.SqlServer;
 
 namespace Jhu.Graywulf.Schema.SqlServer.Test
 {
@@ -44,7 +47,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
 
             var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
-            
+
             Assert.IsTrue(ds.Tables.Count == 1);
         }
 
@@ -55,9 +58,9 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
             var t2 = ds.Tables[ds.DatabaseName, "", "Author"];
-            
+
             Assert.IsTrue(ds.Tables.Count == 1);
-            
+
             Assert.AreEqual(t1, t2);
         }
 
@@ -70,7 +73,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var t1 = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
             var t2 = ds.Tables[ds.DatabaseName, "", "Author"];
             Table t3 = ds.Tables[ds.DatabaseName, "", "Book"];
-            
+
             Assert.IsTrue(ds.Tables.Count == 2);
             Assert.AreNotEqual(t1, t3);
             Assert.AreEqual(t3.SchemaName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName);
@@ -157,6 +160,110 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"];
             Assert.IsTrue(t.Statistics.RowCount == 0);
+        }
+
+        #endregion
+        #region Columns test
+
+        [TestMethod]
+        public void ColumnTypesTest()
+        {
+            var ds = CreateTestDataset();
+
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithAllTypes"];
+
+            Assert.IsTrue(t.Columns.Count == 31);
+
+            Assert.IsTrue(t.Columns["BigIntColumn"].DataType.NameWithLength == "bigint");
+            Assert.IsTrue(t.Columns["NumericColumn"].DataType.NameWithLength == "decimal");                   // precision?
+            Assert.IsTrue(t.Columns["BitColumn"].DataType.NameWithLength == "bit");
+            Assert.IsTrue(t.Columns["SmallIntColumn"].DataType.NameWithLength == "smallint");
+            Assert.IsTrue(t.Columns["DecimalColumn"].DataType.NameWithLength == "decimal");
+            Assert.IsTrue(t.Columns["SmallMoneyColumn"].DataType.NameWithLength == "smallmoney");
+            Assert.IsTrue(t.Columns["IntColumn"].DataType.NameWithLength == "int");
+            Assert.IsTrue(t.Columns["TinyIntColumn"].DataType.NameWithLength == "tinyint");
+            Assert.IsTrue(t.Columns["MoneyColumn"].DataType.NameWithLength == "money");
+            Assert.IsTrue(t.Columns["FloatColumn"].DataType.NameWithLength == "float");
+            Assert.IsTrue(t.Columns["RealColumn"].DataType.NameWithLength == "real");
+            Assert.IsTrue(t.Columns["DateColumn"].DataType.NameWithLength == "date");
+            Assert.IsTrue(t.Columns["DateTimeOffsetColumn"].DataType.NameWithLength == "datetimeoffset");     // precision?
+            Assert.IsTrue(t.Columns["DateTime2Column"].DataType.NameWithLength == "datetime2");               // precision?
+            Assert.IsTrue(t.Columns["SmallDateTimeColumn"].DataType.NameWithLength == "smalldatetime");
+            Assert.IsTrue(t.Columns["DateTimeColumn"].DataType.NameWithLength == "datetime");
+            Assert.IsTrue(t.Columns["TimeColumn"].DataType.NameWithLength == "time");                         // precision?
+            Assert.IsTrue(t.Columns["CharColumn"].DataType.NameWithLength == "char(10)");
+            Assert.IsTrue(t.Columns["VarCharColumn"].DataType.NameWithLength == "varchar(10)");
+            Assert.IsTrue(t.Columns["VarCharMaxColumn"].DataType.NameWithLength == "varchar(max)");
+            Assert.IsTrue(t.Columns["TextColumn"].DataType.NameWithLength == "text");
+            Assert.IsTrue(t.Columns["NCharColumn"].DataType.NameWithLength == "nchar(10)");
+            Assert.IsTrue(t.Columns["NVarCharColumn"].DataType.NameWithLength == "nvarchar(10)");
+            Assert.IsTrue(t.Columns["NVarCharMaxColumn"].DataType.NameWithLength == "nvarchar(max)");
+            Assert.IsTrue(t.Columns["NTextColumn"].DataType.NameWithLength == "ntext");
+            Assert.IsTrue(t.Columns["BinaryColumn"].DataType.NameWithLength == "binary(10)");
+            Assert.IsTrue(t.Columns["VarBinaryColumn"].DataType.NameWithLength == "varbinary(10)");
+            Assert.IsTrue(t.Columns["VarBinaryMaxColumn"].DataType.NameWithLength == "varbinary(max)");
+            Assert.IsTrue(t.Columns["ImageColumn"].DataType.NameWithLength == "image");
+            Assert.IsTrue(t.Columns["TimeStampColumn"].DataType.NameWithLength == "timestamp");
+            Assert.IsTrue(t.Columns["UniqueIdentifierColumn"].DataType.NameWithLength == "uniqueidentifier");
+        }
+
+        [TestMethod]
+        public void ColumnTypesTest2()
+        {
+            var ds = CreateTestDataset();
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithAllTypes"];
+            var codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(ds);
+            var sql = codegen.GenerateSelectStarQuery(t, 100);
+
+            using (var cn = t.Dataset.OpenConnection())
+            {
+                using (var cmd = new SmartCommand(ds, cn.CreateCommand()))
+                {
+                    cmd.CommandText = sql;
+                    cmd.CommandType = CommandType.Text;
+
+                    using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
+                    {
+                        var columns = dr.Columns;
+
+                        Assert.IsTrue(columns.Count == 31);
+
+                        var o = 0;
+
+                        Assert.IsTrue(columns[0].DataType.NameWithLength == "bigint");
+                        Assert.IsTrue(columns[1].DataType.NameWithLength == "decimal");                   // precision?
+                        Assert.IsTrue(columns[2].DataType.NameWithLength == "bit");
+                        Assert.IsTrue(columns[3].DataType.NameWithLength == "smallint");
+                        Assert.IsTrue(columns[4].DataType.NameWithLength == "decimal");
+                        Assert.IsTrue(columns[5].DataType.NameWithLength == "smallmoney");
+                        Assert.IsTrue(columns[6].DataType.NameWithLength == "int");
+                        Assert.IsTrue(columns[7].DataType.NameWithLength == "tinyint");
+                        Assert.IsTrue(columns[8].DataType.NameWithLength == "money");
+                        Assert.IsTrue(columns[9].DataType.NameWithLength == "float");
+                        Assert.IsTrue(columns[10].DataType.NameWithLength == "real");
+                        Assert.IsTrue(columns[11].DataType.NameWithLength == "date");
+                        Assert.IsTrue(columns[12].DataType.NameWithLength == "datetimeoffset");     // precision?
+                        Assert.IsTrue(columns[13].DataType.NameWithLength == "datetime2");               // precision?
+                        Assert.IsTrue(columns[14].DataType.NameWithLength == "smalldatetime");
+                        Assert.IsTrue(columns[15].DataType.NameWithLength == "datetime");
+                        Assert.IsTrue(columns[16].DataType.NameWithLength == "time");                         // precision?
+                        Assert.IsTrue(columns[17].DataType.NameWithLength == "char(10)");
+                        Assert.IsTrue(columns[18].DataType.NameWithLength == "varchar(10)");
+                        Assert.IsTrue(columns[19].DataType.NameWithLength == "varchar(max)");
+                        Assert.IsTrue(columns[20].DataType.NameWithLength == "text");
+                        Assert.IsTrue(columns[21].DataType.NameWithLength == "nchar(10)");
+                        Assert.IsTrue(columns[22].DataType.NameWithLength == "nvarchar(10)");
+                        Assert.IsTrue(columns[23].DataType.NameWithLength == "nvarchar(max)");
+                        Assert.IsTrue(columns[24].DataType.NameWithLength == "ntext");
+                        Assert.IsTrue(columns[25].DataType.NameWithLength == "binary(10)");
+                        Assert.IsTrue(columns[26].DataType.NameWithLength == "varbinary(10)");
+                        Assert.IsTrue(columns[27].DataType.NameWithLength == "varbinary(max)");
+                        Assert.IsTrue(columns[28].DataType.NameWithLength == "image");
+                        Assert.IsTrue(columns[29].DataType.NameWithLength == "timestamp");
+                        Assert.IsTrue(columns[30].DataType.NameWithLength == "uniqueidentifier");
+                    }
+                }
+            }
         }
 
         #endregion

@@ -12,6 +12,8 @@ namespace Jhu.Graywulf.Data
         string Name { get; }
         long RecordCount { get; }
         DatabaseObjectMetadata Metadata { get; }
+
+        // TODO: consider making it into a dictionary
         List<Column> Columns { get; }
         List<TypeMapping> TypeMappings { get; }
     }

@@ -469,6 +469,16 @@ ORDER BY c.column_id";
                                 Convert.ToByte(dr.GetValue(5)),
                                 dr.GetBoolean(6));
 
+                            // SQL Server reports column sizes in bytes for unicode columns whereas
+                            // SchemaTable, when accessed via ADO.NET returns the number of characters.
+                            // To account for this, column sizes need to be divided by the number of
+                            // bytes per character here, and only here.
+
+                            if (cd.DataType.HasLength && cd.DataType.ByteSize > 1)
+                            {
+                                cd.DataType.Length /= cd.DataType.ByteSize;
+                            }
+
                             yield return new KeyValuePair<string, Column>(cd.Name, cd);
                         }
                     }
