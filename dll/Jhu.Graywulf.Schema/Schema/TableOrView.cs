@@ -50,6 +50,15 @@ namespace Jhu.Graywulf.Schema
             get { return indexes.Value; }
         }
 
+        /// <summary>
+        /// Gets the primary key of the table or related table of a view
+        /// </summary>
+        [IgnoreDataMember]
+        public Index PrimaryKey
+        {
+            get { return Indexes.Values.FirstOrDefault(i => i.IsPrimaryKey); }
+        }
+
         [IgnoreDataMember]
         public TableStatistics Statistics
         {

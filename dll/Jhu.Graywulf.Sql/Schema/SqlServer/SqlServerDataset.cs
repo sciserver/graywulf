@@ -493,13 +493,46 @@ ORDER BY c.column_id";
         /// <returns></returns>
         internal override IEnumerable<KeyValuePair<string, Index>> LoadIndexes(DatabaseObject databaseObject)
         {
-            var sql = @"
+            string sql;
+
+            if (databaseObject is Table)
+            {
+                sql = @"
 SELECT i.index_id, i.name, i.type, i.is_unique, i.is_primary_key
 FROM sys.indexes i
 INNER JOIN sys.objects o ON o.object_id = i.object_id
 INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
 WHERE i.type IN (1, 2) AND
 s.name = @schemaName AND o.name = @objectName";
+            }
+            else
+            {
+                // This is a trick to determine the primary key of an underlying table of a SELECT * view
+                // Will not work with JOIN views but it's hard to figure out without executing the query.
+                // Still helpful to support certain types of queries
+
+                sql = @"
+WITH refs AS
+(
+	SELECT d.referenced_id
+	FROM sys.objects o
+	INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
+	INNER JOIN sys.sql_expression_dependencies d ON d.referencing_id = o.object_id
+	WHERE d.referenced_class = 1 AND d.referenced_minor_id = 0
+		AND s.name = @schemaName AND o.name = @objectName
+
+	UNION ALL
+
+	SELECT d.referenced_id
+	FROM refs r
+	INNER JOIN sys.sql_expression_dependencies d ON d.referencing_id = r.referenced_id
+	WHERE d.referenced_class = 1 AND d.referenced_minor_id = 0
+)
+SELECT i.index_id, i.name, i.type, i.is_unique, i.is_primary_key
+FROM refs
+INNER JOIN sys.indexes i ON i.object_id = refs.referenced_id
+WHERE   i.type IN (1, 2)";
+            }
 
             using (var cn = OpenConnectionInternal())
             {

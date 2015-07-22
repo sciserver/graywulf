@@ -307,6 +307,21 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             }
         }
 
+        [TestMethod]
+        public void GetViewUnderlyingPrimaryKeyTest()
+        {
+            var ds = CreateTestDataset();
+            var v = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"];
+
+            Assert.AreEqual(1, v.Indexes.Count);
+            Assert.IsTrue(v.Indexes.FirstOrDefault().Value.IsUnique);
+
+            v = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar2"];
+
+            Assert.AreEqual(1, v.Indexes.Count);
+            Assert.IsTrue(v.Indexes.FirstOrDefault().Value.IsUnique);
+        }
+
         #endregion
         #region Table-valued function tests
 

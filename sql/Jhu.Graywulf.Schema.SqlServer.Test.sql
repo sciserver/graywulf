@@ -98,6 +98,12 @@ AS
 
 GO
 
+CREATE VIEW [dbo].[ViewWithStar2]
+AS
+	SELECT * FROM ViewWithStar
+
+GO
+
 -- CREATE STORED PROCEDURES --
 
 CREATE PROCEDURE [dbo].[StoredProcedure]

@@ -484,7 +484,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     break;
                 case Jobs.Query.ExecutionMode.Graywulf:
                     {
-                        InitializeQueryObject(context, scheduler);
+                        InitializeQueryObject(context, scheduler, true);
 
                         lock (query.syncRoot)
                         {

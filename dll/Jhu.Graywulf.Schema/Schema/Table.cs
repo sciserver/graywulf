@@ -27,15 +27,6 @@ namespace Jhu.Graywulf.Schema
         }
 
         /// <summary>
-        /// Gets the primary key of the table
-        /// </summary>
-        [IgnoreDataMember]
-        public Index PrimaryKey
-        {
-            get { return Indexes.Values.FirstOrDefault(i => i.IsPrimaryKey); }
-        }
-
-        /// <summary>
         /// Default constructor
         /// </summary>
         public Table()
