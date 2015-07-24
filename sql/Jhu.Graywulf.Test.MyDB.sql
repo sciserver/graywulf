@@ -1,6 +1,6 @@
 
 
-CREATE TABLE [dbo].[TestTable]
+CREATE TABLE [mydb].[TestTable]
 (
 	[OBJID] [bigint] NOT NULL,
 	[RA] [float] NOT NULL,
