@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Components
                 this[key].Value = value;
             }
         }
-        
+
 
         public void Add(Parameter item)
         {
@@ -129,13 +129,15 @@ namespace Jhu.Graywulf.Components
             }
             else
             {
-                using (var sw = new StringWriter())
+                var sb = new StringBuilder();
+
+                using (var xw = XmlWriter.Create(sb))
                 {
                     var s = new XmlSerializer(typeof(Parameter[]));
-                    s.Serialize(sw, Values.ToArray());
-
-                    return sw.ToString();
+                    s.Serialize(xw, Values.ToArray());
                 }
+
+                return sb.ToString();
             }
         }
 

@@ -114,7 +114,11 @@ namespace Jhu.Graywulf.Components
                 }
                 else
                 {
-                    var doc = new XmlDocument();
+                    var doc = new XmlDocument()
+                    {
+                        PreserveWhitespace = true,
+                    };
+
                     doc.LoadXml(XmlValue);          // Always use property here for lazy loading
                     return doc;
                 }

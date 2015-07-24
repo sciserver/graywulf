@@ -206,7 +206,7 @@ namespace Jhu.Graywulf.Format
             {
                 if (i > 0)
                 {
-                    // Allways use the first column separator
+                    // Always use the first column separator
                     line.Append(File.ColumnSeparators[0]);
                 }
 
