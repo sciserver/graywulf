@@ -141,7 +141,7 @@ WHERE b.ID = 1";
             var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
 
             Assert.AreEqual(1, res.Length);
-            Assert.AreEqual("SELECT CAST(`b`.`ID` AS SIGNED) AS `ID`, `b`.`Title` FROM `Graywulf_Schema_Test`.`Book` AS `b` WHERE `b`.`ID` = 1", res[0]);
+            Assert.AreEqual("SELECT CAST(`b`.`ID` AS SIGNED) AS `ID`, `b`.`Title` FROM `Graywulf_Schema_Test`.`Book` AS `b` WHERE (`b`.`ID` = 1)", res[0]);
         }
 
         [TestMethod]
@@ -155,8 +155,8 @@ WHERE b.ID = 1 AND a.ID IN (3, 4)";
             var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
 
             Assert.AreEqual(2, res.Length);
-            Assert.AreEqual("SELECT CAST(`a`.`ID` AS SIGNED) AS `ID`, `a`.`Title` FROM `Graywulf_Schema_Test`.`Book` AS `a` WHERE `a`.`ID` IN (3, 4)", res[0]);
-            Assert.AreEqual("SELECT CAST(`b`.`ID` AS SIGNED) AS `ID` FROM `Graywulf_Schema_Test`.`Book` AS `b` WHERE `b`.`ID` = 1", res[1]);
+            Assert.AreEqual("SELECT CAST(`a`.`ID` AS SIGNED) AS `ID`, `a`.`Title` FROM `Graywulf_Schema_Test`.`Book` AS `a` WHERE (`a`.`ID` IN (3, 4))", res[0]);
+            Assert.AreEqual("SELECT CAST(`b`.`ID` AS SIGNED) AS `ID` FROM `Graywulf_Schema_Test`.`Book` AS `b` WHERE (`b`.`ID` = 1)", res[1]);
         }
 
         [TestMethod]
@@ -174,8 +174,8 @@ WHERE ID = 1";
             var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
 
             Assert.AreEqual(2, res.Length);
-            Assert.AreEqual("SELECT CAST(`Graywulf_Schema_Test`.`Book`.`ID` AS SIGNED) AS `ID`, `Graywulf_Schema_Test`.`Book`.`Title` FROM `Graywulf_Schema_Test`.`Book` WHERE `Graywulf_Schema_Test`.`Book`.`ID` IN (2, 3)", res[0]);
-            Assert.AreEqual("SELECT CAST(`Graywulf_Schema_Test`.`Book`.`ID` AS SIGNED) AS `ID`, `Graywulf_Schema_Test`.`Book`.`Title` FROM `Graywulf_Schema_Test`.`Book` WHERE `Graywulf_Schema_Test`.`Book`.`ID` = 1", res[1]);
+            Assert.AreEqual("SELECT CAST(`Graywulf_Schema_Test`.`Book`.`ID` AS SIGNED) AS `ID`, `Graywulf_Schema_Test`.`Book`.`Title` FROM `Graywulf_Schema_Test`.`Book` WHERE (`Graywulf_Schema_Test`.`Book`.`ID` IN (2, 3))", res[0]);
+            Assert.AreEqual("SELECT CAST(`Graywulf_Schema_Test`.`Book`.`ID` AS SIGNED) AS `ID`, `Graywulf_Schema_Test`.`Book`.`Title` FROM `Graywulf_Schema_Test`.`Book` WHERE (`Graywulf_Schema_Test`.`Book`.`ID` = 1)", res[1]);
         }
 
     }
