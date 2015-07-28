@@ -78,6 +78,18 @@ namespace Jhu.Graywulf.Test
             }
         }
 
+        protected SqlServerDataset GetTestUserMyDB()
+        {
+            // Get mydb default schema
+            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.DirtyRead))
+            {
+                var user = SignInTestUser(context);
+                var fc = new FederationContext(context, user);
+
+                return fc.MyDBDataset;
+            }
+        }
+
         protected Guid ScheduleTestJob(JobType jobType, QueueType queueType)
         {
             return ScheduleTestJob(TimeSpan.Zero, jobType, queueType);
