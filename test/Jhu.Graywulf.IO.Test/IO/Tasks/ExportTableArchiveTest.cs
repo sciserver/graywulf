@@ -14,6 +14,9 @@ namespace Jhu.Graywulf.IO.Tasks
     [TestClass]
     public class ExportTableArchiveTest : TestClassBase
     {
+        // TODO: change this if same-machine remoting works
+        private const bool allowInProc = false;
+
         private IExportTableArchive GetTableExportTask(Uri uri, string path, bool remote)
         {
             var source = new SourceTableQuery()
@@ -30,7 +33,7 @@ namespace Jhu.Graywulf.IO.Tasks
             IExportTableArchive te = null;
             if (remote)
             {
-                te = RemoteServiceHelper.CreateObject<IExportTableArchive>(Test.Constants.Localhost, false);
+                te = RemoteServiceHelper.CreateObject<IExportTableArchive>(Test.Constants.Localhost, allowInProc);
             }
             else
             {

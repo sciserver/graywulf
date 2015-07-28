@@ -15,6 +15,10 @@ namespace Jhu.Graywulf.RemoteService
     [TestClass]
     public class RemoteServiceTest
     {
+        // TODO: these tests now run in in-proc mode because authentication against localhost is problematic
+
+        private const bool allowInProc = false;
+
         [TestMethod]
         public void StartStopTest()
         {
@@ -32,7 +36,7 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, false);
+                var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
                 c.Execute();
 
                 Assert.IsFalse(c.IsCanceled);
@@ -47,7 +51,7 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, false);
+                var c = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
                 c.Period = 10000;
 
                 var start = DateTime.Now;
@@ -69,8 +73,8 @@ namespace Jhu.Graywulf.RemoteService
             {
                 RemoteServiceTester.Instance.EnsureRunning();
 
-                var c1 = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, false);
-                var c2 = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, false);
+                var c1 = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
+                var c2 = RemoteServiceHelper.CreateObject<ICancelableDelay>(Jhu.Graywulf.Test.Constants.Localhost, allowInProc);
 
                 c2.Period = 2;
                 c1.Period = 1;

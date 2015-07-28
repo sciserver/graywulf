@@ -219,8 +219,7 @@ namespace Jhu.Graywulf.RemoteService
         {
             var service = GetServiceType(contract);
 
-            // Everything is OK, initialize service
-            var hostname = localhostName;       // This determines how other machines will address the server
+            var hostname = localhostFqdn;       // This determines how other machines will address the server
             var ep = RemoteServiceHelper.CreateEndpointUri(hostname, service.FullName);
             var tcp = RemoteServiceHelper.CreateNetTcpBinding();
 
