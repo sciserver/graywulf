@@ -52,6 +52,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                     Sources = new SourceTableQuery[] { source },
                     Destinations = new DataFileBase[] { destination },
                     Uri = Util.UriConverter.FromFilePath(path),
+                    Archival = IO.DataFileArchival.Automatic,
                 };
 
                 var etf = ExportTablesJobFactory.Create(context.Federation);

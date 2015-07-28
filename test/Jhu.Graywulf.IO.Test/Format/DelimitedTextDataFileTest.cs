@@ -19,7 +19,11 @@ namespace Jhu.Graywulf.Format
 
         FileDataReader OpenSimpleReader(string csv)
         {
-            var f = new DelimitedTextDataFile(new StringReader(csv));
+            var f = new DelimitedTextDataFile(new StringReader(csv))
+            {
+                ColumnNamesInFirstLine = false,
+                GenerateIdentityColumn = false,
+            };
             var b = new DelimitedTextDataFileBlock(f);
 
             b.Columns.Add(new Column("one", typeof(int), 4));
@@ -261,7 +265,7 @@ testline
             var cmd = new FileCommand(f);
             var dr = cmd.ExecuteReader();
 
-            Assert.AreEqual("__ID", dr.GetName(0));
+            Assert.AreEqual("ID", dr.GetName(0));
             Assert.AreEqual("first", dr.GetName(1));
             Assert.AreEqual("second", dr.GetName(2));
             Assert.AreEqual("third", dr.GetName(3));
@@ -293,7 +297,7 @@ testline
             var cmd = new FileCommand(f);
             var dr = cmd.ExecuteReader();
 
-            Assert.AreEqual("__ID", dr.GetName(0));
+            Assert.AreEqual("ID", dr.GetName(0));
             Assert.AreEqual("first", dr.GetName(1));
             Assert.AreEqual("second", dr.GetName(2));
             Assert.AreEqual("third", dr.GetName(3));
