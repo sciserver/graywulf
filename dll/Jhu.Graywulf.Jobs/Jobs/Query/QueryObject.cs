@@ -632,26 +632,51 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected void LoadDatasets(bool forceReinitialize)
         {
-            // Initialize temporary database
-            if (temporaryDataset == null || forceReinitialize)
+            switch (ExecutionMode)
             {
-                var tempds = new GraywulfDataset(Context);
-                tempds.Name = Registry.Constants.TempDbName;
-                tempds.IsOnLinkedServer = false;
-                tempds.DatabaseVersionReference.Value = FederationReference.Value.TempDatabaseVersion;
+                case Query.ExecutionMode.Graywulf:
 
-                temporaryDataset = tempds;
-            }
+                    // Initialize temporary database
+                    if (temporaryDataset == null || forceReinitialize)
+                    {
+                        var tempds = new GraywulfDataset(Context);
+                        tempds.Name = Registry.Constants.TempDbName;
+                        tempds.IsOnLinkedServer = false;
+                        tempds.DatabaseVersionReference.Value = FederationReference.Value.TempDatabaseVersion;
 
-            // Initialize code database
-            if (codeDataset == null || forceReinitialize)
-            {
-                var codeds = new GraywulfDataset(Context);
-                codeds.Name = Registry.Constants.CodeDbName;
-                codeds.IsOnLinkedServer = false;
-                codeds.DatabaseVersionReference.Value = FederationReference.Value.CodeDatabaseVersion;
+                        temporaryDataset = tempds;
+                    }
 
-                codeDataset = codeds;
+                    // Initialize code database
+                    if (codeDataset == null || forceReinitialize)
+                    {
+                        var codeds = new GraywulfDataset(Context);
+                        codeds.Name = Registry.Constants.CodeDbName;
+                        codeds.IsOnLinkedServer = false;
+                        codeds.DatabaseVersionReference.Value = FederationReference.Value.CodeDatabaseVersion;
+
+                        codeDataset = codeds;
+                    }
+
+                    break;
+
+                case Query.ExecutionMode.SingleServer:
+
+                    // Initialize temporary database
+                    if (temporaryDataset == null || forceReinitialize)
+                    {
+                        // TODO: implement this if necessary
+                    }
+
+                    // Initialize code database
+                    if (codeDataset == null || forceReinitialize)
+                    {
+                        // TODO: implement this if necessary
+                    }
+
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
         }
 
