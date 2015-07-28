@@ -281,30 +281,41 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             if (table.IsSubquery || table.IsComputed)
             {
+                // We consider a table alias unique within a query, although this is
+                // not a requirement by SQL Server which support using the same alias
+                // in subqueries.
+
                 return EscapeIdentifierName(table.Alias);
             }
             else
             {
                 string res = String.Empty;
 
-                if (table.DatasetName != null)
+                if (!String.IsNullOrWhiteSpace(table.DatasetName))
                 {
                     res += String.Format("{0}_", EscapeIdentifierName(table.DatasetName));
                 }
 
-                if (table.DatabaseName != null)
+                if (!String.IsNullOrWhiteSpace(table.DatabaseName))
                 {
                     res += String.Format("{0}_", EscapeIdentifierName(table.DatabaseName));
                 }
 
-                if (table.SchemaName != null)
+                if (!String.IsNullOrWhiteSpace(table.SchemaName))
                 {
                     res += String.Format("{0}_", EscapeIdentifierName(table.SchemaName));
                 }
 
-                if (table.DatabaseObjectName != null)
+                if (!String.IsNullOrWhiteSpace(table.DatabaseObjectName))
                 {
                     res += String.Format("{0}", EscapeIdentifierName(table.DatabaseObjectName));
+                }
+
+                // If a table is referenced more than once we need an alias to distinguish them
+
+                if (!String.IsNullOrWhiteSpace(table.Alias))
+                {
+                    res += String.Format("_{0}", EscapeIdentifierName(table.Alias));
                 }
 
                 return res;
