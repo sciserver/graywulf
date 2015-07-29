@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Data;
@@ -216,7 +217,7 @@ namespace Jhu.Graywulf.Test
             }
         }
 
-        protected void DropUserDatabaseTable(string schemaName, string tableName)
+        protected void DropUserDatabaseTable(string tableName)
         {
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
@@ -225,7 +226,7 @@ namespace Jhu.Graywulf.Test
                 var udf = UserDatabaseFactory.Create(context.Federation);
                 var userdb = udf.GetUserDatabase(user);
 
-                DropTable(userdb.ConnectionString, schemaName, tableName);
+                DropTable(userdb.ConnectionString, userdb.DefaultSchemaName, tableName);
             }
         }
 
@@ -247,6 +248,12 @@ namespace Jhu.Graywulf.Test
                     cmd.ExecuteNonQuery();
                 }
             }
+        }
+
+        protected string GetTestFilePath(string filename)
+        {
+            var sln = Path.GetDirectoryName(Environment.GetEnvironmentVariable("SolutionPath"));
+            return Path.Combine(sln, filename);
         }
 
         protected Uri GetTestFilename(string extension)

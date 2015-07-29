@@ -60,6 +60,8 @@ namespace Jhu.Graywulf.Web.Api.V1
             // WCF client with custom headers. To access WebOperationContext from a client an
             // OperationContextScope needs to be created
 
+            var path = GetTestFilePath(@"graywulf\test\files\csv_numbers.csv");
+
             using (var session = new RestClientSession())
             {
                 var client = CreateClient(session);
@@ -75,7 +77,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 {
                     WebOperationContext.Current.OutgoingRequest.ContentType = Jhu.Graywulf.Format.Constants.MimeTypeCsv;
 
-                    using (var infile = new FileStream(@"..\..\..\..\..\graywulf\test\files\csv_numbers.csv", FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (var infile = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
                         client.UploadTable("MYDB", "file_upload_test", infile);
                     }

@@ -121,6 +121,8 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         [TestMethod]
         public void ImportArchiveJobTest()
         {
+            DropUserDatabaseTable("ImportArchiveJobTest");
+
             using (SchedulerTester.Instance.GetToken())
             {
                 PurgeTestJobs();
@@ -139,8 +141,6 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
                     var ji = LoadJob(guid);
                     Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
-
-                    DropTestTables("ImportArchiveJobTest");
                 }
             }
         }
