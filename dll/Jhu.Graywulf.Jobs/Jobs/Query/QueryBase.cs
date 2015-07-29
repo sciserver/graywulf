@@ -84,6 +84,11 @@ namespace Jhu.Graywulf.Jobs.Query
         [NonSerialized]
         private string partitioningKey;
 
+        /// <summary>
+        /// Determines if queries are dumped into files during execution
+        /// </summary>
+        private bool dumpSql;
+
         #endregion
         #region Properties
 
@@ -159,6 +164,16 @@ namespace Jhu.Graywulf.Jobs.Query
             get;
         }
 
+        /// <summary>
+        /// Gets or sets whether SQL scripts are dumped to files during query execution.
+        /// </summary>
+        [IgnoreDataMember]
+        public bool DumpSql
+        {
+            get { return dumpSql; }
+            set { dumpSql = value; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -200,6 +215,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
             this.partitioningTable = null;
             this.partitioningKey = null;
+
+            this.dumpSql = false;
         }
 
         private void CopyMembers(QueryBase old)

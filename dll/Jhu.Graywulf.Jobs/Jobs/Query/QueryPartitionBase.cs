@@ -653,53 +653,55 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected void DumpSqlCommand(string sql)
         {
-#if DUMPQUERIES
-            string filename = GetDumpFileName();
-            var sw = new StringWriter();
+            if (query.DumpSql)
+            {
+                string filename = GetDumpFileName();
+                var sw = new StringWriter();
 
-            // Time stamp
-            sw.WriteLine("-- {0}\r\n", DateTime.Now);
-            sw.WriteLine(sql);
-            sw.WriteLine("GO");
-            sw.WriteLine();
+                // Time stamp
+                sw.WriteLine("-- {0}\r\n", DateTime.Now);
+                sw.WriteLine(sql);
+                sw.WriteLine("GO");
+                sw.WriteLine();
 
-            File.AppendAllText(filename, sw.ToString());
-#endif
+                File.AppendAllText(filename, sw.ToString());
+            }
         }
 
         protected void DumpSqlCommand(SqlCommand cmd)
         {
-#if DUMPQUERIES
-            var filename = GetDumpFileName();
-            var sw = new StringWriter();
-
-            // Time stamp
-            sw.WriteLine("-- {0}\r\n", DateTime.Now);
-
-            // Database name
-            var csb = new SqlConnectionStringBuilder(cmd.Connection.ConnectionString);
-            
-            if (!String.IsNullOrWhiteSpace(csb.InitialCatalog))
+            if (Query.DumpSql)
             {
-                sw.WriteLine("USE [{0}]", csb.InitialCatalog);
+                var filename = GetDumpFileName();
+                var sw = new StringWriter();
+
+                // Time stamp
+                sw.WriteLine("-- {0}\r\n", DateTime.Now);
+
+                // Database name
+                var csb = new SqlConnectionStringBuilder(cmd.Connection.ConnectionString);
+
+                if (!String.IsNullOrWhiteSpace(csb.InitialCatalog))
+                {
+                    sw.WriteLine("USE [{0}]", csb.InitialCatalog);
+                    sw.WriteLine("GO");
+                    sw.WriteLine();
+                }
+
+                // Command parameters
+                foreach (SqlParameter par in cmd.Parameters)
+                {
+                    sw.WriteLine(String.Format("DECLARE {0} {1} = {2}",
+                        par.ParameterName,
+                        par.SqlDbType.ToString(),
+                        par.Value.ToString()));
+                }
+
+                sw.WriteLine(cmd.CommandText);
                 sw.WriteLine("GO");
-                sw.WriteLine();
+
+                File.AppendAllText(filename, sw.ToString());
             }
-
-            // Command parameters
-            foreach (SqlParameter par in cmd.Parameters)
-            {
-                sw.WriteLine(String.Format("DECLARE {0} {1} = {2}",
-                    par.ParameterName,
-                    par.SqlDbType.ToString(),
-                    par.Value.ToString()));
-            }
-
-            sw.WriteLine(cmd.CommandText);
-            sw.WriteLine("GO");
-
-            File.AppendAllText(filename, sw.ToString());
-#endif
         }
 
         #endregion
