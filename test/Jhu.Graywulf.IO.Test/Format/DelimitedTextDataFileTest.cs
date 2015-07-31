@@ -395,7 +395,7 @@ testline
         [TestMethod]
         public void CompressedWriterTest()
         {
-            var uri = GetTestFilename(".csv.gz");
+            var uri = GetTestUniqueFileUri(".csv.gz");
 
             using (var csv = new DelimitedTextDataFile(uri, DataFileMode.Write))
             {

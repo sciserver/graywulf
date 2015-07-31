@@ -256,10 +256,15 @@ namespace Jhu.Graywulf.Test
             return Path.Combine(sln, filename);
         }
 
-        protected Uri GetTestFilename(string extension)
+        protected Uri GetTestUniqueFileUri(string extension)
         {
-            var fn = GetTestClassName() + "_" + GetTestMethodName() + extension;
+            var fn = GetTestUniqueName() + extension;
             return new Uri(fn, UriKind.Relative);
+        }
+
+        protected string GetTestUniqueName()
+        {
+            return GetTestClassName() + "_" + GetTestMethodName();
         }
 
         protected string GetTestClassName()

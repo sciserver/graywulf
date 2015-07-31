@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Format
         [TestMethod]
         public void SimpleWriterTest()
         {
-            var uri = GetTestFilename(".dat.zip");
+            var uri = GetTestUniqueFileUri(".dat.zip");
 
             using (var nat = new SqlServerNativeDataFile(uri, DataFileMode.Write))
             {
@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Format
         [TestMethod]
         public void SimpleWriterNullsTest()
         {
-            var uri = GetTestFilename(".dat.zip");
+            var uri = GetTestUniqueFileUri(".dat.zip");
 
             using (var nat = new SqlServerNativeDataFile(uri, DataFileMode.Write))
             {
@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Format
         [TestMethod]
         public void SimpleWriterAllTypesTest()
         {
-            var uri = GetTestFilename(".dat.zip");
+            var uri = GetTestUniqueFileUri(".dat.zip");
 
             using (var nat = new SqlServerNativeDataFile(uri, DataFileMode.Write))
             {
@@ -85,7 +85,7 @@ namespace Jhu.Graywulf.Format
         [TestMethod]
         public void SimpleWriterAllTypesNullableTest()
         {
-            var uri = GetTestFilename(".dat.zip");
+            var uri = GetTestUniqueFileUri(".dat.zip");
 
             using (var nat = new SqlServerNativeDataFile(uri, DataFileMode.Write))
             {
