@@ -86,38 +86,6 @@ namespace Jhu.Graywulf.SqlParser
             }
         }
 
-        /* TODO: delete
-        /// <summary>
-        /// Gets the fully qualified name of the table or view.
-        /// </summary>
-        /// <remarks>
-        /// The fully qualified name is always in the
-        /// [dataset]:[database].[schema].[object] format that is
-        /// specific to Graywulf.
-        /// </remarks>
-        public string FullyQualifiedName
-        {
-            get
-            {
-                if (isSubquery || isComputed)
-                {
-                    return String.Format("[{0}]", alias);
-                }
-                else
-                {
-                    string res = String.Empty;
-
-                    // If it's not resolved yet
-                    if (datasetName != null) res += String.Format("[{0}]:", datasetName);
-                    if (databaseName != null) res += String.Format("[{0}].", databaseName);
-                    if (schemaName != null) res += String.Format("[{0}].", schemaName);
-                    if (databaseObjectName != null) res += String.Format("[{0}]", databaseObjectName);
-
-                    return res;
-                }
-            }
-        }*/
-
         public override bool IsUndefined
         {
             get { return base.IsUndefined && alias == null; }
