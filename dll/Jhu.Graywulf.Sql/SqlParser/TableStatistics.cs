@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.SqlParser
         private TableReference table;
         private int binCount;
         private string keyColumn;
-        private List<double> keyValue;
+        private List<IComparable> keyValue;
         private List<long> keyCount;
         private long rowCount;
 
@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.SqlParser
             set { keyColumn = value; }
         }
 
-        public List<double> KeyValue
+        public List<IComparable> KeyValue
         {
             get { return keyValue; }
         }
@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.SqlParser
             this.table = null;
             this.binCount = 250;
             this.keyColumn = null;
-            this.keyValue = new List<double>();
+            this.keyValue = new List<IComparable>();
             this.keyCount = new List<long>();
             this.rowCount = 0;
         }
@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.SqlParser
             this.table = old.table;
             this.binCount = old.binCount;
             this.keyColumn = old.keyColumn;
-            this.keyValue = new List<double>(old.keyValue);
+            this.keyValue = new List<IComparable>(old.keyValue);
             this.keyCount = new List<long>(old.keyCount);
             this.rowCount = old.rowCount;
         }

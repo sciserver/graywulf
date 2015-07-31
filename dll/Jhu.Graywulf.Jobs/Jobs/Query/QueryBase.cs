@@ -310,11 +310,9 @@ namespace Jhu.Graywulf.Jobs.Query
                 si.Load();
 
                 // TODO: what happens if no MINI version is available?
-
                 connectionString = si.GetConnectionString().ConnectionString;
 
                 SubstituteDatabaseName(tr, si.Guid, StatDatabaseVersionName);
-                tr.DatabaseObject = null;
 
                 multiplier = 10000; // MINI version is sampled 10000 to 1
             }
@@ -326,7 +324,9 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             // Generate statistics query
-            sql = CodeGenerator.GenerateTableStatisticsQuery(tr);
+            var escname = CodeGenerator.GetEscapedUniqueName(tr);
+            var tempname = String.Format("{0}_{1}_{2}", Context.UserName, Context.JobID, escname);
+            sql = CodeGenerator.GenerateTableStatisticsQuery(tr, tempname);
         }
 
         /// <summary>
@@ -336,13 +336,13 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="binSize"></param>
         public virtual void ComputeTableStatistics(TableReference tr, string connectionString, string sql, int multiplier)
         {
-            using (SqlConnection cn = new SqlConnection(connectionString))
+            using (var cn = new SqlConnection(connectionString))
             {
                 cn.Open();
 
-                using (SqlCommand cmd = new SqlCommand(sql, cn))
+                using (var cmd = new SqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@BinCount", SqlDbType.Decimal).Value = tr.Statistics.BinCount;
+                    cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = tr.Statistics.BinCount;
                     cmd.CommandTimeout = queryTimeout;
 
                     ExecuteLongCommandReader(cmd, dr =>
@@ -350,10 +350,10 @@ namespace Jhu.Graywulf.Jobs.Query
                         long rc = 0;
                         while (dr.Read())
                         {
-                            tr.Statistics.KeyValue.Add(dr.GetDouble(0));
-                            tr.Statistics.KeyCount.Add(dr.GetInt64(1));
+                            tr.Statistics.KeyCount.Add(dr.GetInt64(0));
+                            tr.Statistics.KeyValue.Add((IComparable)dr.GetValue(1));
 
-                            rc = dr.GetInt64(1);    // the very last value will give row count
+                            rc = dr.GetInt64(0);    // the very last value will give row count
                         }
                         tr.Statistics.RowCount = rc * multiplier;
                     });

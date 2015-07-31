@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             using (Context context = query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                query.InitializeQueryObject(context, activityContext.GetExtension<IScheduler>(), false);
+                query.InitializeQueryObject(context, activityContext.GetExtension<IScheduler>(), true);
                 query.PrepareComputeTableStatistics(context, tableReference, out connectionString, out sql, out multiplier);
             }
 

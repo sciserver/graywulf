@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 
             return res;
         }
-
+        
         #endregion
         #region Complete query generators
 
@@ -175,17 +175,33 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             return sql.ToString();
         }
 
-        public string GenerateTableStatisticsQuery(TableReference table)
+        public string GenerateTableStatisticsQuery(TableReference tr, string temptable)
         {
-            if (table.Statistics == null)
+            if (tr.Statistics == null)
             {
-                throw new InvalidOperationException();
+                throw new ArgumentNullException();
             }
 
-            // Build table specific where clause
+            if (!(tr.DatabaseObject is TableOrView))
+            {
+                throw new ArgumentException();
+            }
+
+            var table = (TableOrView)tr.DatabaseObject;
+            var keycol = tr.Statistics.KeyColumn;
+            var keytype = table.Columns[keycol].DataType.NameWithLength;
+
+            // Build table specific from clause
+            var from = "FROM " + GetResolvedTableName(tr);
+            if (!String.IsNullOrWhiteSpace(tr.Alias))
+            {
+                from += " AS " + QuoteIdentifier(tr.Alias);
+            }
+
+                        // Build table specific where clause
             var cnr = new SearchConditionNormalizer();
-            cnr.NormalizeQuerySpecification(((TableSource)table.Node).QuerySpecification);
-            var wh = cnr.GenerateWhereClauseSpecificToTable(table);
+            cnr.NormalizeQuerySpecification(((TableSource)tr.Node).QuerySpecification);
+            var wh = cnr.GenerateWhereClauseSpecificToTable(tr);
 
             var where = new StringWriter();
             if (wh != null)
@@ -194,40 +210,19 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
                 cg.Execute(where, wh);
             };
 
-            //*** TODO: move into resource
-            string sql = String.Format(@"
-IF OBJECT_ID('tempdb..##keys_{4}') IS NOT NULL
-DROP TABLE ##keys_{4}
+            return GenerateTableStatisticsQuery(temptable, keycol, keytype, from, where.ToString());
+        }
 
-SELECT CAST({2} AS float) AS __key
-INTO ##keys_{4}
-FROM {0} {1}
-{3};
+        private string GenerateTableStatisticsQuery(string tempTable, string keyCol, string keyType, string from, string where)
+        {
+            var sql = new StringBuilder(SqlServerScripts.TableStatistics);
+            sql.Replace("[$temptable]", tempTable);
+            sql.Replace("[$keytype]", keyType);
+            sql.Replace("[$keycol]", keyCol);
+            sql.Replace("[$from]", from);
+            sql.Replace("[$where]", where);
 
-DECLARE @count bigint = @@ROWCOUNT;
-DECLARE @step bigint = @count / @bincount;
-
-IF (@step = 0) SET @step = 1;
-
-WITH q AS
-(
-	SELECT __key, ROW_NUMBER() OVER (ORDER BY __key) __rn
-	FROM ##keys_{4}
-)
-SELECT __key, __rn
-FROM q
-WHERE __rn % @step = 0 OR __rn = @count
-ORDER BY __rn;
-
-DROP TABLE ##keys_{4};
-",
-         GetResolvedTableName(table),
-         table.Alias == null ? "" : String.Format(" AS {0} ", QuoteIdentifier(table.Alias)),
-         QuoteIdentifier(table.Statistics.KeyColumn),
-         where.ToString(),
-         Guid.NewGuid().ToString().Replace('-', '_'));
-
-            return sql;
+            return sql.ToString();
         }
 
         #endregion

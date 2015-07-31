@@ -142,8 +142,6 @@ namespace Jhu.Graywulf.Jobs.Query
             if (s == 0)
             {
                 qp = new SqlQueryPartition(this, this.Context);
-                qp.PartitioningKeyFrom = double.NegativeInfinity;
-                qp.PartitioningKeyTo = double.PositiveInfinity;
 
                 AppendPartition(qp);
             }
@@ -156,7 +154,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                     if (i == 0)
                     {
-                        qp.PartitioningKeyFrom = double.NegativeInfinity;
+                        qp.PartitioningKeyFrom = null;
                     }
                     else
                     {
@@ -166,7 +164,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     AppendPartition(qp);
                 }
 
-                Partitions[Partitions.Count - 1].PartitioningKeyTo = double.PositiveInfinity;
+                Partitions[Partitions.Count - 1].PartitioningKeyTo = null;
             }
         }
     }

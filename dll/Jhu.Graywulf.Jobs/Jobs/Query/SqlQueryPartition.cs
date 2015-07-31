@@ -78,11 +78,11 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private void AppendPartitioningConditions(QuerySpecification qs, SimpleTableSource ts)
         {
-            if (!double.IsInfinity(PartitioningKeyFrom) || !double.IsInfinity(PartitioningKeyTo))
+            if (!IsPartitioningKeyUnbound( PartitioningKeyFrom) || !IsPartitioningKeyUnbound(PartitioningKeyTo))
             {
                 var cg = new SqlServerCodeGenerator();
                 var column = cg.GetResolvedColumnName(ts.PartitioningColumnReference);
-                var sc = GetPartitioningConditions(column, 0);
+                var sc = GetPartitioningConditions(column);
 
                 var where = qs.FindDescendant<WhereClause>();
                 if (where == null)

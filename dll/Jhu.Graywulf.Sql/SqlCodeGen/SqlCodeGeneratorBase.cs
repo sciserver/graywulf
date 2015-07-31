@@ -77,6 +77,55 @@ namespace Jhu.Graywulf.SqlCodeGen
             }
         }
 
+        public string EscapeIdentifier(string identifier)
+        {
+            return identifier.Replace(".", "_");
+        }
+
+        public string GetEscapedUniqueName(TableReference table)
+        {
+            if (table.IsSubquery || table.IsComputed)
+            {
+                // We consider a table alias unique within a query, although this is
+                // not a requirement by SQL Server which support using the same alias
+                // in subqueries.
+
+                return EscapeIdentifier(table.Alias);
+            }
+            else
+            {
+                string res = String.Empty;
+
+                if (!String.IsNullOrWhiteSpace(table.DatasetName))
+                {
+                    res += String.Format("{0}_", EscapeIdentifier(table.DatasetName));
+                }
+
+                if (!String.IsNullOrWhiteSpace(table.DatabaseName))
+                {
+                    res += String.Format("{0}_", EscapeIdentifier(table.DatabaseName));
+                }
+
+                if (!String.IsNullOrWhiteSpace(table.SchemaName))
+                {
+                    res += String.Format("{0}_", EscapeIdentifier(table.SchemaName));
+                }
+
+                if (!String.IsNullOrWhiteSpace(table.DatabaseObjectName))
+                {
+                    res += String.Format("{0}", EscapeIdentifier(table.DatabaseObjectName));
+                }
+
+                // If a table is referenced more than once we need an alias to distinguish them
+                if (!String.IsNullOrWhiteSpace(table.Alias))
+                {
+                    res += String.Format("_{0}", EscapeIdentifier(table.Alias));
+                }
+
+                return res;
+            }
+        }
+
         public string GetResolvedTableName(TableReference table)
         {
             if (table.IsSubquery || table.IsComputed)

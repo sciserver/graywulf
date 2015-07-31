@@ -870,7 +870,10 @@ namespace Jhu.Graywulf.Jobs.Query
                         di.Load();
                     }
 
+                    // Refresh database object, now that the correct database name is set
+                    ds = di.GetDataset();
                     tr.DatabaseName = di.DatabaseName;
+                    tr.DatabaseObject = ds.GetObject(tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName);
                 }
             }
         }
@@ -1120,7 +1123,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 destination.TableName,
                 source.Query);
 
-            ExecuteLongCommandNonQuery(sql, source.Dataset.ConnectionString, timeout);
+            ExecuteLongCommandNonQuery(sql, source, timeout);
         }
 
         protected void ExecuteInsertInto(SourceTableQuery source, Table destination, int timeout)
@@ -1132,7 +1135,32 @@ namespace Jhu.Graywulf.Jobs.Query
                 destination.TableName,
                 source.Query);
 
-            ExecuteLongCommandNonQuery(sql, source.Dataset.ConnectionString, timeout);
+            ExecuteLongCommandNonQuery(sql, source, timeout);
+        }
+
+        private void ExecuteLongCommandNonQuery(string sql, SourceTableQuery source, int timeout)
+        {
+            using (var cn = new SqlConnection(source.Dataset.ConnectionString))
+            {
+                cn.Open();
+
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    cmd.CommandTimeout = timeout;
+
+                    foreach (var name in source.Parameters.Keys)
+                    {
+                        var par = cmd.CreateParameter();
+                        par.ParameterName = name;
+                        par.Value = source.Parameters[name];
+                        cmd.Parameters.Add(par);
+
+                        //cmd.Parameters.Add(name, SqlDbType.Variant).Value = source.Parameters[name];
+                    }
+
+                    ExecuteLongCommandNonQuery(cmd);
+                }
+            }
         }
 
         /// <summary>

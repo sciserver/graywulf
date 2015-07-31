@@ -23,14 +23,17 @@ namespace Jhu.Graywulf.Jobs.Query
     [Serializable]
     public abstract class QueryPartitionBase : QueryObject
     {
+        protected const string keyFromParameterName = "@keyFrom";
+        protected const string keyToParameterName = "@keyTo";
+
         #region Property storage variables
 
         private int id;
 
         private QueryBase query;
 
-        private double partitioningKeyFrom;
-        private double partitioningKeyTo;
+        private IComparable partitioningKeyFrom;
+        private IComparable partitioningKeyTo;
 
         [NonSerialized]
         private Dictionary<string, TableReference> tableSourceReferences;
@@ -52,13 +55,13 @@ namespace Jhu.Graywulf.Jobs.Query
             get { return query; }
         }
 
-        public double PartitioningKeyFrom
+        public IComparable PartitioningKeyFrom
         {
             get { return partitioningKeyFrom; }
             set { partitioningKeyFrom = value; }
         }
 
-        public double PartitioningKeyTo
+        public IComparable PartitioningKeyTo
         {
             get { return partitioningKeyTo; }
             set { partitioningKeyTo = value; }
@@ -105,8 +108,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
             this.query = null;
 
-            this.partitioningKeyFrom = double.NegativeInfinity;
-            this.partitioningKeyTo = double.PositiveInfinity;
+            this.partitioningKeyFrom = null;
+            this.partitioningKeyTo = null;
 
             this.tableSourceReferences = new Dictionary<string, TableReference>(SchemaManager.Comparer);
             this.remoteTableReferences = new Dictionary<string, TableReference>(SchemaManager.Comparer);
@@ -270,57 +273,6 @@ namespace Jhu.Graywulf.Jobs.Query
 
         #region Remote table caching functions
 
-        private string EscapeIdentifierName(string name)
-        {
-            var res = name.Replace(".", "_");
-
-            return res;
-        }
-
-        private string GetEscapedUniqueName(TableReference table)
-        {
-            if (table.IsSubquery || table.IsComputed)
-            {
-                // We consider a table alias unique within a query, although this is
-                // not a requirement by SQL Server which support using the same alias
-                // in subqueries.
-
-                return EscapeIdentifierName(table.Alias);
-            }
-            else
-            {
-                string res = String.Empty;
-
-                if (!String.IsNullOrWhiteSpace(table.DatasetName))
-                {
-                    res += String.Format("{0}_", EscapeIdentifierName(table.DatasetName));
-                }
-
-                if (!String.IsNullOrWhiteSpace(table.DatabaseName))
-                {
-                    res += String.Format("{0}_", EscapeIdentifierName(table.DatabaseName));
-                }
-
-                if (!String.IsNullOrWhiteSpace(table.SchemaName))
-                {
-                    res += String.Format("{0}_", EscapeIdentifierName(table.SchemaName));
-                }
-
-                if (!String.IsNullOrWhiteSpace(table.DatabaseObjectName))
-                {
-                    res += String.Format("{0}", EscapeIdentifierName(table.DatabaseObjectName));
-                }
-
-                // If a table is referenced more than once we need an alias to distinguish them
-
-                if (!String.IsNullOrWhiteSpace(table.Alias))
-                {
-                    res += String.Format("_{0}", EscapeIdentifierName(table.Alias));
-                }
-
-                return res;
-            }
-        }
 
         /// <summary>
         /// Finds those tables that are required to execute the query but had to be
@@ -393,7 +345,8 @@ namespace Jhu.Graywulf.Jobs.Query
         public void CopyRemoteTable(TableReference table, SourceTableQuery source)
         {
             // Create a target table name
-            var temptable = GetTemporaryTable(GetEscapedUniqueName(table));
+            var cg = new SqlServerCodeGenerator();
+            var temptable = GetTemporaryTable(cg.GetEscapedUniqueName(table));
             TemporaryTables.TryAdd(table.UniqueName, temptable);
 
             var dest = new DestinationTable(
@@ -440,11 +393,22 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private SourceTableQuery GetExecuteSourceQuery()
         {
-            return new SourceTableQuery()
+            var q = new SourceTableQuery();
+
+            q.Dataset = GetTemporaryDatabaseDataset();
+            q.Query = GetExecuteQueryText();
+
+            if (!IsPartitioningKeyUnbound(partitioningKeyFrom))
             {
-                Dataset = GetTemporaryDatabaseDataset(),
-                Query = GetExecuteQueryText()
-            };
+                q.Parameters.Add(keyFromParameterName, partitioningKeyFrom);
+            }
+
+            if (!IsPartitioningKeyUnbound(partitioningKeyTo))
+            {
+                q.Parameters.Add(keyToParameterName, partitioningKeyTo);
+            }
+
+            return q;
         }
 
         /// <summary>
@@ -753,19 +717,24 @@ namespace Jhu.Graywulf.Jobs.Query
 
         #endregion
 
-        protected SearchCondition GetPartitioningConditions(string column, double buffering)
+        protected virtual bool IsPartitioningKeyUnbound(object key)
+        {
+            return key == null;
+        }
+
+        protected SearchCondition GetPartitioningConditions(string keyCol)
         {
             string format;
 
-            if (!double.IsInfinity(PartitioningKeyFrom) && !double.IsInfinity(PartitioningKeyTo))
+            if (!IsPartitioningKeyUnbound(PartitioningKeyFrom) && !IsPartitioningKeyUnbound(PartitioningKeyTo))
             {
                 format = "({1} <= {0} AND {0} < {2})";
             }
-            else if (!double.IsInfinity(PartitioningKeyTo))
+            else if (!IsPartitioningKeyUnbound(PartitioningKeyTo))
             {
                 format = "({0} < {2})";
             }
-            else if (!double.IsInfinity(PartitioningKeyFrom))
+            else if (!IsPartitioningKeyUnbound(PartitioningKeyFrom))
             {
                 format = "({1} <= {0})";
             }
@@ -774,17 +743,31 @@ namespace Jhu.Graywulf.Jobs.Query
                 return null;
             }
 
-            string sql = String.Format(
-                System.Globalization.CultureInfo.InvariantCulture,
-                format,
-                column,
-                PartitioningKeyFrom - buffering,
-                PartitioningKeyTo + buffering);
+            string sql = String.Format(format, keyCol, keyFromParameterName, keyToParameterName);
 
             var parser = new Jhu.Graywulf.SqlParser.SqlParser();
             var sc = (SearchCondition)parser.Execute(new SearchCondition(), sql);
 
             return sc;
+        }
+
+        protected void AppendPartitioningConditionParameters(SqlCommand cmd)
+        {
+            if (!IsPartitioningKeyUnbound(partitioningKeyFrom))
+            {
+                var par = cmd.CreateParameter();
+                par.ParameterName = keyFromParameterName;
+                par.Value = partitioningKeyFrom;
+                cmd.Parameters.Add(par);
+            }
+
+            if (!IsPartitioningKeyUnbound(partitioningKeyTo))
+            {
+                var par = cmd.CreateParameter();
+                par.ParameterName = keyToParameterName;
+                par.Value = partitioningKeyTo;
+                cmd.Parameters.Add(par);
+            }
         }
     }
 }
