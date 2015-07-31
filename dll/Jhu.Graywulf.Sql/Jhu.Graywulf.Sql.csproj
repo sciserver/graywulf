@@ -130,6 +130,7 @@
     <Compile Include="SqlParser\SqlNameResolver.cs" />
     <Compile Include="SqlParser\SqlParser.cs" />
     <Compile Include="SqlParser\SqlValidator.cs" />
+    <Compile Include="SqlParser\StringConstant.cs" />
     <Compile Include="SqlParser\Subquery.cs" />
     <Compile Include="SqlParser\SubqueryTableSource.cs" />
     <Compile Include="SqlParser\TableAlias.cs" />
