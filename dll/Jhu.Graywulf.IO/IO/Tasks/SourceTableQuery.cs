@@ -25,6 +25,7 @@ namespace Jhu.Graywulf.IO.Tasks
         private string sourceSchemaName;
         private string sourceObjectName;
         private string query;
+        private Dictionary<string, object> parameters;
 
         #endregion
         #region Properties
@@ -70,6 +71,13 @@ namespace Jhu.Graywulf.IO.Tasks
             set { query = value; }
         }
 
+        [DataMember]
+        public Dictionary<string, object> Parameters
+        {
+            get { return parameters; }
+            set { parameters = value; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -107,6 +115,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.sourceSchemaName = null;
             this.sourceObjectName = null;
             this.query = null;
+            this.parameters = new Dictionary<string, object>();
         }
 
         private void CopyMembers(SourceTableQuery old)
@@ -115,6 +124,7 @@ namespace Jhu.Graywulf.IO.Tasks
             this.sourceSchemaName = old.sourceSchemaName;
             this.sourceObjectName = old.sourceObjectName;
             this.query = old.query;
+            this.parameters = new Dictionary<string, object>(old.parameters);
         }
 
         public object Clone()
@@ -144,6 +154,17 @@ namespace Jhu.Graywulf.IO.Tasks
 
             cmd.CommandText = query;
             cmd.CommandType = CommandType.Text;
+
+            if (parameters != null)
+            {
+                foreach (string name in parameters.Keys)
+                {
+                    var par = cmd.CreateParameter();
+                    par.ParameterName = name;
+                    par.Value = parameters[name];
+                    cmd.Parameters.Add(par);
+                }
+            }
 
             return cmd;
         }
