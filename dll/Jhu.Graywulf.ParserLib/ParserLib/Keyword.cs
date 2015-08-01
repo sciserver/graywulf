@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.ParserLib
     /// </summary>
     public sealed class Keyword : Token
     {
-        private Regex pattern = new Regex(@"\G[a-zA-Z]+");
+        private Regex pattern = new Regex(@"\G[a-zA-Z][a-zA-Z0-9_]*");
 
         private Regex Pattern
         {
