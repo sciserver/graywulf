@@ -118,20 +118,22 @@ namespace Jhu.Graywulf.SqlParser
 
         protected void ResolveSelectStatement(SelectStatement selectStatement, int depth)
         {
-            // The SqlParser build the parsing tree and tags many nodes with TableReference and ColumnReference objects.
-            // At this point these references only contain information directly available in the query, but names are
+            // SqlParser builds the parsing tree and tags many nodes with TableReference and ColumnReference objects.
+            // At this point these references only contain information directly available from the query, but names are
             // not verified against the database schema.
 
             // A query consists of a set of query specifications combined using set operators (UNION, EXCEPT etc.)
             // Each query specification has a FROM clause with a complex table expression. A table expression is a
             // set of table sources combined with join operators. A table source can be any of the following four:
             // a table (or view), a table-valued function, a table-valued variable or a subquery.
-            // The WHERE clause main contain additional semi-join criteria which contain subqueries.
+            // The WHERE clause may contain additional semi-join criteria which contain subqueries.
+            // Furthermore, certain extensions to the SQL grammar may contain one or more table sources.
 
             // Steps of name resolution:
 
             // 1. Identify all query specifications and execute name resolution on each of them
-            // 2. For each query specification, substitute default values if null is found
+            // 2. For each query specification, substitute default values of database name, schema, etc.
+            //    if null is found
             // 3. Collect column descriptions from table sources
             // 4. Resolve column aliases
             // 5. Resolve table aliases
@@ -158,7 +160,9 @@ namespace Jhu.Graywulf.SqlParser
                 ResolveQuerySpecification(qs, depth);
             }
 
-            // Copy select list columns from the very first query specification
+            // Copy select list columns from the very first query specification.
+            // All subsequent query specifications combined with set operators
+            // (UNION, UNION ALL etc.) must mach the column list.
             var firstqs = qe.FindDescendant<QuerySpecification>();
             qe.TableReference.ColumnReferences.AddRange(firstqs.ResultsTableReference.ColumnReferences);
         }
@@ -217,47 +221,6 @@ namespace Jhu.Graywulf.SqlParser
             {
                 ResolveTableReferences(firstqs, orderBy);
                 ResolveColumnReferences(firstqs, orderBy, ColumnContext.OrderBy);
-            }
-        }
-
-        /// <summary>
-        /// Substitutes dataset and schema defaults into table source table references
-        /// </summary>
-        /// <param name="qs"></param>
-        protected void SubstituteTableAndColumnDefaults(QuerySpecification qs)
-        {
-            foreach (var tr in qs.EnumerateSourceTableReferences(false))
-            {
-                try
-                {
-                    if (tr.IsTableOrView)
-                    {
-                        tr.SubstituteDefaults(SchemaManager, defaultTableDatasetName);
-                    }
-                    else if (tr.IsUdf)
-                    {
-                        tr.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
-                    }
-                }
-                catch (KeyNotFoundException ex)
-                {
-                    throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, tr.DatasetName, tr.Node);
-                }
-            }
-        }
-
-        protected void SubstituteFunctionDefaults(Node node)
-        {
-            foreach (var fi in node.EnumerateDescendantsRecursive<FunctionIdentifier>())
-            {
-                try
-                {
-                    fi.FunctionReference.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
-                }
-                catch (KeyNotFoundException ex)
-                {
-                    throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, fi.FunctionReference.DatasetName, fi);
-                }
             }
         }
 
@@ -612,7 +575,7 @@ namespace Jhu.Graywulf.SqlParser
 
         protected void ResolveFunctionReference(IFunctionReference node)
         {
-            // *** TODO: handle sys function here
+            // *** TODO: handle sys functions here
             if (!node.FunctionReference.IsUdf)
             {
                 if (!IsSystemFunctionName(node.FunctionReference.SystemFunctionName))
@@ -691,6 +654,60 @@ namespace Jhu.Graywulf.SqlParser
                 cr.ColumnAlias = alias;
             }
         }
+
+        #region Default substitution logic
+
+        /// <summary>
+        /// Substitutes dataset and schema defaults into table source table references
+        /// </summary>
+        /// <param name="qs"></param>
+        protected void SubstituteTableAndColumnDefaults(QuerySpecification qs)
+        {
+            foreach (var tr in qs.EnumerateSourceTableReferences(false))
+            {
+                try
+                {
+                    if (tr.IsTableOrView)
+                    {
+                        tr.SubstituteDefaults(SchemaManager, defaultTableDatasetName);
+                    }
+                    else if (tr.IsUdf)
+                    {
+                        tr.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
+                    }
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, tr.DatasetName, tr.Node);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Substitutes dataset and schema defaults into function references.
+        /// </summary>
+        /// <remarks>
+        /// This is non-standard SQL as SQL requires the schema name to be specified and the database is
+        /// always taken from the current context. In applications, like SkyQuery, functions are always
+        /// taken from the CODE database.
+        /// </remarks>
+        /// <param name="node"></param>
+        protected void SubstituteFunctionDefaults(Node node)
+        {
+            foreach (var fi in node.EnumerateDescendantsRecursive<FunctionIdentifier>())
+            {
+                try
+                {
+                    fi.FunctionReference.SubstituteDefaults(SchemaManager, defaultFunctionDatasetName);
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    throw CreateException(ExceptionMessages.UnresolvableDatasetReference, ex, fi.FunctionReference.DatasetName, fi);
+                }
+            }
+        }
+
+        #endregion
 
         private string GetUniqueColumnAlias(HashSet<string> aliases, string alias)
         {

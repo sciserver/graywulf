@@ -9,8 +9,13 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class QuerySpecification
     {
+        #region Private member variables 
+
         private Dictionary<string, TableReference> sourceTableReferences;
         private TableReference resultsTableReference;
+
+        #endregion
+        #region Properties
 
         public Dictionary<string, TableReference> SourceTableReferences
         {
@@ -29,6 +34,9 @@ namespace Jhu.Graywulf.SqlParser
                 return FindDescendant<SelectList>();
             }
         }
+
+        #endregion
+        #region Constructors and initializers
 
         public QuerySpecification()
             : base()
@@ -54,6 +62,12 @@ namespace Jhu.Graywulf.SqlParser
             this.resultsTableReference = new TableReference(old.resultsTableReference);
         }
 
+        #endregion
+
+        /// <summary>
+        /// Enumerates all subqueries of the query specification recursively.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Subquery> EnumerateSubqueries()
         {
             return this.EnumerateDescendantsRecursive<Subquery>(typeof(Subquery));
@@ -61,7 +75,7 @@ namespace Jhu.Graywulf.SqlParser
 
         /// <summary>
         /// Enumerates source tables referenced in the current, and optionally in
-        /// all sub-, queries.
+        /// all subqueries.
         /// </summary>
         /// <param name="recursive"></param>
         /// <returns></returns>
@@ -78,6 +92,9 @@ namespace Jhu.Graywulf.SqlParser
                 {
                     var ts = node.FindDescendant<TableSource>();
                     yield return ts.SpecificTableSource;
+
+                    // TODO: extend here to return all tables from
+                    // the XMATCH table source
 
                     if (recursive && ts.SpecificTableSource is SubqueryTableSource)
                     {
@@ -105,6 +122,7 @@ namespace Jhu.Graywulf.SqlParser
             }
 
             // TODO: add functionality to handle semi-join constructs
+            // verify this, because might be covered by the where clause above
         }
 
         /// <summary>
@@ -132,6 +150,9 @@ namespace Jhu.Graywulf.SqlParser
         {
             //*** This goes to the SkyQueryJob and the Condition normalizer
             // TODO: this has to be updated to handle non conjunctive normal form predicates too
+
+            // Currently used by the Parser UI only, need to remove.
+
             WhereClause wh = FindDescendant<WhereClause>();
 
             if (wh == null)
