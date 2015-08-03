@@ -7,5 +7,11 @@ namespace Jhu.Graywulf.SqlParser
 {
     public interface ITableSource : ITableReference
     {
+        bool IsSubquery { get; }
+        bool IsMultiTable { get; }
+
+        IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive);
+
+        IEnumerable<ITableSource> EnumerateMultiTableSources();
     }
 }

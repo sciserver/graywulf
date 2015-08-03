@@ -9,7 +9,7 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class QuerySpecification
     {
-        #region Private member variables 
+        #region Private member variables
 
         private Dictionary<string, TableReference> sourceTableReferences;
         private TableReference resultsTableReference;
@@ -93,17 +93,34 @@ namespace Jhu.Graywulf.SqlParser
                     var ts = node.FindDescendant<TableSource>();
                     yield return ts.SpecificTableSource;
 
-                    // TODO: extend here to return all tables from
-                    // the XMATCH table source
-
-                    if (recursive && ts.SpecificTableSource is SubqueryTableSource)
+                    // Enumerate recursively, if necessary
+                    if (recursive && ts.SpecificTableSource.IsSubquery)
                     {
-                        var sts = (SubqueryTableSource)ts.SpecificTableSource;
-                        foreach (var tts in sts.FindDescendant<Subquery>().SelectStatement.EnumerateSourceTables(recursive))
+                        foreach (var tts in ts.SpecificTableSource.EnumerateSubqueryTableSources(recursive))
                         {
                             yield return tts;
                         }
                     }
+
+                    // TODO: extend here to return all tables from
+                    // the XMATCH table source
+                    if (ts.SpecificTableSource.IsMultiTable)
+                    {
+                        foreach (var mts in ts.SpecificTableSource.EnumerateMultiTableSources())
+                        {
+                            yield return mts;
+
+                            // Enumerate recursively, if necessary
+                            if (recursive && mts.IsSubquery)
+                            {
+                                foreach (var tts in mts.EnumerateSubqueryTableSources(recursive))
+                                {
+                                    yield return tts;
+                                }
+                            }
+                        }
+                    }
+
 
                     node = node.FindDescendant<JoinedTable>();
                 }

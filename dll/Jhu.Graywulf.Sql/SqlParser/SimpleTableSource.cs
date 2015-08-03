@@ -18,6 +18,16 @@ namespace Jhu.Graywulf.SqlParser
             set { TableOrViewName.TableReference = value ; }
         }
 
+        public bool IsSubquery
+        {
+            get { return false; }
+        }
+
+        public bool IsMultiTable
+        {
+            get { return false; }
+        }
+
         public ColumnReference PartitioningColumnReference
         {
             get
@@ -48,6 +58,16 @@ namespace Jhu.Graywulf.SqlParser
             node.TableReference.InterpretTableSource(this);
 
             return node;
+        }
+
+        public IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ITableSource> EnumerateMultiTableSources()
+        {
+            throw new NotImplementedException();
         }
     }
 }

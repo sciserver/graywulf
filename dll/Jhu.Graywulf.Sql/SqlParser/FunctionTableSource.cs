@@ -20,6 +20,16 @@ namespace Jhu.Graywulf.SqlParser
             set { FunctionCall.TableReference = value; }
         }
 
+        public bool IsSubquery
+        {
+            get { return false; }
+        }
+
+        public bool IsMultiTable
+        {
+            get { return false; }
+        }
+
         public override Node Interpret()
         {
             var node = (FunctionTableSource)base.Interpret();
@@ -27,6 +37,16 @@ namespace Jhu.Graywulf.SqlParser
             node.TableReference.InterpretTableSource(this);
 
             return node;
+        }
+
+        public IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ITableSource> EnumerateMultiTableSources()
+        {
+            throw new NotImplementedException();
         }
     }
 }

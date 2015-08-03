@@ -31,11 +31,34 @@ namespace Jhu.Graywulf.SqlParser
             set { QueryExpression.TableReference = value; }
         }
 
+        public bool IsSubquery
+        {
+            get { return true; }
+        }
+
+        public bool IsMultiTable
+        {
+            get { return false; }
+        }
+
         public override Node Interpret()
         {
             TableReference = new TableReference(this);
 
             return base.Interpret();
+        }
+
+        public IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive)
+        {
+            foreach (var tts in FindDescendant<Subquery>().SelectStatement.EnumerateSourceTables(recursive))
+            {
+                yield return tts;
+            }
+        }
+
+        public IEnumerable<ITableSource> EnumerateMultiTableSources()
+        {
+            throw new NotImplementedException();
         }
     }
 }

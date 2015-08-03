@@ -13,7 +13,6 @@ namespace Jhu.Graywulf.SqlParser
         public ITableSource SpecificTableSource
         {
             get { return specificTableSource; }
-            protected set { specificTableSource = value; }
         }
 
         public TableReference TableReference
@@ -29,36 +28,43 @@ namespace Jhu.Graywulf.SqlParser
 
         public override Node Interpret()
         {
-            var ts = FindDescendant<SimpleTableSource>();
-            if (ts != null)
-            {
-                this.specificTableSource = ts;
-            }
+            specificTableSource = FindSpecificTableSource();
 
-            var fts = FindDescendant<FunctionTableSource>();
-            if (fts != null)
-            {
-                this.specificTableSource = fts;
-            }
-
-            var vts = FindDescendant<VariableTableSource>();
-            if (vts != null)
-            {
-                this.specificTableSource = vts;
-            }
-
-            var sts = FindDescendant<SubqueryTableSource>();
-            if (sts != null)
-            {
-                this.specificTableSource = sts;
-            }
-
-            if (this.specificTableSource == null)
+            if (specificTableSource == null)
             {
                 throw new NotImplementedException();
             }
 
             return base.Interpret();
+        }
+
+        protected virtual ITableSource FindSpecificTableSource()
+        {
+            var ts = FindDescendant<SimpleTableSource>();
+            if (ts != null)
+            {
+                return ts;
+            }
+
+            var fts = FindDescendant<FunctionTableSource>();
+            if (fts != null)
+            {
+                return fts;
+            }
+
+            var vts = FindDescendant<VariableTableSource>();
+            if (vts != null)
+            {
+                return vts;
+            }
+
+            var sts = FindDescendant<SubqueryTableSource>();
+            if (sts != null)
+            {
+                return sts;
+            }
+
+            return null;
         }
 
         public static TableSource Create(ComputedTableSource ts)
