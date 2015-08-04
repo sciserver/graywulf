@@ -9,17 +9,8 @@ namespace Jhu.Graywulf.ParserLib
     /// <summary>
     /// Represents a token that matches keywords
     /// </summary>
-    public sealed class Keyword : Token
+    public sealed class Keyword : Literal
     {
-        private Regex pattern = new Regex(@"\G[a-zA-Z][a-zA-Z0-9_]*");
-
-        private Regex Pattern
-        {
-            get { return pattern; }
-        }
-
-        private string keyword;
-
         public Keyword()
             : base()
         {
@@ -27,9 +18,9 @@ namespace Jhu.Graywulf.ParserLib
         }
 
         public Keyword(string keyword)
+            :base(keyword)
         {
             InitializeMembers();
-            Value = this.keyword = keyword;
         }
 
         public Keyword(Keyword old)
@@ -50,27 +41,9 @@ namespace Jhu.Graywulf.ParserLib
         {
             var res = new Keyword();
 
-            res.keyword = res.Value = keyword;
+            res.LiteralText = res.Value = keyword;
 
             return res;
-        }
-
-        public override bool Match(Parser parser)
-        {
-            Match m = this.Pattern.Match(parser.Code, parser.Pos);
-
-            if (m.Success && parser.Comparer.Compare(m.Value, keyword) == 0)
-            {
-                Value = m.Value;
-                parser.GetLineCol(out pos, out line, out col);
-                parser.Advance(m.Length);
-
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
     }
 }

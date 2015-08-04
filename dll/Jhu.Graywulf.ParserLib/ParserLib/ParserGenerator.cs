@@ -412,8 +412,9 @@ namespace Jhu.Graywulf.ParserLib
                             case "May":
                                 code.Append(GenerateMayMatch(tabs + 1, grammar, c, exstr));
                                 break;
+                            case "Literal":
                             case "Keyword":
-                                code.AppendLineFormat(tabs + 1, "{0} = {0} && {1};", exstr, GenerateKeywordMatch(c));
+                                code.AppendLineFormat(tabs + 1, "{0} = {0} && {1};", exstr, GenerateLiteralMatch(c));
                                 break;
                             default:
                                 throw new InvalidOperationException();  //*** TODO
@@ -472,13 +473,13 @@ namespace Jhu.Graywulf.ParserLib
         /// </summary>
         /// <param name="exp"></param>
         /// <returns></returns>
-        private string GenerateKeywordMatch(MethodCallExpression exp)
+        private string GenerateLiteralMatch(MethodCallExpression exp)
         {
             var keyword = (string)((ConstantExpression)exp.Arguments[0]).Value;
 
             return String.Format("Match(parser, new {0}.{1}(@\"{2}\"))",
-                typeof(Keyword).Namespace,
-                typeof(Keyword).Name,
+                typeof(Literal).Namespace,
+                typeof(Literal).Name,
                 keyword);
         }
 

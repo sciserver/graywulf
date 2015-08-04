@@ -44,6 +44,7 @@ namespace Jhu.Graywulf.ParserLib
             set { parent = value; }
         }
 
+        
         public Token()
         {
             InitializeMembers();

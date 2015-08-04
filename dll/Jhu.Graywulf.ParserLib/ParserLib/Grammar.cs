@@ -35,6 +35,11 @@ namespace Jhu.Graywulf.ParserLib
             return null;
         }
 
+        public static Expression Literal(string literal)
+        {
+            return null;
+        }
+
         public static Expression Keyword(string keyword)
         {
             return null;

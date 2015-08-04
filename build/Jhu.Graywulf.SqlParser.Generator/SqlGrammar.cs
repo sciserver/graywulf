@@ -508,6 +508,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), TableHintList))
             );
 
+        // TODO: consider making hints identifieds instead of keywords
         public static Expression<Rule> TableHint = () =>
             Must(
                 Sequence(May(Sequence(Keyword("NOEXPAND"), CommentOrWhitespace)), Keyword("INDEX"), May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace), IndexValueList, May(CommentOrWhitespace), BracketClose),

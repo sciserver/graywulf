@@ -17,6 +17,7 @@ namespace Jhu.Graywulf.ParserLib
             get;
         }
 
+        
         public Terminal()
             :base()
         {

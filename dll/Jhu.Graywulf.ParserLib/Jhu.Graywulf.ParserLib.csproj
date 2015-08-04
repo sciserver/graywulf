@@ -90,6 +90,7 @@
     <Compile Include="ParserLib\Grammar.cs" />
     <Compile Include="ParserLib\GrammarAttribute.cs" />
     <Compile Include="ParserLib\GrammarInfo.cs" />
+    <Compile Include="ParserLib\Literal.cs" />
     <Compile Include="ParserLib\Keyword.cs" />
     <Compile Include="ParserLib\KeywordVisitor.cs" />
     <Compile Include="ParserLib\Node.cs" />
