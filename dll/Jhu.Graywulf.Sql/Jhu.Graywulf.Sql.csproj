@@ -134,6 +134,7 @@
     <Compile Include="SqlParser\Subquery.cs" />
     <Compile Include="SqlParser\SubqueryTableSource.cs" />
     <Compile Include="SqlParser\TableAlias.cs" />
+    <Compile Include="SqlParser\TableHint.cs" />
     <Compile Include="SqlParser\TableName.cs" />
     <Compile Include="SqlParser\TableOrViewName.cs" />
     <Compile Include="SqlParser\TableReference.cs" />

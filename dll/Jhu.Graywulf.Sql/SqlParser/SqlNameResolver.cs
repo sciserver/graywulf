@@ -522,6 +522,10 @@ namespace Jhu.Graywulf.SqlParser
             {
                 context = ColumnContext.Having;
             }
+            else if (n is TableHintClause)
+            {
+                context = ColumnContext.Hint;
+            }
 
             return context;
         }

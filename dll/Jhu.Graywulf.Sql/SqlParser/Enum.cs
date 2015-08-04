@@ -15,6 +15,7 @@ namespace Jhu.Graywulf.SqlParser
         GroupBy = 8,
         Having = 16,
         OrderBy = 32,
+        Hint = 64,
 
         Special = 1024,
     }

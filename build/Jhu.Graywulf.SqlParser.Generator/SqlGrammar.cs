@@ -508,26 +508,10 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 May(Sequence(May(CommentOrWhitespace), Comma, May(CommentOrWhitespace), TableHintList))
             );
 
-        // TODO: consider making hints identifieds instead of keywords
         public static Expression<Rule> TableHint = () =>
             Must(
-                Sequence(May(Sequence(Keyword("NOEXPAND"), CommentOrWhitespace)), Keyword("INDEX"), May(CommentOrWhitespace), BracketOpen, May(CommentOrWhitespace), IndexValueList, May(CommentOrWhitespace), BracketClose),
-                Keyword("FASTFIRSTROW"),
-                Keyword("HOLDLOCK"),
-                Keyword("NOLOCK"),
-                Keyword("NOWAIT"),
-                Keyword("PAGLOCK"),
-                Keyword("READCOMMITTED"),
-                Keyword("READCOMMITTEDLOCK"),
-                Keyword("READPAST"),
-                Keyword("READUNCOMMITTED"),
-                Keyword("REPEATABLEREAD"),
-                Keyword("ROWLOCK"),
-                Keyword("SERIALIZABLE"),
-                Keyword("TABLOCK"),
-                Keyword("TABLOCKX"),
-                Keyword("UPDLOCK"),
-                Keyword("XLOCK")
+                Sequence(Identifier, FunctionArguments),
+                Identifier
             );
 
         public static Expression<Rule> IndexValueList = () =>
@@ -550,7 +534,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Rule> TablePartitionClause = () =>
             Sequence
             (
-                Keyword("PARTITION"), CommentOrWhitespace, Keyword("ON"),
+                Keyword("PARTITION"), CommentOrWhitespace, Keyword("BY"),
                 CommentOrWhitespace,
                 ColumnIdentifier
             );
