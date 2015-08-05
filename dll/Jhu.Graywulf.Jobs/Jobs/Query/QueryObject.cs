@@ -643,6 +643,7 @@ namespace Jhu.Graywulf.Jobs.Query
                         tempds.Name = Registry.Constants.TempDbName;
                         tempds.IsOnLinkedServer = false;
                         tempds.DatabaseVersionReference.Value = FederationReference.Value.TempDatabaseVersion;
+                        tempds.CacheSchemaConnectionString();
 
                         temporaryDataset = tempds;
                     }
@@ -654,6 +655,7 @@ namespace Jhu.Graywulf.Jobs.Query
                         codeds.Name = Registry.Constants.CodeDbName;
                         codeds.IsOnLinkedServer = false;
                         codeds.DatabaseVersionReference.Value = FederationReference.Value.CodeDatabaseVersion;
+                        codeds.CacheSchemaConnectionString();
 
                         codeDataset = codeds;
                     }
