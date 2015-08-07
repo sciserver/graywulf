@@ -443,7 +443,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             if (RemoteTableReferences.ContainsKey(tr.UniqueName))
             {
-                return CodeGenerator.GetResolvedTableName(TemporaryTables[tr.UniqueName]);
+                return CodeGenerator.GetResolvedTableNameWithAlias(TemporaryTables[tr.UniqueName], tr.Alias);
             }
             else
             {

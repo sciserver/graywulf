@@ -185,7 +185,24 @@ namespace Jhu.Graywulf.SqlCodeGen
             return GetResolvedTableName(table.DatabaseName, table.SchemaName, table.ObjectName);
         }
 
+        public string GetResolvedTableNameWithAlias(DatabaseObject table, string alias)
+        {
+            return GetResolvedTableNameWithAlias(table.DatabaseName, table.SchemaName, table.ObjectName, alias);
+        }
+
         protected abstract string GetResolvedTableName(string databaseName, string schemaName, string tableName);
+
+        protected virtual string GetResolvedTableNameWithAlias(string databaseName, string schemaName, string tableName, string alias)
+        {
+            if (String.IsNullOrWhiteSpace(alias))
+            {
+                return GetResolvedTableName(databaseName, schemaName, tableName);
+            }
+            else
+            {
+                return GetResolvedTableName(databaseName, schemaName, tableName) + " AS " + QuoteIdentifier(alias);
+            }
+        }
 
         /// <summary>
         /// 
