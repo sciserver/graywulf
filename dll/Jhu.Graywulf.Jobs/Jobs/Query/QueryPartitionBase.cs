@@ -26,6 +26,12 @@ namespace Jhu.Graywulf.Jobs.Query
         protected const string keyFromParameterName = "@keyFrom";
         protected const string keyToParameterName = "@keyTo";
 
+        protected enum CommandTarget
+        {
+            Code,
+            Temp
+        }
+
         #region Property storage variables
 
         private int id;
@@ -166,19 +172,71 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        public SqlConnectionStringBuilder GetTemporaryDatabaseConnectionString()
+        protected SqlConnectionStringBuilder GetSystemDatabaseConnectionString(CommandTarget target)
         {
             switch (ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
-                    return new SqlConnectionStringBuilder(((SqlServerDataset)query.TemporaryDataset).ConnectionString);
+                    {
+                        SqlServerDataset ds;
+
+                        switch (target)
+                        {
+                            case CommandTarget.Code:
+                                ds = (SqlServerDataset)query.CodeDataset;
+                                break;
+                            case CommandTarget.Temp:
+                                ds = (SqlServerDataset)query.TemporaryDataset;
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+
+                        return new SqlConnectionStringBuilder(ds.ConnectionString);
+                    }
                 case ExecutionMode.Graywulf:
-                    return TemporaryDatabaseInstanceReference.Value.GetConnectionString();
+                    {
+                        EntityReference<DatabaseInstance> di;
+
+                        switch (target)
+                        {
+                            case CommandTarget.Code:
+                                di = CodeDatabaseInstanceReference;
+                                break;
+                            case CommandTarget.Temp:
+                                di = TemporaryDatabaseInstanceReference;
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+
+                        return di.Value.GetConnectionString();
+                    }
                 default:
                     throw new NotImplementedException();
             }
         }
 
+        public SqlServerDataset GetCodeDatabaseDataset()
+        {
+            SqlServerDataset codeds;
+
+            switch (ExecutionMode)
+            {
+                case ExecutionMode.SingleServer:
+                    codeds = query.CodeDataset;
+                    break;
+                case ExecutionMode.Graywulf:
+                    // *** TODO: this throws null exception after persist and restore
+                    codeds = CodeDatabaseInstanceReference.Value.GetDataset();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return codeds;
+        }
+        
         public SqlServerDataset GetTemporaryDatabaseDataset()
         {
             SqlServerDataset tempds;
@@ -381,6 +439,18 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        public string SubstituteRemoteTableNameWithAlias(TableReference tr)
+        {
+            if (RemoteTableReferences.ContainsKey(tr.UniqueName))
+            {
+                return CodeGenerator.GetResolvedTableName(TemporaryTables[tr.UniqueName]);
+            }
+            else
+            {
+                return CodeGenerator.GetResolvedTableNameWithAlias(tr);
+            }
+        }
+
         #endregion
         #region Destination table functions and final query execution
 
@@ -539,7 +609,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                         var destination = new DestinationTable(Query.Output, TableInitializationOptions.Append);
 
-                        DumpSqlCommand(source.Query);
+                        DumpSqlCommand(source.Query, CommandTarget.Temp);
 
                         // Create bulk copy task and execute it
                         var tc = CreateTableCopyTask(source, destination, false);
@@ -609,17 +679,17 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Query dump functions
 
-        private string GetDumpFileName()
+        private string GetDumpFileName(CommandTarget target)
         {
-            string server = GetTemporaryDatabaseConnectionString().DataSource;
+            string server = GetSystemDatabaseConnectionString(target).DataSource;
             return String.Format("dump_{0}_{1}.sql", server, this.id);
         }
 
-        protected void DumpSqlCommand(string sql)
+        protected void DumpSqlCommand(string sql, CommandTarget target)
         {
             if (query.DumpSql)
             {
-                string filename = GetDumpFileName();
+                string filename = GetDumpFileName(target);
                 var sw = new StringWriter();
 
                 // Time stamp
@@ -636,7 +706,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             if (Query.DumpSql)
             {
-                var filename = GetDumpFileName();
+                var filename = GetDumpFileName(CommandTarget.Temp);
                 var sw = new StringWriter();
 
                 // Time stamp
@@ -671,18 +741,18 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Actual query execution functions
 
-        protected void ExecuteSqlCommandOnTemporaryDatabase(string sql)
+        protected void ExecuteSqlCommand(string sql, CommandTarget target)
         {
             using (var cmd = new SqlCommand())
             {
                 cmd.CommandText = sql;
-                ExecuteSqlCommandOnTemporaryDatabase(cmd);
+                ExecuteSqlCommand(cmd, target);
             }
         }
 
-        protected void ExecuteSqlCommandOnTemporaryDatabase(SqlCommand cmd)
+        protected void ExecuteSqlCommand(SqlCommand cmd, CommandTarget target)
         {
-            var csb = GetTemporaryDatabaseConnectionString();
+            var csb = GetSystemDatabaseConnectionString(target);
 
             using (SqlConnection cn = new SqlConnection(csb.ConnectionString))
             {
@@ -697,10 +767,10 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        protected object ExecuteSqlCommandOnTemporaryDatabaseScalar(SqlCommand cmd)
+        protected object ExecuteSqlCommandScalar(SqlCommand cmd, CommandTarget target)
         {
 
-            var csb = GetTemporaryDatabaseConnectionString();
+            var csb = GetSystemDatabaseConnectionString(target);
 
             using (var cn = new SqlConnection(csb.ConnectionString))
             {

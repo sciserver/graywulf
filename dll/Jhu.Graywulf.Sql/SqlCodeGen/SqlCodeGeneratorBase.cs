@@ -126,6 +126,7 @@ namespace Jhu.Graywulf.SqlCodeGen
             }
         }
 
+
         public string GetResolvedTableName(TableReference table)
         {
             if (table.IsSubquery || table.IsComputed)
@@ -143,6 +144,38 @@ namespace Jhu.Graywulf.SqlCodeGen
                 {
                     // If it's not resolved yet against the schema
                     return GetResolvedTableName(table.DatabaseName, table.SchemaName, table.DatabaseObjectName);
+                }
+            }
+        }
+
+        public string GetResolvedTableNameWithAlias(TableReference table)
+        {
+            if (table.IsSubquery || table.IsComputed)
+            {
+                return QuoteIdentifier(table.Alias);
+            }
+            else
+            {
+                string name, alias;
+
+                if (table.DatabaseObject != null)
+                {
+                    // If it is linked up to the schema already
+                    name = GetResolvedTableName(table.DatabaseObject);
+                }
+                else
+                {
+                    // If it's not resolved yet against the schema
+                    name = GetResolvedTableName(table.DatabaseName, table.SchemaName, table.DatabaseObjectName);
+                }
+
+                if (String.IsNullOrEmpty(table.Alias))
+                {
+                    return name;
+                }
+                else
+                {
+                    return name + " AS " + QuoteIdentifier(table.Alias);
                 }
             }
         }
