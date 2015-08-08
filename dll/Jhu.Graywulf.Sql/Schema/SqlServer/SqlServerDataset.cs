@@ -569,7 +569,7 @@ WHERE   i.type IN (1, 2)";
         internal override IEnumerable<KeyValuePair<string, IndexColumn>> LoadIndexColumns(Index index)
         {
             var sql = @"
-SELECT ic.column_id, ic.key_ordinal, c.name, ic.is_descending_key, t.name, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
+SELECT ic.column_id, ic.is_included_column, ic.key_ordinal, c.name, ic.is_descending_key, t.name, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
 FROM sys.indexes AS i
 INNER JOIN sys.index_columns AS ic 
     ON i.object_id = ic.object_id AND i.index_id = ic.index_id
@@ -589,21 +589,33 @@ ORDER BY ic.key_ordinal";
                     {
                         while (dr.Read())
                         {
+                            IndexColumnOrdering ordering;
+
+                            if (dr.GetBoolean(1))
+                            {
+                                ordering = IndexColumnOrdering.Unknown;
+                            }
+                            else
+                            {
+                                ordering = dr.GetBoolean(4) ? IndexColumnOrdering.Descending : IndexColumnOrdering.Ascending;
+                            }
+
                             var ic = new IndexColumn()
                             {
                                 ID = dr.GetInt32(0),
-                                KeyOrdinal = dr.GetByte(1),
-                                Name = dr.GetString(2),
-                                Ordering = dr.GetBoolean(3) ? IndexColumnOrdering.Descending : IndexColumnOrdering.Ascending,
-                                IsIdentity = dr.GetBoolean(8),
+                                IsIncluded = dr.GetBoolean(1),
+                                KeyOrdinal = dr.GetByte(2),
+                                Name = dr.GetString(3),
+                                Ordering = ordering,
+                                IsIdentity = dr.GetBoolean(9),
                             };
 
                             ic.DataType = CreateDataType(
-                                dr.GetString(4),
-                                Convert.ToInt32(dr.GetValue(5)),
-                                Convert.ToByte(dr.GetValue(6)),
+                                dr.GetString(5),
+                                Convert.ToInt32(dr.GetValue(6)),
                                 Convert.ToByte(dr.GetValue(7)),
-                                dr.GetBoolean(9));
+                                Convert.ToByte(dr.GetValue(8)),
+                                dr.GetBoolean(10));
 
                             yield return new KeyValuePair<string, IndexColumn>(ic.Name, ic);
                         }

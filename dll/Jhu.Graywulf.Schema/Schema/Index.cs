@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Schema
     /// Reflects a database table or view index
     /// </summary>
     [Serializable]
-    [DataContract(Namespace="")]
+    [DataContract(Namespace = "")]
     public class Index : DatabaseObject, ICloneable
     {
         [NonSerialized]
@@ -105,7 +105,7 @@ namespace Jhu.Graywulf.Schema
             {
                 int q = 0;
                 var cols = "";
-                foreach (var c in Columns.Values.OrderBy(i => i.KeyOrdinal))
+                foreach (var c in Columns.Values.Where(i => !i.IsIncluded).OrderBy(i => i.KeyOrdinal))
                 {
                     if (q > 0)
                     {
@@ -124,6 +124,31 @@ namespace Jhu.Graywulf.Schema
                 return cols;
             }
         }
+
+        [IgnoreDataMember]
+        public string IncludedColumnListDisplayString
+        {
+            get
+            {
+                int q = 0;
+                var cols = "";
+                foreach (var c in Columns.Values.Where(i => i.IsIncluded))
+                {
+                    if (q > 0)
+                    {
+                        cols += ", ";
+                    }
+
+                    cols += c.Name;
+
+                    q++;
+                }
+
+                return cols;
+            }
+        }
+
+        #region Constructors and initializers
 
         /// <summary>
         /// Creates a new index object
@@ -150,7 +175,7 @@ namespace Jhu.Graywulf.Schema
         }
 
         public Index(Index old)
-            :base(old)
+            : base(old)
         {
             CopyMembers(old);
         }
@@ -186,6 +211,17 @@ namespace Jhu.Graywulf.Schema
         }
 
         /// <summary>
+        /// Returns a copy of this index
+        /// </summary>
+        /// <returns></returns>
+        public override object Clone()
+        {
+            return new Index(this);
+        }
+
+        #endregion
+
+        /// <summary>
         /// Loads all columns of the index
         /// </summary>
         /// <returns></returns>
@@ -200,18 +236,5 @@ namespace Jhu.Graywulf.Schema
                 return new ConcurrentDictionary<string, IndexColumn>(SchemaManager.Comparer);
             }
         }
-
-        #region ICloneable Members
-
-        /// <summary>
-        /// Returns a copy of this index
-        /// </summary>
-        /// <returns></returns>
-        public override object Clone()
-        {
-            return new Index(this);
-        }
-
-        #endregion
     }
 }

@@ -4,5 +4,6 @@
     <Columns>
         <jgwc:BoundField DataField="IndexName" HeaderText="Name" ItemStyle-Width="240px" />
         <jgwc:BoundField DataField="ColumnListDisplayString" HeaderText="Columns" ItemStyle-CssClass="GridViewSpan" />
+        <jgwc:BoundField DataField="IncludedColumnListDisplayString" HeaderText="Included Columns" ItemStyle-CssClass="GridViewSpan" />
     </Columns>
 </jgwc:MultiSelectGridView>

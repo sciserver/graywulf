@@ -14,10 +14,21 @@ namespace Jhu.Graywulf.Schema
     public class IndexColumn : Column, ICloneable
     {
         [NonSerialized]
+        private bool isIncluded;
+
+        [NonSerialized]
         private int keyOrdinal;
 
         [NonSerialized]
         private IndexColumnOrdering ordering;
+
+
+        [DataMember]
+        public bool IsIncluded
+        {
+            get { return isIncluded; }
+            set { isIncluded = value; }
+        }
 
         /// <summary>
         /// Gets or sets the ordinal position of the column within the index key
@@ -71,6 +82,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         private void InitializeMembers()
         {
+            this.isIncluded = false;
             this.keyOrdinal = -1;
             this.ordering = IndexColumnOrdering.Unknown;
         }
@@ -81,11 +93,10 @@ namespace Jhu.Graywulf.Schema
         /// <param name="old"></param>
         private void CopyMembers(IndexColumn old)
         {
+            this.isIncluded = old.isIncluded;
             this.keyOrdinal = old.keyOrdinal;
             this.ordering = old.ordering;
         }
-
-        #region ICloneable Members
 
         /// <summary>
         /// Returns a copy of the index column
@@ -95,7 +106,5 @@ namespace Jhu.Graywulf.Schema
         {
             return new IndexColumn(this);
         }
-
-        #endregion
     }
 }
