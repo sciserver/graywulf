@@ -126,6 +126,9 @@
   <data name="DatabaseNameNotAllowed" xml:space="preserve">
     <value>Database name '{0}' illegally specified at ({1},{2}).</value>
   </data>
+  <data name="DifferentTableReferenceInHintNotAllowed" xml:space="preserve">
+    <value>Reference to a different table '{0}' is not allowed in table hint expression but found at ({1},{2}).</value>
+  </data>
   <data name="DuplicateTableAlias" xml:space="preserve">
     <value>Duplicate table alias '{0}' found at ({1},{2}).</value>
   </data>
@@ -149,8 +152,5 @@
   </data>
   <data name="UnresolvableUdfReference" xml:space="preserve">
     <value>Unresolvable function name '{0}' found at ({1},{2}).</value>
-  </data>
-  <data name="XMatchSubqueryNotAllowed" xml:space="preserve">
-    <value>XMatch subqueries are not allowed, but found at ({1},{2}).</value>
   </data>
 </root>

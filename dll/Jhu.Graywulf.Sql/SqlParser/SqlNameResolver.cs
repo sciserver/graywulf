@@ -219,7 +219,7 @@ namespace Jhu.Graywulf.SqlParser
         {
             if (orderBy != null)
             {
-                ResolveTableReferences(firstqs, orderBy);
+                ResolveTableReferences(firstqs, orderBy, ColumnContext.OrderBy);
                 ResolveColumnReferences(firstqs, orderBy, ColumnContext.OrderBy);
             }
         }
@@ -295,7 +295,7 @@ namespace Jhu.Graywulf.SqlParser
         /// <param name="qs"></param>
         private void ResolveTableReferences(QuerySpecification qs)
         {
-            ResolveTableReferences(qs, (Node)qs);
+            ResolveTableReferences(qs, (Node)qs, ColumnContext.None);
         }
 
         /// <summary>
@@ -304,8 +304,10 @@ namespace Jhu.Graywulf.SqlParser
         /// </summary>
         /// <param name="qs"></param>
         /// <param name="n"></param>
-        private void ResolveTableReferences(QuerySpecification qs, Node n)
+        private void ResolveTableReferences(QuerySpecification qs, Node n, ColumnContext context)
         {
+            context = GetColumnContext(n, context);
+
             foreach (object o in n.Nodes)
             {
                 // Skip the into and clause and subqueries
@@ -313,14 +315,14 @@ namespace Jhu.Graywulf.SqlParser
                 {
                     if (o is Node)
                     {
-                        ResolveTableReferences(qs, (Node)o);   // Recursive call
+                        ResolveTableReferences(qs, (Node)o, context);   // Recursive call
                     }
                 }
             }
 
             if (n is ITableReference && ((ITableReference)n).TableReference != null)
             {
-                ResolveTableReference(qs, (ITableReference)n);
+                ResolveTableReference(qs, (ITableReference)n, context);
             }
         }
 
@@ -329,7 +331,7 @@ namespace Jhu.Graywulf.SqlParser
         /// </summary>
         /// <param name="qs"></param>
         /// <param name="tr"></param>
-        private void ResolveTableReference(QuerySpecification qs, ITableReference node)
+        private void ResolveTableReference(QuerySpecification qs, ITableReference node, ColumnContext context)
         {
             // Try to resolve the table alias part of a table reference
             // If and alias or table name is specified, this can be done based on
@@ -397,6 +399,25 @@ namespace Jhu.Graywulf.SqlParser
 
                 node.TableReference = ntr;
             }
+
+            // If we are inside a table hint, make sure the reference is to the current table
+            if (context == ColumnContext.Hint)
+            {
+                // In this case a column reference appears inside a table hint (WITH clause)
+                // If the table reference is undefined it must refer to the table itself
+                // otherwise we must make sure it is indeed referencing the table itself
+
+                var ts = ((Node)node).FindAscendant<SimpleTableSource>();
+
+                if (node.TableReference.IsUndefined)
+                {
+                    node.TableReference = ts.TableReference;
+                }
+                else if (node.TableReference != ts.TableReference)
+                {
+                    throw CreateException(ExceptionMessages.DifferentTableReferenceInHintNotAllowed, (Node)node);
+                }
+            }
         }
 
         private void ResolveColumnReferences(QuerySpecification qs)
@@ -416,7 +437,8 @@ namespace Jhu.Graywulf.SqlParser
 
             foreach (object o in n.Nodes)
             {
-                // Skip the into and clause and subqueries
+                // Skip the into clause and subqueries
+                // Subqueries are already processed recursively.
                 if (!(o is IntoClause) && !(o is SubqueryTableSource))
                 {
                     if (o is Node)
@@ -468,6 +490,8 @@ namespace Jhu.Graywulf.SqlParser
                 }
                 else if (!cr.ColumnReference.TableReference.IsUndefined)
                 {
+                    // This has a table reference already so only check
+                    // columns of that particular table
                     foreach (var ccr in cr.ColumnReference.TableReference.ColumnReferences)
                     {
                         if (cr.ColumnReference.Compare(ccr))
