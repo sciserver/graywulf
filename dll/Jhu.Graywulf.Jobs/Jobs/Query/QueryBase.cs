@@ -287,7 +287,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <returns></returns>
         public abstract void CollectTablesForStatistics();
 
-        public void PrepareComputeTableStatistics(Context context, TableReference tr, out string connectionString, out string sql, out int multiplier)
+        public void PrepareComputeTableStatistics(Context context, TableReference tr, out string connectionString, out SqlCommand cmd, out int multiplier)
         {
             // Assign a database server to the query
             // TODO: maybe make this function generic
@@ -314,7 +314,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 SubstituteDatabaseName(tr, si.Guid, StatDatabaseVersionName);
 
-                multiplier = 10000; // MINI version is sampled 10000 to 1
+                multiplier = 10000; // TODO: MINI version is sampled 10000 to 1 but not always :-(
             }
             else
             {
@@ -324,9 +324,18 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             // Generate statistics query
+            cmd = GetComputeTableStatisticsCommand(tr);
+        }
+
+        protected virtual SqlCommand GetComputeTableStatisticsCommand(TableReference tr)
+        {
+            var cmd = new SqlCommand();
             var escname = CodeGenerator.GetEscapedUniqueName(tr);
             var tempname = String.Format("{0}_{1}_{2}", Context.UserName, Context.JobID, escname);
-            sql = CodeGenerator.GenerateTableStatisticsQuery(tr, tempname);
+
+            cmd.CommandText = CodeGenerator.GenerateTableStatisticsQuery(tr, tempname);
+
+            return cmd;
         }
 
         /// <summary>
@@ -334,30 +343,30 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="tr"></param>
         /// <param name="binSize"></param>
-        public virtual void ComputeTableStatistics(TableReference tr, string connectionString, string sql, int multiplier)
+        public void ComputeTableStatistics(TableReference tr, string connectionString, SqlCommand cmd, int multiplier)
         {
             using (var cn = new SqlConnection(connectionString))
             {
                 cn.Open();
 
-                using (var cmd = new SqlCommand(sql, cn))
+                cmd.Connection = cn;
+                cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = tr.Statistics.BinCount;
+                cmd.CommandTimeout = queryTimeout;
+
+                ExecuteLongCommandReader(cmd, dr =>
                 {
-                    cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = tr.Statistics.BinCount;
-                    cmd.CommandTimeout = queryTimeout;
-
-                    ExecuteLongCommandReader(cmd, dr =>
+                    long rc = 0;
+                    while (dr.Read())
                     {
-                        long rc = 0;
-                        while (dr.Read())
-                        {
-                            tr.Statistics.KeyCount.Add(dr.GetInt64(0));
-                            tr.Statistics.KeyValue.Add((IComparable)dr.GetValue(1));
+                        tr.Statistics.KeyCount.Add(dr.GetInt64(0));
+                        tr.Statistics.KeyValue.Add((IComparable)dr.GetValue(1));
 
-                            rc = dr.GetInt64(0);    // the very last value will give row count
-                        }
-                        tr.Statistics.RowCount = rc * multiplier;
-                    });
-                }
+                        rc = dr.GetInt64(0);    // the very last value will give row count
+                    }
+                    tr.Statistics.RowCount = rc * multiplier;
+                });
+
+                cmd.Dispose();
             }
         }
 
