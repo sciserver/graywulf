@@ -12,12 +12,18 @@ namespace Jhu.Graywulf.SqlParser
 {
     public class TableStatistics
     {
+        #region Private member variables
+
         private TableReference table;
         private int binCount;
         private string keyColumn;
+        private DataType keyColumnDataType;
         private List<IComparable> keyValue;
         private List<long> keyCount;
         private long rowCount;
+
+        #endregion
+        #region Properties
 
         public TableReference Table
         {
@@ -37,6 +43,12 @@ namespace Jhu.Graywulf.SqlParser
             set { keyColumn = value; }
         }
 
+        public DataType KeyColumnDataType
+        {
+            get { return keyColumnDataType; }
+            set { keyColumnDataType = value; }
+        }
+
         public List<IComparable> KeyValue
         {
             get { return keyValue; }
@@ -53,9 +65,19 @@ namespace Jhu.Graywulf.SqlParser
             set { rowCount = value; }
         }
 
-        public TableStatistics()
+        #endregion
+        #region Constructors and initializers
+
+        protected TableStatistics()
         {
             InitializeMembers();
+        }
+
+        public TableStatistics(TableReference table)
+        {
+            InitializeMembers();
+            
+            this.table = table;
         }
 
         public TableStatistics(TableStatistics old)
@@ -68,6 +90,7 @@ namespace Jhu.Graywulf.SqlParser
             this.table = null;
             this.binCount = 250;
             this.keyColumn = null;
+            this.keyColumnDataType = null;
             this.keyValue = new List<IComparable>();
             this.keyCount = new List<long>();
             this.rowCount = 0;
@@ -78,9 +101,12 @@ namespace Jhu.Graywulf.SqlParser
             this.table = old.table;
             this.binCount = old.binCount;
             this.keyColumn = old.keyColumn;
+            this.keyColumnDataType = old.keyColumnDataType;
             this.keyValue = new List<IComparable>(old.keyValue);
             this.keyCount = new List<long>(old.keyCount);
             this.rowCount = old.rowCount;
         }
+
+        #endregion
     }
 }

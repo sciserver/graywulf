@@ -7,6 +7,17 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class Expression
     {
+        public static Expression Create(ColumnIdentifier ci)
+        {
+            var nex = new Expression();
+            var avr = new AnyVariable();
+
+            avr.Stack.AddLast(ci);
+            nex.Stack.AddLast(avr);
+
+            return nex;
+        }
+
         /// <summary>
         /// Returns true if the expression is a single column name
         /// </summary>

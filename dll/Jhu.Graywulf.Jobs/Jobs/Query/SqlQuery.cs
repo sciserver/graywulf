@@ -82,12 +82,11 @@ namespace Jhu.Graywulf.Jobs.Query
                 // *** TODO: test this here, will not work with functions etc!
                 var qs = SelectStatement.EnumerateQuerySpecifications().FirstOrDefault();
                 var ts = (SimpleTableSource)qs.EnumerateSourceTables(false).First();
+                var tr = ts.TableReference;
 
-                ts.TableReference.Statistics = new SqlParser.TableStatistics()
-                {
-                    Table = ts.TableReference,
-                    KeyColumn = ts.PartitioningColumnReference.ColumnName,
-                };
+                tr.Statistics = new SqlParser.TableStatistics(ts.TableReference);
+                tr.Statistics.KeyColumn = CodeGenerator.GetResolvedColumnName(ts.PartitioningColumnReference);
+                tr.Statistics.KeyColumnDataType = ts.PartitioningColumnReference.DataType;
 
                 TableStatistics.Add(ts.TableReference);
             }

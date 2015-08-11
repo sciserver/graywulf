@@ -188,8 +188,8 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             }
 
             var table = (TableOrView)tr.DatabaseObject;
-            var keycol = tr.Statistics.KeyColumn;
-            var keytype = table.Columns[keycol].DataType.NameWithLength;
+            var keycol =  tr.Statistics.KeyColumn;
+            var keytype = tr.Statistics.KeyColumnDataType.NameWithLength;
 
             // Build table specific from clause
             var from = "FROM " + GetResolvedTableName(tr);
@@ -198,7 +198,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
                 from += " AS " + QuoteIdentifier(tr.Alias);
             }
 
-                        // Build table specific where clause
+            // Build table specific where clause
             var cnr = new SearchConditionNormalizer();
             cnr.NormalizeQuerySpecification(((TableSource)tr.Node).QuerySpecification);
             var wh = cnr.GenerateWhereClauseSpecificToTable(tr);

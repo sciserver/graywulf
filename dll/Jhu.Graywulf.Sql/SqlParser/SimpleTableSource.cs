@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.SqlParser
         public TableReference TableReference
         {
             get { return TableOrViewName.TableReference; }
-            set { TableOrViewName.TableReference = value ; }
+            set { TableOrViewName.TableReference = value; }
         }
 
         public bool IsSubquery
@@ -28,15 +28,33 @@ namespace Jhu.Graywulf.SqlParser
             get { return false; }
         }
 
+        public ColumnIdentifier PartitioningColumn
+        {
+            get
+            {
+                var tpc = this.FindDescendant<TablePartitionClause>();
+
+                if (tpc != null)
+                {
+                    var ci = tpc.FindDescendant<ColumnIdentifier>();
+                    return ci;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
         public ColumnReference PartitioningColumnReference
         {
             get
             {
-                TablePartitionClause tpc = this.FindDescendant<TablePartitionClause>();
-                if (tpc != null)
+                var ci = PartitioningColumn;
+
+                if (ci != null)
                 {
-                    ColumnIdentifier ci = tpc.FindDescendant<ColumnIdentifier>();
-                        return ci.ColumnReference;
+                    return ci.ColumnReference;
                 }
                 else
                 {
