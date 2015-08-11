@@ -290,8 +290,6 @@ namespace Jhu.Graywulf.Jobs.Query
         public void PrepareComputeTableStatistics(Context context, TableReference tr, out string connectionString, out SqlCommand cmd, out int multiplier)
         {
             // Assign a database server to the query
-            // TODO: maybe make this function generic
-            // TODO: check this part to use appropriate server and database
             var sm = GetSchemaManager();
             var ds = sm.Datasets[tr.DatasetName];
 
