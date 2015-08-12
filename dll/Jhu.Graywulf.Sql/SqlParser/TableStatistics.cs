@@ -14,7 +14,6 @@ namespace Jhu.Graywulf.SqlParser
     {
         #region Private member variables
 
-        private TableReference table;
         private int binCount;
         private string keyColumn;
         private DataType keyColumnDataType;
@@ -24,12 +23,6 @@ namespace Jhu.Graywulf.SqlParser
 
         #endregion
         #region Properties
-
-        public TableReference Table
-        {
-            get { return table; }
-            set { table = value; }
-        }
 
         public int BinCount
         {
@@ -68,16 +61,9 @@ namespace Jhu.Graywulf.SqlParser
         #endregion
         #region Constructors and initializers
 
-        protected TableStatistics()
+        public TableStatistics()
         {
             InitializeMembers();
-        }
-
-        public TableStatistics(TableReference table)
-        {
-            InitializeMembers();
-            
-            this.table = table;
         }
 
         public TableStatistics(TableStatistics old)
@@ -87,7 +73,6 @@ namespace Jhu.Graywulf.SqlParser
 
         private void InitializeMembers()
         {
-            this.table = null;
             this.binCount = 250;
             this.keyColumn = null;
             this.keyColumnDataType = null;
@@ -98,7 +83,6 @@ namespace Jhu.Graywulf.SqlParser
 
         private void CopyMembers(TableStatistics old)
         {
-            this.table = old.table;
             this.binCount = old.binCount;
             this.keyColumn = old.keyColumn;
             this.keyColumnDataType = old.keyColumnDataType;

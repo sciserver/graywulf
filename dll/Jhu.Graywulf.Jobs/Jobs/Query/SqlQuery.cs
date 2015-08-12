@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public override void CollectTablesForStatistics()
         {
-            TableStatistics.Clear();
+            TableSourceStatistics.Clear();
 
             if (IsPartitioned)
             {
@@ -86,11 +86,11 @@ namespace Jhu.Graywulf.Jobs.Query
                 var ts = (SimpleTableSource)qs.EnumerateSourceTables(false).First();
                 var tr = ts.TableReference;
 
-                tr.Statistics = new SqlParser.TableStatistics(ts.TableReference);
+                tr.Statistics = new SqlParser.TableStatistics();
                 tr.Statistics.KeyColumn = CodeGenerator.GetResolvedColumnName(ts.PartitioningColumnReference);
                 tr.Statistics.KeyColumnDataType = ts.PartitioningColumnReference.DataType;
 
-                TableStatistics.Add(ts.TableReference);
+                TableSourceStatistics.Add(ts);
             }
         }
 
@@ -118,12 +118,12 @@ namespace Jhu.Graywulf.Jobs.Query
                     else
                     {
                         // --- determine partition limits based on the first table's statistics
-                        if (TableStatistics == null || TableStatistics.Count == 0)
+                        if (TableSourceStatistics == null || TableSourceStatistics.Count == 0)
                         {
                             throw new InvalidOperationException();
                         }
 
-                        var stat = TableStatistics[0].Statistics;
+                        var stat = TableSourceStatistics[0].TableReference.Statistics;
                         GeneratePartitions(partitionCount, stat);
                     }
                     break;
@@ -139,6 +139,8 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="stat"></param>
         private void GeneratePartitions(int partitionCount, SqlParser.TableStatistics stat)
         {
+            // TODO: fix issue with repeating keys!
+
             SqlQueryPartition qp = null;
             int s = stat.KeyValue.Count / partitionCount;
 

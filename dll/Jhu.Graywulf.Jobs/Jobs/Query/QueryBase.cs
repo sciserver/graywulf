@@ -56,7 +56,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <summary>
         /// Holds table statistics gathered for all the tables in the query
         /// </summary>
-        private List<TableReference> tableStatistics;
+        private List<ITableSource> tableSourceStatistics;
 
         /// <summary>
         /// Holds the individual partitions. Usually many, but for simple queries
@@ -123,9 +123,9 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         [IgnoreDataMember]
-        public List<TableReference> TableStatistics
+        public List<ITableSource> TableSourceStatistics
         {
-            get { return tableStatistics; }
+            get { return tableSourceStatistics; }
         }
 
         [IgnoreDataMember]
@@ -172,7 +172,7 @@ namespace Jhu.Graywulf.Jobs.Query
             this.sourceDatabaseVersionName = String.Empty;
             this.statDatabaseVersionName = String.Empty;
 
-            this.tableStatistics = new List<TableReference>();
+            this.tableSourceStatistics = new List<ITableSource>();
             this.partitions = new List<QueryPartitionBase>();
 
             this.partitioningTable = null;
@@ -188,7 +188,7 @@ namespace Jhu.Graywulf.Jobs.Query
             this.sourceDatabaseVersionName = old.sourceDatabaseVersionName;
             this.statDatabaseVersionName = old.statDatabaseVersionName;
 
-            this.tableStatistics = new List<TableReference>();  // *** TODO
+            this.tableSourceStatistics = new List<ITableSource>();
             this.partitions = new List<QueryPartitionBase>(old.partitions.Select(p => (QueryPartitionBase)p.Clone()));
 
             this.partitioningTable = old.partitioningTable;
@@ -245,11 +245,11 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <returns></returns>
         public abstract void CollectTablesForStatistics();
 
-        public void PrepareComputeTableStatistics(Context context, TableReference tr, out string connectionString, out SqlCommand cmd, out int multiplier)
+        public void PrepareComputeTableStatistics(Context context, ITableSource tableSource, out string connectionString, out SqlCommand cmd, out int multiplier)
         {
             // Assign a database server to the query
             var sm = GetSchemaManager();
-            var ds = sm.Datasets[tr.DatasetName];
+            var ds = sm.Datasets[tableSource.TableReference.DatasetName];
 
             if (ds is GraywulfDataset && !((GraywulfDataset)ds).IsSpecificInstanceRequired)
             {
@@ -266,7 +266,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 connectionString = si.GetConnectionString().ConnectionString;
 
-                SubstituteDatabaseName(tr, si, StatDatabaseVersionName, SourceDatabaseVersionName);
+                SubstituteDatabaseName(tableSource.TableReference, si, StatDatabaseVersionName, SourceDatabaseVersionName);
 
                 // TODO: multiplier depends on whether statistics were gathered from the
                 // sample table or a full table of the surrogate full database
@@ -290,34 +290,34 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             // Generate statistics query
-            cmd = GetTableStatisticsCommand(tr);
+            cmd = GetTableStatisticsCommand(tableSource);
         }
 
-        protected virtual SqlCommand GetTableStatisticsCommand(TableReference tr)
+        protected virtual SqlCommand GetTableStatisticsCommand(ITableSource tableSource)
         {
-            if (tr.Statistics == null)
+            if (tableSource.TableReference.Statistics == null)
             {
                 throw new ArgumentNullException();
             }
 
-            if (!(tr.DatabaseObject is TableOrView))
+            if (!(tableSource.TableReference.DatabaseObject is TableOrView))
             {
                 throw new ArgumentException();
             }
 
-            var table = (TableOrView)tr.DatabaseObject;
-            var keycol = tr.Statistics.KeyColumn;
-            var keytype = tr.Statistics.KeyColumnDataType.NameWithLength;
+            var table = (TableOrView)tableSource.TableReference.DatabaseObject;
+            var keycol = tableSource.TableReference.Statistics.KeyColumn;
+            var keytype = tableSource.TableReference.Statistics.KeyColumnDataType.NameWithLength;
 
-            var temptable = GetTemporaryTable(CodeGenerator.GetEscapedUniqueName(tr));
+            var temptable = GetTemporaryTable(CodeGenerator.GetEscapedUniqueName(tableSource.TableReference));
 
             var sql = new StringBuilder(SqlQueryScripts.TableStatistics);
 
             sql.Replace("[$temptable]", CodeGenerator.GetResolvedTableName(temptable));
             sql.Replace("[$keytype]", keytype);
             sql.Replace("[$keycol]", keycol);
-            sql.Replace("[$from]", CodeGenerator.GetResolvedTableNameWithAlias(tr));
-            sql.Replace("[$where]", GetTableStatisticsWhereClause(tr));
+            sql.Replace("[$from]", CodeGenerator.GetResolvedTableNameWithAlias(tableSource.TableReference));
+            sql.Replace("[$where]", GetTableStatisticsWhereClause(tableSource.TableReference));
 
             return new SqlCommand(sql.ToString());
         }
@@ -342,14 +342,16 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="tr"></param>
         /// <param name="binSize"></param>
-        public void ComputeTableStatistics(TableReference tr, string connectionString, SqlCommand cmd, int multiplier)
+        public void ComputeTableStatistics(ITableSource tableSource, string connectionString, SqlCommand cmd, int multiplier)
         {
+            var stat = tableSource.TableReference.Statistics;
+
             using (var cn = new SqlConnection(connectionString))
             {
                 cn.Open();
 
                 cmd.Connection = cn;
-                cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = tr.Statistics.BinCount;
+                cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = stat.BinCount;
                 cmd.CommandTimeout = QueryTimeout;
 
                 ExecuteSqlCommandReader(cmd, CommandTarget.Code, dr =>
@@ -357,12 +359,12 @@ namespace Jhu.Graywulf.Jobs.Query
                     long rc = 0;
                     while (dr.Read())
                     {
-                        tr.Statistics.KeyCount.Add(dr.GetInt64(0));
-                        tr.Statistics.KeyValue.Add((IComparable)dr.GetValue(1));
+                        stat.KeyCount.Add(dr.GetInt64(0));
+                        stat.KeyValue.Add((IComparable)dr.GetValue(1));
 
                         rc = dr.GetInt64(0);    // the very last value will give row count
                     }
-                    tr.Statistics.RowCount = rc * multiplier;
+                    stat.RowCount = rc * multiplier;
                 });
 
                 cmd.Dispose();
@@ -385,7 +387,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     InitializeQueryObject(null);
                     break;
                 case ExecutionMode.Graywulf:
-                    InitializeQueryObject(context, scheduler);
+                    InitializeQueryObject(context, scheduler, false);
 
                     // If query is partitioned, statistics must be gathered
                     if (IsPartitioned)
