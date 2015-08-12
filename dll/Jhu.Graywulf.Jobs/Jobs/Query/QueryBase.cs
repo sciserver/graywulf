@@ -316,14 +316,15 @@ namespace Jhu.Graywulf.Jobs.Query
             sql.Replace("[$temptable]", CodeGenerator.GetResolvedTableName(temptable));
             sql.Replace("[$keytype]", keytype);
             sql.Replace("[$keycol]", keycol);
-            sql.Replace("[$from]", CodeGenerator.GetResolvedTableNameWithAlias(tableSource.TableReference));
-            sql.Replace("[$where]", GetTableStatisticsWhereClause(tableSource.TableReference));
+            sql.Replace("[$tablename]", CodeGenerator.GetResolvedTableNameWithAlias(tableSource.TableReference));
+            sql.Replace("[$where]", GetTableStatisticsWhereClause(tableSource));
 
             return new SqlCommand(sql.ToString());
         }
 
-        protected virtual string GetTableStatisticsWhereClause(TableReference tr)
+        protected virtual string GetTableStatisticsWhereClause(ITableSource tableSource)
         {
+            var tr = tableSource.TableReference;
             var cnr = new SearchConditionNormalizer();
             cnr.NormalizeQuerySpecification(((TableSource)tr.Node).QuerySpecification);
             var wh = cnr.GenerateWhereClauseSpecificToTable(tr);

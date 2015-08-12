@@ -8,7 +8,7 @@ CREATE TABLE [$temptable]
 
 INSERT [$temptable] WITH(TABLOCKX)
 SELECT ROW_NUMBER() OVER (ORDER BY [$keycol]), [$keycol]
-FROM [$from]
+FROM [$tablename]
 [$where];
 
 DECLARE @count bigint = @@ROWCOUNT;
