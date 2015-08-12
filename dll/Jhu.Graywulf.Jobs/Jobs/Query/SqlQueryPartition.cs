@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 AppendPartitioningConditions(qs, (SimpleTableSource)ts);
             }
 
-            SubstituteDatabaseNames(AssignedServerInstance.Guid, Query.SourceDatabaseVersionName);
+            SubstituteDatabaseNames(AssignedServerInstance, Query.SourceDatabaseVersionName);
             SubstituteRemoteTableNames(TemporaryDatabaseInstanceReference.Value.GetDataset(), Query.TemporaryDataset.DefaultSchemaName);
         }
 

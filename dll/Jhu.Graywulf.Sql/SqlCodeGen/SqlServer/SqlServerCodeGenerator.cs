@@ -175,56 +175,6 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             return sql.ToString();
         }
 
-        public string GenerateTableStatisticsQuery(TableReference tr, string temptable)
-        {
-            if (tr.Statistics == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            if (!(tr.DatabaseObject is TableOrView))
-            {
-                throw new ArgumentException();
-            }
-
-            var table = (TableOrView)tr.DatabaseObject;
-            var keycol =  tr.Statistics.KeyColumn;
-            var keytype = tr.Statistics.KeyColumnDataType.NameWithLength;
-
-            // Build table specific from clause
-            var from = "FROM " + GetResolvedTableName(tr);
-            if (!String.IsNullOrWhiteSpace(tr.Alias))
-            {
-                from += " AS " + QuoteIdentifier(tr.Alias);
-            }
-
-            // Build table specific where clause
-            var cnr = new SearchConditionNormalizer();
-            cnr.NormalizeQuerySpecification(((TableSource)tr.Node).QuerySpecification);
-            var wh = cnr.GenerateWhereClauseSpecificToTable(tr);
-
-            var where = new StringWriter();
-            if (wh != null)
-            {
-                var cg = new SqlServerCodeGenerator();
-                cg.Execute(where, wh);
-            };
-
-            return GenerateTableStatisticsQuery(temptable, keycol, keytype, from, where.ToString());
-        }
-
-        private string GenerateTableStatisticsQuery(string tempTable, string keyCol, string keyType, string from, string where)
-        {
-            var sql = new StringBuilder(SqlServerScripts.TableStatistics);
-            sql.Replace("[$temptable]", tempTable);
-            sql.Replace("[$keytype]", keyType);
-            sql.Replace("[$keycol]", keyCol);
-            sql.Replace("[$from]", from);
-            sql.Replace("[$where]", where);
-
-            return sql.ToString();
-        }
-
         #endregion
 
 

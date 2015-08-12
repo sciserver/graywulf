@@ -48,7 +48,7 @@ namespace Jhu.Graywulf.Jobs.Query
                         // otherwise ask the scheduler for an appropriate server
                         if (!queryPartition.Query.AssignedServerInstanceReference.IsEmpty && (dss.Count == 0 || assignDefault))
                         {
-                            queryPartition.AssignedServerInstance = queryPartition.Query.AssignedServerInstance;
+                            queryPartition.AssignServer(queryPartition.Query.AssignedServerInstance);
                         }
                         else
                         {
@@ -60,7 +60,7 @@ namespace Jhu.Graywulf.Jobs.Query
                                 null);
                             si.Load();
 
-                            queryPartition.AssignedServerInstance = si;
+                            queryPartition.AssignServer(si);
                         }
 
                         queryPartition.InitializeQueryObject(context, scheduler, true);

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Jhu.Graywulf.SqlCodeGen.SqlServer {
+namespace Jhu.Graywulf.Jobs.Query {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class SqlServerScripts {
+    internal class SqlQueryScripts {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal SqlServerScripts() {
+        internal SqlQueryScripts() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerScripts", typeof(SqlServerScripts).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Jhu.Graywulf.Jobs.Query.SqlQueryScripts", typeof(SqlQueryScripts).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,7 +61,30 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to -- Create temp table to store keys
+        ///
+        ///CREATE TABLE [$temptable]
+        ///(
+        ///	[rn] bigint PRIMARY KEY,
+        ///	[key] [$keytype]
+        ///);
+        ///
+        ///INSERT [$temptable] WITH(TABLOCKX)
+        ///SELECT ROW_NUMBER() OVER (ORDER BY [$keycol]), [$keycol]
+        ///[$from]
+        ///[$where];
+        ///
+        ///DECLARE @count bigint = @@ROWCOUNT;
+        ///DECLARE @step bigint = @count / @bincount;
+        ///
+        ///IF (@step = 0) SET @step = 1;
+        ///
+        ///SELECT [rn], [key]
+        ///FROM [$temptable]
+        ///WHERE [rn] % @step = 0 OR [rn] = @count
+        ///ORDER BY [rn];
+        ///
+        ///DROP TABLE [$temptable].
         /// </summary>
         internal static string TableStatistics {
             get {

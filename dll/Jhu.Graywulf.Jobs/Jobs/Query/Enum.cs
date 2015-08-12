@@ -10,4 +10,10 @@ namespace Jhu.Graywulf.Jobs.Query
         SingleServer,
         Graywulf
     }
+
+    public enum CommandTarget
+    {
+        Code,
+        Temp
+    }
 }

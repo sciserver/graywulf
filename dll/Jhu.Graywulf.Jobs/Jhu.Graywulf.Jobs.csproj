@@ -163,6 +163,11 @@
     <Compile Include="Jobs\Query\SqlQueryPartition.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Jobs\Query\SqlQueryScripts.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SqlQueryScripts.resx</DependentUpon>
+    </Compile>
     <Compile Include="Jobs\Test\TestAsyncException.cs" />
     <Compile Include="Jobs\Test\TestJob.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -176,6 +181,11 @@
     <EmbeddedResource Include="Jobs\MirrorDatabase\ExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Jobs\Query\SqlQueryScripts.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>SqlQueryScripts.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -251,6 +261,9 @@
     <EmbeddedResource Include="Jobs\ExportTables\ExportTablesToUriForm.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Jobs\Query\SqlQueryResources\TableStatistics.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

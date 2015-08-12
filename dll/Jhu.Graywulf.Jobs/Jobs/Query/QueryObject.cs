@@ -47,6 +47,17 @@ namespace Jhu.Graywulf.Jobs.Query
         #region Property storage member variables
 
         /// <summary>
+        /// Individual query time-out, overall job timeout is enforced by
+        /// the scheduler in a different way.
+        /// </summary>
+        private int queryTimeout;
+
+        /// <summary>
+        /// Determines if queries are dumped into files during execution
+        /// </summary>
+        private bool dumpSql;
+
+        /// <summary>
         /// Cache for registry context
         /// </summary>
         [NonSerialized]
@@ -176,6 +187,29 @@ namespace Jhu.Graywulf.Jobs.Query
                     ResolveNames = true
                 };
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the timeout of individual queries
+        /// </summary>
+        /// <remarks>
+        /// The overall timeout period is enforced by the scheduler.
+        /// </remarks>
+        [DataMember]
+        public int QueryTimeout
+        {
+            get { return queryTimeout; }
+            set { queryTimeout = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether SQL scripts are dumped to files during query execution.
+        /// </summary>
+        [IgnoreDataMember]
+        public bool DumpSql
+        {
+            get { return dumpSql; }
+            set { dumpSql = value; }
         }
 
         /// <summary>
@@ -348,7 +382,6 @@ namespace Jhu.Graywulf.Jobs.Query
         public ServerInstance AssignedServerInstance
         {
             get { return assignedServerInstanceReference.Value; }
-            set { assignedServerInstanceReference.Value = value; }
         }
 
         /// <summary>
@@ -422,6 +455,9 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             this.syncRoot = new object();
 
+            this.queryTimeout = 60;
+            this.dumpSql = false;
+
             this.context = null;
             this.scheduler = null;
 
@@ -468,6 +504,9 @@ namespace Jhu.Graywulf.Jobs.Query
         private void CopyMembers(QueryObject old)
         {
             this.syncRoot = new object();
+
+            this.queryTimeout = old.queryTimeout;
+            this.dumpSql = old.dumpSql;
 
             this.context = old.context;
             this.scheduler = old.scheduler;
@@ -572,7 +611,10 @@ namespace Jhu.Graywulf.Jobs.Query
                             break;
                         case ExecutionMode.Graywulf:
                             LoadAssignedServerInstance(forceReinitialize);
+                            LoadSystemDatabaseInstance(TemporaryDatabaseInstanceReference, (GraywulfDataset)TemporaryDataset, forceReinitialize);
+                            LoadSystemDatabaseInstance(CodeDatabaseInstanceReference, (GraywulfDataset)CodeDataset, forceReinitialize);
                             LoadDatasets(forceReinitialize);
+
                             break;
                         default:
                             throw new NotImplementedException();
@@ -588,6 +630,14 @@ namespace Jhu.Graywulf.Jobs.Query
                 Interpret(forceReinitialize);
                 Validate();
             }
+        }
+
+        public void AssignServer(ServerInstance serverInstance)
+        {
+            assignedServerInstanceReference.Value = serverInstance;
+
+            LoadSystemDatabaseInstance(TemporaryDatabaseInstanceReference, (GraywulfDataset)TemporaryDataset, true);
+            LoadSystemDatabaseInstance(CodeDatabaseInstanceReference, (GraywulfDataset)CodeDataset, true);
         }
 
         #region Cluster registry query functions
@@ -624,7 +674,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected void LoadAssignedServerInstance(bool forceReinitialize)
         {
-            if (!assignedServerInstanceReference.IsEmpty || forceReinitialize)
+            if (!assignedServerInstanceReference.IsEmpty && forceReinitialize)
             {
                 assignedServerInstanceReference.Value.GetConnectionString();
             }
@@ -680,6 +730,157 @@ namespace Jhu.Graywulf.Jobs.Query
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        #endregion
+        #region System database functions
+
+        protected void LoadSystemDatabaseInstance(EntityReference<DatabaseInstance> databaseInstance, GraywulfDataset dataset, bool forceReinitialize)
+        {
+            if (!AssignedServerInstanceReference.IsEmpty && (databaseInstance.IsEmpty || forceReinitialize))
+            {
+                dataset.Context = Context;
+                var dd = dataset.DatabaseVersionReference.Value.DatabaseDefinition;
+
+                dd.LoadDatabaseInstances(false);
+                foreach (var di in dd.DatabaseInstances.Values)
+                {
+                    di.Context = Context;
+                }
+
+                // Find database instance that is on the same machine
+                try
+                {
+                    // TODO: only server instance and database definition is checked here, maybe database version would be better
+                    databaseInstance.Value = dd.DatabaseInstances.Values.FirstOrDefault(ddi => ddi.ServerInstanceReference.Guid == AssignedServerInstance.Guid);
+                    databaseInstance.Value.GetConnectionString();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(
+                        String.Format(
+                            "Cannot find instance of system database: {0} ({1}) on server {2}/{3} ({4}).",
+                            dataset.Name, dataset.DatabaseName,
+                            AssignedServerInstance.Machine.Name, AssignedServerInstance.Name, AssignedServerInstance.GetCompositeName()),
+                        ex); // TODO ***
+                }
+            }
+            else if (AssignedServerInstanceReference.IsEmpty)
+            {
+                databaseInstance.Value = null;
+            }
+        }
+
+        protected SqlConnectionStringBuilder GetSystemDatabaseConnectionString(CommandTarget target)
+        {
+            switch (ExecutionMode)
+            {
+                case ExecutionMode.SingleServer:
+                    {
+                        SqlServerDataset ds;
+
+                        switch (target)
+                        {
+                            case CommandTarget.Code:
+                                ds = (SqlServerDataset)codeDataset;
+                                break;
+                            case CommandTarget.Temp:
+                                ds = (SqlServerDataset)temporaryDataset;
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+
+                        return new SqlConnectionStringBuilder(ds.ConnectionString);
+                    }
+                case ExecutionMode.Graywulf:
+                    {
+                        EntityReference<DatabaseInstance> di;
+
+                        switch (target)
+                        {
+                            case CommandTarget.Code:
+                                di = codeDatabaseInstanceReference;
+                                break;
+                            case CommandTarget.Temp:
+                                di = temporaryDatabaseInstanceReference;
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+
+                        return di.Value.GetConnectionString();
+                    }
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public SqlServerDataset GetCodeDatabaseDataset()
+        {
+            SqlServerDataset codeds;
+
+            switch (ExecutionMode)
+            {
+                case ExecutionMode.SingleServer:
+                    codeds = codeDataset;
+                    break;
+                case ExecutionMode.Graywulf:
+                    // *** TODO: this throws null exception after persist and restore
+                    codeds = codeDatabaseInstanceReference.Value.GetDataset();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return codeds;
+        }
+
+        public SqlServerDataset GetTemporaryDatabaseDataset()
+        {
+            SqlServerDataset tempds;
+
+            switch (ExecutionMode)
+            {
+                case ExecutionMode.SingleServer:
+                    tempds = temporaryDataset;
+                    break;
+                case ExecutionMode.Graywulf:
+                    // *** TODO: this throws null exception after persist and restore
+                    tempds = temporaryDatabaseInstanceReference.Value.GetDataset();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            tempds.IsMutable = true;
+            return tempds;
+        }
+
+        public virtual Table GetTemporaryTable(string tableName)
+        {
+            string tempname;
+            var tempds = GetTemporaryDatabaseDataset();
+
+            switch (executionMode)
+            {
+                case Jobs.Query.ExecutionMode.SingleServer:
+                    tempname = String.Format("skyquerytemp_{0}", tableName);
+                    break;
+                case Jobs.Query.ExecutionMode.Graywulf:
+                    tempname = String.Format("{0}_{1}_{2}", Context.UserName, Context.JobID, tableName);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return new Table()
+            {
+                Dataset = tempds,
+                DatabaseName = tempds.DatabaseName,
+                SchemaName = tempds.DefaultSchemaName,
+                TableName = tempname,
+            };
         }
 
         #endregion
@@ -801,7 +1002,210 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
+        #region Scheduler functions
+
+        protected ServerInstance GetNextServerInstance(DatabaseDefinition databaseDefinition, string databaseVersion)
+        {
+            return GetNextServerInstance(databaseDefinition, databaseVersion);
+        }
+
+        protected ServerInstance GetNextServerInstance(DatabaseDefinition databaseDefinition, string databaseVersion, string surrogateDatabaseVersion)
+        {
+            Guid siguid;
+
+            // Try with requested database version
+            siguid = Scheduler.GetNextServerInstance(new Guid[] { databaseDefinition.Guid }, databaseVersion, null);
+
+            // If not found, try with surrogate
+            if (surrogateDatabaseVersion != null && siguid == Guid.Empty)
+            {
+                siguid = Scheduler.GetNextServerInstance(new Guid[] { databaseDefinition.Guid }, surrogateDatabaseVersion, null);
+            }
+
+            if (siguid == Guid.Empty)
+            {
+                throw new Exception("No server found with requested database.");  // *** TODO
+            }
+
+            var si = new ServerInstance(Context);
+            si.Guid = siguid;
+            si.Load();
+
+            return si;
+        }
+
+        protected ServerInstance GetNextServerInstance(IEnumerable<DatabaseDefinition> databaseDefinitions, string databaseVersion, string surrogateDatabaseVersion, IEnumerable<DatabaseInstance> specificDatabaseInstances)
+        {
+            Guid[] dds, dis;
+            Guid siguid;
+
+            if (databaseDefinitions != null)
+            {
+                dds = databaseDefinitions.Select(i => i.Guid).ToArray();
+            }
+            else
+            {
+                dds = null;
+            }
+
+            if (specificDatabaseInstances != null)
+            {
+                dis = specificDatabaseInstances.Select(i => i.Guid).ToArray();
+            }
+            else
+            {
+                dis = null;
+            }
+            
+            // Try with requested database version
+            siguid = scheduler.GetNextServerInstance(dds, databaseVersion, dis);
+
+            // If not found, try with surrogate
+            // If not found, try with surrogate
+            if (surrogateDatabaseVersion != null && siguid == Guid.Empty)
+            {
+                siguid = Scheduler.GetNextServerInstance(dds, surrogateDatabaseVersion, dis);
+            }
+
+            if (siguid == Guid.Empty)
+            {
+                throw new Exception("No server found with requested database.");  // *** TODO
+            }
+
+            var si = new ServerInstance(Context);
+            si.Guid = siguid;
+            si.Load();
+
+            return si;
+        }
+
+        protected ServerInstance[] GetAvailableServerInstances(IEnumerable<DatabaseDefinition> databaseDefinitions, string databaseVersion, string surrogateDatabaseVersion, IEnumerable<DatabaseInstance> specificDatabaseInstances)
+        {
+            Guid[] dds, dis;
+            Guid[] siguid;
+
+            if (databaseDefinitions != null)
+            {
+                dds = databaseDefinitions.Select(i => i.Guid).ToArray();
+            }
+            else
+            {
+                dds = null;
+            }
+
+            if (specificDatabaseInstances != null)
+            {
+                dis = specificDatabaseInstances.Select(i => i.Guid).ToArray();
+            }
+            else
+            {
+                dis = null;
+            }
+
+            // Try with requested database version
+            siguid = scheduler.GetServerInstances(dds, databaseVersion, dis);
+
+            // If not found, try with surrogate
+            // If not found, try with surrogate
+            if (surrogateDatabaseVersion != null && (siguid == null || siguid.Length == 0))
+            {
+                siguid = scheduler.GetServerInstances(dds, surrogateDatabaseVersion, dis);
+
+            }
+
+            if (siguid == null || siguid.Length == 0)
+            {
+                throw new Exception("No server found with requested database.");  // *** TODO
+            }
+
+            var si = new ServerInstance[siguid.Length];
+            for (int i = 0; i < siguid.Length; i++)
+            {
+                si[i] = new ServerInstance(Context);
+                si[i].Guid = siguid[i];
+                si[i].Load();
+            }
+
+            return si;
+        }
+
+
+        protected DatabaseInstance[] GetAvailableDatabaseInstances(DatabaseDefinition databaseDefinition, string databaseVersion)
+        {
+            return GetAvailableDatabaseInstances(databaseDefinition, databaseVersion, null);
+        }
+
+        protected DatabaseInstance[] GetAvailableDatabaseInstances(DatabaseDefinition databaseDefinition, string databaseVersion, string surrogateDatabaseVersion)
+        {
+            Guid[] diguid;
+
+            // Try with requested database version
+            diguid = Scheduler.GetDatabaseInstances(databaseDefinition.Guid, databaseVersion);
+
+            // If not found, try with surrogate
+            if (surrogateDatabaseVersion != null && (diguid == null || diguid.Length == 0))
+            {
+                diguid = Scheduler.GetDatabaseInstances(databaseDefinition.Guid, surrogateDatabaseVersion);
+            }
+
+            if (diguid == null || diguid.Length == 0)
+            {
+                throw new Exception("No instance of the requested database found.");  // *** TODO
+            }
+
+            var di = new DatabaseInstance[diguid.Length];
+            for (int i = 0; i < diguid.Length; i++)
+            {
+                di[i] = new DatabaseInstance(Context);
+                di[i].Guid = diguid[i];
+                di[i].Load();
+            }
+
+            return di;
+        }
+
+        public DatabaseInstance[] GetAvailableDatabaseInstances(ServerInstance serverInstance, DatabaseDefinition databaseDefinition, string databaseVersion)
+        {
+            return GetAvailableDatabaseInstances(serverInstance, databaseDefinition, null);
+        }
+
+
+        public DatabaseInstance[] GetAvailableDatabaseInstances(ServerInstance serverInstance, DatabaseDefinition databaseDefinition, string databaseVersion, string surrogateDatabaseVersion)
+        {
+            Guid[] diguid;
+
+            // Try with requested database version
+            diguid = Scheduler.GetDatabaseInstances(serverInstance.Guid, databaseDefinition.Guid, databaseVersion);
+
+            // If not found, try with surrogate
+            if (surrogateDatabaseVersion != null && (diguid == null || diguid.Length == 0))
+            {
+                diguid = Scheduler.GetDatabaseInstances(databaseDefinition.Guid, surrogateDatabaseVersion);
+            }
+
+            if (diguid == null || diguid.Length == 0)
+            {
+                throw new Exception("No instance of the requested database found.");  // *** TODO
+            }
+
+            var di = new DatabaseInstance[diguid.Length];
+            for (int i = 0; i < diguid.Length; i++)
+            {
+                di[i] = new DatabaseInstance(Context);
+                di[i].Guid = diguid[i];
+                di[i].Load();
+            }
+
+            return di;
+        }
+
+        #endregion
         #region Name substitution
+
+        protected void SubstituteDatabaseNames(ServerInstance serverInstance, string databaseVersion)
+        {
+            SubstituteDatabaseNames(serverInstance, databaseVersion, null);
+        }
 
         /// <summary>
         /// Looks up actual database instance names on the specified server instance
@@ -809,7 +1213,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="serverInstance"></param>
         /// <param name="databaseVersion"></param>
         /// <remarks>This function call must be synchronized!</remarks>
-        protected void SubstituteDatabaseNames(Guid serverInstance, string databaseVersion)
+        protected void SubstituteDatabaseNames(ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
         {
             switch (ExecutionMode)
             {
@@ -824,7 +1228,7 @@ namespace Jhu.Graywulf.Jobs.Query
                         {
                             if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
                             {
-                                SubstituteDatabaseName(tr, serverInstance, databaseVersion);
+                                SubstituteDatabaseName(tr, serverInstance, databaseVersion, surrogateDatabaseVersion);
                             }
                         }
                     }
@@ -844,7 +1248,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// During query executions, actual database name are not known until a server instance is
         /// assigned to the query partition.
         /// </remarks>
-        protected void SubstituteDatabaseName(TableReference tr, Guid serverInstance, string databaseVersion)
+        protected void SubstituteDatabaseName(TableReference tr, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
         {
             SchemaManager sc = GetSchemaManager();
 
@@ -867,9 +1271,8 @@ namespace Jhu.Graywulf.Jobs.Query
                     else
                     {
                         // Find appropriate database instance
-                        di = new DatabaseInstance(Context);
-                        di.Guid = scheduler.GetDatabaseInstances(serverInstance, gwds.DatabaseDefinitionReference.Guid, databaseVersion)[0];
-                        di.Load();
+                        var dis = GetAvailableDatabaseInstances(serverInstance, gwds.DatabaseDefinitionReference.Value, databaseVersion, surrogateDatabaseVersion);
+                        di = dis[0];
                     }
 
                     // Refresh database object, now that the correct database name is set
@@ -968,6 +1371,128 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
+        #region Actual query execution functions
+
+        protected void ExecuteSqlCommand(string sql, CommandTarget target)
+        {
+            using (var cmd = new SqlCommand())
+            {
+                cmd.CommandText = sql;
+                ExecuteSqlCommand(cmd, target);
+            }
+        }
+
+        protected void ExecuteSqlCommand(SqlCommand cmd, CommandTarget target)
+        {
+            var csb = GetSystemDatabaseConnectionString(target);
+
+            using (SqlConnection cn = new SqlConnection(csb.ConnectionString))
+            {
+                cn.Open();
+
+                cmd.Connection = cn;
+                cmd.CommandTimeout = queryTimeout;
+
+                DumpSqlCommand(cmd);
+
+                ExecuteLongCommandNonQuery(cmd);
+            }
+        }
+
+        protected object ExecuteSqlCommandScalar(SqlCommand cmd, CommandTarget target)
+        {
+            var csb = GetSystemDatabaseConnectionString(target);
+
+            using (var cn = new SqlConnection(csb.ConnectionString))
+            {
+                cn.Open();
+
+                cmd.Connection = cn;
+                cmd.CommandTimeout = queryTimeout;
+
+                DumpSqlCommand(cmd);
+
+                return ExecuteLongCommandScalar(cmd);
+            }
+        }
+
+        protected void ExecuteSqlCommandReader(SqlCommand cmd, CommandTarget target, Action<IDataReader> action)
+        {
+            var csb = GetSystemDatabaseConnectionString(target);
+
+            using (var cn = new SqlConnection(csb.ConnectionString))
+            {
+                cn.Open();
+
+                cmd.Connection = cn;
+                cmd.CommandTimeout = queryTimeout;
+
+                DumpSqlCommand(cmd);
+
+                ExecuteLongCommandReader(cmd, action);
+            }
+        }
+
+        protected virtual string GetDumpFileName(CommandTarget target)
+        {
+            string server = GetSystemDatabaseConnectionString(target).DataSource;
+            return String.Format("dump_{0}.sql", server);
+        }
+
+        protected void DumpSqlCommand(string sql, CommandTarget target)
+        {
+            if (dumpSql)
+            {
+                string filename = GetDumpFileName(target);
+                var sw = new StringWriter();
+
+                // Time stamp
+                sw.WriteLine("-- {0}\r\n", DateTime.Now);
+                sw.WriteLine(sql);
+                sw.WriteLine("GO");
+                sw.WriteLine();
+
+                File.AppendAllText(filename, sw.ToString());
+            }
+        }
+
+        private void DumpSqlCommand(SqlCommand cmd)
+        {
+            if (dumpSql)
+            {
+                var filename = GetDumpFileName(CommandTarget.Temp);
+                var sw = new StringWriter();
+
+                // Time stamp
+                sw.WriteLine("-- {0}\r\n", DateTime.Now);
+
+                // Database name
+                var csb = new SqlConnectionStringBuilder(cmd.Connection.ConnectionString);
+
+                if (!String.IsNullOrWhiteSpace(csb.InitialCatalog))
+                {
+                    sw.WriteLine("USE [{0}]", csb.InitialCatalog);
+                    sw.WriteLine("GO");
+                    sw.WriteLine();
+                }
+
+                // Command parameters
+                foreach (SqlParameter par in cmd.Parameters)
+                {
+                    sw.WriteLine(String.Format("DECLARE {0} {1} = {2}",
+                        par.ParameterName,
+                        par.SqlDbType.ToString(),
+                        par.Value.ToString()));
+                }
+
+                sw.WriteLine(cmd.CommandText);
+                sw.WriteLine("GO");
+
+                File.AppendAllText(filename, sw.ToString());
+            }
+        }
+
+        #endregion
         #region Cancelable command execution
 
         public virtual void Execute()
@@ -1046,7 +1571,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Executes a long SQL command in cancelable mode.
         /// </summary>
         /// <param name="cmd"></param>
-        protected void ExecuteLongCommandNonQuery(SqlCommand cmd)
+        private void ExecuteLongCommandNonQuery(SqlCommand cmd)
         {
             var guid = Guid.NewGuid();
             var ccmd = new CancelableDbCommand(cmd);
@@ -1070,7 +1595,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="cmd"></param>
         /// <returns></returns>
-        protected object ExecuteLongCommandScalar(SqlCommand cmd)
+        private object ExecuteLongCommandScalar(SqlCommand cmd)
         {
             var guid = Guid.NewGuid();
             var ccmd = new CancelableDbCommand(cmd);
@@ -1096,7 +1621,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="cmd"></param>
         /// <param name="action"></param>
-        protected void ExecuteLongCommandReader(SqlCommand cmd, Action<IDataReader> action)
+        private void ExecuteLongCommandReader(SqlCommand cmd, Action<IDataReader> action)
         {
             var guid = Guid.NewGuid();
             var ccmd = new CancelableDbCommand(cmd);

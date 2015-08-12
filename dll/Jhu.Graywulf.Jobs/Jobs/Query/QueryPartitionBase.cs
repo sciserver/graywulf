@@ -26,12 +26,6 @@ namespace Jhu.Graywulf.Jobs.Query
         protected const string keyFromParameterName = "@keyFrom";
         protected const string keyToParameterName = "@keyTo";
 
-        protected enum CommandTarget
-        {
-            Code,
-            Temp
-        }
-
         #region Property storage variables
 
         private int id;
@@ -136,134 +130,12 @@ namespace Jhu.Graywulf.Jobs.Query
 
         #endregion
 
-        protected void LoadSystemDatabaseInstance(EntityReference<DatabaseInstance> databaseInstance, GraywulfDataset dataset, bool forceReinitialize)
-        {
-            if (!AssignedServerInstanceReference.IsEmpty && (databaseInstance.IsEmpty || forceReinitialize))
-            {
-                dataset.Context = Context;
-                var dd = dataset.DatabaseVersionReference.Value.DatabaseDefinition;
-
-                dd.LoadDatabaseInstances(false);
-                foreach (var di in dd.DatabaseInstances.Values)
-                {
-                    di.Context = Context;
-                }
-
-                // Find database instance that is on the same machine
-                try
-                {
-                    // TODO: only server instance and database definition is checked here, maybe database version would be better
-                    databaseInstance.Value = dd.DatabaseInstances.Values.FirstOrDefault(ddi => ddi.ServerInstanceReference.Guid == AssignedServerInstance.Guid);
-                    databaseInstance.Value.GetConnectionString();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(
-                        String.Format(
-                            "Cannot find instance of system database: {0} ({1}) on server {2}/{3} ({4}).",
-                            dataset.Name, dataset.DatabaseName,
-                            AssignedServerInstance.Machine.Name, AssignedServerInstance.Name, AssignedServerInstance.GetCompositeName()),
-                        ex); // TODO ***
-                }
-            }
-            else if (AssignedServerInstanceReference.IsEmpty)
-            {
-                databaseInstance.Value = null;
-            }
-        }
-
-        protected SqlConnectionStringBuilder GetSystemDatabaseConnectionString(CommandTarget target)
-        {
-            switch (ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    {
-                        SqlServerDataset ds;
-
-                        switch (target)
-                        {
-                            case CommandTarget.Code:
-                                ds = (SqlServerDataset)query.CodeDataset;
-                                break;
-                            case CommandTarget.Temp:
-                                ds = (SqlServerDataset)query.TemporaryDataset;
-                                break;
-                            default:
-                                throw new NotImplementedException();
-                        }
-
-                        return new SqlConnectionStringBuilder(ds.ConnectionString);
-                    }
-                case ExecutionMode.Graywulf:
-                    {
-                        EntityReference<DatabaseInstance> di;
-
-                        switch (target)
-                        {
-                            case CommandTarget.Code:
-                                di = CodeDatabaseInstanceReference;
-                                break;
-                            case CommandTarget.Temp:
-                                di = TemporaryDatabaseInstanceReference;
-                                break;
-                            default:
-                                throw new NotImplementedException();
-                        }
-
-                        return di.Value.GetConnectionString();
-                    }
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        public SqlServerDataset GetCodeDatabaseDataset()
-        {
-            SqlServerDataset codeds;
-
-            switch (ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    codeds = query.CodeDataset;
-                    break;
-                case ExecutionMode.Graywulf:
-                    // *** TODO: this throws null exception after persist and restore
-                    codeds = CodeDatabaseInstanceReference.Value.GetDataset();
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            return codeds;
-        }
-        
-        public SqlServerDataset GetTemporaryDatabaseDataset()
-        {
-            SqlServerDataset tempds;
-
-            switch (ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    tempds = query.TemporaryDataset;
-                    break;
-                case ExecutionMode.Graywulf:
-                    // *** TODO: this throws null exception after persist and restore
-                    tempds = TemporaryDatabaseInstanceReference.Value.GetDataset();
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            tempds.IsMutable = true;
-            return tempds;
-        }
-
-        public Table GetTemporaryTable(string tableName)
+        public override Table GetTemporaryTable(string tableName)
         {
             string tempname;
             var tempds = GetTemporaryDatabaseDataset();
 
-            switch (query.ExecutionMode)
+            switch (ExecutionMode)
             {
                 case Jobs.Query.ExecutionMode.SingleServer:
                     tempname = String.Format("skyquerytemp_{0}_{1}", id.ToString(), tableName);
@@ -312,6 +184,7 @@ namespace Jhu.Graywulf.Jobs.Query
             base.FinishInterpret(forceReinitialize);
         }
 
+        /* TODO: delete
         public override void InitializeQueryObject(Context context, IScheduler scheduler, bool forceReinitialize)
         {
             base.InitializeQueryObject(context, scheduler, forceReinitialize);
@@ -327,7 +200,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 default:
                     throw new NotImplementedException();
             }
-        }
+        }*/
 
         #region Remote table caching functions
 
@@ -677,112 +550,12 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
-        #region Query dump functions
+        #region Query execution
 
-        private string GetDumpFileName(CommandTarget target)
+        protected override string GetDumpFileName(CommandTarget target)
         {
             string server = GetSystemDatabaseConnectionString(target).DataSource;
             return String.Format("dump_{0}_{1}.sql", server, this.id);
-        }
-
-        protected void DumpSqlCommand(string sql, CommandTarget target)
-        {
-            if (query.DumpSql)
-            {
-                string filename = GetDumpFileName(target);
-                var sw = new StringWriter();
-
-                // Time stamp
-                sw.WriteLine("-- {0}\r\n", DateTime.Now);
-                sw.WriteLine(sql);
-                sw.WriteLine("GO");
-                sw.WriteLine();
-
-                File.AppendAllText(filename, sw.ToString());
-            }
-        }
-
-        protected void DumpSqlCommand(SqlCommand cmd)
-        {
-            if (Query.DumpSql)
-            {
-                var filename = GetDumpFileName(CommandTarget.Temp);
-                var sw = new StringWriter();
-
-                // Time stamp
-                sw.WriteLine("-- {0}\r\n", DateTime.Now);
-
-                // Database name
-                var csb = new SqlConnectionStringBuilder(cmd.Connection.ConnectionString);
-
-                if (!String.IsNullOrWhiteSpace(csb.InitialCatalog))
-                {
-                    sw.WriteLine("USE [{0}]", csb.InitialCatalog);
-                    sw.WriteLine("GO");
-                    sw.WriteLine();
-                }
-
-                // Command parameters
-                foreach (SqlParameter par in cmd.Parameters)
-                {
-                    sw.WriteLine(String.Format("DECLARE {0} {1} = {2}",
-                        par.ParameterName,
-                        par.SqlDbType.ToString(),
-                        par.Value.ToString()));
-                }
-
-                sw.WriteLine(cmd.CommandText);
-                sw.WriteLine("GO");
-
-                File.AppendAllText(filename, sw.ToString());
-            }
-        }
-
-        #endregion
-        #region Actual query execution functions
-
-        protected void ExecuteSqlCommand(string sql, CommandTarget target)
-        {
-            using (var cmd = new SqlCommand())
-            {
-                cmd.CommandText = sql;
-                ExecuteSqlCommand(cmd, target);
-            }
-        }
-
-        protected void ExecuteSqlCommand(SqlCommand cmd, CommandTarget target)
-        {
-            var csb = GetSystemDatabaseConnectionString(target);
-
-            using (SqlConnection cn = new SqlConnection(csb.ConnectionString))
-            {
-                cn.Open();
-
-                cmd.Connection = cn;
-                cmd.CommandTimeout = query.QueryTimeout;
-
-                DumpSqlCommand(cmd);
-
-                ExecuteLongCommandNonQuery(cmd);
-            }
-        }
-
-        protected object ExecuteSqlCommandScalar(SqlCommand cmd, CommandTarget target)
-        {
-
-            var csb = GetSystemDatabaseConnectionString(target);
-
-            using (var cn = new SqlConnection(csb.ConnectionString))
-            {
-                cn.Open();
-
-                cmd.Connection = cn;
-                cmd.CommandTimeout = query.QueryTimeout;
-
-                DumpSqlCommand(cmd);
-
-                return ExecuteLongCommandScalar(cmd);
-            }
         }
 
         #endregion

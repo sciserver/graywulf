@@ -112,7 +112,6 @@ namespace Jhu.Graywulf.Jobs.Query
             userDatabase.IsMutable = true;
             query.CustomDatasets.Add(userDatabase);
             query.DefaultDataset = userDatabase;
-            query.AssignedServerInstance = serverInstance;
         }
 
         #region Job scheduling functions

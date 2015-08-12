@@ -26,12 +26,6 @@ namespace Jhu.Graywulf.Jobs.Query
         #region Property storage member variables
 
         /// <summary>
-        /// Individual query time-out, overall job timeout is enforced by
-        /// the scheduler in a different way.
-        /// </summary>
-        private int queryTimeout;
-
-        /// <summary>
         /// Destination table including target table naming pattern.
         /// Output table names are either automatically generater or
         /// taken from the INTO clause.
@@ -84,26 +78,8 @@ namespace Jhu.Graywulf.Jobs.Query
         [NonSerialized]
         private string partitioningKey;
 
-        /// <summary>
-        /// Determines if queries are dumped into files during execution
-        /// </summary>
-        private bool dumpSql;
-
         #endregion
         #region Properties
-
-        /// <summary>
-        /// Gets or sets the timeout of individual queries
-        /// </summary>
-        /// <remarks>
-        /// The overall timeout period is enforced by the scheduler.
-        /// </remarks>
-        [DataMember]
-        public int QueryTimeout
-        {
-            get { return queryTimeout; }
-            set { queryTimeout = value; }
-        }
 
         /// <summary>
         /// Gets or sets the destination table of the query
@@ -164,16 +140,6 @@ namespace Jhu.Graywulf.Jobs.Query
             get;
         }
 
-        /// <summary>
-        /// Gets or sets whether SQL scripts are dumped to files during query execution.
-        /// </summary>
-        [IgnoreDataMember]
-        public bool DumpSql
-        {
-            get { return dumpSql; }
-            set { dumpSql = value; }
-        }
-
         #endregion
         #region Constructors and initializers
 
@@ -199,10 +165,6 @@ namespace Jhu.Graywulf.Jobs.Query
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            // TODO: take from constants
-            // this is overwritten most of the time by job settings
-            this.queryTimeout = 60;
-
             this.destination = null;
             this.isDestinationTableInitialized = false;
             this.output = null;
@@ -215,14 +177,10 @@ namespace Jhu.Graywulf.Jobs.Query
 
             this.partitioningTable = null;
             this.partitioningKey = null;
-
-            this.dumpSql = false;
         }
 
         private void CopyMembers(QueryBase old)
         {
-            this.queryTimeout = old.queryTimeout;
-
             this.destination = old.destination;
             this.isDestinationTableInitialized = old.isDestinationTableInitialized;
             this.output = old.output;
@@ -303,16 +261,26 @@ namespace Jhu.Graywulf.Jobs.Query
                 dd.Load();
 
                 // Get a server from the scheduler
-                var si = new ServerInstance(Context);
-                si.Guid = Scheduler.GetNextServerInstance(new Guid[] { dd.Guid }, StatDatabaseVersionName, null);
-                si.Load();
+                var si = GetNextServerInstance(dd, StatDatabaseVersionName, SourceDatabaseVersionName);
+                AssignServer(si);
 
-                // TODO: what happens if no MINI version is available?
                 connectionString = si.GetConnectionString().ConnectionString;
 
-                SubstituteDatabaseName(tr, si.Guid, StatDatabaseVersionName);
+                SubstituteDatabaseName(tr, si, StatDatabaseVersionName, SourceDatabaseVersionName);
 
+                // TODO: multiplier depends on whether statistics were gathered from the
+                // sample table or a full table of the surrogate full database
                 multiplier = 10000; // TODO: MINI version is sampled 10000 to 1 but not always :-(
+            }
+            else if (ds is GraywulfDataset)
+            {
+                // TODO: test!
+                var gds = (GraywulfDataset)ds;
+                var si = gds.DatabaseInstanceReference.Value.ServerInstance;
+                AssignServer(si);
+
+                connectionString = ds.ConnectionString;
+                multiplier = 1;
             }
             else
             {
@@ -322,18 +290,51 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             // Generate statistics query
-            cmd = GetComputeTableStatisticsCommand(tr);
+            cmd = GetTableStatisticsCommand(tr);
         }
 
-        protected virtual SqlCommand GetComputeTableStatisticsCommand(TableReference tr)
+        protected virtual SqlCommand GetTableStatisticsCommand(TableReference tr)
         {
-            var cmd = new SqlCommand();
-            var escname = CodeGenerator.GetEscapedUniqueName(tr);
-            var tempname = String.Format("{0}_{1}_{2}", Context.UserName, Context.JobID, escname);
+            if (tr.Statistics == null)
+            {
+                throw new ArgumentNullException();
+            }
 
-            cmd.CommandText = CodeGenerator.GenerateTableStatisticsQuery(tr, tempname);
+            if (!(tr.DatabaseObject is TableOrView))
+            {
+                throw new ArgumentException();
+            }
 
-            return cmd;
+            var table = (TableOrView)tr.DatabaseObject;
+            var keycol = tr.Statistics.KeyColumn;
+            var keytype = tr.Statistics.KeyColumnDataType.NameWithLength;
+
+            var temptable = GetTemporaryTable(CodeGenerator.GetEscapedUniqueName(tr));
+
+            var sql = new StringBuilder(SqlQueryScripts.TableStatistics);
+
+            sql.Replace("[$temptable]", CodeGenerator.GetResolvedTableName(temptable));
+            sql.Replace("[$keytype]", keytype);
+            sql.Replace("[$keycol]", keycol);
+            sql.Replace("[$from]", CodeGenerator.GetResolvedTableNameWithAlias(tr));
+            sql.Replace("[$where]", GetTableStatisticsWhereClause(tr));
+
+            return new SqlCommand(sql.ToString());
+        }
+
+        protected virtual string GetTableStatisticsWhereClause(TableReference tr)
+        {
+            var cnr = new SearchConditionNormalizer();
+            cnr.NormalizeQuerySpecification(((TableSource)tr.Node).QuerySpecification);
+            var wh = cnr.GenerateWhereClauseSpecificToTable(tr);
+
+            var where = new StringWriter();
+            if (wh != null)
+            {
+                CodeGenerator.Execute(where, wh);
+            };
+
+            return where.ToString();
         }
 
         /// <summary>
@@ -349,9 +350,9 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 cmd.Connection = cn;
                 cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = tr.Statistics.BinCount;
-                cmd.CommandTimeout = queryTimeout;
+                cmd.CommandTimeout = QueryTimeout;
 
-                ExecuteLongCommandReader(cmd, dr =>
+                ExecuteSqlCommandReader(cmd, CommandTarget.Code, dr =>
                 {
                     long rc = 0;
                     while (dr.Read())
@@ -399,24 +400,23 @@ namespace Jhu.Graywulf.Jobs.Query
                         // Datasets that are mirrored and can be on any server
                         var reqds = (from ds in dss.Values
                                      where !ds.IsSpecificInstanceRequired
-                                     select ds.DatabaseDefinitionReference.Guid).ToArray();
+                                     select ds.DatabaseDefinitionReference.Value);
 
                         // Datasets that are only available at a specific server instance
                         var spds = (from ds in dss.Values
                                     where ds.IsSpecificInstanceRequired && !ds.DatabaseInstanceReference.IsEmpty
-                                    select ds.DatabaseInstanceReference.Guid).ToArray();
+                                    select ds.DatabaseInstanceReference.Value);
 
 
-                        var si = new ServerInstance(context);
-                        si.Guid = scheduler.GetNextServerInstance(reqds, StatDatabaseVersionName, spds);
-                        si.Load();
+                        var si = GetNextServerInstance(reqds, SourceDatabaseVersionName, null, spds);
 
-                        AssignedServerInstance = si;
+                        AssignServer(si);
                         assignedServerInstanceGuid = si.Guid;
 
                         // *** TODO: find optimal number of partitions
                         // TODO: replace "4" with a value from settings
-                        partitionCount = 4 * scheduler.GetServerInstances(reqds, SourceDatabaseVersionName, spds).Length;
+                        var sis = GetAvailableServerInstances(reqds, SourceDatabaseVersionName, null, spds);
+                        partitionCount = 4 * sis.Length;
 
                         // Now have to reinitialize to load the assigned server instances
                         InitializeQueryObject(context, scheduler, true);

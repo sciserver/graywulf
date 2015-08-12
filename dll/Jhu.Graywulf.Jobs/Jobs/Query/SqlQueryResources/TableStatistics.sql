@@ -1,4 +1,5 @@
 -- Create temp table to store keys
+
 CREATE TABLE [$temptable]
 (
 	[rn] bigint PRIMARY KEY,
@@ -7,7 +8,7 @@ CREATE TABLE [$temptable]
 
 INSERT [$temptable] WITH(TABLOCKX)
 SELECT ROW_NUMBER() OVER (ORDER BY [$keycol]), [$keycol]
-[$from]
+FROM [$from]
 [$where];
 
 DECLARE @count bigint = @@ROWCOUNT;

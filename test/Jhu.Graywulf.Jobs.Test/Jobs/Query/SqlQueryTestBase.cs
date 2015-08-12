@@ -57,7 +57,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 Options = TableInitializationOptions.Create | TableInitializationOptions.Drop
             };
 
-            q.InitializeQueryObject(qf.Context);
+            // TODO: delete q.InitializeQueryObject(qf.Context);
 
             return q;
         }

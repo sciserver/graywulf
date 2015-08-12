@@ -71,6 +71,8 @@ namespace Jhu.Graywulf.Jobs.Query
             Destination.CheckTableExistence();
         }
 
+        #region Table statistics
+
         public override void CollectTablesForStatistics()
         {
             TableStatistics.Clear();
@@ -91,6 +93,8 @@ namespace Jhu.Graywulf.Jobs.Query
                 TableStatistics.Add(ts.TableReference);
             }
         }
+
+        #endregion
 
         public override void GeneratePartitions(int partitionCount)
         {

@@ -74,11 +74,6 @@
     <Compile Include="SqlCodeGen\SqlCodeGeneratorBase.cs" />
     <Compile Include="SqlCodeGen\SqlCodeGeneratorFactory.cs" />
     <Compile Include="SqlCodeGen\SqlServer\SqlServerCodeGenerator.cs" />
-    <Compile Include="SqlCodeGen\SqlServer\SqlServerScripts.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SqlServerScripts.resx</DependentUpon>
-    </Compile>
     <Compile Include="SqlParser\ColumnExpression.cs" />
     <Compile Include="SqlParser\ColumnIdentifier.cs" />
     <Compile Include="SqlParser\ColumnName.cs" />
@@ -152,11 +147,6 @@
     <Compile Include="SqlParser\Whitespace.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="SqlCodeGen\SqlServer\SqlServerScripts.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>SqlServerScripts.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="SqlParser\ExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
@@ -178,9 +168,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="SqlCodeGen\SqlServer\Resources\TableStatistics.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
