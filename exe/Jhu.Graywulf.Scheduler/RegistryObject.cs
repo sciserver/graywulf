@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Scheduler
         private Guid guid;
         private string name;
         private string fullyQualifiedName;
-        private gw::RunningState runningState;
+        protected gw::RunningState runningState;
 
         public Guid Guid
         {

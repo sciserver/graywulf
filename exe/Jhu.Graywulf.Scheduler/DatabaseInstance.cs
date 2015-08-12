@@ -22,9 +22,14 @@ namespace Jhu.Graywulf.Scheduler
             set { databaseDefinition = value; }
         }
 
+        public bool IsAttached
+        {
+            get { return runningState == Registry.RunningState.Attached; }
+        }
+
         public bool IsAvailable
         {
-            get { return IsRunning && serverInstance.IsAvailable; }
+            get { return IsAttached && serverInstance.IsAvailable; }
         }
 
         public DatabaseInstance(Jhu.Graywulf.Registry.Entity e)

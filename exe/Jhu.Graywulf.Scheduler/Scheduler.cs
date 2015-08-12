@@ -67,7 +67,15 @@ namespace Jhu.Graywulf.Scheduler
         public Guid GetNextServerInstance(Guid[] databaseDefinitions, string databaseVersion, Guid[] databaseInstances)
         {
             var sis = GetServerInstancesInternal(databaseDefinitions, databaseVersion, databaseInstances);
-            return sis[GetNextServerIndex(sis)].Guid;
+
+            if (sis.Length > 0)
+            {
+                return sis[GetNextServerIndex(sis)].Guid;
+            }
+            else
+            {
+                return Guid.Empty;
+            }
         }
 
         public Guid[] GetServerInstances(Guid[] databaseDefinitions, string databaseVersion, Guid[] databaseInstances)
@@ -77,6 +85,16 @@ namespace Jhu.Graywulf.Scheduler
 
         public Guid GetNextDatabaseInstance(Guid databaseDefinition, string databaseVersion)
         {
+            if (!queueManager.Cluster.DatabaseDefinitions.ContainsKey(databaseDefinition))
+            {
+                return Guid.Empty;
+            }
+
+            if (!queueManager.Cluster.DatabaseDefinitions[databaseDefinition].DatabaseInstances.ContainsKey(databaseVersion))
+            {
+                return Guid.Empty;
+            }
+
             var q =
                 from di in queueManager.Cluster.DatabaseDefinitions[databaseDefinition].DatabaseInstances[databaseVersion].Values
                 where di.ServerInstance.IsAvailable
@@ -90,16 +108,43 @@ namespace Jhu.Graywulf.Scheduler
                 sis[i] = dis[i].ServerInstance;
             }
 
-            return sis[GetNextServerIndex(sis)].Guid;
+            if (sis.Length > 0)
+            {
+                return sis[GetNextServerIndex(sis)].Guid;
+            }
+            else
+            {
+                return Guid.Empty;
+            }
         }
 
         public Guid[] GetDatabaseInstances(Guid databaseDefinition, string databaseVersion)
         {
+            if (!queueManager.Cluster.DatabaseDefinitions.ContainsKey(databaseDefinition))
+            {
+                return null;
+            }
+
+            if (!queueManager.Cluster.DatabaseDefinitions[databaseDefinition].DatabaseInstances.ContainsKey(databaseVersion))
+            {
+                return null;
+            }
+
             return queueManager.Cluster.DatabaseDefinitions[databaseDefinition].DatabaseInstances[databaseVersion].Keys.ToArray();
         }
 
         public Guid[] GetDatabaseInstances(Guid serverInstance, Guid databaseDefinition, string databaseVersion)
         {
+            if (!queueManager.Cluster.DatabaseDefinitions.ContainsKey(databaseDefinition))
+            {
+                return null;
+            }
+
+            if (!queueManager.Cluster.DatabaseDefinitions[databaseDefinition].DatabaseInstances.ContainsKey(databaseVersion))
+            {
+                return null;
+            }
+
             var q = from di in queueManager.Cluster.DatabaseDefinitions[databaseDefinition].DatabaseInstances[databaseVersion].Values
                     where di.ServerInstance.IsAvailable && di.ServerInstance.Guid == serverInstance
                     select di.Guid;
@@ -146,59 +191,62 @@ namespace Jhu.Graywulf.Scheduler
         /// <returns></returns>
         private ServerInstance[] GetServerInstancesInternal(Guid[] databaseDefinitions, string databaseVersionName, Guid[] databaseInstances)
         {
-            // TODO: lock?
-            // TODO: for some reason it might return wrong results when database version is non-existing, check this
+            HashSet<ServerInstance> sis;
 
-            // Start with all server instances
-            var sis = new HashSet<Guid>(queueManager.Cluster.ServerInstances.Keys);
+            if (databaseDefinitions != null && databaseDefinitions.Length > 0)
+            {
+                sis = new HashSet<ServerInstance>(GetServerInstancesInternal(databaseDefinitions, databaseVersionName));
+            }
+            else
+            {
+                sis = new HashSet<ServerInstance>(GetAllAvailableServerInstances());
+            }
 
             // If there's any database instances specified then a specific server instance will be required
             if (databaseInstances != null && databaseInstances.Length > 0)
             {
-                var disis = new HashSet<Guid>();
+                var disis = new HashSet<ServerInstance>();
                 foreach (var di in databaseInstances)
                 {
                     var si = queueManager.Cluster.DatabaseInstances[di].ServerInstance;
                     if (si.IsAvailable)
                     {
-                        disis.Add(si.Guid);
+                        disis.Add(si);
                     }
                 }
 
                 sis.IntersectWith(disis);
             }
 
+            return sis.ToArray();
+        }
+
+        private ServerInstance[] GetServerInstancesInternal(Guid[] databaseDefinitions, string databaseVersionName)
+        {
+            var sis = new HashSet<ServerInstance>();
+
             foreach (var dd in databaseDefinitions)
             {
                 if (queueManager.Cluster.DatabaseDefinitions[dd].DatabaseInstances.ContainsKey(databaseVersionName))
                 {
-                    var disis = new HashSet<Guid>();
-
                     foreach (var di in queueManager.Cluster.DatabaseDefinitions[dd].DatabaseInstances[databaseVersionName].Values)
                     {
                         var si = di.ServerInstance;
 
-                        if (si.IsAvailable)
+                        if (si.IsAvailable && di.IsAvailable)
                         {
-                            disis.Add(si.Guid);
+                            sis.Add(si);
                         }
                     }
-
-                    sis.IntersectWith(disis);
                 }
             }
 
+            return sis.ToArray();
+        }
 
-            var res = new ServerInstance[sis.Count];
-
-            int q = 0;
-            foreach (var si in sis)
-            {
-                res[q] = queueManager.Cluster.ServerInstances[si];
-                q++;
-            }
-
-            return res;
+        private ServerInstance[] GetAllAvailableServerInstances()
+        {
+            return queueManager.Cluster.ServerInstances.Values.Where(i => i.IsAvailable).ToArray();
         }
     }
 }
