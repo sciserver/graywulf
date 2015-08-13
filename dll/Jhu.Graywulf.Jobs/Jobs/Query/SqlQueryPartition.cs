@@ -56,12 +56,22 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             base.PrepareExecuteQuery(context, scheduler);
 
-            // --- strip off orderBy clause -- it always goes into a table
-            var orderby = SelectStatement.FindDescendant<OrderByClause>();
-            if (orderby != null)
-            {
-                SelectStatement.Stack.Remove(orderby);
-            }
+            SubstituteDatabaseNames(AssignedServerInstance, Query.SourceDatabaseVersionName);
+            SubstituteRemoteTableNames(TemporaryDatabaseInstanceReference.Value.GetDataset(), Query.TemporaryDataset.DefaultSchemaName);
+        }
+
+        protected override string GetExecuteQueryText()
+        {
+            RewriteQueryForExecute();
+
+            var sw = new StringWriter();
+            CodeGenerator.Execute(sw, SelectStatement);
+            return sw.ToString();
+        }
+
+        protected virtual void RewriteQueryForExecute()
+        {
+            RemoveExtraTokens();
 
             var qs = SelectStatement.EnumerateQuerySpecifications().First<QuerySpecification>();
 
@@ -71,39 +81,9 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 AppendPartitioningConditions(qs, (SimpleTableSource)ts);
             }
-
-            SubstituteDatabaseNames(AssignedServerInstance, Query.SourceDatabaseVersionName);
-            SubstituteRemoteTableNames(TemporaryDatabaseInstanceReference.Value.GetDataset(), Query.TemporaryDataset.DefaultSchemaName);
         }
 
-        private void AppendPartitioningConditions(QuerySpecification qs, SimpleTableSource ts)
-        {
-            if (!IsPartitioningKeyUnbound( PartitioningKeyFrom) || !IsPartitioningKeyUnbound(PartitioningKeyTo))
-            {
-                var cg = new SqlServerCodeGenerator();
-                var column = cg.GetResolvedColumnName(ts.PartitioningColumnReference);
-                var sc = GetPartitioningConditions(column);
-
-                var where = qs.FindDescendant<WhereClause>();
-                if (where == null)
-                {
-                    where = WhereClause.Create(sc);
-                    var ws = Whitespace.Create();
-
-                    var wsn = qs.Stack.AddAfter(qs.Stack.Find(qs.FindDescendant<FromClause>()), ws);
-                    qs.Stack.AddAfter(wsn, where);
-                }
-                else
-                {
-                    where.AppendCondition(sc, "AND");
-                }
-            }
-
-            // --- remove partition clause
-            ts.Stack.Remove(ts.FindDescendant<TablePartitionClause>());
-        }
-
-        protected override string GetExecuteQueryText()
+        private void RemoveExtraTokens()
         {
             // strip off order by
             var orderby = SelectStatement.FindDescendant<OrderByClause>();
@@ -132,17 +112,33 @@ namespace Jhu.Graywulf.Jobs.Query
                     }
                 }
             }
+        }
 
-            // Generate code
-            var sw = new StringWriter();
-            var cg = new SqlServerCodeGenerator()
+        protected virtual void AppendPartitioningConditions(QuerySpecification qs, SimpleTableSource ts)
+        {
+            if (!IsPartitioningKeyUnbound( PartitioningKeyFrom) || !IsPartitioningKeyUnbound(PartitioningKeyTo))
             {
-                ResolveNames = true
-            };
+                var cg = new SqlServerCodeGenerator();
+                var column = cg.GetResolvedColumnName(ts.PartitioningColumnReference);
+                var sc = GetPartitioningConditions(column);
 
-            cg.Execute(sw, SelectStatement);
+                var where = qs.FindDescendant<WhereClause>();
+                if (where == null)
+                {
+                    where = WhereClause.Create(sc);
+                    var ws = Whitespace.Create();
 
-            return sw.ToString();
+                    var wsn = qs.Stack.AddAfter(qs.Stack.Find(qs.FindDescendant<FromClause>()), ws);
+                    qs.Stack.AddAfter(wsn, where);
+                }
+                else
+                {
+                    where.AppendCondition(sc, "AND");
+                }
+            }
+
+            // --- remove partition clause
+            ts.Stack.Remove(ts.FindDescendant<TablePartitionClause>());
         }
     }
 }

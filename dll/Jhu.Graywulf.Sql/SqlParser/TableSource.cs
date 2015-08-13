@@ -8,17 +8,16 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class TableSource : ITableReference
     {
-        private ITableSource specificTableSource;
 
         public ITableSource SpecificTableSource
         {
-            get { return specificTableSource; }
+            get { return FindSpecificTableSource(); }
         }
 
         public TableReference TableReference
         {
-            get { return specificTableSource.TableReference; }
-            set { specificTableSource.TableReference = value; }
+            get { return SpecificTableSource.TableReference; }
+            set { SpecificTableSource.TableReference = value; }
         }
 
         public QuerySpecification QuerySpecification
@@ -26,11 +25,24 @@ namespace Jhu.Graywulf.SqlParser
             get { return FindAscendant<QuerySpecification>(); }
         }
 
+        public static TableSource Create(ComputedTableSource ts)
+        {
+            var res = new TableSource();
+            res.Stack.AddLast(ts);
+            return res;
+        }
+
+        public static TableSource Create(TableReference tr)
+        {
+            var ts = new TableSource();
+            var sts = SimpleTableSource.Create(tr);
+            ts.Stack.AddLast(sts);
+            return ts;
+        }
+
         public override Node Interpret()
         {
-            specificTableSource = FindSpecificTableSource();
-
-            if (specificTableSource == null)
+            if (FindSpecificTableSource() == null)
             {
                 throw new NotImplementedException();
             }
@@ -65,13 +77,6 @@ namespace Jhu.Graywulf.SqlParser
             }
 
             return null;
-        }
-
-        public static TableSource Create(ComputedTableSource ts)
-        {
-            var res = new TableSource();
-            res.Stack.AddLast(ts);
-            return res;
         }
     }
 }

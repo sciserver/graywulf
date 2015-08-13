@@ -16,14 +16,20 @@ namespace Jhu.Graywulf.SqlParser
             set { tableReference = value; }
         }
 
-        public TableOrViewName()
+        protected override void InitializeMembers()
         {
-            InitializeMembers();
+            base.InitializeMembers();
+
+            this.tableReference = null;
         }
 
-        private void InitializeMembers()
+        protected override void CopyMembers(object other)
         {
-            this.tableReference = null;
+            base.CopyMembers(other);
+
+            var old = (TableOrViewName)other;
+
+            this.tableReference = old.tableReference;
         }
 
         public static TableOrViewName Create(TableReference tr)

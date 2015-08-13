@@ -9,16 +9,20 @@ namespace Jhu.Graywulf.ParserLib
     /// <summary>
     /// Represents a token that matches keywords
     /// </summary>
-    public class Literal : Token
+    public class Literal : Token, ICloneable
     {
-        private Regex pattern = new Regex(@"\G[a-zA-Z][a-zA-Z0-9_]*");
+        #region Private members variables
+
+        private static readonly Regex pattern = new Regex(@"\G[a-zA-Z][a-zA-Z0-9_]*", RegexOptions.Compiled);
+        private string literalText;
+
+        #endregion
+        #region Properties
 
         protected Regex Pattern
         {
             get { return pattern; }
         }
-
-        private string literalText;
 
         protected string LiteralText
         {
@@ -26,31 +30,45 @@ namespace Jhu.Graywulf.ParserLib
             set { literalText = value; }
         }
 
+        #endregion
+        #region Constructors and initializers
+
         public Literal()
             : base()
         {
-            InitializeMembers();
-        }
-
-        public Literal(string literalText)
-        {
-            InitializeMembers();
-            Value = this.literalText = literalText;
         }
 
         public Literal(Literal old)
             :base(old)
         {
-            CopyMembers(old);
         }
 
-        private void InitializeMembers()
+        public Literal(string literalText)
+            : this()
         {
+            Value = this.literalText = literalText;
         }
 
-        private void CopyMembers(Literal old)
+        protected override void InitializeMembers()
         {
+            base.InitializeMembers();
+
+            this.literalText = null;
         }
+
+        protected override void CopyMembers(object other)
+        {
+            var old = (Literal)other;
+
+            this.literalText = old.literalText;
+        }
+
+        public override object Clone()
+        {
+            return new Literal(this);
+        }
+
+        #endregion
 
         public static Literal Create(string literalText)
         {

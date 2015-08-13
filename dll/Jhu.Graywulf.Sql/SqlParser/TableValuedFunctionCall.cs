@@ -32,14 +32,20 @@ namespace Jhu.Graywulf.SqlParser
             get { return UdfIdentifier != null; }
         }
 
-        public TableValuedFunctionCall()
+        protected override void InitializeMembers()
         {
-            InitializeMembers();
+            base.InitializeMembers();
+
+            this.tableReference = null;
         }
 
-        private void InitializeMembers()
+        protected override void CopyMembers(object other)
         {
-            this.tableReference = null;
+            base.CopyMembers(other);
+
+            var old = (TableValuedFunctionCall)other;
+
+            this.tableReference = old.tableReference;
         }
 
         public override Node Interpret()

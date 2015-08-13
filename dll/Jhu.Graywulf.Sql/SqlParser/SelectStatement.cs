@@ -39,26 +39,6 @@ namespace Jhu.Graywulf.SqlParser
             }
         }
 
-        public SelectStatement()
-            : base()
-        {
-            InitializeMembers();
-        }
-
-        public SelectStatement(SelectStatement old)
-            : base(old)
-        {
-            CopyMembers(old);
-        }
-
-        private void InitializeMembers()
-        {
-        }
-
-        private void CopyMembers(SelectStatement old)
-        {
-        }
-
         public IEnumerable<QuerySpecification> EnumerateQuerySpecifications()
         {
             return QueryExpression.EnumerateDescendants<QuerySpecification>();

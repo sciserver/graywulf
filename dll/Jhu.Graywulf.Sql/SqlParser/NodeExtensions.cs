@@ -34,13 +34,6 @@ namespace Jhu.Graywulf.SqlParser
                     }
                 }
 
-                /* **** TODO: move to SQ
-                if (o is Node && !(o is Subquery) && !(o is XMatchHavingClause))
-                {
-                    FindTableReferences((Node)o, tableReferences);
-                }
-                 * */
-
                 if (o is Node && !(o is Subquery))
                 {
                     FindTableReferences((Node)o, tableReferences);

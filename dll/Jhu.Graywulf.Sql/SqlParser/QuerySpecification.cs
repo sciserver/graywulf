@@ -29,35 +29,36 @@ namespace Jhu.Graywulf.SqlParser
 
         public SelectList SelectList
         {
-            get
-            {
-                return FindDescendant<SelectList>();
-            }
+            get { return FindDescendant<SelectList>(); }
+        }
+
+        public FromClause FromClause
+        {
+            get { return FindDescendant<FromClause>(); }
+        }
+
+        public WhereClause WhereClause
+        {
+            get { return FindDescendant<WhereClause>(); }
         }
 
         #endregion
         #region Constructors and initializers
 
-        public QuerySpecification()
-            : base()
+        protected override void InitializeMembers()
         {
-            InitializeMembers();
-        }
+            base.InitializeMembers();
 
-        public QuerySpecification(QuerySpecification old)
-            : base(old)
-        {
-            CopyMembers(old);
-        }
-
-        private void InitializeMembers()
-        {
             this.sourceTableReferences = new Dictionary<string, TableReference>(Schema.SchemaManager.Comparer);
             this.resultsTableReference = new TableReference(this);
         }
 
-        private void CopyMembers(QuerySpecification old)
+        protected override void CopyMembers(object other)
         {
+            base.CopyMembers(other);
+
+            var old = (QuerySpecification)other;
+
             this.sourceTableReferences = new Dictionary<string, TableReference>(old.sourceTableReferences);
             this.resultsTableReference = new TableReference(old.resultsTableReference);
         }
@@ -202,5 +203,46 @@ namespace Jhu.Graywulf.SqlParser
                 }
             }
         }
+
+        #region Query construction functions
+
+        public void AppendWhereClause(WhereClause where)
+        {
+            if (where == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (WhereClause != null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            // The where clause follows the from clause but a
+            // whitespace needs to be added first
+            var ws = Whitespace.CreateNewLine();
+            var wsn = Stack.AddAfter(Stack.Find(FromClause), ws);
+            Stack.AddAfter(wsn, where);
+        }
+
+        public void AppendSearchCondition(SearchCondition condition, string op)
+        {
+            if (condition == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            WhereClause where = WhereClause;
+
+            if (where == null)
+            {
+                where = WhereClause.Create(condition);
+                AppendWhereClause(where);
+            }
+
+            where.AppendCondition(condition, op);
+        }
+
+        #endregion
     }
 }

@@ -8,10 +8,6 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class LogicalOperator
     {
-        public LogicalOperator()
-        {
-        }
-
         public bool IsOr
         {
             get

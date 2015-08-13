@@ -8,11 +8,6 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class SearchCondition
     {
-        public SearchCondition()
-            : base()
-        {
-        }
-
         #region Instance creation
 
         public static SearchCondition Create()

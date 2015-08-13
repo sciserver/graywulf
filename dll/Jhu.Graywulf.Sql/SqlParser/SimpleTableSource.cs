@@ -7,6 +7,7 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class SimpleTableSource : ITableSource
     {
+
         public TableOrViewName TableOrViewName
         {
             get { return FindDescendant<TableOrViewName>(); }
@@ -66,6 +67,24 @@ namespace Jhu.Graywulf.SqlParser
         public bool IsPartitioned
         {
             get { return FindDescendant<TablePartitionClause>() != null; }
+        }
+
+        public static SimpleTableSource Create(TableReference tr)
+        {
+            var ts = new SimpleTableSource();
+            var name = TableOrViewName.Create(tr);
+
+            ts.Stack.AddLast(name);
+
+            if (!String.IsNullOrWhiteSpace(tr.Alias))
+            {
+                ts.Stack.AddLast(Whitespace.Create());
+                ts.Stack.AddLast(Keyword.Create("AS"));
+                ts.Stack.AddLast(Whitespace.Create());
+                ts.Stack.AddLast(TableAlias.Create(tr.Alias));
+            }
+
+            return ts;
         }
 
         public override Node Interpret()

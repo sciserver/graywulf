@@ -127,6 +127,20 @@ namespace Jhu.Graywulf.SqlParser
             CopyMembers(old);
         }
 
+        protected DatabaseObjectReference(DatabaseObject databaseObject)
+        {
+            InitializeMembers();
+
+            this.node = null;
+
+            this.databaseObject = databaseObject;
+
+            this.datasetName = databaseObject.DatasetName;
+            this.databaseName = databaseObject.DatabaseName;
+            this.schemaName = databaseObject.SchemaName;
+            this.databaseObjectName = databaseObject.ObjectName;
+        }
+
         private void InitializeMembers()
         {
             this.node = null;

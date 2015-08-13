@@ -90,6 +90,7 @@
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="SqlParser\Expression.cs" />
+    <Compile Include="SqlParser\FromClause.cs" />
     <Compile Include="SqlParser\FunctionCall.cs" />
     <Compile Include="SqlParser\FunctionIdentifier.cs" />
     <Compile Include="SqlParser\FunctionReference.cs" />
@@ -100,6 +101,8 @@
     <Compile Include="SqlParser\IntoClause.cs" />
     <Compile Include="SqlParser\ITableReference.cs" />
     <Compile Include="SqlParser\ITableSource.cs" />
+    <Compile Include="SqlParser\JoinedTable.cs" />
+    <Compile Include="SqlParser\JoinType.cs" />
     <Compile Include="SqlParser\LogicalExpressions\BinaryExpression.cs" />
     <Compile Include="SqlParser\LogicalExpressions\Brackets.cs" />
     <Compile Include="SqlParser\LogicalExpressions\CnfConverter.cs" />

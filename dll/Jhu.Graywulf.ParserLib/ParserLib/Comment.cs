@@ -5,16 +5,20 @@ using System.Text;
 
 namespace Jhu.Graywulf.ParserLib
 {
-    public abstract class Comment : Terminal
+    public abstract class Comment : Terminal, ICloneable
     {
-        public Comment()
+        #region Constructors and initializers
+
+        protected Comment()
             : base()
         {
         }
 
-        public Comment(Comment old)
+        protected Comment(Comment old)
             : base(old)
         {
         }
+
+        #endregion
     }
 }

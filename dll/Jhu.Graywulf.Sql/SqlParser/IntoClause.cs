@@ -8,34 +8,15 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class IntoClause : ITableReference
     {
-        TableOrViewName tableName;
+        public TableOrViewName TableName
+        {
+            get { return FindDescendant<TableOrViewName>(); }
+        }
 
         public TableReference TableReference
         {
-            get { return tableName.TableReference; }
-            set { tableName.TableReference = value; }
-        }
-
-        /* TODO: delete
-        public Token TableNameToken
-        {
-            get { return tableName.Token; }
-        }*/
-
-        public IntoClause()
-        {
-        }
-
-        private void InitializeMembers()
-        {
-            this.tableName = null;
-        }
-
-        public override Node Interpret()
-        {
-            this.tableName = FindDescendant<TableOrViewName>();
-
-            return base.Interpret();
+            get { return TableName.TableReference; }
+            set { TableName.TableReference = value; }
         }
     }
 }

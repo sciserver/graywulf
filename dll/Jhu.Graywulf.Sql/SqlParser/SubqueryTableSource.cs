@@ -11,18 +11,12 @@ namespace Jhu.Graywulf.SqlParser
     {
         public SelectStatement SelectStatement
         {
-            get
-            {
-                return FindDescendant<Subquery>().SelectStatement;
-            }
+            get { return FindDescendant<Subquery>().SelectStatement; }
         }
 
         public QueryExpression QueryExpression
         {
-            get
-            {
-                return SelectStatement.QueryExpression;
-            }
+            get { return SelectStatement.QueryExpression; }
         }
 
         public TableReference TableReference

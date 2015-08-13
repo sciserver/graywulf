@@ -8,6 +8,36 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class ColumnIdentifier : ITableReference, IColumnReference
     {
+        private ColumnReference columnReference;
+
+        public ColumnReference ColumnReference
+        {
+            get { return columnReference; }
+            set { columnReference = value; }
+        }
+
+        public TableReference TableReference
+        {
+            get { return columnReference.TableReference; }
+            set { columnReference.TableReference = value; }
+        }
+
+        protected override void InitializeMembers()
+        {
+            base.InitializeMembers();
+
+            this.columnReference = null;
+        }
+
+        protected override void CopyMembers(object other)
+        {
+            base.CopyMembers(other);
+
+            var old = (ColumnIdentifier)other;
+
+            this.columnReference = old.columnReference;
+        }
+
         public static ColumnIdentifier Create(ColumnReference cr)
         {
             var nci = new ColumnIdentifier();
@@ -25,30 +55,6 @@ namespace Jhu.Graywulf.SqlParser
             nci.Stack.AddLast(ColumnName.Create(cr.ColumnName));
 
             return nci;
-        }
-
-        private ColumnReference columnReference;
-
-        public ColumnReference ColumnReference
-        {
-            get { return columnReference; }
-            set { columnReference = value; }
-        }
-
-        public TableReference TableReference
-        {
-            get { return columnReference.TableReference; }
-            set { columnReference.TableReference = value; }
-        }
-        
-        public ColumnIdentifier()
-        {
-            InitializeMembers();
-        }
-
-        private void InitializeMembers()
-        {
-            this.columnReference = null;
         }
 
         public override Node Interpret()

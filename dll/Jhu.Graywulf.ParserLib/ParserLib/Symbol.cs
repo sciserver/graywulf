@@ -8,38 +8,35 @@ namespace Jhu.Graywulf.ParserLib
     /// <summary>
     /// Represents a token that matches a symbol
     /// </summary>
-    public abstract class Symbol : Token
+    public abstract class Symbol : Token, ICloneable
     {
+        #region Properties
+
         protected abstract string Pattern
         {
             get;
         }
 
-        public Symbol()
-            : base()
+        #endregion
+        #region Constructors and initializers
+
+        protected Symbol()
+            :base()
         {
-            InitializeMembers();
         }
 
-        public Symbol(string symbol)
+        protected Symbol(Symbol old)
+            : base(old)
         {
-            InitializeMembers();
+        }
+
+        protected Symbol(string symbol)
+            :this()
+        {
             Value = symbol;
         }
 
-        public Symbol(Symbol old)
-            :base(old)
-        {
-            CopyMembers(old);
-        }
-
-        private void InitializeMembers()
-        {
-        }
-
-        private void CopyMembers(Symbol old)
-        {
-        }
+        #endregion
 
         public sealed override bool Match(Parser parser)
         {

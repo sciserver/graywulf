@@ -14,5 +14,13 @@ namespace Jhu.Graywulf.SqlParser
 
             return ws;
         }
+
+        public static Whitespace CreateNewLine()
+        {
+            var ws = new Whitespace();
+            ws.Value = "\r\n";
+
+            return ws;
+        }
     }
 }

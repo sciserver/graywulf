@@ -27,6 +27,22 @@ namespace Jhu.Graywulf.SqlParser
             get { return false; }
         }
 
+        protected override void InitializeMembers()
+        {
+            base.InitializeMembers();
+
+            this.tableReference = null;
+        }
+
+        protected override void CopyMembers(object other)
+        {
+            base.CopyMembers(other);
+
+            var old = (VariableTableSource)other;
+
+            this.tableReference = old.tableReference;
+        }
+
         public override Node Interpret()
         {
             this.tableReference = new TableReference(this);

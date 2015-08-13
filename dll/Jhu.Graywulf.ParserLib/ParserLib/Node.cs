@@ -11,9 +11,14 @@ namespace Jhu.Graywulf.ParserLib
     /// <remarks>
     /// All tokens matching complex rules derive from this class
     /// </remarks>
-    public abstract class Node : Token
+    public abstract class Node : Token, ICloneable
     {
+        #region Private member variables
+
         private LinkedList<Token> stack;
+
+        #endregion
+        #region Properties
 
         public LinkedList<Token> Stack
         {
@@ -65,28 +70,43 @@ namespace Jhu.Graywulf.ParserLib
             }
         }
 
-        public Node()
-            : base()
+        #endregion
+        #region Constructors and initializers
+
+        protected Node()
+            :base()
         {
-            InitializeMembers();
         }
 
-        public Node(Node old)
+        protected Node(Node old)
             :base(old)
         {
-            CopyMembers(old);
         }
 
-        private void InitializeMembers()
+        protected override void InitializeMembers()
         {
+            base.InitializeMembers();
+
             this.stack = new LinkedList<Token>();
         }
 
-        private void CopyMembers(Node old)
+        protected override void CopyMembers(object other)
         {
-            // TODO: do deep copy here?
-            this.stack = new LinkedList<Token>(old.stack);
+            base.CopyMembers(other);
+
+            var old = (Node)other;
+
+            this.stack = new LinkedList<Token>();
+
+            foreach (var t in old.stack)
+            {
+                var nt = (Token)t.Clone();
+                nt.Parent = this;
+                this.stack.AddLast(nt);
+            }
         }
+        
+        #endregion
 
         /// <summary>
         /// Matches a token

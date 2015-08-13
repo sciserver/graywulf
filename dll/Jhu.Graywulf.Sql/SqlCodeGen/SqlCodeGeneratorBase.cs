@@ -180,6 +180,18 @@ namespace Jhu.Graywulf.SqlCodeGen
             }
         }
 
+        public string GetUniqueName(TableReference table)
+        {
+            if (table.IsSubquery || table.IsComputed || !String.IsNullOrWhiteSpace(table.Alias))
+            {
+                return QuoteIdentifier(table.Alias);
+            }
+            else
+            {
+                return GetResolvedTableName(table);
+            }
+        }
+
         public string GetResolvedTableName(DatabaseObject table)
         {
             return GetResolvedTableName(table.DatabaseName, table.SchemaName, table.ObjectName);

@@ -16,6 +16,22 @@ namespace Jhu.Graywulf.SqlParser
             set { tableReference = value; }
         }
 
+        protected override void InitializeMembers()
+        {
+            base.InitializeMembers();
+
+            this.tableReference = null;
+        }
+
+        protected override void CopyMembers(object other)
+        {
+            base.CopyMembers(other);
+
+            var old = (QueryExpression)other;
+
+            this.tableReference = old.tableReference;
+        }
+
         public override Node Interpret()
         {
             // Subqueries already initialize this

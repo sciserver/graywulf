@@ -10,33 +10,29 @@ namespace Jhu.Graywulf.ParserLib
     /// Represents a token that matches a terminal
     /// defined by a regular expression
     /// </summary>
-    public abstract class Terminal : Token
+    public abstract class Terminal : Token, ICloneable
     {
+        #region Properties
+
         protected abstract Regex Pattern
         {
             get;
         }
 
-        
-        public Terminal()
+        #endregion
+        #region Constructors and initializers
+
+        protected Terminal()
             :base()
         {
-            InitializeMembers();
         }
 
-        public Terminal(Terminal old)
-            : base(old)
-        {
-            CopyMembers(old);
-        }
-
-        private void InitializeMembers()
+        protected Terminal(Terminal old)
+            :base(old)
         {
         }
 
-        private void CopyMembers(Terminal old)
-        {
-        }
+        #endregion
 
         public sealed override bool Match(Parser parser)
         {

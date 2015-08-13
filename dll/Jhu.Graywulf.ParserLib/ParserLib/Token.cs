@@ -8,14 +8,19 @@ namespace Jhu.Graywulf.ParserLib
     /// <summary>
     /// Represents a token
     /// </summary>
-    public abstract class Token
+    public abstract class Token : ICloneable
     {
+        #region Private member variables
+
         protected int pos;
         protected int line;
         protected int col;
         private string value;
 
         private Node parent;
+
+        #endregion
+        #region Properties
 
         public int Pos
         {
@@ -44,7 +49,9 @@ namespace Jhu.Graywulf.ParserLib
             set { parent = value; }
         }
 
-        
+        #endregion
+        #region Constructors and initializers
+
         public Token()
         {
             InitializeMembers();
@@ -55,7 +62,7 @@ namespace Jhu.Graywulf.ParserLib
             CopyMembers(old);
         }
 
-        private void InitializeMembers()
+        protected virtual void InitializeMembers()
         {
             this.pos = -1;
             this.line = -1;
@@ -65,8 +72,10 @@ namespace Jhu.Graywulf.ParserLib
             this.parent = null;
         }
 
-        private void CopyMembers(Token old)
+        protected virtual void CopyMembers(object other)
         {
+            var old = (Token)other;
+
             this.pos = old.pos;
             this.line = old.line;
             this.col = old.col;
@@ -74,6 +83,10 @@ namespace Jhu.Graywulf.ParserLib
 
             this.parent = old.parent;
         }
+
+        public abstract object Clone();
+
+        #endregion
 
         public abstract bool Match(Parser parser);
 

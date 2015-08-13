@@ -134,6 +134,25 @@ namespace Jhu.Graywulf.SqlParser
             CopyMembers(old);
         }
 
+        public TableReference(TableOrView table, string alias)
+            :base(table)
+        {
+            this.alias = alias;
+
+            this.isTableOrView = true;
+            this.isUdf = false;
+            this.isSubquery = false;
+            this.isComputed = false;
+
+            this.statistics = null;
+
+            this.columnReferences = new List<ColumnReference>();
+            foreach (var c in table.Columns.Values)
+            {
+                columnReferences.Add(new ColumnReference(this, c));
+            }
+        }
+
         public TableReference(QueryExpression qe)
         {
             InitializeMembers();

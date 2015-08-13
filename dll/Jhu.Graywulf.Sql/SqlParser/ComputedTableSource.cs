@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.SqlParser
 {
-    public class ComputedTableSource : Jhu.Graywulf.ParserLib.Node
+    public class ComputedTableSource : Jhu.Graywulf.ParserLib.Node, ICloneable
     {
         private TableReference tableReference;
 
@@ -13,6 +13,37 @@ namespace Jhu.Graywulf.SqlParser
         {
             get { return tableReference; }
             set { tableReference = value; }
+        }
+
+        public ComputedTableSource()
+            : base()
+        {
+        }
+
+        public ComputedTableSource(ComputedTableSource old)
+            : base(old)
+        {
+        }
+
+        protected override void InitializeMembers()
+        {
+            base.InitializeMembers();
+
+            this.tableReference = null;
+        }
+
+        protected override void CopyMembers(object other)
+        {
+            base.CopyMembers(other);
+
+            var old = (ComputedTableSource)other;
+
+            this.tableReference = old.tableReference;
+        }
+
+        public override object Clone()
+        {
+            return new ComputedTableSource(this);
         }
 
         public override bool Match(ParserLib.Parser parser)

@@ -26,14 +26,20 @@ namespace Jhu.Graywulf.SqlParser
             set { columnReference.TableReference = value; }
         }
 
-        public ColumnExpression()
+        protected override void InitializeMembers()
         {
-            InitializeMembers();
+            base.InitializeMembers();
+
+            this.columnReference = null;
         }
 
-        private void InitializeMembers()
+        protected override void CopyMembers(object other)
         {
-            this.columnReference = null;
+            base.CopyMembers(other);
+
+            var old = (ColumnExpression)other;
+
+            this.columnReference = old.columnReference;
         }
 
         public override Node Interpret()

@@ -14,15 +14,15 @@ namespace Jhu.Graywulf.ParserLib
     /// terminals in the sense that they can be omitted
     /// when traversing the parsing tree
     /// </remarks>
-    public abstract class Whitespace : Terminal
+    public abstract class Whitespace : Terminal, ICloneable
     {
-        public Whitespace()
+        protected Whitespace()
             :base()
         {
         }
 
-        public Whitespace(Whitespace old)
-            : base(old)
+        protected Whitespace(Whitespace old)
+            :base(old)
         {
         }
     }

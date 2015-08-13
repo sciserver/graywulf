@@ -9,35 +9,33 @@ namespace Jhu.Graywulf.ParserLib
     /// <summary>
     /// Represents a token that matches keywords
     /// </summary>
-    public sealed class Keyword : Literal
+    public sealed class Keyword : Literal, ICloneable
     {
+        #region Constructors and initializers
+
         public Keyword()
             : base()
         {
-            InitializeMembers();
-        }
-
-        public Keyword(string keyword)
-            :base(keyword)
-        {
-            InitializeMembers();
         }
 
         public Keyword(Keyword old)
             :base(old)
         {
-            CopyMembers(old);
         }
 
-        private void InitializeMembers()
+        public Keyword(string keyword)
+            :base(keyword)
         {
         }
 
-        private void CopyMembers(Keyword old)
+        public override object Clone()
         {
+            return new Keyword(this);
         }
 
-        public static Keyword Create(string keyword)
+        #endregion
+
+        public static new Keyword Create(string keyword)
         {
             var res = new Keyword();
 

@@ -124,7 +124,7 @@ namespace Jhu.Graywulf.Jobs.Query
                         }
 
                         var stat = TableSourceStatistics[0].TableReference.Statistics;
-                        GeneratePartitions(partitionCount, stat);
+                        GeneratePartitionsInternal(partitionCount, stat);
                     }
                     break;
                 default:
@@ -137,9 +137,10 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="partitionCount"></param>
         /// <param name="stat"></param>
-        private void GeneratePartitions(int partitionCount, SqlParser.TableStatistics stat)
+        private void GeneratePartitionsInternal(int partitionCount, SqlParser.TableStatistics stat)
         {
             // TODO: fix issue with repeating keys!
+            // Maybe just throw those partitions away?
 
             SqlQueryPartition qp = null;
             int s = stat.KeyValue.Count / partitionCount;
