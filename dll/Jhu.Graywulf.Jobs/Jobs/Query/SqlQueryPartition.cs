@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Configuration;
 using System.IO;
+using System.Runtime.Serialization;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.IO;
@@ -22,13 +23,13 @@ namespace Jhu.Graywulf.Jobs.Query
         public SqlQueryPartition()
             : base()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         public SqlQueryPartition(SqlQuery query, Context context)
             : base(query, context)
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
 
         public SqlQueryPartition(SqlQueryPartition old)
@@ -37,7 +38,8 @@ namespace Jhu.Graywulf.Jobs.Query
             CopyMembers(old);
         }
 
-        private void InitializeMembers()
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
         {
         }
 
@@ -56,89 +58,16 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             base.PrepareExecuteQuery(context, scheduler);
 
-            SubstituteDatabaseNames(AssignedServerInstance, Query.SourceDatabaseVersionName);
-            SubstituteRemoteTableNames(TemporaryDatabaseInstanceReference.Value.GetDataset(), Query.TemporaryDataset.DefaultSchemaName);
+            SubstituteDatabaseNames(SelectStatement, AssignedServerInstance, Query.SourceDatabaseVersionName);
+            SubstituteRemoteTableNames(SelectStatement, TemporaryDatabaseInstanceReference.Value.GetDataset(), Query.TemporaryDataset.DefaultSchemaName);
         }
 
         protected override string GetExecuteQueryText()
         {
-            RewriteQueryForExecute();
-
-            var sw = new StringWriter();
-            CodeGenerator.Execute(sw, SelectStatement);
-            return sw.ToString();
-        }
-
-        protected virtual void RewriteQueryForExecute()
-        {
-            RemoveExtraTokens();
-
-            var qs = SelectStatement.EnumerateQuerySpecifications().First<QuerySpecification>();
-
-            // Check if it is a partitioned query and append partitioning conditions, if necessary
-            var ts = qs.EnumerateSourceTables(false).FirstOrDefault();
-            if (ts != null && ts is SimpleTableSource && ((SimpleTableSource)ts).IsPartitioned)
-            {
-                AppendPartitioningConditions(qs, (SimpleTableSource)ts);
-            }
-        }
-
-        private void RemoveExtraTokens()
-        {
-            // strip off order by
-            var orderby = SelectStatement.FindDescendant<OrderByClause>();
-            if (orderby != null)
-            {
-                SelectStatement.Stack.Remove(orderby);
-            }
-
-            // strip off partition on
-            foreach (var qs in SelectStatement.EnumerateQuerySpecifications())
-            {
-                // strip off select into
-                var into = qs.FindDescendant<IntoClause>();
-                if (into != null)
-                {
-                    qs.Stack.Remove(into);
-                }
-
-                foreach (var ts in qs.EnumerateDescendantsRecursive<SimpleTableSource>())
-                {
-                    var pc = ts.FindDescendant<TablePartitionClause>();
-
-                    if (pc != null)
-                    {
-                        pc.Parent.Stack.Remove(pc);
-                    }
-                }
-            }
-        }
-
-        protected virtual void AppendPartitioningConditions(QuerySpecification qs, SimpleTableSource ts)
-        {
-            if (!IsPartitioningKeyUnbound( PartitioningKeyFrom) || !IsPartitioningKeyUnbound(PartitioningKeyTo))
-            {
-                var cg = new SqlServerCodeGenerator();
-                var column = cg.GetResolvedColumnName(ts.PartitioningColumnReference);
-                var sc = GetPartitioningConditions(column);
-
-                var where = qs.FindDescendant<WhereClause>();
-                if (where == null)
-                {
-                    where = WhereClause.Create(sc);
-                    var ws = Whitespace.Create();
-
-                    var wsn = qs.Stack.AddAfter(qs.Stack.Find(qs.FindDescendant<FromClause>()), ws);
-                    qs.Stack.AddAfter(wsn, where);
-                }
-                else
-                {
-                    where.AppendCondition(sc, "AND");
-                }
-            }
-
-            // --- remove partition clause
-            ts.Stack.Remove(ts.FindDescendant<TablePartitionClause>());
+            // Take a copy of the parsing tree
+            var selectStatement = new SelectStatement(SelectStatement);
+            CodeGenerator.RewriteQueryForExecute(selectStatement, PartitioningKeyFrom, PartitioningKeyTo);
+            return CodeGenerator.Execute(selectStatement);
         }
     }
 }

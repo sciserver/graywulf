@@ -58,6 +58,8 @@ namespace Jhu.Graywulf.ParserLib
 
         protected override void CopyMembers(object other)
         {
+            base.CopyMembers(other);
+
             var old = (Literal)other;
 
             this.literalText = old.literalText;

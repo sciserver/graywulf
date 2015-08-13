@@ -43,15 +43,20 @@ namespace Jhu.Graywulf.SqlParser
             var nci = new ColumnIdentifier();
             nci.ColumnReference = cr;
 
-            if (String.IsNullOrEmpty(cr.TableReference.Alias))
+            if (!cr.TableReference.IsUndefined)
             {
-                nci.Stack.AddLast(TableName.Create(cr.TableReference.DatabaseObjectName));
+                if (String.IsNullOrEmpty(cr.TableReference.Alias))
+                {
+                    nci.Stack.AddLast(TableName.Create(cr.TableReference.DatabaseObjectName));
+                    nci.Stack.AddLast(Dot.Create());
+                }
+                else
+                {
+                    nci.Stack.AddLast(TableName.Create(cr.TableReference.Alias));
+                    nci.Stack.AddLast(Dot.Create());
+                }
             }
-            else
-            {
-                nci.Stack.AddLast(TableName.Create(cr.TableReference.Alias));
-            }
-            nci.Stack.AddLast(Dot.Create());
+
             nci.Stack.AddLast(ColumnName.Create(cr.ColumnName));
 
             return nci;

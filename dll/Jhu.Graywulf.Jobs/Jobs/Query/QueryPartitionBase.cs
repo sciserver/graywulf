@@ -23,9 +23,6 @@ namespace Jhu.Graywulf.Jobs.Query
     [Serializable]
     public abstract class QueryPartitionBase : QueryObject
     {
-        protected const string keyFromParameterName = "@keyFrom";
-        protected const string keyToParameterName = "@keyTo";
-
         #region Property storage variables
 
         private int id;
@@ -340,16 +337,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             q.Dataset = GetTemporaryDatabaseDataset();
             q.Query = GetExecuteQueryText();
-
-            if (!IsPartitioningKeyUnbound(partitioningKeyFrom))
-            {
-                q.Parameters.Add(keyFromParameterName, partitioningKeyFrom);
-            }
-
-            if (!IsPartitioningKeyUnbound(partitioningKeyTo))
-            {
-                q.Parameters.Add(keyToParameterName, partitioningKeyTo);
-            }
+            CodeGenerator.AppendPartitioningConditionParameters(q, partitioningKeyFrom, partitioningKeyTo);
 
             return q;
         }
@@ -559,58 +547,5 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
-
-        protected virtual bool IsPartitioningKeyUnbound(object key)
-        {
-            return key == null;
-        }
-
-        protected SearchCondition GetPartitioningConditions(string keyCol)
-        {
-            string format;
-
-            if (!IsPartitioningKeyUnbound(PartitioningKeyFrom) && !IsPartitioningKeyUnbound(PartitioningKeyTo))
-            {
-                format = "({1} <= {0} AND {0} < {2})";
-            }
-            else if (!IsPartitioningKeyUnbound(PartitioningKeyTo))
-            {
-                format = "({0} < {2})";
-            }
-            else if (!IsPartitioningKeyUnbound(PartitioningKeyFrom))
-            {
-                format = "({1} <= {0})";
-            }
-            else
-            {
-                return null;
-            }
-
-            string sql = String.Format(format, keyCol, keyFromParameterName, keyToParameterName);
-
-            var parser = new Jhu.Graywulf.SqlParser.SqlParser();
-            var sc = (SearchCondition)parser.Execute(new SearchCondition(), sql);
-
-            return sc;
-        }
-
-        protected void AppendPartitioningConditionParameters(SqlCommand cmd)
-        {
-            if (!IsPartitioningKeyUnbound(partitioningKeyFrom))
-            {
-                var par = cmd.CreateParameter();
-                par.ParameterName = keyFromParameterName;
-                par.Value = partitioningKeyFrom;
-                cmd.Parameters.Add(par);
-            }
-
-            if (!IsPartitioningKeyUnbound(partitioningKeyTo))
-            {
-                var par = cmd.CreateParameter();
-                par.ParameterName = keyToParameterName;
-                par.Value = partitioningKeyTo;
-                cmd.Parameters.Add(par);
-            }
-        }
     }
 }

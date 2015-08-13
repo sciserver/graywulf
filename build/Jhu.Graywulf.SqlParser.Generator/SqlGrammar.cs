@@ -30,8 +30,8 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Symbol> NotEquals = () => @"!=";
         public static Expression<Symbol> NotLessThan = () => @"!<";
         public static Expression<Symbol> NotGreaterThan = () => @"!>";
-        public static Expression<Symbol> LessOrEqualThan = () => @"<=";
-        public static Expression<Symbol> GreaterOrEqualThan = () => @">=";
+        public static Expression<Symbol> LessThanOrEqual = () => @"<=";
+        public static Expression<Symbol> GreaterThanOrEqual = () => @">=";
         public static Expression<Symbol> LessThan = () => @"<";
         public static Expression<Symbol> GreaterThan = () => @">";
 
@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
             Must(BitwiseAnd, BitwiseOr, BitwiseXor);
         public static Expression<Rule> ComparisonOperator = () =>
             Must(Equals2, Equals, LessOrGreaterThan, NotEquals,
-            NotLessThan, NotGreaterThan, LessOrEqualThan, GreaterOrEqualThan,
+            NotLessThan, NotGreaterThan, LessThanOrEqual, GreaterThanOrEqual,
             LessThan, GreaterThan);
 
         #endregion
@@ -113,6 +113,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 Must
                 (
                     ExpressionBrackets,
+                    UdtFunctionCall,
                     FunctionCall,
                     Sequence(UnaryOperator, May(CommentOrWhitespace), Number),
                     Sequence(UnaryOperator, May(CommentOrWhitespace), AnyVariable),
@@ -267,6 +268,13 @@ namespace Jhu.Graywulf.SqlParser.Generator
                 May(CommentOrWhitespace),
                 Argument,
                 May(Sequence(May(CommentOrWhitespace), Comma, ArgumentList))
+            );
+
+        public static Expression<Rule> UdtFunctionCall = () =>
+            Sequence
+            (
+                UdtFunctionIdentifier,
+                FunctionArguments
             );
 
         public static Expression<Rule> FunctionCall = () =>

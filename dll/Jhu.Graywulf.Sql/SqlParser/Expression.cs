@@ -59,5 +59,16 @@ namespace Jhu.Graywulf.SqlParser
 
             return nex;
         }
+
+        public static Expression Create(Variable var)
+        {
+            var nex = new Expression();
+            var avr = new AnyVariable();
+
+            avr.Stack.AddLast(var);
+            nex.Stack.AddLast(avr);
+
+            return nex;
+        }
     }
 }

@@ -25,11 +25,11 @@ namespace Jhu.Graywulf.SqlParser
             var cond = this.FindDescendant<SearchCondition>();
             this.Stack.Remove(cond);
 
-            SearchConditionBrackets br1 = SearchConditionBrackets.Create(sc);
-            SearchConditionBrackets br2 = SearchConditionBrackets.Create(cond);
+            var br1 = SearchConditionBrackets.Create(sc);
+            var br2 = SearchConditionBrackets.Create(cond);
 
             var op = LogicalOperator.Create(opstring);
-            cond = SearchCondition.Create(br1, op, SearchCondition.Create(false, br2));
+            cond = SearchCondition.Create(br1, SearchCondition.Create(false, br2), op);
 
             this.Stack.AddLast(cond);
         }

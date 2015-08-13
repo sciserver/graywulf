@@ -36,11 +36,22 @@ namespace Jhu.Graywulf.SqlParser
             return CreateInternal(negated, brackets);
         }
 
-        public static SearchCondition Create(SearchConditionBrackets br, LogicalOperator op, SearchCondition sc)
+        public static SearchCondition Create(SearchCondition a, SearchCondition b, LogicalOperator op)
         {
             var nsc = new SearchCondition();
 
-            // TODO: add whitespaces here
+            nsc.Stack.AddLast(a);
+            nsc.Stack.AddLast(Whitespace.Create());
+            nsc.Stack.AddLast(op);
+            nsc.Stack.AddLast(Whitespace.Create());
+            nsc.Stack.AddLast(b);
+
+            return nsc;
+        }
+
+        public static SearchCondition Create(SearchConditionBrackets br, SearchCondition sc, LogicalOperator op)
+        {
+            var nsc = new SearchCondition();
 
             nsc.Stack.AddLast(br);
             nsc.Stack.AddLast(Whitespace.Create());

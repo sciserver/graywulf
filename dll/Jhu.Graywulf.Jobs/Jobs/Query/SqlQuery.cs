@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Jobs.Query
 {
     [Serializable]
     [DataContract(Name = "Query", Namespace = "")]
-    public class SqlQuery : QueryBase
+    public class SqlQuery : QueryBase, ICloneable
     {
         #region Properties
 
@@ -63,6 +63,7 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
+        #region Query interpretation and validation
 
         public override void Verify()
         {
@@ -71,6 +72,7 @@ namespace Jhu.Graywulf.Jobs.Query
             Destination.CheckTableExistence();
         }
 
+        #endregion
         #region Table statistics
 
         public override void CollectTablesForStatistics()
@@ -95,6 +97,12 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
+        #region Query partitioning
+
+        protected override QueryPartitionBase CreatePartition(QueryBase query, gw.Context context)
+        {
+            return new SqlQueryPartition((SqlQuery)query, context);
+        }
 
         public override void GeneratePartitions(int partitionCount)
         {
@@ -105,14 +113,14 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 case ExecutionMode.SingleServer:
                     {
-                        var sqp = new SqlQueryPartition(this, null);
+                        var sqp = CreatePartition(this, null);
                         AppendPartition(sqp);
                     }
                     break;
                 case ExecutionMode.Graywulf:
                     if (!SelectStatement.IsPartitioned)
                     {
-                        var sqp = new SqlQueryPartition(this, this.Context);
+                        var sqp = CreatePartition(this, this.Context);
                         AppendPartition(sqp);
                     }
                     else
@@ -147,7 +155,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             if (s == 0)
             {
-                qp = new SqlQueryPartition(this, this.Context);
+                qp = (SqlQueryPartition)CreatePartition(this, this.Context);
 
                 AppendPartition(qp);
             }
@@ -155,7 +163,7 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 for (int i = 0; i < partitionCount; i++)
                 {
-                    qp = new SqlQueryPartition(this, this.Context);
+                    qp = (SqlQueryPartition)CreatePartition(this, this.Context);
                     qp.PartitioningKeyTo = stat.KeyValue[Math.Min((i + 1) * s, stat.KeyValue.Count - 1)];
 
                     if (i == 0)
@@ -173,5 +181,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 Partitions[Partitions.Count - 1].PartitioningKeyTo = null;
             }
         }
+
+        #endregion
     }
 }

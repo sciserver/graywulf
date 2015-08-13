@@ -18,3 +18,5 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 [assembly: Guid("df309c81-9248-45e5-89b5-f9f9851ea247")]
+
+[assembly: InternalsVisibleTo("Jhu.Graywulf.Jobs.Test")]

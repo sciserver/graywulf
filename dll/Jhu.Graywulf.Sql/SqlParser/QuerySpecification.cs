@@ -239,8 +239,10 @@ namespace Jhu.Graywulf.SqlParser
                 where = WhereClause.Create(condition);
                 AppendWhereClause(where);
             }
-
-            where.AppendCondition(condition, op);
+            else
+            {
+                where.AppendCondition(condition, op);
+            }
         }
 
         #endregion

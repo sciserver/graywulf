@@ -153,6 +153,7 @@
     <Compile Include="Jobs\Query\SqlQuery.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Jobs\Query\SqlQueryCodeGenerator.cs" />
     <Compile Include="Jobs\Query\SqlQueryFactory.cs">
       <SubType>Code</SubType>
     </Compile>

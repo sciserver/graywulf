@@ -178,11 +178,11 @@ namespace Jhu.Graywulf.Jobs.Query
         #region Properties
 
         [IgnoreDataMember]
-        protected SqlServerCodeGenerator CodeGenerator
+        protected SqlQueryCodeGenerator CodeGenerator
         {
             get
             {
-                return new SqlServerCodeGenerator()
+                return new SqlQueryCodeGenerator()
                 {
                     ResolveNames = true
                 };
@@ -1202,9 +1202,9 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Name substitution
 
-        protected void SubstituteDatabaseNames(ServerInstance serverInstance, string databaseVersion)
+        protected void SubstituteDatabaseNames(SelectStatement selectStatement, ServerInstance serverInstance, string databaseVersion)
         {
-            SubstituteDatabaseNames(serverInstance, databaseVersion, null);
+            SubstituteDatabaseNames(selectStatement, serverInstance, databaseVersion, null);
         }
 
         /// <summary>
@@ -1213,7 +1213,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="serverInstance"></param>
         /// <param name="databaseVersion"></param>
         /// <remarks>This function call must be synchronized!</remarks>
-        protected void SubstituteDatabaseNames(ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
+        protected void SubstituteDatabaseNames(SelectStatement selectStatement, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
         {
             switch (ExecutionMode)
             {
@@ -1224,7 +1224,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     {
                         var ef = new Jhu.Graywulf.Registry.EntityFactory(Context);
 
-                        foreach (var tr in SelectStatement.EnumerateSourceTableReferences(true))
+                        foreach (var tr in selectStatement.EnumerateSourceTableReferences(true))
                         {
                             if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
                             {
@@ -1289,7 +1289,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <remarks></remarks>
         // TODO: This function call must be synchronized! ??
-        protected virtual void SubstituteRemoteTableNames(DatasetBase temporaryDataset, string temporarySchemaName)
+        protected virtual void SubstituteRemoteTableNames(SelectStatement selectStatement, DatasetBase temporaryDataset, string temporarySchemaName)
         {
             switch (ExecutionMode)
             {
@@ -1297,11 +1297,11 @@ namespace Jhu.Graywulf.Jobs.Query
                     // No remote table support
 
                     // Replace remote table references with temp table references
-                    foreach (TableReference tr in SelectStatement.EnumerateSourceTableReferences(true))
+                    foreach (TableReference tr in selectStatement.EnumerateSourceTableReferences(true))
                     {
                         if (!tr.IsSubquery && TemporaryTables.ContainsKey(tr.UniqueName))
                         {
-                            throw new NotImplementedException();
+                            throw new InvalidOperationException();
                         }
                     }
                     break;
@@ -1309,7 +1309,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     var sm = GetSchemaManager();
 
                     // Replace remote table references with temp table references
-                    foreach (TableReference tr in SelectStatement.EnumerateSourceTableReferences(true))
+                    foreach (TableReference tr in selectStatement.EnumerateSourceTableReferences(true))
                     {
                         SubstituteRemoteTableName(sm, tr, temporaryDataset, temporarySchemaName);
                     }
@@ -1590,6 +1590,29 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        private void ExecuteLongCommandNonQuery(string sql, SourceTableQuery source, int timeout)
+        {
+            using (var cn = new SqlConnection(source.Dataset.ConnectionString))
+            {
+                cn.Open();
+
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    cmd.CommandTimeout = timeout;
+
+                    foreach (var name in source.Parameters.Keys)
+                    {
+                        var par = cmd.CreateParameter();
+                        par.ParameterName = name;
+                        par.Value = source.Parameters[name];
+                        cmd.Parameters.Add(par);
+                    }
+
+                    ExecuteLongCommandNonQuery(cmd);
+                }
+            }
+        }
+
         /// <summary>
         /// Executes a long SQL command in cancelable mode.
         /// </summary>
@@ -1663,31 +1686,6 @@ namespace Jhu.Graywulf.Jobs.Query
                 source.Query);
 
             ExecuteLongCommandNonQuery(sql, source, timeout);
-        }
-
-        private void ExecuteLongCommandNonQuery(string sql, SourceTableQuery source, int timeout)
-        {
-            using (var cn = new SqlConnection(source.Dataset.ConnectionString))
-            {
-                cn.Open();
-
-                using (var cmd = new SqlCommand(sql, cn))
-                {
-                    cmd.CommandTimeout = timeout;
-
-                    foreach (var name in source.Parameters.Keys)
-                    {
-                        var par = cmd.CreateParameter();
-                        par.ParameterName = name;
-                        par.Value = source.Parameters[name];
-                        cmd.Parameters.Add(par);
-
-                        //cmd.Parameters.Add(name, SqlDbType.Variant).Value = source.Parameters[name];
-                    }
-
-                    ExecuteLongCommandNonQuery(cmd);
-                }
-            }
         }
 
         /// <summary>

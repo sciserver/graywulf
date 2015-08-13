@@ -24,5 +24,46 @@ namespace Jhu.Graywulf.SqlParser
         {
             return new LogicalExpressions.Predicate(this);
         }
+
+        public static Predicate CreateEquals(Expression a, Expression b)
+        {
+            return Create(a, b, new Equals());
+        }
+
+        public static Predicate CreateLessThan(Expression a, Expression b)
+        {
+            return Create(a, b, new LessThan());
+        }
+
+        public static Predicate CreateLessThanOrEqual(Expression a, Expression b)
+        {
+            return Create(a, b, new LessThanOrEqual());
+        }
+
+        public static Predicate CreateGreaterThan(Expression a, Expression b)
+        {
+            return Create(a, b, new GreaterThan());
+        }
+
+        public static Predicate CreateGreaterThanOrEqual(Expression a, Expression b)
+        {
+            return Create(a, b, new GreaterThanOrEqual());
+        }
+
+        private static Predicate Create(Expression a, Expression b, Symbol op)
+        {
+            var predicate = new Predicate();
+            var comparison = new ComparisonOperator();
+
+            comparison.Stack.AddLast(op);
+
+            predicate.Stack.AddLast(a);
+            predicate.Stack.AddLast(Whitespace.Create());
+            predicate.Stack.AddLast(comparison);
+            predicate.Stack.AddLast(Whitespace.Create());
+            predicate.Stack.AddLast(b);
+
+            return predicate;
+        }
     }
 }

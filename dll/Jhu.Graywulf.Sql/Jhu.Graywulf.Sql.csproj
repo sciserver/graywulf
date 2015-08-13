@@ -145,6 +145,7 @@
     <Compile Include="SqlParser\TableValuedFunctionCall.cs" />
     <Compile Include="SqlParser\Util.cs" />
     <Compile Include="SqlParser\ValidatorException.cs" />
+    <Compile Include="SqlParser\Variable.cs" />
     <Compile Include="SqlParser\VariableTableSource.cs" />
     <Compile Include="SqlParser\WhereClause.cs" />
     <Compile Include="SqlParser\Whitespace.cs" />

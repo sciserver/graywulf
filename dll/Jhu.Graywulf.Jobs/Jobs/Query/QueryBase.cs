@@ -430,6 +430,8 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        protected abstract QueryPartitionBase CreatePartition(QueryBase query, Context context);
+
         public abstract void GeneratePartitions(int availableServerCount);
 
         protected void AppendPartition(QueryPartitionBase partition)
