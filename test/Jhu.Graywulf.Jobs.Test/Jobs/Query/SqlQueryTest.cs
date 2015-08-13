@@ -37,35 +37,25 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         [TestCategory("Query")]
         public void SimpleQueryTest()
         {
-            using (SchedulerTester.Instance.GetToken())
-            {
-                DropUserDatabaseTable("SqlQueryTest_SimpleQueryTest");
+            var sql = "SELECT TOP 10 * INTO [$into] FROM TEST:SampleData";
 
-                SchedulerTester.Instance.EnsureRunning();
-                using (RemoteServiceTester.Instance.GetToken())
-                {
-                    RemoteServiceTester.Instance.EnsureRunning();
-
-                    var sql = "SELECT TOP 10 * INTO SqlQueryTest_SimpleQueryTest FROM TEST:SampleData";
-
-                    var guid = ScheduleQueryJob(sql, QueueType.Long);
-
-                    WaitJobComplete(guid, TimeSpan.FromSeconds(10));
-
-                    var ji = LoadJob(guid);
-                    Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
-                }
-            }
+            RunQuery(sql, GetTestUniqueName());
         }
+
+        // TODO: implement partitioned query test
         
         [TestMethod]
         [TestCategory("Query")]
         [ExpectedException(typeof(IO.Tasks.TableCopyException))]
         public void CheckDestinationTableNewTest()
         {
-            DropUserDatabaseTable("SqlQueryTest_CheckDestinationTableTest");
+            var testname = GetTestUniqueName();
 
-            var sql = "SELECT TOP 10 * INTO SqlQueryTest_CheckDestinationTableTest FROM TEST:SampleData";
+            DropUserDatabaseTable(testname);
+
+            var sql = "SELECT TOP 10 * INTO [$into] FROM TEST:SampleData";
+            sql = sql.Replace("[$into]", testname);
+
             var q = CreateQuery(sql);
             q.Destination.Options = Schema.TableInitializationOptions.Drop;
 
@@ -78,12 +68,13 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         [ExpectedException(typeof(IO.Tasks.TableCopyException))]
         public void CheckDestinationTableExistingTest()
         {
+            var testname = GetTestUniqueName();
 
+            DropUserDatabaseTable(testname);
 
+            var sql = "SELECT TOP 10 * INTO [$into] FROM TEST:SampleData";
+            sql = sql.Replace("[$into]", testname);
 
-            DropUserDatabaseTable("SqlQueryTest_CheckDestinationTableTest");
-
-            var sql = "SELECT TOP 10 * INTO SqlQueryTest_CheckDestinationTableTest FROM TEST:SampleData";
             var q = CreateQuery(sql);
             q.Destination.Options = Schema.TableInitializationOptions.Create;
 

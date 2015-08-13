@@ -8,6 +8,8 @@ using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Test;
+using Jhu.Graywulf.Scheduler;
+using Jhu.Graywulf.RemoteService;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -57,7 +59,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 Options = TableInitializationOptions.Create | TableInitializationOptions.Drop
             };
 
-            // TODO: delete q.InitializeQueryObject(qf.Context);
+            q.InitializeQueryObject(qf.Context);
 
             return q;
         }
@@ -76,6 +78,34 @@ namespace Jhu.Graywulf.Jobs.Query
                 ji.Save();
 
                 return ji.Guid;
+            }
+        }
+
+        protected void RunQuery(string sql, string testName)
+        {
+            RunQuery(sql, testName, new TimeSpan(0, 2, 0));
+        }
+
+        protected void RunQuery(string sql, string testName, TimeSpan timeout)
+        {
+            using (SchedulerTester.Instance.GetToken())
+            {
+                DropUserDatabaseTable(testName);
+
+                SchedulerTester.Instance.EnsureRunning();
+                using (RemoteServiceTester.Instance.GetToken())
+                {
+                    RemoteServiceTester.Instance.EnsureRunning();
+
+                    sql = sql.Replace("[$into]", testName);
+
+                    var guid = ScheduleQueryJob(sql, QueueType.Long);
+
+                    WaitJobComplete(guid, TimeSpan.FromSeconds(10), timeout);
+
+                    var ji = LoadJob(guid);
+                    Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
+                }
             }
         }
     }
