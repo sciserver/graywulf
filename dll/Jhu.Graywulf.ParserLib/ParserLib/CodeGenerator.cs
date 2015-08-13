@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.ParserLib
         public string Execute(Node node)
         {
             var sw = new StringWriter();
-            Execute(writer, node);
+            Execute(sw, node);
             return sw.ToString();
         }
 
