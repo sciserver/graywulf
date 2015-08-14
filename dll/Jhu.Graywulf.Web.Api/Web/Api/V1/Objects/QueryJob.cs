@@ -134,7 +134,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public QueryBase CreateQuery(FederationContext context)
+        public SqlQuery CreateQuery(FederationContext context)
         {
             var qf = QueryFactory.Create(context.Federation);
             var q = qf.CreateQuery(query);

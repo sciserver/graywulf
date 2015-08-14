@@ -38,8 +38,8 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         public void SimpleQueryTest()
         {
             var sql = "SELECT TOP 10 * INTO [$into] FROM TEST:SampleData";
-
-            RunQuery(sql, GetTestUniqueName());
+            
+            RunQuery(sql);
         }
 
         // TODO: implement partitioned query test

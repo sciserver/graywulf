@@ -85,12 +85,12 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected abstract Type[] LoadQueryTypes();
 
-        public QueryBase CreateQuery(string queryString)
+        public SqlQuery CreateQuery(string queryString)
         {
             var parser = CreateParser();
             var root = parser.Execute(queryString);
 
-            QueryBase q = CreateQueryBase((Node)root);
+            SqlQuery q = CreateQueryBase((Node)root);
             q.QueryFactoryTypeName = Util.TypeNameFormatter.ToUnversionedAssemblyQualifiedName(this.GetType());
             InitializeQuery(q, queryString);
 
@@ -103,11 +103,11 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public abstract SqlParser.SqlNameResolver CreateNameResolver();
 
-        protected abstract QueryBase CreateQueryBase(Node root);
+        protected abstract SqlQuery CreateQueryBase(Node root);
 
-        protected abstract void InitializeQuery(QueryBase query, string queryString);
+        protected abstract void InitializeQuery(SqlQuery query, string queryString);
 
-        public void AppendUserDatabase(QueryBase query, SqlServerDataset userDatabase, ServerInstance serverInstance)
+        public void AppendUserDatabase(SqlQuery query, SqlServerDataset userDatabase, ServerInstance serverInstance)
         {
             userDatabase.IsMutable = true;
             query.CustomDatasets.Add(userDatabase);
@@ -116,7 +116,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         #region Job scheduling functions
 
-        public abstract JobInstance ScheduleAsJob(string jobName, QueryBase query, string queueName, string comments);
+        public abstract JobInstance ScheduleAsJob(string jobName, SqlQuery query, string queueName, string comments);
 
         #endregion
     }

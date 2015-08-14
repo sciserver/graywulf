@@ -16,11 +16,11 @@ namespace Jhu.Graywulf.Jobs.Query
         public InArgument<Guid> UserGuid { get; set; }
 
         [RequiredArgument]
-        public InArgument<QueryBase> Query { get; set; }
+        public InArgument<SqlQuery> Query { get; set; }
 
         protected override void Execute(CodeActivityContext activityContext)
         {
-            QueryBase query = Query.Get(activityContext);
+            SqlQuery query = Query.Get(activityContext);
 
             using (Context context = query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {

@@ -19,11 +19,11 @@ namespace Jhu.Graywulf.Jobs.Query
         public OutArgument<Guid> EntityGuid { get; set; }
 
         [RequiredArgument]
-        public InArgument<QueryBase> Query { get; set; }
+        public InArgument<SqlQuery> Query { get; set; }
 
         protected override void Execute(CodeActivityContext activityContext)
         {
-            QueryBase query = Query.Get(activityContext);
+            SqlQuery query = Query.Get(activityContext);
 
             // Single server mode will run on one partition by definition,
             // Graywulf mode has to look at the registry for available machines

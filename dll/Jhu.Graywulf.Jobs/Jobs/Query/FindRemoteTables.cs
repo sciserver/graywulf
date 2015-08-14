@@ -16,11 +16,11 @@ namespace Jhu.Graywulf.Jobs.Query
         public InArgument<Guid> UserGuid { get; set; }
 
         [RequiredArgument]
-        public InArgument<QueryPartitionBase> QueryPartition { get; set; }
+        public InArgument<SqlQueryPartition> QueryPartition { get; set; }
 
         protected override void Execute(CodeActivityContext activityContext)
         {
-            QueryPartitionBase querypartition = QueryPartition.Get(activityContext);
+            SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
 
             using (Context context = querypartition.Query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {

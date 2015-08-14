@@ -50,9 +50,9 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        protected override QueryBase CreateQueryBase(Node root)
+        protected override SqlQuery CreateQueryBase(Node root)
         {
-            QueryBase res;
+            SqlQuery res;
             if (root is SelectStatement)
             {
                 res = new SqlQuery(Context);
@@ -102,7 +102,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <remarks>
         /// The initialized object will be the input parameter of a query job.
         /// </remarks>
-        protected override void InitializeQuery(QueryBase query, string queryString)
+        protected override void InitializeQuery(SqlQuery query, string queryString)
         {
             var ef = new EntityFactory(Context);
             var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.FederationName, typeof(SqlQueryJob).Name);
@@ -121,9 +121,6 @@ namespace Jhu.Graywulf.Jobs.Query
             query.StatDatabaseVersionName = settings.StatDatabaseVersionName;
 
             query.QueryTimeout = settings.QueryTimeout;
-
-            // TODO: modify this to allow myscratch, group membership, etc.
-            // TODO: delete, moved to userdatabasefactory
         }
 
         /// <summary>
@@ -134,7 +131,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="queueName"></param>
         /// <param name="comments"></param>
         /// <returns></returns>
-        public override JobInstance ScheduleAsJob(string jobName, QueryBase query, string queueName, string comments)
+        public override JobInstance ScheduleAsJob(string jobName, SqlQuery query, string queueName, string comments)
         {
             var job = CreateJobInstance(
                 jobName,

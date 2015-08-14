@@ -74,15 +74,15 @@
     <Compile Include="SqlCodeGen\SqlCodeGeneratorBase.cs" />
     <Compile Include="SqlCodeGen\SqlCodeGeneratorFactory.cs" />
     <Compile Include="SqlCodeGen\SqlServer\SqlServerCodeGenerator.cs" />
+    <Compile Include="SqlParser\Argument.cs" />
+    <Compile Include="SqlParser\ArgumentList.cs" />
     <Compile Include="SqlParser\ColumnExpression.cs" />
     <Compile Include="SqlParser\ColumnIdentifier.cs" />
     <Compile Include="SqlParser\ColumnName.cs" />
     <Compile Include="SqlParser\ColumnReference.cs" />
-    <Compile Include="SqlParser\Comma.cs" />
     <Compile Include="SqlParser\CommentOrWhitespace.cs" />
     <Compile Include="SqlParser\ComputedTableSource.cs" />
     <Compile Include="SqlParser\DatabaseObjectReference.cs" />
-    <Compile Include="SqlParser\Dot.cs" />
     <Compile Include="SqlParser\Enum.cs" />
     <Compile Include="SqlParser\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -91,12 +91,13 @@
     </Compile>
     <Compile Include="SqlParser\Expression.cs" />
     <Compile Include="SqlParser\FromClause.cs" />
+    <Compile Include="SqlParser\FunctionArguments.cs" />
     <Compile Include="SqlParser\FunctionCall.cs" />
     <Compile Include="SqlParser\FunctionIdentifier.cs" />
+    <Compile Include="SqlParser\FunctionName.cs" />
     <Compile Include="SqlParser\FunctionReference.cs" />
     <Compile Include="SqlParser\FunctionTableSource.cs" />
     <Compile Include="SqlParser\IColumnReference.cs" />
-    <Compile Include="SqlParser\Identifier.cs" />
     <Compile Include="SqlParser\IFunctionReference.cs" />
     <Compile Include="SqlParser\IntoClause.cs" />
     <Compile Include="SqlParser\ITableReference.cs" />
@@ -143,9 +144,10 @@
     <Compile Include="SqlParser\TableSource.cs" />
     <Compile Include="SqlParser\TableStatistics.cs" />
     <Compile Include="SqlParser\TableValuedFunctionCall.cs" />
+    <Compile Include="SqlParser\UdtFunctionCall.cs" />
+    <Compile Include="SqlParser\UdtFunctionIdentifier.cs" />
     <Compile Include="SqlParser\Util.cs" />
     <Compile Include="SqlParser\ValidatorException.cs" />
-    <Compile Include="SqlParser\Variable.cs" />
     <Compile Include="SqlParser\VariableTableSource.cs" />
     <Compile Include="SqlParser\WhereClause.cs" />
     <Compile Include="SqlParser\Whitespace.cs" />

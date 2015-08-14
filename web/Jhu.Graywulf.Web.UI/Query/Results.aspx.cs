@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Web.UI.Query
 
         private void RenderResults(JobInstance ji)
         {
-            var q = (QueryBase)ji.Parameters["Query"].Value;
+            var q = (SqlQuery)ji.Parameters["Query"].Value;
 
             var codegen = new SqlServerCodeGenerator();
 

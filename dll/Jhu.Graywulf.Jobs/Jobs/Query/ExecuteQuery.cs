@@ -17,11 +17,11 @@ namespace Jhu.Graywulf.Jobs.Query
         public InArgument<Guid> UserGuid { get; set; }
 
         [RequiredArgument]
-        public InArgument<QueryPartitionBase> QueryPartition { get; set; }
+        public InArgument<SqlQueryPartition> QueryPartition { get; set; }
 
         protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
         {
-            QueryPartitionBase querypartition = QueryPartition.Get(activityContext);
+            SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
 
             using (Context context = querypartition.Query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.Jobs.Query
             return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, querypartition), callback, state);
         }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, QueryPartitionBase querypartition)
+        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlQueryPartition querypartition)
         {
             RegisterCancelable(workflowInstanceGuid, activityInstanceId, querypartition);
             querypartition.ExecuteQuery();

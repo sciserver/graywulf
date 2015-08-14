@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Jobs.Query
             return qf;
         }
 
-        protected QueryBase CreateQuery(string query)
+        protected SqlQuery CreateQuery(string query)
         {
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        private QueryBase CreateQuery(QueryFactory qf, string query)
+        private SqlQuery CreateQuery(QueryFactory qf, string query)
         {
             var user = SignInTestUser(qf.Context);
 
@@ -81,13 +81,15 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        protected void RunQuery(string sql, string testName)
+        protected void RunQuery(string sql)
         {
-            RunQuery(sql, testName, new TimeSpan(0, 2, 0));
+            RunQuery(sql, new TimeSpan(0, 2, 0));
         }
 
-        protected void RunQuery(string sql, string testName, TimeSpan timeout)
+        protected void RunQuery(string sql, TimeSpan timeout)
         {
+            var testName = GetTestUniqueName();
+
             using (SchedulerTester.Instance.GetToken())
             {
                 DropUserDatabaseTable(testName);

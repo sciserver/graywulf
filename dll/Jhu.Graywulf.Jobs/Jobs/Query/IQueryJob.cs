@@ -15,6 +15,6 @@ namespace Jhu.Graywulf.Jobs.Query
     /// </remarks>
     public interface IQueryJob : IJob
     {
-        InOutArgument<QueryBase> Query { get; set; }
+        InOutArgument<SqlQuery> Query { get; set; }
     }
 }

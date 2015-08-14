@@ -7,6 +7,8 @@ using System.Data.SqlClient;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.SqlCodeGen.SqlServer;
+using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
@@ -16,7 +18,39 @@ namespace Jhu.Graywulf.Jobs.Query
         protected const string keyFromParameterName = "@keyFrom";
         protected const string keyToParameterName = "@keyTo";
 
-        public void RewriteQueryForExecute(SelectStatement selectStatement, object partitioningKeyFrom, object partitioningKeyTo)
+        protected QueryObject queryObject;
+
+        private SqlQueryPartition Partition
+        {
+            get { return (SqlQueryPartition)queryObject; }
+        }
+
+        // TODO: used only by tests, delete
+        public SqlQueryCodeGenerator()
+        {
+        }
+               
+        public SqlQueryCodeGenerator(QueryObject queryObject)
+        {
+            this.queryObject = queryObject;
+        }
+
+        #region Basic query rewrite functions
+
+        /// <summary>
+        /// Generates the query that can be used to perform the final execution
+        /// step.
+        /// </summary>
+        /// <returns></returns>
+        public string GetExecuteQueryText(SelectStatement selectStatement)
+        {
+            // Take a copy of the parsing tree
+            var ss = new SelectStatement(selectStatement);
+            RewriteQueryForExecute(ss);
+            return Execute(selectStatement);
+        }
+
+        public void RewriteQueryForExecute(SelectStatement selectStatement)
         {
             var qs = selectStatement.EnumerateQuerySpecifications().First<QuerySpecification>();
 
@@ -24,13 +58,13 @@ namespace Jhu.Graywulf.Jobs.Query
             var ts = qs.EnumerateSourceTables(false).FirstOrDefault();
             if (ts != null && ts is SimpleTableSource && ((SimpleTableSource)ts).IsPartitioned)
             {
-                AppendPartitioningConditions(qs, (SimpleTableSource)ts, partitioningKeyFrom, partitioningKeyTo);
+                AppendPartitioningConditions(qs, (SimpleTableSource)ts);
             }
 
             RemoveExtraTokens(selectStatement);
         }
 
-        internal void RemoveExtraTokens(SelectStatement selectStatement)
+        public virtual void RemoveExtraTokens(SelectStatement selectStatement)
         {
             // strip off order by, we write to the mydb
             var orderby = selectStatement.FindDescendant<OrderByClause>();
@@ -61,46 +95,94 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        #endregion
+        #region Table statistics
+
+        /// <summary>
+        /// Returns a command initialized for computing table statistics
+        /// </summary>
+        /// <param name="tableSource"></param>
+        /// <returns></returns>
+        public virtual SqlCommand GetTableStatisticsCommand(ITableSource tableSource)
+        {
+            if (tableSource.TableReference.Statistics == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (!(tableSource.TableReference.DatabaseObject is TableOrView))
+            {
+                throw new ArgumentException();
+            }
+
+            var table = (TableOrView)tableSource.TableReference.DatabaseObject;
+            var keycol = tableSource.TableReference.Statistics.KeyColumn;
+            var keytype = tableSource.TableReference.Statistics.KeyColumnDataType.NameWithLength;
+            var temptable = queryObject.GetTemporaryTable(GetEscapedUniqueName(tableSource.TableReference));
+
+            var sql = new StringBuilder(SqlQueryScripts.TableStatistics);
+
+            sql.Replace("[$temptable]", GetResolvedTableName(temptable));
+            sql.Replace("[$keytype]", keytype);
+            sql.Replace("[$keycol]", keycol);
+            sql.Replace("[$tablename]", GetResolvedTableNameWithAlias(tableSource.TableReference));
+            sql.Replace("[$where]", GetTableStatisticsWhereClause(tableSource).ToString());
+
+            return new SqlCommand(sql.ToString());
+        }
+
+        protected virtual WhereClause GetTableStatisticsWhereClause(ITableSource tableSource)
+        {
+            var tr = tableSource.TableReference;
+            
+            var cnr = new SearchConditionNormalizer();
+            cnr.NormalizeQuerySpecification(((TableSource)tr.Node).QuerySpecification);
+            var where = cnr.GenerateWhereClauseSpecificToTable(tr);
+
+            return where;
+        }
+
+        #endregion
         #region Query partitioning
 
-        protected virtual void AppendPartitioningConditions(QuerySpecification qs, SimpleTableSource ts, object partitioningKeyFrom, object partitioningKeyTo)
+        protected virtual void AppendPartitioningConditions(QuerySpecification qs, SimpleTableSource ts)
         {
-            var sc = GetPartitioningConditions(ts.PartitioningColumnReference, partitioningKeyFrom, partitioningKeyTo);
+            var sc = GetPartitioningConditions(ts.PartitioningColumnReference);
             if (sc != null)
             {
                 qs.AppendSearchCondition(sc, "AND");
             }
         }
 
-        public void AppendPartitioningConditionParameters(SqlCommand cmd, object partitioningKeyFrom, object partitioningKeyTo)
+        public void AppendPartitioningConditionParameters(SqlCommand cmd)
         {
-            if (!IsPartitioningKeyUnbound(partitioningKeyFrom))
+            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyFrom))
             {
                 var par = cmd.CreateParameter();
                 par.ParameterName = keyFromParameterName;
-                par.Value = partitioningKeyFrom;
+                par.Value = Partition.PartitioningKeyFrom;
                 cmd.Parameters.Add(par);
             }
 
-            if (!IsPartitioningKeyUnbound(partitioningKeyTo))
+            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyTo))
             {
                 var par = cmd.CreateParameter();
                 par.ParameterName = keyToParameterName;
-                par.Value = partitioningKeyTo;
+                par.Value = Partition.PartitioningKeyTo;
                 cmd.Parameters.Add(par);
             }
         }
 
-        public void AppendPartitioningConditionParameters(SourceTableQuery q, object partitioningKeyFrom, object partitioningKeyTo)
+        public void AppendPartitioningConditionParameters(SourceTableQuery q)
         {
-            if (!IsPartitioningKeyUnbound(partitioningKeyFrom))
+            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyFrom))
             {
-                q.Parameters.Add(keyFromParameterName, partitioningKeyFrom);
+                q.Parameters.Add(keyFromParameterName, Partition.PartitioningKeyFrom);
             }
 
-            if (!IsPartitioningKeyUnbound(partitioningKeyTo))
+            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyTo))
             {
-                q.Parameters.Add(keyToParameterName, partitioningKeyTo);
+                q.Parameters.Add(keyToParameterName, Partition.PartitioningKeyTo);
             }
         }
 
@@ -109,19 +191,19 @@ namespace Jhu.Graywulf.Jobs.Query
             return key == null;
         }
 
-        protected SearchCondition GetPartitioningConditions(ColumnReference partitioningKey, object partitioningKeyFrom, object partitioningKeyTo)
+        protected SearchCondition GetPartitioningConditions(ColumnReference partitioningKey)
         {
-            if (!IsPartitioningKeyUnbound(partitioningKeyFrom) && !IsPartitioningKeyUnbound(partitioningKeyTo))
+            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyFrom) && !IsPartitioningKeyUnbound(Partition.PartitioningKeyTo))
             {
                 var from = GetPartitioningKeyFromCondition(partitioningKey);
                 var to = GetPartitioningKeyToCondition(partitioningKey);
                 return SearchCondition.Create(from, to, LogicalOperator.CreateAnd());
             }
-            else if (!IsPartitioningKeyUnbound(partitioningKeyFrom))
+            else if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyFrom))
             {
                 return GetPartitioningKeyFromCondition(partitioningKey);
             }
-            else if (!IsPartitioningKeyUnbound(partitioningKeyTo))
+            else if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyTo))
             {
                 return GetPartitioningKeyToCondition(partitioningKey);
             }
@@ -138,7 +220,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <returns></returns>
         private SearchCondition GetPartitioningKeyFromCondition(ColumnReference partitioningKey)
         {
-            var a = Expression.Create(Variable.Create(keyFromParameterName));
+            var a = Expression.Create(SqlParser.Variable.Create(keyFromParameterName));
             var b = Expression.Create(ColumnIdentifier.Create(partitioningKey));
             var p = Predicate.CreateLessThanOrEqual(a, b);
             return SearchCondition.Create(false, p);
@@ -152,7 +234,7 @@ namespace Jhu.Graywulf.Jobs.Query
         private SearchCondition GetPartitioningKeyToCondition(ColumnReference partitioningKey)
         {
             var a = Expression.Create(ColumnIdentifier.Create(partitioningKey));
-            var b = Expression.Create(Variable.Create(keyToParameterName));
+            var b = Expression.Create(SqlParser.Variable.Create(keyToParameterName));
             var p = Predicate.CreateLessThan(a, b);
             return SearchCondition.Create(false, p);
         }

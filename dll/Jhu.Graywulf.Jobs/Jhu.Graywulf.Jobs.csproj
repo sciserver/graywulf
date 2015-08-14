@@ -138,16 +138,10 @@
     <Compile Include="Jobs\Query\PrepareDestinationTable.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Jobs\Query\QueryBase.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Jobs\Query\QueryFactory.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Jobs\Query\QueryObject.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Jobs\Query\QueryPartitionBase.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Jobs\Query\SqlQuery.cs">

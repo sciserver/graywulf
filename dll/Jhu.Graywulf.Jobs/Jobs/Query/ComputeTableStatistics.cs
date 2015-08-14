@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public InArgument<Guid> UserGuid { get; set; }
 
         [RequiredArgument]
-        public InArgument<QueryBase> Query { get; set; }
+        public InArgument<SqlQuery> Query { get; set; }
 
         [RequiredArgument]
         public InArgument<ITableSource> TableSource { get; set; }
@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Jobs.Query
             return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, query, tableSource, connectionString, cmd, multiplier), callback, state);
         }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, QueryBase query, ITableSource tableSource, string connectionString, SqlCommand cmd, int multiplier)
+        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlQuery query, ITableSource tableSource, string connectionString, SqlCommand cmd, int multiplier)
         {
             RegisterCancelable(workflowInstanceGuid, activityInstanceId, query);
             query.ComputeTableStatistics(tableSource, connectionString, cmd, multiplier);

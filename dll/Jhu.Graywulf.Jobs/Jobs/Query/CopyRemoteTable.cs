@@ -21,13 +21,13 @@ namespace Jhu.Graywulf.Jobs.Query
         public InArgument<Guid> UserGuid { get; set; }
 
         [RequiredArgument]
-        public InArgument<QueryPartitionBase> QueryPartition { get; set; }
+        public InArgument<SqlQueryPartition> QueryPartition { get; set; }
         [RequiredArgument]
         public InArgument<string> RemoteTable { get; set; }
 
         protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
         {
-            QueryPartitionBase querypartition = (QueryPartitionBase)QueryPartition.Get(activityContext);
+            SqlQueryPartition querypartition = (SqlQueryPartition)QueryPartition.Get(activityContext);
             
             TableReference remotetable = null;
             SourceTableQuery source;
@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.Jobs.Query
             return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, querypartition, remotetable, source), callback, state);
         }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, QueryPartitionBase querypartition, TableReference remotetable, SourceTableQuery source)
+        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlQueryPartition querypartition, TableReference remotetable, SourceTableQuery source)
         {
             RegisterCancelable(workflowInstanceGuid, activityInstanceId, querypartition);
             querypartition.CopyRemoteTable(remotetable, source);

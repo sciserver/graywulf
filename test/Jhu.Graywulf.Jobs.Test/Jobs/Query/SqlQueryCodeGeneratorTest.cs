@@ -23,11 +23,6 @@ namespace Jhu.Graywulf.Jobs.Query
             get { return new SqlParser.SqlParser(); }
         }
 
-        protected SqlQueryCodeGenerator CodeGenerator
-        {
-            get { return new SqlQueryCodeGenerator(); }
-        }
-
         protected SelectStatement Parse(string sql)
         {
             return (SelectStatement)Parser.Execute(sql);
@@ -36,17 +31,21 @@ namespace Jhu.Graywulf.Jobs.Query
         protected void RemoveExtraTokensHelper(string sql, string gt)
         {
             var ss = Parse(sql);
-            CodeGenerator.RemoveExtraTokens(ss);
+            var cg = new SqlQueryCodeGenerator();
+            cg.RemoveExtraTokens(ss);
             Assert.AreEqual(gt, ss.ToString());
         }
 
         protected void RewriteQueryHelper(string sql, string gt, bool partitioningKeyFrom, bool partitioningKeyTo)
         {
             var ss = Parse(sql);
-            CodeGenerator.RewriteQueryForExecute(
-                ss, 
-                partitioningKeyFrom ? new object() : null,
-                partitioningKeyTo ? new object() : null);
+            var partition = new SqlQueryPartition()
+            {
+                PartitioningKeyFrom = partitioningKeyFrom ? (IComparable)(1.0) : null,
+                PartitioningKeyTo = partitioningKeyTo ? (IComparable)(1.0) : null
+            };
+            var cg = new SqlQueryCodeGenerator(partition);
+            cg.RewriteQueryForExecute(ss);
             Assert.AreEqual(gt, ss.ToString());
         }
 

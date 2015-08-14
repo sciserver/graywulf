@@ -19,11 +19,11 @@ namespace Jhu.Graywulf.Jobs.Query
         public OutArgument<Guid> EntityGuid { get; set; }
 
         [RequiredArgument]
-        public InArgument<QueryPartitionBase> QueryPartition { get; set; }
+        public InArgument<SqlQueryPartition> QueryPartition { get; set; }
 
         protected override void Execute(CodeActivityContext activityContext)
         {
-            QueryPartitionBase queryPartition = QueryPartition.Get(activityContext);
+            SqlQueryPartition queryPartition = QueryPartition.Get(activityContext);
 
             switch (queryPartition.Query.ExecutionMode)
             {

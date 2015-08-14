@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.Jobs.Query
     [DataContract(Namespace = "")]
     public abstract class QueryObject : IContextObject, ICancelableTask, ICloneable
     {
-        #region Member variables
+        #region Property storage member variables
 
         /// <summary>
         /// Used to synchronize on for certain operations that run in
@@ -42,9 +42,6 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         [NonSerialized]
         internal object syncRoot;
-
-        #endregion
-        #region Property storage member variables
 
         /// <summary>
         /// Individual query time-out, overall job timeout is enforced by
@@ -100,9 +97,19 @@ namespace Jhu.Graywulf.Jobs.Query
         private SqlServerDataset temporaryDataset;
 
         /// <summary>
+        /// Holds a reference to temporary database registry object, once server is assigned
+        /// </summary>
+        private EntityReference<DatabaseInstance> temporaryDatabaseInstanceReference;
+
+        /// <summary>
         /// Dataset to be used to find functions by default.
         /// </summary>
         private SqlServerDataset codeDataset;
+
+        /// <summary>
+        /// Holds a reference to the code database registry object, once server is assigned
+        /// </summary>
+        private EntityReference<DatabaseInstance> codeDatabaseInstanceReference;
 
         /// <summary>
         /// A list of custom datasets, i.e. those that are not
@@ -159,16 +166,6 @@ namespace Jhu.Graywulf.Jobs.Query
         private EntityReference<Federation> federationReference;
 
         /// <summary>
-        /// Holds a reference to the code database registry object.
-        /// </summary>
-        private EntityReference<DatabaseInstance> codeDatabaseInstanceReference;
-
-        /// <summary>
-        /// Holds a reference to temporary database registry object.
-        /// </summary>
-        private EntityReference<DatabaseInstance> temporaryDatabaseInstanceReference;
-
-        /// <summary>
         /// Hold a reference to the server instance that was assigned
         /// by the scheduler to a given partition of the query.
         /// </summary>
@@ -182,7 +179,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             get
             {
-                return new SqlQueryCodeGenerator()
+                return new SqlQueryCodeGenerator(this)
                 {
                     ResolveNames = true
                 };
@@ -305,9 +302,29 @@ namespace Jhu.Graywulf.Jobs.Query
         [IgnoreDataMember]
         public SqlServerDataset TemporaryDataset
         {
-            get { return temporaryDataset; }
+            get
+            {
+                SqlServerDataset tempds;
+
+                switch (ExecutionMode)
+                {
+                    case ExecutionMode.SingleServer:
+                        tempds = temporaryDataset;
+                        break;
+                    case ExecutionMode.Graywulf:
+                        // *** TODO: this throws null exception after persist and restore
+                        tempds = temporaryDatabaseInstanceReference.Value.GetDataset();
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                tempds.IsMutable = true;
+                return tempds;
+            }
             set { temporaryDataset = value; }
         }
+
 
         /// <summary>
         /// Gets or sets the code database to be used by default to resolve function calls.
@@ -315,7 +332,25 @@ namespace Jhu.Graywulf.Jobs.Query
         [IgnoreDataMember]
         public SqlServerDataset CodeDataset
         {
-            get { return codeDataset; }
+            get
+            {
+                SqlServerDataset codeds;
+
+                switch (ExecutionMode)
+                {
+                    case ExecutionMode.SingleServer:
+                        codeds = codeDataset;
+                        break;
+                    case ExecutionMode.Graywulf:
+                        // *** TODO: this throws null exception after persist and restore
+                        codeds = codeDatabaseInstanceReference.Value.GetDataset();
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                return codeds;
+            }
             set { codeDataset = value; }
         }
 
@@ -395,15 +430,6 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         /// <summary>
-        /// Gets a reference to the temporary database instance registry object.
-        /// </summary>
-        [IgnoreDataMember]
-        protected EntityReference<DatabaseInstance> TemporaryDatabaseInstanceReference
-        {
-            get { return temporaryDatabaseInstanceReference; }
-        }
-
-        /// <summary>
         /// Gets the list of temporary tables created during query execution.
         /// </summary>
         [IgnoreDataMember]
@@ -419,15 +445,6 @@ namespace Jhu.Graywulf.Jobs.Query
         public ConcurrentDictionary<string, View> TemporaryViews
         {
             get { return temporaryViews; }
-        }
-
-        /// <summary>
-        /// Gets a reference to the code database instance registry object.
-        /// </summary>
-        [IgnoreDataMember]
-        protected EntityReference<DatabaseInstance> CodeDatabaseInstanceReference
-        {
-            get { return codeDatabaseInstanceReference; }
         }
 
         #endregion
@@ -611,9 +628,10 @@ namespace Jhu.Graywulf.Jobs.Query
                             break;
                         case ExecutionMode.Graywulf:
                             LoadAssignedServerInstance(forceReinitialize);
-                            LoadSystemDatabaseInstance(TemporaryDatabaseInstanceReference, (GraywulfDataset)TemporaryDataset, forceReinitialize);
-                            LoadSystemDatabaseInstance(CodeDatabaseInstanceReference, (GraywulfDataset)CodeDataset, forceReinitialize);
                             LoadDatasets(forceReinitialize);
+                            LoadSystemDatabaseInstance(temporaryDatabaseInstanceReference, (GraywulfDataset)temporaryDataset, forceReinitialize);
+                            LoadSystemDatabaseInstance(codeDatabaseInstanceReference, (GraywulfDataset)codeDataset, forceReinitialize);
+                            
 
                             break;
                         default:
@@ -636,8 +654,8 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             assignedServerInstanceReference.Value = serverInstance;
 
-            LoadSystemDatabaseInstance(TemporaryDatabaseInstanceReference, (GraywulfDataset)TemporaryDataset, true);
-            LoadSystemDatabaseInstance(CodeDatabaseInstanceReference, (GraywulfDataset)CodeDataset, true);
+            LoadSystemDatabaseInstance(temporaryDatabaseInstanceReference, (GraywulfDataset)temporaryDataset, true);
+            LoadSystemDatabaseInstance(codeDatabaseInstanceReference, (GraywulfDataset)codeDataset, true);
         }
 
         #region Cluster registry query functions
@@ -689,21 +707,26 @@ namespace Jhu.Graywulf.Jobs.Query
                     // Initialize temporary database
                     if (temporaryDataset == null || forceReinitialize)
                     {
-                        var tempds = new GraywulfDataset(Context);
-                        tempds.Name = Registry.Constants.TempDbName;
-                        tempds.IsOnLinkedServer = false;
+                        var tempds = new GraywulfDataset(Context)
+                        {
+                            Name = Registry.Constants.TempDbName,
+                            IsOnLinkedServer = false,
+                            IsMutable = true,
+                        };
                         tempds.DatabaseVersionReference.Value = FederationReference.Value.TempDatabaseVersion;
                         tempds.CacheSchemaConnectionString();
-
                         temporaryDataset = tempds;
                     }
 
                     // Initialize code database
                     if (codeDataset == null || forceReinitialize)
                     {
-                        var codeds = new GraywulfDataset(Context);
-                        codeds.Name = Registry.Constants.CodeDbName;
-                        codeds.IsOnLinkedServer = false;
+                        var codeds = new GraywulfDataset(Context)
+                        {
+                            Name = Registry.Constants.CodeDbName,
+                            IsOnLinkedServer = false,
+                            IsMutable = false,
+                        };
                         codeds.DatabaseVersionReference.Value = FederationReference.Value.CodeDatabaseVersion;
                         codeds.CacheSchemaConnectionString();
 
@@ -773,94 +796,27 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected SqlConnectionStringBuilder GetSystemDatabaseConnectionString(CommandTarget target)
         {
-            switch (ExecutionMode)
+            SqlServerDataset ds;
+
+            switch (target)
             {
-                case ExecutionMode.SingleServer:
-                    {
-                        SqlServerDataset ds;
-
-                        switch (target)
-                        {
-                            case CommandTarget.Code:
-                                ds = (SqlServerDataset)codeDataset;
-                                break;
-                            case CommandTarget.Temp:
-                                ds = (SqlServerDataset)temporaryDataset;
-                                break;
-                            default:
-                                throw new NotImplementedException();
-                        }
-
-                        return new SqlConnectionStringBuilder(ds.ConnectionString);
-                    }
-                case ExecutionMode.Graywulf:
-                    {
-                        EntityReference<DatabaseInstance> di;
-
-                        switch (target)
-                        {
-                            case CommandTarget.Code:
-                                di = codeDatabaseInstanceReference;
-                                break;
-                            case CommandTarget.Temp:
-                                di = temporaryDatabaseInstanceReference;
-                                break;
-                            default:
-                                throw new NotImplementedException();
-                        }
-
-                        return di.Value.GetConnectionString();
-                    }
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        public SqlServerDataset GetCodeDatabaseDataset()
-        {
-            SqlServerDataset codeds;
-
-            switch (ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    codeds = codeDataset;
+                case CommandTarget.Code:
+                    ds = (SqlServerDataset)CodeDataset;
                     break;
-                case ExecutionMode.Graywulf:
-                    // *** TODO: this throws null exception after persist and restore
-                    codeds = codeDatabaseInstanceReference.Value.GetDataset();
+                case CommandTarget.Temp:
+                    ds = (SqlServerDataset)TemporaryDataset;
                     break;
                 default:
                     throw new NotImplementedException();
             }
 
-            return codeds;
-        }
-
-        public SqlServerDataset GetTemporaryDatabaseDataset()
-        {
-            SqlServerDataset tempds;
-
-            switch (ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    tempds = temporaryDataset;
-                    break;
-                case ExecutionMode.Graywulf:
-                    // *** TODO: this throws null exception after persist and restore
-                    tempds = temporaryDatabaseInstanceReference.Value.GetDataset();
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            tempds.IsMutable = true;
-            return tempds;
+            return new SqlConnectionStringBuilder(ds.ConnectionString);
         }
 
         public virtual Table GetTemporaryTable(string tableName)
         {
             string tempname;
-            var tempds = GetTemporaryDatabaseDataset();
+            var tempds = TemporaryDataset;
 
             switch (executionMode)
             {
@@ -882,6 +838,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 TableName = tempname,
             };
         }
+
 
         #endregion
         #region Parsing functions
@@ -1056,7 +1013,7 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 dis = null;
             }
-            
+
             // Try with requested database version
             siguid = scheduler.GetNextServerInstance(dds, databaseVersion, dis);
 
@@ -1742,7 +1699,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
             catch (Exception)
             {
-                
+
             }
 
             return host;
