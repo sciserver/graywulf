@@ -42,7 +42,58 @@ namespace Jhu.Graywulf.Test.Jobs.Query
             RunQuery(sql);
         }
 
-        // TODO: implement partitioned query test
+        [TestMethod]
+        [TestCategory("Query")]
+        public void MyDBJoinQueryTest()
+        {
+            var sql =
+@"SELECT TOP 100 a.objid, a.ra, a.dec, b.ObjID
+INTO [$into]
+FROM TEST:SDSSDR7PhotoObjAll a
+CROSS JOIN MyCatalog b
+";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void PartitionedQueryTest()
+        {
+            var sql =
+@"SELECT TOP 100 a.objid, a.ra, a.dec 
+INTO [$into] 
+FROM TEST:SDSSDR7PhotoObjAll a PARTITION BY a.ra
+WHERE ra BETWEEN 0 AND 5 AND dec BETWEEN 0 AND 5";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void PartitionedQueryNoWhereTest()
+        {
+            var sql = 
+@"SELECT TOP 100 a.objid, a.ra, a.dec 
+INTO [$into] 
+FROM TEST:SDSSDR7PhotoObjAll a PARTITION BY a.ra";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void PartitionedMyDBJoinQueryTest()
+        {
+            var sql =
+@"SELECT TOP 100 a.objid, a.ra, a.dec, b.ObjID
+INTO [$into]
+FROM TEST:SDSSDR7PhotoObjAll a PARTITION BY a.ra
+CROSS JOIN MyCatalog b
+";
+
+            RunQuery(sql);
+        }
         
         [TestMethod]
         [TestCategory("Query")]
