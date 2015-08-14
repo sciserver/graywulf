@@ -256,23 +256,9 @@ namespace Jhu.Graywulf.Jobs.Query
             InitializeQueryObject(context, scheduler, true);
 
             // Source query
-
-            var ss = new SelectStatement(Query.SelectStatement);
-
-            SubstituteDatabaseNames(ss, AssignedServerInstance, Query.SourceDatabaseVersionName);
-            SubstituteRemoteTableNames(ss, TemporaryDataset, TemporaryDataset.DefaultSchemaName);
-            CodeGenerator.RewriteQueryForExecute(ss);
-
-            source = new SourceTableQuery()
-            {
-                Dataset = TemporaryDataset,
-                Query = CodeGenerator.Execute(ss),
-            };
-
-            CodeGenerator.AppendPartitioningConditionParameters(source);
+            source = CodeGenerator.GetExecuteQuery(Query.SelectStatement);
 
             // Destination table
-
             switch (Query.ExecutionMode)
             {
                 case ExecutionMode.SingleServer:

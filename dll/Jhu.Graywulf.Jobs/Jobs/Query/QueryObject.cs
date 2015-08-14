@@ -602,6 +602,32 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        /// <summary>
+        /// Checks whether the given dataset is remote to the assigned server
+        /// </summary>
+        /// <param name="ds"></param>
+        /// <returns></returns>
+        public bool IsRemoteDataset(DatasetBase ds)
+        {
+            if (ds is GraywulfDataset && !((GraywulfDataset)ds).IsSpecificInstanceRequired)
+            {
+                return false;
+            }
+            else if (ds is SqlServerDataset)
+            {
+                // A SqlServer dataset is remote if it's on another server
+                var csbr = new SqlConnectionStringBuilder(ds.ConnectionString);
+                var csba = AssignedServerInstance.GetConnectionString();
+
+                return StringComparer.InvariantCultureIgnoreCase.Compare(csbr.DataSource, csba.DataSource) != 0;
+            }
+            else
+            {
+                // Everything else is remote
+                return true;
+            }
+        }
+
         #endregion
         #region System database functions
 
@@ -902,7 +928,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="clearCache"></param>
         /// <returns></returns>
-        protected virtual SchemaManager GetSchemaManager()
+        public virtual SchemaManager GetSchemaManager()
         {
             var sc = CreateSchemaManager();
 
@@ -914,174 +940,6 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             return sc;
-        }
-
-        protected void SubstituteDatabaseNames(SelectStatement selectStatement, ServerInstance serverInstance, string databaseVersion)
-        {
-            SubstituteDatabaseNames(selectStatement, serverInstance, databaseVersion, null);
-        }
-
-        /// <summary>
-        /// Looks up actual database instance names on the specified server instance
-        /// </summary>
-        /// <param name="serverInstance"></param>
-        /// <param name="databaseVersion"></param>
-        /// <remarks>This function call must be synchronized!</remarks>
-        protected void SubstituteDatabaseNames(SelectStatement selectStatement, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
-        {
-            switch (ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    // *** Nothing to do here?
-                    break;
-                case ExecutionMode.Graywulf:
-                    {
-                        var ef = new Jhu.Graywulf.Registry.EntityFactory(Context);
-
-                        foreach (var tr in selectStatement.EnumerateSourceTableReferences(true))
-                        {
-                            if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
-                            {
-                                SubstituteDatabaseName(tr, serverInstance, databaseVersion, surrogateDatabaseVersion);
-                            }
-                        }
-                    }
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        /// <summary>
-        /// Substitutes the database name into a table reference.
-        /// </summary>
-        /// <param name="tr"></param>
-        /// <param name="serverInstance"></param>
-        /// <param name="databaseVersion"></param>
-        /// <remarks>
-        /// During query executions, actual database name are not known until a server instance is
-        /// assigned to the query partition.
-        /// </remarks>
-        protected void SubstituteDatabaseName(TableReference tr, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
-        {
-            SchemaManager sc = GetSchemaManager();
-
-            if (!tr.IsSubquery && !tr.IsComputed)
-            {
-                DatasetBase ds = sc.Datasets[tr.DatasetName];
-
-                // Graywulf datasets have changing database names depending on the server
-                // the database is on.
-                if (ds is GraywulfDataset)
-                {
-                    var gwds = ds as GraywulfDataset;
-                    gwds.Context = Context;
-
-                    DatabaseInstance di;
-                    if (gwds.IsSpecificInstanceRequired)
-                    {
-                        di = gwds.DatabaseInstanceReference.Value;
-                    }
-                    else
-                    {
-                        // Find appropriate database instance
-                        var dis = GetAvailableDatabaseInstances(serverInstance, gwds.DatabaseDefinitionReference.Value, databaseVersion, surrogateDatabaseVersion);
-                        di = dis[0];
-                    }
-
-                    // Refresh database object, now that the correct database name is set
-                    ds = di.GetDataset();
-                    tr.DatabaseName = di.DatabaseName;
-                    tr.DatabaseObject = ds.GetObject(tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Substitutes names of remote tables with name of temporary tables
-        /// holding a cached version of remote tables.
-        /// </summary>
-        /// <remarks></remarks>
-        // TODO: This function call must be synchronized! ??
-        protected virtual void SubstituteRemoteTableNames(SelectStatement selectStatement, DatasetBase temporaryDataset, string temporarySchemaName)
-        {
-            switch (ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    // No remote table support
-
-                    // Replace remote table references with temp table references
-                    foreach (TableReference tr in selectStatement.EnumerateSourceTableReferences(true))
-                    {
-                        if (!tr.IsSubquery && TemporaryTables.ContainsKey(tr.UniqueName))
-                        {
-                            throw new InvalidOperationException();
-                        }
-                    }
-                    break;
-                case ExecutionMode.Graywulf:
-                    var sm = GetSchemaManager();
-
-                    // Replace remote table references with temp table references
-                    foreach (TableReference tr in selectStatement.EnumerateSourceTableReferences(true))
-                    {
-                        SubstituteRemoteTableName(sm, tr, temporaryDataset, temporarySchemaName);
-                    }
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        /// <summary>
-        /// Substitutes the name of a remote tables with name of the temporary table
-        /// holding a cached version of the remote data.
-        /// </summary>
-        /// <param name="sm"></param>
-        /// <param name="tr"></param>
-        /// <param name="temporaryDataset"></param>
-        /// <param name="temporarySchemaName"></param>
-        private void SubstituteRemoteTableName(SchemaManager sm, TableReference tr, DatasetBase temporaryDataset, string temporarySchemaName)
-        {
-            // Save unique name because it will change as names are substituted
-            var un = tr.UniqueName;
-
-            // TODO: write function to determine if a table is to be copied
-            // ie. the condition in the if clause of the following line
-            if (tr.IsCachable && TemporaryTables.ContainsKey(tr.UniqueName) &&
-                IsRemoteDataset(sm.Datasets[tr.DatasetName]))
-            {
-                tr.DatabaseName = temporaryDataset.DatabaseName;
-                tr.SchemaName = temporarySchemaName;
-                tr.DatabaseObjectName = TemporaryTables[un].TableName;
-                tr.DatabaseObject = null;
-            }
-        }
-
-        /// <summary>
-        /// Checks whether the given dataset is remote to the assigned server
-        /// </summary>
-        /// <param name="ds"></param>
-        /// <returns></returns>
-        protected bool IsRemoteDataset(DatasetBase ds)
-        {
-            if (ds is GraywulfDataset && !((GraywulfDataset)ds).IsSpecificInstanceRequired)
-            {
-                return false;
-            }
-            else if (ds is SqlServerDataset)
-            {
-                // A SqlServer dataset is remote if it's on another server
-                var csbr = new SqlConnectionStringBuilder(ds.ConnectionString);
-                var csba = AssignedServerInstance.GetConnectionString();
-
-                return StringComparer.InvariantCultureIgnoreCase.Compare(csbr.DataSource, csba.DataSource) != 0;
-            }
-            else
-            {
-                // Everything else is remote
-                return true;
-            }
         }
 
         #endregion

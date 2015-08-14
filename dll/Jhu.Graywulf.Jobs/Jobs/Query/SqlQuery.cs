@@ -326,6 +326,14 @@ namespace Jhu.Graywulf.Jobs.Query
             Validate();
         }
 
+        public virtual void Verify()
+        {
+            // TODO: this is used to validate query before scheduling
+            // this needs to be merged with with InitializeQuery.
+            // Also: add mechanism to collect validation messages
+            InitializeQueryObject(null, null, true);
+        }
+
         /// <summary>
         /// Returns a new name resolver to be used with the parsed query string.
         /// </summary>
@@ -357,12 +365,14 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        protected void Validate()
+        protected virtual void Validate()
         {
             // Perform validation on the query string
-
             var validator = queryFactory.Value.CreateValidator();
             validator.Execute(selectStatement);
+
+            // TODO: add additional validation here
+            Destination.CheckTableExistence();
         }
 
         /// <summary>
@@ -411,16 +421,6 @@ namespace Jhu.Graywulf.Jobs.Query
                 this.destination.Options &= ~TableInitializationOptions.GenerateUniqueName;
             }
         }
-
-        public virtual void Verify()
-        {
-            Parse(true);
-            Interpret(true);
-            Validate();
-
-            Destination.CheckTableExistence();
-        }
-
 
         #endregion
         #region Table statistics
@@ -484,7 +484,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 connectionString = si.GetConnectionString().ConnectionString;
 
-                SubstituteDatabaseName(tableSource.TableReference, si, StatDatabaseVersionName, SourceDatabaseVersionName);
+                CodeGenerator.SubstituteDatabaseName(tableSource.TableReference, si, StatDatabaseVersionName, SourceDatabaseVersionName);
 
                 // TODO: multiplier depends on whether statistics were gathered from the
                 // sample table or a full table of the surrogate full database
@@ -608,6 +608,7 @@ namespace Jhu.Graywulf.Jobs.Query
             return new SqlQueryPartition(this);
         }
 
+        // TODO: make it non-virtual if XMatch query doesn't need to override it
         public virtual void GeneratePartitions(int partitionCount)
         {
             // Partitioning is only supperted using Graywulf mode, single server mode always
