@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.SqlCodeGen.SqlServer;
@@ -33,22 +34,10 @@ namespace Jhu.Graywulf.Jobs.Query
         public SqlQueryCodeGenerator(QueryObject queryObject)
         {
             this.queryObject = queryObject;
+            this.ResolveNames = true;
         }
 
         #region Basic query rewrite functions
-
-        /// <summary>
-        /// Generates the query that can be used to perform the final execution
-        /// step.
-        /// </summary>
-        /// <returns></returns>
-        public string GetExecuteQueryText(SelectStatement selectStatement)
-        {
-            // Take a copy of the parsing tree
-            var ss = new SelectStatement(selectStatement);
-            RewriteQueryForExecute(ss);
-            return Execute(selectStatement);
-        }
 
         public void RewriteQueryForExecute(SelectStatement selectStatement)
         {
@@ -73,7 +62,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 selectStatement.Stack.Remove(orderby);
             }
 
-            // strip off partition by
+            // strip off partition by and into clauses
             foreach (var qs in selectStatement.EnumerateQuerySpecifications())
             {
                 // strip off select into
@@ -136,7 +125,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var tr = tableSource.TableReference;
             
             var cnr = new SearchConditionNormalizer();
-            cnr.NormalizeQuerySpecification(((TableSource)tr.Node).QuerySpecification);
+            cnr.CollectConditions(((TableSource)tr.Node).QuerySpecification);
             var where = cnr.GenerateWhereClauseSpecificToTable(tr);
 
             return where;

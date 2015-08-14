@@ -26,6 +26,37 @@ namespace Jhu.Graywulf.Jobs.Query
         #region Property storage member variables
 
         /// <summary>
+        /// Type name of the query factory class
+        /// </summary>
+        private string queryFactoryTypeName;
+
+        /// <summary>
+        /// Holds a reference to the query factory class
+        /// </summary>
+        [NonSerialized]
+        private Lazy<QueryFactory> queryFactory;
+
+        /// <summary>
+        /// The original query to be executed
+        /// </summary>
+        private string queryString;
+
+        private string batchName;
+        private string queryName;
+
+        /// <summary>
+        /// The root object of the query parsing tree
+        /// </summary>
+        [NonSerialized]
+        private SelectStatement selectStatement;
+
+        /// <summary>
+        /// True, if the FinishInterpret function has completed.
+        /// </summary>
+        [NonSerialized]
+        private bool isInterpretFinished;
+
+        /// <summary>
         /// Destination table including target table naming pattern.
         /// Output table names are either automatically generater or
         /// taken from the INTO clause.
@@ -80,6 +111,59 @@ namespace Jhu.Graywulf.Jobs.Query
 
         #endregion
         #region Properties
+
+        /// <summary>
+        /// Gets or sets the type name string of the query factory class
+        /// </summary>
+        [DataMember]
+        public string QueryFactoryTypeName
+        {
+            get { return queryFactoryTypeName; }
+            set { queryFactoryTypeName = value; }
+        }
+
+        /// <summary>
+        /// Gets a query factory instance.
+        /// </summary>
+        [IgnoreDataMember]
+        protected QueryFactory QueryFactory
+        {
+            get { return queryFactory.Value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the query string of the query job.
+        /// </summary>
+        [DataMember]
+        public string QueryString
+        {
+            get { return queryString; }
+            set { queryString = value; }
+        }
+
+        [DataMember]
+        public string BatchName
+        {
+            get { return batchName; }
+            set { batchName = value; }
+        }
+
+        [DataMember]
+        public string QueryName
+        {
+            get { return queryName; }
+            set { queryName = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the root object of the query parsing tree.
+        /// </summary>
+        [IgnoreDataMember]
+        public SelectStatement SelectStatement
+        {
+            get { return selectStatement; }
+            protected set { selectStatement = value; }
+        }
 
         /// <summary>
         /// Gets or sets the destination table of the query
@@ -138,9 +222,15 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Gets whether the query is partitioned
         /// </summary>
         [IgnoreDataMember]
-        public bool IsPartitioned
+        public virtual bool IsPartitioned
         {
             get { return SelectStatement.IsPartitioned; }
+        }
+
+        [IgnoreDataMember]
+        protected virtual SqlQueryCodeGenerator CodeGenerator
+        {
+            get { return new SqlQueryCodeGenerator(this); }
         }
 
         #endregion
@@ -169,6 +259,16 @@ namespace Jhu.Graywulf.Jobs.Query
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
+            this.queryFactoryTypeName = null;
+            this.queryFactory = new Lazy<QueryFactory>(() => (QueryFactory)Activator.CreateInstance(Type.GetType(queryFactoryTypeName)), false);
+
+            this.queryString = null;
+            this.batchName = null;
+            this.queryName = null;
+
+            this.selectStatement = null;
+            this.isInterpretFinished = false;
+
             this.destination = null;
             this.isDestinationTableInitialized = false;
             this.output = null;
@@ -185,6 +285,16 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private void CopyMembers(SqlQuery old)
         {
+            this.queryFactoryTypeName = old.queryFactoryTypeName;
+            this.queryFactory = new Lazy<QueryFactory>(() => (QueryFactory)Activator.CreateInstance(Type.GetType(queryFactoryTypeName)), false);
+
+            this.queryString = old.queryString;
+            this.batchName = old.batchName;
+            this.queryName = old.queryName;
+
+            this.selectStatement = null;
+            this.isInterpretFinished = false;
+
             this.destination = old.destination;
             this.isDestinationTableInitialized = old.isDestinationTableInitialized;
             this.output = old.output;
@@ -205,11 +315,81 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
-        #region Query interpretation and validation
+        #region Query parsing and interpretation
 
-        protected override void FinishInterpret(bool forceReinitialize)
+        public override void InitializeQueryObject(Context context, IScheduler scheduler, bool forceReinitialize)
         {
-            // --- Retrieve target table information
+            base.InitializeQueryObject(context, scheduler, forceReinitialize);
+
+            Parse(forceReinitialize);
+            Interpret(forceReinitialize);
+            Validate();
+        }
+
+        /// <summary>
+        /// Returns a new name resolver to be used with the parsed query string.
+        /// </summary>
+        /// <param name="forceReinitialize"></param>
+        /// <returns></returns>
+        protected SqlNameResolver CreateNameResolver(bool forceReinitialize)
+        {
+            LoadDatasets(forceReinitialize);
+
+            var nr = queryFactory.Value.CreateNameResolver();
+            nr.SchemaManager = GetSchemaManager();
+
+            nr.DefaultTableDatasetName = DefaultDataset.Name;
+            nr.DefaultFunctionDatasetName = CodeDataset.Name;
+
+            return nr;
+        }
+
+        /// <summary>
+        /// Parses the query
+        /// </summary>
+        protected void Parse(bool forceReinitialize)
+        {
+            // Reparse only if needed
+            if (selectStatement == null || forceReinitialize)
+            {
+                var parser = queryFactory.Value.CreateParser();
+                selectStatement = (SelectStatement)parser.Execute(queryString);
+            }
+        }
+
+        protected void Validate()
+        {
+            // Perform validation on the query string
+
+            var validator = queryFactory.Value.CreateValidator();
+            validator.Execute(selectStatement);
+        }
+
+        /// <summary>
+        /// Interprets the parsed query
+        /// </summary>
+        protected bool Interpret(bool forceReinitialize)
+        {
+            if (!isInterpretFinished || forceReinitialize)
+            {
+                // --- Execute name resolution
+                var nr = CreateNameResolver(forceReinitialize);
+                nr.Execute(selectStatement);
+
+                FinishInterpret(forceReinitialize);
+
+                this.isInterpretFinished = true;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        protected virtual void FinishInterpret(bool forceReinitialize)
+        {
+            // Retrieve target table information
             IntoClause into = SelectStatement.FindDescendantRecursive<IntoClause>();
             if (into != null)
             {
@@ -229,12 +409,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 // Turn off unique name generation in case an into clause is used
                 this.destination.Options &= ~TableInitializationOptions.GenerateUniqueName;
-
-                // remove into clause from query
-                into.Parent.Stack.Remove(into);
             }
-
-            base.FinishInterpret(forceReinitialize);
         }
 
         public virtual void Verify()
@@ -428,9 +603,9 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        protected virtual SqlQueryPartition CreatePartition(SqlQuery query, Context context)
+        protected virtual SqlQueryPartition CreatePartition()
         {
-            return new SqlQueryPartition((SqlQuery)query, context);
+            return new SqlQueryPartition(this);
         }
 
         public virtual void GeneratePartitions(int partitionCount)
@@ -442,14 +617,14 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 case ExecutionMode.SingleServer:
                     {
-                        var sqp = CreatePartition(this, null);
+                        var sqp = CreatePartition();
                         AppendPartition(sqp);
                     }
                     break;
                 case ExecutionMode.Graywulf:
                     if (!SelectStatement.IsPartitioned)
                     {
-                        var sqp = CreatePartition(this, this.Context);
+                        var sqp = CreatePartition();
                         AppendPartition(sqp);
                     }
                     else
@@ -484,7 +659,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             if (s == 0)
             {
-                qp = (SqlQueryPartition)CreatePartition(this, this.Context);
+                qp = CreatePartition();
 
                 AppendPartition(qp);
             }
@@ -492,7 +667,7 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 for (int i = 0; i < partitionCount; i++)
                 {
-                    qp = (SqlQueryPartition)CreatePartition(this, this.Context);
+                    qp = CreatePartition();
                     qp.PartitioningKeyTo = stat.KeyValue[Math.Min((i + 1) * s, stat.KeyValue.Count - 1)];
 
                     if (i == 0)
@@ -515,6 +690,58 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             partition.ID = partitions.Count;
             partitions.Add(partition);
+        }
+
+        /// <summary>
+        /// Returns local datasets that are required to execute the query.
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// The function only returns GraywulfDatasets.
+        /// </remarks>
+        public Dictionary<string, GraywulfDataset> FindRequiredDatasets()
+        {
+            var sc = GetSchemaManager();
+
+            // Collect list of required databases
+            var ds = new Dictionary<string, GraywulfDataset>(SchemaManager.Comparer);
+            var trs = new List<TableReference>();
+
+            foreach (var tr in selectStatement.EnumerateSourceTableReferences(true))
+            {
+                if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
+                {
+                    // Filter out non-graywulf datasets
+                    if (!ds.ContainsKey(tr.DatasetName) && (sc.Datasets[tr.DatasetName] is GraywulfDataset))
+                    {
+                        ds.Add(tr.DatasetName, (GraywulfDataset)sc.Datasets[tr.DatasetName]);
+                    }
+                }
+            }
+
+            return ds;
+        }
+
+        #endregion
+        #region Temporary table logic
+
+        public override Table GetTemporaryTable(string tableName)
+        {
+            string tempname;
+
+            switch (ExecutionMode)
+            {
+                case Jobs.Query.ExecutionMode.SingleServer:
+                    tempname = String.Format("skyquerytemp_{0}", tableName);
+                    break;
+                case Jobs.Query.ExecutionMode.Graywulf:
+                    tempname = String.Format("{0}_{1}_{2}", Context.UserName, Context.JobID, tableName);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return GetTemporaryTableInternal(tempname);
         }
 
         #endregion

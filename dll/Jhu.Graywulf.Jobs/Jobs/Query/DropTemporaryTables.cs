@@ -32,8 +32,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             var suppressErrors = SuppressErrors.Get(activityContext);
 
-            querypartition.DropTemporaryTables(suppressErrors);
-            querypartition.DropTemporaryViews(suppressErrors);
+            querypartition.CleanUp(suppressErrors);
         }
     }
 }

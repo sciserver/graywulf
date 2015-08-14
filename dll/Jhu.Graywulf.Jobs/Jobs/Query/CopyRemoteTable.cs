@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.Jobs.Query
             using (Context context = querypartition.Query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {       
                 remotetable = querypartition.RemoteTableReferences[RemoteTable.Get(activityContext)];
-                source = querypartition.PrepareCopyRemoteTable(remotetable);
+                querypartition.PrepareCopyRemoteTable(remotetable, out source);
             }
 
             Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;

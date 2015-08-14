@@ -123,7 +123,7 @@ FROM `Graywulf_Schema_Test`.`Book` `b1`, `Graywulf_Schema_Test`.`Book` `b2`", re
                 // TODO: use qs.SourceTableReferences
                 foreach (var tr in qs.EnumerateSourceTableReferences(true))
                 {
-                    res.Add(cg.GenerateMostRestrictiveTableQuery(tr, includePrimaryKey, top));
+                    res.Add(cg.GenerateMostRestrictiveTableQuery(qs, tr, includePrimaryKey, top));
                 }
             }
 

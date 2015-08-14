@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Jobs.Query
                         //queryPartition.DatabaseVersionName = queryPartition.Query.SourceDatabaseVersionName; TODO: delete
                         queryPartition.InitializeQueryObject(context, scheduler, false);
 
-                        var dss = queryPartition.FindRequiredDatasets();
+                        var dss = queryPartition.Query.FindRequiredDatasets();
 
                         // Check if there are any Graywulf datasets referenced in the query
                         var assignDefault = (dss.Values.FirstOrDefault(ds => !ds.IsSpecificInstanceRequired) == null);

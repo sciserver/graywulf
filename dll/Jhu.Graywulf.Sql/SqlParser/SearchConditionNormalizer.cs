@@ -19,29 +19,24 @@ namespace Jhu.Graywulf.SqlParser
         {
         }
 
-        public void Execute(SelectStatement selectStatement)
+        public void CollectConditions(SelectStatement selectStatement)
         {
-            NormalizeSelectStatement(selectStatement);
+            CollectConditions(selectStatement.QueryExpression);
         }
 
-        public void NormalizeSelectStatement(SelectStatement selectStatement)
-        {
-            NormalizeQueryExpression(selectStatement.QueryExpression);
-        }
-
-        public void NormalizeQueryExpression(QueryExpression qe)
+        public void CollectConditions(QueryExpression qe)
         {
             foreach (var qs in qe.EnumerateDescendants<QuerySpecification>())
             {
-                NormalizeQuerySpecification(qs);
+                CollectConditions(qs);
             }
         }
 
-        public void NormalizeQuerySpecification(QuerySpecification qs)
+        public void CollectConditions(QuerySpecification qs)
         {
             foreach (var sq in qs.EnumerateSubqueries())
             {
-                NormalizeSelectStatement(sq.SelectStatement);
+                CollectConditions(sq.SelectStatement);
             }
 
             // Process join conditions
@@ -100,17 +95,7 @@ namespace Jhu.Graywulf.SqlParser
             // Prefix with the WHERE keyword
             if (sc != null)
             {
-                var where = new WhereClause();
-                where.Stack.AddLast(Keyword.Create("WHERE"));
-                where.Stack.AddLast(Whitespace.Create());
-
-                // Wrap into brackets
-                var scb = SearchConditionBrackets.Create(sc);
-                sc = SearchCondition.Create(false, scb);
-
-                where.Stack.AddLast(sc);
-
-                return where;
+                return WhereClause.Create(sc);
             }
             else
             {

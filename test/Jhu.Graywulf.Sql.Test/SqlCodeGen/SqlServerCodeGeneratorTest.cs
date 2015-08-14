@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.SqlCodeGen.Test
                 // TODO: use qs.SourceTableReferences
                 foreach (var tr in qs.EnumerateSourceTableReferences(true))
                 {
-                    res.Add(cg.GenerateMostRestrictiveTableQuery(tr, includePrimaryKey, top));
+                    res.Add(cg.GenerateMostRestrictiveTableQuery(qs, tr, includePrimaryKey, top));
                 }
             }
 

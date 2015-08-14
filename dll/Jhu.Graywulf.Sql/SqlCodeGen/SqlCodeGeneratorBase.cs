@@ -426,7 +426,7 @@ namespace Jhu.Graywulf.SqlCodeGen
 
         protected abstract string GenerateTopExpression(int top);
 
-        public abstract string GenerateMostRestrictiveTableQuery(TableReference table, bool includePrimaryKey, int top);
+        public abstract string GenerateMostRestrictiveTableQuery(QuerySpecification querySpecification, TableReference table, bool includePrimaryKey, int top);
 
         public virtual string GenerateCountStarQuery(string subquery)
         {

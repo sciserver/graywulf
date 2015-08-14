@@ -97,12 +97,12 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             return topstr;
         }
 
-        public override string GenerateMostRestrictiveTableQuery(TableReference table, bool includePrimaryKey, int top)
+        public override string GenerateMostRestrictiveTableQuery(QuerySpecification querySpecification, TableReference table, bool includePrimaryKey, int top)
         {
-            // Normalize search conditions and extract where clause
-            var cn = new SearchConditionNormalizer();
-            cn.NormalizeQuerySpecification(((TableSource)table.Node).QuerySpecification);
-            var where = cn.GenerateWhereClauseSpecificToTable(table);
+            // Run the normalizer to convert where clause to a normal form
+            var cnr = new SearchConditionNormalizer();
+            cnr.CollectConditions(querySpecification);
+            var where = cnr.GenerateWhereClauseSpecificToTable(table);
 
             // Build table specific query
             var sql = new StringWriter();

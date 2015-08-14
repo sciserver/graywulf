@@ -67,25 +67,6 @@ namespace Jhu.Graywulf.Jobs.Query
         private IScheduler scheduler;
 
         /// <summary>
-        /// Type name of the query factory class
-        /// </summary>
-        private string queryFactoryTypeName;
-
-        /// <summary>
-        /// Holds a reference to the query factory class
-        /// </summary>
-        [NonSerialized]
-        private Lazy<QueryFactory> queryFactory;
-
-        /// <summary>
-        /// The original query to be executed
-        /// </summary>
-        private string queryString;
-
-        private string batchName;
-        private string queryName;
-
-        /// <summary>
         /// The dataset to be assumed when no DATASET: part in
         /// table names appear.
         /// </summary>
@@ -97,19 +78,9 @@ namespace Jhu.Graywulf.Jobs.Query
         private SqlServerDataset temporaryDataset;
 
         /// <summary>
-        /// Holds a reference to temporary database registry object, once server is assigned
-        /// </summary>
-        private EntityReference<DatabaseInstance> temporaryDatabaseInstanceReference;
-
-        /// <summary>
         /// Dataset to be used to find functions by default.
         /// </summary>
         private SqlServerDataset codeDataset;
-
-        /// <summary>
-        /// Holds a reference to the code database registry object, once server is assigned
-        /// </summary>
-        private EntityReference<DatabaseInstance> codeDatabaseInstanceReference;
 
         /// <summary>
         /// A list of custom datasets, i.e. those that are not
@@ -137,18 +108,6 @@ namespace Jhu.Graywulf.Jobs.Query
         private Dictionary<string, ICancelableTask> cancelableTasks;
 
         /// <summary>
-        /// The root object of the query parsing tree
-        /// </summary>
-        [NonSerialized]
-        private SelectStatement selectStatement;
-
-        /// <summary>
-        /// True, if the FinishInterpret function has completed.
-        /// </summary>
-        [NonSerialized]
-        private bool isInterpretFinished;
-
-        /// <summary>
         /// Holds a list of temporary tables created during query execution.
         /// Need to delete all these after the query has completed.
         /// </summary>
@@ -171,20 +130,18 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         private EntityReference<ServerInstance> assignedServerInstanceReference;
 
+        /// <summary>
+        /// Holds a reference to temporary database registry object, once server is assigned
+        /// </summary>
+        private EntityReference<DatabaseInstance> temporaryDatabaseInstanceReference;
+
+        /// <summary>
+        /// Holds a reference to the code database registry object, once server is assigned
+        /// </summary>
+        private EntityReference<DatabaseInstance> codeDatabaseInstanceReference;
+
         #endregion
         #region Properties
-
-        [IgnoreDataMember]
-        protected SqlQueryCodeGenerator CodeGenerator
-        {
-            get
-            {
-                return new SqlQueryCodeGenerator(this)
-                {
-                    ResolveNames = true
-                };
-            }
-        }
 
         /// <summary>
         /// Gets or sets the timeout of individual queries
@@ -232,25 +189,6 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         /// <summary>
-        /// Gets or sets the type name string of the query factory class
-        /// </summary>
-        [DataMember]
-        public string QueryFactoryTypeName
-        {
-            get { return queryFactoryTypeName; }
-            set { queryFactoryTypeName = value; }
-        }
-
-        /// <summary>
-        /// Gets a query factory instance.
-        /// </summary>
-        [IgnoreDataMember]
-        protected QueryFactory QueryFactory
-        {
-            get { return queryFactory.Value; }
-        }
-
-        /// <summary>
         /// Gets or sets the Federation.
         /// </summary>
         [DataMember]
@@ -258,30 +196,6 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             get { return federationReference; }
             set { federationReference = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the query string of the query job.
-        /// </summary>
-        [DataMember]
-        public string QueryString
-        {
-            get { return queryString; }
-            set { queryString = value; }
-        }
-
-        [DataMember]
-        public string BatchName
-        {
-            get { return batchName; }
-            set { batchName = value; }
-        }
-
-        [DataMember]
-        public string QueryName
-        {
-            get { return queryName; }
-            set { queryName = value; }
         }
 
         /// <summary>
@@ -306,17 +220,17 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 SqlServerDataset tempds;
 
-                switch (ExecutionMode)
+                if (executionMode == Query.ExecutionMode.SingleServer || temporaryDatabaseInstanceReference.IsEmpty)
                 {
-                    case ExecutionMode.SingleServer:
-                        tempds = temporaryDataset;
-                        break;
-                    case ExecutionMode.Graywulf:
-                        // *** TODO: this throws null exception after persist and restore
-                        tempds = temporaryDatabaseInstanceReference.Value.GetDataset();
-                        break;
-                    default:
-                        throw new NotImplementedException();
+                    tempds = temporaryDataset;
+                }
+                else if (executionMode == ExecutionMode.Graywulf)
+                {
+                    tempds = temporaryDatabaseInstanceReference.Value.GetDataset();
+                }
+                else
+                {
+                    throw new NotImplementedException();
                 }
 
                 tempds.IsMutable = true;
@@ -336,17 +250,17 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 SqlServerDataset codeds;
 
-                switch (ExecutionMode)
+                if (executionMode == Query.ExecutionMode.SingleServer || temporaryDatabaseInstanceReference.IsEmpty)
                 {
-                    case ExecutionMode.SingleServer:
-                        codeds = codeDataset;
-                        break;
-                    case ExecutionMode.Graywulf:
-                        // *** TODO: this throws null exception after persist and restore
-                        codeds = codeDatabaseInstanceReference.Value.GetDataset();
-                        break;
-                    default:
-                        throw new NotImplementedException();
+                    codeds = codeDataset;
+                }
+                else if (executionMode == ExecutionMode.Graywulf)
+                {
+                    codeds = codeDatabaseInstanceReference.Value.GetDataset();
+                }
+                else
+                {
+                    throw new NotImplementedException();
                 }
 
                 return codeds;
@@ -420,16 +334,6 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         /// <summary>
-        /// Gets or sets the root object of the query parsing tree.
-        /// </summary>
-        [IgnoreDataMember]
-        public SelectStatement SelectStatement
-        {
-            get { return selectStatement; }
-            protected set { selectStatement = value; }
-        }
-
-        /// <summary>
         /// Gets the list of temporary tables created during query execution.
         /// </summary>
         [IgnoreDataMember]
@@ -478,15 +382,6 @@ namespace Jhu.Graywulf.Jobs.Query
             this.context = null;
             this.scheduler = null;
 
-            this.queryFactoryTypeName = null;
-            this.queryFactory = new Lazy<QueryFactory>(() => (QueryFactory)Activator.CreateInstance(Type.GetType(queryFactoryTypeName)), false);
-
-            this.federationReference = new EntityReference<Federation>(this);
-
-            this.queryString = null;
-            this.batchName = null;
-            this.queryName = null;
-
             this.defaultDataset = null;
             this.temporaryDataset = null;
             this.codeDataset = null;
@@ -497,16 +392,13 @@ namespace Jhu.Graywulf.Jobs.Query
             this.isCanceled = false;
             this.cancelableTasks = new Dictionary<string, ICancelableTask>();
 
+            this.federationReference = new EntityReference<Federation>(this);
             this.assignedServerInstanceReference = new EntityReference<ServerInstance>(this);
-            this.selectStatement = null;
-            this.isInterpretFinished = false;
-
             this.temporaryDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this);
+            this.codeDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this);
 
             this.temporaryTables = new ConcurrentDictionary<string, Table>(SchemaManager.Comparer);
             this.temporaryViews = new ConcurrentDictionary<string, View>(SchemaManager.Comparer);
-
-            this.codeDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this);
         }
 
         [OnDeserialized]
@@ -528,15 +420,6 @@ namespace Jhu.Graywulf.Jobs.Query
             this.context = old.context;
             this.scheduler = old.scheduler;
 
-            this.queryFactoryTypeName = old.queryFactoryTypeName;
-            this.queryFactory = new Lazy<QueryFactory>(() => (QueryFactory)Activator.CreateInstance(Type.GetType(queryFactoryTypeName)), false);
-
-            this.federationReference = new EntityReference<Registry.Federation>(this, old.federationReference);
-
-            this.queryString = old.queryString;
-            this.batchName = old.batchName;
-            this.queryName = old.queryName;
-
             this.defaultDataset = old.defaultDataset;
             this.temporaryDataset = old.temporaryDataset;
             this.codeDataset = old.codeDataset;
@@ -547,16 +430,13 @@ namespace Jhu.Graywulf.Jobs.Query
             this.isCanceled = false;
             this.cancelableTasks = new Dictionary<string, ICancelableTask>();
 
+            this.federationReference = new EntityReference<Registry.Federation>(this, old.federationReference);
             this.assignedServerInstanceReference = new EntityReference<ServerInstance>(this, old.assignedServerInstanceReference);
-            this.selectStatement = null;
-            this.isInterpretFinished = false;
-
             this.temporaryDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this, old.temporaryDatabaseInstanceReference);
+            this.codeDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this, old.codeDatabaseInstanceReference);
 
             this.temporaryTables = new ConcurrentDictionary<string, Table>(old.temporaryTables, SchemaManager.Comparer);
             this.temporaryViews = new ConcurrentDictionary<string, View>(old.temporaryViews, SchemaManager.Comparer);
-
-            this.codeDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this, old.codeDatabaseInstanceReference);
         }
 
         public abstract object Clone();
@@ -631,7 +511,7 @@ namespace Jhu.Graywulf.Jobs.Query
                             LoadDatasets(forceReinitialize);
                             LoadSystemDatabaseInstance(temporaryDatabaseInstanceReference, (GraywulfDataset)temporaryDataset, forceReinitialize);
                             LoadSystemDatabaseInstance(codeDatabaseInstanceReference, (GraywulfDataset)codeDataset, forceReinitialize);
-                            
+
 
                             break;
                         default:
@@ -643,10 +523,6 @@ namespace Jhu.Graywulf.Jobs.Query
                 {
                     this.scheduler = scheduler;
                 }
-
-                Parse(forceReinitialize);
-                Interpret(forceReinitialize);
-                Validate();
             }
         }
 
@@ -658,37 +534,8 @@ namespace Jhu.Graywulf.Jobs.Query
             LoadSystemDatabaseInstance(codeDatabaseInstanceReference, (GraywulfDataset)codeDataset, true);
         }
 
+
         #region Cluster registry query functions
-
-        /// <summary>
-        /// Returns local datasets that are required to execute the query.
-        /// </summary>
-        /// <returns></returns>
-        /// <remarks>
-        /// The function only returns GraywulfDatasets.
-        /// </remarks>
-        public Dictionary<string, GraywulfDataset> FindRequiredDatasets()
-        {
-            var sc = GetSchemaManager();
-
-            // Collect list of required databases
-            var ds = new Dictionary<string, GraywulfDataset>(SchemaManager.Comparer);
-            var trs = new List<TableReference>();
-
-            foreach (var tr in selectStatement.EnumerateSourceTableReferences(true))
-            {
-                if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
-                {
-                    // Filter out non-graywulf datasets
-                    if (!ds.ContainsKey(tr.DatasetName) && (sc.Datasets[tr.DatasetName] is GraywulfDataset))
-                    {
-                        ds.Add(tr.DatasetName, (GraywulfDataset)sc.Datasets[tr.DatasetName]);
-                    }
-                }
-            }
-
-            return ds;
-        }
 
         protected void LoadAssignedServerInstance(bool forceReinitialize)
         {
@@ -813,149 +660,19 @@ namespace Jhu.Graywulf.Jobs.Query
             return new SqlConnectionStringBuilder(ds.ConnectionString);
         }
 
-        public virtual Table GetTemporaryTable(string tableName)
-        {
-            string tempname;
-            var tempds = TemporaryDataset;
+        public abstract Table GetTemporaryTable(string tablename);
 
-            switch (executionMode)
-            {
-                case Jobs.Query.ExecutionMode.SingleServer:
-                    tempname = String.Format("skyquerytemp_{0}", tableName);
-                    break;
-                case Jobs.Query.ExecutionMode.Graywulf:
-                    tempname = String.Format("{0}_{1}_{2}", Context.UserName, Context.JobID, tableName);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
+        protected Table GetTemporaryTableInternal(string tablename)
+        {
+            var tempds = TemporaryDataset;
 
             return new Table()
             {
                 Dataset = tempds,
                 DatabaseName = tempds.DatabaseName,
                 SchemaName = tempds.DefaultSchemaName,
-                TableName = tempname,
+                TableName = tablename,
             };
-        }
-
-
-        #endregion
-        #region Parsing functions
-
-        /// <summary>
-        /// Parses the query
-        /// </summary>
-        protected void Parse(bool forceReinitialize)
-        {
-            // Reparse only if needed
-            if (selectStatement == null || forceReinitialize)
-            {
-                var parser = queryFactory.Value.CreateParser();
-                selectStatement = (SelectStatement)parser.Execute(queryString);
-            }
-        }
-
-        protected void Validate()
-        {
-            // Perform validation on the query string
-
-            var validator = queryFactory.Value.CreateValidator();
-            validator.Execute(selectStatement);
-        }
-
-        /// <summary>
-        /// Interprets the parsed query
-        /// </summary>
-        protected bool Interpret(bool forceReinitialize)
-        {
-            if (!isInterpretFinished || forceReinitialize)
-            {
-                // --- Execute name resolution
-                var nr = CreateNameResolver(forceReinitialize);
-                nr.Execute(selectStatement);
-
-                // --- Normalize where conditions
-                var wcn = new SearchConditionNormalizer();
-                wcn.Execute(selectStatement);
-
-                FinishInterpret(forceReinitialize);
-
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Performes additional interpretation steps after the query has been parsed.
-        /// </summary>
-        /// <param name="forceReinitialize"></param>
-        protected virtual void FinishInterpret(bool forceReinitialize)
-        {
-            this.isInterpretFinished = true;
-        }
-
-        /// <summary>
-        /// Returns a schema manager, either the cached one, either a newly
-        /// created one.
-        /// </summary>
-        /// <param name="clearCache"></param>
-        /// <returns></returns>
-        protected virtual SchemaManager GetSchemaManager()
-        {
-            var sc = CreateSchemaManager();
-
-            // Add custom dataset defined by code
-            foreach (var ds in customDatasets)
-            {
-                // *** TODO: check this
-                sc.Datasets[ds.Name] = ds;
-            }
-
-            return sc;
-        }
-
-        /// <summary>
-        /// Creates a SqlSchemaConnector that will look up and cache database table schema
-        /// information for query parsing
-        /// </summary>
-        /// <returns>An initialized SqlSchemaConnector instance.</returns>
-        /// <remarks>
-        /// The function adds custom datasets (usually MYDBs or remote dataset) defined
-        /// for the query job.
-        /// </remarks>
-        private SchemaManager CreateSchemaManager()
-        {
-            switch (executionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    return new Schema.SqlServer.SqlServerSchemaManager();
-                case ExecutionMode.Graywulf:
-                    return GraywulfSchemaManager.Create(federationReference.Value);
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        /// <summary>
-        /// Returns a new name resolver to be used with the parsed query string.
-        /// </summary>
-        /// <param name="forceReinitialize"></param>
-        /// <returns></returns>
-        protected virtual SqlNameResolver CreateNameResolver(bool forceReinitialize)
-        {
-            LoadDatasets(forceReinitialize);
-
-            var nr = queryFactory.Value.CreateNameResolver();
-            nr.SchemaManager = GetSchemaManager();
-
-            nr.DefaultTableDatasetName = defaultDataset.Name;
-            nr.DefaultFunctionDatasetName = codeDataset.Name;
-
-            return nr;
         }
 
         #endregion
@@ -1086,7 +803,6 @@ namespace Jhu.Graywulf.Jobs.Query
             return si;
         }
 
-
         protected DatabaseInstance[] GetAvailableDatabaseInstances(DatabaseDefinition databaseDefinition, string databaseVersion)
         {
             return GetAvailableDatabaseInstances(databaseDefinition, databaseVersion, null);
@@ -1126,7 +842,6 @@ namespace Jhu.Graywulf.Jobs.Query
             return GetAvailableDatabaseInstances(serverInstance, databaseDefinition, null);
         }
 
-
         public DatabaseInstance[] GetAvailableDatabaseInstances(ServerInstance serverInstance, DatabaseDefinition databaseDefinition, string databaseVersion, string surrogateDatabaseVersion)
         {
             Guid[] diguid;
@@ -1158,6 +873,48 @@ namespace Jhu.Graywulf.Jobs.Query
 
         #endregion
         #region Name substitution
+
+        /// <summary>
+        /// Creates a SqlSchemaConnector that will look up and cache database table schema
+        /// information for query parsing
+        /// </summary>
+        /// <returns>An initialized SqlSchemaConnector instance.</returns>
+        /// <remarks>
+        /// The function adds custom datasets (usually MYDBs or remote dataset) defined
+        /// for the query job.
+        /// </remarks>
+        protected SchemaManager CreateSchemaManager()
+        {
+            switch (ExecutionMode)
+            {
+                case ExecutionMode.SingleServer:
+                    return new Schema.SqlServer.SqlServerSchemaManager();
+                case ExecutionMode.Graywulf:
+                    return GraywulfSchemaManager.Create(FederationReference.Value);
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Returns a schema manager, either the cached one, either a newly
+        /// created one.
+        /// </summary>
+        /// <param name="clearCache"></param>
+        /// <returns></returns>
+        protected virtual SchemaManager GetSchemaManager()
+        {
+            var sc = CreateSchemaManager();
+
+            // Add custom dataset defined by code
+            foreach (var ds in customDatasets)
+            {
+                // *** TODO: check this
+                sc.Datasets[ds.Name] = ds;
+            }
+
+            return sc;
+        }
 
         protected void SubstituteDatabaseNames(SelectStatement selectStatement, ServerInstance serverInstance, string databaseVersion)
         {
@@ -1325,6 +1082,55 @@ namespace Jhu.Graywulf.Jobs.Query
                 // Everything else is remote
                 return true;
             }
+        }
+
+        #endregion
+        #region Clean-up functions
+
+        protected void DropTemporaryTables(bool suppressErrors)
+        {
+            foreach (var table in temporaryTables.Values)
+            {
+                // This function is called in the cancel branch of certain workflows
+                // where it's not supposed to fail in any circumstances.
+
+                try
+                {
+                    table.Drop();
+                }
+                catch (Exception)
+                {
+                    if (!suppressErrors)
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            temporaryTables.Clear();
+        }
+
+        protected void DropTemporaryViews(bool suppressErrors)
+        {
+            foreach (var view in temporaryViews.Values)
+            {
+                // This function is called in the cancel branch of certain workflows
+                // where it's not supposed to fail in any circumstances.
+
+                try
+                {
+                    view.Drop();
+                }
+                catch (Exception)
+                {
+                    if (!suppressErrors)
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            temporaryViews.Clear();
         }
 
         #endregion

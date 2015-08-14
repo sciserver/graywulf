@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.SqlParser.Test
 
             foreach (var qs in select.EnumerateQuerySpecifications())
             {
-                cn.NormalizeQuerySpecification(qs);
+                cn.CollectConditions(qs);
 
                 // TODO use qs.SourceTableReferences ???
                 foreach (var tr in qs.EnumerateSourceTableReferences(true))
@@ -84,7 +84,7 @@ namespace Jhu.Graywulf.SqlParser.Test
             var select = CreateSelect(query);
 
             var scn = new SearchConditionNormalizer();
-            scn.Execute(select);
+            scn.CollectConditions(select);
 
             var conditions = typeof(SearchConditionNormalizer).GetField("conditions", BindingFlags.Instance | BindingFlags.NonPublic);
             var enumterms = typeof(SearchConditionNormalizer).GetMethod("EnumerateCnfTerms", BindingFlags.Static | BindingFlags.NonPublic);
@@ -117,7 +117,7 @@ namespace Jhu.Graywulf.SqlParser.Test
             var select = CreateSelect(query);
 
             var scn = new SearchConditionNormalizer();
-            scn.Execute(select);
+            scn.CollectConditions(select);
 
             var conditions = typeof(SearchConditionNormalizer).GetField("conditions", BindingFlags.Instance | BindingFlags.NonPublic);
             var enumterms = typeof(SearchConditionNormalizer).GetMethod("EnumerateCnfTermsSpecificToTable", BindingFlags.Static | BindingFlags.NonPublic);

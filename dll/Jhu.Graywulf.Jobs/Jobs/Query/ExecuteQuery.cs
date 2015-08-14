@@ -6,6 +6,8 @@ using System.Activities;
 using System.Threading.Tasks;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
@@ -22,21 +24,23 @@ namespace Jhu.Graywulf.Jobs.Query
         protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
         {
             SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
+            SourceTableQuery source;
+            Table destination;
 
             using (Context context = querypartition.Query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                querypartition.PrepareExecuteQuery(context, activityContext.GetExtension<IScheduler>());
+                querypartition.PrepareExecuteQuery(context, activityContext.GetExtension<IScheduler>(), out source, out destination);
             }
 
             Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
             string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, querypartition), callback, state);
+            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, querypartition, source, destination), callback, state);
         }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlQueryPartition querypartition)
+        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlQueryPartition querypartition, SourceTableQuery source, Table destination)
         {
             RegisterCancelable(workflowInstanceGuid, activityInstanceId, querypartition);
-            querypartition.ExecuteQuery();
+            querypartition.ExecuteQuery(source, destination);
             UnregisterCancelable(workflowInstanceGuid, activityInstanceId, querypartition);
         }
     }
