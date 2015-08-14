@@ -65,6 +65,12 @@ namespace Jhu.Graywulf.SqlParser
             CopyMembers(old);
         }
 
+        public FunctionReference(string functionName)
+        {
+            InitializeMembers();
+            InterpretSystemFunction(functionName);
+        }
+
         public FunctionReference(FunctionIdentifier fi)
         {
             InitializeMembers();
@@ -81,6 +87,18 @@ namespace Jhu.Graywulf.SqlParser
         {
             this.systemFunctionName = old.systemFunctionName;
             this.isUdf = old.isUdf;
+        }
+
+        private void InterpretSystemFunction(string functionName)
+        {
+            DatasetName = null;
+            DatabaseName = null;
+            SchemaName = null;
+            DatabaseObjectName = null;
+
+            systemFunctionName = functionName;
+
+            isUdf = false;
         }
 
         private void InterpretFunctionIdentifier(FunctionIdentifier fi)

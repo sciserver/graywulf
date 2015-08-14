@@ -18,6 +18,13 @@
         {
         }
 
+        public static [$Name] Create(string value)
+        {
+            var terminal = new [$Name]();
+            terminal.Value = value;
+            return terminal;
+        }
+
         public override object Clone()
         {
             return new [$Name](this);

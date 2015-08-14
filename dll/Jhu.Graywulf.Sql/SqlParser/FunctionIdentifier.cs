@@ -41,6 +41,20 @@ namespace Jhu.Graywulf.SqlParser
             this.functionReference = old.functionReference;
         }
 
+        public static FunctionIdentifier Create(string functionName)
+        {
+            var fid = new FunctionIdentifier();
+            fid.functionReference = new FunctionReference(functionName);
+            return fid;
+        }
+
+        public static FunctionIdentifier Create(FunctionReference functionReference)
+        {
+            var fid = new FunctionIdentifier();
+            fid.functionReference = functionReference;
+            return fid;
+        }
+
         public override ParserLib.Node Interpret()
         {
             this.functionReference = new FunctionReference(this);

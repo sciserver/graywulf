@@ -17,5 +17,29 @@ namespace Jhu.Graywulf.SqlParser
             get { return FunctionIdentifier.FunctionReference; }
             set { FunctionIdentifier.FunctionReference = value; }
         }
+
+        public static FunctionCall Create(string functionName, params Expression[] arguments)
+        {
+            var f = new FunctionCall();
+            var fun = FunctionIdentifier.Create(functionName);
+            var args = FunctionArguments.Create(arguments);
+
+            f.Stack.AddLast(fun);
+            f.Stack.AddLast(args);
+
+            return f;
+        }
+
+        public static FunctionCall Create(FunctionReference functionReference, params Expression[] arguments)
+        {
+            var f = new FunctionCall();
+            var fun = FunctionIdentifier.Create(functionReference);
+            var args = FunctionArguments.Create(arguments);
+
+            f.Stack.AddLast(fun);
+            f.Stack.AddLast(args);
+
+            return f;
+        }
     }
 }

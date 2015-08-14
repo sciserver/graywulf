@@ -5,13 +5,13 @@ using System.Text;
 
 namespace Jhu.Graywulf.SqlParser
 {
-    public partial class Variable
+    public partial class FunctionName
     {
         public static Variable Create(string name)
         {
-            var var = new Variable();
-            var.Value = name;
-            return var;
+            var fun = new Variable();
+            fun.Value = name;
+            return fun;
         }
     }
 }

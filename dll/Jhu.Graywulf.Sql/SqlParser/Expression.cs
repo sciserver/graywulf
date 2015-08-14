@@ -49,6 +49,8 @@ namespace Jhu.Graywulf.SqlParser
             }
         }
 
+
+
         public static Expression Create(ColumnIdentifier ci)
         {
             var nex = new Expression();
@@ -68,6 +70,28 @@ namespace Jhu.Graywulf.SqlParser
             avr.Stack.AddLast(var);
             nex.Stack.AddLast(avr);
 
+            return nex;
+        }
+
+        public static Expression Create(FunctionCall fun)
+        {
+            var nex = new Expression();
+            nex.Stack.AddLast(fun);
+            return nex;
+        }
+
+        public static Expression Create(UdtFunctionCall fun)
+        {
+            var nex = new Expression();
+            nex.Stack.AddLast(fun);
+            return nex;
+        }
+
+        public static Expression CreateNumber(string number)
+        {
+            var nex = new Expression();
+            var num = Number.Create(number);
+            nex.Stack.AddLast(num);
             return nex;
         }
     }

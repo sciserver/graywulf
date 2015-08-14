@@ -16,6 +16,13 @@
         {
         }
 
+        public static [$Name] Create()
+        {
+            var s = new [$Name]();
+            s.Value = @"[$Pattern]";
+            return s;
+        }
+
         public override object Clone()
         {
             return new [$Name](this);

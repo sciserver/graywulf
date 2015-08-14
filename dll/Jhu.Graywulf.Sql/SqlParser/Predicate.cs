@@ -65,5 +65,22 @@ namespace Jhu.Graywulf.SqlParser
 
             return predicate;
         }
+
+        public static Predicate CreateBetween(Expression x, Expression a, Expression b)
+        {
+            var predicate = new Predicate();
+
+            predicate.Stack.AddLast(x);
+            predicate.Stack.AddLast(Whitespace.Create());
+            predicate.Stack.AddLast(Keyword.Create("BETWEEN"));
+            predicate.Stack.AddLast(Whitespace.Create());
+            predicate.Stack.AddLast(a);
+            predicate.Stack.AddLast(Whitespace.Create());
+            predicate.Stack.AddLast(Keyword.Create("AND"));
+            predicate.Stack.AddLast(Whitespace.Create());
+            predicate.Stack.AddLast(b);
+
+            return predicate;
+        }
     }
 }

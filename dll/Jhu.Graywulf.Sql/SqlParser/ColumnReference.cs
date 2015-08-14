@@ -85,6 +85,15 @@ namespace Jhu.Graywulf.SqlParser
             CopyMembers(old);
         }
 
+        public ColumnReference(TableReference tableReference, string columnName, DataType columnType)
+        {
+            InitializeMembers();
+
+            this.tableReference = tableReference;
+            this.columnName = columnName;
+            this.dataType = columnType;
+        }
+
         public ColumnReference(TableReference tableReference, Column columnDescription)
         {
             InitializeMembers();
