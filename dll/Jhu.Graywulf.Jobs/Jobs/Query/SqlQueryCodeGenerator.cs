@@ -108,6 +108,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var keycol = tableSource.TableReference.Statistics.KeyColumn;
             var keytype = tableSource.TableReference.Statistics.KeyColumnDataType.NameWithLength;
             var temptable = queryObject.GetTemporaryTable(GetEscapedUniqueName(tableSource.TableReference));
+            var where = GetTableStatisticsWhereClause(tableSource);
 
             var sql = new StringBuilder(SqlQueryScripts.TableStatistics);
 
@@ -115,7 +116,7 @@ namespace Jhu.Graywulf.Jobs.Query
             sql.Replace("[$keytype]", keytype);
             sql.Replace("[$keycol]", keycol);
             sql.Replace("[$tablename]", GetResolvedTableNameWithAlias(tableSource.TableReference));
-            sql.Replace("[$where]", GetTableStatisticsWhereClause(tableSource).ToString());
+            sql.Replace("[$where]", where != null ? where.ToString() : "");
 
             return new SqlCommand(sql.ToString());
         }
