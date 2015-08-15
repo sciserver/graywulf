@@ -228,9 +228,9 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         [IgnoreDataMember]
-        protected virtual SqlQueryCodeGenerator CodeGenerator
+        private SqlQueryCodeGenerator CodeGenerator
         {
-            get { return new SqlQueryCodeGenerator(this); }
+            get { return CreateCodeGenerator(); }
         }
 
         #endregion
@@ -601,6 +601,11 @@ namespace Jhu.Graywulf.Jobs.Query
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        protected virtual SqlQueryCodeGenerator CreateCodeGenerator()
+        {
+            return new SqlQueryCodeGenerator(this);
         }
 
         protected virtual SqlQueryPartition CreatePartition()

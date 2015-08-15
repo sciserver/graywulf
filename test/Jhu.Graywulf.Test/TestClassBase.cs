@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
@@ -288,6 +289,24 @@ namespace Jhu.Graywulf.Test
             }
 
             return "Not called from a test method";
+        }
+
+        protected object CallMethod(object obj, string name, params object[] pars)
+        {
+            var tt = new Type[pars.Length];
+
+            for (int i = 0; i < pars.Length; i++)
+            {
+                tt[i] = pars[i].GetType();
+            }
+
+            var t = obj.GetType();
+            var f = t.GetMethod(
+                name, 
+                BindingFlags.Default | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static, 
+                null, CallingConventions.Any, tt, null);
+            
+            return f.Invoke(obj, pars);
         }
     }
 }

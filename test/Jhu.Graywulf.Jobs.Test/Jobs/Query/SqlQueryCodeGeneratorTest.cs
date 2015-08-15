@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             var ss = Parse(sql);
             var cg = new SqlQueryCodeGenerator();
-            cg.RemoveExtraTokens(ss);
+            CallMethod(cg, "RemoveExtraTokens", ss);
             Assert.AreEqual(gt, ss.ToString());
         }
 
@@ -45,7 +45,8 @@ namespace Jhu.Graywulf.Jobs.Query
                 PartitioningKeyTo = partitioningKeyTo ? (IComparable)(1.0) : null
             };
             var cg = new SqlQueryCodeGenerator(partition);
-            cg.RewriteQueryForExecute(ss);
+            CallMethod(cg, "RewriteForExecute", ss);
+            CallMethod(cg, "RemoveExtraTokens", ss);
             Assert.AreEqual(gt, ss.ToString());
         }
 

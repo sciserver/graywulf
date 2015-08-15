@@ -43,7 +43,11 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             var ss = new SelectStatement(selectStatement);
 
-            RewriteQueryForExecute(ss);
+            RewriteForExecute(ss);
+            RemoveExtraTokens(ss);
+
+            SubstituteDatabaseNames(ss, queryObject.AssignedServerInstance, Partition.Query.SourceDatabaseVersionName);
+            SubstituteRemoteTableNames(ss, queryObject.TemporaryDataset, queryObject.TemporaryDataset.DefaultSchemaName);
 
             var source = new SourceTableQuery()
             {
@@ -56,57 +60,78 @@ namespace Jhu.Graywulf.Jobs.Query
             return source;
         }
 
-        public void RewriteQueryForExecute(SelectStatement selectStatement)
+        protected virtual void RewriteForExecute(SelectStatement selectStatement)
         {
-            SubstituteDatabaseNames(selectStatement, queryObject.AssignedServerInstance, Partition.Query.SourceDatabaseVersionName);
-            SubstituteRemoteTableNames(selectStatement, queryObject.TemporaryDataset, queryObject.TemporaryDataset.DefaultSchemaName);
-
-            var qs = selectStatement.EnumerateQuerySpecifications().First<QuerySpecification>();
-
-            // Check if it is a partitioned query and append partitioning conditions, if necessary
-            var ts = qs.EnumerateSourceTables(false).FirstOrDefault();
-            if (ts != null && ts is SimpleTableSource && ((SimpleTableSource)ts).IsPartitioned)
+            int i = 0;
+            foreach (var qs in selectStatement.EnumerateQuerySpecifications())
             {
-                AppendPartitioningConditions(qs, (SimpleTableSource)ts);
+                RewriteForExecute(qs, i);
+                i++;
             }
 
-            RemoveExtraTokens(selectStatement);
+            RewriteForExecute(selectStatement.OrderByClause);
         }
 
-        public virtual void RemoveExtraTokens(SelectStatement selectStatement)
+        protected virtual void RemoveExtraTokens(SelectStatement selectStatement)
         {
+            // strip off partition by and into clauses
+            foreach (var qs in selectStatement.EnumerateQuerySpecifications())
+            {
+                RemoveExtraTokens(qs);
+            }
+
             // strip off order by, we write to the mydb
             var orderby = selectStatement.FindDescendant<OrderByClause>();
             if (orderby != null)
             {
                 selectStatement.Stack.Remove(orderby);
             }
+        }
 
-            // strip off partition by and into clauses
-            foreach (var qs in selectStatement.EnumerateQuerySpecifications())
+        protected virtual void RewriteForExecute(QuerySpecification qs, int i)
+        {
+            // Check if it is a partitioned query and append partitioning conditions, if necessary
+            var ts = qs.EnumerateSourceTables(false).FirstOrDefault();
+            if (ts != null && ts is SimpleTableSource && ((SimpleTableSource)ts).IsPartitioned)
             {
-                // strip off select into
-                var into = qs.FindDescendant<IntoClause>();
-                if (into != null)
+                if (i > 0)
                 {
-                    qs.Stack.Remove(into);
+                    throw new InvalidOperationException();
                 }
 
-                foreach (var ts in qs.EnumerateDescendantsRecursive<SimpleTableSource>())
-                {
-                    var pc = ts.FindDescendant<TablePartitionClause>();
+                AppendPartitioningConditions(qs, (SimpleTableSource)ts);
+            }
+        }
 
-                    if (pc != null)
-                    {
-                        pc.Parent.Stack.Remove(pc);
-                    }
+        protected virtual void RemoveExtraTokens(QuerySpecification qs)
+        {
+            // strip off select into
+            var into = qs.FindDescendant<IntoClause>();
+            if (into != null)
+            {
+                qs.Stack.Remove(into);
+            }
+
+            // strip off partition by
+            foreach (var ts in qs.EnumerateDescendantsRecursive<SimpleTableSource>())
+            {
+                var pc = ts.FindDescendant<TablePartitionClause>();
+
+                if (pc != null)
+                {
+                    pc.Parent.Stack.Remove(pc);
                 }
             }
         }
 
-        protected void SubstituteDatabaseNames(SelectStatement selectStatement, ServerInstance serverInstance, string databaseVersion)
+        protected virtual void RewriteForExecute(OrderByClause orderBy)
         {
-            SubstituteDatabaseNames(selectStatement, serverInstance, databaseVersion, null);
+            // TODO: we remove this for now but later can be implemented
+        }
+
+        protected void SubstituteDatabaseNames(SelectStatement ss, ServerInstance serverInstance, string databaseVersion)
+        {
+            SubstituteDatabaseNames(ss, serverInstance, databaseVersion, null);
         }
 
         /// <summary>
@@ -115,13 +140,16 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="serverInstance"></param>
         /// <param name="databaseVersion"></param>
         /// <remarks>This function call must be synchronized!</remarks>
-        protected void SubstituteDatabaseNames(SelectStatement selectStatement, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
+        protected void SubstituteDatabaseNames(SelectStatement ss, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
         {
-            foreach (var tr in selectStatement.EnumerateSourceTableReferences(true))
+            foreach (var qs in ss.EnumerateQuerySpecifications())
             {
-                if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
+                foreach (var tr in qs.EnumerateSourceTableReferences(true))
                 {
-                    SubstituteDatabaseName(tr, serverInstance, databaseVersion, surrogateDatabaseVersion);
+                    if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
+                    {
+                        SubstituteDatabaseName(tr, serverInstance, databaseVersion, surrogateDatabaseVersion);
+                    }
                 }
             }
         }
@@ -176,8 +204,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// holding a cached version of remote tables.
         /// </summary>
         /// <remarks></remarks>
-        // TODO: This function call must be synchronized! ??
-        protected virtual void SubstituteRemoteTableNames(SelectStatement selectStatement, DatasetBase temporaryDataset, string temporarySchemaName)
+        protected virtual void SubstituteRemoteTableNames(SelectStatement ss, DatasetBase temporaryDataset, string temporarySchemaName)
         {
             switch (queryObject.ExecutionMode)
             {
@@ -187,10 +214,13 @@ namespace Jhu.Graywulf.Jobs.Query
                 case ExecutionMode.Graywulf:
                     var sm = queryObject.GetSchemaManager();
 
-                    // Replace remote table references with temp table references
-                    foreach (TableReference tr in selectStatement.EnumerateSourceTableReferences(true))
+                    foreach (var qs in ss.EnumerateQuerySpecifications())
                     {
-                        SubstituteRemoteTableName(sm, tr, temporaryDataset, temporarySchemaName);
+                        // Replace remote table references with temp table references
+                        foreach (TableReference tr in qs.EnumerateSourceTableReferences(true))
+                        {
+                            SubstituteRemoteTableName(sm, tr, temporaryDataset, temporarySchemaName);
+                        }
                     }
                     break;
                 default:
