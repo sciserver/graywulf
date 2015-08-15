@@ -67,9 +67,9 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         [IgnoreDataMember]
-        protected virtual SqlQueryCodeGenerator CodeGenerator
+        private SqlQueryCodeGenerator CodeGenerator
         {
-            get { return new SqlQueryCodeGenerator(this); }
+            get { return (SqlQueryCodeGenerator)CreateCodeGenerator(); }
         }
 
         #endregion
@@ -126,6 +126,12 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
+
+        protected virtual SqlServerCodeGenerator CreateCodeGenerator()
+        {
+            return new SqlQueryCodeGenerator(this);
+        }
+
         #region Remote table caching functions
 
         /// <summary>
