@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             RemoveExtraTokensHelper(sql, gt);
         }
-
+        
         [TestMethod]
         [TestCategory("Parsing")]
         public void RemoveOrderByClauseFromUnion()
@@ -156,6 +156,26 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             var sql = "SELECT * FROM Table PARTITION BY id WHERE x < 5";
             var gt = "SELECT * FROM Table  WHERE (@keyFrom <= id AND id < @keyTo) AND (x < 5)";
+
+            RewriteQueryHelper(sql, gt, true, true);
+        }
+
+        [TestMethod]
+        [TestCategory("Parsing")]
+        public void AppendPartitioningBothWithJoin()
+        {
+            var sql = "SELECT * FROM Table1 PARTITION BY id CROSS JOIN Table2";
+            var gt = "SELECT * FROM Table1  CROSS JOIN Table2 WHERE @keyFrom <= id AND id < @keyTo";
+
+            RewriteQueryHelper(sql, gt, true, true);
+        }
+
+        [TestMethod]
+        [TestCategory("Parsing")]
+        public void AppendPartitioningBothWithWhereAndJoin()
+        {
+            var sql = "SELECT * FROM Table1 PARTITION BY id CROSS JOIN Table2 WHERE x < 5";
+            var gt = "SELECT * FROM Table1  CROSS JOIN Table2 WHERE (@keyFrom <= id AND id < @keyTo) AND (x < 5)";
 
             RewriteQueryHelper(sql, gt, true, true);
         }

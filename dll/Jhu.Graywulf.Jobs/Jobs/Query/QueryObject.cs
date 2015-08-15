@@ -44,6 +44,37 @@ namespace Jhu.Graywulf.Jobs.Query
         internal object syncRoot;
 
         /// <summary>
+        /// Type name of the query factory class
+        /// </summary>
+        private string queryFactoryTypeName;
+
+        /// <summary>
+        /// Holds a reference to the query factory class
+        /// </summary>
+        [NonSerialized]
+        private Lazy<QueryFactory> queryFactory;
+
+        /// <summary>
+        /// The original query to be executed
+        /// </summary>
+        private string queryString;
+
+        private string batchName;
+        private string queryName;
+
+        /// <summary>
+        /// The root object of the query parsing tree
+        /// </summary>
+        [NonSerialized]
+        private SelectStatement selectStatement;
+
+        /// <summary>
+        /// True, if the FinishInterpret function has completed.
+        /// </summary>
+        [NonSerialized]
+        private bool isInterpretFinished;
+
+        /// <summary>
         /// Individual query time-out, overall job timeout is enforced by
         /// the scheduler in a different way.
         /// </summary>
@@ -142,6 +173,59 @@ namespace Jhu.Graywulf.Jobs.Query
 
         #endregion
         #region Properties
+
+        /// <summary>
+        /// Gets or sets the type name string of the query factory class
+        /// </summary>
+        [DataMember]
+        public string QueryFactoryTypeName
+        {
+            get { return queryFactoryTypeName; }
+            set { queryFactoryTypeName = value; }
+        }
+
+        /// <summary>
+        /// Gets a query factory instance.
+        /// </summary>
+        [IgnoreDataMember]
+        protected QueryFactory QueryFactory
+        {
+            get { return queryFactory.Value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the query string of the query job.
+        /// </summary>
+        [DataMember]
+        public string QueryString
+        {
+            get { return queryString; }
+            set { queryString = value; }
+        }
+
+        [DataMember]
+        public string BatchName
+        {
+            get { return batchName; }
+            set { batchName = value; }
+        }
+
+        [DataMember]
+        public string QueryName
+        {
+            get { return queryName; }
+            set { queryName = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the root object of the query parsing tree.
+        /// </summary>
+        [IgnoreDataMember]
+        public SelectStatement SelectStatement
+        {
+            get { return selectStatement; }
+            protected set { selectStatement = value; }
+        }
 
         /// <summary>
         /// Gets or sets the timeout of individual queries
@@ -376,6 +460,16 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             this.syncRoot = new object();
 
+            this.queryFactoryTypeName = null;
+            this.queryFactory = new Lazy<QueryFactory>(() => (QueryFactory)Activator.CreateInstance(Type.GetType(queryFactoryTypeName)), false);
+
+            this.queryString = null;
+            this.batchName = null;
+            this.queryName = null;
+
+            this.selectStatement = null;
+            this.isInterpretFinished = false;
+
             this.queryTimeout = 60;
             this.dumpSql = false;
 
@@ -413,6 +507,16 @@ namespace Jhu.Graywulf.Jobs.Query
         private void CopyMembers(QueryObject old)
         {
             this.syncRoot = new object();
+
+            this.queryFactoryTypeName = old.queryFactoryTypeName;
+            this.queryFactory = new Lazy<QueryFactory>(() => (QueryFactory)Activator.CreateInstance(Type.GetType(queryFactoryTypeName)), false);
+
+            this.queryString = old.queryString;
+            this.batchName = old.batchName;
+            this.queryName = old.queryName;
+
+            this.selectStatement = null;
+            this.isInterpretFinished = false;
 
             this.queryTimeout = old.queryTimeout;
             this.dumpSql = old.dumpSql;
@@ -523,9 +627,71 @@ namespace Jhu.Graywulf.Jobs.Query
                 {
                     this.scheduler = scheduler;
                 }
+
+                Parse(forceReinitialize);
+                Interpret(forceReinitialize);
             }
         }
 
+        /// <summary>
+        /// Parses the query
+        /// </summary>
+        protected void Parse(bool forceReinitialize)
+        {
+            // Reparse only if needed
+            if (selectStatement == null || forceReinitialize)
+            {
+                var parser = queryFactory.Value.CreateParser();
+                selectStatement = (SelectStatement)parser.Execute(queryString);
+            }
+        }
+
+        /// <summary>
+        /// Interprets the parsed query
+        /// </summary>
+        protected bool Interpret(bool forceReinitialize)
+        {
+            if (!isInterpretFinished || forceReinitialize)
+            {
+                // --- Execute name resolution
+                var nr = CreateNameResolver(forceReinitialize);
+                nr.Execute(selectStatement);
+
+                FinishInterpret(forceReinitialize);
+
+                this.isInterpretFinished = true;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Returns a new name resolver to be used with the parsed query string.
+        /// </summary>
+        /// <param name="forceReinitialize"></param>
+        /// <returns></returns>
+        protected SqlNameResolver CreateNameResolver(bool forceReinitialize)
+        {
+            LoadDatasets(forceReinitialize);
+
+            var nr = QueryFactory.CreateNameResolver();
+            nr.SchemaManager = GetSchemaManager();
+
+            nr.DefaultTableDatasetName = DefaultDataset.Name;
+            nr.DefaultFunctionDatasetName = CodeDataset.Name;
+
+            return nr;
+        }
+
+        protected abstract void FinishInterpret(bool forceReinitialize);
+
+        protected virtual void Validate()
+        {
+        }
+        
         public void AssignServer(ServerInstance serverInstance)
         {
             assignedServerInstanceReference.Value = serverInstance;

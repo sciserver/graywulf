@@ -132,6 +132,10 @@ namespace Jhu.Graywulf.Jobs.Query
             return new SqlQueryCodeGenerator(this);
         }
 
+        protected override void FinishInterpret(bool forceReinitialize)
+        {
+        }
+
         #region Remote table caching functions
 
         /// <summary>
@@ -145,7 +149,7 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 var sc = GetSchemaManager();
 
-                foreach (var tr in query.SelectStatement.EnumerateSourceTableReferences(true))
+                foreach (var tr in SelectStatement.EnumerateSourceTableReferences(true))
                 {
                     if (tr.IsCachable && !remoteTableReferences.ContainsKey(tr.UniqueName) &&
                         IsRemoteDataset(sc.Datasets[tr.DatasetName]))
@@ -262,7 +266,7 @@ namespace Jhu.Graywulf.Jobs.Query
             InitializeQueryObject(context, scheduler, true);
 
             // Source query
-            source = CodeGenerator.GetExecuteQuery(Query.SelectStatement);
+            source = CodeGenerator.GetExecuteQuery(SelectStatement);
 
             // Destination table
             switch (Query.ExecutionMode)
