@@ -305,8 +305,15 @@ namespace Jhu.Graywulf.Test
                 name, 
                 BindingFlags.Default | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static, 
                 null, CallingConventions.Any, tt, null);
-            
-            return f.Invoke(obj, pars);
+
+            try
+            {
+                return f.Invoke(obj, pars);
+            }
+            catch (TargetInvocationException ex)
+            {
+                throw ex.InnerException;
+            }
         }
     }
 }
