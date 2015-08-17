@@ -319,11 +319,14 @@ namespace Jhu.Graywulf.SqlParser.Generator
             (
                 Must
                 (
-                    Sequence(BracketOpen, May(CommentOrWhitespace), QueryExpression, May(CommentOrWhitespace), BracketClose),
+                    QueryExpressionBrackets,
                     QuerySpecification
                 ),
                 May(Sequence(May(CommentOrWhitespace), QueryOperator, May(CommentOrWhitespace), QueryExpression))
             );
+
+        public static Expression<Rule> QueryExpressionBrackets = () =>
+            Sequence(BracketOpen, May(CommentOrWhitespace), QueryExpression, May(CommentOrWhitespace), BracketClose);
 
         public static Expression<Rule> QueryOperator = () =>
             Must

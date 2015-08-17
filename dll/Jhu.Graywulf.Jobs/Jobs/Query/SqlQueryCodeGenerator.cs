@@ -16,15 +16,40 @@ namespace Jhu.Graywulf.Jobs.Query
 {
     public class SqlQueryCodeGenerator : SqlServerCodeGenerator
     {
+        #region Constants
+
         protected const string keyFromParameterName = "@keyFrom";
         protected const string keyToParameterName = "@keyTo";
 
+        #endregion
+        #region Private member variables
+
         protected QueryObject queryObject;
+        private SqlServerDataset codeDataset;
+        private SqlServerDataset tempDataset;
+
+        #endregion
+        #region Properties
+
+        public SqlServerDataset CodeDataset
+        {
+            get { return codeDataset; }
+            set { codeDataset = value; }
+        }
+
+        public SqlServerDataset TempDataset
+        {
+            get { return tempDataset; }
+            set { tempDataset = value; }
+        }
 
         private SqlQueryPartition Partition
         {
             get { return queryObject as SqlQueryPartition; }
         }
+
+        #endregion
+        #region Constructors and initializers
 
         // TODO: used only by tests, delete
         public SqlQueryCodeGenerator()
@@ -34,9 +59,13 @@ namespace Jhu.Graywulf.Jobs.Query
         public SqlQueryCodeGenerator(QueryObject queryObject)
         {
             this.queryObject = queryObject;
+            this.codeDataset = queryObject.CodeDataset;
+            this.tempDataset = queryObject.TemporaryDataset;
+            
             this.ResolveNames = true;
         }
 
+        #endregion
         #region Basic query rewrite functions
 
         public virtual SourceTableQuery GetExecuteQuery(SelectStatement selectStatement)
@@ -44,7 +73,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var ss = new SelectStatement(selectStatement);
 
             RewriteForExecute(ss);
-            RemoveExtraTokens(ss);
+            RemoveNonStandardTokens(ss);
 
             SubstituteDatabaseNames(ss, queryObject.AssignedServerInstance, Partition.Query.SourceDatabaseVersionName);
             SubstituteRemoteTableNames(ss, queryObject.TemporaryDataset, queryObject.TemporaryDataset.DefaultSchemaName);
@@ -72,26 +101,11 @@ namespace Jhu.Graywulf.Jobs.Query
             RewriteForExecute(selectStatement.OrderByClause);
         }
 
-        protected virtual void RemoveExtraTokens(SelectStatement selectStatement)
-        {
-            // strip off partition by and into clauses
-            foreach (var qs in selectStatement.EnumerateQuerySpecifications())
-            {
-                RemoveExtraTokens(qs);
-            }
-
-            // strip off order by, we write to the mydb
-            var orderby = selectStatement.FindDescendant<OrderByClause>();
-            if (orderby != null)
-            {
-                selectStatement.Stack.Remove(orderby);
-            }
-        }
-
         protected virtual void RewriteForExecute(QuerySpecification qs, int i)
         {
             // Check if it is a partitioned query and append partitioning conditions, if necessary
             var ts = qs.EnumerateSourceTables(false).FirstOrDefault();
+            
             if (ts != null && ts is SimpleTableSource && ((SimpleTableSource)ts).IsPartitioned)
             {
                 if (i > 0)
@@ -103,7 +117,62 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        protected virtual void RemoveExtraTokens(QuerySpecification qs)
+        protected virtual void RewriteForExecute(OrderByClause orderBy)
+        {
+            // TODO: we remove this for now but later can be implemented
+        }
+
+        #endregion
+        #region Remove non-standard tokens
+
+        protected virtual void RemoveNonStandardTokens(SelectStatement selectStatement)
+        {
+            // strip off partition by and into clauses
+            var qe = selectStatement.FindDescendant<QueryExpression>();
+            
+            if (qe != null)
+            {
+                RemoveNonStandardTokens(qe);
+            }
+
+            // strip off order by, we write to the mydb
+            var orderby = selectStatement.FindDescendant<OrderByClause>();
+            
+            if (orderby != null)
+            {
+                selectStatement.Stack.Remove(orderby);
+            }
+        }
+
+        protected virtual void RemoveNonStandardTokens(QueryExpression qe)
+        {
+            // QueryExpressionBrackets
+            var qeb = qe.FindDescendant<QueryExpressionBrackets>();
+            
+            if (qeb != null)
+            {
+                var qee = qeb.FindDescendant<QueryExpression>();
+                RemoveNonStandardTokens(qee);
+            }
+
+            // QueryExpression
+            var qer = qe.FindDescendant<QueryExpression>();
+
+            if (qer != null)
+            {
+                RemoveNonStandardTokens(qer);
+            }
+
+            // QuerySpecification
+            var qs = qe.FindDescendant<QuerySpecification>();
+
+            if (qs != null)
+            {
+                RemoveNonStandardTokens(qs);
+            }
+        }
+        
+        protected virtual void RemoveNonStandardTokens(QuerySpecification qs)
         {
             // strip off select into
             var into = qs.FindDescendant<IntoClause>();
@@ -124,10 +193,8 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        protected virtual void RewriteForExecute(OrderByClause orderBy)
-        {
-            // TODO: we remove this for now but later can be implemented
-        }
+        #endregion
+        #region Name substitution
 
         protected void SubstituteDatabaseNames(SelectStatement ss, ServerInstance serverInstance, string databaseVersion)
         {

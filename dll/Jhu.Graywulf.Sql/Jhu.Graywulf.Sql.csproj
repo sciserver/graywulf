@@ -122,6 +122,8 @@
     <Compile Include="SqlParser\NodeExtensions.cs" />
     <Compile Include="SqlParser\Predicate.cs" />
     <Compile Include="SqlParser\QueryExpression.cs" />
+    <Compile Include="SqlParser\QueryExpressionBrackets.cs" />
+    <Compile Include="SqlParser\QueryOperator.cs" />
     <Compile Include="SqlParser\QuerySpecification.cs" />
     <Compile Include="SqlParser\SearchCondition.cs" />
     <Compile Include="SqlParser\SearchConditionBrackets.cs" />

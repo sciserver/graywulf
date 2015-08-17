@@ -33,6 +33,8 @@ namespace Jhu.Graywulf.SqlParser
 
                 if (p != null)
                 {
+                    p.Stack.AddLast(Comma.Create());
+                    p.Stack.AddLast(Whitespace.Create());
                     p.Stack.AddLast(n);
                 }
 
