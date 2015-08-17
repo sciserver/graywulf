@@ -15,12 +15,12 @@ namespace Jhu.Graywulf.ParserLib
     {
         #region Private member variables
 
-        private LinkedList<Token> stack;
+        private TokenStack stack;
 
         #endregion
         #region Properties
 
-        public LinkedList<Token> Stack
+        public TokenStack Stack
         {
             get { return stack; }
         }
@@ -87,7 +87,7 @@ namespace Jhu.Graywulf.ParserLib
         {
             base.InitializeMembers();
 
-            this.stack = new LinkedList<Token>();
+            this.stack = new TokenStack();
         }
 
         protected override void CopyMembers(object other)
@@ -96,7 +96,7 @@ namespace Jhu.Graywulf.ParserLib
 
             var old = (Node)other;
 
-            this.stack = new LinkedList<Token>();
+            this.stack = new TokenStack();
 
             foreach (var t in old.stack)
             {
@@ -376,5 +376,10 @@ namespace Jhu.Graywulf.ParserLib
         }
 
         #endregion
+
+        public void ExchangeWith(Node other)
+        {
+            this.Parent.Stack.Exchange(this, other);
+        }
     }
 }
