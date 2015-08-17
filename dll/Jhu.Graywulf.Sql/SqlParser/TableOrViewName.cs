@@ -36,6 +36,9 @@ namespace Jhu.Graywulf.SqlParser
         {
             var res = new TableOrViewName();
             res.tableReference = tr;
+
+            res.Stack.AddLast(TableName.Create(tr.DatabaseObjectName));
+
             return res;
         }
 
