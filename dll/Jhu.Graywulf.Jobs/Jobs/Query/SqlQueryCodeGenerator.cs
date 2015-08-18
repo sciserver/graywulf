@@ -360,7 +360,7 @@ namespace Jhu.Graywulf.Jobs.Query
             sql.Replace("[$where]", where != null ? where.ToString() : "");
         }
 
-        protected WhereClause GetTableSpecificWhereClause(ITableSource tableSource)
+        protected virtual WhereClause GetTableSpecificWhereClause(ITableSource tableSource)
         {
             var tr = tableSource.TableReference;
 
