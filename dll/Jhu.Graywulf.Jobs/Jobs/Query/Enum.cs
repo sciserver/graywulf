@@ -16,4 +16,11 @@ namespace Jhu.Graywulf.Jobs.Query
         Code,
         Temp
     }
+
+    public enum CommandMethod
+    {
+        Select,
+        SelectInto,
+        Insert,
+    }
 }

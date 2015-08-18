@@ -61,32 +61,69 @@ namespace Jhu.Graywulf.Jobs.Query
             this.queryObject = queryObject;
             this.codeDataset = queryObject.CodeDataset;
             this.tempDataset = queryObject.TemporaryDataset;
-            
+
             this.ResolveNames = true;
         }
 
         #endregion
         #region Basic query rewrite functions
 
-        public virtual SourceTableQuery GetExecuteQuery(SelectStatement selectStatement)
+        public SourceTableQuery GetExecuteQuery(SelectStatement selectStatement)
         {
+            return GetExecuteQuery(selectStatement, CommandMethod.Select, null);
+        }
+
+        public virtual SourceTableQuery GetExecuteQuery(SelectStatement selectStatement, CommandMethod method, Table destination)
+        {
+            var sql = new StringBuilder();
             var ss = new SelectStatement(selectStatement);
 
             RewriteForExecute(ss);
-            RemoveNonStandardTokens(ss);
+            RemoveNonStandardTokens(ss, method);
 
             SubstituteDatabaseNames(ss, queryObject.AssignedServerInstance, Partition.Query.SourceDatabaseVersionName);
             SubstituteRemoteTableNames(ss, queryObject.TemporaryDataset, queryObject.TemporaryDataset.DefaultSchemaName);
 
+            AppendQuery(sql, ss, method, destination);
+
             var source = new SourceTableQuery()
             {
                 Dataset = queryObject.TemporaryDataset,
-                Query = Execute(ss)
+                Query = sql.ToString(),
             };
 
             AppendPartitioningConditionParameters(source);
 
             return source;
+        }
+
+        protected void AppendQuery(StringBuilder sql, SelectStatement ss, CommandMethod method, Table destination)
+        {
+            // TODO: this is a temporary trick until full SQL grammar is implemented
+            switch (method)
+            {
+                case CommandMethod.Select:
+                    sql.AppendLine(Execute(ss));
+                    break;
+                case CommandMethod.SelectInto:
+                    sql.Append("SELECT __tablealias.* INTO ");
+                    sql.Append(GetResolvedTableName(destination));
+                    sql.AppendLine(" FROM (");
+                    sql.AppendLine(Execute(ss));
+                    sql.AppendLine(") AS __tablealias");
+                    break;
+                case CommandMethod.Insert:
+                    sql.Append("INSERT ");
+                    sql.Append(GetResolvedTableName(destination));
+                    sql.AppendLine("WITH (TABLOCKX) ");
+                    sql.AppendLine("SELECT __tablealias.*");
+                    sql.AppendLine("FROM (");
+                    sql.AppendLine(Execute(ss));
+                    sql.AppendLine(") AS __tablealias");
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         protected virtual void RewriteForExecute(SelectStatement selectStatement)
@@ -105,7 +142,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             // Check if it is a partitioned query and append partitioning conditions, if necessary
             var ts = qs.EnumerateSourceTables(false).FirstOrDefault();
-            
+
             if (ts != null && ts is SimpleTableSource && ((SimpleTableSource)ts).IsPartitioned)
             {
                 if (i > 0)
@@ -125,22 +162,25 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Remove non-standard tokens
 
-        protected virtual void RemoveNonStandardTokens(SelectStatement selectStatement)
+        protected virtual void RemoveNonStandardTokens(SelectStatement selectStatement, CommandMethod method)
         {
             // strip off partition by and into clauses
             var qe = selectStatement.FindDescendant<QueryExpression>();
-            
+
             if (qe != null)
             {
                 RemoveNonStandardTokens(qe);
             }
 
-            // strip off order by, we write to the mydb
-            var orderby = selectStatement.FindDescendant<OrderByClause>();
-            
-            if (orderby != null)
+            // Strip off order by, we write to the mydb
+            if (method == CommandMethod.Insert || method == CommandMethod.SelectInto)
             {
-                selectStatement.Stack.Remove(orderby);
+                var orderby = selectStatement.FindDescendant<OrderByClause>();
+
+                if (orderby != null)
+                {
+                    selectStatement.Stack.Remove(orderby);
+                }
             }
         }
 
@@ -148,7 +188,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             // QueryExpressionBrackets
             var qeb = qe.FindDescendant<QueryExpressionBrackets>();
-            
+
             if (qeb != null)
             {
                 var qee = qeb.FindDescendant<QueryExpression>();
@@ -171,7 +211,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 RemoveNonStandardTokens(qs);
             }
         }
-        
+
         protected virtual void RemoveNonStandardTokens(QuerySpecification qs)
         {
             // strip off select into

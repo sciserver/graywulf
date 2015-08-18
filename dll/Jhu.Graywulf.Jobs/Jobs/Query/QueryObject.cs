@@ -1451,30 +1451,6 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Specialized SQL manipulation function
 
-        protected void ExecuteSelectInto(SourceTableQuery source, Table destination, int timeout)
-        {
-            string sql = String.Format(
-                "SELECT __tablealias.* INTO [{0}].[{1}].[{2}] FROM ({3}) AS __tablealias",
-                !String.IsNullOrWhiteSpace(destination.DatabaseName) ? destination.DatabaseName : destination.Dataset.DatabaseName,
-                destination.SchemaName,
-                destination.TableName,
-                source.Query);
-
-            ExecuteLongCommandNonQuery(sql, source, timeout);
-        }
-
-        protected void ExecuteInsertInto(SourceTableQuery source, Table destination, int timeout)
-        {
-            string sql = String.Format(
-                "INSERT [{0}].[{1}].[{2}] WITH (TABLOCKX) SELECT __tablealias.* FROM ({3}) AS __tablealias",
-                !String.IsNullOrWhiteSpace(destination.DatabaseName) ? destination.DatabaseName : destination.Dataset.DatabaseName,
-                destination.SchemaName,
-                destination.TableName,
-                source.Query);
-
-            ExecuteLongCommandNonQuery(sql, source, timeout);
-        }
-
         /// <summary>
         /// Creates and initializes a remote or local table copy task
         /// </summary>

@@ -265,9 +265,6 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             InitializeQueryObject(context, scheduler, true);
 
-            // Source query
-            source = CodeGenerator.GetExecuteQuery(SelectStatement);
-
             // Destination table
             switch (Query.ExecutionMode)
             {
@@ -286,11 +283,29 @@ namespace Jhu.Graywulf.Jobs.Query
                 default:
                     throw new NotImplementedException();
             }
+
+            // Source query
+            source = CodeGenerator.GetExecuteQuery(SelectStatement, CommandMethod.SelectInto, destination);
         }
 
         public void ExecuteQuery(SourceTableQuery source, Table destination)
         {
-            ExecuteSelectInto(source, destination, Query.QueryTimeout);
+            var cmd = new SqlCommand()
+            {
+                CommandText = source.Query,
+                CommandTimeout = Query.QueryTimeout,
+                CommandType = System.Data.CommandType.Text
+            };
+
+            foreach (var p in source.Parameters)
+            {
+                var par = cmd.CreateParameter();
+                par.ParameterName = p.Key;
+                par.Value = p.Value;
+                cmd.Parameters.Add(par);
+            }
+
+            ExecuteSqlCommand(cmd, CommandTarget.Code);
         }
 
         #endregion
