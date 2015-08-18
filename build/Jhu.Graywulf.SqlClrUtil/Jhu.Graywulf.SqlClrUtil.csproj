@@ -7,8 +7,8 @@
     <ProjectGuid>{CC75D904-89FB-40CD-9EA3-55359FFE1540}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Jhu.Spherical.ScriptGenerator</RootNamespace>
-    <AssemblyName>Jhu.Spherical.ScriptGenerator</AssemblyName>
+    <RootNamespace>Jhu.Graywulf.SqlClrUtil</RootNamespace>
+    <AssemblyName>gwsqlclrutil</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
