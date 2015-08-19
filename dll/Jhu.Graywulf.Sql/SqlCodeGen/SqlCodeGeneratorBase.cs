@@ -192,6 +192,16 @@ namespace Jhu.Graywulf.SqlCodeGen
             }
         }
 
+        public string GeneratePrimaryKeyName(DatabaseObject table)
+        {
+            return GeneratePrimaryKeyName(table.SchemaName, table.ObjectName);
+        }
+
+        public string GeneratePrimaryKeyName(string schemaName, string tableName)
+        {
+            return QuoteIdentifier(String.Format("PK_{0}_{1}", schemaName, tableName));
+        }
+
         public string GetResolvedTableName(DatabaseObject table)
         {
             return GetResolvedTableName(table.DatabaseName, table.SchemaName, table.ObjectName);
