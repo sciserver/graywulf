@@ -513,5 +513,173 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
+        #region Column propagator functions
+
+        public Dictionary<string, Column> GetColumnList(ITableSource table, ColumnListInclude include)
+        {
+            var res = new Dictionary<string, Column>();
+            var t = (TableOrView)table.TableReference.DatabaseObject;
+
+            if ((include & ColumnListInclude.PrimaryKey) != 0)
+            {
+                foreach (var cd in t.PrimaryKey.Columns.Values)
+                {
+                    if (!res.ContainsKey(cd.ColumnName))
+                    {
+                        res.Add(cd.ColumnName, cd);
+                    }
+                }
+            }
+
+            if ((include & ColumnListInclude.Referenced) != 0)
+            {
+                foreach (var cr in table.TableReference.ColumnReferences)
+                {
+                    if (cr.IsReferenced && !res.ContainsKey(cr.ColumnName))
+                    {
+                        res.Add(cr.ColumnName, t.Columns[cr.ColumnName]);
+                    }
+                }
+            }
+
+            return res;
+        }
+
+        /// <summary>
+        /// Returns a SQL snippet with the list of primary keys
+        /// and propagated columns belonging to the table.
+        /// </summary>
+        /// <param name="table">Reference to the table.</param>
+        /// <param name="type">Column list type.</param>
+        /// <param name="nullType">Column nullable type.</param>
+        /// <param name="tableAlias">Optional table alias prefix, specify null to omit.</param>
+        /// <returns>A SQL snippet with the list of columns.</returns>
+        public string GeneratePropagatedColumnList(ITableSource table, string tableAlias, ColumnListInclude include, ColumnListType type, ColumnListNullType nullType, bool leadingComma)
+        {
+            // ---
+            string nullstring = null;
+
+            switch (nullType)
+            {
+                case ColumnListNullType.Nothing:
+                    nullstring = String.Empty;
+                    break;
+                case ColumnListNullType.Null:
+                    nullstring = "NULL";
+                    break;
+                case ColumnListNullType.NotNull:
+                    nullstring = "NOT NULL";
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            // ---
+            string format = null;
+
+            switch (type)
+            {
+                case ColumnListType.ForCreateTable:
+                    format = "[{1}] {3} {4}";
+                    break;
+                case ColumnListType.ForCreateView:
+                case ColumnListType.ForInsert:
+                    format = "[{1}]";
+                    break;
+                case ColumnListType.ForSelectWithOriginalName:
+                    format = "{0}[{2}] AS [{1}]";
+                    break;
+                case ColumnListType.ForSelectWithEscapedName:
+                    format = "{0}[{1}] AS [{1}]";
+                    break;
+                case ColumnListType.ForSelectNoAlias:
+                    format = "{0}[{1}]";
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            var columnlist = new StringBuilder();
+            var columns = GetColumnList(table, include);
+
+            foreach (var column in columns.Values)
+            {
+                if (leadingComma || columnlist.Length != 0)
+                {
+                    columnlist.Append(", ");
+                }
+
+                columnlist.AppendFormat(format,
+                                        tableAlias == null ? String.Empty : QuoteIdentifier(tableAlias),
+                                        EscapePropagatedColumnName(table.TableReference, column.Name),
+                                        column.Name,
+                                        column.DataType.NameWithLength,
+                                        nullstring);
+            }
+
+            return columnlist.ToString();
+        }
+
+        
+
+        private void IncludeReferencedColumns(ITableSource table, StringBuilder columnList, HashSet<string> referencedColumns, string tableAlias, string format, string nullString)
+        {
+            foreach (ColumnReference cr in table.TableReference.ColumnReferences)
+            {
+                if (cr.IsReferenced)
+                {
+                    string key = EscapeColumnName(table.TableReference, cr.ColumnName);
+                    string escapedname = EscapePropagatedColumnName(table.TableReference, cr.ColumnName);
+
+                    if (!referencedColumns.Contains(key))
+                    {
+                        if (columnList.Length != 0)
+                        {
+                            columnList.Append(", ");
+                        }
+
+                        columnList.AppendFormat(format,
+                                            tableAlias == null ? String.Empty : String.Format("[{0}].", tableAlias),
+                                            escapedname,
+                                            cr.ColumnName,
+                                            cr.DataType.NameWithLength,
+                                            nullString);
+
+                        referencedColumns.Add(key);
+                    }
+                }
+            }
+        }
+
+        #endregion
+        #region Column name escaping
+
+        /// <summary>
+        /// Generates and escaped name for a column that should be
+        /// propagated.
+        /// </summary>
+        /// <remarks>
+        /// Will generate a name like DS_schema_table_column that
+        /// is unique in a table.
+        /// </remarks>
+        /// <param name="table">Reference to the source table.</param>
+        /// <param name="column">Reference to the column.</param>
+        /// <returns>The excaped name of the temporary table column.</returns>
+        protected string EscapeColumnName(TableReference table, string columnName)
+        {
+            return String.Format("{0}_{1}_{2}_{3}_{4}",
+                                 table.DatasetName,
+                                 table.SchemaName,
+                                 table.DatabaseObjectName,
+                                 table.Alias,
+                                 columnName);
+        }
+
+        protected string EscapePropagatedColumnName(TableReference table, string columnName)
+        {
+            return String.Format("_{0}", EscapeColumnName(table, columnName));
+        }
+
+        #endregion
     }
 }
