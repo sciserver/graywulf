@@ -134,6 +134,18 @@ namespace Jhu.Graywulf.SqlParser
             CopyMembers(old);
         }
 
+        public TableReference(string alias)
+        {
+            this.alias = alias;
+
+            this.isTableOrView = false;
+            this.isUdf = false;
+            this.isSubquery = false;
+            this.isComputed = false;
+
+            this.statistics = null;
+        }
+
         public TableReference(TableOrView table, string alias)
             :base(table)
         {
