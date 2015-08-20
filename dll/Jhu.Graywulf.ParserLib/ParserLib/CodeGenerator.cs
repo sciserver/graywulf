@@ -27,9 +27,16 @@ namespace Jhu.Graywulf.ParserLib
 
         public string Execute(Node node)
         {
-            var sw = new StringWriter();
-            Execute(sw, node);
-            return sw.ToString();
+            if (node == null)
+            {
+                return String.Empty;
+            }
+            else
+            {
+                var sw = new StringWriter();
+                Execute(sw, node);
+                return sw.ToString();
+            }
         }
 
         public virtual void Execute(TextWriter writer, Node node)
