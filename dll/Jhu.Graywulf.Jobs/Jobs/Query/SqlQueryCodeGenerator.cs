@@ -73,18 +73,23 @@ namespace Jhu.Graywulf.Jobs.Query
             return GetExecuteQuery(selectStatement, CommandMethod.Select, null);
         }
 
-        public virtual SourceTableQuery GetExecuteQuery(SelectStatement selectStatement, CommandMethod method, Table destination)
+        public SourceTableQuery GetExecuteQuery(Graywulf.SqlParser.SelectStatement selectStatement, CommandMethod method, Table destination)
+        {
+            var ss = new SelectStatement(selectStatement);
+            return GetExecuteQueryImpl(ss, method, destination);
+        }
+
+        protected virtual SourceTableQuery GetExecuteQueryImpl(SelectStatement selectStatement, CommandMethod method, Table destination)
         {
             var sql = new StringBuilder();
-            var ss = new SelectStatement(selectStatement);
 
-            RewriteForExecute(ss);
-            RemoveNonStandardTokens(ss, method);
+            RewriteForExecute(selectStatement);
+            RemoveNonStandardTokens(selectStatement, method);
 
-            SubstituteDatabaseNames(ss, queryObject.AssignedServerInstance, Partition.Query.SourceDatabaseVersionName);
-            SubstituteRemoteTableNames(ss, queryObject.TemporaryDataset, queryObject.TemporaryDataset.DefaultSchemaName);
+            SubstituteDatabaseNames(selectStatement, queryObject.AssignedServerInstance, Partition.Query.SourceDatabaseVersionName);
+            SubstituteRemoteTableNames(selectStatement);
 
-            AppendQuery(sql, ss, method, destination);
+            AppendQuery(sql, selectStatement, method, destination);
 
             var source = new SourceTableQuery()
             {
@@ -311,7 +316,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// holding a cached version of remote tables.
         /// </summary>
         /// <remarks></remarks>
-        protected virtual void SubstituteRemoteTableNames(SelectStatement ss, DatasetBase temporaryDataset, string temporarySchemaName)
+        protected virtual void SubstituteRemoteTableNames(SelectStatement ss)
         {
             switch (queryObject.ExecutionMode)
             {
@@ -319,14 +324,12 @@ namespace Jhu.Graywulf.Jobs.Query
                     // No remote table support
                     throw new InvalidOperationException();
                 case ExecutionMode.Graywulf:
-                    var sm = queryObject.GetSchemaManager();
-
                     foreach (var qs in ss.EnumerateQuerySpecifications())
                     {
                         // Replace remote table references with temp table references
                         foreach (TableReference tr in qs.EnumerateSourceTableReferences(true))
                         {
-                            SubstituteRemoteTableName(sm, tr, temporaryDataset, temporarySchemaName);
+                            SubstituteRemoteTableName(tr);
                         }
                     }
                     break;
@@ -343,8 +346,12 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="tr"></param>
         /// <param name="temporaryDataset"></param>
         /// <param name="temporarySchemaName"></param>
-        private void SubstituteRemoteTableName(SchemaManager sm, TableReference tr, DatasetBase temporaryDataset, string temporarySchemaName)
+        protected void SubstituteRemoteTableName(TableReference tr)
         {
+            var sm = queryObject.GetSchemaManager();
+            var temporaryDataset = queryObject.TemporaryDataset;
+            var temporarySchemaName = queryObject.TemporaryDataset.DefaultSchemaName;
+
             // Save unique name because it will change as names are substituted
             var un = tr.UniqueName;
 
