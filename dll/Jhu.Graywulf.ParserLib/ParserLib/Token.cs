@@ -62,7 +62,12 @@ namespace Jhu.Graywulf.ParserLib
             CopyMembers(old);
         }
 
-        protected virtual void InitializeMembers()
+        private void InitializeMembers()
+        {
+            OnInitializeMembers();
+        }
+
+        protected virtual void OnInitializeMembers()
         {
             this.pos = -1;
             this.line = -1;
@@ -72,7 +77,12 @@ namespace Jhu.Graywulf.ParserLib
             this.parent = null;
         }
 
-        protected virtual void CopyMembers(object other)
+        private void CopyMembers(Token old)
+        {
+            OnCopyMembers(old);
+        }
+
+        protected virtual void OnCopyMembers(object other)
         {
             var old = (Token)other;
 

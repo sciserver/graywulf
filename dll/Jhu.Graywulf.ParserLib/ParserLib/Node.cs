@@ -83,16 +83,16 @@ namespace Jhu.Graywulf.ParserLib
         {
         }
 
-        protected override void InitializeMembers()
+        protected override void OnInitializeMembers()
         {
-            base.InitializeMembers();
+            base.OnInitializeMembers();
 
             this.stack = new TokenStack();
         }
 
-        protected override void CopyMembers(object other)
+        protected override void OnCopyMembers(object other)
         {
-            base.CopyMembers(other);
+            base.OnCopyMembers(other);
 
             var old = (Node)other;
 
@@ -345,14 +345,21 @@ namespace Jhu.Graywulf.ParserLib
         #endregion
         #region Interpreter functions
 
-        public virtual Node Interpret()
+        /// <summary>
+        /// When overriden in derived classes, replaces a parsing tree element with
+        /// a derived class, based on descendant elements of the subtree
+        /// </summary>
+        /// <returns></returns>
+        public virtual Node Exchange()
         {
-            InterpretChildren();
-
             return this;
         }
 
-        protected void InterpretChildren()
+        public virtual void Interpret()
+        {
+        }
+
+        internal void ExchangeChildren()
         {
             var item = stack.First;
 
@@ -362,13 +369,29 @@ namespace Jhu.Graywulf.ParserLib
 
                 if (o is Node)
                 {
-                    ((Node)o).Parent = this;
-                    Node no = ((Node)o).Interpret();
+                    var node = (Node)o;
+                    node.ExchangeChildren();
+                    node.Parent = this;
+                    item.Value = node.Exchange();
+                }
 
-                    if (item.Value != no)
-                    {
-                        item.Value = no;
-                    }
+                item = item.Next;
+            }
+        }
+
+        internal void InterpretChildren()
+        {
+            var item = stack.First;
+
+            while (item != null)
+            {
+                var o = item.Value;
+
+                if (o is Node)
+                {
+                    var node = (Node)o;
+                    node.InterpretChildren();
+                    node.Interpret();
                 }
 
                 item = item.Next;

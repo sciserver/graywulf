@@ -16,16 +16,16 @@ namespace Jhu.Graywulf.SqlParser
             set { tableReference = value; }
         }
 
-        protected override void InitializeMembers()
+        protected override void OnInitializeMembers()
         {
-            base.InitializeMembers();
+            base.OnInitializeMembers();
 
             this.tableReference = null;
         }
 
-        protected override void CopyMembers(object other)
+        protected override void OnCopyMembers(object other)
         {
-            base.CopyMembers(other);
+            base.OnCopyMembers(other);
 
             var old = (QueryExpression)other;
 
@@ -73,15 +73,19 @@ namespace Jhu.Graywulf.SqlParser
             return qe;
         }
 
-        public override Node Interpret()
+        public override void Interpret()
         {
+            // TODO: delete
             // Subqueries already initialize this
+            /*
             if (this.tableReference == null)
             {
                 this.tableReference = new TableReference(this);
-            }
+            }*/
 
-            return base.Interpret();
+            base.Interpret();
+
+            this.tableReference = new TableReference(this);
         }
 
         public virtual IEnumerable<ITableSource> EnumerateSourceTables(bool recursive)

@@ -16,16 +16,16 @@ namespace Jhu.Graywulf.SqlParser
             set { tableReference = value; }
         }
 
-        protected override void InitializeMembers()
+        protected override void OnInitializeMembers()
         {
-            base.InitializeMembers();
+            base.OnInitializeMembers();
 
             this.tableReference = null;
         }
 
-        protected override void CopyMembers(object other)
+        protected override void OnCopyMembers(object other)
         {
-            base.CopyMembers(other);
+            base.OnCopyMembers(other);
 
             var old = (TableOrViewName)other;
 
@@ -42,11 +42,11 @@ namespace Jhu.Graywulf.SqlParser
             return res;
         }
 
-        public override Node Interpret()
+        public override void Interpret()
         {
-            this.tableReference = new TableReference(this);
+            base.Interpret();
 
-            return base.Interpret();
+            this.tableReference = new TableReference(this);
         }
     }
 }

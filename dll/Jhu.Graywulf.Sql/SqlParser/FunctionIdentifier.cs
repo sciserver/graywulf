@@ -25,16 +25,16 @@ namespace Jhu.Graywulf.SqlParser
             get { return FindDescendant<FunctionName>(); }
         }
 
-        protected override void InitializeMembers()
+        protected override void OnInitializeMembers()
         {
-            base.InitializeMembers();
+            base.OnInitializeMembers();
 
             this.functionReference = null;
         }
 
-        protected override void CopyMembers(object other)
+        protected override void OnCopyMembers(object other)
         {
-            base.CopyMembers(other);
+            base.OnCopyMembers(other);
 
             var old = (FunctionIdentifier)other;
 
@@ -55,11 +55,11 @@ namespace Jhu.Graywulf.SqlParser
             return fid;
         }
 
-        public override ParserLib.Node Interpret()
+        public override void Interpret()
         {
-            this.functionReference = new FunctionReference(this);
+            base.Interpret();
 
-            return base.Interpret();
+            this.functionReference = new FunctionReference(this);
         }
     }
 }

@@ -36,11 +36,13 @@ namespace Jhu.Graywulf.ParserLib
         public Literal()
             : base()
         {
+            InitializeMembers();
         }
 
         public Literal(Literal old)
             :base(old)
         {
+            CopyMembers(old);
         }
 
         public Literal(string literalText)
@@ -49,19 +51,13 @@ namespace Jhu.Graywulf.ParserLib
             Value = this.literalText = literalText;
         }
 
-        protected override void InitializeMembers()
+        private void InitializeMembers()
         {
-            base.InitializeMembers();
-
             this.literalText = null;
         }
 
-        protected override void CopyMembers(object other)
+        private void CopyMembers(Literal old)
         {
-            base.CopyMembers(other);
-
-            var old = (Literal)other;
-
             this.literalText = old.literalText;
         }
 

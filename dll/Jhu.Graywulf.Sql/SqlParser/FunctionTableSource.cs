@@ -30,13 +30,11 @@ namespace Jhu.Graywulf.SqlParser
             get { return false; }
         }
 
-        public override Node Interpret()
+        public override void Interpret()
         {
-            var node = (FunctionTableSource)base.Interpret();
+            base.Interpret();
 
-            node.TableReference.InterpretTableSource(this);
-
-            return node;
+            TableReference.InterpretTableSource(this);
         }
 
         public IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive)

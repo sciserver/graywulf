@@ -26,27 +26,27 @@ namespace Jhu.Graywulf.SqlParser
             set { columnReference.TableReference = value; }
         }
 
-        protected override void InitializeMembers()
+        protected override void OnInitializeMembers()
         {
-            base.InitializeMembers();
+            base.OnInitializeMembers();
 
             this.columnReference = null;
         }
 
-        protected override void CopyMembers(object other)
+        protected override void OnCopyMembers(object other)
         {
-            base.CopyMembers(other);
+            base.OnCopyMembers(other);
 
             var old = (ColumnExpression)other;
 
             this.columnReference = old.columnReference;
         }
 
-        public override Node Interpret()
+        public override void Interpret()
         {
-            this.columnReference = ColumnReference.Interpret(this);
+            base.Interpret();
 
-            return base.Interpret();
+            this.columnReference = ColumnReference.Interpret(this);
         }
     }
 }

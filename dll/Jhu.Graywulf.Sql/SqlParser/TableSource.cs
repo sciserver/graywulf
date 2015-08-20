@@ -40,14 +40,14 @@ namespace Jhu.Graywulf.SqlParser
             return ts;
         }
 
-        public override Node Interpret()
+        public override void Interpret()
         {
+            base.Interpret();
+
             if (FindSpecificTableSource() == null)
             {
                 throw new NotImplementedException();
             }
-
-            return base.Interpret();
         }
 
         protected virtual ITableSource FindSpecificTableSource()

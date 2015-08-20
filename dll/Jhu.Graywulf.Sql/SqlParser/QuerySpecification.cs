@@ -45,17 +45,17 @@ namespace Jhu.Graywulf.SqlParser
         #endregion
         #region Constructors and initializers
 
-        protected override void InitializeMembers()
+        protected override void OnInitializeMembers()
         {
-            base.InitializeMembers();
+            base.OnInitializeMembers();
 
             this.sourceTableReferences = new Dictionary<string, TableReference>(Schema.SchemaManager.Comparer);
             this.resultsTableReference = new TableReference(this);
         }
 
-        protected override void CopyMembers(object other)
+        protected override void OnCopyMembers(object other)
         {
-            base.CopyMembers(other);
+            base.OnCopyMembers(other);
 
             var old = (QuerySpecification)other;
 

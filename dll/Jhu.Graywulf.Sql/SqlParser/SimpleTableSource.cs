@@ -87,14 +87,11 @@ namespace Jhu.Graywulf.SqlParser
             return ts;
         }
 
-        public override Node Interpret()
+        public override void Interpret()
         {
-            var node = (SimpleTableSource)base.Interpret();
+            base.Interpret();
 
-            // Look up table alias
-            node.TableReference.InterpretTableSource(this);
-
-            return node;
+            TableReference.InterpretTableSource(this);
         }
 
         public IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive)

@@ -52,7 +52,12 @@ namespace Jhu.Graywulf.ParserLib
             {
                 if (rootToken is Node)
                 {
-                    return ((Node)rootToken).Interpret();
+                    var node = (Node)rootToken;
+                    node.ExchangeChildren();
+                    node = node.Exchange();
+                    node.InterpretChildren();
+                    node.Interpret();
+                    return node;
                 }
                 else
                 {
