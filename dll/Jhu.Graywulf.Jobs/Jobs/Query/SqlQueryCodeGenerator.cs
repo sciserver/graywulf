@@ -527,7 +527,8 @@ namespace Jhu.Graywulf.Jobs.Query
             var res = new Dictionary<string, Column>();
             var t = (TableOrView)table.TableReference.DatabaseObject;
 
-            if ((include & ColumnListInclude.PrimaryKey) != 0)
+            if ((include & ColumnListInclude.PrimaryKey) != 0 &&
+                t.PrimaryKey != null)
             {
                 foreach (var cd in t.PrimaryKey.Columns.Values)
                 {
