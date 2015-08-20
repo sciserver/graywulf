@@ -396,7 +396,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             var tablename = GetEscapedUniqueName(tableSource.TableReference);
             var temptable = queryObject.GetTemporaryTable("stat_" + tablename);
-            var keycol = tableSource.TableReference.Statistics.KeyColumn;
+            var keycol = QuoteIdentifier(tableSource.TableReference.Statistics.KeyColumn);
             var keytype = tableSource.TableReference.Statistics.KeyColumnDataType.NameWithLength;
             var where = GetTableSpecificWhereClause(tableSource);
 
@@ -404,7 +404,7 @@ namespace Jhu.Graywulf.Jobs.Query
             sql.Replace("[$keytype]", keytype);
             sql.Replace("[$keycol]", keycol);
             sql.Replace("[$tablename]", GetResolvedTableNameWithAlias(tableSource.TableReference));
-            sql.Replace("[$where]", where != null ? where.ToString() : "");
+            sql.Replace("[$where]", Execute(where));
         }
 
         protected virtual WhereClause GetTableSpecificWhereClause(ITableSource tableSource)
@@ -572,10 +572,10 @@ namespace Jhu.Graywulf.Jobs.Query
                     nullstring = String.Empty;
                     break;
                 case ColumnListNullType.Null:
-                    nullstring = "NULL";
+                    nullstring = " NULL";
                     break;
                 case ColumnListNullType.NotNull:
-                    nullstring = "NOT NULL";
+                    nullstring = " NOT NULL";
                     break;
                 default:
                     throw new NotImplementedException();
@@ -587,7 +587,7 @@ namespace Jhu.Graywulf.Jobs.Query
             switch (type)
             {
                 case ColumnListType.ForCreateTable:
-                    format = "[{1}] {3} {4}";
+                    format = "[{1}] {3}{4}";
                     break;
                 case ColumnListType.ForCreateView:
                 case ColumnListType.ForInsert:
@@ -617,7 +617,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 }
 
                 columnlist.AppendFormat(format,
-                                        tableAlias == null ? String.Empty : QuoteIdentifier(tableAlias),
+                                        tableAlias == null ? String.Empty : QuoteIdentifier(tableAlias) + ".",
                                         EscapePropagatedColumnName(table.TableReference, column.Name),
                                         column.Name,
                                         column.DataType.NameWithLength,
@@ -625,37 +625,6 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             return columnlist.ToString();
-        }
-
-        
-
-        private void IncludeReferencedColumns(ITableSource table, StringBuilder columnList, HashSet<string> referencedColumns, string tableAlias, string format, string nullString)
-        {
-            foreach (ColumnReference cr in table.TableReference.ColumnReferences)
-            {
-                if (cr.IsReferenced)
-                {
-                    string key = EscapeColumnName(table.TableReference, cr.ColumnName);
-                    string escapedname = EscapePropagatedColumnName(table.TableReference, cr.ColumnName);
-
-                    if (!referencedColumns.Contains(key))
-                    {
-                        if (columnList.Length != 0)
-                        {
-                            columnList.Append(", ");
-                        }
-
-                        columnList.AppendFormat(format,
-                                            tableAlias == null ? String.Empty : String.Format("[{0}].", tableAlias),
-                                            escapedname,
-                                            cr.ColumnName,
-                                            cr.DataType.NameWithLength,
-                                            nullString);
-
-                        referencedColumns.Add(key);
-                    }
-                }
-            }
         }
 
         #endregion
