@@ -44,6 +44,190 @@ namespace Jhu.Graywulf.Test.Jobs.Query
             RunQuery(sql);
         }
 
+        [TestMethod]
+        [TestCategory("Query")]
+        public void SimpleQueryWithoutIntoTest()
+        {
+            var sql = "SELECT TOP 10 objid, ra, dec FROM SDSSDR7:PhotoObj";
+
+            RunQuery(sql);
+        }
+
+        /// <summary>
+        /// This is to test round-robin scheduling over a set of servers
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Query")]
+        public void MultipleQueriesTest()
+        {
+            var sql = "SELECT TOP 10 * INTO [$into] FROM TEST:SampleData";
+
+            for (int i = 0; i < 5; i++)
+            {
+                RunQuery(sql);
+            }
+        }
+
+        /// <summary>
+        /// Joins two tables of the same dataset.
+        /// This one won't create a primary key on the target table because there's no
+        /// unique combination of columns.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Query")]
+        public void JoinQueryTest()
+        {
+            var sql = @"
+SELECT TOP 10 p.objid, p.ra, p.dec, s.ra, s.dec
+INTO [$into]
+FROM SDSSDR7:PhotoObj p
+INNER JOIN SDSSDR7:SpecObjAll s
+    ON p.objID = s.bestObjID";
+
+            RunQuery(sql);
+        }
+
+        /// <summary>
+        /// Joins two tables of the same dataset.
+        /// This one does create a primary key on the target table.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Query")]
+        public void JoinQueryTest2()
+        {
+            var sql = @"
+SELECT TOP 10 p.objid, s.specObjID, p.ra, p.dec, s.ra, s.dec
+INTO [$into]
+FROM SDSSDR7:PhotoObj p
+INNER JOIN SDSSDR7:SpecObjAll s
+    ON p.objID = s.bestObjID";
+
+            RunQuery(sql);
+        }
+
+        /// <summary>
+        /// Joins two table from different mirrored datasets.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Query")]
+        public void JoinQueryTest3()
+        {
+            var sql = @"
+SELECT TOP 100 s.objID, g.ObjID
+INTO [$into]
+FROM SDSSDR7:PhotoObjAll s
+CROSS JOIN Galex:PhotoObjAll g";
+
+            RunQuery(sql);
+        }
+
+        /// <summary>
+        /// Executes a self-join
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Query")]
+        public void SelfJoinQueryTest()
+        {
+            var sql = @"
+SELECT TOP 100 a.objID, b.ObjID
+INTO SqlQueryTest_SelfJoinQueryTest
+FROM SDSSDR7:PhotoObjAll a
+CROSS JOIN SDSSDR7:PhotoObjAll b";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void SimpleSelectStarQueryTest()
+        {
+            var sql = "SELECT TOP 10 * INTO [$into] FROM SDSSDR7:PhotoObj";
+
+            RunQuery(sql);
+        }
+
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void AliasSelectStarQueryTest()
+        {
+            var sql = "SELECT TOP 10 p.* INTO [$into] FROM SDSSDR7:PhotoObj p";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void TableValuedFunctionTest()
+        {
+            var sql = "SELECT * INTO [$into] FROM dbo.fHtmCoverCircleEq(0, 0, 10) AS htm";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void TableValuedFunctionJoinTest()
+        {
+            var sql = @"
+SELECT TOP 100 objid, ra, dec
+INTO [$into]
+FROM dbo.fHtmCoverCircleEq(0, 0, 10) htm
+INNER JOIN SDSSDR7:PhotoObj p
+    ON p.htmid BETWEEN htm.htmidstart AND htm.htmidend";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void TableValuedFunctionCrossApplyTest()
+        {
+            var sql = @"
+SELECT htm.htmidstart, htm.htmidend
+INTO [$into]
+FROM (SELECT TOP 10 ra, dec FROM SDSSDR7:PhotoObj) p
+CROSS APPLY dbo.fHtmCoverCircleEq(p.ra, p.dec, 10) htm";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void ScalarFunctionTest()
+        {
+            var sql = @"
+SELECT dbo.fDistanceEq(0, 0, 1, 1)
+INTO [$into]";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void ScalarFunctionOnTableTest()
+        {
+            var sql = @"
+SELECT TOP 100 dbo.fDistanceEq(0, 0, p.ra, p.dec) sep
+INTO [$into]
+FROM SDSSDR7:PhotoObj p";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public void ScalarFunctionInWhereTest()
+        {
+            var sql = @"
+SELECT p.objid, p.ra, p.dec
+INTO [$into]
+FROM (SELECT TOP 100 * FROM SDSSDR7:PhotoObj) p
+WHERE dbo.fDistanceEq(0, 0, p.ra, p.dec) > 1000";
+
+            RunQuery(sql);
+        }
+
         #endregion
         #region MyDB query tests
 
@@ -109,7 +293,7 @@ INNER JOIN MYDB:MySDSSSample b ON a.ObjID = b.ObjID";
         /// </summary>
         [TestMethod]
         [TestCategory("Query")]
-        public void SelfJoinQueryTest()
+        public void MyDBSelfJoinQueryTest()
         {
             var sql = @"
 SELECT TOP 100 a.objID, b.ObjID
@@ -127,7 +311,7 @@ CROSS JOIN MyCatalog b";
         /// </summary>
         [TestMethod]
         [TestCategory("Query")]
-        public void SelfJoinQueryTest2()
+        public void MyDBSelfJoinQueryTest2()
         {
             var sql = @"
 SELECT TOP 100 p.ObjID, a.objID, b.ObjID
