@@ -62,6 +62,12 @@ namespace Jhu.Graywulf.SqlParser
             return nex;
         }
 
+        public static Expression Create(ColumnReference cr)
+        {
+            var ci = ColumnIdentifier.Create(cr);
+            return Create(ci);
+        }
+
         public static Expression Create(Variable var)
         {
             var nex = new Expression();
