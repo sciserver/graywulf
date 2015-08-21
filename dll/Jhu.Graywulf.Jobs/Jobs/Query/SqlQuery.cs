@@ -288,7 +288,10 @@ namespace Jhu.Graywulf.Jobs.Query
                 var tr = ts.TableReference;
 
                 tr.Statistics = new SqlParser.TableStatistics();
-                tr.Statistics.KeyColumn = ts.PartitioningColumnReference;
+
+                // TODO: modify this when expression output type functions are implemented
+                tr.Statistics.KeyColumn = SqlParser.Expression.Create(ts.PartitioningColumn);
+                tr.Statistics.KeyColumnDataType = ts.PartitioningColumnReference.DataType;
 
                 TableSourceStatistics.Add(ts);
             }
@@ -437,6 +440,11 @@ namespace Jhu.Graywulf.Jobs.Query
                         var sis = GetAvailableServerInstances(reqds, SourceDatabaseVersionName, null, spds);
                         partitionCount = 4 * sis.Length;
 
+                        if (MaxPartitions > 0)
+                        {
+                            partitionCount = Math.Max(partitionCount, MaxPartitions);
+                        }
+
                         // Now have to reinitialize to load the assigned server instances
                         InitializeQueryObject(context, scheduler, true);
                     }
@@ -456,8 +464,7 @@ namespace Jhu.Graywulf.Jobs.Query
             return new SqlQueryPartition(this);
         }
 
-        // TODO: make it non-virtual if XMatch query doesn't need to override it
-        public virtual void GeneratePartitions(int partitionCount)
+        public void GeneratePartitions(int partitionCount)
         {
             // Partitioning is only supperted using Graywulf mode, single server mode always
             // falls back to a single partition
@@ -478,14 +485,20 @@ namespace Jhu.Graywulf.Jobs.Query
                     }
                     else
                     {
-                        // --- determine partition limits based on the first table's statistics
+                        // See if maxmimum number of partitions is limited
+                        if (MaxPartitions != 0)
+                        {
+                            partitionCount = Math.Max(partitionCount, MaxPartitions);
+                        }
+
                         if (TableSourceStatistics == null || TableSourceStatistics.Count == 0)
                         {
                             throw new InvalidOperationException();
                         }
 
+                        // Determine partition limits based on the first table's statistics
                         var stat = TableSourceStatistics[0].TableReference.Statistics;
-                        GeneratePartitionsInternal(partitionCount, stat);
+                        OnGeneratePartitions(partitionCount, stat);
                     }
                     break;
                 default:
@@ -498,7 +511,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="partitionCount"></param>
         /// <param name="stat"></param>
-        private void GeneratePartitionsInternal(int partitionCount, SqlParser.TableStatistics stat)
+        protected virtual void OnGeneratePartitions(int partitionCount, Jhu.Graywulf.SqlParser.TableStatistics stat)
         {
             // TODO: fix issue with repeating keys!
             // Maybe just throw those partitions away?

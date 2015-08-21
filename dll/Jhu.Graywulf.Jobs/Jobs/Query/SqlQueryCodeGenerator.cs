@@ -408,8 +408,8 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             var tablename = GenerateEscapedUniqueName(tableSource.TableReference);
             var temptable = queryObject.GetTemporaryTable("stat_" + tablename);
-            var keycol = GetResolvedColumnName(tableSource.TableReference.Statistics.KeyColumn);
-            var keytype = tableSource.TableReference.Statistics.KeyColumn.DataType.NameWithLength;
+            var keycol = Execute(tableSource.TableReference.Statistics.KeyColumn);
+            var keytype = tableSource.TableReference.Statistics.KeyColumnDataType.NameWithLength;
             var where = GetTableSpecificWhereClause(tableSource);
 
             sql.Replace("[$temptable]", GetResolvedTableName(temptable));

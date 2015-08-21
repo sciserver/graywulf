@@ -232,7 +232,7 @@ namespace Jhu.Graywulf.Jobs.Query
             ts.TableReference.Statistics = new Graywulf.SqlParser.TableStatistics()
             {
                 BinCount = 200,
-                KeyColumn = new ColumnReference("dec", DataTypes.SqlFloat)
+                KeyColumn = Expression.Create(new ColumnReference("dec", DataTypes.SqlFloat))
             };
 
             var cmd = cg.GetTableStatisticsCommand(ts);
