@@ -66,12 +66,19 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected Guid ScheduleQueryJob(string query, QueueType queueType)
         {
+            return ScheduleQueryJob(query, queueType, 0);
+        }
+
+        protected Guid ScheduleQueryJob(string query, QueueType queueType, int maxPartitions)
+        {
             var queue = String.Format("QueueInstance:Graywulf.Controller.Controller.{0}", queueType.ToString());  // *** TODO
 
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var qf = CreateQueryFactory(context);
-                var q = CreateQuery(qf, query);      
+                var q = CreateQuery(qf, query);
+
+                q.MaxPartitions = maxPartitions;
 
                 var ji = qf.ScheduleAsJob(null, q, queue, "testjob");
 

@@ -80,6 +80,8 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         private int queryTimeout;
 
+        private int maxPartitions;
+
         /// <summary>
         /// Determines if queries are dumped into files during execution
         /// </summary>
@@ -238,6 +240,16 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             get { return queryTimeout; }
             set { queryTimeout = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum number of partitions
+        /// </summary>
+        [DataMember]
+        public int MaxPartitions
+        {
+            get { return maxPartitions; }
+            set { maxPartitions = value; }
         }
 
         /// <summary>
@@ -471,6 +483,7 @@ namespace Jhu.Graywulf.Jobs.Query
             this.isInterpretFinished = false;
 
             this.queryTimeout = 60;
+            this.maxPartitions = 0;
             this.dumpSql = false;
 
             this.context = null;
@@ -519,6 +532,7 @@ namespace Jhu.Graywulf.Jobs.Query
             this.isInterpretFinished = false;
 
             this.queryTimeout = old.queryTimeout;
+            this.maxPartitions = old.maxPartitions;
             this.dumpSql = old.dumpSql;
 
             this.context = old.context;
