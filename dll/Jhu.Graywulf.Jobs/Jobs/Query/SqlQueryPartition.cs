@@ -204,7 +204,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             // Create a target table name
             var cg = new SqlServerCodeGenerator();
-            var temptable = GetTemporaryTable(cg.GetEscapedUniqueName(table));
+            var temptable = GetTemporaryTable(cg.GenerateEscapedUniqueName(table));
             TemporaryTables.TryAdd(table.UniqueName, temptable);
 
             var dest = new DestinationTable(

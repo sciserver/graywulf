@@ -328,7 +328,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 connectionString = si.GetConnectionString().ConnectionString;
 
-                CodeGenerator.SubstituteDatabaseName(tableSource.TableReference, si, StatDatabaseVersionName, SourceDatabaseVersionName);
+                CodeGenerator.SubstituteServerSpecificDatabaseName(tableSource.TableReference, si, StatDatabaseVersionName, SourceDatabaseVersionName);
 
                 // TODO: multiplier depends on whether statistics were gathered from the
                 // sample table or a full table of the surrogate full database

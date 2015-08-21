@@ -73,9 +73,9 @@ namespace Jhu.Graywulf.Jobs.Query
             return GetExecuteQuery(selectStatement, CommandMethod.Select, null);
         }
 
-        public SourceTableQuery GetExecuteQuery(Graywulf.SqlParser.SelectStatement selectStatement, CommandMethod method, Table destination)
+        public SourceTableQuery GetExecuteQuery(SelectStatement selectStatement, CommandMethod method, Table destination)
         {
-            var ss = new SelectStatement(selectStatement);
+            var ss = (SelectStatement)selectStatement.Clone();
             return GetExecuteQueryImpl(ss, method, destination);
         }
 
@@ -86,8 +86,11 @@ namespace Jhu.Graywulf.Jobs.Query
             RewriteForExecute(selectStatement);
             RemoveNonStandardTokens(selectStatement, method);
 
-            SubstituteDatabaseNames(selectStatement, queryObject.AssignedServerInstance, Partition.Query.SourceDatabaseVersionName);
-            SubstituteRemoteTableNames(selectStatement);
+            if (queryObject.ExecutionMode == ExecutionMode.Graywulf)
+            {
+                SubstituteServerSpecificDatabaseNames(selectStatement, queryObject.AssignedServerInstance, Partition.Query.SourceDatabaseVersionName);
+                SubstituteRemoteTableNames(selectStatement);
+            }
 
             AppendQuery(sql, selectStatement, method, destination);
 
@@ -241,9 +244,9 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Name substitution
 
-        protected void SubstituteDatabaseNames(SelectStatement ss, ServerInstance serverInstance, string databaseVersion)
+        protected void SubstituteServerSpecificDatabaseNames(SelectStatement ss, ServerInstance serverInstance, string databaseVersion)
         {
-            SubstituteDatabaseNames(ss, serverInstance, databaseVersion, null);
+            SubstituteServerSpecificDatabaseNames(ss, serverInstance, databaseVersion, null);
         }
 
         /// <summary>
@@ -252,17 +255,26 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="serverInstance"></param>
         /// <param name="databaseVersion"></param>
         /// <remarks>This function call must be synchronized!</remarks>
-        protected void SubstituteDatabaseNames(SelectStatement ss, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
+        protected void SubstituteServerSpecificDatabaseNames(SelectStatement ss, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
         {
-            foreach (var qs in ss.EnumerateQuerySpecifications())
+            switch (queryObject.ExecutionMode)
             {
-                foreach (var tr in qs.EnumerateSourceTableReferences(true))
-                {
-                    if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
+                case ExecutionMode.SingleServer:
+                    throw new InvalidOperationException();
+                case ExecutionMode.Graywulf:
+                    foreach (var qs in ss.EnumerateQuerySpecifications())
                     {
-                        SubstituteDatabaseName(tr, serverInstance, databaseVersion, surrogateDatabaseVersion);
+                        foreach (var tr in qs.EnumerateSourceTableReferences(true))
+                        {
+                            if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
+                            {
+                                SubstituteServerSpecificDatabaseName(tr, serverInstance, databaseVersion, surrogateDatabaseVersion);
+                            }
+                        }
                     }
-                }
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
         }
 
@@ -276,7 +288,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// During query executions, actual database name are not known until a server instance is
         /// assigned to the query partition.
         /// </remarks>
-        public void SubstituteDatabaseName(TableReference tr, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
+        public void SubstituteServerSpecificDatabaseName(TableReference tr, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
         {
             var sc = queryObject.GetSchemaManager();
 
@@ -394,7 +406,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected void SubstituteTableStatisticsQueryTokens(StringBuilder sql, ITableSource tableSource)
         {
-            var tablename = GetEscapedUniqueName(tableSource.TableReference);
+            var tablename = GenerateEscapedUniqueName(tableSource.TableReference);
             var temptable = queryObject.GetTemporaryTable("stat_" + tablename);
             var keycol = QuoteIdentifier(tableSource.TableReference.Statistics.KeyColumn);
             var keytype = tableSource.TableReference.Statistics.KeyColumnDataType.NameWithLength;
