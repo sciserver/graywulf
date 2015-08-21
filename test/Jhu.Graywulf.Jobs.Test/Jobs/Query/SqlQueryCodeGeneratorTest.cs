@@ -83,6 +83,8 @@ namespace Jhu.Graywulf.Jobs.Query
             Assert.AreEqual(gt, ss.ToString());
         }
 
+        #region Simple code rewrite functions
+
         [TestMethod]
         [TestCategory("Parsing")]
         public void LeaveIntact()
@@ -213,6 +215,8 @@ namespace Jhu.Graywulf.Jobs.Query
             RewriteQueryHelper(sql, gt, true, true);
         }
 
+        #endregion
+
         // TODO: add remote table name substitution tests
 
         #region Statistics query tests
@@ -224,6 +228,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var cg = new SqlQueryCodeGenerator(q);
             var ts = q.SelectStatement.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
 
+            // Column to compute the statistics on, not partitioning!
             ts.TableReference.Statistics = new Graywulf.SqlParser.TableStatistics()
             {
                 BinCount = 200,
