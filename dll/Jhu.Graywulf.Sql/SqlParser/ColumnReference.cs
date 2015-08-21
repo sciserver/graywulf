@@ -103,6 +103,15 @@ namespace Jhu.Graywulf.SqlParser
             this.dataType = columnDescription.DataType;
         }
 
+        public ColumnReference(string name, DataType dataType)
+        {
+            InitializeMembers();
+
+            this.tableReference = null;
+            this.columnName = name;
+            this.dataType = dataType;
+        }
+
         private void InitializeMembers()
         {
             this.columnExpression = null;

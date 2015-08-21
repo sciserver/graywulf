@@ -288,8 +288,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 var tr = ts.TableReference;
 
                 tr.Statistics = new SqlParser.TableStatistics();
-                tr.Statistics.KeyColumn = CodeGenerator.GetResolvedColumnName(ts.PartitioningColumnReference);
-                tr.Statistics.KeyColumnDataType = ts.PartitioningColumnReference.DataType;
+                tr.Statistics.KeyColumn = ts.PartitioningColumnReference;
 
                 TableSourceStatistics.Add(ts);
             }

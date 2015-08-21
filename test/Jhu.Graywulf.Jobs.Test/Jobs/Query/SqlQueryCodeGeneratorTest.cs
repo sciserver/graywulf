@@ -227,8 +227,7 @@ namespace Jhu.Graywulf.Jobs.Query
             ts.TableReference.Statistics = new Graywulf.SqlParser.TableStatistics()
             {
                 BinCount = 200,
-                KeyColumn = "dec",
-                KeyColumnDataType = DataTypes.SqlFloat
+                KeyColumn = new ColumnReference("dec", DataTypes.SqlFloat)
             };
 
             var cmd = cg.GetTableStatisticsCommand(ts);
@@ -244,7 +243,7 @@ SELECT objID
 FROM TEST:SDSSDR7PhotoObjAll
 WHERE ra > 2";
 
-            var gt = @"INSERT [dbo].[test__stat_TEST_dbo_SDSSDR7PhotoObjAll] WITH(TABLOCKX)
+            var gt = @"INSERT [Graywulf_Temp].[dbo].[test__stat_TEST_dbo_SDSSDR7PhotoObjAll] WITH(TABLOCKX)
 SELECT ROW_NUMBER() OVER (ORDER BY [dec]), [dec]
 FROM [SkyNode_Test].[dbo].[SDSSDR7PhotoObjAll]
 WHERE [SkyNode_Test].[dbo].[SDSSDR7PhotoObjAll].[ra] > 2;";
@@ -262,7 +261,7 @@ FROM TEST:SDSSDR7PhotoObjAll p
 INNER JOIN TEST:SDSSDR7PhotoObjAll b ON p.objID = b.objID
 WHERE p.ra > 2";
 
-            var gt = @"INSERT [dbo].[test__stat_TEST_dbo_SDSSDR7PhotoObjAll_p] WITH(TABLOCKX)
+            var gt = @"INSERT [Graywulf_Temp].[dbo].[test__stat_TEST_dbo_SDSSDR7PhotoObjAll_p] WITH(TABLOCKX)
 SELECT ROW_NUMBER() OVER (ORDER BY [dec]), [dec]
 FROM [SkyNode_Test].[dbo].[SDSSDR7PhotoObjAll] AS [p]
 WHERE [p].[ra] > 2;";

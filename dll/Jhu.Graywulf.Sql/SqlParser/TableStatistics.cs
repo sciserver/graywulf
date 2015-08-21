@@ -15,8 +15,7 @@ namespace Jhu.Graywulf.SqlParser
         #region Private member variables
 
         private int binCount;
-        private string keyColumn;
-        private DataType keyColumnDataType;
+        private ColumnReference keyColumn;
         private List<IComparable> keyValue;
         private List<long> keyCount;
         private long rowCount;
@@ -30,16 +29,10 @@ namespace Jhu.Graywulf.SqlParser
             set { binCount = value; }
         }
 
-        public string KeyColumn
+        public ColumnReference KeyColumn
         {
             get { return keyColumn; }
             set { keyColumn = value; }
-        }
-
-        public DataType KeyColumnDataType
-        {
-            get { return keyColumnDataType; }
-            set { keyColumnDataType = value; }
         }
 
         public List<IComparable> KeyValue
@@ -75,7 +68,6 @@ namespace Jhu.Graywulf.SqlParser
         {
             this.binCount = 250;
             this.keyColumn = null;
-            this.keyColumnDataType = null;
             this.keyValue = new List<IComparable>();
             this.keyCount = new List<long>();
             this.rowCount = 0;
@@ -85,7 +77,6 @@ namespace Jhu.Graywulf.SqlParser
         {
             this.binCount = old.binCount;
             this.keyColumn = old.keyColumn;
-            this.keyColumnDataType = old.keyColumnDataType;
             this.keyValue = new List<IComparable>(old.keyValue);
             this.keyCount = new List<long>(old.keyCount);
             this.rowCount = old.rowCount;

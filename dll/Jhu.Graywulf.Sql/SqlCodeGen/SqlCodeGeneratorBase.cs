@@ -239,7 +239,11 @@ namespace Jhu.Graywulf.SqlCodeGen
         {
             string tablename;
 
-            if (!String.IsNullOrEmpty(column.TableReference.Alias))
+            if (column.TableReference == null)
+            {
+                tablename = null;
+            }
+            else if (!String.IsNullOrEmpty(column.TableReference.Alias))
             {
                 tablename = QuoteIdentifier(column.TableReference.Alias);
             }
