@@ -37,12 +37,12 @@ namespace Jhu.Graywulf.Jobs.Query
                 {
                     CodeDataset = new Graywulf.Schema.SqlServer.SqlServerDataset()
                     {
-                        Name = "CODE",
+                        Name = Jhu.Graywulf.Registry.Constants.CodeDbName,
                         ConnectionString = "data source=localhost;initial catalog=SkyQuery_Code",
                     },
                     TemporaryDataset = new Graywulf.Schema.SqlServer.SqlServerDataset()
                     {
-                        Name = "TEMP",
+                        Name = Jhu.Graywulf.Registry.Constants.TempDbName,
                         ConnectionString = "data source=localhost;initial catalog=Graywulf_Temp",
                     }
                 };

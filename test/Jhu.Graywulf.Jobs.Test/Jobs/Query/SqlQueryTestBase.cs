@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Jobs.Query
             return qf;
         }
 
-        protected SqlQuery CreateQuery(string query)
+        protected virtual SqlQuery CreateQuery(string query)
         {
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
