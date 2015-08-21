@@ -33,12 +33,28 @@ namespace Jhu.Graywulf.Test.Jobs.Query
             Assert.IsTrue(sc.Execute(t));
         }
 
+        #region Simple SQL query tests
+
         [TestMethod]
         [TestCategory("Query")]
         public void SimpleQueryTest()
         {
             var sql = "SELECT TOP 10 * INTO [$into] FROM TEST:SampleData";
-            
+
+            RunQuery(sql);
+        }
+
+        #endregion
+        #region MyDB query tests
+
+        /// <summary>
+        /// Executes a simple query on a single MyDB table
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Query")]
+        public void MyDBTableQueryTest()
+        {
+            var sql = "SELECT TOP 10 objid INTO [$into] FROM MYDB:MyCatalog";
             RunQuery(sql);
         }
 
@@ -55,6 +71,76 @@ CROSS JOIN MyCatalog b
 
             RunQuery(sql);
         }
+
+        /// <summary>
+        /// Joins two MyDB tables
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Query")]
+        public void MyDBTableJoinedQueryTest1()
+        {
+            var sql =
+@"SELECT a.objid
+INTO [$into]
+FROM MYDB:MyCatalog a
+INNER JOIN MYDB:MySDSSSample b ON a.ObjID = b.objID";
+
+            RunQuery(sql);
+        }
+
+        /// <summary>
+        /// Joins a MyDB table with a mirrored catalog table
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Query")]
+        public void MyDBTableJoinedQueryTest2()
+        {
+            var sql =
+@"SELECT a.objid
+INTO [$into]
+FROM SDSSDR7:PhotoObjAll a
+INNER JOIN MYDB:MySDSSSample b ON a.ObjID = b.ObjID";
+
+            RunQuery(sql);
+        }
+
+        /// <summary>
+        /// Executes a self-join on a MyDB table
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Query")]
+        public void SelfJoinQueryTest()
+        {
+            var sql = @"
+SELECT TOP 100 a.objID, b.ObjID
+INTO [$into]
+FROM MyCatalog a
+CROSS JOIN MyCatalog b";
+
+            RunQuery(sql);
+        }
+
+        /// <summary>
+        /// Executes a self-join on a MyDB table while also joining in a
+        /// catalog table. This one is interesting because it can test name
+        /// collision issues of cached remote tables.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Query")]
+        public void SelfJoinQueryTest2()
+        {
+            var sql = @"
+SELECT TOP 100 p.ObjID, a.objID, b.ObjID
+INTO [$into]
+FROM SDSSDR7:PhotoObj p
+CROSS JOIN MyCatalog a
+CROSS JOIN MyCatalog b";
+
+            RunQuery(sql);
+        }
+
+        #endregion
+        #region Partitioned query tests
 
         [TestMethod]
         [TestCategory("Query")]
@@ -73,7 +159,7 @@ WHERE ra BETWEEN 0 AND 5 AND dec BETWEEN 0 AND 5";
         [TestCategory("Query")]
         public void PartitionedQueryNoWhereTest()
         {
-            var sql = 
+            var sql =
 @"SELECT TOP 100 a.objid, a.ra, a.dec 
 INTO [$into] 
 FROM TEST:SDSSDR7PhotoObjAll a PARTITION BY a.ra";
@@ -94,7 +180,7 @@ CROSS JOIN MyCatalog b
 
             RunQuery(sql);
         }
-        
+
         [TestMethod]
         [TestCategory("Query")]
         [ExpectedException(typeof(IO.Tasks.TableCopyException))]
@@ -140,5 +226,7 @@ CROSS JOIN MyCatalog b
             // Now check if it's there which should throw an exception
             q.Destination.CheckTableExistence();
         }
+
+        #endregion
     }
 }
