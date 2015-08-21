@@ -37,6 +37,21 @@ namespace Jhu.Graywulf.SqlParser
             var res = new TableOrViewName();
             res.tableReference = tr;
 
+            if (!String.IsNullOrWhiteSpace(tr.DatasetName))
+            {
+                res.Stack.AddLast(DatasetName.Create(tr.DatasetName));
+                res.Stack.AddLast(Colon.Create());
+            }
+
+            // Here one would add the database name but we omit that since we
+            // primarily refer to databases via datasets
+
+            if (!String.IsNullOrWhiteSpace(tr.SchemaName))
+            {
+                res.Stack.AddLast(SchemaName.Create(tr.SchemaName));
+                res.Stack.AddLast(Dot.Create());
+            }
+
             res.Stack.AddLast(TableName.Create(tr.DatabaseObjectName));
 
             return res;

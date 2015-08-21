@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.SqlCodeGen
             return identifier.Replace(".", "_");
         }
 
-        public string GetEscapedUniqueName(TableReference table)
+        public string GenerateEscapedUniqueName(TableReference table)
         {
             if (table.IsSubquery || table.IsComputed)
             {

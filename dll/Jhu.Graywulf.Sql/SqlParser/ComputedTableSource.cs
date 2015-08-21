@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.SqlParser
 {
-    public class ComputedTableSource : Jhu.Graywulf.ParserLib.Node, ICloneable
+    public class ComputedTableSource : Jhu.Graywulf.ParserLib.Node, ITableSource, ICloneable
     {
         private TableReference tableReference;
 
@@ -13,6 +13,16 @@ namespace Jhu.Graywulf.SqlParser
         {
             get { return tableReference; }
             set { tableReference = value; }
+        }
+
+        public bool IsSubquery
+        {
+            get { return false; }
+        }
+
+        public bool IsMultiTable
+        {
+            get { return false; }
         }
 
         public ComputedTableSource()
@@ -47,6 +57,16 @@ namespace Jhu.Graywulf.SqlParser
         }
 
         public override bool Match(ParserLib.Parser parser)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ITableSource> EnumerateMultiTableSources()
         {
             throw new NotImplementedException();
         }

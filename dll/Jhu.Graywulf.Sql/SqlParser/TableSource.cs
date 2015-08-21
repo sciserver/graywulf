@@ -40,16 +40,6 @@ namespace Jhu.Graywulf.SqlParser
             return ts;
         }
 
-        public override void Interpret()
-        {
-            base.Interpret();
-
-            if (FindSpecificTableSource() == null)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         protected virtual ITableSource FindSpecificTableSource()
         {
             var ts = FindDescendant<SimpleTableSource>();
@@ -76,7 +66,13 @@ namespace Jhu.Graywulf.SqlParser
                 return sts;
             }
 
-            return null;
+            var cts = FindDescendant<ComputedTableSource>();
+            if (cts != null)
+            {
+                return cts;
+            }
+
+            throw new NotImplementedException();
         }
     }
 }

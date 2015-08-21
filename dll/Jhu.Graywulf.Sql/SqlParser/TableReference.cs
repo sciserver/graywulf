@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.SqlParser
         public bool IsComputed
         {
             get { return isComputed; }
-            protected set { isComputed = value; }
+            set { isComputed = value; }
         }
 
         public bool IsCachable
