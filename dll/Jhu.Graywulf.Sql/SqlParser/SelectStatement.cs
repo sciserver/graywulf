@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.SqlParser
             get { return FindDescendant<OrderByClause>(); }
         }
 
-        public bool IsPartitioned
+        public virtual bool IsPartitioned
         {
             get
             {
