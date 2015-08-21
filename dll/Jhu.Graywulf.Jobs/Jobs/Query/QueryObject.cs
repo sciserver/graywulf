@@ -334,7 +334,7 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 SqlServerDataset codeds;
 
-                if (executionMode == Query.ExecutionMode.SingleServer || temporaryDatabaseInstanceReference.IsEmpty)
+                if (executionMode == Query.ExecutionMode.SingleServer || codeDatabaseInstanceReference.IsEmpty)
                 {
                     codeds = codeDataset;
                 }
@@ -742,7 +742,6 @@ namespace Jhu.Graywulf.Jobs.Query
                         };
                         codeds.DatabaseVersionReference.Value = FederationReference.Value.CodeDatabaseVersion;
                         codeds.CacheSchemaConnectionString();
-
                         codeDataset = codeds;
                     }
 
@@ -1098,10 +1097,14 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             var sc = CreateSchemaManager();
 
+            sc.Datasets[Jhu.Graywulf.Registry.Constants.CodeDbName] = CodeDataset;
+            sc.Datasets[Jhu.Graywulf.Registry.Constants.TempDbName] = TemporaryDataset;
+
             // Add custom dataset defined by code
             foreach (var ds in customDatasets)
             {
                 // *** TODO: check this
+                // is this where mydb is added?
                 sc.Datasets[ds.Name] = ds;
             }
 
