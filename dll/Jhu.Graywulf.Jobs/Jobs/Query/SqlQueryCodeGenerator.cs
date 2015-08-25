@@ -76,10 +76,10 @@ namespace Jhu.Graywulf.Jobs.Query
         public SourceTableQuery GetExecuteQuery(SelectStatement selectStatement, CommandMethod method, Table destination)
         {
             var ss = (SelectStatement)selectStatement.Clone();
-            return GetExecuteQueryImpl(ss, method, destination);
+            return OnGetExecuteQuery(ss, method, destination);
         }
 
-        protected virtual SourceTableQuery GetExecuteQueryImpl(SelectStatement selectStatement, CommandMethod method, Table destination)
+        protected virtual SourceTableQuery OnGetExecuteQuery(SelectStatement selectStatement, CommandMethod method, Table destination)
         {
             var sql = new StringBuilder();
 
@@ -400,7 +400,9 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             var sql = new StringBuilder(SqlQueryScripts.TableStatistics);
+
             SubstituteTableStatisticsQueryTokens(sql, tableSource);
+            
             return new SqlCommand(sql.ToString());
         }
 
@@ -614,7 +616,10 @@ namespace Jhu.Graywulf.Jobs.Query
                 case ColumnListType.ForSelectWithEscapedName:
                     format = "{0}[{1}] AS [{1}]";
                     break;
-                case ColumnListType.ForSelectNoAlias:
+                case ColumnListType.ForSelectWithOriginalNameNoAlias:
+                    format = "{0}[{2}]";
+                    break;
+                case ColumnListType.ForSelectWithEscapedNameNoAlias:
                     format = "{0}[{1}]";
                     break;
                 default:

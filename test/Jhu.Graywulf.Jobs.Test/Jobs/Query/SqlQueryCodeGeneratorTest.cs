@@ -397,7 +397,7 @@ WHERE ra > 5 AND dec < 3";
 
             var gt = "[_TEST_dbo_SDSSDR7PhotoObjAll_p_objId], [_TEST_dbo_SDSSDR7PhotoObjAll_p_ra], [_TEST_dbo_SDSSDR7PhotoObjAll_p_dec]";
 
-            var res = GeneratePropagatedColumnListTestHelper(sql, null, ColumnListType.ForSelectNoAlias);
+            var res = GeneratePropagatedColumnListTestHelper(sql, null, ColumnListType.ForSelectWithEscapedNameNoAlias);
 
             Assert.AreEqual(gt, res);
         }

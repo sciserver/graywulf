@@ -102,13 +102,21 @@ namespace Jhu.Graywulf.Jobs.Query
         ForSelectWithEscapedName,
 
         /// <summary>
+        /// To use with 'SELECT'
+        /// </summary>
+        /// <remarks>
+        /// Original name used.
+        /// </remarks>
+        ForSelectWithOriginalNameNoAlias,
+
+        /// <summary>
         /// To use with 'SELECT'.
         /// </summary>
         /// <remarks>
         /// Escaped name used, no column alias added. To use
         /// with 'INSERT' or 'CREATE INDEX'
         /// </remarks>
-        ForSelectNoAlias
+        ForSelectWithEscapedNameNoAlias
     }
 
     [Flags]
