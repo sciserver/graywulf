@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.SqlParser
         private void InitializeMembers()
         {
             this.systemFunctionName = null;
-            this.isUdf = false;
+            this.isUdf = true;
         }
 
         private void CopyMembers(FunctionReference old)

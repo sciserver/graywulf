@@ -290,8 +290,8 @@ namespace Jhu.Graywulf.Jobs.Query
                 tr.Statistics = new SqlParser.TableStatistics();
 
                 // TODO: modify this when expression output type functions are implemented
-                tr.Statistics.KeyColumn = SqlParser.Expression.Create(ts.PartitioningColumn);
-                tr.Statistics.KeyColumnDataType = ts.PartitioningColumnReference.DataType;
+                tr.Statistics.KeyColumn = ts.PartitioningKeyExpression;
+                tr.Statistics.KeyColumnDataType = ts.PartitioningKeyDataType;
 
                 TableSourceStatistics.Add(ts);
             }
@@ -488,7 +488,7 @@ namespace Jhu.Graywulf.Jobs.Query
                         // See if maxmimum number of partitions is limited
                         if (MaxPartitions != 0)
                         {
-                            partitionCount = Math.Max(partitionCount, MaxPartitions);
+                            partitionCount = Math.Min(partitionCount, MaxPartitions);
                         }
 
                         if (TableSourceStatistics == null || TableSourceStatistics.Count == 0)

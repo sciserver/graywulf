@@ -90,10 +90,15 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected void RunQuery(string sql)
         {
-            RunQuery(sql, new TimeSpan(0, 2, 0));
+            RunQuery(sql, 0, new TimeSpan(0, 2, 0));
         }
 
-        protected void RunQuery(string sql, TimeSpan timeout)
+        protected void RunQuery(string sql, int maxPartitions)
+        {
+            RunQuery(sql, maxPartitions, new TimeSpan(0, 2, 0));
+        }
+
+        protected void RunQuery(string sql, int maxPartitions, TimeSpan timeout)
         {
             var testName = GetTestUniqueName();
 
@@ -108,7 +113,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                     sql = sql.Replace("[$into]", testName);
 
-                    var guid = ScheduleQueryJob(sql, QueueType.Long);
+                    var guid = ScheduleQueryJob(sql, QueueType.Long, maxPartitions);
 
                     WaitJobComplete(guid, TimeSpan.FromSeconds(10), timeout);
 

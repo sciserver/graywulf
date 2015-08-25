@@ -58,6 +58,14 @@ namespace Jhu.Graywulf.SqlCodeGen.MySql
         #endregion
         #region Complete query generators
 
+        public override string GenerateSelectStarQuery(TableReference tableReference, int top)
+        {
+            return String.Format(
+                "SELECT t.* FROM {1} AS t {0}",
+                GenerateTopExpression(top),
+                GetResolvedTableName(tableReference.DatabaseName, tableReference.SchemaName, tableReference.DatabaseObjectName));
+        }
+
         public override string GenerateSelectStarQuery(TableOrView tableOrView, int top)
         {
             return String.Format(

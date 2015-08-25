@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jhu.Graywulf.ParserLib;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.SqlParser
 {
     public partial class SimpleTableSource : ITableSource
     {
+        private ColumnIdentifier partitioningColumn;
+        private Expression partitioningKeyExpression;
+        private DataType partitioningKeyDataType;
 
         public TableOrViewName TableOrViewName
         {
@@ -29,44 +33,55 @@ namespace Jhu.Graywulf.SqlParser
             get { return false; }
         }
 
-        public ColumnIdentifier PartitioningColumn
+        public Expression PartitioningKeyExpression
         {
             get
             {
-                var tpc = this.FindDescendant<TablePartitionClause>();
+                if (partitioningKeyExpression == null)
+                {
+                    InterpretPartitioningKey();
+                }
 
-                if (tpc != null)
-                {
-                    var ci = tpc.FindDescendant<ColumnIdentifier>();
-                    return ci;
-                }
-                else
-                {
-                    return null;
-                }
+                return partitioningKeyExpression;
             }
         }
 
-        public ColumnReference PartitioningColumnReference
+        public DataType PartitioningKeyDataType
         {
             get
             {
-                var ci = PartitioningColumn;
+                if (partitioningKeyDataType == null)
+                {
+                    InterpretPartitioningKey();
+                }
 
-                if (ci != null)
-                {
-                    return ci.ColumnReference;
-                }
-                else
-                {
-                    return null;
-                }
+                return partitioningKeyDataType;
             }
         }
 
         public bool IsPartitioned
         {
             get { return FindDescendant<TablePartitionClause>() != null; }
+        }
+
+        protected override void OnInitializeMembers()
+        {
+            base.OnInitializeMembers();
+
+            this.partitioningColumn = null;
+            this.partitioningKeyExpression = null;
+            this.partitioningKeyDataType = null;
+        }
+
+        protected override void OnCopyMembers(object other)
+        {
+            base.OnCopyMembers(other);
+
+
+            // Lazy-loaded, keep them null
+            this.partitioningColumn = null;
+            this.partitioningKeyExpression = null;
+            this.partitioningKeyDataType = null;
         }
 
         public static SimpleTableSource Create(TableReference tr)
@@ -92,6 +107,19 @@ namespace Jhu.Graywulf.SqlParser
             base.Interpret();
 
             TableReference.InterpretTableSource(this);
+        }
+
+        private void InterpretPartitioningKey()
+        {
+            var tpc = this.FindDescendant<TablePartitionClause>();
+
+            if (tpc != null)
+            {
+                var ci = tpc.FindDescendant<ColumnIdentifier>();
+                partitioningColumn = ci;
+                partitioningKeyExpression = Expression.Create(ci);
+                partitioningKeyDataType = ci.ColumnReference.DataType;
+            }
         }
 
         public IEnumerable<ITableSource> EnumerateSubqueryTableSources(bool recursive)

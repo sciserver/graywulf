@@ -435,7 +435,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected virtual void AppendPartitioningConditions(QuerySpecification qs, SimpleTableSource ts)
         {
-            var sc = GetPartitioningConditions(ts.PartitioningColumnReference);
+            var sc = GetPartitioningConditions(ts.PartitioningKeyExpression);
             if (sc != null)
             {
                 qs.AppendSearchCondition(sc, "AND");
@@ -555,7 +555,9 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 foreach (var cr in table.TableReference.ColumnReferences)
                 {
-                    if (cr.IsReferenced && !res.ContainsKey(cr.ColumnName))
+                    // Avoid hint and special contexts
+                    if ((cr.ColumnContext & (ColumnContext.SelectList | ColumnContext.From | ColumnContext.Where | ColumnContext.GroupBy | ColumnContext.Having | ColumnContext.OrderBy)) != 0 && 
+                        !res.ContainsKey(cr.ColumnName))
                     {
                         res.Add(cr.ColumnName, t.Columns[cr.ColumnName]);
                     }
@@ -638,6 +640,19 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             return columnlist.ToString();
+        }
+
+        public string GeneratePropagatedColumnList(IList<ITableSource> tables, IList<string> tableAliases, ColumnListInclude include, ColumnListType type, ColumnListNullType nullType, bool leadingComma)
+        {
+            var columns = new StringBuilder();
+
+            for (int i = 0; i < tables.Count; i++)
+            {
+                bool comma = leadingComma || columns.Length > 0;
+                columns.Append(GeneratePropagatedColumnList(tables[i], tableAliases[i], include, type, nullType, comma));
+            }
+
+            return columns.ToString();
         }
 
         #endregion

@@ -78,6 +78,14 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
         #endregion
         #region Complete query generators
 
+        public override string GenerateSelectStarQuery(TableReference tableReference, int top)
+        {
+            return String.Format(
+                "SELECT {0} * FROM {1}",
+                GenerateTopExpression(top),
+                GetResolvedTableName(tableReference.DatabaseName, tableReference.SchemaName, tableReference.DatabaseObjectName));
+        }
+
         public override string GenerateSelectStarQuery(TableOrView tableOrView, int top)
         {
             return String.Format(
@@ -89,7 +97,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
         protected override string GenerateTopExpression(int top)
         {
             var topstr = String.Empty;
-            if (top < int.MaxValue)
+            if (top < 1 || top < int.MaxValue)
             {
                 topstr = String.Format("TOP {0}", top);
             }

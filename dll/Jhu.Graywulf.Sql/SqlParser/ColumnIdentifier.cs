@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.SqlParser
             var nci = new ColumnIdentifier();
             nci.ColumnReference = cr;
 
-            if (!cr.TableReference.IsUndefined)
+            if (cr.TableReference != null && !cr.TableReference.IsUndefined)
             {
                 if (String.IsNullOrEmpty(cr.TableReference.Alias))
                 {

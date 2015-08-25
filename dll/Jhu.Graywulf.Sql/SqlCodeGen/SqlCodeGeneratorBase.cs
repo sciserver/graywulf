@@ -426,6 +426,8 @@ namespace Jhu.Graywulf.SqlCodeGen
         // These functions don't use the parsing tree, they generate certain
         // types of queries.
 
+        public abstract string GenerateSelectStarQuery(TableReference tableReference, int top);
+
         /// <summary>
         /// 
         /// </summary>
