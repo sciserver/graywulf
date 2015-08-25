@@ -281,13 +281,14 @@ WHERE [p].[ra] > 2;";
         #endregion
         #region Column list functions
 
-        private Dictionary<string, Column> GetColumnListTestHelper(string sql, ColumnListInclude include)
+        private Dictionary<string, Column> GetColumnListTestHelper(string sql, ColumnContext context)
         {
             var q = CreateQuery(sql);
             var cg = new SqlQueryCodeGenerator(q);
             var ts = q.SelectStatement.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
+            var columns = new SqlQueryColumnListGenerator(ts.TableReference, context);
 
-            return cg.GetColumnList(ts, include);
+            return columns.GetList();
         }
 
         [TestMethod]
@@ -297,7 +298,7 @@ WHERE [p].[ra] > 2;";
 SELECT *
 FROM TEST:SDSSDR7PhotoObjAll p";
 
-            var cols = GetColumnListTestHelper(sql, ColumnListInclude.PrimaryKey);
+            var cols = GetColumnListTestHelper(sql, ColumnContext.PrimaryKey);
             Assert.AreEqual(1, cols.Count);
             Assert.AreEqual("objId", cols["objId"].Name);
         }
@@ -310,7 +311,7 @@ SELECT dec
 FROM TEST:SDSSDR7PhotoObjAll p
 WHERE ra > 2";
 
-            var cols = GetColumnListTestHelper(sql, ColumnListInclude.PrimaryKey | ColumnListInclude.Referenced);
+            var cols = GetColumnListTestHelper(sql, ColumnContext.Default | ColumnContext.PrimaryKey);
             Assert.AreEqual(3, cols.Count);
             Assert.AreEqual("objId", cols["objId"].Name);
             Assert.AreEqual("ra", cols["ra"].Name);
@@ -324,7 +325,7 @@ WHERE ra > 2";
 SELECT objid, ra, dec
 FROM TEST:SDSSDR7PhotoObjAll p";
 
-            var cols = GetColumnListTestHelper(sql, ColumnListInclude.Referenced);
+            var cols = GetColumnListTestHelper(sql, ColumnContext.Default);
             Assert.AreEqual(3, cols.Count);
             Assert.AreEqual("objId", cols["objId"].Name);
             Assert.AreEqual("ra", cols["ra"].Name);
@@ -339,7 +340,7 @@ SELECT objid
 FROM TEST:SDSSDR7PhotoObjAll p
 WHERE ra > 5 AND dec < 3";
 
-            var cols = GetColumnListTestHelper(sql, ColumnListInclude.Referenced);
+            var cols = GetColumnListTestHelper(sql, ColumnContext.Default);
             Assert.AreEqual(3, cols.Count);
             Assert.AreEqual("objId", cols["objId"].Name);
             Assert.AreEqual("ra", cols["ra"].Name);
@@ -354,7 +355,7 @@ SELECT p.ra, p.dec
 FROM TEST:SDSSDR7PhotoObjAll p
 INNER JOIN TEST:SDSSDR7PhotoObjAll b ON p.objID = b.objID";
 
-            var cols = GetColumnListTestHelper(sql, ColumnListInclude.Referenced);
+            var cols = GetColumnListTestHelper(sql, ColumnContext.Default);
             Assert.AreEqual(3, cols.Count);
             Assert.AreEqual("objId", cols["objId"].Name);
             Assert.AreEqual("ra", cols["ra"].Name);
@@ -368,7 +369,7 @@ INNER JOIN TEST:SDSSDR7PhotoObjAll b ON p.objID = b.objID";
 SELECT *
 FROM TEST:SDSSDR7PhotoObjAll p";
 
-            var cols = GetColumnListTestHelper(sql, ColumnListInclude.Referenced);
+            var cols = GetColumnListTestHelper(sql, ColumnContext.Default);
             Assert.AreEqual(23, cols.Count);
         }
 
@@ -380,11 +381,9 @@ FROM TEST:SDSSDR7PhotoObjAll p";
             var q = CreateQuery(sql);
             var cg = new SqlQueryCodeGenerator(q);
             var ts = q.SelectStatement.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
-            var include = ColumnListInclude.Referenced;
-            var nullType = ColumnListNullType.Nothing;
-            var leadingComma = false;
+            var columnlist = new SqlQueryColumnListGenerator(ts.TableReference);
 
-            return cg.GeneratePropagatedColumnList(ts, tableAlias, include, type, nullType, leadingComma);
+            return columnlist.GetString();
         }
 
         [TestMethod]

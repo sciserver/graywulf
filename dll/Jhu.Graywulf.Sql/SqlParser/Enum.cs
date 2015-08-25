@@ -9,14 +9,23 @@ namespace Jhu.Graywulf.SqlParser
     public enum ColumnContext : long
     {
         None = 0,
-        SelectList = 1,
-        From = 2,
-        Where = 4,
-        GroupBy = 8,
-        Having = 16,
-        OrderBy = 32,
-        Hint = 64,
+        NonReferenced = 1,
 
+        SelectList = 2,
+        From = 4,
+        Where = 8,
+        GroupBy = 16,
+        Having = 32,
+        OrderBy = 64,
+
+        Default = SelectList | From | Where | GroupBy | Having | OrderBy,
+
+        Hint = 128,
         Special = 1024,
+        PrimaryKey = 2048,
+
+        AllReferenced = Default | Hint | Special | PrimaryKey,
+
+        All = NonReferenced | AllReferenced
     }
 }

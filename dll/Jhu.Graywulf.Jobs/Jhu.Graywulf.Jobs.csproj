@@ -105,6 +105,7 @@
     <Compile Include="Jobs\Query\CheckDestinationTable.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Jobs\Query\SqlQueryColumnListGenerator.cs" />
     <Compile Include="Jobs\Query\ComputeTableStatistics.cs">
       <SubType>Code</SubType>
     </Compile>

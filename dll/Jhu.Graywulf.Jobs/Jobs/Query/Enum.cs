@@ -118,13 +118,4 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </remarks>
         ForSelectWithEscapedNameNoAlias
     }
-
-    [Flags]
-    public enum ColumnListInclude
-    {
-        None = 0,
-        PrimaryKey = 1,
-        Referenced = 2,
-        All = PrimaryKey | Referenced
-    }
 }
