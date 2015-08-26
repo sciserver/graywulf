@@ -269,6 +269,7 @@ namespace Jhu.Graywulf.Registry
         {
             return new Schema.SqlServer.SqlServerDataset()
             {
+                Name = DatabaseDefinition.Name,
                 ConnectionString = GetConnectionString().ConnectionString
             };
         }
