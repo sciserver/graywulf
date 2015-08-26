@@ -11,7 +11,8 @@ namespace Jhu.Graywulf.Jobs.Query
     {
         private TableReference table;
         private string tableAlias;
-        private ColumnContext context;
+        private string joinedTableAlias;
+        private ColumnContext columnContext;
         private ColumnListType listType;
         private ColumnListNullType nullType;
         private bool leadingComma;
@@ -28,10 +29,16 @@ namespace Jhu.Graywulf.Jobs.Query
             set { tableAlias = value; }
         }
 
-        public ColumnContext Context
+        public string JoinedTableAlias
         {
-            get { return context; }
-            set { context = value; }
+            get { return joinedTableAlias; }
+            set { joinedTableAlias = value; }
+        }
+
+        public ColumnContext ColumnContext
+        {
+            get { return columnContext; }
+            set { columnContext = value; }
         }
 
         public ColumnListType ListType
@@ -69,26 +76,27 @@ namespace Jhu.Graywulf.Jobs.Query
             InitializeMembers();
 
             this.table = table;
-            this.context = context;
+            this.columnContext = context;
         }
 
         private void InitializeMembers()
         {
             this.table = null;
             this.tableAlias = "";
-            this.context = ColumnContext.Default;
+            this.joinedTableAlias = "";
+            this.columnContext = ColumnContext.Default;
             this.listType = ColumnListType.ForSelectWithOriginalNameNoAlias;
             this.nullType = ColumnListNullType.Nothing;
             this.leadingComma = false;
         }
 
-        public Dictionary<string, Column> GetList()
+        public Dictionary<string, Column> GetColumnList()
         {
             var res = new Dictionary<string, Column>();
             var t = (TableOrView)table.DatabaseObject;
 
             // Primary key columns
-            if ((context & ColumnContext.PrimaryKey) != 0 && t.PrimaryKey != null)
+            if ((columnContext & ColumnContext.PrimaryKey) != 0 && t.PrimaryKey != null)
             {
                 foreach (var cd in t.PrimaryKey.Columns.Values)
                 {
@@ -103,7 +111,7 @@ namespace Jhu.Graywulf.Jobs.Query
             foreach (var cr in table.ColumnReferences)
             {
                 // Avoid hint and special contexts
-                if (((context & cr.ColumnContext) != 0 || (context & ColumnContext.NonReferenced) != 0)
+                if (((columnContext & cr.ColumnContext) != 0 || (columnContext & ColumnContext.NonReferenced) != 0)
                     && !res.ContainsKey(cr.ColumnName))
                 {
                     res.Add(cr.ColumnName, t.Columns[cr.ColumnName]);
@@ -187,13 +195,13 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="nullType">Column nullable type.</param>
         /// <param name="tableAlias">Optional table alias prefix, specify null to omit.</param>
         /// <returns>A SQL snippet with the list of columns.</returns>
-        public string GetString()
+        public string GetColumnListString()
         {
             var nullstring = GetNullString();
             var format = GetFormatString();
 
             var columnlist = new StringBuilder();
-            var columns = GetList();
+            var columns = GetColumnList();
 
             foreach (var column in columns.Values)
             {
@@ -221,29 +229,41 @@ namespace Jhu.Graywulf.Jobs.Query
                     alias = QuoteIdentifier(table.Alias) + ".";
                 }
 
-                columnlist.AppendFormat(format,
-                                        alias,
-                                        SqlQueryCodeGenerator.EscapePropagatedColumnName(table, column.Name),
-                                        column.Name,
-                                        column.DataType.NameWithLength,
-                                        nullstring);
+                columnlist.AppendFormat(
+                    format,
+                    alias,
+                    SqlQueryCodeGenerator.EscapePropagatedColumnName(table, column.Name),
+                    column.Name,
+                    column.DataType.NameWithLength,
+                    nullstring);
             }
 
             return columnlist.ToString();
         }
 
-        /*
-        public static string GeneratePropagatedColumnList(ColumnListGene)
+        public string GetJoinString()
         {
-            var columns = new StringBuilder();
+            var columnlist = new StringBuilder();
+            var columns = GetColumnList();
 
-            for (int i = 0; i < options.Count; i++)
+            foreach (var column in columns.Values)
             {
-                bool comma = options[i].LeadingComma || columns.Length > 0;
-                columns.Append(GeneratePropagatedColumnList(options[i]));
+                if (columnlist.Length != 0)
+                {
+                    columnlist.Append(" AND ");
+                }
+
+                string alias1 = QuoteIdentifier(tableAlias);
+                string alias2 = QuoteIdentifier(joinedTableAlias);
+
+                columnlist.AppendFormat(
+                    "{0}.[{2}] = {1}.[{2}]",
+                    alias1,
+                    alias2,
+                    SqlQueryCodeGenerator.EscapePropagatedColumnName(table, column.Name));
             }
 
-            return columns.ToString();
-        }*/
+            return columnlist.ToString();
+        }
     }
 }

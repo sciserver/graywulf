@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var ts = q.SelectStatement.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
             var columns = new SqlQueryColumnListGenerator(ts.TableReference, context);
 
-            return columns.GetList();
+            return columns.GetColumnList();
         }
 
         [TestMethod]
@@ -127,7 +127,7 @@ FROM TEST:SDSSDR7PhotoObjAll p";
                 ListType = type,
             };
 
-            return columnlist.GetString();
+            return columnlist.GetColumnListString();
         }
 
         [TestMethod]
