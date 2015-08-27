@@ -77,7 +77,7 @@ namespace Jhu.Graywulf.SqlCodeGen.MySql
         protected override string GenerateTopExpression(int top)
         {
             string topstr = String.Empty;
-            if (top < int.MaxValue)
+            if (top > 0 && top < int.MaxValue)
             {
                 topstr = String.Format("LIMIT {0}", top);
             }
