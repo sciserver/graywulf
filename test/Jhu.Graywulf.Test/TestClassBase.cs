@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Test
                 var jf = new JobInstanceFactory(context);
                 jf.UserGuid = Guid.Empty;
                 jf.JobDefinitionGuids.Add(jd.Guid);
-                jf.JobExecutionStatus = JobExecutionState.Scheduled;
+                jf.JobExecutionStatus = JobExecutionState.Scheduled | JobExecutionState.Executing;
                 foreach (var job in jf.FindJobInstances())
                 {
                     job.Cancel();
