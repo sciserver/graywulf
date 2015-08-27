@@ -379,6 +379,25 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        protected Expression SubstituteTableName(Expression exp, TableReference original, TableReference other)
+        {
+            exp = (Expression)exp.Clone();
+
+            foreach (var ci in exp.EnumerateDescendantsRecursive<ColumnIdentifier>(typeof(Jhu.Graywulf.SqlParser.Subquery)))
+            {
+                var cr = ci.ColumnReference;
+
+                if (original.Compare(cr.TableReference))
+                {
+                    // TODO. this might be neede
+                    //cr.ColumnName = EscapePropagatedColumnName(cr.TableReference, cr.ColumnName);
+                    cr.TableReference = other;
+                }
+            }
+
+            return exp;
+        }
+
         #endregion
         #region Table statistics
 
