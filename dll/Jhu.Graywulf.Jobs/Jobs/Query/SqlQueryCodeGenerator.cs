@@ -500,12 +500,6 @@ namespace Jhu.Graywulf.Jobs.Query
             return key == null;
         }
 
-        protected SearchCondition GetPartitioningConditions(ColumnReference partitioningKey)
-        {
-            var partitioningKeyExpression = Expression.Create(ColumnIdentifier.Create(partitioningKey));
-            return GetPartitioningConditions(partitioningKeyExpression);
-        }
-
         protected SearchCondition GetPartitioningConditions(Expression partitioningKeyExpression)
         {
             if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyFrom) && !IsPartitioningKeyUnbound(Partition.PartitioningKeyTo))

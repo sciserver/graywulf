@@ -305,7 +305,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 cmd.Parameters.Add(par);
             }
 
-            ExecuteSqlCommand(cmd, CommandTarget.Code);
+            ExecuteSqlOnAssignedServer(cmd, CommandTarget.Code);
         }
 
         #endregion
@@ -462,9 +462,9 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Query execution
 
-        protected override string GetDumpFileName(CommandTarget target)
+        protected internal override string GetDumpFileName(CommandTarget target)
         {
-            string server = GetSystemDatabaseConnectionString(target).DataSource;
+            string server = GetSystemDatabaseConnectionStringOnAssignedServer(target).DataSource;
             return String.Format("dump_{0}_{1}.sql", server, this.id);
         }
 
