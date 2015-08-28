@@ -560,32 +560,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public abstract object Clone();
 
         #endregion
-
-        /// <summary>
-        /// Returnes a new registry context when in Graywulf execution mode.
-        /// </summary>
-        /// <param name="activity"></param>
-        /// <param name="activityContext"></param>
-        /// <param name="connectionMode"></param>
-        /// <param name="transactionMode"></param>
-        /// <returns></returns>
-        public Jhu.Graywulf.Registry.Context CreateContext(IGraywulfActivity activity, System.Activities.CodeActivityContext activityContext, Jhu.Graywulf.Registry.ConnectionMode connectionMode, Jhu.Graywulf.Registry.TransactionMode transactionMode)
-        {
-            switch (executionMode)
-            {
-                case Query.ExecutionMode.SingleServer:
-                    return null;
-                case Query.ExecutionMode.Graywulf:
-                    return Jhu.Graywulf.Registry.ContextManager.Instance.CreateContext(activity, activityContext, connectionMode, transactionMode);
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        protected virtual void UpdateContext(Context context)
-        {
-            this.context = context;
-        }
+        #region Query object initialization and parsing
 
         /// <summary>
         /// Initializes the query object by loading registry objects, if necessary.
@@ -714,8 +689,34 @@ namespace Jhu.Graywulf.Jobs.Query
             LoadSystemDatabaseInstance(codeDatabaseInstanceReference, (GraywulfDataset)codeDataset, true);
         }
 
+        #endregion
+        #region Cluster registry functions
 
-        #region Cluster registry query functions
+        /// <summary>
+        /// Returnes a new registry context when in Graywulf execution mode.
+        /// </summary>
+        /// <param name="activity"></param>
+        /// <param name="activityContext"></param>
+        /// <param name="connectionMode"></param>
+        /// <param name="transactionMode"></param>
+        /// <returns></returns>
+        public Jhu.Graywulf.Registry.Context CreateContext(IGraywulfActivity activity, System.Activities.CodeActivityContext activityContext, Jhu.Graywulf.Registry.ConnectionMode connectionMode, Jhu.Graywulf.Registry.TransactionMode transactionMode)
+        {
+            switch (executionMode)
+            {
+                case Query.ExecutionMode.SingleServer:
+                    return null;
+                case Query.ExecutionMode.Graywulf:
+                    return Jhu.Graywulf.Registry.ContextManager.Instance.CreateContext(activity, activityContext, connectionMode, transactionMode);
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        protected virtual void UpdateContext(Context context)
+        {
+            this.context = context;
+        }
 
         protected void LoadAssignedServerInstance(bool forceReinitialize)
         {
@@ -846,7 +847,13 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        protected SqlConnectionStringBuilder GetSystemDatabaseConnectionString(CommandTarget target)
+        /// <summary>
+        /// Returns a connection string to a system database on a well-known server assigned
+        /// to a query partition
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        protected internal SqlConnectionStringBuilder GetSystemDatabaseConnectionStringOnAssignedServer(CommandTarget target)
         {
             SqlServerDataset ds;
 
@@ -1177,18 +1184,10 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Actual query execution functions
 
-        protected void ExecuteSqlCommand(string sql, CommandTarget target)
-        {
-            using (var cmd = new SqlCommand())
-            {
-                cmd.CommandText = sql;
-                ExecuteSqlCommand(cmd, target);
-            }
-        }
 
-        protected void ExecuteSqlCommand(SqlCommand cmd, CommandTarget target)
+        protected void ExecuteSqlOnAssignedServer(SqlCommand cmd, CommandTarget target)
         {
-            var csb = GetSystemDatabaseConnectionString(target);
+            var csb = GetSystemDatabaseConnectionStringOnAssignedServer(target);
 
             using (SqlConnection cn = new SqlConnection(csb.ConnectionString))
             {
@@ -1199,13 +1198,13 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 DumpSqlCommand(cmd);
 
-                ExecuteLongCommandNonQuery(cmd);
+                ExecuteSql(cmd);
             }
         }
 
-        protected object ExecuteSqlCommandScalar(SqlCommand cmd, CommandTarget target)
+        protected object ExecuteSqlOnAssignedServerScalar(SqlCommand cmd, CommandTarget target)
         {
-            var csb = GetSystemDatabaseConnectionString(target);
+            var csb = GetSystemDatabaseConnectionStringOnAssignedServer(target);
 
             using (var cn = new SqlConnection(csb.ConnectionString))
             {
@@ -1216,13 +1215,13 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 DumpSqlCommand(cmd);
 
-                return ExecuteLongCommandScalar(cmd);
+                return ExecuteSqlScalar(cmd);
             }
         }
 
-        protected void ExecuteSqlCommandReader(SqlCommand cmd, CommandTarget target, Action<IDataReader> action)
+        protected void ExecuteSqlOnAssignedServerReader(SqlCommand cmd, CommandTarget target, Action<IDataReader> action)
         {
-            var csb = GetSystemDatabaseConnectionString(target);
+            var csb = GetSystemDatabaseConnectionStringOnAssignedServer(target);
 
             using (var cn = new SqlConnection(csb.ConnectionString))
             {
@@ -1233,13 +1232,85 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 DumpSqlCommand(cmd);
 
-                ExecuteLongCommandReader(cmd, action);
+                ExecuteSqlReader(cmd, action);
             }
         }
 
-        protected virtual string GetDumpFileName(CommandTarget target)
+        /// <summary>
+        /// Executes a long SQL command in cancelable mode.
+        /// </summary>
+        /// <param name="cmd"></param>
+        protected void ExecuteSql(SqlCommand cmd)
         {
-            string server = GetSystemDatabaseConnectionString(target).DataSource;
+            var guid = Guid.NewGuid();
+            var ccmd = new CancelableDbCommand(cmd);
+
+            RegisterCancelable(guid, ccmd);
+
+            try
+            {
+#if !SKIPQUERIES
+                ccmd.ExecuteNonQuery();
+#endif
+            }
+            finally
+            {
+                UnregisterCancelable(guid);
+            }
+        }
+
+
+        /// <summary>
+        /// Executes a long SQL command in cancelable mode.
+        /// </summary>
+        /// <param name="cmd"></param>
+        /// <returns></returns>
+        protected object ExecuteSqlScalar(SqlCommand cmd)
+        {
+            var guid = Guid.NewGuid();
+            var ccmd = new CancelableDbCommand(cmd);
+
+            RegisterCancelable(guid, ccmd);
+
+            try
+            {
+#if !SKIPQUERIES
+                return ccmd.ExecuteScalar();
+#else
+            return 0;
+#endif
+            }
+            finally
+            {
+                UnregisterCancelable(guid);
+            }
+        }
+
+        /// <summary>
+        /// Executes a long SQL command in cancelable mode.
+        /// </summary>
+        /// <param name="cmd"></param>
+        /// <param name="action"></param>
+        protected void ExecuteSqlReader(SqlCommand cmd, Action<IDataReader> action)
+        {
+            var guid = Guid.NewGuid();
+            var ccmd = new CancelableDbCommand(cmd);
+
+            RegisterCancelable(guid, ccmd);
+
+            try
+            {
+                ccmd.ExecuteReader(action);
+            }
+            finally
+            {
+                UnregisterCancelable(guid);
+            }
+        }
+
+        protected internal virtual string GetDumpFileName(CommandTarget target)
+        {
+            string server = GetSystemDatabaseConnectionStringOnAssignedServer(target).DataSource;
             return String.Format("dump_{0}.sql", server);
         }
 
@@ -1301,6 +1372,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public virtual void Execute()
         {
+            // Required by cancelable interface
             throw new NotImplementedException();
         }
 
@@ -1346,123 +1418,6 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             isCanceled = true;
-        }
-
-        #endregion
-        #region Generic SQL functions with cancel support
-
-        /// <summary>
-        /// Executes a long SQL command in cancelable mode.
-        /// </summary>
-        /// <param name="sql"></param>
-        /// <param name="connectionString"></param>
-        /// <param name="timeout"></param>
-        protected void ExecuteLongCommandNonQuery(string sql, string connectionString, int timeout)
-        {
-            using (var cn = new SqlConnection(connectionString))
-            {
-                cn.Open();
-
-                using (var cmd = new SqlCommand(sql, cn))
-                {
-                    cmd.CommandTimeout = timeout;
-                    ExecuteLongCommandNonQuery(cmd);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Executes a long SQL command in cancelable mode.
-        /// </summary>
-        /// <param name="cmd"></param>
-        private void ExecuteLongCommandNonQuery(SqlCommand cmd)
-        {
-            var guid = Guid.NewGuid();
-            var ccmd = new CancelableDbCommand(cmd);
-
-            RegisterCancelable(guid, ccmd);
-
-            try
-            {
-#if !SKIPQUERIES
-                ccmd.ExecuteNonQuery();
-#endif
-            }
-            finally
-            {
-                UnregisterCancelable(guid);
-            }
-        }
-
-        private void ExecuteLongCommandNonQuery(string sql, SourceTableQuery source, int timeout)
-        {
-            using (var cn = new SqlConnection(source.Dataset.ConnectionString))
-            {
-                cn.Open();
-
-                using (var cmd = new SqlCommand(sql, cn))
-                {
-                    cmd.CommandTimeout = timeout;
-
-                    foreach (var name in source.Parameters.Keys)
-                    {
-                        var par = cmd.CreateParameter();
-                        par.ParameterName = name;
-                        par.Value = source.Parameters[name];
-                        cmd.Parameters.Add(par);
-                    }
-
-                    ExecuteLongCommandNonQuery(cmd);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Executes a long SQL command in cancelable mode.
-        /// </summary>
-        /// <param name="cmd"></param>
-        /// <returns></returns>
-        private object ExecuteLongCommandScalar(SqlCommand cmd)
-        {
-            var guid = Guid.NewGuid();
-            var ccmd = new CancelableDbCommand(cmd);
-
-            RegisterCancelable(guid, ccmd);
-
-            try
-            {
-#if !SKIPQUERIES
-                return ccmd.ExecuteScalar();
-#else
-            return 0;
-#endif
-            }
-            finally
-            {
-                UnregisterCancelable(guid);
-            }
-        }
-
-        /// <summary>
-        /// Executes a long SQL command in cancelable mode.
-        /// </summary>
-        /// <param name="cmd"></param>
-        /// <param name="action"></param>
-        private void ExecuteLongCommandReader(SqlCommand cmd, Action<IDataReader> action)
-        {
-            var guid = Guid.NewGuid();
-            var ccmd = new CancelableDbCommand(cmd);
-
-            RegisterCancelable(guid, ccmd);
-
-            try
-            {
-                ccmd.ExecuteReader(action);
-            }
-            finally
-            {
-                UnregisterCancelable(guid);
-            }
         }
 
         #endregion
