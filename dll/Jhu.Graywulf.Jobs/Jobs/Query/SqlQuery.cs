@@ -264,7 +264,7 @@ namespace Jhu.Graywulf.Jobs.Query
             // TODO: add additional validation here
             Destination.CheckTableExistence();
         }
-        
+
 
         #endregion
         #region Table statistics
@@ -282,7 +282,6 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 // Partitioning is always done on the table specified right after the FROM keyword
                 // TODO: what if more than one QS?
-                // *** TODO: test this here, will not work with functions etc!
                 var qs = SelectStatement.EnumerateQuerySpecifications().FirstOrDefault();
                 var ts = (SimpleTableSource)qs.EnumerateSourceTables(false).First();
                 var tr = ts.TableReference;
@@ -290,6 +289,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 tr.Statistics = new SqlParser.TableStatistics();
 
                 // TODO: modify this when expression output type functions are implemented
+                // and figure out data type directly from expression
                 tr.Statistics.KeyColumn = ts.PartitioningKeyExpression;
                 tr.Statistics.KeyColumnDataType = ts.PartitioningKeyDataType;
 
@@ -338,6 +338,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
             else if (ds is GraywulfDataset)
             {
+                // Run it on the specific database
                 // TODO: test!
                 var gds = (GraywulfDataset)ds;
                 var si = gds.DatabaseInstanceReference.Value.ServerInstance;
@@ -348,9 +349,9 @@ namespace Jhu.Graywulf.Jobs.Query
             }
             else
             {
-                // Run it on the specific database
-                connectionString = ds.ConnectionString;
-                multiplier = 1;
+                // This is very likely a foreign server that might have no
+                // CLR code installed. Skip statistics generation in this case.
+                throw new InvalidOperationException();
             }
 
             // Generate statistics query
@@ -374,7 +375,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = stat.BinCount;
                 cmd.CommandTimeout = QueryTimeout;
 
-                ExecuteSqlCommandReader(cmd, CommandTarget.Code, dr =>
+                ExecuteSqlReader(cmd, dr =>
                 {
                     long rc = 0;
                     while (dr.Read())
