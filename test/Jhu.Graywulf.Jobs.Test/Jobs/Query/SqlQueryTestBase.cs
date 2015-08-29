@@ -15,6 +15,27 @@ namespace Jhu.Graywulf.Jobs.Query
 {
     public class SqlQueryTestBase : TestClassBase
     {
+        protected static void InitializeQueryTests()
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                PurgeTestJobs();
+            }
+        }
+
+        protected static void CleanupQueryTests()
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                if (SchedulerTester.Instance.IsRunning)
+                {
+                    SchedulerTester.Instance.DrainStop();
+                }
+
+                PurgeTestJobs();
+            }
+        }
+
         protected virtual UserDatabaseFactory CreateUserDatabaseFactory(Context context)
         {
             return UserDatabaseFactory.Create(
@@ -90,7 +111,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected void RunQuery(string sql)
         {
-            RunQuery(sql, 0, new TimeSpan(0, 2, 0));
+            RunQuery(sql, 3, new TimeSpan(0, 10, 0));
+            //RunQuery(sql, 0, new TimeSpan(0, 2, 0));
         }
 
         protected void RunQuery(string sql, int maxPartitions)

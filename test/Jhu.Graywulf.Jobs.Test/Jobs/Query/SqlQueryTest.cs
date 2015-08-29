@@ -15,6 +15,18 @@ namespace Jhu.Graywulf.Test.Jobs.Query
     [TestClass]
     public class SqlQueryTest : SqlQueryTestBase
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            InitializeQueryTests();
+        }
+
+        [ClassCleanup]
+        public static void CleanUp()
+        {
+            CleanupQueryTests();
+        }
+
         [TestMethod]
         public void DiscoverParametersTest()
         {
