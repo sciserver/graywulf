@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Jobs.Query
             Assert.AreEqual(gt, ss.ToString());
         }
 
-        protected void RewriteQueryHelper(string sql, string gt, bool partitioningKeyFrom, bool partitioningKeyTo)
+        protected void RewriteQueryHelper(string sql, string gt, bool partitioningKeyMin, bool partitioningKeyMax)
         {
             var ss = Parse(sql);
             var partition = new SqlQueryPartition()
@@ -73,8 +73,8 @@ namespace Jhu.Graywulf.Jobs.Query
                     Name = "TEMP",
                     ConnectionString = "data source=localhost;initial catalog=Graywulf_Temp",
                 },
-                PartitioningKeyFrom = partitioningKeyFrom ? (IComparable)(1.0) : null,
-                PartitioningKeyTo = partitioningKeyTo ? (IComparable)(1.0) : null
+                PartitioningKeyMin = partitioningKeyMin ? (IComparable)(1.0) : null,
+                PartitioningKeyMax = partitioningKeyMax ? (IComparable)(1.0) : null
             };
 
             var cg = new SqlQueryCodeGenerator(partition);
@@ -150,7 +150,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public void AppendPartitioningFrom()
         {
             var sql = "SELECT * FROM Table PARTITION BY id";
-            var gt = "SELECT * FROM Table  WHERE @keyFrom <= id";
+            var gt = "SELECT * FROM Table  WHERE @keyMin <= id";
 
             RewriteQueryHelper(sql, gt, true, false);
         }
@@ -160,7 +160,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public void AppendPartitioningFromWithWhere()
         {
             var sql = "SELECT * FROM Table PARTITION BY id WHERE x < 5";
-            var gt = "SELECT * FROM Table  WHERE (@keyFrom <= id) AND (x < 5)";
+            var gt = "SELECT * FROM Table  WHERE (@keyMin <= id) AND (x < 5)";
 
             RewriteQueryHelper(sql, gt, true, false);
         }
@@ -170,7 +170,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public void AppendPartitioningTo()
         {
             var sql = "SELECT * FROM Table PARTITION BY id";
-            var gt = "SELECT * FROM Table  WHERE id < @keyTo";
+            var gt = "SELECT * FROM Table  WHERE id < @keyMax";
 
             RewriteQueryHelper(sql, gt, false, true);
         }
@@ -180,7 +180,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public void AppendPartitioningBoth()
         {
             var sql = "SELECT * FROM Table PARTITION BY id";
-            var gt = "SELECT * FROM Table  WHERE @keyFrom <= id AND id < @keyTo";
+            var gt = "SELECT * FROM Table  WHERE @keyMin <= id AND id < @keyMax";
 
             RewriteQueryHelper(sql, gt, true, true);
         }
@@ -190,7 +190,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public void AppendPartitioningBothWithWhere()
         {
             var sql = "SELECT * FROM Table PARTITION BY id WHERE x < 5";
-            var gt = "SELECT * FROM Table  WHERE (@keyFrom <= id AND id < @keyTo) AND (x < 5)";
+            var gt = "SELECT * FROM Table  WHERE (@keyMin <= id AND id < @keyMax) AND (x < 5)";
 
             RewriteQueryHelper(sql, gt, true, true);
         }
@@ -200,7 +200,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public void AppendPartitioningBothWithJoin()
         {
             var sql = "SELECT * FROM Table1 PARTITION BY id CROSS JOIN Table2";
-            var gt = "SELECT * FROM Table1  CROSS JOIN Table2 WHERE @keyFrom <= id AND id < @keyTo";
+            var gt = "SELECT * FROM Table1  CROSS JOIN Table2 WHERE @keyMin <= id AND id < @keyMax";
 
             RewriteQueryHelper(sql, gt, true, true);
         }
@@ -210,7 +210,7 @@ namespace Jhu.Graywulf.Jobs.Query
         public void AppendPartitioningBothWithWhereAndJoin()
         {
             var sql = "SELECT * FROM Table1 PARTITION BY id CROSS JOIN Table2 WHERE x < 5";
-            var gt = "SELECT * FROM Table1  CROSS JOIN Table2 WHERE (@keyFrom <= id AND id < @keyTo) AND (x < 5)";
+            var gt = "SELECT * FROM Table1  CROSS JOIN Table2 WHERE (@keyMin <= id AND id < @keyMax) AND (x < 5)";
 
             RewriteQueryHelper(sql, gt, true, true);
         }

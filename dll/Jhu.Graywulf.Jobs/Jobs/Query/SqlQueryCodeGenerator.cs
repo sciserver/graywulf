@@ -18,8 +18,8 @@ namespace Jhu.Graywulf.Jobs.Query
     {
         #region Constants
 
-        protected const string keyFromParameterName = "@keyFrom";
-        protected const string keyToParameterName = "@keyTo";
+        protected const string partitioningKeyMinParameterName = "@keyMin";
+        protected const string partitioningKeyMaxParameterName = "@keyMax";
 
         #endregion
         #region Private member variables
@@ -471,33 +471,33 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public void AppendPartitioningConditionParameters(SqlCommand cmd)
         {
-            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyFrom))
+            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyMin))
             {
                 var par = cmd.CreateParameter();
-                par.ParameterName = keyFromParameterName;
-                par.Value = Partition.PartitioningKeyFrom;
+                par.ParameterName = partitioningKeyMinParameterName;
+                par.Value = Partition.PartitioningKeyMin;
                 cmd.Parameters.Add(par);
             }
 
-            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyTo))
+            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyMax))
             {
                 var par = cmd.CreateParameter();
-                par.ParameterName = keyToParameterName;
-                par.Value = Partition.PartitioningKeyTo;
+                par.ParameterName = partitioningKeyMaxParameterName;
+                par.Value = Partition.PartitioningKeyMax;
                 cmd.Parameters.Add(par);
             }
         }
 
         public void AppendPartitioningConditionParameters(SourceTableQuery q)
         {
-            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyFrom))
+            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyMin))
             {
-                q.Parameters.Add(keyFromParameterName, Partition.PartitioningKeyFrom);
+                q.Parameters.Add(partitioningKeyMinParameterName, Partition.PartitioningKeyMin);
             }
 
-            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyTo))
+            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyMax))
             {
-                q.Parameters.Add(keyToParameterName, Partition.PartitioningKeyTo);
+                q.Parameters.Add(partitioningKeyMaxParameterName, Partition.PartitioningKeyMax);
             }
         }
 
@@ -508,19 +508,19 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected SearchCondition GetPartitioningConditions(Expression partitioningKeyExpression)
         {
-            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyFrom) && !IsPartitioningKeyUnbound(Partition.PartitioningKeyTo))
+            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyMin) && !IsPartitioningKeyUnbound(Partition.PartitioningKeyMax))
             {
-                var from = GetPartitioningKeyFromCondition(partitioningKeyExpression);
-                var to = GetPartitioningKeyToCondition(partitioningKeyExpression);
+                var from = GetPartitioningKeyMinCondition(partitioningKeyExpression);
+                var to = GetPartitioningKeyMaxCondition(partitioningKeyExpression);
                 return SearchCondition.Create(from, to, LogicalOperator.CreateAnd());
             }
-            else if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyFrom))
+            else if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyMin))
             {
-                return GetPartitioningKeyFromCondition(partitioningKeyExpression);
+                return GetPartitioningKeyMinCondition(partitioningKeyExpression);
             }
-            else if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyTo))
+            else if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyMax))
             {
-                return GetPartitioningKeyToCondition(partitioningKeyExpression);
+                return GetPartitioningKeyMaxCondition(partitioningKeyExpression);
             }
             else
             {
@@ -533,9 +533,9 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="partitioningKey"></param>
         /// <returns></returns>
-        private SearchCondition GetPartitioningKeyFromCondition(Expression partitioningKeyExpression)
+        private SearchCondition GetPartitioningKeyMinCondition(Expression partitioningKeyExpression)
         {
-            var a = Expression.Create(SqlParser.Variable.Create(keyFromParameterName));
+            var a = Expression.Create(SqlParser.Variable.Create(partitioningKeyMinParameterName));
             var p = Predicate.CreateLessThanOrEqual(a, partitioningKeyExpression);
             return SearchCondition.Create(false, p);
         }
@@ -545,9 +545,9 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="partitioningKey"></param>
         /// <returns></returns>
-        private SearchCondition GetPartitioningKeyToCondition(Expression partitioningKeyExpression)
+        private SearchCondition GetPartitioningKeyMaxCondition(Expression partitioningKeyExpression)
         {
-            var b = Expression.Create(SqlParser.Variable.Create(keyToParameterName));
+            var b = Expression.Create(SqlParser.Variable.Create(partitioningKeyMaxParameterName));
             var p = Predicate.CreateLessThan(partitioningKeyExpression, b);
             return SearchCondition.Create(false, p);
         }

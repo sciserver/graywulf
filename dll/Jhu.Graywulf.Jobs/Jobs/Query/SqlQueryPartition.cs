@@ -29,8 +29,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private SqlQuery query;
 
-        private IComparable partitioningKeyFrom;
-        private IComparable partitioningKeyTo;
+        private IComparable partitioningKeyMin;
+        private IComparable partitioningKeyMax;
 
         [NonSerialized]
         private Dictionary<string, TableReference> remoteTableReferences;
@@ -49,16 +49,16 @@ namespace Jhu.Graywulf.Jobs.Query
             get { return query; }
         }
 
-        public IComparable PartitioningKeyFrom
+        public IComparable PartitioningKeyMin
         {
-            get { return partitioningKeyFrom; }
-            set { partitioningKeyFrom = value; }
+            get { return partitioningKeyMin; }
+            set { partitioningKeyMin = value; }
         }
 
-        public IComparable PartitioningKeyTo
+        public IComparable PartitioningKeyMax
         {
-            get { return partitioningKeyTo; }
-            set { partitioningKeyTo = value; }
+            get { return partitioningKeyMax; }
+            set { partitioningKeyMax = value; }
         }
 
         public Dictionary<string, TableReference> RemoteTableReferences
@@ -102,8 +102,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
             this.query = null;
 
-            this.partitioningKeyFrom = null;
-            this.partitioningKeyTo = null;
+            this.partitioningKeyMin = null;
+            this.partitioningKeyMax = null;
 
             this.remoteTableReferences = new Dictionary<string, TableReference>(SchemaManager.Comparer);
         }
@@ -114,8 +114,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
             this.query = old.query;
 
-            this.partitioningKeyFrom = old.partitioningKeyFrom;
-            this.partitioningKeyTo = old.partitioningKeyTo;
+            this.partitioningKeyMin = old.partitioningKeyMin;
+            this.partitioningKeyMax = old.partitioningKeyMax;
 
             this.remoteTableReferences = new Dictionary<string, TableReference>(old.remoteTableReferences, SchemaManager.Comparer);
         }
@@ -135,58 +135,6 @@ namespace Jhu.Graywulf.Jobs.Query
         protected override void FinishInterpret(bool forceReinitialize)
         {
         }
-
-        /* TODO: delete
-        public void AssignServerInstance()
-        {
-            var requiredDatasets = Query.FindRequiredDatasets();
-            var mirroredDatasets = requiredDatasets.Values.Where(x => !x.IsSpecificInstanceRequired).ToArray();
-
-            // Check if there are any Graywulf datasets referenced in the query
-            var onlyspecific = mirroredDatasets.Length == 0;
-
-            // *** TODO: replace this whole thing to use JOIN graphs
-
-            if (!Query.AssignedServerInstanceReference.IsEmpty && (requiredDatasets.Count == 0 || onlyspecific))
-            {
-                AssignServerInstance(Query.AssignedServerInstance);
-            }
-            else
-            {
-                // Get the next appropriate server from the scheduler
-                Guid siguid;
-
-                if (Query.AssignedServerInstanceReference.IsEmpty)
-                {
-                    // If no graywulf datasets are used, get a server from the scheduler
-                    // that has an instance of the code database and assume that it is
-                    // configured correctly
-
-                    var codeds = (GraywulfDataset)CodeDataset;
-                    var codeddguid = codeds.DatabaseDefinitionReference.Guid;
-
-                    siguid = Scheduler.GetNextServerInstance(
-                        new Guid[] { codeddguid },
-                        Jhu.Graywulf.Registry.Constants.CodeDbName,
-                        null);
-                }
-                else
-                {
-                    // Assign new server instance
-                    siguid = Scheduler.GetNextServerInstance(
-                        mirroredDatasets.Select(x => x.DatabaseDefinitionReference.Guid).ToArray(),
-                        Query.SourceDatabaseVersionName,
-                        null);
-                }
-
-                var si = new ServerInstance(Context);
-                si.Guid = siguid;
-                si.Load();
-
-                AssignServerInstance(si);
-            }
-        }
-        */
 
         #region Remote table caching functions
 

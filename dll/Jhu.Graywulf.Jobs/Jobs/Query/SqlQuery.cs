@@ -420,21 +420,21 @@ namespace Jhu.Graywulf.Jobs.Query
                 for (int i = 0; i < partitionCount; i++)
                 {
                     qp = CreatePartition();
-                    qp.PartitioningKeyTo = stat.KeyValue[Math.Min((i + 1) * s, stat.KeyValue.Count - 1)];
+                    qp.PartitioningKeyMax = stat.KeyValue[Math.Min((i + 1) * s, stat.KeyValue.Count - 1)];
 
                     if (i == 0)
                     {
-                        qp.PartitioningKeyFrom = null;
+                        qp.PartitioningKeyMin = null;
                     }
                     else
                     {
-                        qp.PartitioningKeyFrom = Partitions[i - 1].PartitioningKeyTo;
+                        qp.PartitioningKeyMin = Partitions[i - 1].PartitioningKeyMax;
                     }
 
                     AppendPartition(qp);
                 }
 
-                Partitions[Partitions.Count - 1].PartitioningKeyTo = null;
+                Partitions[Partitions.Count - 1].PartitioningKeyMax = null;
             }
         }
 
