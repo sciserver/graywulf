@@ -159,7 +159,7 @@ namespace Jhu.Graywulf.Registry
                 {
                     // Cache guid but name will be lazy-loaded
                     this.guid = this.value.Guid;
-                    this.name = null;
+                    this.name = this.value.Name;
                 }
                 else
                 {

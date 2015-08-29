@@ -267,11 +267,14 @@ namespace Jhu.Graywulf.Registry
 
         public Schema.SqlServer.SqlServerDataset GetDataset()
         {
-            return new Schema.SqlServer.SqlServerDataset()
-            {
-                Name = DatabaseDefinition.Name,
-                ConnectionString = GetConnectionString().ConnectionString
-            };
+            var ds = new Schema.GraywulfDataset(Context);
+            ds.Name = this.DatabaseDefinition.Name;
+            ds.DatabaseVersionReference.Value = this.DatabaseVersion;
+            ds.DatabaseDefinitionReference.Value = this.DatabaseDefinition;
+            ds.DatabaseInstanceReference.Value = this;
+            ds.ConnectionString = GetConnectionString().ConnectionString;
+
+            return ds;
         }
     }
 }

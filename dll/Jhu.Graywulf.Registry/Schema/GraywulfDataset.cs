@@ -14,6 +14,8 @@ namespace Jhu.Graywulf.Schema
     [DataContract(Namespace = "")]
     public class GraywulfDataset : Schema.SqlServer.SqlServerDataset, IContextObject, ICloneable
     {
+        #region Private member variables
+
         [NonSerialized]
         private Context context;
 
@@ -25,6 +27,9 @@ namespace Jhu.Graywulf.Schema
 
         [NonSerialized]
         private EntityReference<DatabaseInstance> databaseInstanceReference;
+
+        #endregion
+        #region Properties
 
         public Context Context
         {
@@ -77,6 +82,9 @@ namespace Jhu.Graywulf.Schema
             get { return !databaseInstanceReference.IsEmpty; }
         }
 
+        #endregion
+        #region Constructors and initializers
+
         public GraywulfDataset(Context context)
             : base()
         {
@@ -125,6 +133,8 @@ namespace Jhu.Graywulf.Schema
             this.databaseVersionReference = new EntityReference<DatabaseVersion>(this, old.databaseVersionReference);
             this.databaseInstanceReference = new EntityReference<DatabaseInstance>(this, old.databaseInstanceReference);
         }
+
+        #endregion
 
         public void CacheSchemaConnectionString()
         {
