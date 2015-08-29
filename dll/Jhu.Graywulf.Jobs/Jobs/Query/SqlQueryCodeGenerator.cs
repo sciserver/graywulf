@@ -471,19 +471,24 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public void AppendPartitioningConditionParameters(SqlCommand cmd)
         {
-            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyMin))
+            AppendPartitioningConditionParameters(cmd, Partition.PartitioningKeyMin, Partition.PartitioningKeyMax);
+        }
+
+        public void AppendPartitioningConditionParameters(SqlCommand cmd, IComparable partitioningKeyMin, IComparable partitioningKeyMax)
+        {
+            if (!IsPartitioningKeyUnbound(partitioningKeyMin))
             {
                 var par = cmd.CreateParameter();
                 par.ParameterName = partitioningKeyMinParameterName;
-                par.Value = Partition.PartitioningKeyMin;
+                par.Value = partitioningKeyMin;
                 cmd.Parameters.Add(par);
             }
 
-            if (!IsPartitioningKeyUnbound(Partition.PartitioningKeyMax))
+            if (!IsPartitioningKeyUnbound(partitioningKeyMax))
             {
                 var par = cmd.CreateParameter();
                 par.ParameterName = partitioningKeyMaxParameterName;
-                par.Value = Partition.PartitioningKeyMax;
+                par.Value = partitioningKeyMax;
                 cmd.Parameters.Add(par);
             }
         }
