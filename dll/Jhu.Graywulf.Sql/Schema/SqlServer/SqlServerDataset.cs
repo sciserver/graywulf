@@ -1099,8 +1099,9 @@ END",
                 throw new InvalidOperationException("Operation valid on mutable datasets only.");   // TODO ***
             }
 
+            var tr = new SqlParser.TableReference(table, null);
             var codegen = new Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator();
-            var sql = codegen.GenerateCreateTableQuery(table, true, true);
+            var sql = codegen.GenerateCreateTableQuery(tr, true, true);
 
             using (var cn = OpenConnectionInternal())
             {
