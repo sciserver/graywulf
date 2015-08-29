@@ -63,6 +63,16 @@ namespace Jhu.Graywulf.Jobs.Query
         private string queryName;
 
         /// <summary>
+        /// Database version to be used to execute the queries (HOT)
+        /// </summary>
+        private string sourceDatabaseVersionName;
+
+        /// <summary>
+        /// Database version to be used to calculate statistics (STAT)
+        /// </summary>
+        private string statDatabaseVersionName;
+
+        /// <summary>
         /// The root object of the query parsing tree
         /// </summary>
         [NonSerialized]
@@ -219,6 +229,20 @@ namespace Jhu.Graywulf.Jobs.Query
             set { queryName = value; }
         }
 
+        [DataMember]
+        public string SourceDatabaseVersionName
+        {
+            get { return sourceDatabaseVersionName; }
+            set { sourceDatabaseVersionName = value; }
+        }
+
+        [DataMember]
+        public string StatDatabaseVersionName
+        {
+            get { return statDatabaseVersionName; }
+            set { statDatabaseVersionName = value; }
+        }
+
         /// <summary>
         /// Gets or sets the root object of the query parsing tree.
         /// </summary>
@@ -273,15 +297,6 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 UpdateContext(value);
             }
-        }
-
-        /// <summary>
-        /// Gets the scheduler instance
-        /// </summary>
-        [IgnoreDataMember]
-        public IScheduler Scheduler
-        {
-            get { return scheduler; }
         }
 
         /// <summary>
@@ -479,6 +494,9 @@ namespace Jhu.Graywulf.Jobs.Query
             this.batchName = null;
             this.queryName = null;
 
+            this.sourceDatabaseVersionName = String.Empty;
+            this.statDatabaseVersionName = String.Empty;
+
             this.selectStatement = null;
             this.isInterpretFinished = false;
 
@@ -527,6 +545,9 @@ namespace Jhu.Graywulf.Jobs.Query
             this.queryString = old.queryString;
             this.batchName = old.batchName;
             this.queryName = old.queryName;
+
+            this.sourceDatabaseVersionName = old.sourceDatabaseVersionName;
+            this.statDatabaseVersionName = old.statDatabaseVersionName;
 
             this.selectStatement = null;
             this.isInterpretFinished = false;
@@ -680,9 +701,93 @@ namespace Jhu.Graywulf.Jobs.Query
         protected virtual void Validate()
         {
         }
-        
-        public void AssignServer(ServerInstance serverInstance)
+
+        #endregion
+        #region Server assignment logic
+
+        /// <summary>
+        /// Returns local datasets that are required to execute the query.
+        /// </summary>
+        protected Dictionary<string, GraywulfDataset> FindRequiredGraywulfDatasets()
         {
+            var sc = GetSchemaManager();
+            var dss = new Dictionary<string, GraywulfDataset>(SchemaManager.Comparer);
+
+            foreach (var tr in SelectStatement.EnumerateSourceTableReferences(true))
+            {
+                if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
+                {
+                    if (!dss.ContainsKey(tr.DatasetName))
+                    {
+                        var ds = sc.Datasets[tr.DatasetName];
+                        if (ds is GraywulfDataset)
+                        {
+                            dss.Add(tr.DatasetName, (GraywulfDataset)ds);
+                        }
+                    }
+                }
+            }
+
+            return dss;
+        }
+
+        protected Dictionary<string, GraywulfDataset> FindMirroredGraywulfDatasets()
+        {
+            var dss = new Dictionary<string, GraywulfDataset>(SchemaManager.Comparer);
+
+            foreach (var ds in FindRequiredGraywulfDatasets())
+            {
+                if (!ds.Value.IsSpecificInstanceRequired)
+                {
+                    dss.Add(ds.Key, (GraywulfDataset)ds.Value);
+                }
+            }
+
+            return dss;
+        }
+
+        protected Dictionary<string, GraywulfDataset> FindServerSpecificGraywulfDatasets()
+        {
+            var dss = new Dictionary<string, GraywulfDataset>(SchemaManager.Comparer);
+
+            foreach (var ds in FindRequiredGraywulfDatasets())
+            {
+                if (ds.Value.IsSpecificInstanceRequired)
+                {
+                    dss.Add(ds.Key, ds.Value);
+                }
+            }
+
+            return dss;
+        }
+
+
+        public void AssignServerInstance()
+        {
+            // Assign a server that will run the queries
+            // Try to find a server that contains all required datasets. This is true right now for
+            // SkyQuery where all databases are mirrored but will have to be updated later
+
+            var mirroredDatasets = FindMirroredGraywulfDatasets().Values.Select(i => i.DatabaseDefinitionReference.Value).ToArray();
+            var specificDatasets = FindServerSpecificGraywulfDatasets().Values.Select(i => i.DatabaseInstanceReference.Value).ToArray();
+
+            ServerInstance serverInstance;
+
+            if (mirroredDatasets.Length == 0)
+            {
+                // If no graywulf datasets are used, get a server from the scheduler
+                // that has an instance of the code database and assume that it is
+                // configured correctly
+
+                var dd = ((GraywulfDataset)CodeDataset).DatabaseVersionReference.Value.DatabaseDefinition;
+                serverInstance = GetNextServerInstance(dd, Registry.Constants.CodeDbName);
+            }
+            else
+            {
+                // Assign new server instance based on database availability
+                serverInstance = GetNextServerInstance(mirroredDatasets, sourceDatabaseVersionName, null, specificDatasets);
+            }
+
             assignedServerInstanceReference.Value = serverInstance;
 
             LoadSystemDatabaseInstance(temporaryDatabaseInstanceReference, (GraywulfDataset)temporaryDataset, true);
@@ -892,7 +997,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected ServerInstance GetNextServerInstance(DatabaseDefinition databaseDefinition, string databaseVersion)
         {
-            return GetNextServerInstance(databaseDefinition, databaseVersion);
+            return GetNextServerInstance(databaseDefinition, databaseVersion, null);
         }
 
         protected ServerInstance GetNextServerInstance(DatabaseDefinition databaseDefinition, string databaseVersion, string surrogateDatabaseVersion)
@@ -900,12 +1005,12 @@ namespace Jhu.Graywulf.Jobs.Query
             Guid siguid;
 
             // Try with requested database version
-            siguid = Scheduler.GetNextServerInstance(new Guid[] { databaseDefinition.Guid }, databaseVersion, null);
+            siguid = scheduler.GetNextServerInstance(new Guid[] { databaseDefinition.Guid }, databaseVersion, null);
 
             // If not found, try with surrogate
             if (surrogateDatabaseVersion != null && siguid == Guid.Empty)
             {
-                siguid = Scheduler.GetNextServerInstance(new Guid[] { databaseDefinition.Guid }, surrogateDatabaseVersion, null);
+                siguid = scheduler.GetNextServerInstance(new Guid[] { databaseDefinition.Guid }, surrogateDatabaseVersion, null);
             }
 
             if (siguid == Guid.Empty)
@@ -950,7 +1055,7 @@ namespace Jhu.Graywulf.Jobs.Query
             // If not found, try with surrogate
             if (surrogateDatabaseVersion != null && siguid == Guid.Empty)
             {
-                siguid = Scheduler.GetNextServerInstance(dds, surrogateDatabaseVersion, dis);
+                siguid = scheduler.GetNextServerInstance(dds, surrogateDatabaseVersion, dis);
             }
 
             if (siguid == Guid.Empty)
@@ -1025,12 +1130,12 @@ namespace Jhu.Graywulf.Jobs.Query
             Guid[] diguid;
 
             // Try with requested database version
-            diguid = Scheduler.GetDatabaseInstances(databaseDefinition.Guid, databaseVersion);
+            diguid = scheduler.GetDatabaseInstances(databaseDefinition.Guid, databaseVersion);
 
             // If not found, try with surrogate
             if (surrogateDatabaseVersion != null && (diguid == null || diguid.Length == 0))
             {
-                diguid = Scheduler.GetDatabaseInstances(databaseDefinition.Guid, surrogateDatabaseVersion);
+                diguid = scheduler.GetDatabaseInstances(databaseDefinition.Guid, surrogateDatabaseVersion);
             }
 
             if (diguid == null || diguid.Length == 0)
@@ -1059,12 +1164,12 @@ namespace Jhu.Graywulf.Jobs.Query
             Guid[] diguid;
 
             // Try with requested database version
-            diguid = Scheduler.GetDatabaseInstances(serverInstance.Guid, databaseDefinition.Guid, databaseVersion);
+            diguid = scheduler.GetDatabaseInstances(serverInstance.Guid, databaseDefinition.Guid, databaseVersion);
 
             // If not found, try with surrogate
             if (surrogateDatabaseVersion != null && (diguid == null || diguid.Length == 0))
             {
-                diguid = Scheduler.GetDatabaseInstances(databaseDefinition.Guid, surrogateDatabaseVersion);
+                diguid = scheduler.GetDatabaseInstances(databaseDefinition.Guid, surrogateDatabaseVersion);
             }
 
             if (diguid == null || diguid.Length == 0)

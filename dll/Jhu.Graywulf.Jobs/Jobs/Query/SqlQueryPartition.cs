@@ -136,6 +136,58 @@ namespace Jhu.Graywulf.Jobs.Query
         {
         }
 
+        /* TODO: delete
+        public void AssignServerInstance()
+        {
+            var requiredDatasets = Query.FindRequiredDatasets();
+            var mirroredDatasets = requiredDatasets.Values.Where(x => !x.IsSpecificInstanceRequired).ToArray();
+
+            // Check if there are any Graywulf datasets referenced in the query
+            var onlyspecific = mirroredDatasets.Length == 0;
+
+            // *** TODO: replace this whole thing to use JOIN graphs
+
+            if (!Query.AssignedServerInstanceReference.IsEmpty && (requiredDatasets.Count == 0 || onlyspecific))
+            {
+                AssignServerInstance(Query.AssignedServerInstance);
+            }
+            else
+            {
+                // Get the next appropriate server from the scheduler
+                Guid siguid;
+
+                if (Query.AssignedServerInstanceReference.IsEmpty)
+                {
+                    // If no graywulf datasets are used, get a server from the scheduler
+                    // that has an instance of the code database and assume that it is
+                    // configured correctly
+
+                    var codeds = (GraywulfDataset)CodeDataset;
+                    var codeddguid = codeds.DatabaseDefinitionReference.Guid;
+
+                    siguid = Scheduler.GetNextServerInstance(
+                        new Guid[] { codeddguid },
+                        Jhu.Graywulf.Registry.Constants.CodeDbName,
+                        null);
+                }
+                else
+                {
+                    // Assign new server instance
+                    siguid = Scheduler.GetNextServerInstance(
+                        mirroredDatasets.Select(x => x.DatabaseDefinitionReference.Guid).ToArray(),
+                        Query.SourceDatabaseVersionName,
+                        null);
+                }
+
+                var si = new ServerInstance(Context);
+                si.Guid = siguid;
+                si.Load();
+
+                AssignServerInstance(si);
+            }
+        }
+        */
+
         #region Remote table caching functions
 
         /// <summary>
@@ -185,7 +237,7 @@ namespace Jhu.Graywulf.Jobs.Query
             // Use code generator specific to the remote database platform!
             var cg = SqlCodeGeneratorFactory.CreateCodeGenerator(ds);
             var qs = ((TableSource)table.Node).QuerySpecification;
-            var sql = CodeGenerator.GenerateMostRestrictiveTableQuery(qs, table, true, 0);
+            var sql = cg.GenerateMostRestrictiveTableQuery(qs, table, ColumnContext.Default | ColumnContext.Special, 0);
 
             query = new SourceTableQuery()
             {

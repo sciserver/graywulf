@@ -99,13 +99,10 @@
     <Compile Include="Jobs\MirrorDatabase\FindDatabaseInstanceFiles.cs" />
     <Compile Include="Jobs\MirrorDatabase\FindSourcesAndDestinations.cs" />
     <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseFile.cs" />
-    <Compile Include="Jobs\Query\AssignPartitionServerInstance.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Jobs\Query\AssignServerInstance.cs" />
     <Compile Include="Jobs\Query\CheckDestinationTable.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Jobs\Query\SqlQueryColumnListGenerator.cs" />
     <Compile Include="Jobs\Query\ComputeTableStatistics.cs">
       <SubType>Code</SubType>
     </Compile>

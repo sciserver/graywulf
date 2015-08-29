@@ -44,16 +44,6 @@ namespace Jhu.Graywulf.Jobs.Query
         private Table output;
 
         /// <summary>
-        /// Database version to be used to execute the queries (HOT)
-        /// </summary>
-        private string sourceDatabaseVersionName;
-
-        /// <summary>
-        /// Database version to be used to calculate statistics (STAT)
-        /// </summary>
-        private string statDatabaseVersionName;
-
-        /// <summary>
         /// Holds table statistics gathered for all the tables in the query
         /// </summary>
         private List<ITableSource> tableSourceStatistics;
@@ -106,20 +96,6 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             get { return output; }
             set { output = value; }
-        }
-
-        [DataMember]
-        public string SourceDatabaseVersionName
-        {
-            get { return sourceDatabaseVersionName; }
-            set { sourceDatabaseVersionName = value; }
-        }
-
-        [DataMember]
-        public string StatDatabaseVersionName
-        {
-            get { return statDatabaseVersionName; }
-            set { statDatabaseVersionName = value; }
         }
 
         [IgnoreDataMember]
@@ -179,9 +155,6 @@ namespace Jhu.Graywulf.Jobs.Query
             this.isDestinationTableInitialized = false;
             this.output = null;
 
-            this.sourceDatabaseVersionName = String.Empty;
-            this.statDatabaseVersionName = String.Empty;
-
             this.tableSourceStatistics = new List<ITableSource>();
             this.partitions = new List<SqlQueryPartition>();
 
@@ -194,9 +167,6 @@ namespace Jhu.Graywulf.Jobs.Query
             this.destination = old.destination;
             this.isDestinationTableInitialized = old.isDestinationTableInitialized;
             this.output = old.output;
-
-            this.sourceDatabaseVersionName = old.sourceDatabaseVersionName;
-            this.statDatabaseVersionName = old.statDatabaseVersionName;
 
             this.tableSourceStatistics = new List<ITableSource>();
             this.partitions = new List<SqlQueryPartition>(old.partitions.Select(p => (SqlQueryPartition)p.Clone()));
@@ -298,84 +268,17 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         /// <summary>
-        /// Gets a connection string and a query to compute table statistics.
-        /// </summary>
-        /// <remarks>
-        /// The server to run the statistics is chosen by the scheduler based on
-        /// database availability.
-        /// </remarks>
-        /// <param name="context"></param>
-        /// <param name="tableSource"></param>
-        /// <param name="connectionString"></param>
-        /// <param name="cmd"></param>
-        /// <param name="multiplier"></param>
-        public void PrepareComputeTableStatistics(Context context, ITableSource tableSource, out string connectionString, out SqlCommand cmd, out int multiplier)
-        {
-            // Assign a database server to the query
-            var sm = GetSchemaManager();
-            var ds = sm.Datasets[tableSource.TableReference.DatasetName];
-
-            if (ds is GraywulfDataset && !((GraywulfDataset)ds).IsSpecificInstanceRequired)
-            {
-                // Use the MINI version of the database definition to get statistics
-
-                var gds = (GraywulfDataset)ds;
-                var dd = new DatabaseDefinition(context);
-                dd.Guid = gds.DatabaseDefinitionReference.Guid;
-                dd.Load();
-
-                // Get a server from the scheduler
-                var si = GetNextServerInstance(dd, StatDatabaseVersionName, SourceDatabaseVersionName);
-                AssignServer(si);
-
-                connectionString = si.GetConnectionString().ConnectionString;
-
-                CodeGenerator.SubstituteServerSpecificDatabaseName(tableSource.TableReference, si, StatDatabaseVersionName, SourceDatabaseVersionName);
-
-                // TODO: multiplier depends on whether statistics were gathered from the
-                // sample table or a full table of the surrogate full database
-                multiplier = 10000; // TODO: MINI version is sampled 10000 to 1 but not always :-(
-            }
-            else if (ds is GraywulfDataset)
-            {
-                // Run it on the specific database
-                // TODO: test!
-                var gds = (GraywulfDataset)ds;
-                var si = gds.DatabaseInstanceReference.Value.ServerInstance;
-                AssignServer(si);
-
-                connectionString = ds.ConnectionString;
-                multiplier = 1;
-            }
-            else
-            {
-                // This is very likely a foreign server that might have no
-                // CLR code installed. Skip statistics generation in this case.
-                throw new InvalidOperationException();
-            }
-
-            // Generate statistics query
-            cmd = CodeGenerator.GetTableStatisticsCommand(tableSource);
-        }
-
-        /// <summary>
         /// Gather statistics for the table with the specified bin size
         /// </summary>
         /// <param name="tr"></param>
         /// <param name="binSize"></param>
-        public void ComputeTableStatistics(ITableSource tableSource, string connectionString, SqlCommand cmd, int multiplier)
+        public void ComputeTableStatistics(ITableSource tableSource)
         {
             var stat = tableSource.TableReference.Statistics;
 
-            using (var cn = new SqlConnection(connectionString))
+            using (var cmd = CodeGenerator.GetTableStatisticsCommand(tableSource))
             {
-                cn.Open();
-
-                cmd.Connection = cn;
-                cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = stat.BinCount;
-                cmd.CommandTimeout = QueryTimeout;
-
-                ExecuteSqlReader(cmd, dr =>
+                ExecuteSqlOnAssignedServerReader(cmd, CommandTarget.Code, dr =>
                 {
                     long rc = 0;
                     while (dr.Read())
@@ -385,75 +288,13 @@ namespace Jhu.Graywulf.Jobs.Query
 
                         rc = dr.GetInt64(0);    // the very last value will give row count
                     }
-                    stat.RowCount = rc * multiplier;
+                    stat.RowCount = rc;
                 });
-
-                cmd.Dispose();
             }
         }
 
         #endregion
         #region Query partitioning
-
-        public void DeterminePartitionCount(Context context, IScheduler scheduler, out int partitionCount, out Guid assignedServerInstanceGuid)
-        {
-            partitionCount = 1;
-            assignedServerInstanceGuid = Guid.Empty;
-
-            // Single server mode will run on one partition by definition,
-            // Graywulf mode has to look at the registry for available machines
-            switch (ExecutionMode)
-            {
-                case ExecutionMode.SingleServer:
-                    InitializeQueryObject(null);
-                    break;
-                case ExecutionMode.Graywulf:
-                    InitializeQueryObject(context, scheduler, false);
-
-                    // If query is partitioned, statistics must be gathered
-                    if (IsPartitioned)
-                    {
-                        // Assign a server that will run the statistics queries
-                        // Try to find a server that contains all required datasets. This is true right now for
-                        // SkyQuery where all databases are mirrored but will have to be updated later
-
-                        // Collect all datasets that are required to answer the query
-                        var dss = FindRequiredDatasets();
-
-                        // Datasets that are mirrored and can be on any server
-                        var reqds = (from ds in dss.Values
-                                     where !ds.IsSpecificInstanceRequired
-                                     select ds.DatabaseDefinitionReference.Value);
-
-                        // Datasets that are only available at a specific server instance
-                        var spds = (from ds in dss.Values
-                                    where ds.IsSpecificInstanceRequired && !ds.DatabaseInstanceReference.IsEmpty
-                                    select ds.DatabaseInstanceReference.Value);
-
-
-                        var si = GetNextServerInstance(reqds, SourceDatabaseVersionName, null, spds);
-
-                        AssignServer(si);
-                        assignedServerInstanceGuid = si.Guid;
-
-                        // *** TODO: find optimal number of partitions
-                        // TODO: replace "4" with a value from settings
-                        var sis = GetAvailableServerInstances(reqds, SourceDatabaseVersionName, null, spds);
-                        partitionCount = 4 * sis.Length;
-
-                        if (MaxPartitions > 0)
-                        {
-                            partitionCount = Math.Max(partitionCount, MaxPartitions);
-                        }
-
-                        // Now have to reinitialize to load the assigned server instances
-                        InitializeQueryObject(context, scheduler, true);
-                    }
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
 
         protected virtual SqlQueryCodeGenerator CreateCodeGenerator()
         {
@@ -465,24 +306,66 @@ namespace Jhu.Graywulf.Jobs.Query
             return new SqlQueryPartition(this);
         }
 
-        public void GeneratePartitions(int partitionCount)
+        private int DeterminePartitionCount()
+        {
+            int partitionCount = 1;
+
+            switch (ExecutionMode)
+            {
+                case Query.ExecutionMode.SingleServer:
+                    break;
+                case Query.ExecutionMode.Graywulf:
+                    // Single server mode will run on one partition by definition,
+                    // Graywulf mode has to look at the registry for available machines
+                    // If query is partitioned, statistics must be gathered
+                    if (IsPartitioned)
+                    {
+                        var mirroredDatasets = FindMirroredGraywulfDatasets().Values.Select(i => i.DatabaseDefinitionReference.Value).ToArray();
+                        var specificDatasets = FindServerSpecificGraywulfDatasets().Values.Select(i => i.DatabaseInstanceReference.Value).ToArray();
+
+                        if (mirroredDatasets.Length == 0)
+                        {
+                            partitionCount = 1;
+                        }
+                        else
+                        {
+                            // *** TODO: find optimal number of partitions
+                            // TODO: replace "4" with a value from settings
+                            var sis = GetAvailableServerInstances(mirroredDatasets, SourceDatabaseVersionName, null, specificDatasets);
+                            partitionCount = 4 * sis.Length;
+
+                            if (MaxPartitions > 0)
+                            {
+                                partitionCount = Math.Max(partitionCount, MaxPartitions);
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return partitionCount;
+        }
+
+        public void GeneratePartitions()
         {
             // Partitioning is only supperted using Graywulf mode, single server mode always
             // falls back to a single partition
+
+            int partitionCount = DeterminePartitionCount();
 
             switch (ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
                     {
-                        var sqp = CreatePartition();
-                        AppendPartition(sqp);
+                        OnGeneratePartitions(1, null);
                     }
                     break;
                 case ExecutionMode.Graywulf:
                     if (!SelectStatement.IsPartitioned)
                     {
-                        var sqp = CreatePartition();
-                        AppendPartition(sqp);
+                        OnGeneratePartitions(1, null);
                     }
                     else
                     {
@@ -492,14 +375,19 @@ namespace Jhu.Graywulf.Jobs.Query
                             partitionCount = Math.Min(partitionCount, MaxPartitions);
                         }
 
+                        // Determine partition limits based on the first table's statistics
+                        // In certaint cases all tables of the query are remote tables which
+                        // means no statistics are generated at all. In this case a single
+                        // partition will be used.
                         if (TableSourceStatistics == null || TableSourceStatistics.Count == 0)
                         {
-                            throw new InvalidOperationException();
+                            OnGeneratePartitions(1, null);
                         }
-
-                        // Determine partition limits based on the first table's statistics
-                        var stat = TableSourceStatistics[0].TableReference.Statistics;
-                        OnGeneratePartitions(partitionCount, stat);
+                        else
+                        {
+                            var stat = TableSourceStatistics[0].TableReference.Statistics;
+                            OnGeneratePartitions(partitionCount, stat);
+                        }
                     }
                     break;
                 default:
@@ -518,16 +406,17 @@ namespace Jhu.Graywulf.Jobs.Query
             // Maybe just throw those partitions away?
 
             SqlQueryPartition qp = null;
-            int s = stat.KeyValue.Count / partitionCount;
 
-            if (s == 0)
+
+            if (stat == null || stat.KeyValue.Count / partitionCount == 0)
             {
                 qp = CreatePartition();
-
                 AppendPartition(qp);
             }
             else
             {
+                int s = stat.KeyValue.Count / partitionCount;
+
                 for (int i = 0; i < partitionCount; i++)
                 {
                     qp = CreatePartition();
@@ -553,36 +442,6 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             partition.ID = partitions.Count;
             partitions.Add(partition);
-        }
-
-        /// <summary>
-        /// Returns local datasets that are required to execute the query.
-        /// </summary>
-        /// <returns></returns>
-        /// <remarks>
-        /// The function only returns GraywulfDatasets.
-        /// </remarks>
-        public Dictionary<string, GraywulfDataset> FindRequiredDatasets()
-        {
-            var sc = GetSchemaManager();
-
-            // Collect list of required databases
-            var ds = new Dictionary<string, GraywulfDataset>(SchemaManager.Comparer);
-            var trs = new List<TableReference>();
-
-            foreach (var tr in SelectStatement.EnumerateSourceTableReferences(true))
-            {
-                if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
-                {
-                    // Filter out non-graywulf datasets
-                    if (!ds.ContainsKey(tr.DatasetName) && (sc.Datasets[tr.DatasetName] is GraywulfDataset))
-                    {
-                        ds.Add(tr.DatasetName, (GraywulfDataset)sc.Datasets[tr.DatasetName]);
-                    }
-                }
-            }
-
-            return ds;
         }
 
         #endregion
