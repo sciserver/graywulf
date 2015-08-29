@@ -52,9 +52,10 @@
     <Compile Include="Jobs\ImportTables\ImportTablesTest.cs" />
     <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseTest.cs" />
     <Compile Include="Jobs\Query\SqlQueryCodeGeneratorTest.cs" />
-    <Compile Include="Jobs\Query\SqlQueryColumnListGeneratorTest.cs" />
     <Compile Include="Jobs\Query\SqlQueryTest.cs" />
     <Compile Include="Jobs\Query\SqlQueryTestBase.cs" />
+    <Compile Include="Jobs\Query\SqlServerColumnListGeneratorTest.cs" />
+    <Compile Include="Jobs\Query\TableReferenceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
