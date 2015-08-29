@@ -44,6 +44,10 @@ namespace Jhu.Graywulf.SqlParser
 
                 return partitioningKeyExpression;
             }
+            set
+            {
+                partitioningKeyExpression = value;
+            }
         }
 
         public DataType PartitioningKeyDataType
@@ -56,6 +60,10 @@ namespace Jhu.Graywulf.SqlParser
                 }
 
                 return partitioningKeyDataType;
+            }
+            set
+            {
+                partitioningKeyDataType = value;
             }
         }
 
