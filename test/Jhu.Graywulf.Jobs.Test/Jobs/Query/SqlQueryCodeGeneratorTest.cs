@@ -295,7 +295,7 @@ WHERE [p].[ra] > 2;";
 
             var gt = "TEST_sch_table_a_col";
 
-            var res = (string)CallMethod(CodeGenerator, "EscapeColumnName", tr, "col");
+            var res = (string)CallMethod(CodeGenerator.CreateColumnListGenerator(), "EscapeColumnName", tr, "col");
 
             Assert.AreEqual(gt, res);
         }
