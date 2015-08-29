@@ -25,6 +25,11 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
         {
         }
 
+        public SqlColumnListGeneratorBase CreateColumnListGenerator()
+        {
+            return new SqlServerColumnListGenerator();
+        }
+
         public override SqlColumnListGeneratorBase CreateColumnListGenerator(TableReference table, ColumnContext columnContext, ColumnListType listType)
         {
             return new SqlServerColumnListGenerator(table, columnContext, listType);
@@ -151,53 +156,6 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             sql.AppendLine(Execute(where));
 
             return sql.ToString();
-
-            /* TODO: delete
-            // Now write the referenced columns
-            var referencedcolumns = new HashSet<string>(Jhu.Graywulf.Schema.SqlServer.SqlServerSchemaManager.Comparer);
-
-            int q = 0;
-            if (includePrimaryKey)
-            {
-                var t = table.DatabaseObject as Jhu.Graywulf.Schema.Table;
-                foreach (var cr in t.PrimaryKey.Columns.Values)
-                {
-                    var columnname = String.Format(
-                        "{0}.{1}",
-                        GetQuotedIdentifier(table.Alias),
-                        GetQuotedIdentifier(cr.ColumnName));
-
-                    if (!referencedcolumns.Contains(columnname))
-                    {
-                        if (q != 0)
-                        {
-                            sql.Write(", ");
-                        }
-                        sql.Write(columnname);
-                        q++;
-
-                        referencedcolumns.Add(columnname);
-                    }
-                }
-            }
-
-
-            foreach (var cr in table.ColumnReferences.Where(c => c.IsReferenced))
-            {
-                var columnname = GetResolvedColumnName(cr);     // TODO: verify
-
-                if (!referencedcolumns.Contains(columnname))
-                {
-                    if (q != 0)
-                    {
-                        sql.Write(", ");
-                    }
-                    sql.Write(columnname);
-                    q++;
-
-                    referencedcolumns.Add(columnname);
-                }
-            }*/
         }
 
         #endregion
@@ -227,30 +185,16 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             if (primaryKey && table.TableOrView.PrimaryKey != null)
             {
                 // If primary is specified directly
+                var constraint = GeneratePrimaryKeyConstraint(table, ColumnContext.PrimaryKey);
                 sql.AppendLine(",");
-
-                var constraint = GeneratePrimaryKeyConstraint(table);
-
                 sql.Append(constraint);
             }
-            else if (primaryKey)
+            else if (primaryKey && table.TableOrView.Columns.Values.Count(i => i.IsKey) > 0)
             {
-                throw new NotImplementedException();
-
-                // TODO: Do we need this?
-                /*
                 // If key columns are to be taken as primary key
-
-                var keys = table.Columns.Values.Where(ci => ci.IsKey).OrderBy(ci => ci.ID).ToArray();
-
-                if (keys.Length > 0)
-                {
-                    sql.AppendLine(",");
-
-                    var constraint = GeneratePrimaryKeyConstraint(table, keys);
-
-                    sql.Append(constraint);
-                }*/
+                var constraint = GeneratePrimaryKeyConstraint(table, ColumnContext.Key);
+                sql.AppendLine(",");
+                sql.Append(constraint);
             }
 
             sql.AppendLine();
@@ -261,9 +205,9 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             return sql.ToString();
         }
 
-        private string GeneratePrimaryKeyConstraint(TableReference table)
+        private string GeneratePrimaryKeyConstraint(TableReference table, ColumnContext columnContext)
         {
-            var columnlist = CreateColumnListGenerator(table, ColumnContext.PrimaryKey, ColumnListType.ForCreateIndex);
+            var columnlist = CreateColumnListGenerator(table, columnContext, ColumnListType.ForCreateIndex);
 
             var sql = new StringBuilder();
 

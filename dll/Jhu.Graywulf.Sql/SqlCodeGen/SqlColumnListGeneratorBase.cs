@@ -9,6 +9,9 @@ namespace Jhu.Graywulf.SqlCodeGen
 {
     public abstract class SqlColumnListGeneratorBase
     {
+        private const string columnNull = " NULL";
+        private const string columnNotNull = " NOT NULL";
+
         private TableReference table;
         private string tableAlias;
         private string joinedTableAlias;
@@ -88,7 +91,7 @@ namespace Jhu.Graywulf.SqlCodeGen
             this.joinedTableAlias = "";
             this.columnContext = ColumnContext.Default;
             this.listType = ColumnListType.ForSelectWithOriginalNameNoAlias;
-            this.nullType = ColumnListNullType.Nothing;
+            this.nullType = ColumnListNullType.Defined;
             this.leadingComma = false;
         }
 
@@ -129,13 +132,14 @@ namespace Jhu.Graywulf.SqlCodeGen
             switch (nullType)
             {
                 case ColumnListNullType.Nothing:
+                case ColumnListNullType.Defined:
                     nullstring = String.Empty;
                     break;
                 case ColumnListNullType.Null:
-                    nullstring = " NULL";
+                    nullstring = columnNull;
                     break;
                 case ColumnListNullType.NotNull:
-                    nullstring = " NOT NULL";
+                    nullstring = columnNotNull;
                     break;
                 default:
                     throw new NotImplementedException();
@@ -157,18 +161,18 @@ namespace Jhu.Graywulf.SqlCodeGen
             switch (listType)
             {
                 case ColumnListType.ForCreateTable:
-                    format = "{1} {3}{4}";
+                    format = "{2} {3}{4}";
                     break;
                 case ColumnListType.ForCreateView:
                 case ColumnListType.ForCreateIndex:
                 case ColumnListType.ForInsert:
-                    format = "{1}";
+                    format = "{2}";
                     break;
                 case ColumnListType.ForSelectWithOriginalName:
                     format = "{0}{2} AS {1}";
                     break;
                 case ColumnListType.ForSelectWithEscapedName:
-                    format = "{0}{1} AS {1}";
+                    format = "{0}{1}";
                     break;
                 case ColumnListType.ForSelectWithOriginalNameNoAlias:
                     format = "{0}{2}";
@@ -209,6 +213,7 @@ namespace Jhu.Graywulf.SqlCodeGen
                     columnlist.Append(", ");
                 }
 
+                // Alias
                 string alias;
 
                 if (tableAlias == String.Empty)
@@ -228,13 +233,25 @@ namespace Jhu.Graywulf.SqlCodeGen
                     alias = GetQuotedIdentifier(table.Alias) + ".";
                 }
 
+                // Null
+                string nullspec;
+
+                if (nullType == ColumnListNullType.Defined)
+                {
+                    nullspec = column.DataType.IsNullable ? columnNull : columnNotNull;
+                }
+                else
+                {
+                    nullspec = nullstring;
+                }
+
                 columnlist.AppendFormat(
                     format,
                     alias,
                     GetQuotedIdentifier(EscapePropagatedColumnName(table, column.Name)),
                     GetQuotedIdentifier(column.Name),
                     column.DataType.NameWithLength,
-                    nullstring);
+                    nullspec);
             }
 
             return columnlist.ToString();

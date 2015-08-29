@@ -482,6 +482,18 @@ namespace Jhu.Graywulf.SqlParser
                 }
             }
 
+            // Columns marked as key
+            if ((columnContext & ColumnContext.Key) != 0)
+            {
+                foreach (var cd in t.Columns.Values)
+                {
+                    if (cd.IsKey && !res.ContainsKey(cd.ColumnName))
+                    {
+                        res.Add(cd.ColumnName, cd);
+                    }
+                }
+            }
+
             // Other columns
             foreach (var cr in ColumnReferences)
             {

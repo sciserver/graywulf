@@ -22,7 +22,8 @@ namespace Jhu.Graywulf.SqlParser
 
         Hint = 128,
         Special = 1024,
-        PrimaryKey = 2048,
+        Key = 4096,             // Columns marked as 'Key' in schema description (usually taken from a data reader's schema table)
+        PrimaryKey = 2048,      // Columns of the primary key index
 
         AllReferenced = Default | Hint | Special | PrimaryKey,
 

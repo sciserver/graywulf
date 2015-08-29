@@ -18,6 +18,8 @@ namespace Jhu.Graywulf.SqlCodeGen
         /// </remarks>
         Nothing,
 
+        Defined,
+
         /// <summary>
         /// 'NULL' added after each column.
         /// </summary>
