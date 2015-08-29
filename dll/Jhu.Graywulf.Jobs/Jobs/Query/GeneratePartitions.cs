@@ -25,15 +25,23 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             SqlQuery query = Query.Get(activityContext);
 
-            using (Context context = query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            switch (query.ExecutionMode)
             {
-                int partitionCount;
-                Guid assignedServerInstanceGuid;
-                
-                query.DeterminePartitionCount(context, activityContext.GetExtension<IScheduler>(), out partitionCount, out assignedServerInstanceGuid);
-                EntityGuid.Set(activityContext, assignedServerInstanceGuid);
+                case ExecutionMode.SingleServer:
+                    query.InitializeQueryObject(null);
+                    query.GeneratePartitions();
+                    break;
+                case ExecutionMode.Graywulf:
+                    using (Context context = query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                    {
+                        var scheduler = activityContext.GetExtension<IScheduler>();
 
-                query.GeneratePartitions(partitionCount);
+                        query.InitializeQueryObject(context, scheduler, false);
+                        query.GeneratePartitions();
+                    }
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
         }
     }

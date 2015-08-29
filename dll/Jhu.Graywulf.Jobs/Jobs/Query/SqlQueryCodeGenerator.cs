@@ -389,7 +389,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 if (original.Compare(cr.TableReference))
                 {
-                    // TODO. this might be neede
+                    // TODO. this might be needed
                     //cr.ColumnName = EscapePropagatedColumnName(cr.TableReference, cr.ColumnName);
                     cr.TableReference = other;
                 }
@@ -419,10 +419,11 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             var sql = new StringBuilder(SqlQueryScripts.TableStatistics);
-
             SubstituteTableStatisticsQueryTokens(sql, tableSource);
 
-            return new SqlCommand(sql.ToString());
+            var cmd = new SqlCommand(sql.ToString());
+            cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = tableSource.TableReference.Statistics.BinCount;
+            return cmd;
         }
 
         protected void SubstituteTableStatisticsQueryTokens(StringBuilder sql, ITableSource tableSource)
@@ -544,35 +545,6 @@ namespace Jhu.Graywulf.Jobs.Query
             var b = Expression.Create(SqlParser.Variable.Create(keyToParameterName));
             var p = Predicate.CreateLessThan(partitioningKeyExpression, b);
             return SearchCondition.Create(false, p);
-        }
-
-        #endregion
-        #region Column name escaping
-
-        /// <summary>
-        /// Generates and escaped name for a column that should be
-        /// propagated.
-        /// </summary>
-        /// <remarks>
-        /// Will generate a name like DS_schema_table_column that
-        /// is unique in a table.
-        /// </remarks>
-        /// <param name="table">Reference to the source table.</param>
-        /// <param name="column">Reference to the column.</param>
-        /// <returns>The excaped name of the temporary table column.</returns>
-        protected internal static string EscapeColumnName(TableReference table, string columnName)
-        {
-            return String.Format("{0}_{1}_{2}_{3}_{4}",
-                                 table.DatasetName,
-                                 table.SchemaName,
-                                 table.DatabaseObjectName,
-                                 table.Alias,
-                                 columnName);
-        }
-
-        protected internal static string EscapePropagatedColumnName(TableReference table, string columnName)
-        {
-            return String.Format("_{0}", EscapeColumnName(table, columnName));
         }
 
         #endregion

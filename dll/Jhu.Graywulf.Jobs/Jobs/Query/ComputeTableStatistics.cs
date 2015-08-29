@@ -30,25 +30,21 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             var query = Query.Get(activityContext);
             var tableSource = TableSource.Get(activityContext);
-            string connectionString;
-            SqlCommand cmd;
-            int multiplier;
 
             using (Context context = query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 query.InitializeQueryObject(context, activityContext.GetExtension<IScheduler>(), true);
-                query.PrepareComputeTableStatistics(context, tableSource, out connectionString, out cmd, out multiplier);
             }
 
             Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
             string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, query, tableSource, connectionString, cmd, multiplier), callback, state);
+            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, query, tableSource), callback, state);
         }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlQuery query, ITableSource tableSource, string connectionString, SqlCommand cmd, int multiplier)
+        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlQuery query, ITableSource tableSource)
         {
             RegisterCancelable(workflowInstanceGuid, activityInstanceId, query);
-            query.ComputeTableStatistics(tableSource, connectionString, cmd, multiplier);
+            query.ComputeTableStatistics(tableSource);
             UnregisterCancelable(workflowInstanceGuid, activityInstanceId, query);
         }
     }
