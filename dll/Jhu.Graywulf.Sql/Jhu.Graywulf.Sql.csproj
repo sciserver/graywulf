@@ -70,10 +70,14 @@
     <Compile Include="SqlCodeGen\CodeGeneratorFactory.cs" />
     <Compile Include="SqlCodeGen\Enum.cs" />
     <Compile Include="SqlCodeGen\MySql\MySqlCodeGenerator.cs" />
+    <Compile Include="SqlCodeGen\MySql\MySqlColumnListGenerator.cs" />
+    <Compile Include="SqlCodeGen\PostgreSql\PostgreSqlColumnListGenerator.cs" />
     <Compile Include="SqlCodeGen\PostgreSql\PostgreSqlCodeGenerator.cs" />
     <Compile Include="SqlCodeGen\SqlCodeGeneratorBase.cs" />
     <Compile Include="SqlCodeGen\SqlCodeGeneratorFactory.cs" />
+    <Compile Include="SqlCodeGen\SqlColumnListGeneratorBase.cs" />
     <Compile Include="SqlCodeGen\SqlServer\SqlServerCodeGenerator.cs" />
+    <Compile Include="SqlCodeGen\SqlServer\SqlServerColumnListGenerator.cs" />
     <Compile Include="SqlParser\Argument.cs" />
     <Compile Include="SqlParser\ArgumentList.cs" />
     <Compile Include="SqlParser\ColumnExpression.cs" />

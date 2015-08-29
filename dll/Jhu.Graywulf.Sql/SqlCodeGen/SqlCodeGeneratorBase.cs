@@ -43,6 +43,9 @@ namespace Jhu.Graywulf.SqlCodeGen
         }
 
         #endregion
+
+        public abstract SqlColumnListGeneratorBase CreateColumnListGenerator(TableReference table, ColumnContext columnContext, ColumnListType listType); 
+
         #region Identifier formatting functions
 
         /// <summary>
@@ -53,7 +56,7 @@ namespace Jhu.Graywulf.SqlCodeGen
         /// <remarks>
         /// The quoting characters used depends on the flavor of SQL
         /// </remarks>
-        protected abstract string QuoteIdentifier(string identifier);
+        protected abstract string GetQuotedIdentifier(string identifier);
 
         /// <summary>
         /// 
@@ -131,7 +134,7 @@ namespace Jhu.Graywulf.SqlCodeGen
         {
             if (table.IsSubquery || table.IsComputed)
             {
-                return QuoteIdentifier(table.Alias);
+                return GetQuotedIdentifier(table.Alias);
             }
             else
             {
@@ -152,7 +155,7 @@ namespace Jhu.Graywulf.SqlCodeGen
         {
             if (table.IsSubquery || table.IsComputed)
             {
-                return QuoteIdentifier(table.Alias);
+                return GetQuotedIdentifier(table.Alias);
             }
             else
             {
@@ -175,7 +178,7 @@ namespace Jhu.Graywulf.SqlCodeGen
                 }
                 else
                 {
-                    return name + " AS " + QuoteIdentifier(table.Alias);
+                    return name + " AS " + GetQuotedIdentifier(table.Alias);
                 }
             }
         }
@@ -184,7 +187,7 @@ namespace Jhu.Graywulf.SqlCodeGen
         {
             if (table.IsSubquery || table.IsComputed || !String.IsNullOrWhiteSpace(table.Alias))
             {
-                return QuoteIdentifier(table.Alias);
+                return GetQuotedIdentifier(table.Alias);
             }
             else
             {
@@ -199,7 +202,7 @@ namespace Jhu.Graywulf.SqlCodeGen
 
         public string GeneratePrimaryKeyName(string schemaName, string tableName)
         {
-            return QuoteIdentifier(String.Format("PK_{0}_{1}", schemaName, tableName));
+            return GetQuotedIdentifier(String.Format("PK_{0}_{1}", schemaName, tableName));
         }
 
         public string GetResolvedTableName(DatabaseObject table)
@@ -222,7 +225,7 @@ namespace Jhu.Graywulf.SqlCodeGen
             }
             else
             {
-                return GetResolvedTableName(databaseName, schemaName, tableName) + " AS " + QuoteIdentifier(alias);
+                return GetResolvedTableName(databaseName, schemaName, tableName) + " AS " + GetQuotedIdentifier(alias);
             }
         }
 
@@ -245,7 +248,7 @@ namespace Jhu.Graywulf.SqlCodeGen
             }
             else if (!String.IsNullOrEmpty(column.TableReference.Alias))
             {
-                tablename = QuoteIdentifier(column.TableReference.Alias);
+                tablename = GetQuotedIdentifier(column.TableReference.Alias);
             }
             else
             {
@@ -264,7 +267,7 @@ namespace Jhu.Graywulf.SqlCodeGen
                 res = tableName + ".";
             }
 
-            res += QuoteIdentifier(columnName);
+            res += GetQuotedIdentifier(columnName);
 
             return res;
         }
@@ -331,7 +334,7 @@ namespace Jhu.Graywulf.SqlCodeGen
 
         public void WriteTableAlias(TableAlias node)
         {
-            Writer.Write(QuoteIdentifier(node.Value));
+            Writer.Write(GetQuotedIdentifier(node.Value));
         }
 
         /// <summary>
@@ -398,7 +401,7 @@ namespace Jhu.Graywulf.SqlCodeGen
                 {
                     Writer.Write(
                         " AS {0}",
-                        QuoteIdentifier(node.ColumnReference.ColumnAlias));
+                        GetQuotedIdentifier(node.ColumnReference.ColumnAlias));
                 }
             }
             else
@@ -442,7 +445,7 @@ namespace Jhu.Graywulf.SqlCodeGen
 
         protected abstract string GenerateTopExpression(int top);
 
-        public abstract string GenerateMostRestrictiveTableQuery(QuerySpecification querySpecification, TableReference table, bool includePrimaryKey, int top);
+        public abstract string GenerateMostRestrictiveTableQuery(QuerySpecification querySpecification, TableReference table, ColumnContext columnContext, int top);
 
         public virtual string GenerateCountStarQuery(string subquery)
         {

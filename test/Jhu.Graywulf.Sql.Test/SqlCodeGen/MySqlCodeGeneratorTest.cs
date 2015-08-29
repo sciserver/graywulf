@@ -109,7 +109,7 @@ FROM `Graywulf_Schema_Test`.`Book` `b1`, `Graywulf_Schema_Test`.`Book` `b2`", re
 
         }
 
-        private string[] GenerateMostRestrictiveTableQueryTestHelper(string sql, bool includePrimaryKey, int top)
+        private string[] GenerateMostRestrictiveTableQueryTestHelper(string sql, ColumnContext columnContext, int top)
         {
             var cg = new MySql.MySqlCodeGenerator();
             cg.ResolveNames = true;
@@ -123,7 +123,7 @@ FROM `Graywulf_Schema_Test`.`Book` `b1`, `Graywulf_Schema_Test`.`Book` `b2`", re
                 // TODO: use qs.SourceTableReferences
                 foreach (var tr in qs.EnumerateSourceTableReferences(true))
                 {
-                    res.Add(cg.GenerateMostRestrictiveTableQuery(qs, tr, includePrimaryKey, top));
+                    res.Add(cg.GenerateMostRestrictiveTableQuery(qs, tr, columnContext, top));
                 }
             }
 
@@ -138,10 +138,17 @@ FROM `Graywulf_Schema_Test`.`Book` `b1`, `Graywulf_Schema_Test`.`Book` `b2`", re
 FROM Book b
 WHERE b.ID = 1";
 
-            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
+            var gt =
+@"SELECT 
+`ID`, `Title`
+ FROM `Book`AS `b` 
+WHERE `b`.`ID` = 1
+";
+
+            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, ColumnContext.Default, 0);
 
             Assert.AreEqual(1, res.Length);
-            Assert.AreEqual("SELECT CAST(`b`.`ID` AS SIGNED) AS `ID`, `b`.`Title` FROM `Graywulf_Schema_Test`.`Book` AS `b` WHERE (`b`.`ID` = 1)", res[0]);
+            Assert.AreEqual(gt, res[0]);
         }
 
         [TestMethod]
@@ -152,11 +159,25 @@ WHERE b.ID = 1";
 FROM Book a CROSS JOIN Book b
 WHERE b.ID = 1 AND a.ID IN (3, 4)";
 
-            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
+            var gta =
+@"SELECT 
+`ID`, `Title`
+ FROM `Book`AS `a` 
+WHERE `a`.`ID` IN (3, 4)
+";
+
+            var gtb =
+@"SELECT 
+`ID`
+ FROM `Book`AS `b` 
+WHERE `b`.`ID` = 1
+";
+
+            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, ColumnContext.Default, 0);
 
             Assert.AreEqual(2, res.Length);
-            Assert.AreEqual("SELECT CAST(`a`.`ID` AS SIGNED) AS `ID`, `a`.`Title` FROM `Graywulf_Schema_Test`.`Book` AS `a` WHERE (`a`.`ID` IN (3, 4))", res[0]);
-            Assert.AreEqual("SELECT CAST(`b`.`ID` AS SIGNED) AS `ID` FROM `Graywulf_Schema_Test`.`Book` AS `b` WHERE (`b`.`ID` = 1)", res[1]);
+            Assert.AreEqual(gta, res[0]);
+            Assert.AreEqual(gtb, res[1]);
         }
 
         [TestMethod]
@@ -171,11 +192,25 @@ SELECT Title, ID + 1
 FROM Book
 WHERE ID = 1";
 
-            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, false, 0);
+            var gta =
+@"SELECT 
+`ID`, `Title`
+ FROM `Book`
+WHERE `Graywulf_Schema_Test`.`Book`.`ID` IN (2, 3)
+";
+
+            var gtb =
+@"SELECT 
+`ID`, `Title`
+ FROM `Book`
+WHERE `Graywulf_Schema_Test`.`Book`.`ID` = 1
+";
+
+            var res = GenerateMostRestrictiveTableQueryTestHelper(sql, ColumnContext.Default, 0);
 
             Assert.AreEqual(2, res.Length);
-            Assert.AreEqual("SELECT CAST(`Graywulf_Schema_Test`.`Book`.`ID` AS SIGNED) AS `ID`, `Graywulf_Schema_Test`.`Book`.`Title` FROM `Graywulf_Schema_Test`.`Book` WHERE (`Graywulf_Schema_Test`.`Book`.`ID` IN (2, 3))", res[0]);
-            Assert.AreEqual("SELECT CAST(`Graywulf_Schema_Test`.`Book`.`ID` AS SIGNED) AS `ID`, `Graywulf_Schema_Test`.`Book`.`Title` FROM `Graywulf_Schema_Test`.`Book` WHERE (`Graywulf_Schema_Test`.`Book`.`ID` = 1)", res[1]);
+            Assert.AreEqual(gta, res[0]);
+            Assert.AreEqual(gtb, res[1]);
         }
 
     }

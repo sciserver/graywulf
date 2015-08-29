@@ -25,11 +25,21 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
         {
         }
 
+        public override SqlColumnListGeneratorBase CreateColumnListGenerator(TableReference table, ColumnContext columnContext, ColumnListType listType)
+        {
+            return new SqlServerColumnListGenerator(table, columnContext, listType);
+        }
+
         #region Identifier formatting functions
 
-        protected override string QuoteIdentifier(string identifier)
+        public static string QuoteIdentifier(string identifier)
         {
             return String.Format("[{0}]", identifier);
+        }
+
+        protected override string GetQuotedIdentifier(string identifier)
+        {
+            return QuoteIdentifier(identifier);
         }
 
         protected override string GetResolvedTableName(string databaseName, string schemaName, string tableName)
@@ -38,12 +48,12 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 
             if (!String.IsNullOrWhiteSpace(databaseName))
             {
-                res += QuoteIdentifier(databaseName) + ".";
+                res += GetQuotedIdentifier(databaseName) + ".";
             }
 
             if (!String.IsNullOrWhiteSpace(schemaName))
             {
-                res += QuoteIdentifier(schemaName);
+                res += GetQuotedIdentifier(schemaName);
             }
 
             // If no schema name is specified but there's a database name,
@@ -53,7 +63,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
                 res += ".";
             }
 
-            res += QuoteIdentifier(tableName);
+            res += GetQuotedIdentifier(tableName);
 
             return res;
         }
@@ -65,12 +75,12 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 
             if (databaseName != null)
             {
-                res += QuoteIdentifier(databaseName) + ".";
+                res += GetQuotedIdentifier(databaseName) + ".";
             }
 
             // SQL Server function must always have the schema name specified
-            res += QuoteIdentifier(schemaName) + ".";
-            res += QuoteIdentifier(functionName);
+            res += GetQuotedIdentifier(schemaName) + ".";
+            res += GetQuotedIdentifier(functionName);
 
             return res;
         }
@@ -105,23 +115,44 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             return topstr;
         }
 
-        public override string GenerateMostRestrictiveTableQuery(QuerySpecification querySpecification, TableReference table, bool includePrimaryKey, int top)
+        #endregion
+        #region Most restrictive query generation
+
+        public override string GenerateMostRestrictiveTableQuery(QuerySpecification querySpecification, TableReference table, ColumnContext columnContext, int top)
         {
             // Run the normalizer to convert where clause to a normal form
             var cnr = new SearchConditionNormalizer();
             cnr.CollectConditions(querySpecification);
             var where = cnr.GenerateWhereClauseSpecificToTable(table);
 
-            // Build table specific query
-            var sql = new StringWriter();
+            var columnlist = CreateColumnListGenerator(table, columnContext, ColumnListType.ForSelectWithOriginalNameNoAlias);
+            columnlist.TableAlias = null;
 
-            sql.Write("SELECT ");
+            // Build table specific query
+            var sql = new StringBuilder();
+
+            sql.Append("SELECT ");
 
             if (top > 0)
             {
-                sql.Write("TOP {0} ", top);
+                sql.AppendFormat("TOP {0} ", top);
             }
 
+            sql.AppendLine();
+            sql.AppendLine(columnlist.GetColumnListString());
+            sql.AppendFormat("FROM {0} ", GetResolvedTableName(table));
+
+            if (!String.IsNullOrWhiteSpace(table.Alias))
+            {
+                sql.AppendFormat("AS {0} ", GetQuotedIdentifier(table.Alias));
+            }
+
+            sql.AppendLine();
+            sql.AppendLine(Execute(where));
+
+            return sql.ToString();
+
+            /* TODO: delete
             // Now write the referenced columns
             var referencedcolumns = new HashSet<string>(Jhu.Graywulf.Schema.SqlServer.SqlServerSchemaManager.Comparer);
 
@@ -133,8 +164,8 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
                 {
                     var columnname = String.Format(
                         "{0}.{1}",
-                        QuoteIdentifier(table.Alias),
-                        QuoteIdentifier(cr.ColumnName));
+                        GetQuotedIdentifier(table.Alias),
+                        GetQuotedIdentifier(cr.ColumnName));
 
                     if (!referencedcolumns.Contains(columnname))
                     {
@@ -166,33 +197,24 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 
                     referencedcolumns.Add(columnname);
                 }
-            }
-
-            // From cluse
-            sql.Write(" FROM {0} ", GetResolvedTableName(table));
-            if (!String.IsNullOrWhiteSpace(table.Alias))
-            {
-                sql.Write("AS {0} ", QuoteIdentifier(table.Alias));
-            }
-
-            if (where != null)
-            {
-                Execute(sql, where);
-            }
-
-            return sql.ToString();
+            }*/
         }
 
         #endregion
 
-
-
-        public string GenerateCreateTableQuery(Table table, bool primaryKey, bool indexes)
+        public string GenerateCreateTableQuery(TableReference table, bool primaryKey, bool indexes)
         {
-            if (table.Columns.Count == 0)
+            if (table.DatabaseObject == null)
+            {
+                throw new ArgumentNullException("The table reference is not resolved");         // TODO ***
+            }
+
+            if (table.TableOrView.Columns.Count == 0)
             {
                 throw new InvalidOperationException("The table doesn't have any columns.");     // TODO ***
             }
+
+            var columns = CreateColumnListGenerator(table, ColumnContext.All, ColumnListType.ForCreateTable);
 
             var sql = new StringBuilder();
 
@@ -200,24 +222,23 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             sql.Append(GetResolvedTableName(table));
             sql.AppendLine(" (");
 
-            var columns = GenerateColumnList(
-                table.Columns.Values.OrderBy(ci => ci.ID),
-                null,
-                ColumnListType.CreateTable);
+            sql.Append(columns.GetColumnListString());
 
-            sql.Append(columns);
-
-            if (primaryKey && table.PrimaryKey != null)
+            if (primaryKey && table.TableOrView.PrimaryKey != null)
             {
                 // If primary is specified directly
                 sql.AppendLine(",");
 
-                var constraint = GeneratePrimaryKeyConstraint(table, table.PrimaryKey.Columns.Values.OrderBy(ci => ci.KeyOrdinal));
+                var constraint = GeneratePrimaryKeyConstraint(table);
 
                 sql.Append(constraint);
             }
             else if (primaryKey)
             {
+                throw new NotImplementedException();
+
+                // TODO: Do we need this?
+                /*
                 // If key columns are to be taken as primary key
 
                 var keys = table.Columns.Values.Where(ci => ci.IsKey).OrderBy(ci => ci.ID).ToArray();
@@ -229,7 +250,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
                     var constraint = GeneratePrimaryKeyConstraint(table, keys);
 
                     sql.Append(constraint);
-                }
+                }*/
             }
 
             sql.AppendLine();
@@ -240,80 +261,22 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             return sql.ToString();
         }
 
-        private string GeneratePrimaryKeyConstraint(Table table, IEnumerable<Column> columns)
+        private string GeneratePrimaryKeyConstraint(TableReference table)
         {
+            var columnlist = CreateColumnListGenerator(table, ColumnContext.PrimaryKey, ColumnListType.ForCreateIndex);
+
             var sql = new StringBuilder();
 
             sql.Append("CONSTRAINT ");
-            sql.Append(QuoteIdentifier(String.Format("PK_{0}_{1}", table.SchemaName, table.TableName)));
+            sql.Append(GetQuotedIdentifier(String.Format("PK_{0}_{1}", table.SchemaName, table.DatabaseObjectName)));
             sql.AppendLine(" PRIMARY KEY (");
 
-            var collist = GenerateColumnList(
-                    columns,
-                    null,
-                    ColumnListType.CreateIndex);
-
-            sql.Append(collist);
+            sql.Append(columnlist.GetColumnListString());
 
             sql.AppendLine();
             sql.AppendLine(" )");
 
             return sql.ToString();
-        }
-
-        public string GenerateColumnList(IEnumerable<Column> columns, string tableAlias, ColumnListType type)
-        {
-            var columnlist = new StringBuilder();
-            string format = null;
-
-            switch (type)
-            {
-                case ColumnListType.CreateTable:
-                    format = "[{1}] {2} {3}";
-                    break;
-                case ColumnListType.CreateIndex:
-                    format = "[{1}] {4}";
-                    break;
-                case ColumnListType.CreateView:
-                case ColumnListType.Insert:
-                    format = "[{1}]";
-                    break;
-                case ColumnListType.Select:
-                    format = "{0}[{1}]";
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            foreach (var column in columns)
-            {
-                if (columnlist.Length != 0)
-                {
-                    columnlist.Append(", ");
-                }
-
-                var nullspec = "";
-                var orderspec = "";
-
-                if (type == ColumnListType.CreateTable)
-                {
-                    nullspec = column.DataType.IsNullable ? "NULL" : "NOT NULL";
-                }
-
-                if (type == ColumnListType.CreateIndex && column is IndexColumn)
-                {
-                    orderspec = ((IndexColumn)column).Ordering == IndexColumnOrdering.Descending ? "DESC" : "ASC";
-                }
-
-                columnlist.AppendFormat(format,
-                                        tableAlias == null ? String.Empty : String.Format("[{0}].", tableAlias),
-                                        column.Name,
-                                        column.DataType.NameWithLength,
-                                        nullspec,
-                                        orderspec);
-            }
-
-            return columnlist.ToString();
         }
     }
 }

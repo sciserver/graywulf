@@ -15,11 +15,21 @@ namespace Jhu.Graywulf.SqlCodeGen.MySql
         {
         }
 
+        public override SqlColumnListGeneratorBase CreateColumnListGenerator(TableReference table, ColumnContext columnContext, ColumnListType listType)
+        {
+            return new MySqlColumnListGenerator(table, columnContext, listType);
+        }
+
         #region Identifier formatting functions
 
-        protected override string QuoteIdentifier(string identifier)
+        public static string QuoteIdentifier(string identifier)
         {
-            return String.Format("`{0}`", UnquoteIdentifier(identifier));
+            return String.Format("`{0}`", identifier);
+        }
+
+        protected override string GetQuotedIdentifier(string identifier)
+        {
+            return QuoteIdentifier(UnquoteIdentifier(identifier));
         }
 
         protected override string GetResolvedTableName(string databaseName, string schemaName, string tableName)
@@ -28,12 +38,12 @@ namespace Jhu.Graywulf.SqlCodeGen.MySql
 
             if (!String.IsNullOrWhiteSpace(databaseName))
             {
-                res += QuoteIdentifier(databaseName) + ".";
+                res += GetQuotedIdentifier(databaseName) + ".";
             }
 
             // MySQL doesn't have the equivalent of SQL Server schame name
 
-            res += QuoteIdentifier(tableName);
+            res += GetQuotedIdentifier(tableName);
 
             return res;
         }
@@ -45,12 +55,12 @@ namespace Jhu.Graywulf.SqlCodeGen.MySql
 
             if (databaseName != null)
             {
-                res += QuoteIdentifier(databaseName) + ".";
+                res += GetQuotedIdentifier(databaseName) + ".";
             }
 
             // MySQL doesn't have the equivalent of SQL Server schame name
 
-            res += QuoteIdentifier(functionName);
+            res += GetQuotedIdentifier(functionName);
 
             return res;
         }
@@ -85,54 +95,33 @@ namespace Jhu.Graywulf.SqlCodeGen.MySql
             return topstr;
         }
 
-        public override string GenerateMostRestrictiveTableQuery(QuerySpecification querySpecification, TableReference table, bool includePrimaryKey, int top)
+        public override string GenerateMostRestrictiveTableQuery(QuerySpecification querySpecification, TableReference table, ColumnContext columnContext, int top)
         {
             // Normalize search conditions and extract where clause
             var cn = new SearchConditionNormalizer();
             cn.CollectConditions(querySpecification);
             var where = cn.GenerateWhereClauseSpecificToTable(table);
 
+            var columnlist = CreateColumnListGenerator(table, columnContext, ColumnListType.ForSelectWithOriginalNameNoAlias);
+
             // Build table specific query
-            var sql = new StringWriter();
+            var sql = new StringBuilder();
 
-            sql.Write("SELECT ");
+            sql.AppendLine("SELECT ");
+            sql.AppendLine(columnlist.GetColumnListString());
+            sql.AppendFormat(" FROM {0}", GetQuotedIdentifier(table.DatabaseObjectName));
 
-            // Now write the referenced columns
-            int q = 0;
-            foreach (var cr in table.ColumnReferences.Where(c => c.IsReferenced))
+            if (!String.IsNullOrWhiteSpace(table.Alias))
             {
-                if (q != 0)
-                {
-                    sql.Write(", ");
-                }
-
-                if (cr.DataType.IsInteger)
-                {
-                    // Here a cast to a type that is accepted by SQL Server has to be made
-                    sql.Write("CAST({0} AS SIGNED) AS {1}", GetResolvedColumnName(cr), QuoteIdentifier(cr.ColumnName));
-                }
-                else
-                {
-                    sql.Write(GetResolvedColumnName(cr));
-                }
-                q++;
+                sql.AppendFormat("AS {0} ", GetQuotedIdentifier(table.Alias));
             }
 
-            // From cluse
-            sql.Write(" FROM {0} ", GetResolvedTableName(table));
-            if (table.Alias != null)
-            {
-                sql.Write("AS {0} ", QuoteIdentifier(table.Alias));
-            }
-
-            if (where != null)
-            {
-                Execute(sql, where);
-            }
+            sql.AppendLine();
+            sql.AppendLine(Execute(where));
 
             if (top > 0)
             {
-                sql.Write(" LIMIT {0} ", top);
+                sql.AppendFormat(" LIMIT {0} ", top);
             }
 
             return sql.ToString();

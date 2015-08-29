@@ -40,6 +40,11 @@ namespace Jhu.Graywulf.SqlParser
             get { return isTableOrView; }
         }
 
+        public TableOrView TableOrView
+        {
+            get { return (TableOrView)DatabaseObject; }
+        }
+
         /// <summary>
         /// Gets the value indicating whether the table source is a table valued function
         /// </summary>
@@ -458,6 +463,37 @@ namespace Jhu.Graywulf.SqlParser
                     SchemaManager.Comparer.Compare(this.alias, other.alias) == 0);
 
             return res;
+        }
+
+        public List<Column> GetColumnList(ColumnContext columnContext)
+        {
+            var res = new Dictionary<string, Column>();
+            var t = (TableOrView)DatabaseObject;            // TODO: what if function?
+
+            // Primary key columns
+            if ((columnContext & ColumnContext.PrimaryKey) != 0 && t.PrimaryKey != null)
+            {
+                foreach (var cd in t.PrimaryKey.Columns.Values)
+                {
+                    if (!res.ContainsKey(cd.ColumnName))
+                    {
+                        res.Add(cd.ColumnName, cd);
+                    }
+                }
+            }
+
+            // Other columns
+            foreach (var cr in ColumnReferences)
+            {
+                // Avoid hint and special contexts
+                if (((columnContext & cr.ColumnContext) != 0 || (columnContext & ColumnContext.NonReferenced) != 0)
+                    && !res.ContainsKey(cr.ColumnName))
+                {
+                    res.Add(cr.ColumnName, t.Columns[cr.ColumnName]);
+                }
+            }
+
+            return new List<Column>(res.Values.OrderBy(c => c.ID));
         }
     }
 }
