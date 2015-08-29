@@ -11,28 +11,29 @@ namespace Jhu.Graywulf.SqlParser
 
         public void AppendJoinedTable(JoinedTable joinedTable)
         {
+            // Find the last table source
             var tse = FindDescendant<TableSourceExpression>();
+            var ts = tse.EnumerateDescendantsRecursive<TableSource>(typeof(Subquery)).LastOrDefault();
 
-            // Find the first table and try to find the last joined table
-            var ft = tse.FindDescendant<TableSource>();
-            if (ft != null)
-            {
-                tse.Stack.AddLast(Whitespace.CreateNewLine());
-                tse.Stack.AddLast(joinedTable);
-
-                return;
-            }
-
-            var jt = tse.EnumerateDescendantsRecursive<JoinedTable>(typeof(Subquery)).LastOrDefault();
-
-            if (jt != null)
-            {
-                tse.Stack.AddLast(Whitespace.CreateNewLine());
-                tse.Stack.AddLast(joinedTable);
-            }
-
-            throw new InvalidOperationException();
+            ts.Stack.AddLast(Whitespace.CreateNewLine());
+            ts.Stack.AddLast(joinedTable);
         }
+
+        public void PrependJoinedTable(TableSource tableSource, JoinType joinType, SearchCondition joinCondition)
+        {
+            // Find the first table source
+            var tse = FindDescendant<TableSourceExpression>();
+            var ts = tse.FindDescendant<TableSource>();
+
+            var jt = JoinedTable.Create(joinType, ts, joinCondition);
+
+            tableSource.Stack.AddLast(CommentOrWhitespace.Create(Whitespace.CreateNewLine()));
+            tableSource.Stack.AddLast(jt);
+
+            // Exchange table sources so that the joined table comes first
+            ts.ExchangeWith(tableSource);
+        }
+
 
         #endregion
     }

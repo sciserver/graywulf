@@ -13,6 +13,7 @@ namespace Jhu.Graywulf.ParserLib
             {
                 var i = Find(old);
                 AddAfter(i, other);
+                other.Parent = old.Parent;
                 Remove(i);
             }
         }
