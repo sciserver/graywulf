@@ -160,8 +160,11 @@ namespace Jhu.Graywulf.SqlCodeGen
 
             switch (listType)
             {
-                case ColumnListType.ForCreateTable:
+                case ColumnListType.ForCreateTableWithOriginalName:
                     format = "{2} {3}{4}";
+                    break;
+                case ColumnListType.ForCreateTableWithEscapedName:
+                    format = "{1} {3}{4}";
                     break;
                 case ColumnListType.ForCreateView:
                 case ColumnListType.ForCreateIndex:

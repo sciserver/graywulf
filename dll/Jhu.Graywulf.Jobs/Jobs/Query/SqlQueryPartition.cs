@@ -235,9 +235,13 @@ namespace Jhu.Graywulf.Jobs.Query
 
             // Generate most restrictive query
             // Use code generator specific to the remote database platform!
+            // TODO: For some reason, the remote table object contains referenced columns
+            // only and column context is not set for them, so we need to generate
+            // the column list from all available columns. Check this and figure
+            // out why columns are not resolved.
             var cg = SqlCodeGeneratorFactory.CreateCodeGenerator(ds);
             var qs = ((TableSource)table.Node).QuerySpecification;
-            var sql = cg.GenerateMostRestrictiveTableQuery(qs, table, ColumnContext.Default | ColumnContext.Special, 0);
+            var sql = cg.GenerateMostRestrictiveTableQuery(qs, table, ColumnContext.All, 0);
 
             query = new SourceTableQuery()
             {

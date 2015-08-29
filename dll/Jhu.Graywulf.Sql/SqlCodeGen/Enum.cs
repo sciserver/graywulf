@@ -46,9 +46,17 @@ namespace Jhu.Graywulf.SqlCodeGen
         /// To use with 'CREATE TABLE' column list.
         /// </summary>
         /// <remarks>
-        /// Escaped name used, column type is added.
+        /// Original name used, column type is added.
         /// </remarks>
-        ForCreateTable,
+        ForCreateTableWithOriginalName,
+
+        /// <summary>
+        /// To use with 'CREATE TABLE' column list.
+        /// </summary>
+        /// <remarks>
+        /// Original name used, column type is added.
+        /// </remarks>
+        ForCreateTableWithEscapedName,
 
         /// <summary>
         /// To use with 'CREATE VIEW' column list.

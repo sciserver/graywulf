@@ -422,7 +422,7 @@ namespace Jhu.Graywulf.Jobs.Query
             SubstituteTableStatisticsQueryTokens(sql, tableSource);
 
             var cmd = new SqlCommand(sql.ToString());
-            cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = tableSource.TableReference.Statistics.BinCount;
+            AppendTableStatisticsCommandParameters(tableSource, cmd);
             return cmd;
         }
 
@@ -439,6 +439,11 @@ namespace Jhu.Graywulf.Jobs.Query
             sql.Replace("[$keycol]", keycol);
             sql.Replace("[$tablename]", GetResolvedTableNameWithAlias(tableSource.TableReference));
             sql.Replace("[$where]", Execute(where));
+        }
+
+        protected virtual void AppendTableStatisticsCommandParameters(ITableSource tableSource, SqlCommand cmd)
+        {
+            cmd.Parameters.Add("@BinCount", SqlDbType.Int).Value = tableSource.TableReference.Statistics.BinCount;
         }
 
         protected virtual WhereClause GetTableSpecificWhereClause(ITableSource tableSource)

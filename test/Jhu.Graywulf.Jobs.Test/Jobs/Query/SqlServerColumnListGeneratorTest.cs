@@ -88,7 +88,7 @@ WHERE ra > 5 AND dec < 3";
 
             var gt = "[_TEST_dbo_SDSSDR7PhotoObjAll_p_objId] bigint, [_TEST_dbo_SDSSDR7PhotoObjAll_p_ra] float, [_TEST_dbo_SDSSDR7PhotoObjAll_p_dec] float";
 
-            var res = GeneratePropagatedColumnListTestHelper(sql, null, ColumnContext.Default, ColumnListType.ForCreateTable);
+            var res = GeneratePropagatedColumnListTestHelper(sql, null, ColumnContext.Default, ColumnListType.ForCreateTableWithOriginalName);
 
             Assert.AreEqual(gt, res);
         }

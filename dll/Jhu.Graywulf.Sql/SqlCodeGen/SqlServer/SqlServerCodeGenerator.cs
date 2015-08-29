@@ -172,7 +172,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
                 throw new InvalidOperationException("The table doesn't have any columns.");     // TODO ***
             }
 
-            var columns = CreateColumnListGenerator(table, ColumnContext.All, ColumnListType.ForCreateTable);
+            var columns = CreateColumnListGenerator(table, ColumnContext.All, ColumnListType.ForCreateTableWithOriginalName);
 
             var sql = new StringBuilder();
 
