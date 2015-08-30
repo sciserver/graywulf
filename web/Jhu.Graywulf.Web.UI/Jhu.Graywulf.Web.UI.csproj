@@ -867,8 +867,8 @@ mklink /D $(ProjectDir)App_Themes $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Th
 IF EXIST $(ProjectDir)Templates rmdir $(ProjectDir)Templates /s /q
 mklink /D $(ProjectDir)Templates $(ProjectDir)..\Jhu.Graywulf.Web.Shared\Templates
 
-IF EXIST $(ProjectDir)Docs\pages rmdir $(ProjectDir)Docs\pages /s /q
-mklink /D $(ProjectDir)Docs\pages $(SolutionDir)docs\pages
+REM IF EXIST $(ProjectDir)Docs\pages rmdir $(ProjectDir)Docs\pages /s /q
+REM mklink /D $(ProjectDir)Docs\pages $(SolutionDir)docs\pages
 
 REM Create symlinks to directories under packages
 

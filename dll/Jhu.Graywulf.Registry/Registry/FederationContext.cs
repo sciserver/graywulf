@@ -68,7 +68,11 @@ namespace Jhu.Graywulf.Registry
                 if (schemaManager == null)
                 {
                     schemaManager = GraywulfSchemaManager.Create(registryContext.Federation);
-                    schemaManager.AddUserDatabases(Federation, registryUser);
+
+                    if (registryUser != null)
+                    {
+                        schemaManager.AddUserDatabases(Federation, registryUser);
+                    }
                 }
 
                 return schemaManager;

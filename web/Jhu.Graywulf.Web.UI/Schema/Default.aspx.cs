@@ -69,10 +69,13 @@ namespace Jhu.Graywulf.Web.UI.Schema
             DatasetList.Items.Clear();
 
             // Add MyDB as the first item
-
-            var mydbli = new ListItem(FederationContext.MyDBDataset.Name, FederationContext.MyDBDataset.Name);
-            mydbli.Attributes.Add("class", "ToolbarControlHighlight");
-            DatasetList.Items.Add(mydbli);
+            // TODO: extend this in case of multiple user databases
+            if (FederationContext.RegistryUser != null)
+            {
+                var mydbli = new ListItem(FederationContext.MyDBDataset.Name, FederationContext.MyDBDataset.Name);
+                mydbli.Attributes.Add("class", "ToolbarControlHighlight");
+                DatasetList.Items.Add(mydbli);
+            }
 
             // Code is the second
 
@@ -81,9 +84,12 @@ namespace Jhu.Graywulf.Web.UI.Schema
             DatasetList.Items.Add(codedbli);
 
             // Add other registered catalogs            
-
+            // TODO: this needs to be modified here, use flags instead of filtering on name!
             FederationContext.SchemaManager.Datasets.LoadAll();
-            foreach (var dsd in FederationContext.SchemaManager.Datasets.Values.Where(k => k.Name != FederationContext.MyDBDataset.Name).OrderBy(k => k.Name))
+            foreach (var dsd in FederationContext.SchemaManager.Datasets.Values.Where(k => 
+                k.Name != Graywulf.Registry.Constants.UserDbName &&
+                k.Name != Graywulf.Registry.Constants.CodeDbName &&
+                k.Name != Graywulf.Registry.Constants.TempDbName).OrderBy(k => k.Name))
             {
                 DatasetList.Items.Add(dsd.Name);
             }
