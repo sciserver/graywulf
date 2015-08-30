@@ -172,7 +172,7 @@ CROSS JOIN SDSSDR7:PhotoObjAll b";
         [TestCategory("Query")]
         public void TableValuedFunctionTest()
         {
-            var sql = "SELECT * INTO [$into] FROM dbo.fHtmCoverCircleEq(0, 0, 10) AS htm";
+            var sql = "SELECT * INTO [$into] FROM htm.CoverCircleEq(0, 0, 10) AS htm";
 
             RunQuery(sql);
         }
@@ -184,7 +184,7 @@ CROSS JOIN SDSSDR7:PhotoObjAll b";
             var sql = @"
 SELECT TOP 100 objid, ra, dec
 INTO [$into]
-FROM dbo.fHtmCoverCircleEq(0, 0, 10) htm
+FROM htm.CoverCircleEq(0, 0, 10) htm
 INNER JOIN SDSSDR7:PhotoObj p
     ON p.htmid BETWEEN htm.htmidstart AND htm.htmidend";
 
@@ -199,7 +199,7 @@ INNER JOIN SDSSDR7:PhotoObj p
 SELECT htm.htmidstart, htm.htmidend
 INTO [$into]
 FROM (SELECT TOP 10 ra, dec FROM SDSSDR7:PhotoObj) p
-CROSS APPLY dbo.fHtmCoverCircleEq(p.ra, p.dec, 10) htm";
+CROSS APPLY htm.CoverCircleEq(p.ra, p.dec, 10) htm";
 
             RunQuery(sql);
         }
@@ -209,7 +209,7 @@ CROSS APPLY dbo.fHtmCoverCircleEq(p.ra, p.dec, 10) htm";
         public void ScalarFunctionTest()
         {
             var sql = @"
-SELECT dbo.fDistanceEq(0, 0, 1, 1)
+SELECT point.GetAngleEq(0, 0, 1, 1)
 INTO [$into]";
 
             RunQuery(sql);
@@ -220,7 +220,7 @@ INTO [$into]";
         public void ScalarFunctionOnTableTest()
         {
             var sql = @"
-SELECT TOP 100 dbo.fDistanceEq(0, 0, p.ra, p.dec) sep
+SELECT TOP 100 point.GetAngleEq(0, 0, p.ra, p.dec) sep
 INTO [$into]
 FROM SDSSDR7:PhotoObj p";
 
@@ -235,7 +235,7 @@ FROM SDSSDR7:PhotoObj p";
 SELECT p.objid, p.ra, p.dec
 INTO [$into]
 FROM (SELECT TOP 100 * FROM SDSSDR7:PhotoObj) p
-WHERE dbo.fDistanceEq(0, 0, p.ra, p.dec) > 1000";
+WHERE point.GetAngleEq(0, 0, p.ra, p.dec) > 1000";
 
             RunQuery(sql);
         }

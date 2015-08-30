@@ -22,19 +22,22 @@ namespace Jhu.Graywulf.Jobs.Query
     {
         #region Propagated column list functions
 
-        private string GeneratePropagatedColumnListTestHelper(string sql, string tableAlias, ColumnContext columnContext, ColumnListType listType)
+        private string GenerateColumnListTestHelper(string sql, string tableAlias, ColumnContext columnContext, ColumnListType listType)
         {
             var q = CreateQuery(sql);
             var cg = new SqlQueryCodeGenerator(q);
             var ts = q.SelectStatement.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
-            var columnlist = new SqlServerColumnListGenerator(ts.TableReference, columnContext, listType);
-            columnlist.TableAlias = tableAlias;
+            var columnlist = new SqlServerColumnListGenerator(ts.TableReference, columnContext, listType)
+            {
+                TableAlias = tableAlias,
+                NullType = ColumnListNullType.Defined
+            };
 
             return columnlist.GetColumnListString();
         }
 
         [TestMethod]
-        public void GeneratePropagatedColumnListForSelectNoAliasTest()
+        public void GenerateColumnListForSelectNoAliasTest()
         {
             var sql = @"
 SELECT objid
@@ -43,13 +46,13 @@ WHERE ra > 5 AND dec < 3";
 
             var gt = "[_TEST_dbo_SDSSDR7PhotoObjAll_p_objId], [_TEST_dbo_SDSSDR7PhotoObjAll_p_ra], [_TEST_dbo_SDSSDR7PhotoObjAll_p_dec]";
 
-            var res = GeneratePropagatedColumnListTestHelper(sql, "", ColumnContext.Default, ColumnListType.ForSelectWithEscapedNameNoAlias);
+            var res = GenerateColumnListTestHelper(sql, "", ColumnContext.Default, ColumnListType.ForSelectWithEscapedNameNoAlias);
 
             Assert.AreEqual(gt, res);
         }
 
         [TestMethod]
-        public void GeneratePropagatedColumnListForSelectWithOriginalNameTest()
+        public void GenerateColumnListForSelectWithOriginalNameTest()
         {
             var sql = @"
 SELECT objid
@@ -58,43 +61,13 @@ WHERE ra > 5 AND dec < 3";
 
             var gt = "[objId] AS [_TEST_dbo_SDSSDR7PhotoObjAll_p_objId], [ra] AS [_TEST_dbo_SDSSDR7PhotoObjAll_p_ra], [dec] AS [_TEST_dbo_SDSSDR7PhotoObjAll_p_dec]";
 
-            var res = GeneratePropagatedColumnListTestHelper(sql, "", ColumnContext.Default, ColumnListType.ForSelectWithOriginalName);
+            var res = GenerateColumnListTestHelper(sql, "", ColumnContext.Default, ColumnListType.ForSelectWithOriginalName);
 
             Assert.AreEqual(gt, res);
         }
 
         [TestMethod]
-        public void GeneratePropagatedColumnListForSelectWithEscapedNameTest()
-        {
-            var sql = @"
-SELECT objid
-FROM TEST:SDSSDR7PhotoObjAll p
-WHERE ra > 5 AND dec < 3";
-
-            var gt = "[_TEST_dbo_SDSSDR7PhotoObjAll_p_objId] AS [_TEST_dbo_SDSSDR7PhotoObjAll_p_objId], [_TEST_dbo_SDSSDR7PhotoObjAll_p_ra] AS [_TEST_dbo_SDSSDR7PhotoObjAll_p_ra], [_TEST_dbo_SDSSDR7PhotoObjAll_p_dec] AS [_TEST_dbo_SDSSDR7PhotoObjAll_p_dec]";
-
-            var res = GeneratePropagatedColumnListTestHelper(sql, "", ColumnContext.Default, ColumnListType.ForSelectWithEscapedName);
-
-            Assert.AreEqual(gt, res);
-        }
-
-        [TestMethod]
-        public void GeneratePropagatedColumnListForCreateTableTest()
-        {
-            var sql = @"
-SELECT objid
-FROM TEST:SDSSDR7PhotoObjAll p
-WHERE ra > 5 AND dec < 3";
-
-            var gt = "[_TEST_dbo_SDSSDR7PhotoObjAll_p_objId] bigint, [_TEST_dbo_SDSSDR7PhotoObjAll_p_ra] float, [_TEST_dbo_SDSSDR7PhotoObjAll_p_dec] float";
-
-            var res = GeneratePropagatedColumnListTestHelper(sql, null, ColumnContext.Default, ColumnListType.ForCreateTableWithOriginalName);
-
-            Assert.AreEqual(gt, res);
-        }
-
-        [TestMethod]
-        public void GeneratePropagatedColumnListForCreateViewTest()
+        public void GenerateColumnListForSelectWithEscapedNameTest()
         {
             var sql = @"
 SELECT objid
@@ -103,22 +76,52 @@ WHERE ra > 5 AND dec < 3";
 
             var gt = "[_TEST_dbo_SDSSDR7PhotoObjAll_p_objId], [_TEST_dbo_SDSSDR7PhotoObjAll_p_ra], [_TEST_dbo_SDSSDR7PhotoObjAll_p_dec]";
 
-            var res = GeneratePropagatedColumnListTestHelper(sql, null, ColumnContext.Default, ColumnListType.ForCreateView);
+            var res = GenerateColumnListTestHelper(sql, "", ColumnContext.Default, ColumnListType.ForSelectWithEscapedName);
 
             Assert.AreEqual(gt, res);
         }
 
         [TestMethod]
-        public void GeneratePropagatedColumnListForInsertTest()
+        public void GenerateColumnListForCreateTableTest()
         {
             var sql = @"
 SELECT objid
 FROM TEST:SDSSDR7PhotoObjAll p
 WHERE ra > 5 AND dec < 3";
 
-            var gt = "[_TEST_dbo_SDSSDR7PhotoObjAll_p_objId], [_TEST_dbo_SDSSDR7PhotoObjAll_p_ra], [_TEST_dbo_SDSSDR7PhotoObjAll_p_dec]";
+            var gt = "[objId] bigint NOT NULL, [ra] float NOT NULL, [dec] float NOT NULL";
 
-            var res = GeneratePropagatedColumnListTestHelper(sql, null, ColumnContext.Default, ColumnListType.ForInsert);
+            var res = GenerateColumnListTestHelper(sql, null, ColumnContext.Default, ColumnListType.ForCreateTableWithOriginalName);
+
+            Assert.AreEqual(gt, res);
+        }
+
+        [TestMethod]
+        public void GenerateColumnListForCreateViewTest()
+        {
+            var sql = @"
+SELECT objid
+FROM TEST:SDSSDR7PhotoObjAll p
+WHERE ra > 5 AND dec < 3";
+
+            var gt = "[objId], [ra], [dec]";
+
+            var res = GenerateColumnListTestHelper(sql, null, ColumnContext.Default, ColumnListType.ForCreateView);
+
+            Assert.AreEqual(gt, res);
+        }
+
+        [TestMethod]
+        public void GenerateColumnListForInsertTest()
+        {
+            var sql = @"
+SELECT objid
+FROM TEST:SDSSDR7PhotoObjAll p
+WHERE ra > 5 AND dec < 3";
+
+            var gt = "[objId], [ra], [dec]";
+
+            var res = GenerateColumnListTestHelper(sql, null, ColumnContext.Default, ColumnListType.ForInsert);
 
             Assert.AreEqual(gt, res);
         }

@@ -192,7 +192,7 @@ namespace Jhu.Graywulf.SqlParser.Test
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 1);
-            Assert.AreEqual("WHERE ([Graywulf_Schema_Test].[dbo].[Book].[ID] = 6)", res[0]);
+            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6", res[0]);
         }
 
         [TestMethod]
@@ -202,7 +202,7 @@ namespace Jhu.Graywulf.SqlParser.Test
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 1);
-            Assert.AreEqual("WHERE ([Graywulf_Schema_Test].[dbo].[Book].[ID] = 6 AND [Graywulf_Schema_Test].[dbo].[Book].[Title]='x')", res[0]);
+            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6 AND [Graywulf_Schema_Test].[dbo].[Book].[Title]='x'", res[0]);
         }
 
         [TestMethod]
@@ -212,7 +212,7 @@ namespace Jhu.Graywulf.SqlParser.Test
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 1);
-            Assert.AreEqual("WHERE ([Graywulf_Schema_Test].[dbo].[Book].[ID] = 6 AND 2 = 3)", res[0]);
+            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6 AND 2 = 3", res[0]);
         }
 
         [TestMethod]
@@ -241,7 +241,7 @@ WHERE Book.ID = 6";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 3);
-            Assert.AreEqual("WHERE ([Graywulf_Schema_Test].[dbo].[Book].[ID] = 6)", res[0]);
+            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6", res[0]);
         }
 
         [TestMethod]
@@ -256,9 +256,9 @@ WHERE Book.ID = 6 AND Author.ID = 3";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 3);
-            Assert.AreEqual("WHERE ([Graywulf_Schema_Test].[dbo].[Book].[ID] = 6)", res[0]);
+            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6", res[0]);
             Assert.AreEqual("", res[1]);
-            Assert.AreEqual("WHERE ([Graywulf_Schema_Test].[dbo].[Author].[ID] = 3)", res[2]);
+            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = 3", res[2]);
         }
 
         [TestMethod]
@@ -273,9 +273,9 @@ WHERE Author.ID = 3";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 3);
-            Assert.AreEqual("WHERE ([Graywulf_Schema_Test].[dbo].[Book].[ID] = 6)", res[0]);
+            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6", res[0]);
             Assert.AreEqual("", res[1]);
-            Assert.AreEqual("WHERE ([Graywulf_Schema_Test].[dbo].[Author].[ID] = 3)", res[2]);
+            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Author].[ID] = 3", res[2]);
         }
 
         [TestMethod]
@@ -290,7 +290,7 @@ WHERE Book.ID IN (3, 6)";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 3);
-            Assert.AreEqual("WHERE ([Graywulf_Schema_Test].[dbo].[Book].[ID] IN (3, 6) AND [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6)", res[0]);
+            Assert.AreEqual("WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] IN (3, 6) AND [Graywulf_Schema_Test].[dbo].[Book].[ID] = 6", res[0]);
             Assert.AreEqual("", res[1]);
             Assert.AreEqual("", res[2]);
         }
@@ -306,7 +306,7 @@ WHERE a.ID = 3";
             var res = GetWhereClauses(sql);
 
             Assert.IsTrue(res.Length == 2);
-            Assert.AreEqual("WHERE ([a].[ID] = 3)", res[0]);
+            Assert.AreEqual("WHERE [a].[ID] = 3", res[0]);
             Assert.AreEqual("", res[1]);
         }
     }
