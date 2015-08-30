@@ -61,14 +61,17 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
                 res += GetQuotedIdentifier(schemaName);
             }
 
-            // If no schema name is specified but there's a database name,
-            // SQL Server uses the database..table syntax
-            if (res != String.Empty)
+            if (!String.IsNullOrWhiteSpace(tableName))
             {
-                res += ".";
-            }
+                // If no schema name is specified but there's a database name,
+                // SQL Server uses the database..table syntax
+                if (res != String.Empty)
+                {
+                    res += ".";
+                }
 
-            res += GetQuotedIdentifier(tableName);
+                res += GetQuotedIdentifier(tableName);
+            }
 
             return res;
         }

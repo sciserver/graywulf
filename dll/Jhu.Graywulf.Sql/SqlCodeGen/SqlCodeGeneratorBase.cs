@@ -255,19 +255,26 @@ namespace Jhu.Graywulf.SqlCodeGen
                 tablename = GetResolvedTableName(column.TableReference);
             }
 
-            return GetResolvedColumnName(tablename, column.ColumnName);
-        }
+            string columnname;
 
-        protected virtual string GetResolvedColumnName(string tableName, string columnName)
-        {
-            string res = String.Empty;
-
-            if (!String.IsNullOrWhiteSpace(tableName))
+            if (column.IsStar)
             {
-                res = tableName + ".";
+                columnname = "*";
+            }
+            else
+            {
+                columnname = GetQuotedIdentifier(column.ColumnName);
             }
 
-            res += GetQuotedIdentifier(columnName);
+
+            string res = String.Empty;
+
+            if (!String.IsNullOrWhiteSpace(tablename))
+            {
+                res = tablename + ".";
+            }
+
+            res += columnname;
 
             return res;
         }
