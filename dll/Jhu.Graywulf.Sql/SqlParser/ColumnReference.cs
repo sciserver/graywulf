@@ -250,7 +250,7 @@ namespace Jhu.Graywulf.SqlParser
                 // Now both have the table reference set, make sure they are equal
 
                 // compare the two table references
-                res &= (this.tableReference.Compare(other.tableReference));
+                res &= (this.tableReference.Compare(other.tableReference, true));
 
                 // compare the two names
                 res &= (StringComparer.CurrentCultureIgnoreCase.Compare(this.columnName, other.columnName) == 0);

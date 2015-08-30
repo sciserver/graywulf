@@ -256,7 +256,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             var trnode = node as ITableReference;
-            if (trnode != null && trnode.TableReference.Compare(old))
+            if (trnode != null && trnode.TableReference.Compare(old, false))
             {
                 trnode.TableReference = other;
             }
@@ -316,7 +316,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             var sc = queryObject.GetSchemaManager();
 
-            if (!tr.IsSubquery && !tr.IsComputed)
+            if (!tr.IsSubquery && !tr.IsComputed && tr.DatabaseName != null)
             {
                 var ds = sc.Datasets[tr.DatasetName];
 
@@ -359,8 +359,8 @@ namespace Jhu.Graywulf.Jobs.Query
                 switch (queryObject.ExecutionMode)
                 {
                     case ExecutionMode.SingleServer:
-                        // No remote table support
-                        throw new InvalidOperationException();
+                        // Nothing to do here
+                        break;
                     case ExecutionMode.Graywulf:
                         foreach (var qs in ss.EnumerateQuerySpecifications())
                         {
@@ -414,7 +414,7 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 var cr = ci.ColumnReference;
 
-                if (original.Compare(cr.TableReference))
+                if (original.Compare(cr.TableReference, false))
                 {
                     // TODO. this might be needed
                     //cr.ColumnName = EscapePropagatedColumnName(cr.TableReference, cr.ColumnName);

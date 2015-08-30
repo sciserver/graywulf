@@ -450,7 +450,7 @@ namespace Jhu.Graywulf.SqlParser
             this.columnReferences.AddRange(td.Columns.Values.OrderBy(c => c.ID).Select(c => new ColumnReference(this, c)));
         }
 
-        public bool Compare(TableReference other)
+        public bool Compare(TableReference other, bool matchAnyIfNoAlias)
         {
             // If object are the same
             if (this == other)
@@ -473,11 +473,19 @@ namespace Jhu.Graywulf.SqlParser
             res &= (this.DatabaseObjectName == null || other.DatabaseObjectName == null ||
                     SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.DatabaseObjectName) == 0);
 
-            res &= (this.alias == null && other.alias == null ||
-                    this.alias == null && this.DatabaseObjectName != null && other.alias != null && SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.alias) == 0 ||
-                    this.alias == null && this.DatabaseObjectName != null && other.DatabaseObjectName != null && SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.DatabaseObjectName) == 0 ||
-                    this.alias != null && other.alias != null && SchemaManager.Comparer.Compare(this.alias, other.alias) == 0 ||
-                    this.alias != null && other.DatabaseObjectName != null && SchemaManager.Comparer.Compare(this.alias, other.DatabaseObjectName) == 0);
+            if (matchAnyIfNoAlias)
+            {
+                res &= (this.alias == null || other.alias == null || 
+                    SchemaManager.Comparer.Compare(this.alias, other.alias) == 0);
+            }
+            else
+            {
+                res &= (this.alias == null && other.alias == null ||
+                        this.alias == null && this.DatabaseObjectName != null && other.alias != null && SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.alias) == 0 ||
+                        this.alias == null && this.DatabaseObjectName != null && other.DatabaseObjectName != null && SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.DatabaseObjectName) == 0 ||
+                        this.alias != null && other.alias != null && SchemaManager.Comparer.Compare(this.alias, other.alias) == 0 ||
+                        this.alias != null && other.DatabaseObjectName != null && SchemaManager.Comparer.Compare(this.alias, other.DatabaseObjectName) == 0);
+            }
 
             return res;
         }

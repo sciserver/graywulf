@@ -379,7 +379,7 @@ namespace Jhu.Graywulf.SqlParser
                     int q = 0;
                     foreach (var tr in qs.SourceTableReferences.Values)
                     {
-                        if (tr.Compare(node.TableReference))
+                        if (tr.Compare(node.TableReference, true))
                         {
                             if (q != 0)
                             {
