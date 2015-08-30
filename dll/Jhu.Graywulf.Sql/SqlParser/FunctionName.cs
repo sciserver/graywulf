@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.SqlParser
         public static FunctionName Create(string name)
         {
             var fun = new FunctionName();
-            fun.Value = name;
+            fun.Stack.AddLast(Identifier.Create(name));
             return fun;
         }
     }
