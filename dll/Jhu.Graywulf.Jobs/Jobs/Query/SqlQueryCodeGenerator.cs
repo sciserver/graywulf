@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.ParserLib;
 using Jhu.Graywulf.SqlParser;
 using Jhu.Graywulf.SqlCodeGen.SqlServer;
 using Jhu.Graywulf.Schema;
@@ -244,7 +245,32 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Name substitution
 
-        protected void SubstituteServerSpecificDatabaseNames(SelectStatement ss, ServerInstance serverInstance, string databaseVersion)
+        protected void SubstituteTableReference(Node node, TableReference old, TableReference other)
+        {
+            foreach (var t in node.Stack)
+            {
+                if (t is Node && !(t is Subquery))
+                {
+                    SubstituteTableReference((Node)t, old, other);
+                }
+            }
+
+            var trnode = node as ITableReference;
+            if (trnode != null && trnode.TableReference.Compare(old))
+            {
+                trnode.TableReference = other;
+            }
+        }
+
+        protected void SubstituteServerSpecificDatabaseNames(SelectStatement ss)
+        {
+            if (queryObject != null && queryObject.AssignedServerInstance != null && queryObject.CodeDataset != null)
+            {
+                SubstituteServerSpecificDatabaseNames(ss, queryObject.AssignedServerInstance, queryObject.SourceDatabaseVersionName);
+            }
+        }
+
+        private void SubstituteServerSpecificDatabaseNames(SelectStatement ss, ServerInstance serverInstance, string databaseVersion)
         {
             SubstituteServerSpecificDatabaseNames(ss, serverInstance, databaseVersion, null);
         }
@@ -255,7 +281,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="serverInstance"></param>
         /// <param name="databaseVersion"></param>
         /// <remarks>This function call must be synchronized!</remarks>
-        protected void SubstituteServerSpecificDatabaseNames(SelectStatement ss, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
+        private void SubstituteServerSpecificDatabaseNames(SelectStatement ss, ServerInstance serverInstance, string databaseVersion, string surrogateDatabaseVersion)
         {
             switch (queryObject.ExecutionMode)
             {
@@ -264,12 +290,10 @@ namespace Jhu.Graywulf.Jobs.Query
                 case ExecutionMode.Graywulf:
                     foreach (var qs in ss.EnumerateQuerySpecifications())
                     {
-                        foreach (var tr in qs.EnumerateSourceTableReferences(true))
+                        foreach (var ts in qs.EnumerateSourceTables(true))
                         {
-                            if (!tr.IsUdf && !tr.IsSubquery && !tr.IsComputed)
-                            {
-                                SubstituteServerSpecificDatabaseName(tr, serverInstance, databaseVersion, surrogateDatabaseVersion);
-                            }
+                            var tr = ts.TableReference;
+                            SubstituteServerSpecificDatabaseName(tr, serverInstance, databaseVersion, surrogateDatabaseVersion);
                         }
                     }
                     break;
@@ -330,23 +354,26 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <remarks></remarks>
         protected virtual void SubstituteRemoteTableNames(SelectStatement ss)
         {
-            switch (queryObject.ExecutionMode)
+            if (queryObject != null)
             {
-                case ExecutionMode.SingleServer:
-                    // No remote table support
-                    throw new InvalidOperationException();
-                case ExecutionMode.Graywulf:
-                    foreach (var qs in ss.EnumerateQuerySpecifications())
-                    {
-                        // Replace remote table references with temp table references
-                        foreach (TableReference tr in qs.EnumerateSourceTableReferences(true))
+                switch (queryObject.ExecutionMode)
+                {
+                    case ExecutionMode.SingleServer:
+                        // No remote table support
+                        throw new InvalidOperationException();
+                    case ExecutionMode.Graywulf:
+                        foreach (var qs in ss.EnumerateQuerySpecifications())
                         {
-                            SubstituteRemoteTableName(tr);
+                            // Replace remote table references with temp table references
+                            foreach (TableReference tr in qs.EnumerateSourceTableReferences(true))
+                            {
+                                SubstituteRemoteTableName(tr);
+                            }
                         }
-                    }
-                    break;
-                default:
-                    throw new NotImplementedException();
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
             }
         }
 
