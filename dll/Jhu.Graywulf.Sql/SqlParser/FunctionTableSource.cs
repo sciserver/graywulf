@@ -30,6 +30,21 @@ namespace Jhu.Graywulf.SqlParser
             get { return false; }
         }
 
+        public static FunctionTableSource Create(TableValuedFunctionCall functionCall, string tableAlias)
+        {
+            var fts = new FunctionTableSource();
+
+            fts.Stack.AddLast(functionCall);
+            fts.Stack.AddLast(Whitespace.Create());
+            fts.Stack.AddLast(Keyword.Create("AS"));
+            fts.Stack.AddLast(Whitespace.Create());
+            fts.Stack.AddLast(TableAlias.Create(tableAlias));
+
+            functionCall.TableReference.Alias = tableAlias;
+
+            return fts;
+        }
+
         public override void Interpret()
         {
             base.Interpret();

@@ -25,6 +25,20 @@ namespace Jhu.Graywulf.SqlParser
             get { return FindAscendant<QuerySpecification>(); }
         }
 
+        public static TableSource Create(SimpleTableSource sts)
+        {
+            var ts = new TableSource();
+            ts.Stack.AddLast(sts);
+            return ts;
+        }
+
+        public static TableSource Create(FunctionTableSource fts)
+        {
+            var ts = new TableSource();
+            ts.Stack.AddLast(fts);
+            return ts;
+        }
+
         public static TableSource Create(ComputedTableSource ts)
         {
             var res = new TableSource();

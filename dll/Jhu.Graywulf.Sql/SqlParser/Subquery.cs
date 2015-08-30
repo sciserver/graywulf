@@ -11,5 +11,16 @@ namespace Jhu.Graywulf.SqlParser
         {
             get { return FindDescendant<SelectStatement>(); }
         }
+
+        public static Subquery Create(SelectStatement ss)
+        {
+            var sq = new Subquery();
+
+            sq.Stack.AddLast(BracketOpen.Create());
+            sq.Stack.AddLast(ss);
+            sq.Stack.AddLast(BracketClose.Create());
+
+            return sq;
+        }
     }
 }

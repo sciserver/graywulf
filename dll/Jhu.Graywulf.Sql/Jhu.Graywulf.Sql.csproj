@@ -150,8 +150,10 @@
     <Compile Include="SqlParser\TableOrViewName.cs" />
     <Compile Include="SqlParser\TableReference.cs" />
     <Compile Include="SqlParser\TableSource.cs" />
+    <Compile Include="SqlParser\TableSourceExpression.cs" />
     <Compile Include="SqlParser\TableStatistics.cs" />
     <Compile Include="SqlParser\TableValuedFunctionCall.cs" />
+    <Compile Include="SqlParser\UdfIdentifier.cs" />
     <Compile Include="SqlParser\UdtFunctionCall.cs" />
     <Compile Include="SqlParser\UdtFunctionIdentifier.cs" />
     <Compile Include="SqlParser\Util.cs" />

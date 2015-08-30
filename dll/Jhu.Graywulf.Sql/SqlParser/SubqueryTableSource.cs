@@ -35,6 +35,19 @@ namespace Jhu.Graywulf.SqlParser
             get { return false; }
         }
 
+        public static SubqueryTableSource Create(SelectStatement ss, string tableAlias)
+        {
+            var sts = new SubqueryTableSource();
+
+            sts.Stack.AddLast(Subquery.Create(ss));
+            sts.Stack.AddLast(Whitespace.Create());
+            sts.Stack.AddLast(Keyword.Create("AS"));
+            sts.Stack.AddLast(Whitespace.Create());
+            sts.Stack.AddLast(TableAlias.Create(tableAlias));
+
+            return sts;
+        }
+
         public override void Interpret()
         {
             base.Interpret();

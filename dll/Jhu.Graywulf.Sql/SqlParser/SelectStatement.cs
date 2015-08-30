@@ -39,6 +39,17 @@ namespace Jhu.Graywulf.SqlParser
             }
         }
 
+        public static SelectStatement Create(SelectList selectList, FromClause from)
+        {
+            var qs = QuerySpecification.Create(selectList, from);
+            var qe = QueryExpression.Create(qs);
+            
+            var ss = new SelectStatement();
+            ss.Stack.AddLast(qe);
+
+            return ss;
+        }
+
         public IEnumerable<QuerySpecification> EnumerateQuerySpecifications()
         {
             return QueryExpression.EnumerateDescendants<QuerySpecification>();

@@ -42,6 +42,37 @@ namespace Jhu.Graywulf.SqlParser
             this.columnReference = old.columnReference;
         }
 
+        public static ColumnExpression CreateStar()
+        {
+            var ci = ColumnIdentifier.CreateStar();
+            var exp = Expression.Create(ci);
+            var ce = Create(exp);
+
+            ce.columnReference = ci.ColumnReference;
+
+            return ce;
+        }
+
+        public static ColumnExpression CreateStar(TableReference tableReference)
+        {
+            var ci = ColumnIdentifier.CreateStar(tableReference);
+            var exp = Expression.Create(ci);
+            var ce = Create(exp);
+
+            ce.columnReference = ci.ColumnReference;
+
+            return ce;
+        }
+
+        public static ColumnExpression Create(Expression exp)
+        {
+            var ce = new ColumnExpression();
+
+            ce.Stack.AddLast(exp);
+
+            return ce;
+        }
+
         public override void Interpret()
         {
             base.Interpret();

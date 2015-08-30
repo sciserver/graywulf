@@ -7,6 +7,20 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class SelectList
     {
+        public static SelectList CreateStar()
+        {
+            var sl = new SelectList();
+            sl.Stack.AddLast(ColumnExpression.CreateStar());
+            return sl;
+        }
+
+        public static SelectList CreateStar(TableReference tableReference)
+        {
+            var sl = new SelectList();
+            sl.Stack.AddLast(ColumnExpression.CreateStar(tableReference));
+            return sl;
+        }
+
         public static SelectList Create(QuerySpecification querySpecification)
         {
             SelectList root = null;

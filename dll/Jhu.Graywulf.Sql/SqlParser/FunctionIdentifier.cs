@@ -51,6 +51,7 @@ namespace Jhu.Graywulf.SqlParser
         public static FunctionIdentifier Create(FunctionReference functionReference)
         {
             var fid = new FunctionIdentifier();
+            fid.Stack.AddLast(UdfIdentifier.Create());
             fid.functionReference = functionReference;
             return fid;
         }

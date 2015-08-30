@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.SqlParser
     public class TableReference : DatabaseObjectReference
     {
         #region Property storage variables
-        
+
         private string alias;
 
         private bool isTableOrView;
@@ -152,7 +152,7 @@ namespace Jhu.Graywulf.SqlParser
         }
 
         public TableReference(TableOrView table, string alias)
-            :base(table)
+            : base(table)
         {
             this.alias = alias;
 
@@ -193,7 +193,6 @@ namespace Jhu.Graywulf.SqlParser
         {
             InitializeMembers();
             InterpretTableSource(ts);
-            InterpretSubquery();
         }
 
         public TableReference(ColumnIdentifier ci)
@@ -265,6 +264,11 @@ namespace Jhu.Graywulf.SqlParser
             {
                 alias = null;
             }
+
+            if (tableSource is SubqueryTableSource)
+            {
+                InterpretSubquery();
+            }
         }
 
         private void InterpretColumnIdentifier(ColumnIdentifier ci)
@@ -329,7 +333,10 @@ namespace Jhu.Graywulf.SqlParser
 
         private void InterpretSubquery()
         {
-            isSubquery = true;
+            this.isTableOrView = false;
+            this.isUdf = false;
+            this.isSubquery = true;
+            this.isComputed = false;
         }
 
         public void LoadColumnReferences(SchemaManager schemaManager)
@@ -445,6 +452,13 @@ namespace Jhu.Graywulf.SqlParser
 
         public bool Compare(TableReference other)
         {
+            // If object are the same
+            if (this == other)
+            {
+                return true;
+            }
+
+            // Otherwise compare strings
             bool res = true;
 
             res &= (this.DatasetName == null || other.DatasetName == null ||
@@ -459,8 +473,11 @@ namespace Jhu.Graywulf.SqlParser
             res &= (this.DatabaseObjectName == null || other.DatabaseObjectName == null ||
                     SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.DatabaseObjectName) == 0);
 
-            res &= (this.alias == null || other.alias == null ||
-                    SchemaManager.Comparer.Compare(this.alias, other.alias) == 0);
+            res &= (this.alias == null && other.alias == null ||
+                    this.alias == null && this.DatabaseObjectName != null && other.alias != null && SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.alias) == 0 ||
+                    this.alias == null && this.DatabaseObjectName != null && other.DatabaseObjectName != null && SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.DatabaseObjectName) == 0 ||
+                    this.alias != null && other.alias != null && SchemaManager.Comparer.Compare(this.alias, other.alias) == 0 ||
+                    this.alias != null && other.DatabaseObjectName != null && SchemaManager.Comparer.Compare(this.alias, other.DatabaseObjectName) == 0);
 
             return res;
         }

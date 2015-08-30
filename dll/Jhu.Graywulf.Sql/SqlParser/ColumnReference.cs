@@ -48,6 +48,7 @@ namespace Jhu.Graywulf.SqlParser
         public bool IsStar
         {
             get { return isStar; }
+            set { isStar = value; }
         }
 
         public bool IsComplexExpression
@@ -142,6 +143,25 @@ namespace Jhu.Graywulf.SqlParser
             this.isComplexExpression = old.isComplexExpression;
             this.selectListIndex = old.selectListIndex;
             this.columnContext = old.columnContext;
+        }
+
+        public static ColumnReference CreateStar()
+        {
+            var cr = new ColumnReference()
+            {
+                IsStar = true,
+                ColumnName = "*"
+            };
+
+            return cr;
+        }
+
+        public static ColumnReference CreateStar(TableReference tableReference)
+        {
+            var cr = CreateStar();
+            cr.tableReference = tableReference;
+
+            return cr;
         }
 
         public static ColumnReference Interpret(ColumnIdentifier ci)

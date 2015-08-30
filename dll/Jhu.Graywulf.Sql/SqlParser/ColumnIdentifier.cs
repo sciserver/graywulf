@@ -38,6 +38,26 @@ namespace Jhu.Graywulf.SqlParser
             this.columnReference = old.columnReference;
         }
 
+        public static ColumnIdentifier CreateStar()
+        {
+            var ci = new ColumnIdentifier();
+
+            ci.columnReference = ColumnReference.CreateStar();
+            ci.Stack.AddLast(Mul.Create());
+
+            return ci;
+        }
+
+        public static ColumnIdentifier CreateStar(TableReference tableReference)
+        {
+            var ci = new ColumnIdentifier();
+
+            ci.columnReference = ColumnReference.CreateStar(tableReference);
+            ci.Stack.AddLast(Mul.Create());
+
+            return ci;
+        }
+
         public static ColumnIdentifier Create(ColumnReference cr)
         {
             var nci = new ColumnIdentifier();

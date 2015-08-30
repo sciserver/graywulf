@@ -7,9 +7,9 @@ namespace Jhu.Graywulf.SqlParser
 {
     public partial class FunctionName
     {
-        public static Variable Create(string name)
+        public static FunctionName Create(string name)
         {
-            var fun = new Variable();
+            var fun = new FunctionName();
             fun.Value = name;
             return fun;
         }

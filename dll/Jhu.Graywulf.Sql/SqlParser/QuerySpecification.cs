@@ -65,6 +65,23 @@ namespace Jhu.Graywulf.SqlParser
 
         #endregion
 
+        public static QuerySpecification Create(SelectList selectList, FromClause from)
+        {
+            var qs = new QuerySpecification();
+
+            qs.Stack.AddLast(Keyword.Create("SELECT"));
+            qs.Stack.AddLast(Whitespace.Create());
+            qs.Stack.AddLast(selectList);
+
+            if (from != null)
+            {
+                qs.Stack.AddLast(Whitespace.CreateNewLine());
+                qs.Stack.AddLast(from);
+            }
+
+            return qs;
+        }
+
         /// <summary>
         /// Enumerates all subqueries of the query specification recursively.
         /// </summary>
