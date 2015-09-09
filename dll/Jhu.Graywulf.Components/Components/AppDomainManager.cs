@@ -223,6 +223,12 @@ namespace Jhu.Graywulf.Components
             // we have to combine it with the base path of the app domain
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, baseDirectory);
 
+            // If the path doesn't exist, just fall back to the base directory
+            if (!Directory.Exists(path))
+            {
+                path = AppDomain.CurrentDomain.BaseDirectory;
+            }
+
             // See if the binBasePath contains the required assembly
             if (HasDirectoryAssembly(path, assemblyName))
             {
