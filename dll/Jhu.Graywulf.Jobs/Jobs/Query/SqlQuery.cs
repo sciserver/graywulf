@@ -183,13 +183,6 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Query parsing and interpretation
 
-        public override void InitializeQueryObject(Context context, IScheduler scheduler, bool forceReinitialize)
-        {
-            base.InitializeQueryObject(context, scheduler, forceReinitialize);
-
-            Validate();
-        }
-
         public virtual void Verify()
         {
             // TODO: this is used to validate query before scheduling
@@ -223,7 +216,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        protected override void Validate()
+        public override void Validate()
         {
             base.Validate();
 

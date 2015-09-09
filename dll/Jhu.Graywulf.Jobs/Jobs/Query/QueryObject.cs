@@ -698,7 +698,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected abstract void FinishInterpret(bool forceReinitialize);
 
-        protected virtual void Validate()
+        public virtual void Validate()
         {
         }
 

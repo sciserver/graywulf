@@ -36,6 +36,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     using (Context context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
                     {
                         query.InitializeQueryObject(context);
+                        query.Validate();
                         query.CollectTablesForStatistics();
                     }
                     break;

@@ -366,7 +366,6 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public virtual void PrepareCopyResultset(Context context)
         {
-            query.InitializeQueryObject(context);
             this.InitializeQueryObject(context);
         }
 
