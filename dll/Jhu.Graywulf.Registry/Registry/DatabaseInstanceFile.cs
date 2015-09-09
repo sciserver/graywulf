@@ -279,15 +279,35 @@ namespace Jhu.Graywulf.Registry
         /// <returns>The full path to the database file.</returns>
         private string GetFilenameWithPath(string basePath)
         {
-            string filename = basePath;
+            var di = DatabaseInstanceFileGroup.DatabaseInstance;
 
-            DatabaseInstance di = DatabaseInstanceFileGroup.DatabaseInstance;
+            var filename = Path.Combine(
+                basePath,
+                di.DatabaseDefinition.Parent.Name,
+                di.DatabaseDefinition.Name,
+                di.Slice.Name,
+                di.DatabaseVersion.Name);
 
-            filename = Path.Combine(filename, di.DatabaseDefinition.Parent.Name);
-            filename = Path.Combine(filename, di.DatabaseDefinition.Name);
-            filename = Path.Combine(filename, di.Slice.Name);
-            filename = Path.Combine(filename, di.Name.ToString());
-            filename = Path.Combine(filename, this.Filename);
+            switch (di.DatabaseDefinition.LayoutType)
+            {
+                case DatabaseLayoutType.Monolithic:
+                case DatabaseLayoutType.Sliced:
+                    // Use database instance name
+                    filename = Path.Combine(
+                        filename,
+                        di.Name,
+                        this.Filename);
+                    break;
+                case DatabaseLayoutType.Mirrored:
+                    // Use database name
+                    filename = Path.Combine(
+                        filename,
+                        di.DatabaseName,
+                        this.Filename);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
 
             return filename;
         }
