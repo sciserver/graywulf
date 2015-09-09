@@ -128,7 +128,7 @@ namespace Jhu.Graywulf.Web.Services
             System.Threading.Thread.CurrentPrincipal = response.Principal;
         }
 
-        protected override void OnAuthenticationFailed()
+        protected override void OnAuthenticationFailed(AuthenticationResponse response)
         {
             // (6.)
 

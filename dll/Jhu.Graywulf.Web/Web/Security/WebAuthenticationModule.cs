@@ -133,7 +133,7 @@ namespace Jhu.Graywulf.Web.Security
             context.Items[Constants.HttpContextAuthenticationResponse] = response;
         }
 
-        protected override void OnAuthenticationFailed()
+        protected override void OnAuthenticationFailed(AuthenticationResponse response)
         {
             // (3.) Called after authentication was unsuccessful
 
@@ -142,6 +142,9 @@ namespace Jhu.Graywulf.Web.Security
             // the web server (from Forms ticket, windows authentication, etc.)
             // In this case, the principal provided by the framework needs to
             // be converted to a graywulf principal
+
+            var context = HttpContext.Current;
+            context.Items[Constants.HttpContextAuthenticationResponse] = response;
         }
 
         private void OnPostAuthenticateRequest(object sender, EventArgs e)

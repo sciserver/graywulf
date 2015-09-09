@@ -135,7 +135,7 @@ namespace Jhu.Graywulf.Web.Security
                 // In this case, the principal provided by the framework needs to
                 // be converted to a graywulf principal
 
-                OnAuthenticationFailed();
+                OnAuthenticationFailed(response);
             }
 
             return response;
@@ -150,7 +150,7 @@ namespace Jhu.Graywulf.Web.Security
         /// <summary>
         /// When implemented in a derived class, called when all attempts to authenticate the user have failed.
         /// </summary>
-        protected abstract void OnAuthenticationFailed();
+        protected abstract void OnAuthenticationFailed(AuthenticationResponse response);
 
         /// <summary>
         /// Loads the user object, from the cache or from the Graywulf registry.
