@@ -288,28 +288,23 @@ namespace Jhu.Graywulf.Jobs.Query
                     throw new NotImplementedException();
             }
 
-            // Source query
-            source = CodeGenerator.GetExecuteQuery(SelectStatement, CommandMethod.SelectInto, destination);
+            // Source query will be run on the code database to have
+            // access to UDTs
+            source = CodeGenerator.GetExecuteQuery(SelectStatement);
+            source.Dataset = CodeDataset;
         }
 
         public void ExecuteQuery(SourceTableQuery source, Table destination)
         {
-            var cmd = new SqlCommand()
+            var dt = new DestinationTable(destination, TableInitializationOptions.Create);
+
+            var insert = new InsertIntoTable()
             {
-                CommandText = source.Query,
-                CommandTimeout = Query.QueryTimeout,
-                CommandType = System.Data.CommandType.Text
+                Source = source,
+                Destination = dt,
             };
 
-            foreach (var p in source.Parameters)
-            {
-                var par = cmd.CreateParameter();
-                par.ParameterName = p.Key;
-                par.Value = p.Value;
-                cmd.Parameters.Add(par);
-            }
-
-            ExecuteSqlOnAssignedServer(cmd, CommandTarget.Code);
+            insert.Execute();
         }
 
         #endregion
@@ -348,7 +343,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
                                 // TODO: figure out metadata from query
                                 var table = query.Destination.GetTable(query.BatchName, query.QueryName, null, null);
-                                table.Initialize(source.GetColumns(), query.Destination.Options);
+                                var columns = source.GetColumns();
+                                table.Initialize(columns, query.Destination.Options);
 
                                 // At this point the name of the destination is determined
                                 // mark it as the output

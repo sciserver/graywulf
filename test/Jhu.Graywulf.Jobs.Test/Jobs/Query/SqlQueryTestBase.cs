@@ -111,8 +111,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected void RunQuery(string sql)
         {
-            RunQuery(sql, 3, new TimeSpan(0, 10, 0));
-            //RunQuery(sql, 0, new TimeSpan(0, 2, 0));
+            //RunQuery(sql, 3, new TimeSpan(0, 10, 0));
+            RunQuery(sql, 0, new TimeSpan(0, 2, 0));
         }
 
         protected void RunQuery(string sql, int maxPartitions)

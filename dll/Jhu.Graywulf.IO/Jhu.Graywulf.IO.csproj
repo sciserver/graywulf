@@ -111,6 +111,7 @@
     <Compile Include="IO\Tasks\CopyTable.cs" />
     <Compile Include="IO\Tasks\CopyTableBase.cs" />
     <Compile Include="IO\Tasks\Enum.cs" />
+    <Compile Include="IO\Tasks\InsertIntoTable.cs" />
     <Compile Include="IO\Tasks\TableCopyException.cs" />
     <Compile Include="IO\Tasks\TableCopyResult.cs" />
     <Compile Include="IO\Tasks\TableCopyResults.cs" />
