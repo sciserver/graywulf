@@ -164,6 +164,8 @@ namespace Jhu.Graywulf.IO.Tasks
                         ccmd.ExecuteNonQuery();
 
                         UnregisterCancelable(guid);
+
+                        tn.Commit();
                     }
                 }
             }
