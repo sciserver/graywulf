@@ -24,7 +24,9 @@ namespace Jhu.Graywulf.IO.Tasks
         private DatasetBase dataset;
         private string sourceSchemaName;
         private string sourceObjectName;
+        private string header;
         private string query;
+        private string footer;
         private Dictionary<string, object> parameters;
 
         #endregion
@@ -62,6 +64,16 @@ namespace Jhu.Graywulf.IO.Tasks
         }
 
         /// <summary>
+        /// Gets or sets the query script header.
+        /// </summary>
+        [DataMember]
+        public string Header
+        {
+            get { return header; }
+            set { header = value; }
+        }
+
+        /// <summary>
         /// Gets or sets the text of the query.
         /// </summary>
         [DataMember]
@@ -69,6 +81,16 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             get { return query; }
             set { query = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the query script footer.
+        /// </summary>
+        [DataMember]
+        public string Footer
+        {
+            get { return footer; }
+            set { footer = value; }
         }
 
         [DataMember]
@@ -114,7 +136,9 @@ namespace Jhu.Graywulf.IO.Tasks
             this.dataset = null;
             this.sourceSchemaName = null;
             this.sourceObjectName = null;
+            this.header = null;
             this.query = null;
+            this.footer = null;
             this.parameters = new Dictionary<string, object>();
         }
 
@@ -123,7 +147,9 @@ namespace Jhu.Graywulf.IO.Tasks
             this.dataset = Util.DeepCloner.CloneObject(old.dataset);
             this.sourceSchemaName = old.sourceSchemaName;
             this.sourceObjectName = old.sourceObjectName;
+            this.header = old.header;
             this.query = old.query;
+            this.footer = old.footer;
             this.parameters = new Dictionary<string, object>(old.parameters);
         }
 
@@ -152,7 +178,24 @@ namespace Jhu.Graywulf.IO.Tasks
             var dbf = DbProviderFactories.GetFactory(dataset.ProviderName);
             var cmd = new SmartCommand(dataset, dbf.CreateCommand());
 
-            cmd.CommandText = query;
+            var sql = new StringBuilder();
+
+            if (header != null)
+            {
+                sql.Append(header);
+            }
+
+            if (query != null)
+            {
+                sql.Append(query);
+            }
+
+            if (footer != null)
+            {
+                sql.Append(footer);
+            }
+
+            cmd.CommandText = sql.ToString();
             cmd.CommandType = CommandType.Text;
 
             if (parameters != null)
@@ -177,9 +220,8 @@ namespace Jhu.Graywulf.IO.Tasks
                 {
                     cmd.Connection = cn;
 
-                    using (var dr = cmd.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo))
+                    using (var dr = cmd.ExecuteReader(CommandBehavior.SchemaOnly))
                     {
-                        // TODO: test this
                         return dr.Columns;
                     }
                 }

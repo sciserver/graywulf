@@ -71,21 +71,16 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public SourceTableQuery GetExecuteQuery(SelectStatement selectStatement)
         {
-            return GetExecuteQuery(selectStatement, CommandMethod.Select, null);
-        }
-
-        public SourceTableQuery GetExecuteQuery(SelectStatement selectStatement, CommandMethod method, Table destination)
-        {
             var ss = (SelectStatement)selectStatement.Clone();
-            return OnGetExecuteQuery(ss, method, destination);
+            return OnGetExecuteQuery(ss);
         }
 
-        protected virtual SourceTableQuery OnGetExecuteQuery(SelectStatement selectStatement, CommandMethod method, Table destination)
+        protected virtual SourceTableQuery OnGetExecuteQuery(SelectStatement selectStatement)
         {
             var sql = new StringBuilder();
 
             RewriteForExecute(selectStatement);
-            RemoveNonStandardTokens(selectStatement, method);
+            RemoveNonStandardTokens(selectStatement);
 
             if (queryObject.ExecutionMode == ExecutionMode.Graywulf)
             {
@@ -93,11 +88,10 @@ namespace Jhu.Graywulf.Jobs.Query
                 SubstituteRemoteTableNames(selectStatement);
             }
 
-            AppendQuery(sql, selectStatement, method, destination);
+            sql.AppendLine(Execute(selectStatement));
 
             var source = new SourceTableQuery()
             {
-                Dataset = queryObject.TemporaryDataset,
                 Query = sql.ToString(),
             };
 
@@ -105,36 +99,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             return source;
         }
-
-        protected void AppendQuery(StringBuilder sql, SelectStatement ss, CommandMethod method, Table destination)
-        {
-            // TODO: this is a temporary trick until full SQL grammar is implemented
-            switch (method)
-            {
-                case CommandMethod.Select:
-                    sql.AppendLine(Execute(ss));
-                    break;
-                case CommandMethod.SelectInto:
-                    sql.Append("SELECT __tablealias.* INTO ");
-                    sql.Append(GetResolvedTableName(destination));
-                    sql.AppendLine(" FROM (");
-                    sql.AppendLine(Execute(ss));
-                    sql.AppendLine(") AS __tablealias");
-                    break;
-                case CommandMethod.Insert:
-                    sql.Append("INSERT ");
-                    sql.Append(GetResolvedTableName(destination));
-                    sql.AppendLine("WITH (TABLOCKX) ");
-                    sql.AppendLine("SELECT __tablealias.*");
-                    sql.AppendLine("FROM (");
-                    sql.AppendLine(Execute(ss));
-                    sql.AppendLine(") AS __tablealias");
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
+        
         protected virtual void RewriteForExecute(SelectStatement selectStatement)
         {
             int i = 0;
@@ -171,7 +136,7 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Remove non-standard tokens
 
-        protected virtual void RemoveNonStandardTokens(SelectStatement selectStatement, CommandMethod method)
+        protected virtual void RemoveNonStandardTokens(SelectStatement selectStatement)
         {
             // strip off partition by and into clauses
             var qe = selectStatement.FindDescendant<QueryExpression>();
@@ -182,14 +147,11 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             // Strip off order by, we write to the mydb
-            if (method == CommandMethod.Insert || method == CommandMethod.SelectInto)
-            {
-                var orderby = selectStatement.FindDescendant<OrderByClause>();
+            var orderby = selectStatement.FindDescendant<OrderByClause>();
 
-                if (orderby != null)
-                {
-                    selectStatement.Stack.Remove(orderby);
-                }
+            if (orderby != null)
+            {
+                selectStatement.Stack.Remove(orderby);
             }
         }
 

@@ -54,7 +54,7 @@ namespace Jhu.Graywulf.Jobs.Query
         protected void RemoveExtraTokensHelper(string sql, string gt)
         {
             var ss = Parse(sql);
-            CallMethod(CodeGenerator, "RemoveNonStandardTokens", ss, CommandMethod.SelectInto);
+            CallMethod(CodeGenerator, "RemoveNonStandardTokens", ss);
             Assert.AreEqual(gt, ss.ToString());
         }
 
@@ -79,7 +79,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             var cg = new SqlQueryCodeGenerator(partition);
             CallMethod(cg, "RewriteForExecute", ss);
-            CallMethod(cg, "RemoveNonStandardTokens", ss, CommandMethod.SelectInto);
+            CallMethod(cg, "RemoveNonStandardTokens", ss);
             Assert.AreEqual(gt, ss.ToString());
         }
 
