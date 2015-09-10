@@ -220,7 +220,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 {
                     cmd.Connection = cn;
 
-                    using (var dr = cmd.ExecuteReader(CommandBehavior.SchemaOnly))
+                    using (var dr = cmd.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo))
                     {
                         return dr.Columns;
                     }

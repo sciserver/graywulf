@@ -696,7 +696,13 @@ namespace Jhu.Graywulf.Schema
             {
                 var dr = st.Rows[i];
 
-                columns.Add(CreateColumn(dr));
+                // Skip hidden columns, for example key columns returned when
+                // CommandBehaviour.KeyInfo is set but the key column is
+                // not part of the select list.
+                if (dr[SchemaTableOptionalColumn.IsHidden] == DBNull.Value || !(bool)dr[SchemaTableOptionalColumn.IsHidden])
+                {
+                    columns.Add(CreateColumn(dr));
+                }
             }
 
             return columns;
