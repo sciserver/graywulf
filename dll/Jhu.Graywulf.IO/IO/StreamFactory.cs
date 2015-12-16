@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Configuration;
 using System.Net;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.Components;
@@ -20,6 +21,14 @@ namespace Jhu.Graywulf.IO
     {
         #region Static members
 
+        public static IOConfiguration Configuration
+        {
+            get
+            {
+                return (IOConfiguration)ConfigurationManager.GetSection("jhu.graywulf/io");
+            }
+        }
+
         /// <summary>
         /// Creates a new factory class derived from StreamFactory
         /// but using the actual class listed in the config files.
@@ -32,6 +41,12 @@ namespace Jhu.Graywulf.IO
             if (typename != null)
             {
                 type = Type.GetType(typename);
+            }
+
+            // Use config file
+            if (Configuration.StreamFactory != null)
+            {
+                type = Type.GetType(Configuration.StreamFactory);
             }
 
             // Fall back logic if config is invalid

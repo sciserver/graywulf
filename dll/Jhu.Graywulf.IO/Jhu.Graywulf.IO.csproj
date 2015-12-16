@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Format\Constants.cs" />
+    <Compile Include="Format\FormatConfiguration.cs" />
     <Compile Include="Format\XHtmlDataFile.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -98,6 +99,7 @@
     <Compile Include="IO\IArchiveEntry.cs" />
     <Compile Include="IO\IArchiveInputStream.cs" />
     <Compile Include="IO\IArchiveOutputStream.cs" />
+    <Compile Include="IO\IOConfiguration.cs" />
     <Compile Include="IO\SharpZipLibWrapper\TarEntry.cs" />
     <Compile Include="IO\SharpZipLibWrapper\TarInputStream.cs" />
     <Compile Include="IO\SharpZipLibWrapper\TarOutputStream.cs" />

@@ -49,6 +49,7 @@
     <Compile Include="Verb.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.original.config" />
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +79,9 @@
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)
 copy $(TargetPath).config $(SolutionDir)$(OutDir)
 copy $(TargetDir)$(TargetName).pdb $(SolutionDir)$(OutDir)</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj $(ProjectName)</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.IO;
+using System.Configuration;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.IO;
 
@@ -18,6 +19,14 @@ namespace Jhu.Graywulf.Format
     {
         #region Static members
 
+        public static FormatConfiguration Configuration
+        {
+            get
+            {
+                return (FormatConfiguration)ConfigurationManager.GetSection("jhu.graywulf/format");
+            }
+        }
+
         public static FileFormatFactory Create(string typename)
         {
             Type type = null;
@@ -25,6 +34,12 @@ namespace Jhu.Graywulf.Format
             if (typename != null)
             {
                 type = Type.GetType(typename);
+            }
+
+            // Use config file
+            if (Configuration.FileFormatFactory != null)
+            {
+                type = Type.GetType(Configuration.FileFormatFactory);
             }
 
             // If config is incorrect, fall back to known types.
