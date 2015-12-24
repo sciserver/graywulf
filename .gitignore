@@ -4,6 +4,7 @@
 dll/Jhu.Graywulf.Install/app.config
 dll/Jhu.Graywulf.Web/app.config
 exe/Jhu.Graywulf.Install.CmdLineUtil/App.config
+exe/Jhu.Graywulf.IO.CmdLineUtil/App.config
 exe/Jhu.Graywulf.Jobs.CmdLineUtil/App.config
 exe/Jhu.Graywulf.Metadata.CmdLineUtil/App.config
 exe/Jhu.Graywulf.RemoteService.Server/App.config
