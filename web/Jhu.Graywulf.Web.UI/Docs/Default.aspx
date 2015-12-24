@@ -3,7 +3,7 @@
 
 <asp:Content ContentPlaceHolderID="Text" runat="server">
     <h3>
-        Welcome to <asp:Label runat="server" ID="FederationNameLabel" /> documentation!</h3>
+        Welcome to the <asp:Label runat="server" ID="FederationNameLabel" /> documentation!</h3>
     <p>
         Click on the topics to the left to view the documentation.</p>
 </asp:Content>
