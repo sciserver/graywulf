@@ -475,7 +475,8 @@ namespace Jhu.Graywulf.Format
         private void OpenOwnStream()
         {
             // Use stream factory to open stream
-            baseStream = (streamFactory ?? Jhu.Graywulf.IO.StreamFactory.Create(null)).Open(uri, credentials, fileMode, compression);
+            var sf = streamFactory ?? Jhu.Graywulf.IO.StreamFactory.Create(null);
+            baseStream = sf.Open(uri, credentials, fileMode, compression);
 
             ownsBaseStream = true;
         }
