@@ -20,6 +20,9 @@ namespace Jhu.Graywulf.Format
         #region Member variables
 
         [NonSerialized]
+        private SqlServerNativeBinaryReader nativeReader;
+
+        [NonSerialized]
         private SqlServerNativeBinaryWriter nativeWriter;
 
         [NonSerialized]
@@ -27,6 +30,12 @@ namespace Jhu.Graywulf.Format
 
         #endregion
         #region Properties
+
+        [IgnoreDataMember]
+        internal SqlServerNativeBinaryReader NativeReader
+        {
+            get { return nativeReader; }
+        }
 
         [IgnoreDataMember]
         internal SqlServerNativeBinaryWriter NativeWriter
@@ -88,6 +97,7 @@ namespace Jhu.Graywulf.Format
                 RequiresRecordCount = false,
             };
 
+            this.nativeReader = null;
             this.nativeWriter = null;
             this.generateSqlScripts = false;
         }
@@ -108,6 +118,8 @@ namespace Jhu.Graywulf.Format
         protected override void OpenForRead()
         {
             base.OpenForRead();
+
+            nativeReader = new SqlServerNativeBinaryReader(new DetachedStream(BaseStream));
         }
 
         protected override void OpenForWrite()

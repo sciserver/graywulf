@@ -19,6 +19,10 @@ namespace Jhu.Graywulf.Format
     public class SqlServerNativeDataFileBlock : DataFileBlockBase, ICloneable
     {
         private delegate void BinaryColumnWriterDelegate(SqlServerNativeBinaryWriter w, object value, DataType type);
+        private delegate void BinaryColumnReaderDelegate(SqlServerNativeBinaryReader r, out object value, DataType type);
+
+        [NonSerialized]
+        private BinaryColumnReaderDelegate[] columnReaders;
 
         [NonSerialized]
         private BinaryColumnWriterDelegate[] columnWriters;
@@ -64,7 +68,8 @@ namespace Jhu.Graywulf.Format
             switch (File.FileMode)
             {
                 case DataFileMode.Read:
-                    throw new NotImplementedException();
+                    CreateColumnReaders();
+                    break;
                 case DataFileMode.Write:
                     CreateColumnWriters();
                     break;
@@ -75,21 +80,35 @@ namespace Jhu.Graywulf.Format
 
         protected internal override void OnReadHeader()
         {
+            // Nothing to do here
         }
 
         protected internal override bool OnReadNextRow(object[] values)
         {
-            return false;
+            try
+            {
+
+                for (int i = 0; i < values.Length; i++)
+                {
+                    columnReaders[i](File.NativeReader, out values[i], Columns[i].DataType);
+                }
+
+                return true;
+            }
+            catch (EndOfStreamException)
+            {
+                return false;
+            }
         }
 
         protected internal override void OnReadToFinish()
         {
-
+            // Nothing to do here
         }
 
         protected internal override void OnReadFooter()
         {
-
+            // Nothing to do here
         }
 
         protected override void OnWriteHeader()
@@ -182,7 +201,428 @@ namespace Jhu.Graywulf.Format
             WriteTextFileEntry("_insert.sql", sql.ToString());
         }
 
-        #region Value writer functions
+        #region Value formatter functions
+
+        /// <summary>
+        /// Creates column writer delegates for fast dispatching
+        /// </summary>
+        private void CreateColumnReaders()
+        {
+            columnReaders = new BinaryColumnReaderDelegate[Columns.Count];
+
+            for (int i = 0; i < columnReaders.Length; i++)
+            {
+                if (!Columns[i].DataType.IsNullable)
+                {
+                    switch (Columns[i].DataType.SqlDbType.Value)
+                    {
+                        case System.Data.SqlDbType.Bit:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlBit(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.TinyInt:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlTinyInt(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.SmallInt:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlSmallInt(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Int:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlInt(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.BigInt:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlBigInt(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Real:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlReal(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Float:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlFloat(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Binary:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlBinary(t.Length, out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.VarBinary:
+                            if (!Columns[i].DataType.IsMaxLength)
+                            {
+                                columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                                {
+                                    r.ReadSqlVarBinary(out v);
+                                };
+                            }
+                            else
+                            {
+                                columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                                {
+                                    r.ReadSqlVarBinaryMax(out v);
+                                };
+                            }
+                            break;
+                        case System.Data.SqlDbType.Image:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlImage(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Char:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlChar(t.Length, out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.VarChar:
+                            if (!Columns[i].DataType.IsMaxLength)
+                            {
+                                columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                                {
+                                    r.ReadSqlVarChar(out v);
+                                };
+                            }
+                            else
+                            {
+                                columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                                {
+                                    r.ReadSqlVarCharMax(out v);
+                                };
+                            }
+                            break;
+                        case System.Data.SqlDbType.Text:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlText(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.NChar:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlNChar(t.Length, out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.NVarChar:
+                            if (!Columns[i].DataType.IsMaxLength)
+                            {
+                                columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                                {
+                                    r.ReadSqlNVarChar(out v);
+                                };
+                            }
+                            else
+                            {
+                                columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                                {
+                                    r.ReadSqlNVarCharMax(out v);
+                                };
+                            }
+                            break;
+                        case System.Data.SqlDbType.NText:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlNText(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Date:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlDate(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.DateTime:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlDateTime(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.DateTime2:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlDateTime2(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.DateTimeOffset:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlDateTimeOffset(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.SmallDateTime:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlSmallDateTime(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Time:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlTime(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Timestamp:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlTimestamp(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Decimal:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlDecimal(out v, t.Precision, t.Scale);
+                            };
+                            break;
+                        case System.Data.SqlDbType.SmallMoney:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlSmallMoney(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Money:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlMoney(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.UniqueIdentifier:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadSqlUniqueIdentifier(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Variant:
+                        case System.Data.SqlDbType.Xml:
+                        case System.Data.SqlDbType.Structured:
+                        case System.Data.SqlDbType.Udt:
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+                else
+                {
+                    switch (Columns[i].DataType.SqlDbType.Value)
+                    {
+                        case System.Data.SqlDbType.Bit:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlBit(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.TinyInt:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlTinyInt(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.SmallInt:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlSmallInt(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Int:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlInt(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.BigInt:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlBigInt(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Real:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlReal(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Float:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlFloat(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Binary:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlBinary(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.VarBinary:
+                            if (!Columns[i].DataType.IsMaxLength)
+                            {
+                                columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                                {
+                                    r.ReadNullableSqlBinary(out v);
+                                };
+                            }
+                            else
+                            {
+                                columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                                {
+                                    r.ReadNullableSqlVarBinaryMax(out v);
+                                };
+                            }
+                            break;
+                        case System.Data.SqlDbType.Image:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlImage(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Char:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlChar(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.VarChar:
+                            if (!Columns[i].DataType.IsMaxLength)
+                            {
+                                columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                                {
+                                    r.ReadNullableSqlVarChar(out v);
+                                };
+                            }
+                            else
+                            {
+                                columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                                {
+                                    r.ReadNullableSqlVarCharMax(out v);
+                                };
+                            }
+                            break;
+                        case System.Data.SqlDbType.Text:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlText(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.NChar:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlNChar(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.NVarChar:
+                            if (!Columns[i].DataType.IsMaxLength)
+                            {
+                                columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                                {
+                                    r.ReadNullableSqlNChar(out v);
+                                };
+                            }
+                            else
+                            {
+                                columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                                {
+                                    r.ReadNullableSqlNVarCharMax(out v);
+                                };
+                            }
+                            break;
+                        case System.Data.SqlDbType.NText:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlNText(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Date:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlDate(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.DateTime:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlDateTime(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.DateTime2:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlDateTime2(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.DateTimeOffset:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlDateTimeOffset(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.SmallDateTime:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlSmallDateTime(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Time:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlTime(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Timestamp:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlTimestamp(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Decimal:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlDecimal(out v, t.Precision, t.Scale);
+                            };
+                            break;
+                        case System.Data.SqlDbType.SmallMoney:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlSmallMoney(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.Money:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlMoney(out v);
+                            };
+                            break;
+                        case System.Data.SqlDbType.UniqueIdentifier:
+                            columnReaders[i] = delegate(SqlServerNativeBinaryReader r, out object v, DataType t)
+                            {
+                                r.ReadNullableSqlUniqueIdentifier(out v);
+                            };
+                            break;
+
+                        case System.Data.SqlDbType.Variant:
+                        case System.Data.SqlDbType.Xml:
+                        case System.Data.SqlDbType.Structured:
+                        case System.Data.SqlDbType.Udt:
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Creates column writer delegates for fast dispatching

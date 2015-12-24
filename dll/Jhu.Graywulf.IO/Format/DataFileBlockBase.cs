@@ -164,7 +164,7 @@ namespace Jhu.Graywulf.Format
         /// Call this function to set column list from derived classes
         /// </summary>
         /// <param name="dataReaderColumns"></param>
-        protected void CreateColumns(IList<Column> dataReaderColumns)
+        public void CreateColumns(IList<Column> dataReaderColumns)
         {
             this.columns.Clear();
 

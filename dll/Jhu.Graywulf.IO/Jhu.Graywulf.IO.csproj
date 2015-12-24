@@ -106,6 +106,7 @@
     <Compile Include="IO\SharpZipLibWrapper\ZipEntry.cs" />
     <Compile Include="IO\SharpZipLibWrapper\ZipInputStream.cs" />
     <Compile Include="IO\SharpZipLibWrapper\ZipOutputStream.cs" />
+    <Compile Include="IO\SqlServerNativeBinaryReader.cs" />
     <Compile Include="IO\SqlServerNativeBinaryWriter.cs" />
     <Compile Include="IO\StreamFactory.cs" />
     <Compile Include="IO\Tasks\CopyTableArchiveBase.cs" />

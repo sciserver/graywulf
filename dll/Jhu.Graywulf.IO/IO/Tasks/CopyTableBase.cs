@@ -275,17 +275,29 @@ namespace Jhu.Graywulf.IO.Tasks
                 // a collection
                 //do
                 //{
-                    var sdr = (ISmartDataReader)dr;
+                var sdr = (ISmartDataReader)dr;
 
-                    // DestinationTable has the property TableNameTemplate which needs to
-                    // be evaluated now
-                    var table = destination.GetTable(batchName, cmd.Name, sdr.Name, sdr.Metadata);
-                    table.Initialize(sdr.Columns, destination.Options);
+                // DestinationTable has the property TableNameTemplate which needs to
+                // be evaluated now
+                var table = destination.GetTable(batchName, cmd.Name, sdr.Name, sdr.Metadata);
 
-                    result.SchemaName = table.SchemaName;
-                    result.TableName = table.ObjectName;
+                // Certain data readers cannot determine the columns from the data file,
+                // (for instance, SqlServerNativeBinaryReader), hence we need to copy columns
+                // from the destination table instead
+                if ((destination.Options & TableInitializationOptions.Create) == 0 &&
+                    sdr is FileDataReader &&
+                    (sdr.Columns == null || sdr.Columns.Count == 0))
+                {
+                    var fdr = (FileDataReader)sdr;
+                    fdr.CreateColumns(new List<Column>(table.Columns.Values.OrderBy(c => c.ID)));
+                }
 
-                    ExecuteBulkCopy(dr, table, result);
+                table.Initialize(sdr.Columns, destination.Options);
+
+                result.SchemaName = table.SchemaName;
+                result.TableName = table.ObjectName;
+
+                ExecuteBulkCopy(dr, table, result);
                 //}
                 //while (dr.NextResult());
             });
@@ -348,7 +360,7 @@ namespace Jhu.Graywulf.IO.Tasks
             // has to be set to zero and table locking has to be set on. This prevents
             // writing the data into the transaction log prior to copying it to
             // the table. The database recovery model needs to be set to simple.            
-            
+
             // TODO: it can only import the first resultset from dr
             var cg = new SqlServerCodeGenerator();
 

@@ -22,8 +22,6 @@ namespace Jhu.Graywulf.Format
         private int blockCounter;
         private long rowCounter;
 
-        private List<TypeMapping> typeMappings;
-
         #endregion
         #region IDataReader properties
 
@@ -88,7 +86,7 @@ namespace Jhu.Graywulf.Format
         {
             get
             {
-                return typeMappings;
+                return file.CurrentBlock.ColumnTypeMappings;
             }
         }
 
@@ -280,9 +278,9 @@ namespace Jhu.Graywulf.Format
         {
             var value = rowValues[i];
 
-            if (value != null && value != DBNull.Value && typeMappings[i] != null)
+            if (value != null && value != DBNull.Value && TypeMappings[i] != null)
             {
-                return typeMappings[i].Mapping(rowValues[i]);
+                return TypeMappings[i].Mapping(rowValues[i]);
             }
             else
             {
@@ -296,9 +294,9 @@ namespace Jhu.Graywulf.Format
             {
                 var value = rowValues[i];
 
-                if (value != null && value != DBNull.Value && typeMappings[i] != null)
+                if (value != null && value != DBNull.Value && TypeMappings[i] != null)
                 {
-                    values[i] = typeMappings[i].Mapping(value);
+                    values[i] = TypeMappings[i].Mapping(value);
                 }
                 else
                 {
@@ -386,6 +384,10 @@ namespace Jhu.Graywulf.Format
 
         #endregion
 
+        internal void CreateColumns(IList<Column> columns)
+        {
+            file.CurrentBlock.CreateColumns(columns);
+        }
 
         private void InitializeColumns()
         {
@@ -394,7 +396,6 @@ namespace Jhu.Graywulf.Format
 
             columnIndex = new Dictionary<string, int>();
             rowValues = new object[colc];
-            typeMappings = new List<TypeMapping>();
 
             for (int i = 0; i < colc; i++)
             {
@@ -404,8 +405,6 @@ namespace Jhu.Graywulf.Format
                 {
                     ids.Add(i);
                 }
-
-                typeMappings.Add(file.CurrentBlock.ColumnTypeMappings[i]);
             }
 
             isIdentity = ids.ToArray();

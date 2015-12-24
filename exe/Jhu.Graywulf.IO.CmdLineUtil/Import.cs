@@ -16,6 +16,8 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
     class Import : DatabaseVerbBase
     {
         private string table;
+        private bool createTable;
+        private bool generateIdentity;
         private string filename;
 
         [Parameter(Name = "Table", Description = "Destination table", Required = true)]
@@ -23,6 +25,20 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
         {
             get { return table; }
             set { table = value; }
+        }
+
+        [Option(Name = "CreateTable", Description = "Create destination table", Required = false)]
+        public bool CreateTable
+        {
+            get { return createTable; }
+            set { createTable = value; }
+        }
+
+        [Option(Name = "Identity", Description = "Generate identity column", Required = false)]
+        public bool GenerateIdentity
+        {
+            get { return generateIdentity; }
+            set { generateIdentity = value; }
         }
 
         [Parameter(Name = "Filename", Description = "Input file name", Required = true)]
@@ -40,6 +56,8 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
         private void InitializeMembers()
         {
             this.table = null;
+            this.createTable = false;
+            this.generateIdentity = false;
             this.filename = null;
         }
 
@@ -57,6 +75,7 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
             };
 
             var source = ff.CreateFile(filename);
+            source.GenerateIdentityColumn = generateIdentity;
 
             var destination = new DestinationTable()
             {
@@ -65,6 +84,11 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
                 TableNamePattern = table,
                 Options = TableInitializationOptions.Clear,      
             };
+
+            if (createTable)
+            {
+                destination.Options |= TableInitializationOptions.Create;
+            }
 
             // Create task
             var import = new ImportTable()
