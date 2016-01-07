@@ -313,7 +313,26 @@ namespace Jhu.Graywulf.Metadata
 
                         var tag = element.OwnerDocument.CreateElement(tagname);
                         tag.SetAttribute("name", name);
-                        tag.InnerXml = buffer.ToString();
+
+                        try
+                        {
+                            tag.InnerXml = buffer.ToString();
+                        }
+                        catch (XmlException ex)
+                        {
+                            // Get line from xml
+                            string line = null;
+                            var r = new StringReader(buffer.ToString());
+                            for (int q = 0; q < ex.LineNumber; q++)
+                            {
+                                line = r.ReadLine();
+                            }
+
+                            Console.WriteLine();
+                            Console.WriteLine(line);
+                            Console.WriteLine("{0}^", new String(' ', ex.LinePosition - 1));
+                            throw new Exception(String.Format("Error in XML at {0}, {1}", ex.LineNumber, ex.LinePosition));
+                        }
 
                         // Reset the buffer
                         buffer.Clear();
