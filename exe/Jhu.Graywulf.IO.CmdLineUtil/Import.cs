@@ -18,7 +18,9 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
         private string table;
         private bool createTable;
         private bool generateIdentity;
+        private string order;
         private string filename;
+        private int timeout;
 
         [Parameter(Name = "Table", Description = "Destination table", Required = true)]
         public string Table
@@ -41,11 +43,25 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
             set { generateIdentity = value; }
         }
 
+        [Parameter(Name = "Order", Description = "Specify ordering of input", Required = false)]
+        public string Order
+        {
+            get { return order; }
+            set { order = value; }
+        }
+
         [Parameter(Name = "Filename", Description = "Input file name", Required = true)]
         public string Filename
         {
             get { return filename; }
             set { filename = value; }
+        }
+
+        [Parameter(Name = "Timeout", Description = "Bulk insert timeout", Required = false)]
+        public int Timeout
+        {
+            get { return timeout; }
+            set { timeout = value; }
         }
 
         public Import()
@@ -58,7 +74,9 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
             this.table = null;
             this.createTable = false;
             this.generateIdentity = false;
+            this.order = null;
             this.filename = null;
+            this.timeout = 0;
         }
 
         public override void Run()
@@ -95,6 +113,7 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
             {
                 Source = source,
                 Destination = destination,
+                Timeout = timeout,
             };
 
             Console.WriteLine("Importing table...");

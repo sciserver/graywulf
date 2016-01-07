@@ -9,7 +9,7 @@ using Jhu.Graywulf.Data;
 
 namespace Jhu.Graywulf.Format
 {
-    public class FileDataReader : ISmartDataReader
+    public class FileDataReader : DbDataReader, ISmartDataReader
     {
         #region Private member variables
 
@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region IDataReader properties
 
-        public int Depth
+        public override int Depth
         {
             get
             {
@@ -34,27 +34,27 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        public bool IsClosed
+        public override bool IsClosed
         {
             get { return file.IsClosed; }
         }
 
-        public int RecordsAffected
+        public override int RecordsAffected
         {
             get { return -1; }
         }
 
-        public object this[string name]
+        public override object this[string name]
         {
             get { return rowValues[columnIndex[name]]; }
         }
 
-        public object this[int i]
+        public override object this[int i]
         {
             get { return rowValues[i]; }
         }
 
-        public int FieldCount
+        public override int FieldCount
         {
             get { return file.CurrentBlock.Columns.Count; }
         }
@@ -80,6 +80,14 @@ namespace Jhu.Graywulf.Format
         public List<Column> Columns
         {
             get { return file.CurrentBlock.Columns; }
+        }
+
+        public override bool HasRows
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public List<TypeMapping> TypeMappings
@@ -123,7 +131,7 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region IDataReader functions
 
-        public bool NextResult()
+        public override bool NextResult()
         {
             if (file.ReadNextBlock() != null)
             {
@@ -141,9 +149,9 @@ namespace Jhu.Graywulf.Format
         /// Reads the next row from the data file's current block.
         /// </summary>
         /// <returns></returns>
-        public bool Read()
+        public override bool Read()
         {
-            if (rowCounter == -1)
+            if (rowCounter == -1 && columnIndex == null)
             {
                 InitializeColumns();
             }
@@ -166,7 +174,7 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        public void Close()
+        public override void Close()
         {
             file.Close();
         }
@@ -174,7 +182,7 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region IDataReader schema functions
 
-        public DataTable GetSchemaTable()
+        public override DataTable GetSchemaTable()
         {
             DataTable dt = new DataTable();
 
@@ -240,27 +248,27 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Field functions
 
-        public string GetDataTypeName(int i)
+        public override string GetDataTypeName(int i)
         {
             return file.CurrentBlock.Columns[i].DataType.Name;
         }
 
-        public Type GetFieldType(int i)
+        public override Type GetFieldType(int i)
         {
             return file.CurrentBlock.Columns[i].DataType.Type;
         }
 
-        public string GetName(int i)
+        public override string GetName(int i)
         {
             return file.CurrentBlock.Columns[i].Name;
         }
 
-        public int GetOrdinal(string name)
+        public override int GetOrdinal(string name)
         {
             return columnIndex[name];
         }
 
-        public bool IsDBNull(int i)
+        public override bool IsDBNull(int i)
         {
             return rowValues[i] == null;
         }
@@ -268,13 +276,7 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Field accessors
 
-        public IDataReader GetData(int i)
-        {
-            // This is supposed to be used with hierarchical data
-            throw new NotImplementedException();
-        }
-
-        public object GetValue(int i)
+        public override object GetValue(int i)
         {
             var value = rowValues[i];
 
@@ -288,7 +290,7 @@ namespace Jhu.Graywulf.Format
             }
         }
 
-        public int GetValues(object[] values)
+        public override int GetValues(object[] values)
         {
             for (int i = 0; i < rowValues.Length; i++)
             {
@@ -307,13 +309,26 @@ namespace Jhu.Graywulf.Format
             return rowValues.Length;
         }
 
-        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
+        public override long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
         {
-            // TODO: implement
-            throw new NotImplementedException();
+            var data = (byte[])rowValues[i];
+            long res;
+
+            if (fieldOffset + length <= data.Length)
+            {
+                res = length;
+            }
+            else
+            {
+                res = data.LongLength - fieldOffset;
+            }
+
+            Array.Copy(data, fieldOffset, buffer, bufferoffset, res);
+            
+            return res;
         }
 
-        public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
+        public override long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
         {
             // TODO: implement
             throw new NotImplementedException();
@@ -322,62 +337,62 @@ namespace Jhu.Graywulf.Format
         #endregion
         #region Strongly type field accessors
 
-        public bool GetBoolean(int i)
+        public override bool GetBoolean(int i)
         {
             return (bool)rowValues[i];
         }
 
-        public byte GetByte(int i)
+        public override byte GetByte(int i)
         {
             return (byte)rowValues[i];
         }
 
-        public short GetInt16(int i)
+        public override short GetInt16(int i)
         {
             return (Int16)rowValues[i];
         }
 
-        public int GetInt32(int i)
+        public override int GetInt32(int i)
         {
             return (Int32)rowValues[i];
         }
 
-        public long GetInt64(int i)
+        public override long GetInt64(int i)
         {
             return (Int64)rowValues[i];
         }
 
-        public float GetFloat(int i)
+        public override float GetFloat(int i)
         {
             return (float)rowValues[i];
         }
 
-        public double GetDouble(int i)
+        public override double GetDouble(int i)
         {
             return (double)rowValues[i];
         }
 
-        public decimal GetDecimal(int i)
+        public override decimal GetDecimal(int i)
         {
             return (decimal)rowValues[i];
         }
 
-        public Guid GetGuid(int i)
+        public override Guid GetGuid(int i)
         {
             return (Guid)rowValues[i];
         }
 
-        public DateTime GetDateTime(int i)
+        public override DateTime GetDateTime(int i)
         {
             return (DateTime)rowValues[i];
         }
 
-        public char GetChar(int i)
+        public override char GetChar(int i)
         {
             return (char)rowValues[i];
         }
 
-        public string GetString(int i)
+        public override string GetString(int i)
         {
             return (string)rowValues[i];
         }
@@ -408,6 +423,11 @@ namespace Jhu.Graywulf.Format
             }
 
             isIdentity = ids.ToArray();
+        }
+
+        public override System.Collections.IEnumerator GetEnumerator()
+        {
+            throw new NotImplementedException();
         }
     }
 }
