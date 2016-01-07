@@ -49,25 +49,35 @@ namespace Jhu.Graywulf.Metadata.CmdLineUtil
             var meta = File.ReadAllText(inputFilename);
 
             var p = new Parser();
-            var xml = p.Parse(meta);
+
+            try
+            {
+                var xml = p.Parse(meta);
+
+                Console.WriteLine("done.");
+
+                string filename;
+                if (String.IsNullOrEmpty(outputFilename))
+                {
+                    filename = inputFilename + ".xml";
+                }
+                else
+                {
+                    filename = outputFilename;
+                }
+
+                Console.Write("Saving XML... ");
+
+                xml.Save(filename);
+
+                Console.WriteLine("done.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: {0}", ex.Message);
+            }
             
-            Console.WriteLine("done.");
-
-            string filename;
-            if (String.IsNullOrEmpty(outputFilename))
-            {
-                filename = inputFilename + ".xml";
-            }
-            else
-            {
-                filename = outputFilename;
-            }
-
-            Console.Write("Saving XML... ");
-
-            xml.Save(filename);
-
-            Console.WriteLine("done.");
+            
         }
     }
 }
