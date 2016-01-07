@@ -298,8 +298,15 @@ namespace Jhu.Graywulf.IO
 
         public void ReadSqlChar(int size, out object value)
         {
-            reader.Read(buffer, 0, size);
-            value = encoding.GetString(buffer, 0, size);
+            if (size == 0)
+            {
+                value = String.Empty;
+            }
+            else
+            {
+                reader.Read(buffer, 0, size);
+                value = encoding.GetString(buffer, 0, size);
+            }
         }
 
         public void ReadNullableSqlChar(out object value)
@@ -390,8 +397,15 @@ namespace Jhu.Graywulf.IO
 
         public void ReadSqlNChar(int size, out object value)
         {
-            reader.Read(buffer, 0, size);
-            value = Encoding.Unicode.GetString(buffer, 0, size);
+            if (size == 0)
+            {
+                value = String.Empty;
+            }
+            else
+            {
+                reader.Read(buffer, 0, size);
+                value = Encoding.Unicode.GetString(buffer, 0, size);
+            }
         }
 
         public void ReadNullableSqlNChar(out object value)

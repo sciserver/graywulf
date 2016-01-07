@@ -11,6 +11,11 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
     {
         static void Main(string[] args)
         {
+            if (!Environment.Is64BitProcess)
+            {
+                throw new Exception("Must be run as a 64 bit process.");
+            }
+
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
             List<Type> verbs = new List<Type>() { typeof(Export), typeof(Import) };

@@ -108,13 +108,13 @@ namespace Jhu.Graywulf.IO.Tasks
         /// is to be cancelled.
         /// </summary>
         [NonSerialized]
-        private bool isBulkCopyCancelRequested;
+        protected bool isBulkCopyCancelRequested;
 
         /// <summary>
         /// Synchronizes the class to the end of the bulk copy operation.
         /// </summary>
         [NonSerialized]
-        private EventWaitHandle bulkCopyFinishedEvent;
+        protected EventWaitHandle bulkCopyFinishedEvent;
 
         #endregion
         #region Properties
@@ -297,7 +297,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 result.SchemaName = table.SchemaName;
                 result.TableName = table.ObjectName;
 
-                ExecuteBulkCopy(dr, table, result);
+                ExecuteBulkCopy((System.Data.Common.DbDataReader)dr, table, result);
                 //}
                 //while (dr.NextResult());
             });
@@ -354,7 +354,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// Executest bulk copy to ingest data from the DataReader
         /// </summary>
         /// <param name="dr"></param>
-        protected void ExecuteBulkCopy(IDataReader dr, Table destination, TableCopyResult result)
+        protected virtual void ExecuteBulkCopy(System.Data.Common.DbDataReader dr, Table destination, TableCopyResult result)
         {
             // Bulk insert is a tricky animal. To get best performance, batch size
             // has to be set to zero and table locking has to be set on. This prevents
@@ -381,7 +381,7 @@ namespace Jhu.Graywulf.IO.Tasks
             };
 
             // Initialize events
-            sbc.SqlRowsCopied += delegate(object sender, SqlRowsCopiedEventArgs e)
+            sbc.SqlRowsCopied += delegate(object sender, System.Data.SqlClient.SqlRowsCopiedEventArgs e)
             {
                 e.Abort = isBulkCopyCancelRequested;
                 result.RecordsAffected = e.RowsCopied;
