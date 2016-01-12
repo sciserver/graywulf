@@ -64,8 +64,7 @@ namespace Jhu.Graywulf.Web.Auth
             var ip = IdentityProvider.Create(RegistryContext.Domain);
 
             user.Name = Username.Text.Trim();
-            ip.CreateUser(user);
-            ip.ResetPassword(user, Password.Text);
+            ip.CreateUser(user, Password.Text);
 
             // If user signed in with a temporary identity that means
             // it's a postback from a foreign identity provider. In this case

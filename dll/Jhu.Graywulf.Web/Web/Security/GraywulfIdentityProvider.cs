@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Web.Security
                     // If the user is still not found, create an entirely new user
                     if (user == null)
                     {
-                        CreateUserInternal(identity.User);
+                        CreateUserInternal(identity.User, null);
                         user = identity.User;
                     }
 
@@ -160,15 +160,20 @@ namespace Jhu.Graywulf.Web.Security
             }
         }
 
-        protected override void OnCreateUser(User user)
+        protected override void OnCreateUser(User user, string password)
         {
-            CreateUserInternal(user);
+            CreateUserInternal(user, password);
         }
 
-        private void CreateUserInternal(User user)
+        private void CreateUserInternal(User user, string password)
         {
             user.Context = Context;
             user.ParentReference.Value = Context.Domain;
+
+            if (password != null)
+            {
+                user.SetPassword(password);
+            }
 
             user.Save();
 
@@ -312,10 +317,14 @@ namespace Jhu.Graywulf.Web.Security
             ResetPassword(user, newPassword);
         }
 
+        /// <summary>
+        /// Changes the user's password and resets the activation code.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="newPassword"></param>
         public override void ResetPassword(User user, string newPassword)
         {
             user.SetPassword(newPassword);
-
             user.ActivationCode = String.Empty;
             user.Save();
         }

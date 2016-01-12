@@ -128,7 +128,7 @@ namespace Jhu.Graywulf.Web.Security
         /// Creates a new user.
         /// </summary>
         /// <param name="user"></param>
-        public void CreateUser(User user)
+        public void CreateUser(User user, string password)
         {
             // Set user activity status
             // Set user activity status depending on settings
@@ -141,7 +141,7 @@ namespace Jhu.Graywulf.Web.Security
                 user.Activate();
             }
 
-            OnCreateUser(user);
+            OnCreateUser(user, password);
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace Jhu.Graywulf.Web.Security
         /// user.
         /// </summary>
         /// <param name="user"></param>
-        protected abstract void OnCreateUser(User user);
+        protected abstract void OnCreateUser(User user, string password);
 
         /// <summary>
         /// Appends an identity (OpenID, etc.) to the user

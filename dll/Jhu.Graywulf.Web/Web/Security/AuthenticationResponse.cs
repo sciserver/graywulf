@@ -85,8 +85,9 @@ namespace Jhu.Graywulf.Web.Security
         public void AddFormsAuthenticationTicket(bool createPersistentCookie)
         {
             var cookie = System.Web.Security.FormsAuthentication.GetAuthCookie(
-                this.principal.Identity.User.GetFullyQualifiedName(), 
-                createPersistentCookie);
+                this.principal.Identity.User.GetFullyQualifiedName(),
+                createPersistentCookie,
+                System.Web.Security.FormsAuthentication.FormsCookiePath);
 
             cookies.Add(cookie);
         }
