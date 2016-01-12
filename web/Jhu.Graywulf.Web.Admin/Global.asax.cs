@@ -35,8 +35,7 @@ namespace Jhu.Graywulf.Web.Admin
         }
 
         protected override void OnUserLeft(GraywulfPrincipal principal)
-        {
-            
+        {   
         }
     }
 }
