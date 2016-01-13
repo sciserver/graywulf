@@ -44,9 +44,14 @@ namespace Jhu.Graywulf.Registry
         ServerInstance = Cluster | 0x0400,
 
         /// <summary>
+        /// Logical disk group
+        /// </summary>
+        DiskGroup = Cluster | 0x0500,
+
+        /// <summary>
         /// Logical disk volume
         /// </summary>
-        DiskVolume = Cluster | 0x0500,
+        DiskVolume = Cluster | 0x0600,
 
         AllCluster = Cluster | 0xFFFF,
 

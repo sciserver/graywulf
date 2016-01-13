@@ -16,13 +16,14 @@ namespace Jhu.Graywulf.Registry
         #region Member Variables
 
         // --- Background storage for properties ---
-        private DiskVolumeType diskVolumeType;
+        private DiskVolumeType type;
         private ExpressionProperty localPath;
         private ExpressionProperty uncPath;
         private long fullSpace;
         private long allocatedSpace;
         private long reservedSpace;
-        private long speed;
+        private long readBandwidth;
+        private long writeBandwidth;
 
         #endregion
         #region Member Access Properties
@@ -43,10 +44,10 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the type of the disk volume according to its designation like System, Data etc.
         /// </summary>
         [DBColumn]
-        public DiskVolumeType DiskVolumeType
+        public DiskVolumeType Type
         {
-            get { return diskVolumeType; }
-            set { diskVolumeType = value; }
+            get { return type; }
+            set { type = value; }
         }
 
         /// <summary>
@@ -112,26 +113,37 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         [DBColumn]
         [DefaultValue(0)]
-        public long Speed
+        public long ReadBandwidth
         {
-            get { return speed; }
-            set { speed = value; }
+            get { return readBandwidth; }
+            set { readBandwidth = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum bandwidth information of the disk volume in bytes per second.
+        /// </summary>
+        [DBColumn]
+        [DefaultValue(0)]
+        public long WriteBandwidth
+        {
+            get { return writeBandwidth; }
+            set { writeBandwidth = value; }
         }
 
         #endregion
         #region Navigation Properties
 
         /// <summary>
-        /// Gets the <b>Machine</b> object to which the <b>Disk Volume</b> belongs.
+        /// Gets the <b>Disk Group</b> object to which the <b>Disk Volume</b> belongs.
         /// </summary>
         /// <remarks>
         /// This property does do lazy loading, no calling of a loader function is necessary, but
         /// a valid object context with an open database connection must be set.
         /// </remarks>
         [XmlIgnore]
-        public Machine Machine
+        public DiskGroup DiskGroup
         {
-            get { return (Machine)ParentReference.Value; }
+            get { return (DiskGroup)ParentReference.Value; }
         }
 
         #endregion
@@ -166,7 +178,7 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity in the entity hierarchy.</param>
-        public DiskVolume(Machine parent)
+        public DiskVolume(DiskGroup parent)
             : base(parent.Context, parent)
         {
             InitializeMembers();
@@ -190,13 +202,14 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            this.diskVolumeType = DiskVolumeType.Unknown;
+            this.type = DiskVolumeType.Unknown;
             this.localPath = new ExpressionProperty(this, Constants.DiskVolumeLocalPath);
             this.uncPath = new ExpressionProperty(this, Constants.DiskVolumeUncPath);
             this.fullSpace = 0;
             this.allocatedSpace = 0;
             this.reservedSpace = 0;
-            this.speed = 0;
+            this.readBandwidth = 0;
+            this.writeBandwidth = 0;
         }
 
         /// <summary>
@@ -205,13 +218,14 @@ namespace Jhu.Graywulf.Registry
         /// <param name="old">A <b>Disk Volume</b> object to create the deep copy from.</param>
         private void CopyMembers(DiskVolume old)
         {
-            this.diskVolumeType = old.diskVolumeType;
+            this.type = old.type;
             this.localPath = new ExpressionProperty(old.localPath);
             this.uncPath = new ExpressionProperty(old.uncPath);
             this.fullSpace = old.fullSpace;
             this.allocatedSpace = old.allocatedSpace;
             this.reservedSpace = old.reservedSpace;
-            this.speed = old.speed;
+            this.readBandwidth = old.readBandwidth;
+            this.writeBandwidth = old.writeBandwidth;
         }
 
         public override object Clone()

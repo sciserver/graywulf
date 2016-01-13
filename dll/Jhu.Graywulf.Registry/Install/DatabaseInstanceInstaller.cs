@@ -141,8 +141,13 @@ namespace Jhu.Graywulf.Install
             List<DiskVolume> diskVolumes = new List<DiskVolume>();
             if (dataDiskVolumes == null)
             {
-                fg.DatabaseInstance.ServerInstance.Machine.LoadDiskVolumes(false);
-                diskVolumes.AddRange(fg.DatabaseInstance.ServerInstance.Machine.DiskVolumes.Values.Where<DiskVolume>(d => (d.DiskVolumeType & fg.FileGroup.DiskVolumeType) > 0).OrderBy(i => i.Number));
+                // TODO
+                // modify this to associate correctly with disk group
+
+                throw new NotImplementedException();
+
+                //fg.DatabaseInstance.ServerInstance.Machine.LoadDiskVolumes(false);
+                //diskVolumes.AddRange(fg.DatabaseInstance.ServerInstance.Machine.DiskVolumes.Values.Where<DiskVolume>(d => (d.DiskVolumeType & fg.FileGroup.DiskGroupType) > 0).OrderBy(i => i.Number));
             }
             else
             {

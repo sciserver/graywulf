@@ -65,6 +65,7 @@
     <Compile Include="Install\InstallerBase.cs" />
     <Compile Include="Install\UserDatabaseInstanceInstaller.cs" />
     <Compile Include="Registry\Check\EntityCheck.cs" />
+    <Compile Include="Registry\DiskGroup.cs" />
     <Compile Include="Registry\Error.cs" />
     <Compile Include="Registry\FederationContext.cs" />
     <Compile Include="Registry\JobInstanceDependency.cs" />

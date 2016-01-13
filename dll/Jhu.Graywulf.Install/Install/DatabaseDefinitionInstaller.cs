@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Install
                 FileGroupType = FileGroupType.Data,
                 LayoutType = fglayout,
                 AllocationType = FileGroupAllocationType.CrossVolume,
-                DiskVolumeType = DiskVolumeType.Data,
+                DiskGroupType = DiskVolumeType.Data,
                 FileGroupName = Constants.PrimaryFileGroupName,
                 AllocatedSpace = Constants.PrimaryFileGroupSize,
                 FileCount = 0,
@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.Install
                 FileGroupType = FileGroupType.Log,
                 LayoutType = FileGroupLayoutType.Monolithic,
                 AllocationType = FileGroupAllocationType.CrossVolume,
-                DiskVolumeType = DiskVolumeType.Log,
+                DiskGroupType = DiskVolumeType.Log,
                 FileGroupName = Constants.LogFileGroupName,
                 AllocatedSpace = Constants.LogFileGroupSize,
                 FileCount = 0
