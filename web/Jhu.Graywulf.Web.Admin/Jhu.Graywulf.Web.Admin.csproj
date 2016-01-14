@@ -96,13 +96,17 @@
     <Content Include="Cluster\ClusterDetails.aspx" />
     <Content Include="Cluster\ClusterForm.aspx" />
     <Content Include="Cluster\Default.aspx" />
+    <Content Include="Cluster\ServerInstanceDiskGroupDetails.aspx" />
     <Content Include="Cluster\DiskVolumeDetails.aspx" />
+    <Content Include="Cluster\DiskGroupForm.aspx" />
     <Content Include="Cluster\DiskVolumeForm.aspx" />
+    <Content Include="Cluster\DiskGroupDetails.aspx" />
     <Content Include="Cluster\MachineDetails.aspx" />
     <Content Include="Cluster\MachineForm.aspx" />
     <Content Include="Cluster\MachineRoleDetails.aspx" />
     <Content Include="Cluster\MachineRoleForm.aspx" />
     <Content Include="Cluster\ServerInstanceDetails.aspx" />
+    <Content Include="Cluster\ServerInstanceDiskGroupForm.aspx" />
     <Content Include="Cluster\ServerInstanceForm.aspx" />
     <Content Include="Cluster\ServerVersionDetails.aspx" />
     <Content Include="Cluster\ServerVersionForm.aspx" />
@@ -626,6 +630,13 @@
     <Compile Include="Cluster\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Cluster\ServerInstanceDiskGroupDetails.aspx.cs">
+      <DependentUpon>ServerInstanceDiskGroupDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Cluster\ServerInstanceDiskGroupDetails.aspx.designer.cs">
+      <DependentUpon>ServerInstanceDiskGroupDetails.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Cluster\DiskVolumeDetails.aspx.cs">
       <DependentUpon>DiskVolumeDetails.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -633,12 +644,26 @@
     <Compile Include="Cluster\DiskVolumeDetails.aspx.designer.cs">
       <DependentUpon>DiskVolumeDetails.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Cluster\DiskGroupForm.aspx.cs">
+      <DependentUpon>DiskGroupForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Cluster\DiskGroupForm.aspx.designer.cs">
+      <DependentUpon>DiskGroupForm.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Cluster\DiskVolumeForm.aspx.cs">
       <DependentUpon>DiskVolumeForm.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cluster\DiskVolumeForm.aspx.designer.cs">
       <DependentUpon>DiskVolumeForm.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Cluster\DiskGroupDetails.aspx.cs">
+      <DependentUpon>DiskGroupDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Cluster\DiskGroupDetails.aspx.designer.cs">
+      <DependentUpon>DiskGroupDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\MachineDetails.aspx.cs">
       <DependentUpon>MachineDetails.aspx</DependentUpon>
@@ -674,6 +699,13 @@
     </Compile>
     <Compile Include="Cluster\ServerInstanceDetails.aspx.designer.cs">
       <DependentUpon>ServerInstanceDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Cluster\ServerInstanceDiskGroupForm.aspx.cs">
+      <DependentUpon>ServerInstanceDiskGroupForm.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Cluster\ServerInstanceDiskGroupForm.aspx.designer.cs">
+      <DependentUpon>ServerInstanceDiskGroupForm.aspx</DependentUpon>
     </Compile>
     <Compile Include="Cluster\ServerInstanceForm.aspx.cs">
       <DependentUpon>ServerInstanceForm.aspx</DependentUpon>

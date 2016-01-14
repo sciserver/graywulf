@@ -33,14 +33,12 @@
     <jgwac:EntityButtons runat="server" ID="EntityButtons" RunningStateButtonsVisible="true" />
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="FormTabs">
-    <jgwac:EntityChildren ID="EntityChildren1" runat="server">
-        <jgwac:EntityList runat="server" ID="DiskVolumeList" ChildrenType="DiskVolume" EntityGroup="Cluster">
+    <jgwac:EntityChildren runat="server" ID="EntityChildren">
+        <jgwac:EntityList runat="server" ID="DiskGroupList" ChildrenType="DiskGroup" EntityGroup="Cluster">
             <columns>
-                        <asp:BoundField DataField="DiskVolumeType" HeaderText="Type" />
-                        <asp:BoundField DataField="FullSpace" HeaderText="Full Space" />
-                        <jgwc:ExpressionPropertyField DataField="LocalPath" HeaderText="Local Path" />
-                        <jgwc:ExpressionPropertyField DataField="UncPath" HeaderText="UNC Path" />
-                    </columns>
+                <asp:BoundField DataField="Type" HeaderText="Type" />
+                <asp:BoundField DataField="FullSpace" HeaderText="Full Space" />
+            </columns>
         </jgwac:EntityList>
         <jgwac:EntityList runat="server" ID="ServerInstanceList" ChildrenType="ServerInstance"
             EntityGroup="Cluster" />

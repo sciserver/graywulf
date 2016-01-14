@@ -65,11 +65,14 @@
     <Compile Include="Install\InstallerBase.cs" />
     <Compile Include="Install\UserDatabaseInstanceInstaller.cs" />
     <Compile Include="Registry\Check\EntityCheck.cs" />
+    <Compile Include="Registry\ServerInstanceDiskGroup.cs" />
     <Compile Include="Registry\DiskGroup.cs" />
+    <Compile Include="Registry\DiskGroup.diag.cs" />
     <Compile Include="Registry\Error.cs" />
     <Compile Include="Registry\FederationContext.cs" />
     <Compile Include="Registry\JobInstanceDependency.cs" />
     <Compile Include="Registry\IContextObject.cs" />
+    <Compile Include="Registry\DiskGroup.io.cs" />
     <Compile Include="Registry\RegistryConfiguration.cs" />
     <Compile Include="Registry\UserRoleMembership.cs" />
     <Compile Include="Registry\UserRole.cs" />

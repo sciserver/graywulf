@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Registry
         [XmlIgnore]
         public override EntityType EntityType
         {
-            get { return EntityType.DiskVolume; }
+            get { return EntityType.DiskGroup; }
         }
 
         [XmlIgnore]
@@ -115,7 +115,7 @@ namespace Jhu.Graywulf.Registry
         #region Navigation Properties
 
         /// <summary>
-        /// Gets the <b>Machine</b> object to which the <b>Disk Volume</b> belongs.
+        /// Gets the <b>ServerInstance</b> object which the <b>Disk Group</b> belongs to.
         /// </summary>
         /// <remarks>
         /// This property does do lazy loading, no calling of a loader function is necessary, but
@@ -125,6 +125,13 @@ namespace Jhu.Graywulf.Registry
         public Machine Machine
         {
             get { return (Machine)ParentReference.Value; }
+        }
+
+        [XmlIgnore]
+        public Dictionary<string, DiskVolume> DiskVolumes
+        {
+            get { return GetChildren<DiskVolume>(); }
+            set { SetChildren<DiskVolume>(value); }
         }
 
         #endregion
@@ -208,6 +215,14 @@ namespace Jhu.Graywulf.Registry
         public override object Clone()
         {
             return new DiskGroup(this);
+        }
+
+        protected override EntityType[] CreateChildTypes()
+        {
+            return new EntityType[]
+            {
+                EntityType.DiskVolume,
+            };
         }
 
         #endregion

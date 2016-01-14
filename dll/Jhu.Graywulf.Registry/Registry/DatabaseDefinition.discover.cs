@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Registry
             fg.FileGroupType = FileGroupType.Data;
             fg.AllocationType = FileGroupAllocationType.CrossVolume;
             fg.LayoutType = FileGroupLayoutType.Monolithic;
-            fg.DiskGroupType = DiskGroupType.Data;
+            fg.DiskDesignation = DiskDesignation.Data;
             fg.FileCount = 0;   // TODO: check this to be one file/volume
 
             fg.DeploymentState = Registry.DeploymentState.Deployed;
@@ -96,7 +96,7 @@ namespace Jhu.Graywulf.Registry
             fg.FileGroupType = FileGroupType.Log;
             fg.AllocationType = FileGroupAllocationType.CrossVolume;
             fg.LayoutType = FileGroupLayoutType.Monolithic;
-            fg.DiskGroupType = DiskGroupType.Log;
+            fg.DiskDesignation = DiskDesignation.Log;
             fg.FileCount = 0;   // TODO: check this to be one file/volume
 
             fg.DeploymentState = Registry.DeploymentState.Deployed;

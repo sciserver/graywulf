@@ -67,22 +67,22 @@ namespace Jhu.Graywulf.Web.Admin.Federation {
         protected global::System.Web.UI.WebControls.DropDownList allocationTypeList;
         
         /// <summary>
-        /// DiskVolumeTypeLabel control.
+        /// DiskDesignationLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label DiskVolumeTypeLabel;
+        protected global::System.Web.UI.WebControls.Label DiskDesignationLabel;
         
         /// <summary>
-        /// diskVolumeTypeList control.
+        /// diskDesignationList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList diskVolumeTypeList;
+        protected global::System.Web.UI.WebControls.DropDownList diskDesignationList;
         
         /// <summary>
         /// FileGroupNameLabel control.

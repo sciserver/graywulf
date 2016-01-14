@@ -230,7 +230,7 @@ GO
 CREATE TABLE [dbo].[DiskGroup]
 (
 	[EntityGuid] [uniqueidentifier] NOT NULL,
-	[DiskGroupType] [int] NOT NULL,
+	[Type] [int] NOT NULL,
 	[FullSpace] [bigint] NOT NULL,
 	[AllocatedSpace] [bigint] NOT NULL,
 	[ReservedSpace] [bigint] NOT NULL,
@@ -254,7 +254,7 @@ GO
 CREATE TABLE [dbo].[DiskVolume]
 (
 	[EntityGuid] [uniqueidentifier] NOT NULL,
-	[DiskVolumeType] [int] NOT NULL,
+	[Type] [int] NOT NULL,
 	[LocalPath] [nvarchar](256) NOT NULL,
 	[UncPath] [nvarchar](256) NOT NULL,
 	[FullSpace] [bigint] NOT NULL,
@@ -338,7 +338,7 @@ CREATE TABLE [dbo].[FileGroup]
 	[FileGroupType] [int] NOT NULL,
 	[LayoutType] [int] NOT NULL,
 	[AllocationType] [int] NOT NULL,
-	[DiskGroupType] [int] NOT NULL,
+	[DiskDesignation] [int] NOT NULL,
 	[FileGroupName] [nvarchar](50) NOT NULL,
 	[AllocatedSpace] [bigint] NOT NULL,
 	[FileCount] [int] NOT NULL,
@@ -566,6 +566,25 @@ CREATE TABLE [dbo].[ServerInstance]
 	[AdminUser] [nvarchar](50) NOT NULL,
 	[AdminPassword] [nvarchar](50) NOT NULL,
 	CONSTRAINT [PK_ServerInstance] PRIMARY KEY CLUSTERED 
+	(
+		[EntityGuid] ASC
+	)
+)
+
+GO
+
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[ServerInstanceDiskGroup]') IS NOT NULL)
+DROP TABLE [dbo].[ServerInstanceDiskGroup]
+
+GO
+
+CREATE TABLE [dbo].[ServerInstanceDiskGroup]
+(
+	[EntityGuid] [uniqueidentifier] NOT NULL,
+	[DiskDesignation] [int] NOT NULL,
+	CONSTRAINT [PK_ServerInstanceDiskGroup] PRIMARY KEY CLUSTERED 
 	(
 		[EntityGuid] ASC
 	)

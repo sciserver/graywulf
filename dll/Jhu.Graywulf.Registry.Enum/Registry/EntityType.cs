@@ -53,6 +53,11 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         DiskVolume = Cluster | 0x0600,
 
+        /// <summary>
+        /// SQL Server instance disk group mapping
+        /// </summary>
+        ServerInstanceDiskGroup = Cluster | 0x0700,
+
         AllCluster = Cluster | 0xFFFF,
 
         #endregion

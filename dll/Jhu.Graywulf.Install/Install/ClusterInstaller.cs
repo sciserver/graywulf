@@ -87,12 +87,26 @@ namespace Jhu.Graywulf.Install
             };
             nodesv.Save();
 
-            //      -- Create a node
+            //      -- Create a node with a disk group and a disk volume and a server instance
             var mnode = new Machine(mrnode)
             {
                 Name = Constants.NodeMachineRoleName + "00"
             };
             mnode.Save();
+
+            var gnode = new DiskGroup(mnode)
+            {
+                Name = Constants.DiskGroupName + "0",
+                Type = DiskGroupType.Jbod,
+            };
+            gnode.Save();
+
+            var dnode = new DiskVolume(gnode)
+            {
+                Name = Constants.DiskVolumeName + "0",
+                Type = DiskVolumeType.Unknown
+            };
+            dnode.Save();
 
             var sinode = new ServerInstance(mnode)
             {
@@ -100,13 +114,6 @@ namespace Jhu.Graywulf.Install
                 ServerVersion = nodesv,
             };
             sinode.Save();
-
-            var dnode = new DiskVolume(mnode)
-            {
-                Name = Constants.DiskVolumeName + "0",
-                DiskVolumeType = DiskVolumeType.Data | DiskVolumeType.Log | DiskVolumeType.Temporary,
-            };
-            dnode.Save();
 
             // Create the shared domain for cluster level databases and users
             var domain = new Domain(cluster)

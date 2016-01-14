@@ -41,15 +41,15 @@
         </tr>
         <tr>
             <td class="FormLabel">
-                <asp:Label ID="DiskVolumeTypeLabel" runat="server" Text="Disk Volume Type:"></asp:Label>
+                <asp:Label ID="DiskDesignationLabel" runat="server" Text="Disk Designation:"></asp:Label>
             </td>
             <td class="FormField">
-                <asp:DropDownList ID="diskVolumeTypeList" runat="server" CssClass="FormFieldNarrow">
+                <asp:DropDownList ID="diskDesignationList" runat="server" CssClass="FormFieldNarrow">
                     <asp:ListItem Value="Unknown" Text="(select type)" />
                     <asp:ListItem Value="System" Text="System" />
-                    <asp:ListItem Value="Log" Text="Log" />
-                    <asp:ListItem Value="Temporary" Text="Temporary" />
                     <asp:ListItem Value="Data" Text="Data" />
+                    <asp:ListItem Value="Log" Text="Log" />
+                    <asp:ListItem Value="Temp" Text="Temporary" />
                 </asp:DropDownList>
             </td>
         </tr>

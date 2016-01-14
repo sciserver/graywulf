@@ -303,4 +303,16 @@
   <data name="UserRole_Singular" xml:space="preserve">
     <value>User Role</value>
   </data>
+  <data name="DiskGroup_Plural" xml:space="preserve">
+    <value>Disk Groups</value>
+  </data>
+  <data name="DiskGroup_Singular" xml:space="preserve">
+    <value>Disk Group</value>
+  </data>
+  <data name="ServerInstanceDiskGroup_Plural" xml:space="preserve">
+    <value>Server Instance Disk Groups</value>
+  </data>
+  <data name="ServerInstanceDiskGroup_Singular" xml:space="preserve">
+    <value>Server Instance Disk Group</value>
+  </data>
 </root>
