@@ -99,6 +99,7 @@ namespace Jhu.Graywulf.Registry
             { EntityType.QueueInstance, typeof(QueueInstance) },
             { EntityType.RemoteDatabase, typeof(RemoteDatabase) },
             { EntityType.ServerInstance, typeof(ServerInstance) },
+            { EntityType.ServerInstanceDiskGroup, typeof(ServerInstanceDiskGroup) },
             { EntityType.ServerVersion, typeof(ServerVersion) },
             { EntityType.Slice, typeof(Slice) },
             { EntityType.User, typeof(User) },
