@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
         [PersistenceMode(PersistenceMode.InnerDefaultProperty)]
         public List<EntityList> Lists
         {
-            get { return null; }
+            get { return new List<EntityList>(); }
             set
             {
                 // This is a hack here but should work
