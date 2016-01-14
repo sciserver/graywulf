@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Registry
         public const string MachineHostName = "localhost";
         public const string MachineAdminUrl = @"http://[$HostName]/gwcontrol";
         public const string MachineDeployUncPath = @"\\[$HostName]\GWCode\";
-        public const string DiskGroupName = "Data";
+        public const string DataDiskGroupName = "DATA";
         public const string DiskVolumeName = "Volume";
         public const string DiskVolumeLocalPath = @"C:\Data\[$Name]\";
         public const string DiskVolumeUncPath = @"\\[$Parent.Parent.HostName]\Data\[$Name]\";
