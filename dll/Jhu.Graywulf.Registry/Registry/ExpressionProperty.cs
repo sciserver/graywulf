@@ -170,14 +170,16 @@ namespace Jhu.Graywulf.Registry
                         throw new ArgumentNullException(ExceptionMessages.EntityNullException);
                     }
 
-                    System.Reflection.PropertyInfo prop = ee.GetType().GetProperty(parts[i]);
-
                     // If the expression is parent, load the parent entity
                     if (string.Compare(parts[i], "Parent", true) == 0)
                     {
-                        ee = entity.Parent;
+                        ee = ee.Parent;
+                        continue;
                     }
-                    else if (prop == null)
+
+                    var prop = ee.GetType().GetProperty(parts[i]);
+
+                    if (prop == null)
                     {
                         throw new ArgumentException(String.Format(ExceptionMessages.InvalidExpression, m.Value));
                     }
