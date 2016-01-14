@@ -59,6 +59,11 @@ namespace Jhu.Graywulf.Registry
 
         private void DiscoverDiskVolume(smo::DatabaseFile smofile)
         {
+            // TODO: reimplement
+
+            throw new NotImplementedException();
+
+            /*
             var m = DatabaseInstanceFileGroup.DatabaseInstance.ServerInstance.Machine;
             m.LoadDiskVolumes(true);
 
@@ -82,6 +87,7 @@ namespace Jhu.Graywulf.Registry
 
             // Make path relative to disk volume
             Filename = Path.GetFileName(Filename);
+             * */
         }
     }
 }

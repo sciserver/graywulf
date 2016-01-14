@@ -158,9 +158,9 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             double sizefactor = double.Parse(SizeFactor.Text);
             string postfix = String.Empty;
 
-            DatabaseVersion rs = new DatabaseVersion(RegistryContext);
-            rs.Guid = new Guid(databaseVersionList.SelectedValue);
-            rs.Load();
+            DatabaseVersion databaseVersion = new DatabaseVersion(RegistryContext);
+            databaseVersion.Guid = new Guid(databaseVersionList.SelectedValue);
+            databaseVersion.Load();
 
             int q = 0;
             for (int sli = 0; sli < slices.Count; sli++)
@@ -181,7 +181,14 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
                         var dii = new DatabaseInstanceInstaller(item);
 
-                        dii.GenerateDatabaseInstance(serverInstances[ssi], slices[sli], rs, NamePattern.Text.Replace("[$Number]", postfix), DatabaseNamePattern.Text.Replace("[$Number]", postfix), sizefactor, GenerateFileGroups.Checked);
+                        dii.GenerateDatabaseInstance(
+                            serverInstances[ssi], 
+                            slices[sli], 
+                            databaseVersion, 
+                            NamePattern.Text.Replace("[$Number]", postfix), 
+                            DatabaseNamePattern.Text.Replace("[$Number]", postfix), 
+                            sizefactor, 
+                            GenerateFileGroups.Checked);
 
                         q++;
                     }
