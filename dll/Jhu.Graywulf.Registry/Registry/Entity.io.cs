@@ -510,6 +510,8 @@ namespace Jhu.Graywulf.Registry
 
         protected virtual Entity CreateCopy(Entity parent, bool prefixName)
         {
+            this.LoadEntityReferences();
+
             var e = (Entity)this.Clone();
 
             e.Guid = Guid.Empty;
