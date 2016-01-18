@@ -9,6 +9,10 @@ namespace Jhu.Graywulf.Registry
 {
     public class Constants
     {
+        public const char EntityTypeSeparator = ':';
+        public const char EntityNameSeparator = '\\';
+        public const char EntityFieldSeparator = '.';       // Used in expressions
+
         public const string ClusterName = "Graywulf";
         public const string ClusterAdministratorUserGroupName = "Administrators";
         public const string ClusterAdminName = "admin";

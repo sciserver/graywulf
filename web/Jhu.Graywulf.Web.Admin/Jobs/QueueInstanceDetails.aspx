@@ -8,7 +8,7 @@
                 <asp:Label ID="QueueDefinitionLabel" runat="server" Text="QueueDefinition:"></asp:Label>
             </td>
             <td class="FormField">
-                &nbsp;<jgwac:EntityLink ID="QueueDefinition" Expression="[$Parent.Name].[$Name]"
+                &nbsp;<jgwac:EntityLink ID="QueueDefinition" Expression="[$Parent.Name]\[$Name]"
                     runat="server" />
             </td>
         </tr>

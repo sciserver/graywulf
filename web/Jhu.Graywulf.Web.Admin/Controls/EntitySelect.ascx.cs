@@ -92,7 +92,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
                 entity.LoadChildren(childEntityTypes[depth], false);
                 foreach (var e in entity.EnumerateChildren(childEntityTypes[depth]))
                 {
-                    RefreshListRecursively(e, String.Format("{0}.{1}", text, e.Name), depth + 1);
+                    RefreshListRecursively(e, text + Constants.EntityNameSeparator + e.Name, depth + 1);
                 }
             }
             else

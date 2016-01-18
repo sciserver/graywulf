@@ -118,7 +118,7 @@ namespace Jhu.Graywulf.Web.Admin.Layout
                 TableRow tr = new TableRow();
 
                 cell = new TableCell();
-                cell.Text = String.Format("{0}.{1}", serverInstances[sii].Machine.Name, serverInstances[sii].Name);
+                cell.Text = serverInstances[sii].Machine.Name + Constants.EntityNameSeparator + serverInstances[sii].Name;
                 tr.Cells.Add(cell);
 
                 for (int sli = 0; sli < slices.Count; sli++)

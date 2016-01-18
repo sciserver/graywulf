@@ -56,16 +56,16 @@ namespace Jhu.Graywulf.Registry
 
         public static string CombineName(EntityType entityType, params string[] nameParts)
         {
-            var name = entityType.ToString() + ":";
+            var name = entityType.ToString() + Constants.EntityTypeSeparator;
 
             for (int i = 0; i < nameParts.Length; i++)
             {
                 if (i > 0)
                 {
-                    name += ".";
+                    name += Constants.EntityNameSeparator;
                 }
 
-                var idx = nameParts[i].IndexOf(':');
+                var idx = nameParts[i].IndexOf(Constants.EntityTypeSeparator);
 
                 if (idx < 0)
                 {
@@ -82,14 +82,14 @@ namespace Jhu.Graywulf.Registry
 
         public static string CombineName(EntityType entityType, string parentName, string name)
         {
-            var idx = parentName.IndexOf(':');
+            var idx = parentName.IndexOf(Constants.EntityTypeSeparator);
 
-            return entityType.ToString() + ":" + parentName.Substring(idx + 1) + "." + name;
+            return entityType.ToString() + Constants.EntityTypeSeparator + parentName.Substring(idx + 1) + Constants.EntityNameSeparator + name;
         }
 
         public static string GetName(string name)
         {
-            var idx = name.LastIndexOf('.');
+            var idx = name.LastIndexOf(Constants.EntityNameSeparator);
 
             if (idx > -1)
             {
@@ -97,7 +97,7 @@ namespace Jhu.Graywulf.Registry
             }
             else
             {
-                idx = name.IndexOf(':');
+                idx = name.IndexOf(Constants.EntityTypeSeparator);
                 if (idx > -1)
                 {
                     return name.Substring(idx + 1);
@@ -346,7 +346,7 @@ ORDER BY Number";
         /// </remarks>
         public Entity LoadEntity(string name)
         {
-            var i = name.IndexOf(':');
+            var i = name.IndexOf(Constants.EntityTypeSeparator);
 
             if (i <= 0)
             {
@@ -359,7 +359,7 @@ ORDER BY Number";
                 throw new ArgumentException("Invalid entity type in string");       // *** TODO
             }
 
-            return LoadEntityByNameParts(entityType, name.Substring(i + 1).Split('.'));
+            return LoadEntityByNameParts(entityType, name.Substring(i + 1).Split(Constants.EntityNameSeparator));
         }
 
         public T LoadEntity<T>(string name)
@@ -417,7 +417,7 @@ ORDER BY Number";
                 {
                     if (!dr.Read())
                     {
-                        throw Error.EntityNotFound(String.Join(".", nameParts));
+                        throw Error.EntityNotFound(String.Join(Constants.EntityNameSeparator.ToString(), nameParts));
                     }
 
                     var e = new Entity(Context);
@@ -550,7 +550,7 @@ ORDER BY Number";
                 foreach (var entity in registry.Entities)
                 {
                     if (entity.ParentReference.IsEmpty && depth == 0 ||
-                        !entity.ParentReference.IsEmpty && depth == entity.ParentReference.Name.Count(c => c == '.') + 1)
+                        !entity.ParentReference.IsEmpty && depth == entity.ParentReference.Name.Count(c => c == Constants.EntityNameSeparator) + 1)
                     {
                         Console.Error.Write("Deserializing {0}... ", entity.Name);
 

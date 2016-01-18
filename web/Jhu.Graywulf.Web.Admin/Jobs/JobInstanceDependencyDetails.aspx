@@ -8,7 +8,7 @@
                 <asp:Label ID="JobInstanceLabel" runat="server" Text="Predecessor Job Instance:"></asp:Label>
             </td>
             <td class="FormField">
-                &nbsp;<jgwac:EntityLink ID="JobInstance" Expression="[$Parent.Name].[$Name]"
+                &nbsp;<jgwac:EntityLink ID="JobInstance" Expression="[$Parent.Name]\[$Name]"
                     runat="server" />
             </td>
         </tr>
