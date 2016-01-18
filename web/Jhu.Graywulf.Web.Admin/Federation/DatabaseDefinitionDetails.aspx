@@ -90,7 +90,7 @@
             <columns>
                 <asp:BoundField DataField="FileGroupType" HeaderText="Type" />
                 <asp:BoundField DataField="LayoutType" HeaderText="Layout" />
-                <asp:BoundField DataField="AllocatedSpace" HeaderText="Size" />
+                <jgwc:BoundByteSizeField DataField="AllocatedSpace" HeaderText="Size" />
             </columns>
         </jgwac:EntityList>
         <jgwac:EntityList runat="server" ID="SliceList" ChildrenType="Slice" EntityGroup="Federation " />

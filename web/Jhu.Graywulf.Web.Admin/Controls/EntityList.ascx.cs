@@ -11,6 +11,7 @@ using Jhu.Graywulf.Web.UI;
 namespace Jhu.Graywulf.Web.Admin.Controls
 {
     [ParseChildren(true)]
+    [PersistChildren(true)]
     public partial class EntityList : Jhu.Graywulf.Web.UI.UserControlBase
     {
         private Entity parentEntity;
