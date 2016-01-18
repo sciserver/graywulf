@@ -55,7 +55,8 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             EntityFactory ef = new EntityFactory(RegistryContext);
             serverInstances = new List<ServerInstance>(ef.FindAll<ServerInstance>()
                 .Where(i => i.ServerVersionReference.Guid == databaseVersion.ServerVersionReference.Guid)
-                .OrderBy(i => i.Machine.Number));
+                .OrderBy(i => i.Machine.Number)
+                .ThenBy(i => i.Number));
 
             // Load slices
             item.LoadSlices(false);
