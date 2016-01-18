@@ -17,13 +17,13 @@
                 <asp:Label ID="DiskDesignationLabel" runat="server" Text="Designation:"></asp:Label>
             </td>
             <td class="FormField">
-                <asp:DropDownList ID="DiskDesignation" runat="server">
+                <asp:CheckBoxList ID="DiskDesignation" runat="server">
                     <asp:ListItem Value="Unknown"></asp:ListItem>
                     <asp:ListItem Value="System"></asp:ListItem>
                     <asp:ListItem Value="Data"></asp:ListItem>
                     <asp:ListItem Value="Log"></asp:ListItem>
                     <asp:ListItem Value="Temp"></asp:ListItem>
-                </asp:DropDownList>
+                </asp:CheckBoxList>
             </td>
         </tr>
     </table>
