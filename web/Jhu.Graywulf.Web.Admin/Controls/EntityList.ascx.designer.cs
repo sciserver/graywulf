@@ -22,6 +22,15 @@ namespace Jhu.Graywulf.Web.Admin.Controls {
         protected global::System.Web.UI.WebControls.ObjectDataSource InternalDataSource;
         
         /// <summary>
+        /// buttonsDiv control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl buttonsDiv;
+        
+        /// <summary>
         /// ItemSelectedValidator control.
         /// </summary>
         /// <remarks>

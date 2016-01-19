@@ -44,6 +44,12 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             set { text = value; }
         }
 
+        public bool ButtonsVisible
+        {
+            get { return buttonsDiv.Visible; }
+            set { buttonsDiv.Visible = value; }
+        }
+
         public DataControlFieldCollection Columns
         {
             get { return this.columns; }
