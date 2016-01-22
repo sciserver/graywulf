@@ -8,6 +8,8 @@
     |
     <asp:Button ID="Map" runat="server" CssClass="FormButtonNarrow" Text="Map" OnCommand="Button_Command"
         CommandName="Map" />
+    <asp:Button ID="Mirror" runat="server" CssClass="FormButtonNarrow" Text="Mirror" OnCommand="Button_Command"
+        CommandName="Mirror" />
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="FormTabs">
     <jgwac:EntityChildren runat="server">

@@ -17,19 +17,17 @@ namespace Jhu.Graywulf.Jobs.ExportTables
     {
         protected Guid ScheduleMirroDatabaseJob(QueueType queueType)
         {
-            var queue = String.Format("QueueInstance:Graywulf.Controller.Controller.{0}", queueType.ToString());
-
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 SignInTestUser(context);
 
+                // TODO: create test database just for this
                 var ef = new EntityFactory(context);
-                var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(MirrorDatabaseJob).Name);
+                var dv = (DatabaseVersion)ef.LoadEntity("DatabaseVersion:Graywulf\\SciServer\\SkyQuery\\TEST\\HOT");
 
-                var ji = jd.CreateJobInstance(queue, ScheduleType.Queued);
-
-                ji.Parameters["DatabaseVersionName"].Value = "DatabaseVersion:Graywulf.VOServices.SkyQuery.Galex.STAT";
-
+                var jf = MirrorDatabaseJobFactory.Create(context.Federation);
+                var ji = jf.ScheduleAsJob(dv, true);
+                
                 ji.Save();
 
                 return ji.Guid;

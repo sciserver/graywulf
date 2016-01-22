@@ -41,6 +41,10 @@
             </columns>
         </jgwac:EntityList>
         <jgwac:EntityList runat="server" ID="ServerInstanceList" ChildrenType="ServerInstance"
-            EntityGroup="Cluster" />
+            EntityGroup="Cluster">
+            <Columns>
+                <asp:BoundField DataField="RunningState" HeaderText="Running state" />
+            </Columns>
+        </jgwac:EntityList>
     </jgwac:EntityChildren>
 </asp:Content>

@@ -31,6 +31,15 @@ namespace Jhu.Graywulf.Web.Admin.Layout {
         protected global::System.Web.UI.WebControls.Button Map;
         
         /// <summary>
+        /// Mirror control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button Mirror;
+        
+        /// <summary>
         /// DatabaseInstanceList control.
         /// </summary>
         /// <remarks>

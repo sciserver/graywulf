@@ -266,6 +266,7 @@
     <Content Include="Layout\Default.aspx" />
     <Content Include="Layout\DomainDetails.aspx" />
     <Content Include="Layout\FederationDetails.aspx" />
+    <Content Include="Layout\MirroringWizard.aspx" />
     <Content Include="Layout\MappingWizard.aspx" />
     <Content Include="Layout\UserDatabaseInstanceDetails.aspx" />
     <Content Include="Layout\UserDatabaseInstanceForm.aspx" />
@@ -1312,6 +1313,13 @@
     </Compile>
     <Compile Include="Layout\FederationDetails.aspx.designer.cs">
       <DependentUpon>FederationDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Layout\MirroringWizard.aspx.cs">
+      <DependentUpon>MirroringWizard.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Layout\MirroringWizard.aspx.designer.cs">
+      <DependentUpon>MirroringWizard.aspx</DependentUpon>
     </Compile>
     <Compile Include="Layout\MappingWizard.aspx.cs">
       <DependentUpon>MappingWizard.aspx</DependentUpon>
