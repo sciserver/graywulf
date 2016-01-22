@@ -33,14 +33,8 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
             var sourceDatabaseInstanceGuids = SourceDatabaseInstanceGuids.Get(activityContext);
             var destinationDatabaseInstanceGuids = DestinationDatabaseInstanceGuids.Get(activityContext);
 
-            SourceDatabaseQueue.Set(
-                activityContext, 
-                new Queue<Guid>(sourceDatabaseInstanceGuids));
-                
-            DestinationDatabaseQueue.Set(
-                activityContext,
-
-                new Queue<Guid>());
+            SourceDatabaseQueue.Set(activityContext, new Queue<Guid>(sourceDatabaseInstanceGuids));
+            DestinationDatabaseQueue.Set(activityContext, new Queue<Guid>(destinationDatabaseInstanceGuids));
 
             if (sourceDatabaseInstanceGuids.Length == 0 ||
                 destinationDatabaseInstanceGuids.Length == 0)

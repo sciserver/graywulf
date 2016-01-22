@@ -41,16 +41,16 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
 
         #endregion
 
-        public JobInstance ScheduleAsJob(DatabaseVersion databaseVersion, bool cascaded)
+        public MirrorDatabaseParameters CreateParameters(DatabaseVersion databaseVersion)
         {
             var databaseDefinition = databaseVersion.DatabaseDefinition;
             databaseDefinition.LoadDatabaseInstances(false);
-            return ScheduleAsJob(databaseDefinition.DatabaseInstances.Values, cascaded);
+            return CreateParameters(databaseDefinition.DatabaseInstances.Values);
         }
 
-        public JobInstance ScheduleAsJob(IEnumerable<DatabaseInstance> databaseInstances, bool cascaded)
+        public MirrorDatabaseParameters CreateParameters(IEnumerable<DatabaseInstance> databaseInstances)
         {
-            return ScheduleAsJob(
+            return CreateParameters(
                 databaseInstances.Where(di =>
                     di.ServerInstance.RunningState == RunningState.Running &&
                     di.ServerInstance.Machine.RunningState == RunningState.Running &&
@@ -60,17 +60,23 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                     di.ServerInstance.RunningState == RunningState.Running &&
                     di.ServerInstance.Machine.RunningState == RunningState.Running &&
                     (di.DeploymentState == DeploymentState.New ||
-                     di.DeploymentState == DeploymentState.Undeployed)),
-                cascaded);
+                     di.DeploymentState == DeploymentState.Undeployed)));
         }
 
-        public JobInstance ScheduleAsJob(IEnumerable<DatabaseInstance> sourceDatabaseInstances, IEnumerable<DatabaseInstance> destinationDatabaseInstances, bool cascadedMirror)
+        public MirrorDatabaseParameters CreateParameters(IEnumerable<DatabaseInstance> sourceDatabaseInstances, IEnumerable<DatabaseInstance> destinationDatabaseInstances)
         {
-            var job = CreateJobInstance(null, GetJobDefinitionName(), GetQueueName(), "");
+            return new MirrorDatabaseParameters()
+            {
+                SourceDatabaseInstanceGuids = sourceDatabaseInstances.Select(i => i.Guid).ToArray(),
+                DestinationDatabaseInstanceGuids = destinationDatabaseInstances.Select(i => i.Guid).ToArray(),
+            };
+        }
 
-            job.Parameters[Constants.JobParameterCascadedMirror].Value = cascadedMirror;
-            job.Parameters[Constants.JobParameterSourceDatabaseInstanceGuids].Value = sourceDatabaseInstances.ToArray();
-            job.Parameters[Constants.JobParameterDestinationDatabaseInstanceGuids].Value = destinationDatabaseInstances.ToArray();
+        public JobInstance ScheduleAsJob(MirrorDatabaseParameters parameters, string queueName, string comments)
+        {
+            var job = CreateJobInstance(null, GetJobDefinitionName(), queueName, comments);
+
+            job.Parameters[Constants.JobParameterMirrorDatabase].Value = parameters;
 
             return job;
         }
@@ -78,11 +84,6 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
         private string GetJobDefinitionName()
         {
             return EntityFactory.CombineName(EntityType.JobDefinition, Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(MirrorDatabaseJob).Name);
-        }
-
-        private string GetQueueName()
-        {
-            return EntityFactory.CombineName(EntityType.QueueInstance, Context.Federation.ControllerMachine.GetFullyQualifiedName(), Registry.Constants.MaintenanceQueueName);
         }
     }
 }

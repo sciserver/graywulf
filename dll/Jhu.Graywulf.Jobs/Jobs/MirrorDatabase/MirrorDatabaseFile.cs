@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
 
                 EntityGuid.Set(activityContext, di.Guid);
 
-                // Load database instance from the schema database
+                // Math source file with destination file
                 DatabaseInstanceFile df;
 
                 DatabaseInstanceFile sf = new DatabaseInstanceFile(context);

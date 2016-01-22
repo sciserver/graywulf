@@ -13,10 +13,7 @@ namespace Jhu.Graywulf.Jobs
         public const string JobParameterQuery = "Query";
         public const string JobParameterExport = "Parameters";
         public const string JobParameterImport = "Parameters";
-
-        public const string JobParameterCascadedMirror = "CascadedMirror";
-        public const string JobParameterSourceDatabaseInstanceGuids = "SourceDatabaseInstanceGuids";
-        public const string JobParameterDestinationDatabaseInstanceGuids = "DestinationDatabaseInstanceGuids";
+        public const string JobParameterMirrorDatabase = "Parameters";
 
         public const string DefaultQuickResultsTableNamePattern = "QuickResults";
         public const string DefaultLongResultsTableNamePattern = "Results";

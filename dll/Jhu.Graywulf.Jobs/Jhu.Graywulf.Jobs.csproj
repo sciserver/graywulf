@@ -100,6 +100,7 @@
     <Compile Include="Jobs\MirrorDatabase\FindSourcesAndDestinations.cs" />
     <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseFile.cs" />
     <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseJobFactory.cs" />
+    <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseParameters.cs" />
     <Compile Include="Jobs\Query\AssignServerInstance.cs" />
     <Compile Include="Jobs\Query\CheckDestinationTable.cs">
       <SubType>Code</SubType>
