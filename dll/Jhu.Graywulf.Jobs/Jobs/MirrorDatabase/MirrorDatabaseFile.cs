@@ -29,12 +29,15 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
         public InArgument<Guid> DestinationDatabaseInstanceGuid { get; set; }
         [RequiredArgument]
         public InArgument<FileCopyDirection> FileCopyDirection { get; set; }
+        [RequiredArgument]
+        public InArgument<bool> SkipExistingFile { get; set; }
 
         protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
         {
             Guid sourcefileguid = SourceFileGuid.Get(activityContext);
             Guid destinationdatabaseinstanceguid = DestinationDatabaseInstanceGuid.Get(activityContext);
             FileCopyDirection filecopydirection = FileCopyDirection.Get(activityContext);
+            bool skipExistingFile = SkipExistingFile.Get(activityContext);
 
             string sourcefilename, destinationfilename;
             string hostname;
@@ -75,13 +78,13 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
 
             Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
             string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, hostname, sourcefilename, destinationfilename), callback, state);
+            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, hostname, sourcefilename, destinationfilename, skipExistingFile), callback, state);
         }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, string hostName, string sourceFilename, string destinationFilename)
+        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, string hostName, string sourceFilename, string destinationFilename, bool skipExistingFile)
         {
-            // Check if destination file exists and has the same size as the source
-            if (!File.Exists(destinationFilename) ||
+            if (!skipExistingFile ||
+                !File.Exists(destinationFilename) ||
                 new FileInfo(sourceFilename).Length != new FileInfo(destinationFilename).Length)
             {
 

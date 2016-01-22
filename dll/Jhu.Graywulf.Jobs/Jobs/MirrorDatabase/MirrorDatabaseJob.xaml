@@ -134,7 +134,7 @@
                     <DelegateInArgument x:TypeArguments="s:Guid" Name="sourceFileGuid" />
                   </ActivityAction.Argument>
                   <jga:Retry Finally="{x:Null}" JobGuid="{x:Null}" UserGuid="{x:Null}" sap:VirtualizedContainerService.HintSize="214,128" MaxRetries="3">
-                    <local:MirrorDatabaseFile EntityGuid="{x:Null}" EntityGuidFrom="{x:Null}" EntityGuidTo="{x:Null}" DestinationDatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" FileCopyDirection="[Jhu.Graywulf.Registry.FileCopyDirection.Push]" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" SourceFileGuid="[sourceFileGuid]" UserGuid="[UserGuid]" />
+                    <local:MirrorDatabaseFile EntityGuid="{x:Null}" EntityGuidFrom="{x:Null}" EntityGuidTo="{x:Null}" DestinationDatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" FileCopyDirection="[Jhu.Graywulf.Registry.FileCopyDirection.Push]" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" SkipExistingFile="[Parameters.SkipExistingFiles]" SourceFileGuid="[sourceFileGuid]" UserGuid="[UserGuid]" />
                   </jga:Retry>
                 </ActivityAction>
               </ForEach>
