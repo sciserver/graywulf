@@ -14,9 +14,9 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
     {
         #region Static members
 
-        public static MirrorDatabaseJobFactory Create(Federation federation)
+        public static MirrorDatabaseJobFactory Create(Context context)
         {
-            return new MirrorDatabaseJobFactory(federation.Context);
+            return new MirrorDatabaseJobFactory(context);
         }
 
         #endregion
@@ -83,7 +83,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
 
         private string GetJobDefinitionName()
         {
-            return EntityFactory.CombineName(EntityType.JobDefinition, Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(MirrorDatabaseJob).Name);
+            return EntityFactory.CombineName(EntityType.JobDefinition, Context.Cluster.Name, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(MirrorDatabaseJob).Name);
         }
     }
 }

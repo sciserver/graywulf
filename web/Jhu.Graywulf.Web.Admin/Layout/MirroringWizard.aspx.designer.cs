@@ -67,13 +67,40 @@ namespace Jhu.Graywulf.Web.Admin.Layout {
         protected global::System.Web.UI.WebControls.Label Name;
         
         /// <summary>
-        /// Cascade control.
+        /// CascadedCopy control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox Cascade;
+        protected global::System.Web.UI.WebControls.CheckBox CascadedCopy;
+        
+        /// <summary>
+        /// SkipExistingFiles control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox SkipExistingFiles;
+        
+        /// <summary>
+        /// QueueInstanceLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label QueueInstanceLabel;
+        
+        /// <summary>
+        /// QueueInstance control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList QueueInstance;
         
         /// <summary>
         /// SourceDatabases control.

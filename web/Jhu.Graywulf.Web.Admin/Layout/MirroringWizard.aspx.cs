@@ -11,7 +11,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Install;
+using Jhu.Graywulf.Jobs.MirrorDatabase;
 
 namespace Jhu.Graywulf.Web.Admin.Layout
 {
@@ -45,53 +45,36 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
         protected void UpdateForm()
         {
+            RefreshQueueInstanceList();
+
             Name.Text = item.Name;
-            Cascade.Checked = true;
         }
 
         protected void Ok_Click(object sender, EventArgs e)
         {
-            /*double sizefactor = double.Parse(SizeFactor.Text);
-            string postfix = String.Empty;
+            var jf = MirrorDatabaseJobFactory.Create(RegistryContext);
+            var dis = new List<DatabaseInstance>();
 
-            DatabaseVersion databaseVersion = new DatabaseVersion(RegistryContext);
-            databaseVersion.Guid = new Guid(databaseVersionList.SelectedValue);
-            databaseVersion.Load();
-
-            int q = 0;
-            for (int sli = 0; sli < slices.Count; sli++)
+            foreach (var guid in SourceDatabases.SelectedDataKeys)
             {
-                for (int ssi = 0; ssi < serverInstances.Count; ssi++)
-                {
-                    CheckBox cb = (CheckBox)FindControlRecursive(string.Format("cb_{0}_{1}", sli, ssi));
-                    if (cb.Checked)
-                    {
-                        switch (item.LayoutType)
-                        {
-                            case DatabaseLayoutType.Sliced:
-                                break;
-                            default:
-                                postfix = String.Format("{0}", q.ToString("00"));
-                                break;
-                        }
-
-                        var dii = new DatabaseInstanceInstaller(item);
-
-                        dii.GenerateDatabaseInstance(
-                            serverInstances[ssi], 
-                            slices[sli], 
-                            databaseVersion, 
-                            NamePattern.Text.Replace("[$Number]", postfix), 
-                            DatabaseNamePattern.Text.Replace("[$Number]", postfix), 
-                            sizefactor, 
-                            GenerateFileGroups.Checked);
-
-                        q++;
-                    }
-                }
+                var di = new DatabaseInstance(RegistryContext);
+                di.Guid = new Guid(guid);
+                di.Load();
+                dis.Add(di);
             }
 
-            Response.Redirect(item.GetDetailsUrl(EntityGroup.Layout), false);*/
+            var par = jf.CreateParameters(dis);
+            par.CascadedCopy = CascadedCopy.Checked;
+            par.SkipExistingFiles = SkipExistingFiles.Checked;
+
+            var q = new QueueInstance(RegistryContext);
+            q.Guid = new Guid(QueueInstance.SelectedValue);
+            q.Load();
+
+            var job = jf.ScheduleAsJob(par, q.GetFullyQualifiedName(), "");
+            job.Save();
+
+            Response.Redirect(OriginalReferer);
         }
 
         protected void Cancel_Click(object sender, EventArgs e)
@@ -109,5 +92,18 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         }
 
         #endregion
+
+        protected void RefreshQueueInstanceList()
+        {
+            QueueInstance.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
+
+            var m = ((DatabaseDefinition)Item).Federation.ControllerMachine;
+            m.LoadQueueInstances(false);
+
+            foreach (var q in m.QueueInstances.Values)
+            {
+                QueueInstance.Items.Add(new ListItem(m.Name + "\\" + q.Name, q.Guid.ToString()));
+            }
+        }
     }
 }

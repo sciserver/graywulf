@@ -1419,6 +1419,10 @@
       <Project>{AC357A2C-5388-4D7F-B1AF-C78D9BF8326C}</Project>
       <Name>Jhu.Graywulf.Install</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Jobs\Jhu.Graywulf.Jobs.csproj">
+      <Project>{2bd2d467-d003-468d-9b97-83ddc6f2ed78}</Project>
+      <Name>Jhu.Graywulf.Jobs</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Logging\Jhu.Graywulf.Logging.csproj">
       <Project>{FD98FB58-A3E5-4D32-B6D6-3E20609C4D09}</Project>
       <Name>Jhu.Graywulf.Logging</Name>
