@@ -19,7 +19,10 @@ namespace Jhu.Graywulf.Activities
             Queue<T> queue = InputQueue.Get(activityContext);
             T item = Item.Get(activityContext);
 
-            queue.Enqueue(item);
+            lock (queue)
+            {
+                queue.Enqueue(item);
+            }
         }
     }
 }
