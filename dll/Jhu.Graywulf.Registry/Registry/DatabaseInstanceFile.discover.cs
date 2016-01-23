@@ -59,15 +59,18 @@ namespace Jhu.Graywulf.Registry
 
         private void DiscoverDiskVolume(smo::DatabaseFile smofile)
         {
-            // TODO: reimplement
-
-            throw new NotImplementedException();
-
-            /*
+            // TODO: prevent loading these all the time
+            var disks = new List<DiskVolume>();
             var m = DatabaseInstanceFileGroup.DatabaseInstance.ServerInstance.Machine;
-            m.LoadDiskVolumes(true);
+            m.LoadDiskGroups(false);
 
-            var dv = m.DiskVolumes.Values.FirstOrDefault(i => Filename.StartsWith(i.LocalPath.ResolvedValue, StringComparison.InvariantCultureIgnoreCase));
+            foreach (var dg in m.DiskGroups.Values)
+            {
+                dg.LoadDiskVolumes(false);
+                disks.AddRange(dg.DiskVolumes.Values);
+            }
+
+            var dv = disks.FirstOrDefault(i => Filename.StartsWith(i.LocalPath.ResolvedValue, StringComparison.InvariantCultureIgnoreCase));
 
             // Check if file could be associated with a disk volume
             if (smofile != null && dv == null)
@@ -87,7 +90,6 @@ namespace Jhu.Graywulf.Registry
 
             // Make path relative to disk volume
             Filename = Path.GetFileName(Filename);
-             * */
         }
     }
 }
