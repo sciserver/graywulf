@@ -10,29 +10,10 @@ namespace Jhu.Graywulf.Registry
     [Flags]
     public enum DiskVolumeType : int
     {
-        /// <summary>
-        /// Default disk volume type
-        /// </summary>
         Unknown = 0,
-
-        /// <summary>
-        /// Disk volume is a system volume
-        /// </summary>
-        System = 1,
-
-        /// <summary>
-        /// Disk volume is dedicated to log files
-        /// </summary>
-        Log = 2,
-
-        /// <summary>
-        /// Disk volume is dedicated for temporary files
-        /// </summary>
-        Temporary = 4,
-
-        /// <summary>
-        /// Disk volume is dedicated for data files
-        /// </summary>
-        Data = 8
+        Spinning = 1,
+        SolidState = 2,
+        RamDisk = 4,
+        Raid = 8
     }
 }

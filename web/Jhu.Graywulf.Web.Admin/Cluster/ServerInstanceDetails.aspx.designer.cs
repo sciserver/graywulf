@@ -92,5 +92,23 @@ namespace Jhu.Graywulf.Web.Admin.Cluster {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::Jhu.Graywulf.Web.Admin.Controls.EntityButtons EntityButtons;
+        
+        /// <summary>
+        /// EntityChildren control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityChildren EntityChildren;
+        
+        /// <summary>
+        /// DiskGroupList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList DiskGroupList;
     }
 }

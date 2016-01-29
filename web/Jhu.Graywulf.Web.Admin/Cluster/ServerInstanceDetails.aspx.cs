@@ -25,5 +25,12 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
             IntegratedSecurity.Text = Item.IntegratedSecurity ? Resources.Labels.IntegratedSecurity : Resources.Labels.SqlSecurity;
             AdminUser.Text = Item.AdminUser;
         }
+
+        protected override void InitLists()
+        {
+            base.InitLists();
+
+            DiskGroupList.ParentEntity = Item;
+        }
     }
 }

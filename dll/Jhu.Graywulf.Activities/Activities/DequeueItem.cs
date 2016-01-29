@@ -16,8 +16,7 @@ namespace Jhu.Graywulf.Activities
         {
             Queue<T> queue = InputQueue.Get(activityContext);
 
-            // Try to dequeue value and sleep if empty
-            while (true)
+            lock (queue)
             {
                 if (queue.Count > 0)
                 {

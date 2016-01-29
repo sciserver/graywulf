@@ -5,10 +5,10 @@
     <table class="DetailsForm dock-top">
         <tr>
             <td class="FormLabel">
-                <asp:Label ID="DiskVolumeTypeLabel" runat="server" Text="Type:"></asp:Label>
+                <asp:Label ID="TypeLabel" runat="server" Text="Type:"></asp:Label>
             </td>
             <td class="FormField">
-                <asp:Label ID="DiskVolumeType" runat="server" Text="Label"></asp:Label>
+                <asp:Label ID="Type" runat="server" Text="Label"></asp:Label>
             </td>
         </tr>
         <tr>
@@ -61,10 +61,19 @@
         </tr>
         <tr>
             <td class="FormLabel">
-                <asp:Label ID="SpeedLabel" runat="server" Text="IO Speed:"></asp:Label>
+                <asp:Label ID="ReadBandwidthLabel" runat="server" Text="Read Bandwidth:"></asp:Label>
             </td>
             <td class="FormField">
-                <asp:Label ID="Speed" runat="server" Text="Label"></asp:Label>
+                <asp:Label ID="ReadBandwidth" runat="server" Text="Label"></asp:Label>
+                &nbsp;MB/sec
+            </td>
+        </tr>
+         <tr>
+            <td class="FormLabel">
+                <asp:Label ID="WriteBandwidthLabel" runat="server" Text="Write Bandwidth:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:Label ID="WriteBandwidth" runat="server" Text="Label"></asp:Label>
                 &nbsp;MB/sec
             </td>
         </tr>

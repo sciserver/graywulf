@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             FileGroupType.Text = Item.FileGroupType.ToString();
             LayoutType.Text = Item.LayoutType.ToString();
             AllocationType.Text = Item.AllocationType.ToString();
-            DiskVolumeType.Text = Item.DiskVolumeType.ToString();
+            DiskDesignation.Text = Item.DiskDesignation.ToString();
             FileGroupName.Text = Item.FileGroupName;
             AllocatedSpace.Text = Util.ByteSizeFormatter.Format(Item.AllocatedSpace);
             FileCount.Text = Item.FileCount.ToString();

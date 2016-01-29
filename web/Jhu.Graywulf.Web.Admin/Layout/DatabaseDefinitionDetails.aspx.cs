@@ -31,6 +31,9 @@ namespace Jhu.Graywulf.Web.Admin.Layout
                 case "Map":
                     Response.Redirect(MappingWizard.GetUrl(Item.Guid), false);
                     break;
+                case "Mirror":
+                    Response.Redirect(MirroringWizard.GetUrl(Item.Guid), false);
+                    break;
                 default:
                     base.OnButtonCommand(sender, e);
                     break;

@@ -87,6 +87,8 @@
     <Compile Include="Sql\JobExecutionState.cs" />
     <Compile Include="Sql\RunningState.cs" />
     <Compile Include="Sql\ScheduleType.cs" />
+    <Compile Include="Registry\DiskGroupType.cs" />
+    <Compile Include="Registry\DiskDesignation.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data" />

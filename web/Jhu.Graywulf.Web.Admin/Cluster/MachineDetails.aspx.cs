@@ -31,53 +31,8 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
         {
             base.InitLists();
 
+            DiskGroupList.ParentEntity = Item;
             ServerInstanceList.ParentEntity = Item;
-            DiskVolumeList.ParentEntity = Item;
         }
-
-        /*
-        protected void ServerInstanceList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/cluster/ServerInstanceDetails.aspx?Guid=" + e.CommandArgument);
-        }
-
-        protected void AddServerInstance_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(item.GetNewChildFormUrl(EntityType.ServerInstance));
-        }
-
-        protected void DiskVolumeList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/cluster/DiskVolumeDetails.aspx?Guid=" + e.CommandArgument);
-        }
-
-        protected void AddDiskVolume_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(item.GetNewChildFormUrl(EntityType.DiskVolume));
-        }
-
-        protected void MoveServerInstance_Click(object sender, EventArgs e)
-        {
-            if (sender == MoveDownServerInstance)
-                MoveItem<ServerInstance>(ServerInstanceList.FirstSelectedKey, EntityMoveDirection.Down);
-            else if (sender == MoveUpServerInstance)
-                MoveItem<ServerInstance>(ServerInstanceList.FirstSelectedKey, EntityMoveDirection.Up);
-        }
-
-        protected void DeleteServerInstance_Click(object sender, EventArgs e)
-        {
-
-        }
-        protected void MoveDiskVolume_Click(object sender, EventArgs e)
-        {
-            if (sender == MoveDownDiskVolume)
-                MoveItem<DiskVolume>(DiskVolumeList.FirstSelectedKey, EntityMoveDirection.Down);
-            else if (sender == MoveUpDiskVolume)
-                MoveItem<DiskVolume>(DiskVolumeList.FirstSelectedKey, EntityMoveDirection.Up);
-        }
-        protected void DeleteDiskVolume_Click(object sender, EventArgs e)
-        {
-
-        }*/
     }
 }

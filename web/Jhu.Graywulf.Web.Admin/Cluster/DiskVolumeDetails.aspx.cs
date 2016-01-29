@@ -21,13 +21,14 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
         {
             base.UpdateForm();
 
-            DiskVolumeType.Text = Item.DiskVolumeType.ToString();
+            Type.Text = Item.Type.ToString();
             LocalPath.Text = String.Format("{0} ({1})", Item.LocalPath.Value, Item.LocalPath.ResolvedValue);
             UncPath.Text = String.Format("{0} ({1})", Item.UncPath.Value, Item.UncPath.ResolvedValue);
             FullSpace.Text = Util.ByteSizeFormatter.Format(Item.FullSpace);
             AllocatedSpace.Text = Util.ByteSizeFormatter.Format(Item.AllocatedSpace);
             ReservedSpace.Text = Util.ByteSizeFormatter.Format(Item.ReservedSpace);
-            Speed.Text = (Item.Speed / 100000.0).ToString("0.00");
+            ReadBandwidth.Text = (Item.ReadBandwidth / 100000.0).ToString("0.00");
+            WriteBandwidth.Text = (Item.WriteBandwidth / 100000.0).ToString("0.00");
 
             Usage.Values.Clear();
             Usage.Values.Add((double)Item.AllocatedSpace / Item.FullSpace);

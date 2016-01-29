@@ -5,15 +5,15 @@
     <table class="DetailsForm">
         <tr>
             <td class="FormLabel">
-                <asp:Label ID="DiskVolumeTypeLabel" runat="server" Text="Volume Type:"></asp:Label>
+                <asp:Label ID="TypeLabel" runat="server" Text="Volume Type:"></asp:Label>
             </td>
             <td class="FormField">
-                <asp:CheckBoxList ID="DiskVolumeType" runat="server">
-                    <asp:ListItem Value="System"></asp:ListItem>
-                    <asp:ListItem Value="Log"></asp:ListItem>
-                    <asp:ListItem Value="Temporary"></asp:ListItem>
-                    <asp:ListItem Value="Data"></asp:ListItem>
-                </asp:CheckBoxList>
+                <asp:DropDownList ID="Type" runat="server">
+                    <asp:ListItem Value="Spinning"></asp:ListItem>
+                    <asp:ListItem Value="SolidState"></asp:ListItem>
+                    <asp:ListItem Value="RamDisk"></asp:ListItem>
+                    <asp:ListItem Value="Raid"></asp:ListItem>
+                </asp:DropDownList>
             </td>
         </tr>
         <tr>
@@ -74,13 +74,26 @@
         </tr>
         <tr>
             <td class="FormLabel">
-                <asp:Label ID="SpeedLabel" runat="server" Text="IO Speed:"></asp:Label>
+                <asp:Label ID="ReadBandwidthLabel" runat="server" Text="Read Bandwidth:"></asp:Label>
             </td>
             <td class="FormField">
-                <asp:TextBox ID="Speed" runat="server" CssClass="FormFieldNarrow"></asp:TextBox>
-                &nbsp;MB/sec<asp:RequiredFieldValidator ID="SpeedRequiredValidator" runat="server"
-                    ControlToValidate="Speed" Display="Dynamic" ErrorMessage="&lt;br&gt;This field is required"></asp:RequiredFieldValidator>
-                <asp:RangeValidator ID="SpeedRangeValidator" runat="server" ControlToValidate="Speed"
+                <asp:TextBox ID="ReadBandwidth" runat="server" CssClass="FormFieldNarrow"></asp:TextBox>
+                &nbsp;MB/sec<asp:RequiredFieldValidator ID="ReadBandwidthRequiredValidator" runat="server"
+                    ControlToValidate="ReadBandwidth" Display="Dynamic" ErrorMessage="&lt;br&gt;This field is required"></asp:RequiredFieldValidator>
+                <asp:RangeValidator ID="ReadBandwidthRangeValidator" runat="server" ControlToValidate="ReadBandwidth"
+                    Display="Dynamic" ErrorMessage="&lt;br&gt;Invalid number" MaximumValue="100000"
+                    MinimumValue="0" Type="Double"></asp:RangeValidator>
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabel">
+                <asp:Label ID="WriteBandwidthLabel" runat="server" Text="Write Bandwidth:"></asp:Label>
+            </td>
+            <td class="FormField">
+                <asp:TextBox ID="WriteBandwidth" runat="server" CssClass="FormFieldNarrow"></asp:TextBox>
+                &nbsp;MB/sec<asp:RequiredFieldValidator ID="WriteBandwidthRequiredValidator" runat="server"
+                    ControlToValidate="WriteBandwidth" Display="Dynamic" ErrorMessage="&lt;br&gt;This field is required"></asp:RequiredFieldValidator>
+                <asp:RangeValidator ID="WriteBandwidthRangeValidator" runat="server" ControlToValidate="WriteBandwidth"
                     Display="Dynamic" ErrorMessage="&lt;br&gt;Invalid number" MaximumValue="100000"
                     MinimumValue="0" Type="Double"></asp:RangeValidator>
             </td>

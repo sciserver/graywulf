@@ -8,7 +8,7 @@
                 <asp:Label ID="DiskVolumeLabel" runat="server" Text="Disk Volume:"></asp:Label>
             </td>
             <td class="FormField">
-                <jgwac:EntityLink ID="DiskVolume" Expression="[$Machine.Name].[$Name]" runat="server" />
+                <jgwac:EntityLink ID="DiskVolume" Expression="[$DiskGroup.Machine.Name]\[$Name]" runat="server" />
             </td>
         </tr>
         <tr>

@@ -132,6 +132,18 @@ namespace Jhu.Graywulf.Web.Security
             }
         }
 
+        public override void Reset(AuthenticationRequest request, AuthenticationResponse response)
+        {
+            if (response.Cookies[FormsAuthentication.FormsCookieName] != null)
+            {
+                response.Cookies.Remove(FormsAuthentication.FormsCookieName);
+            }
+
+            var cookie = new HttpCookie(FormsAuthentication.FormsCookieName);
+            cookie.Expires = DateTime.Now.AddDays(-1);
+            response.Cookies.Add(cookie);
+        }
+
         /// <summary>
         /// Creates a Graywulf principal based on the user name stored in the
         /// forms authentication ticket.

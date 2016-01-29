@@ -157,42 +157,6 @@ namespace Jhu.Graywulf.Web.Admin.Federation {
         protected global::Jhu.Graywulf.Web.Admin.Controls.EntityLink SchemaSourceServerInstance;
         
         /// <summary>
-        /// QueryFactoryTypeNameLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label QueryFactoryTypeNameLabel;
-        
-        /// <summary>
-        /// QueryFactoryTypeName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label QueryFactoryTypeName;
-        
-        /// <summary>
-        /// FileFormatFactoryTypeNameLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label FileFormatFactoryTypeNameLabel;
-        
-        /// <summary>
-        /// FileFormatFactoryTypeName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label FileFormatFactoryTypeName;
-        
-        /// <summary>
         /// EntityButtons control.
         /// </summary>
         /// <remarks>

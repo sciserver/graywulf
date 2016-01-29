@@ -68,12 +68,18 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
             if (di.ServerInstance != null)
             {
+                // TODO: reimplement
+
+                throw new NotImplementedException();
+
+                /*
                 var m = (Machine)di.ServerInstance.Parent;
                 m.LoadDiskVolumes(false);
                 foreach (DiskVolume d in m.DiskVolumes.Values)
                 {
                     DiskVolume.Items.Add(new ListItem(d.Name, d.Guid.ToString()));
                 }
+                 * */
             }
         }
     }

@@ -22,34 +22,40 @@ namespace Jhu.Graywulf.Web.Admin.Cluster
         {
             base.OnUpdateForm();
 
-            foreach (ListItem li in DiskVolumeType.Items)
+            foreach (ListItem li in Type.Items)
             {
-                li.Selected = ((Item.DiskVolumeType & (DiskVolumeType)Enum.Parse(typeof(DiskVolumeType), li.Value)) > 0);
+                li.Selected = ((Item.Type & (DiskVolumeType)Enum.Parse(typeof(DiskVolumeType), li.Value)) > 0);
             }
             LocalPath.Text = Item.LocalPath.Value;
             UncPath.Text = Item.UncPath.Value;
             FullSpace.Text = Util.ByteSizeFormatter.Format(Item.FullSpace);
             AllocatedSpace.Text = Util.ByteSizeFormatter.Format(Item.AllocatedSpace);
             ReservedSpace.Text = Util.ByteSizeFormatter.Format(Item.ReservedSpace);
-            Speed.Text = (Item.Speed / 100000.0).ToString("0.00");
+            ReadBandwidth.Text = (Item.ReadBandwidth / 100000.0).ToString("0.00");
+            WriteBandwidth.Text = (Item.WriteBandwidth / 100000.0).ToString("0.00");
         }
 
         protected override void OnSaveForm()
         {
             base.OnSaveForm();
 
-            Item.DiskVolumeType = Registry.DiskVolumeType.Unknown;
-            foreach (ListItem li in DiskVolumeType.Items)
+            Item.Type = Registry.DiskVolumeType.Unknown;
+
+            foreach (ListItem li in Type.Items)
             {
                 if (li.Selected)
-                    Item.DiskVolumeType |= (DiskVolumeType)Enum.Parse(typeof(DiskVolumeType), li.Value);
+                {
+                    Item.Type |= (DiskVolumeType)Enum.Parse(typeof(DiskVolumeType), li.Value);
+                }
             }
+
             Item.LocalPath.Value = LocalPath.Text;
             Item.UncPath.Value = UncPath.Text;
             Item.FullSpace = Util.ByteSizeFormatter.Parse(FullSpace.Text);
             //item.AllocatedSpace = ByteSizeFormatter.ParseFileSize(AllocatedSpace.Text);    // read only field
             Item.ReservedSpace = Util.ByteSizeFormatter.Parse(ReservedSpace.Text);
-            Item.Speed = (long)(double.Parse(Speed.Text) * 100000.0);
+            Item.ReadBandwidth = (long)(double.Parse(ReadBandwidth.Text) * 100000.0);
+            Item.WriteBandwidth = (long)(double.Parse(WriteBandwidth.Text) * 100000.0);
         }
 
         protected void SpaceValidator_ServerValidate(object source, ServerValidateEventArgs args)

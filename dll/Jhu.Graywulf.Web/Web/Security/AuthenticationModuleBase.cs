@@ -95,7 +95,7 @@ namespace Jhu.Graywulf.Web.Security
         /// Calls all registered request authenticators.
         /// </summary>
         /// <param name="context"></param>
-        protected virtual AuthenticationResponse Authenticate(AuthenticationRequest request)
+        protected AuthenticationResponse Authenticate(AuthenticationRequest request)
         {
             // See if we can use the principal as it is, otherwise try
             // other authentication methods
@@ -111,22 +111,37 @@ namespace Jhu.Graywulf.Web.Security
                 // Try each authentication protocol
                 for (int i = 0; i < authentications.Length; i++)
                 {
-                    authentications[i].Authenticate(request, response);
+                    try
+                    {
+                        authentications[i].Authenticate(request, response);
+                    }
+                    catch (Exception ex)
+                    {
+                        HandleException(request, response, ex);
+                    }
                 }
             }
 
             if (response.Principal != null)
             {
-                // Associate user identified by the authentication method with a Graywulf user
-                var principal = response.Principal;
-                
-                LoadUser(ref principal);
-                response.SetPrincipal(principal);
+                try
+                {
+                    // Associate user identified by the authentication method with a Graywulf user
+                    var principal = response.Principal;
 
-                // Report user as authenticated
-                OnAuthenticated(response);
+                    LoadUser(ref principal);
+                    response.SetPrincipal(principal);
+
+                    // Report user as authenticated
+                    OnAuthenticated(response);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(request, response, ex);
+                }
             }
-            else
+
+            if (response.Principal == null)
             {
                 // None of the authenticators could identify the user
                 // This only means that the custom authenticators could not
@@ -151,6 +166,31 @@ namespace Jhu.Graywulf.Web.Security
         /// When implemented in a derived class, called when all attempts to authenticate the user have failed.
         /// </summary>
         protected abstract void OnAuthenticationFailed(AuthenticationResponse response);
+
+        private void HandleException(AuthenticationRequest request, AuthenticationResponse response, Exception ex)
+        {
+            if (authentications != null)
+            {
+                // Try each authentication protocol
+                for (int i = 0; i < authentications.Length; i++)
+                {
+                    authentications[i].Reset(request, response);
+                }
+            }
+
+            Reset(request, response);
+        }
+
+        /// <summary>
+        /// When implemented in a derived class, resets response headers so that the next authentication
+        /// attempt can succeed.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="response"></param>
+        protected virtual void Reset(AuthenticationRequest request, AuthenticationResponse response)
+        {
+            response.SetPrincipal(null);
+        }
 
         /// <summary>
         /// Loads the user object, from the cache or from the Graywulf registry.

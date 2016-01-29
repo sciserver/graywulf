@@ -126,6 +126,13 @@ namespace Jhu.Graywulf.Registry
             set { ServerVersionReference.Name = value; }
         }
 
+        [XmlIgnore]
+        public Dictionary<string, ServerInstanceDiskGroup> DiskGroups
+        {
+            get { return GetChildren<ServerInstanceDiskGroup>(); }
+            set { SetChildren<ServerInstanceDiskGroup>(value); }
+        }
+
         #endregion
         #region Validation Properties
         #endregion
@@ -210,6 +217,14 @@ namespace Jhu.Graywulf.Registry
             return new IEntityReference[]
             {
                 new EntityReference<ServerVersion>((int)ReferenceType.ServerVersion),
+            };
+        }
+
+        protected override EntityType[] CreateChildTypes()
+        {
+            return new EntityType[]
+            {
+                EntityType.ServerInstanceDiskGroup
             };
         }
 

@@ -13,22 +13,22 @@ namespace Jhu.Graywulf.Web.Admin.Cluster {
     public partial class DiskVolumeDetails {
         
         /// <summary>
-        /// DiskVolumeTypeLabel control.
+        /// TypeLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label DiskVolumeTypeLabel;
+        protected global::System.Web.UI.WebControls.Label TypeLabel;
         
         /// <summary>
-        /// DiskVolumeType control.
+        /// Type control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label DiskVolumeType;
+        protected global::System.Web.UI.WebControls.Label Type;
         
         /// <summary>
         /// LocalPathLabel control.
@@ -139,22 +139,40 @@ namespace Jhu.Graywulf.Web.Admin.Cluster {
         protected global::Jhu.Graywulf.Web.Controls.UsageBar Usage;
         
         /// <summary>
-        /// SpeedLabel control.
+        /// ReadBandwidthLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label SpeedLabel;
+        protected global::System.Web.UI.WebControls.Label ReadBandwidthLabel;
         
         /// <summary>
-        /// Speed control.
+        /// ReadBandwidth control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Speed;
+        protected global::System.Web.UI.WebControls.Label ReadBandwidth;
+        
+        /// <summary>
+        /// WriteBandwidthLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label WriteBandwidthLabel;
+        
+        /// <summary>
+        /// WriteBandwidth control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label WriteBandwidth;
         
         /// <summary>
         /// EntityButtons control.

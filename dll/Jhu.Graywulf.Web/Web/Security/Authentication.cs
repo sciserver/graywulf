@@ -113,6 +113,8 @@ namespace Jhu.Graywulf.Web.Security
         /// </remarks>
         public abstract void Authenticate(AuthenticationRequest request, AuthenticationResponse response);
 
+        public abstract void Reset(AuthenticationRequest request, AuthenticationResponse response);
+
         /// <summary>
         /// Create a Graywulf principal with a pre-initialized identity
         /// </summary>

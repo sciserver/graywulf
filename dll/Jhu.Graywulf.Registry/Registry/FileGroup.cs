@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Registry
         private FileGroupType fileGroupType;
         private FileGroupLayoutType layoutType;
         private FileGroupAllocationType allocationType;
-        private DiskVolumeType diskVolumeType;
+        private DiskDesignation diskDesignation;
         private string fileGroupName;
         private long allocatedSpace;
         private int fileCount;
@@ -75,10 +75,10 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the value of the disk volume type to by used when creating physical files.
         /// </summary>
         [DBColumn]
-        public DiskVolumeType DiskVolumeType
+        public DiskDesignation DiskDesignation
         {
-            get { return diskVolumeType; }
-            set { diskVolumeType = value; }
+            get { return diskDesignation; }
+            set { diskDesignation = value; }
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace Jhu.Graywulf.Registry
             this.FileGroupType = FileGroupType.Unknown;
             this.layoutType = FileGroupLayoutType.Unknown;
             this.allocationType = FileGroupAllocationType.CrossVolume;
-            this.diskVolumeType = DiskVolumeType.Data;
+            this.diskDesignation = DiskDesignation.Data;
             this.fileGroupName = string.Empty;
             this.allocatedSpace = 0;
             this.fileCount = 0;
@@ -202,7 +202,7 @@ namespace Jhu.Graywulf.Registry
             this.fileGroupType = old.fileGroupType;
             this.layoutType = old.layoutType;
             this.allocationType = old.allocationType;
-            this.diskVolumeType = old.diskVolumeType;
+            this.diskDesignation = old.diskDesignation;
             this.fileGroupName = old.fileGroupName;
             this.allocatedSpace = old.allocatedSpace;
             this.fileCount = old.fileCount;

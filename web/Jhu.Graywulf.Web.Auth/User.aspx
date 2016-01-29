@@ -12,6 +12,8 @@
                     </td>
                     <td class="FormField">
                         <asp:TextBox ID="Username" runat="server" CssClass="FormField"></asp:TextBox>
+                        <asp:RegularExpressionValidator ID="UsernameFormatValidator" runat="server" ControlToValidate="Username"
+                            Display="Dynamic" ErrorMessage="&lt;br /&gt;Username is invalid" ValidationExpression="^[a-zA-Z0-9@\._-]+" />
                         <asp:CustomValidator ID="DuplicateUsernameValidator" runat="server" ControlToValidate="Username"
                             Display="Dynamic" ErrorMessage="&lt;br /&gt;Username is already in use" OnServerValidate="DuplicateUsernameValidator_ServerValidate" />
                         <asp:RequiredFieldValidator ID="PasswordRequiredValidator0" runat="server" ControlToValidate="Username"

@@ -11,9 +11,9 @@ namespace Jhu.Graywulf.Registry
     {
         #region Database IO Functions
 
-        public void LoadDiskVolumes(bool forceReload)
+        public void LoadDiskGroups(bool forceReload)
         {
-            LoadChildren<DiskVolume>(forceReload);
+            LoadChildren<DiskGroup>(forceReload);
         }
 
         public void LoadServerInstances(bool forceReload)
@@ -33,8 +33,8 @@ namespace Jhu.Graywulf.Registry
             var m = CreateCopy(parent, prefixName);
             m.Save();
 
-            LoadDiskVolumes(false);
-            foreach (DiskVolume d in this.DiskVolumes.Values)
+            LoadDiskGroups(false);
+            foreach (DiskGroup d in this.DiskGroups.Values)
             {
                 d.Copy(m, false);
             }

@@ -16,7 +16,7 @@
                 <asp:Label ID="ServerInstanceLabel" runat="server" Text="Server Instance:"></asp:Label>
             </td>
             <td class="FormField">
-                <jgwac:EntityLink ID="ServerInstance" Expression="[$Machine.Name].[$Name]" runat="server" />
+                <jgwac:EntityLink ID="ServerInstance" Expression="[$Machine.Name]\[$Name]" runat="server" />
             </td>
         </tr>
         <tr>

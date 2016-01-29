@@ -118,6 +118,8 @@ namespace Jhu.Graywulf.Web.Admin
                 case EntityType.ServerVersion:
                 case EntityType.Machine:
                 case EntityType.ServerInstance:
+                case EntityType.ServerInstanceDiskGroup:
+                case EntityType.DiskGroup:
                 case EntityType.DiskVolume:
                     group = EntityGroup.Cluster;
                     break;
@@ -190,6 +192,8 @@ namespace Jhu.Graywulf.Web.Admin
                 case EntityType.DatabaseVersion:
                     break;
                 case EntityType.ServerInstance:
+                case EntityType.ServerInstanceDiskGroup:
+                case EntityType.DiskGroup:
                 case EntityType.DiskVolume:
                     group = EntityGroup.Cluster;
                     break;

@@ -26,7 +26,6 @@ namespace Jhu.Graywulf.RemoteService.Server
         protected override void OnBeforeUninstall(IDictionary savedState)
         {
             base.OnBeforeUninstall(savedState);
-
             OverrideServiceName();
         }
 
@@ -35,7 +34,7 @@ namespace Jhu.Graywulf.RemoteService.Server
             if (Context.Parameters.ContainsKey("svcname"))
             {
                 Console.WriteLine("Service name is overriden.");
-                this.serviceInstaller.ServiceName += "_" + Context.Parameters["svcname"];
+                this.serviceInstaller.ServiceName = Context.Parameters["svcname"];
                 this.serviceInstaller.DisplayName += " (" + Context.Parameters["svcname"] + ")";
             }
         }

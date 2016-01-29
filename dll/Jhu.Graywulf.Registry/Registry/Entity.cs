@@ -689,11 +689,11 @@ namespace Jhu.Graywulf.Registry
                 Entity p = Parent;
                 while (p != null)
                 {
-                    n = p.Name + "." + n;
+                    n = p.Name + Constants.EntityNameSeparator + n;
                     p = p.Parent;
                 }
 
-                fullyQualifiedName = EntityType.ToString() + ":" + n;
+                fullyQualifiedName = EntityType.ToString() + Constants.EntityTypeSeparator + n;
             }
 
             return fullyQualifiedName;

@@ -9,6 +9,10 @@ namespace Jhu.Graywulf.Registry
 {
     public class Constants
     {
+        public const char EntityTypeSeparator = ':';
+        public const char EntityNameSeparator = '\\';
+        public const char EntityFieldSeparator = '.';       // Used in expressions
+
         public const string ClusterName = "Graywulf";
         public const string ClusterAdministratorUserGroupName = "Administrators";
         public const string ClusterAdminName = "admin";
@@ -28,9 +32,10 @@ namespace Jhu.Graywulf.Registry
         public const string MachineHostName = "localhost";
         public const string MachineAdminUrl = @"http://[$HostName]/gwcontrol";
         public const string MachineDeployUncPath = @"\\[$HostName]\GWCode\";
-        public const string DiskVolumeName = "Data";
+        public const string DataDiskGroupName = "DATA";
+        public const string DiskVolumeName = "Volume";
         public const string DiskVolumeLocalPath = @"C:\Data\[$Name]\";
-        public const string DiskVolumeUncPath = @"\\[$Parent.HostName]\Data\[$Name]\";
+        public const string DiskVolumeUncPath = @"\\[$Parent.Parent.HostName]\Data\[$Name]\";
 
         public const string SlicedDatabaseInstanceNamePattern = "[$DatabaseDefinition.Name]_[$Slice.Name]_[$DatabaseVersion.Name]";
         public const string SlicedDatabaseNamePattern = "[$DatabaseDefinition.Federation.Name]_[$DatabaseDefinition.Name]_[$Slice.Name]_[$DatabaseVersion.Name]";
@@ -83,6 +88,7 @@ namespace Jhu.Graywulf.Registry
             { EntityType.DatabaseInstanceFileGroup, typeof(DatabaseInstanceFileGroup) },
             { EntityType.DatabaseVersion, typeof(DatabaseVersion) },
             { EntityType.DeploymentPackage, typeof(DeploymentPackage) },
+            { EntityType.DiskGroup, typeof(DiskGroup) },
             { EntityType.DiskVolume, typeof(DiskVolume) },
             { EntityType.Domain, typeof(Domain) },
             { EntityType.Federation, typeof(Federation) },
@@ -97,6 +103,7 @@ namespace Jhu.Graywulf.Registry
             { EntityType.QueueInstance, typeof(QueueInstance) },
             { EntityType.RemoteDatabase, typeof(RemoteDatabase) },
             { EntityType.ServerInstance, typeof(ServerInstance) },
+            { EntityType.ServerInstanceDiskGroup, typeof(ServerInstanceDiskGroup) },
             { EntityType.ServerVersion, typeof(ServerVersion) },
             { EntityType.Slice, typeof(Slice) },
             { EntityType.User, typeof(User) },
@@ -116,6 +123,8 @@ namespace Jhu.Graywulf.Registry
             { EntityType.Machine, EntityNames.Machine_Singular},
             { EntityType.ServerVersion, EntityNames.ServerVersion_Singular},
             { EntityType.ServerInstance, EntityNames.ServerInstance_Singular},
+            { EntityType.ServerInstanceDiskGroup, EntityNames.ServerInstanceDiskGroup_Singular},
+            { EntityType.DiskGroup, EntityNames.DiskGroup_Singular},
             { EntityType.DiskVolume, EntityNames.DiskVolume_Singular},
             { EntityType.UserGroup, EntityNames.UserGroup_Singular},
             { EntityType.User, EntityNames.User_Singular},
@@ -151,6 +160,8 @@ namespace Jhu.Graywulf.Registry
             { EntityType.Machine, EntityNames.Machine_Plural},
             { EntityType.ServerVersion, EntityNames.ServerVersion_Plural},
             { EntityType.ServerInstance, EntityNames.ServerInstance_Plural},
+            { EntityType.ServerInstanceDiskGroup, EntityNames.ServerInstanceDiskGroup_Plural},
+            { EntityType.DiskGroup, EntityNames.DiskGroup_Plural},
             { EntityType.DiskVolume, EntityNames.DiskVolume_Plural},
             { EntityType.UserGroup, EntityNames.UserGroup_Plural},
             { EntityType.User, EntityNames.User_Plural},

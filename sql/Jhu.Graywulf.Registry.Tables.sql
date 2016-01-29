@@ -1,4 +1,7 @@
-﻿-- CREATE TABLES --
+﻿IF (OBJECT_ID('[dbo].[Entity]') IS NOT NULL)
+DROP TABLE [dbo].[Entity]
+
+GO
 
 CREATE TABLE [dbo].[Entity]
 (
@@ -27,23 +30,14 @@ CREATE TABLE [dbo].[Entity]
 	[UserGuidDeleted] [uniqueidentifier] NULL,
 	[Settings] [xml] NULL,
 	[Comments] [nvarchar](max) NOT NULL,
-)
 
-GO
-
-IF OBJECT_ID('[PK_Entity]') IS NOT NULL
-ALTER TABLE [dbo].[Entity]
-DROP CONSTRAINT [PK_Entity]
-
-GO
-
-ALTER TABLE [dbo].[Entity]
-ADD CONSTRAINT [PK_Entity] PRIMARY KEY CLUSTERED 
-(
-	[ParentGuid] ASC,
-	[EntityType] ASC,
-	[Number] ASC,
-	[Guid] ASC
+	CONSTRAINT [PK_Entity] PRIMARY KEY CLUSTERED 
+	(
+		[ParentGuid] ASC,
+		[EntityType] ASC,
+		[Number] ASC,
+		[Guid] ASC
+	)
 )
 
 GO
@@ -56,9 +50,12 @@ WITH (FILLFACTOR = 60)
 
 GO
 
+---------------------------------------------------------------
 
+IF (OBJECT_ID('[dbo].[EntityReference]') IS NOT NULL)
+DROP TABLE [dbo].[EntityReference]
 
-
+GO
 
 CREATE TABLE [dbo].[EntityReference]
 (
@@ -74,6 +71,12 @@ CREATE TABLE [dbo].[EntityReference]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[Cluster]') IS NOT NULL)
+DROP TABLE [dbo].[Cluster]
+
+GO
 
 CREATE TABLE [dbo].[Cluster]
 (
@@ -86,6 +89,12 @@ CREATE TABLE [dbo].[Cluster]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[DatabaseDefinition]') IS NOT NULL)
+DROP TABLE [dbo].[DatabaseDefinition]
+
+GO
 
 CREATE TABLE [dbo].[DatabaseDefinition]
 (
@@ -106,6 +115,12 @@ CREATE TABLE [dbo].[DatabaseDefinition]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[DatabaseInstance]') IS NOT NULL)
+DROP TABLE [dbo].[DatabaseInstance]
+
+GO
 
 CREATE TABLE [dbo].[DatabaseInstance]
 (
@@ -119,6 +134,12 @@ CREATE TABLE [dbo].[DatabaseInstance]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[DatabaseInstanceFile]') IS NOT NULL)
+DROP TABLE [dbo].[DatabaseInstanceFile]
+
+GO
 
 CREATE TABLE [dbo].[DatabaseInstanceFile]
 (
@@ -137,6 +158,12 @@ CREATE TABLE [dbo].[DatabaseInstanceFile]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[DatabaseInstanceFileGroup]') IS NOT NULL)
+DROP TABLE [dbo].[DatabaseInstanceFileGroup]
+
+GO
 
 CREATE TABLE [dbo].[DatabaseInstanceFileGroup]
 (
@@ -154,6 +181,12 @@ CREATE TABLE [dbo].[DatabaseInstanceFileGroup]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[DatabaseVersion]') IS NOT NULL)
+DROP TABLE [dbo].[DatabaseVersion]
+
+GO
 
 CREATE TABLE [dbo].[DatabaseVersion]
 (
@@ -167,6 +200,12 @@ CREATE TABLE [dbo].[DatabaseVersion]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[DeploymentPackage]') IS NOT NULL)
+DROP TABLE [dbo].[DeploymentPackage]
+
+GO
 
 CREATE TABLE [dbo].[DeploymentPackage]
 (
@@ -181,17 +220,48 @@ CREATE TABLE [dbo].[DeploymentPackage]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[DiskGroup]') IS NOT NULL)
+DROP TABLE [dbo].[DiskGroup]
+
+GO
+
+CREATE TABLE [dbo].[DiskGroup]
+(
+	[EntityGuid] [uniqueidentifier] NOT NULL,
+	[Type] [int] NOT NULL,
+	[FullSpace] [bigint] NOT NULL,
+	[AllocatedSpace] [bigint] NOT NULL,
+	[ReservedSpace] [bigint] NOT NULL,
+	[ReadBandwidth] [bigint] NOT NULL,
+	[WriteBandwidth] [bigint] NOT NULL,
+	CONSTRAINT [PK_DiskGroup] PRIMARY KEY CLUSTERED 
+	(
+		[EntityGuid] ASC
+	)
+)
+
+GO
+
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[DiskVolume]') IS NOT NULL)
+DROP TABLE [dbo].[DiskVolume]
+
+GO
 
 CREATE TABLE [dbo].[DiskVolume]
 (
 	[EntityGuid] [uniqueidentifier] NOT NULL,
-	[DiskVolumeType] [int] NOT NULL,
+	[Type] [int] NOT NULL,
 	[LocalPath] [nvarchar](256) NOT NULL,
 	[UncPath] [nvarchar](256) NOT NULL,
 	[FullSpace] [bigint] NOT NULL,
 	[AllocatedSpace] [bigint] NOT NULL,
 	[ReservedSpace] [bigint] NOT NULL,
-	[Speed] [bigint] NOT NULL,
+	[ReadBandwidth] [bigint] NOT NULL,
+	[WriteBandwidth] [bigint] NOT NULL,
 	CONSTRAINT [PK_DiskVolume] PRIMARY KEY CLUSTERED 
 	(
 		[EntityGuid] ASC
@@ -200,6 +270,12 @@ CREATE TABLE [dbo].[DiskVolume]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[Domain]') IS NOT NULL)
+DROP TABLE [dbo].[Domain]
+
+GO
 
 CREATE TABLE [dbo].[Domain]
 (
@@ -219,6 +295,12 @@ CREATE TABLE [dbo].[Domain]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[Federation]') IS NOT NULL)
+DROP TABLE [dbo].[Federation]
+
+GO
 
 CREATE TABLE [dbo].[Federation]
 (
@@ -243,6 +325,12 @@ CREATE TABLE [dbo].[Federation]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[FileGroup]') IS NOT NULL)
+DROP TABLE [dbo].[FileGroup]
+
+GO
 
 CREATE TABLE [dbo].[FileGroup]
 (
@@ -250,7 +338,7 @@ CREATE TABLE [dbo].[FileGroup]
 	[FileGroupType] [int] NOT NULL,
 	[LayoutType] [int] NOT NULL,
 	[AllocationType] [int] NOT NULL,
-	[DiskVolumeType] [int] NOT NULL,
+	[DiskDesignation] [int] NOT NULL,
 	[FileGroupName] [nvarchar](50) NOT NULL,
 	[AllocatedSpace] [bigint] NOT NULL,
 	[FileCount] [int] NOT NULL,
@@ -262,6 +350,12 @@ CREATE TABLE [dbo].[FileGroup]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[JobDefinition]') IS NOT NULL)
+DROP TABLE [dbo].[JobDefinition]
+
+GO
 
 CREATE TABLE [dbo].[JobDefinition]
 (
@@ -276,6 +370,12 @@ CREATE TABLE [dbo].[JobDefinition]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[JobInstance]') IS NOT NULL)
+DROP TABLE [dbo].[JobInstance]
+
+GO
 
 CREATE TABLE [dbo].[JobInstance]
 (
@@ -304,6 +404,12 @@ CREATE TABLE [dbo].[JobInstance]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[JobInstanceDependency]') IS NOT NULL)
+DROP TABLE [dbo].[JobInstanceDependency]
+
+GO
 
 CREATE TABLE [dbo].[JobInstanceDependency]
 (
@@ -317,6 +423,12 @@ CREATE TABLE [dbo].[JobInstanceDependency]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[Machine]') IS NOT NULL)
+DROP TABLE [dbo].[Machine]
+
+GO
 
 CREATE TABLE [dbo].[Machine]
 (
@@ -332,6 +444,12 @@ CREATE TABLE [dbo].[Machine]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[MachineRole]') IS NOT NULL)
+DROP TABLE [dbo].[MachineRole]
+
+GO
 
 CREATE TABLE [dbo].[MachineRole]
 (
@@ -345,6 +463,12 @@ CREATE TABLE [dbo].[MachineRole]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[Partition]') IS NOT NULL)
+DROP TABLE [dbo].[Partition]
+
+GO
 
 CREATE TABLE [dbo].[Partition]
 (
@@ -359,6 +483,12 @@ CREATE TABLE [dbo].[Partition]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[QueueDefinition]') IS NOT NULL)
+DROP TABLE [dbo].[QueueDefinition]
+
+GO
 
 CREATE TABLE [dbo].[QueueDefinition]
 (
@@ -373,6 +503,12 @@ CREATE TABLE [dbo].[QueueDefinition]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[QueueInstance]') IS NOT NULL)
+DROP TABLE [dbo].[QueueInstance]
+
+GO
 
 CREATE TABLE [dbo].[QueueInstance]
 (
@@ -387,6 +523,12 @@ CREATE TABLE [dbo].[QueueInstance]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[RemoteDatabase]') IS NOT NULL)
+DROP TABLE [dbo].[RemoteDatabase]
+
+GO
 
 CREATE TABLE [dbo].[RemoteDatabase]
 (
@@ -409,6 +551,12 @@ CREATE TABLE [dbo].[RemoteDatabase]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[ServerInstance]') IS NOT NULL)
+DROP TABLE [dbo].[ServerInstance]
+
+GO
 
 CREATE TABLE [dbo].[ServerInstance]
 (
@@ -425,6 +573,31 @@ CREATE TABLE [dbo].[ServerInstance]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[ServerInstanceDiskGroup]') IS NOT NULL)
+DROP TABLE [dbo].[ServerInstanceDiskGroup]
+
+GO
+
+CREATE TABLE [dbo].[ServerInstanceDiskGroup]
+(
+	[EntityGuid] [uniqueidentifier] NOT NULL,
+	[DiskDesignation] [int] NOT NULL,
+	CONSTRAINT [PK_ServerInstanceDiskGroup] PRIMARY KEY CLUSTERED 
+	(
+		[EntityGuid] ASC
+	)
+)
+
+GO
+
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[ServerVersion]') IS NOT NULL)
+DROP TABLE [dbo].[ServerVersion]
+
+GO
 
 CREATE TABLE [dbo].[ServerVersion]
 (
@@ -441,6 +614,12 @@ CREATE TABLE [dbo].[ServerVersion]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[Slice]') IS NOT NULL)
+DROP TABLE [dbo].[Slice]
+
+GO
 
 CREATE TABLE [dbo].[Slice]
 (
@@ -455,6 +634,12 @@ CREATE TABLE [dbo].[Slice]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[UserGroup]') IS NOT NULL)
+DROP TABLE [dbo].[UserGroup]
+
+GO
 
 CREATE TABLE [dbo].[UserGroup]
 (
@@ -467,6 +652,12 @@ CREATE TABLE [dbo].[UserGroup]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[UserRole]') IS NOT NULL)
+DROP TABLE [dbo].[UserRole]
+
+GO
 
 CREATE TABLE [dbo].[UserRole]
 (
@@ -480,6 +671,12 @@ CREATE TABLE [dbo].[UserRole]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[User]') IS NOT NULL)
+DROP TABLE [dbo].[User]
+
+GO
 
 CREATE TABLE [dbo].[User]
 (
@@ -518,6 +715,12 @@ CREATE TABLE [dbo].[User]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[UserDatabaseInstance]') IS NOT NULL)
+DROP TABLE [dbo].[UserDatabaseInstance]
+
+GO
 
 CREATE TABLE [dbo].[UserDatabaseInstance]
 (
@@ -530,6 +733,12 @@ CREATE TABLE [dbo].[UserDatabaseInstance]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[UserGroupMembership]') IS NOT NULL)
+DROP TABLE [dbo].[UserGroupMembership]
+
+GO
 
 CREATE TABLE [dbo].[UserGroupMembership]
 (
@@ -542,6 +751,12 @@ CREATE TABLE [dbo].[UserGroupMembership]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[UserRoleMembership]') IS NOT NULL)
+DROP TABLE [dbo].[UserRoleMembership]
+
+GO
 
 CREATE TABLE [dbo].[UserRoleMembership]
 (
@@ -554,6 +769,12 @@ CREATE TABLE [dbo].[UserRoleMembership]
 
 GO
 
+---------------------------------------------------------------
+
+IF (OBJECT_ID('[dbo].[UserIdentity]') IS NOT NULL)
+DROP TABLE [dbo].[UserIdentity]
+
+GO
 
 CREATE TABLE [dbo].[UserIdentity]
 (
@@ -572,6 +793,11 @@ GO
 
 -- USER DEFINED TABLE TYPES --
 
+IF (TYPE_ID('[dbo].[EntityReferenceList]') IS NOT NULL)
+DROP TYPE [dbo].[EntityReferenceList]
+
+GO
+
 CREATE TYPE [dbo].[EntityReferenceList] AS TABLE
 (
 	[EntityGuid] [uniqueidentifier] NULL,
@@ -581,6 +807,12 @@ CREATE TYPE [dbo].[EntityReferenceList] AS TABLE
 
 GO
 
+---------------------------------------------------------------
+
+IF (TYPE_ID('[dbo].[GuidList]') IS NOT NULL)
+DROP TYPE [dbo].[GuidList]
+
+GO
 
 CREATE TYPE [dbo].[GuidList] AS TABLE
 (
@@ -589,6 +821,12 @@ CREATE TYPE [dbo].[GuidList] AS TABLE
 
 GO
 
+---------------------------------------------------------------
+
+IF (TYPE_ID('[dbo].[NamePartList]') IS NOT NULL)
+DROP TYPE [dbo].[NamePartList]
+
+GO
 
 CREATE TYPE [dbo].[NamePartList] AS TABLE
 (

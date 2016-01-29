@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Inherits="Jhu.Graywulf.Web.Admin.Cluster.ServerInstanceDetails"
-    MasterPageFile="~/EntityDetails.master" CodeBehind="ServerInstanceDetails.aspx.cs" %>
+    MasterPageFile="~/EntityChildren.master" CodeBehind="ServerInstanceDetails.aspx.cs" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="FormDetails">
     <table class="DetailsForm dock-top">
@@ -38,5 +38,14 @@
     </table>
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="FormButtons">
-    <jgwac:EntityButtons runat="server" ID="EntityButtons" />
+    <jgwac:EntityButtons runat="server" ID="EntityButtons" RunningStateButtonsVisible="true" />
+</asp:Content>
+<asp:Content runat="server" ContentPlaceHolderID="FormTabs">
+    <jgwac:EntityChildren runat="server" ID="EntityChildren">
+        <jgwac:EntityList runat="server" ID="DiskGroupList" ChildrenType="ServerInstanceDiskGroup" EntityGroup="Cluster">
+            <columns>
+                <asp:BoundField DataField="DiskDesignation" HeaderText="Designation" />
+            </columns>
+        </jgwac:EntityList>
+    </jgwac:EntityChildren>
 </asp:Content>

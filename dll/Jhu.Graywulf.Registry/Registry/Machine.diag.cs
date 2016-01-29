@@ -16,16 +16,16 @@ namespace Jhu.Graywulf.Registry
             msg.Add(Ping());
             msg.Add(PingBulkOpService());
 
+            LoadDiskGroups(false);
+            foreach (DiskGroup dg in this.DiskGroups.Values)
+            {
+                msg.AddRange(dg.RunDiagnostics());
+            }
+
             LoadServerInstances(false);
             foreach (ServerInstance si in this.ServerInstances.Values)
             {
                 msg.AddRange(si.RunDiagnostics());
-            }
-
-            LoadDiskVolumes(false);
-            foreach (DiskVolume dv in this.DiskVolumes.Values)
-            {
-                msg.AddRange(dv.RunDiagnostics());
             }
 
             return msg;

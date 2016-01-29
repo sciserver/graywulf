@@ -81,10 +81,10 @@ namespace Jhu.Graywulf.Registry
         }
 
         [XmlIgnore]
-        public Dictionary<string, DiskVolume> DiskVolumes
+        public Dictionary<string, DiskGroup> DiskGroups
         {
-            get { return GetChildren<DiskVolume>(); }
-            set { SetChildren<DiskVolume>(value); }
+            get { return GetChildren<DiskGroup>(); }
+            set { SetChildren<DiskGroup>(value); }
         }
 
         [XmlIgnore]
@@ -182,7 +182,7 @@ namespace Jhu.Graywulf.Registry
         {
             return new EntityType[]
             {
-                EntityType.DiskVolume,
+                EntityType.DiskGroup,
                 EntityType.ServerInstance,
                 EntityType.QueueInstance,
             };

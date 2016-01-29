@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.Install
             return GenerateDatabaseInstance(serverInstance, null, null, slice, databaseVersion, namePattern, databaseNamePattern, sizeFactor, generateFileGroups);
         }
 
-        public DatabaseInstance GenerateDatabaseInstance(ServerInstance serverInstance, List<DiskVolume> dataDiskVolumes, List<DiskVolume> logDiskVolumes, Slice slice, DatabaseVersion databaseVersion, string namePattern, string databaseNamePattern, double sizeFactor, bool generateFileGroups)
+        private DatabaseInstance GenerateDatabaseInstance(ServerInstance serverInstance, List<DiskVolume> dataDiskVolumes, List<DiskVolume> logDiskVolumes, Slice slice, DatabaseVersion databaseVersion, string namePattern, string databaseNamePattern, double sizeFactor, bool generateFileGroups)
         {
             // --- Create the new database instance and set name
             DatabaseInstance ndi = new DatabaseInstance(databaseDefinition);
@@ -49,8 +49,7 @@ namespace Jhu.Graywulf.Install
 
             if (generateFileGroups)
             {
-                ndi.ServerInstance.Machine.LoadDiskVolumes(false);
-
+                ndi.ServerInstance.LoadDiskGroups(false);
                 databaseDefinition.LoadFileGroups(false);
 
                 slice.LoadPartitions(false);
@@ -141,8 +140,19 @@ namespace Jhu.Graywulf.Install
             List<DiskVolume> diskVolumes = new List<DiskVolume>();
             if (dataDiskVolumes == null)
             {
-                fg.DatabaseInstance.ServerInstance.Machine.LoadDiskVolumes(false);
-                diskVolumes.AddRange(fg.DatabaseInstance.ServerInstance.Machine.DiskVolumes.Values.Where<DiskVolume>(d => (d.DiskVolumeType & fg.FileGroup.DiskVolumeType) > 0).OrderBy(i => i.Number));
+                // Associate disks with file groups automatically
+                // By default, all disk groups designetad as data are used
+
+                fg.DatabaseInstance.ServerInstance.LoadDiskGroups(false);
+                foreach (var dg in fg.DatabaseInstance.ServerInstance.DiskGroups.Values.Where(i => (i.DiskDesignation & fg.FileGroup.DiskDesignation) != 0))
+                {
+                    dg.DiskGroup.LoadDiskVolumes(false);
+                    diskVolumes.AddRange(dg.DiskGroup.DiskVolumes.Values.OrderBy(i => i.Number));
+                }
+                
+                // TODO: delete
+                //fg.DatabaseInstance.ServerInstance.Machine.LoadDiskVolumes(false);
+                //diskVolumes.AddRange(fg.DatabaseInstance.ServerInstance.Machine.DiskVolumes.Values.Where<DiskVolume>(d => (d.DiskVolumeType & fg.FileGroup.DiskGroupType) > 0).OrderBy(i => i.Number));
             }
             else
             {

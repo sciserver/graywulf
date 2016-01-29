@@ -13,22 +13,22 @@ namespace Jhu.Graywulf.Web.Admin.Cluster {
     public partial class DiskVolumeForm {
         
         /// <summary>
-        /// DiskVolumeTypeLabel control.
+        /// TypeLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label DiskVolumeTypeLabel;
+        protected global::System.Web.UI.WebControls.Label TypeLabel;
         
         /// <summary>
-        /// DiskVolumeType control.
+        /// Type control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBoxList DiskVolumeType;
+        protected global::System.Web.UI.WebControls.DropDownList Type;
         
         /// <summary>
         /// LocalPathLabel control.
@@ -193,39 +193,75 @@ namespace Jhu.Graywulf.Web.Admin.Cluster {
         protected global::System.Web.UI.WebControls.CustomValidator SpaceValidator;
         
         /// <summary>
-        /// SpeedLabel control.
+        /// ReadBandwidthLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label SpeedLabel;
+        protected global::System.Web.UI.WebControls.Label ReadBandwidthLabel;
         
         /// <summary>
-        /// Speed control.
+        /// ReadBandwidth control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox Speed;
+        protected global::System.Web.UI.WebControls.TextBox ReadBandwidth;
         
         /// <summary>
-        /// SpeedRequiredValidator control.
+        /// ReadBandwidthRequiredValidator control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator SpeedRequiredValidator;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator ReadBandwidthRequiredValidator;
         
         /// <summary>
-        /// SpeedRangeValidator control.
+        /// ReadBandwidthRangeValidator control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RangeValidator SpeedRangeValidator;
+        protected global::System.Web.UI.WebControls.RangeValidator ReadBandwidthRangeValidator;
+        
+        /// <summary>
+        /// WriteBandwidthLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label WriteBandwidthLabel;
+        
+        /// <summary>
+        /// WriteBandwidth control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox WriteBandwidth;
+        
+        /// <summary>
+        /// WriteBandwidthRequiredValidator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator WriteBandwidthRequiredValidator;
+        
+        /// <summary>
+        /// WriteBandwidthRangeValidator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RangeValidator WriteBandwidthRangeValidator;
     }
 }

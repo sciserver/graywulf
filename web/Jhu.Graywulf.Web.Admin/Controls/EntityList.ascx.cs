@@ -11,6 +11,7 @@ using Jhu.Graywulf.Web.UI;
 namespace Jhu.Graywulf.Web.Admin.Controls
 {
     [ParseChildren(true)]
+    [PersistChildren(true)]
     public partial class EntityList : Jhu.Graywulf.Web.UI.UserControlBase
     {
         private Entity parentEntity;
@@ -41,6 +42,12 @@ namespace Jhu.Graywulf.Web.Admin.Controls
         {
             get { return text; }
             set { text = value; }
+        }
+
+        public bool ButtonsVisible
+        {
+            get { return buttonsDiv.Visible; }
+            set { buttonsDiv.Visible = value; }
         }
 
         public DataControlFieldCollection Columns

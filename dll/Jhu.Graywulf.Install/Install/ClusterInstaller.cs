@@ -42,71 +42,12 @@ namespace Jhu.Graywulf.Install
             cluster.Save();
 
             // Create machine roles and machines
+            Machine controllerMachine;
+            ServerInstance controllerServerInstance;
+            GenerateController(system, out controllerMachine, out controllerServerInstance);
 
-            //      -- controller role
-            var mrcont = new MachineRole(cluster)
-            {
-                Name = Constants.ControllerMachineRoleName,
-                System = system,
-                MachineRoleType = MachineRoleType.StandAlone,
-            };
-            mrcont.Save();
-
-            var sv = new ServerVersion(mrcont)
-            {
-                Name = Constants.ServerVersionName,
-                System = system,
-            };
-            sv.Save();
-
-            var mcont = new Machine(mrcont)
-            {
-                Name = Constants.ControllerMachineName,
-            };
-            mcont.Save();
-
-            var sicont = new ServerInstance(mcont)
-            {
-                Name = Constants.ServerInstanceName,
-                ServerVersion = sv,
-            };
-            sicont.Save();
-
-
-            //      -- node role
-            var mrnode = new MachineRole(cluster)
-            {
-                Name = Constants.NodeMachineRoleName,
-                MachineRoleType = MachineRoleType.MirroredSet,
-            };
-            mrnode.Save();
-
-            var nodesv = new ServerVersion(mrnode)
-            {
-                Name = Constants.ServerVersionName,
-            };
-            nodesv.Save();
-
-            //      -- Create a node
-            var mnode = new Machine(mrnode)
-            {
-                Name = Constants.NodeMachineRoleName + "00"
-            };
-            mnode.Save();
-
-            var sinode = new ServerInstance(mnode)
-            {
-                Name = Constants.ServerInstanceName,
-                ServerVersion = nodesv,
-            };
-            sinode.Save();
-
-            var dnode = new DiskVolume(mnode)
-            {
-                Name = Constants.DiskVolumeName + "0",
-                DiskVolumeType = DiskVolumeType.Data | DiskVolumeType.Log | DiskVolumeType.Temporary,
-            };
-            dnode.Save();
+            ServerVersion nodeServerVersion;
+            GenerateNode(system, out nodeServerVersion);
 
             // Create the shared domain for cluster level databases and users
             var domain = new Domain(cluster)
@@ -127,8 +68,8 @@ namespace Jhu.Graywulf.Install
                 Name = Constants.SystemFederationName,
                 Email = email,
                 System = system,
-                ControllerMachine = mcont,
-                SchemaSourceServerInstance = sicont,
+                ControllerMachine = controllerMachine,
+                SchemaSourceServerInstance = controllerServerInstance,
             };
             federation.Save();
 
@@ -146,7 +87,7 @@ namespace Jhu.Graywulf.Install
             tempdd.Save();
 
             var tempddi = new DatabaseDefinitionInstaller(tempdd);
-            tempddi.GenerateDefaultChildren(nodesv, Constants.TempDbName);
+            tempddi.GenerateDefaultChildren(nodeServerVersion, Constants.TempDbName);
 
             // Create cluster level jobs and queues
 
@@ -158,7 +99,7 @@ namespace Jhu.Graywulf.Install
             };
             qd.Save();
 
-            QueueInstance qi = new QueueInstance(mcont)
+            QueueInstance qi = new QueueInstance(controllerMachine)
             {
                 Name = Constants.MaintenanceQueueName,
                 System = true,
@@ -175,7 +116,7 @@ namespace Jhu.Graywulf.Install
             };
             qd.Save();
 
-            qi = new QueueInstance(mcont)
+            qi = new QueueInstance(controllerMachine)
             {
                 Name = Constants.LongQueueName,
                 RunningState = Registry.RunningState.Running,
@@ -190,7 +131,7 @@ namespace Jhu.Graywulf.Install
             };
             qd.Save();
 
-            qi = new QueueInstance(mcont)
+            qi = new QueueInstance(controllerMachine)
             {
                 Name = Constants.QuickQueueName,
                 RunningState = Registry.RunningState.Running,
@@ -219,6 +160,89 @@ namespace Jhu.Graywulf.Install
             jd.Save();
 
             return cluster;
+        }
+
+        private void GenerateController(bool system, out Machine controllerMachine, out ServerInstance controllerServerInstance)
+        {
+            var mrcont = new MachineRole(cluster)
+            {
+                Name = Constants.ControllerMachineRoleName,
+                System = system,
+                MachineRoleType = MachineRoleType.StandAlone,
+            };
+            mrcont.Save();
+
+            var sv = new ServerVersion(mrcont)
+            {
+                Name = Constants.ServerVersionName,
+                System = system,
+            };
+            sv.Save();
+
+            controllerMachine = new Machine(mrcont)
+            {
+                Name = Constants.ControllerMachineName,
+            };
+            controllerMachine.Save();
+
+            controllerServerInstance = new ServerInstance(controllerMachine)
+            {
+                Name = Constants.ServerInstanceName,
+                ServerVersion = sv,
+            };
+            controllerServerInstance.Save();
+        }
+
+        private void GenerateNode(bool system, out ServerVersion nodeServerVersion)
+        {
+            var mrnode = new MachineRole(cluster)
+            {
+                Name = Constants.NodeMachineRoleName,
+                MachineRoleType = MachineRoleType.MirroredSet,
+            };
+            mrnode.Save();
+
+            nodeServerVersion = new ServerVersion(mrnode)
+            {
+                Name = Constants.ServerVersionName,
+            };
+            nodeServerVersion.Save();
+
+            //      -- Create a node with a disk group and a disk volume and a server instance
+            var mnode = new Machine(mrnode)
+            {
+                Name = Constants.NodeMachineRoleName + "00"
+            };
+            mnode.Save();
+
+            var gnode = new DiskGroup(mnode)
+            {
+                Name = Constants.DataDiskGroupName + "0",
+                Type = DiskGroupType.Jbod,
+            };
+            gnode.Save();
+
+            var dnode = new DiskVolume(gnode)
+            {
+                Name = Constants.DiskVolumeName + "0",
+                Type = DiskVolumeType.Unknown
+            };
+            dnode.Save();
+
+            var sinode = new ServerInstance(mnode)
+            {
+                Name = Constants.ServerInstanceName,
+                ServerVersion = nodeServerVersion,
+            };
+            sinode.Save();
+
+            var sidgnode = new ServerInstanceDiskGroup(sinode)
+            {
+                Name = Constants.DataDiskGroupName,
+                DiskDesignation = DiskDesignation.Data | DiskDesignation.Log,
+                DiskGroup = gnode,
+            };
+            sidgnode.Save();
         }
 
         private void GenerateAdminGroup(bool system)

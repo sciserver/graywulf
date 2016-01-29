@@ -44,9 +44,19 @@ namespace Jhu.Graywulf.Registry
         ServerInstance = Cluster | 0x0400,
 
         /// <summary>
+        /// Logical disk group
+        /// </summary>
+        DiskGroup = Cluster | 0x0500,
+
+        /// <summary>
         /// Logical disk volume
         /// </summary>
-        DiskVolume = Cluster | 0x0500,
+        DiskVolume = Cluster | 0x0600,
+
+        /// <summary>
+        /// SQL Server instance disk group mapping
+        /// </summary>
+        ServerInstanceDiskGroup = Cluster | 0x0700,
 
         AllCluster = Cluster | 0xFFFF,
 

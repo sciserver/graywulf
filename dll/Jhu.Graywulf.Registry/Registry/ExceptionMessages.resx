@@ -136,7 +136,7 @@
     <value>Cannot deploy database. Already deployed, or deploying.</value>
   </data>
   <data name="CannotDetachDatabase" xml:space="preserve">
-    <value>Cannot detach database. Dot deployed or not attached.</value>
+    <value>Cannot detach database. Not deployed or not attached.</value>
   </data>
   <data name="CannotUndeployDatabase" xml:space="preserve">
     <value>Cannot undeploy database. Not deployed.</value>

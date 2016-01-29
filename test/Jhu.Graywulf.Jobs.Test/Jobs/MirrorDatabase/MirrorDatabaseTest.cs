@@ -15,21 +15,43 @@ namespace Jhu.Graywulf.Jobs.ExportTables
     [TestClass]
     public class MirrorDatabaseTest : TestClassBase
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                PurgeTestJobs();
+            }
+        }
+
+        [ClassCleanup]
+        public static void CleanUp()
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                if (SchedulerTester.Instance.IsRunning)
+                {
+                    SchedulerTester.Instance.DrainStop();
+                }
+
+                PurgeTestJobs();
+            }
+        }
+
         protected Guid ScheduleMirroDatabaseJob(QueueType queueType)
         {
-            var queue = String.Format("QueueInstance:Graywulf.Controller.Controller.{0}", queueType.ToString());
-
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 SignInTestUser(context);
 
+                // TODO: create test database just for this
                 var ef = new EntityFactory(context);
-                var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(MirrorDatabaseJob).Name);
+                var databaseVersion = (DatabaseVersion)ef.LoadEntity("DatabaseVersion:Graywulf\\SciServer\\SkyQuery\\TEST\\HOT");
 
-                var ji = jd.CreateJobInstance(queue, ScheduleType.Queued);
-
-                ji.Parameters["DatabaseVersionName"].Value = "DatabaseVersion:Graywulf.VOServices.SkyQuery.Galex.STAT";
-
+                var jf = MirrorDatabaseJobFactory.Create(context.Federation);
+                var parameters = jf.CreateParameters(databaseVersion);
+                var ji = jf.ScheduleAsJob(parameters, jf.GetDefaultMaintenanceQueue(), "test job");
+                
                 ji.Save();
 
                 return ji.Guid;
@@ -54,7 +76,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
                 var guid = ScheduleMirroDatabaseJob(QueueType.Maintenance);
 
-                WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+                WaitJobComplete(guid, TimeSpan.FromSeconds(20), TimeSpan.FromMinutes(10));
 
                 var ji = LoadJob(guid);
                 Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);

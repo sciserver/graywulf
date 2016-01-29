@@ -76,22 +76,22 @@ namespace Jhu.Graywulf.Web.Admin.Cluster {
         protected global::Jhu.Graywulf.Web.Admin.Controls.EntityButtons EntityButtons;
         
         /// <summary>
-        /// EntityChildren1 control.
+        /// EntityChildren control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityChildren EntityChildren1;
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityChildren EntityChildren;
         
         /// <summary>
-        /// DiskVolumeList control.
+        /// DiskGroupList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList DiskVolumeList;
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList DiskGroupList;
         
         /// <summary>
         /// ServerInstanceList control.

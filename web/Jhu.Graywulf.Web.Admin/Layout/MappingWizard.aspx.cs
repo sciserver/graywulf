@@ -55,7 +55,8 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             EntityFactory ef = new EntityFactory(RegistryContext);
             serverInstances = new List<ServerInstance>(ef.FindAll<ServerInstance>()
                 .Where(i => i.ServerVersionReference.Guid == databaseVersion.ServerVersionReference.Guid)
-                .OrderBy(i => i.Machine.Number));
+                .OrderBy(i => i.Machine.Number)
+                .ThenBy(i => i.Number));
 
             // Load slices
             item.LoadSlices(false);
@@ -117,7 +118,7 @@ namespace Jhu.Graywulf.Web.Admin.Layout
                 TableRow tr = new TableRow();
 
                 cell = new TableCell();
-                cell.Text = String.Format("{0}.{1}", serverInstances[sii].Machine.Name, serverInstances[sii].Name);
+                cell.Text = serverInstances[sii].Machine.Name + Constants.EntityNameSeparator + serverInstances[sii].Name;
                 tr.Cells.Add(cell);
 
                 for (int sli = 0; sli < slices.Count; sli++)
@@ -158,9 +159,9 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             double sizefactor = double.Parse(SizeFactor.Text);
             string postfix = String.Empty;
 
-            DatabaseVersion rs = new DatabaseVersion(RegistryContext);
-            rs.Guid = new Guid(databaseVersionList.SelectedValue);
-            rs.Load();
+            DatabaseVersion databaseVersion = new DatabaseVersion(RegistryContext);
+            databaseVersion.Guid = new Guid(databaseVersionList.SelectedValue);
+            databaseVersion.Load();
 
             int q = 0;
             for (int sli = 0; sli < slices.Count; sli++)
@@ -181,7 +182,14 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
                         var dii = new DatabaseInstanceInstaller(item);
 
-                        dii.GenerateDatabaseInstance(serverInstances[ssi], slices[sli], rs, NamePattern.Text.Replace("[$Number]", postfix), DatabaseNamePattern.Text.Replace("[$Number]", postfix), sizefactor, GenerateFileGroups.Checked);
+                        dii.GenerateDatabaseInstance(
+                            serverInstances[ssi], 
+                            slices[sli], 
+                            databaseVersion, 
+                            NamePattern.Text.Replace("[$Number]", postfix), 
+                            DatabaseNamePattern.Text.Replace("[$Number]", postfix), 
+                            sizefactor, 
+                            GenerateFileGroups.Checked);
 
                         q++;
                     }

@@ -29,10 +29,10 @@
         </tr>
         <tr>
             <td class="FormLabel">
-                <asp:Label ID="DiskVolumeTypeLabel" runat="server" Text="Disk Volume Type:"></asp:Label>
+                <asp:Label ID="DiskDesignationLabel" runat="server" Text="Disk Designation:"></asp:Label>
             </td>
             <td class="FormField">
-                <asp:Label ID="DiskVolumeType" runat="server" Text="Label"></asp:Label>
+                <asp:Label ID="DiskDesignation" runat="server" Text="Label"></asp:Label>
             </td>
         </tr>
         <tr>

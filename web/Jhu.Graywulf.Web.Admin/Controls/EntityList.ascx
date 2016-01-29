@@ -5,7 +5,7 @@
     StartRowIndexParameterName="from" MaximumRowsParameterName="max" EnableCaching="false"
     OnObjectCreating="InternalDataSource_ObjectCreating" TypeName="Jhu.Graywulf.Registry.WebEntityFactory">
 </asp:ObjectDataSource>
-<div class="dock-bottom">
+<div runat="server" id="buttonsDiv" class="dock-bottom">
     <p class="FormMessage">
         <asp:CustomValidator ID="ItemSelectedValidator" runat="server" ErrorMessage="No item was selected."
             OnServerValidate="ItemSelectedValidator_ServerValidate" ValidationGroup="EntityList"></asp:CustomValidator></p>

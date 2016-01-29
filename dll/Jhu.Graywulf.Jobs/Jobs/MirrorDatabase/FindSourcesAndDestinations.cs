@@ -18,55 +18,26 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
         public OutArgument<Guid> EntityGuid { get; set; }
 
         [RequiredArgument]
-        public InArgument<string> DatabaseVersionName { get; set; }
+        public InArgument<Guid[]> SourceDatabaseInstanceGuids { get; set; }
 
         [RequiredArgument]
-        public OutArgument<Queue<Guid>> SourceDatabaseInstanceGuids { get; set; }
+        public InArgument<Guid[]> DestinationDatabaseInstanceGuids { get; set; }
+
         [RequiredArgument]
-        public OutArgument<Queue<Guid>> DestinationDatabaseInstanceGuids { get; set; }
+        public OutArgument<Queue<Guid>> SourceDatabaseQueue { get; set; }
+        [RequiredArgument]
+        public OutArgument<Queue<Guid>> DestinationDatabaseQueue { get; set; }
 
         protected override void Execute(CodeActivityContext activityContext)
         {
-            // get/init workflow arguments
-            string databaseVersionName = DatabaseVersionName.Get(activityContext);
-            Queue<Guid> sourceDatabaseInstanceGuids = new Queue<Guid>();
-            Queue<Guid> destinationDatabaseInstanceGuids = new Queue<Guid>();
+            var sourceDatabaseInstanceGuids = SourceDatabaseInstanceGuids.Get(activityContext);
+            var destinationDatabaseInstanceGuids = DestinationDatabaseInstanceGuids.Get(activityContext);
 
-            using (Context context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
-            {
-                EntityFactory ef = new EntityFactory(context);
-                DatabaseVersion dv = ef.LoadEntity<DatabaseVersion>(databaseVersionName);
+            SourceDatabaseQueue.Set(activityContext, new Queue<Guid>(sourceDatabaseInstanceGuids));
+            DestinationDatabaseQueue.Set(activityContext, new Queue<Guid>(destinationDatabaseInstanceGuids));
 
-                EntityGuid.Set(activityContext, dv.Guid);
-
-                dv.DatabaseDefinition.LoadDatabaseInstances(false);
-
-                foreach (DatabaseInstance di in dv.DatabaseDefinition.DatabaseInstances.Values)
-                {
-                    if (Entity.StringComparer.Compare(di.DatabaseVersion.Name, dv.Name) == 0)
-                    {
-                        if (di.ServerInstance.Machine.RunningState == RunningState.Running)
-                        {
-
-                            if (di.DeploymentState == DeploymentState.Deployed && di.RunningState == RunningState.Attached)
-                            {
-                                sourceDatabaseInstanceGuids.Enqueue(di.Guid);
-                            }
-                            else if (di.DeploymentState == DeploymentState.New || di.DeploymentState == DeploymentState.Undeployed)
-                            {
-                                destinationDatabaseInstanceGuids.Enqueue(di.Guid);
-                            }
-
-                        }
-                    }
-                }
-            }
-
-            SourceDatabaseInstanceGuids.Set(activityContext, sourceDatabaseInstanceGuids);
-            DestinationDatabaseInstanceGuids.Set(activityContext, destinationDatabaseInstanceGuids);
-
-            if (sourceDatabaseInstanceGuids.Count == 0 ||
-                destinationDatabaseInstanceGuids.Count == 0)
+            if (sourceDatabaseInstanceGuids.Length == 0 ||
+                destinationDatabaseInstanceGuids.Length == 0)
             {
                 throw new InvalidOperationException(ExceptionMessages.NoDatabasesToCopy);
             }

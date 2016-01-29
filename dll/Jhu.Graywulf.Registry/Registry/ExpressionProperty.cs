@@ -151,7 +151,7 @@ namespace Jhu.Graywulf.Registry
                 if (StringComparer.InvariantCultureIgnoreCase.Compare(key, "username") == 0)
                 {
                     // Get last part of username
-                    var i = entity.Context.UserName.LastIndexOf('.');
+                    var i = entity.Context.UserName.LastIndexOf(Constants.EntityNameSeparator);
                     var name = entity.Context.UserName.Substring(i + 1);
 
                     res = res.Replace(m.Value, name);
@@ -161,7 +161,7 @@ namespace Jhu.Graywulf.Registry
             foreach (Match m in entityNameRegex.Matches(value))
             {
                 Entity ee = entity;
-                string[] parts = m.Groups[1].Value.Split('.');  // splits into parts along dots
+                string[] parts = m.Groups[1].Value.Split(Constants.EntityFieldSeparator);  // splits into parts along dots
 
                 for (int i = 0; i < parts.Length; i++)
                 {
@@ -170,14 +170,16 @@ namespace Jhu.Graywulf.Registry
                         throw new ArgumentNullException(ExceptionMessages.EntityNullException);
                     }
 
-                    System.Reflection.PropertyInfo prop = ee.GetType().GetProperty(parts[i]);
-
                     // If the expression is parent, load the parent entity
                     if (string.Compare(parts[i], "Parent", true) == 0)
                     {
-                        ee = entity.Parent;
+                        ee = ee.Parent;
+                        continue;
                     }
-                    else if (prop == null)
+
+                    var prop = ee.GetType().GetProperty(parts[i]);
+
+                    if (prop == null)
                     {
                         throw new ArgumentException(String.Format(ExceptionMessages.InvalidExpression, m.Value));
                     }

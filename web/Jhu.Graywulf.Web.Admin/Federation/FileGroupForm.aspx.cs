@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             fileGroupTypeList.SelectedValue = Item.FileGroupType.ToString();
             LayoutType.SelectedValue = Item.LayoutType.ToString();
             allocationTypeList.SelectedValue = Item.AllocationType.ToString();
-            diskVolumeTypeList.SelectedValue = Item.DiskVolumeType.ToString();
+            diskDesignationList.SelectedValue = Item.DiskDesignation.ToString();
             FileGroupName.Text = Item.FileGroupName;
             AllocatedSpace.Text = Util.ByteSizeFormatter.Format(Item.AllocatedSpace);
             FileCount.Text = Item.FileCount.ToString();
@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             Item.FileGroupType = (FileGroupType)Enum.Parse(typeof(FileGroupType), fileGroupTypeList.SelectedValue);
             Item.LayoutType = (FileGroupLayoutType)Enum.Parse(typeof(FileGroupLayoutType), LayoutType.SelectedValue);
             Item.AllocationType = (FileGroupAllocationType)Enum.Parse(typeof(FileGroupAllocationType), allocationTypeList.SelectedValue);
-            Item.DiskVolumeType = (DiskVolumeType)Enum.Parse(typeof(DiskVolumeType), diskVolumeTypeList.SelectedValue);
+            Item.DiskDesignation = (DiskDesignation)Enum.Parse(typeof(DiskDesignation), diskDesignationList.SelectedValue);
             Item.FileGroupName = FileGroupName.Text;
             Item.AllocatedSpace = Util.ByteSizeFormatter.Parse(AllocatedSpace.Text);
             Item.FileCount = int.Parse(FileCount.Text);
