@@ -44,7 +44,12 @@ namespace Jhu.Graywulf.Web.Services
 
         public T CreateClient<T>(Uri uri)
         {
-            return CreateChannel<T>(CreateWebHttpBinding(), CreateEndpointAddress(uri));
+            return CreateClient<T>(uri, null);
+        }
+
+        public T CreateClient<T>(Uri uri, Uri proxy)
+        {
+            return CreateChannel<T>(CreateWebHttpBinding(proxy), CreateEndpointAddress(uri));
         }
 
         private T CreateChannel<T>(WebHttpBinding webHttpBinding, EndpointAddress endpoint)
@@ -54,9 +59,15 @@ namespace Jhu.Graywulf.Web.Services
             return cf.CreateChannel();
         }
 
-        private WebHttpBinding CreateWebHttpBinding()
+        private WebHttpBinding CreateWebHttpBinding(Uri proxy)
         {
             var webHttpBinding = new WebHttpBinding(WebHttpSecurityMode.None);
+
+            if (proxy != null)
+            {
+                webHttpBinding.ProxyAddress = proxy;
+                webHttpBinding.UseDefaultWebProxy = false;
+            }
 
             webHttpBinding.ReaderQuotas.MaxArrayLength = 0x7FFFFFFF;
             webHttpBinding.ReaderQuotas.MaxDepth = 0x7FFFFFFF;
