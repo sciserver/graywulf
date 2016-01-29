@@ -34,8 +34,8 @@ namespace Jhu.Graywulf.Registry
         public const string MachineDeployUncPath = @"\\[$HostName]\GWCode\";
         public const string DataDiskGroupName = "DATA";
         public const string DiskVolumeName = "Volume";
-        public const string DiskVolumeLocalPath = @"C:\Data\[$Name]\";
-        public const string DiskVolumeUncPath = @"\\[$Parent.Parent.HostName]\Data\[$Name]\";
+        public const string DiskVolumeLocalPath = @"C:\Data\[$Name]\Graywulf\";
+        public const string DiskVolumeUncPath = @"\\[$Parent.Parent.HostName]\Data\[$Name]\Graywulf\";
 
         public const string SlicedDatabaseInstanceNamePattern = "[$DatabaseDefinition.Name]_[$Slice.Name]_[$DatabaseVersion.Name]";
         public const string SlicedDatabaseNamePattern = "[$DatabaseDefinition.Federation.Name]_[$DatabaseDefinition.Name]_[$Slice.Name]_[$DatabaseVersion.Name]";
@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.Registry
 
         public const string FullSliceName = "FULL";
 
-        public const string HotDatabaseVersionName = "HOT";
+        public const string ProdDatabaseVersionName = "PROD";
         public const string StatDatabaseVersionName = "STAT";
 
         public const string SystemDomainName = "System";

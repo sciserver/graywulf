@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Install
                 WorkflowTypeName = GetUnversionedTypeName(jobType),
                 Settings = new SqlQueryJobSettings()
                 {
-                    HotDatabaseVersionName = Registry.Constants.HotDatabaseVersionName,
+                    HotDatabaseVersionName = Registry.Constants.ProdDatabaseVersionName,
                     StatDatabaseVersionName = Registry.Constants.StatDatabaseVersionName,
                     DefaultSchemaName = Schema.SqlServer.Constants.DefaultSchemaName,
                     DefaultDatasetName = Registry.Constants.UserDbName,

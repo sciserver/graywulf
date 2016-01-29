@@ -88,6 +88,7 @@ namespace Jhu.Graywulf.Install
 
             var tempddi = new DatabaseDefinitionInstaller(tempdd);
             tempddi.GenerateDefaultChildren(nodeServerVersion, Constants.TempDbName);
+            // TODO: use temp designation for temp database file groups
 
             // Create cluster level jobs and queues
 
