@@ -290,7 +290,6 @@ namespace Jhu.Graywulf.Registry
 
             switch (di.DatabaseDefinition.LayoutType)
             {
-                case DatabaseLayoutType.Monolithic:
                 case DatabaseLayoutType.Sliced:
                     // Use database instance name
                     filename = Path.Combine(
@@ -298,6 +297,7 @@ namespace Jhu.Graywulf.Registry
                         di.Name,
                         this.Filename);
                     break;
+                case DatabaseLayoutType.Monolithic:
                 case DatabaseLayoutType.Mirrored:
                     // Use database name
                     filename = Path.Combine(
