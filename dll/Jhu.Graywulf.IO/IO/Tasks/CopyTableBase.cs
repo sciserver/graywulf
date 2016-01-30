@@ -297,7 +297,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 result.SchemaName = table.SchemaName;
                 result.TableName = table.ObjectName;
 
-                ExecuteBulkCopy((System.Data.Common.DbDataReader)dr, table, result);
+                ExecuteBulkCopy(dr, table, result);
                 //}
                 //while (dr.NextResult());
             });
@@ -354,7 +354,7 @@ namespace Jhu.Graywulf.IO.Tasks
         /// Executest bulk copy to ingest data from the DataReader
         /// </summary>
         /// <param name="dr"></param>
-        protected virtual void ExecuteBulkCopy(System.Data.Common.DbDataReader dr, Table destination, TableCopyResult result)
+        protected virtual void ExecuteBulkCopy(IDataReader dr, Table destination, TableCopyResult result)
         {
             // Bulk insert is a tricky animal. To get best performance, batch size
             // has to be set to zero and table locking has to be set on. This prevents
