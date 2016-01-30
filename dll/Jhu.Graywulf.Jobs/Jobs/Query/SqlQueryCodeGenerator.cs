@@ -309,6 +309,35 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        public void SubstituteSystemDatabaseNames(Expression ex)
+        {
+            SubstituteSystemDatabaseNames((Node)ex);
+        }
+
+        public void SubstituteSystemDatabaseNames(Node n)
+        {
+            foreach (var i in n.Nodes)
+            {
+                if (i is Node)
+                {
+                    SubstituteSystemDatabaseNames((Node)i);
+                }
+            }
+
+            if (n is IFunctionReference)
+            {
+                SubstituteSystemDatabaseName(((IFunctionReference)n).FunctionReference);
+            }
+        }
+
+        private void SubstituteSystemDatabaseName(FunctionReference fr)
+        {
+            if (fr != null && !fr.IsSystem && fr.IsUdf)
+            {
+                fr.DatabaseName = CodeDataset.DatabaseName;
+            }
+        }
+
         /// <summary>
         /// Substitutes names of remote tables with name of temporary tables
         /// holding a cached version of remote tables.
