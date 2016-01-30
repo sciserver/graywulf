@@ -446,6 +446,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected void SubstituteTableStatisticsQueryTokens(StringBuilder sql, ITableSource tableSource)
         {
+            SubstituteSystemDatabaseNames(tableSource.TableReference.Statistics.KeyColumn);
+
             var tablename = GenerateEscapedUniqueName(tableSource.TableReference);
             var temptable = queryObject.GetTemporaryTable("stat_" + tablename);
             var keycol = Execute(tableSource.TableReference.Statistics.KeyColumn);
