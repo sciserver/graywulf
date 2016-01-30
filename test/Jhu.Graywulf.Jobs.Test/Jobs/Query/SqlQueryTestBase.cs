@@ -3,6 +3,8 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Data;
+using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
@@ -111,7 +113,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected void RunQuery(string sql)
         {
-            RunQuery(sql, 0, new TimeSpan(0, 10, 0));
+            RunQuery(sql, 1, new TimeSpan(0, 10, 0));
             //RunQuery(sql, 0, new TimeSpan(0, 2, 0));
         }
 
@@ -140,6 +142,40 @@ namespace Jhu.Graywulf.Jobs.Query
                     WaitJobComplete(guid, TimeSpan.FromSeconds(10), timeout);
 
                     var ji = LoadJob(guid);
+
+                    if (ji.JobExecutionStatus == JobExecutionState.Failed)
+                    {
+                        // Load stack trace from
+                        using (var cn = new SqlConnection(Jhu.Graywulf.Logging.AppSettings.ConnectionString))
+                        {
+                            cn.Open();
+
+                            var lsql =
+@"SELECT TOP 1 ExceptionType, StackTrace, Site FROM Event 
+WHERE JobGuid = @jobGuid AND
+      ExceptionType IS NOT NULL
+ORDER BY EventID DESC";
+
+                            using (var cmd = new SqlCommand(lsql, cn))
+                            {
+                                cmd.Parameters.Add("@jobGuid", SqlDbType.UniqueIdentifier).Value = ji.Guid;
+
+                                using (var dr = cmd.ExecuteReader())
+                                {
+                                    if (dr.Read())
+                                    {
+                                        var exceptionType = dr.GetString(0);
+                                        var stackTrace = dr.GetString(1);
+                                        var site = dr.GetString(2);
+
+                                        throw new SqlQueryTestException(ji.ExceptionMessage, site, stackTrace);
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
                     Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
                 }
             }
