@@ -66,7 +66,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
                 sv.Load();
 
                 var ddi = new DatabaseDefinitionInstaller(Item);
-                ddi.GenerateDefaultChildren(sv, Registry.Constants.HotDatabaseVersionName);
+                ddi.GenerateDefaultChildren(sv, Registry.Constants.ProdDatabaseVersionName);
             }
         }
 
