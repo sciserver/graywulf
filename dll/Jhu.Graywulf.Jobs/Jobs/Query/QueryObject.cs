@@ -1568,7 +1568,7 @@ namespace Jhu.Graywulf.Jobs.Query
             int i = csb.DataSource.IndexOf('\\');
             if (i > -1)
             {
-                host = csb.DataSource.Substring(i);
+                host = csb.DataSource.Substring(0, i);
             }
             else
             {
