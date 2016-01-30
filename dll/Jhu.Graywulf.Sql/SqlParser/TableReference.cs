@@ -151,7 +151,7 @@ namespace Jhu.Graywulf.SqlParser
             this.statistics = null;
         }
 
-        public TableReference(TableOrView table, string alias)
+        public TableReference(TableOrView table, string alias, bool copyColumns)
             : base(table)
         {
             this.alias = alias;
@@ -164,9 +164,13 @@ namespace Jhu.Graywulf.SqlParser
             this.statistics = null;
 
             this.columnReferences = new List<ColumnReference>();
-            foreach (var c in table.Columns.Values)
+
+            if (copyColumns)
             {
-                columnReferences.Add(new ColumnReference(this, c));
+                foreach (var c in table.Columns.Values)
+                {
+                    columnReferences.Add(new ColumnReference(this, c));
+                }
             }
         }
 
