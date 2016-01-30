@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
     {
         protected Guid ScheduleImportTableJob(string path, string tableName, QueueType queueType)
         {
-            var queue = String.Format("QueueInstance:Graywulf.Controller.Controller.{0}", queueType.ToString());
+            var queue = GetQueueName(queueType);
 
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {

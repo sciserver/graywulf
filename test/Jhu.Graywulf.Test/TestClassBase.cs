@@ -92,6 +92,11 @@ namespace Jhu.Graywulf.Test
             }
         }
 
+        protected string GetQueueName(QueueType queueType)
+        {
+            return String.Format(@"QueueInstance:Graywulf\Controller\Controller\{0}", queueType.ToString());
+        }
+
         protected Guid ScheduleTestJob(JobType jobType, QueueType queueType)
         {
             return ScheduleTestJob(TimeSpan.Zero, jobType, queueType);
@@ -106,7 +111,7 @@ namespace Jhu.Graywulf.Test
                 var ef = new EntityFactory(context);
                 var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
 
-                var queue = String.Format("QueueInstance:Graywulf.Controller.Controller.{0}", queueType.ToString());
+                var queue = GetQueueName(queueType);
 
                 JobInstance job = jd.CreateJobInstance(queue, Jhu.Graywulf.Registry.ScheduleType.Queued);
 

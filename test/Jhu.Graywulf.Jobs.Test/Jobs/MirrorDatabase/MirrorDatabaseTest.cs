@@ -48,7 +48,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 var ef = new EntityFactory(context);
                 var databaseVersion = (DatabaseVersion)ef.LoadEntity("DatabaseVersion:Graywulf\\SciServer\\SkyQuery\\TEST\\HOT");
 
-                var jf = MirrorDatabaseJobFactory.Create(context.Federation);
+                var jf = MirrorDatabaseJobFactory.Create(context);
                 var parameters = jf.CreateParameters(databaseVersion);
                 var ji = jf.ScheduleAsJob(parameters, jf.GetDefaultMaintenanceQueue(), "test job");
                 
