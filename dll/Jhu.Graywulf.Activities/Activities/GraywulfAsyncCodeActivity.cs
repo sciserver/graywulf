@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Activities;
@@ -10,9 +11,12 @@ namespace Jhu.Graywulf.Activities
 {
     public abstract class GraywulfAsyncCodeActivity : AsyncCodeActivity
     {
-        // Holds a list of tasks that can be cancelled
-        private Dictionary<string, ICancelableTask> cancelableTasks;
 
+        #region Private member variables
+        
+        private ConcurrentDictionary<string, ICancelableTask> cancelableTasks;
+
+        #endregion
         #region Constructors and initializers
 
         public GraywulfAsyncCodeActivity()
@@ -22,7 +26,7 @@ namespace Jhu.Graywulf.Activities
 
         private void InitializeMembers()
         {
-            this.cancelableTasks = new Dictionary<string, ICancelableTask>();
+            this.cancelableTasks = new ConcurrentDictionary<string, ICancelableTask>();
         }
 
         #endregion
@@ -66,7 +70,7 @@ namespace Jhu.Graywulf.Activities
                 throw new InvalidOperationException(ExceptionMessages.OnlyOneCancelable);
             }
 
-            cancelableTasks.Add(String.Format("{0}_{1}", workflowInstanceGuid.ToString(), activityInstanceId), cancelableTask);
+            cancelableTasks.TryAdd(GetUniqueActivityID( workflowInstanceGuid, activityInstanceId), cancelableTask);
         }
 
         /// <summary>
@@ -77,14 +81,18 @@ namespace Jhu.Graywulf.Activities
         /// <param name="cancelableTask"></param>
         protected void UnregisterCancelable(Guid workflowInstanceGuid, string activityInstanceId, ICancelableTask cancelableTask)
         {
-            string id = String.Format("{0}_{1}", workflowInstanceGuid.ToString(), activityInstanceId);
+            ICancelableTask finishedtask;
+            cancelableTasks.TryRemove(GetUniqueActivityID(workflowInstanceGuid, activityInstanceId), out finishedtask);
 
-            if (cancelableTasks[id] != cancelableTask)
+            if (finishedtask != cancelableTask)
             {
-                throw new ArgumentException(ExceptionMessages.ObjectsDoNotMatch, "cancelableObject");
+                throw new InvalidOperationException(ExceptionMessages.ObjectsDoNotMatch);
             }
+        }
 
-            cancelableTasks.Remove(id);
+        private string GetUniqueActivityID(Guid workflowInstanceGuid, string activityInstanceId)
+        {
+            return String.Format("{0}_{1}", workflowInstanceGuid.ToString(), activityInstanceId);
         }
 
         /// <summary>
@@ -97,11 +105,11 @@ namespace Jhu.Graywulf.Activities
         /// </remarks>
         protected override void Cancel(AsyncCodeActivityContext context)
         {
-            string id = String.Format("{0}_{1}", context.WorkflowInstanceId.ToString(), context.ActivityInstanceId);
+            ICancelableTask canceledtask;
 
-            if (cancelableTasks.ContainsKey(id))
+            if (cancelableTasks.TryRemove(GetUniqueActivityID(context.WorkflowInstanceId, context.ActivityInstanceId), out canceledtask))
             {
-                cancelableTasks[id].Cancel();
+                canceledtask.Cancel();
             }
 
             // This is absolutely important here:
