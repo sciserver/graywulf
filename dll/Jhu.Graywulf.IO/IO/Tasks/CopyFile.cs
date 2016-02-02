@@ -41,6 +41,15 @@ namespace Jhu.Graywulf.IO.Tasks
             [OperationContract]
             set;
         }
+
+        FileCopyMethod Method
+        {
+            [OperationContract]
+            get;
+
+            [OperationContract]
+            set;
+        }
     }
 
     /// <summary>
@@ -56,6 +65,7 @@ namespace Jhu.Graywulf.IO.Tasks
         private string source;
         private string destination;
         private bool overwrite;
+        private FileCopyMethod method;
 
         #endregion
         #region Properties
@@ -96,6 +106,15 @@ namespace Jhu.Graywulf.IO.Tasks
             set { overwrite = value; }
         }
 
+        public FileCopyMethod Method
+        {
+            [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+            get { return method; }
+
+            [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+            set { method = value; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -104,20 +123,12 @@ namespace Jhu.Graywulf.IO.Tasks
             InitializeMembers();
         }
 
-        public CopyFile(string source, string destination, bool overwrite)
-        {
-            InitializeMembers();
-
-            this.source = source;
-            this.destination = destination;
-            this.overwrite = overwrite;
-        }
-
         private void InitializeMembers()
         {
             this.source = null;
             this.destination = null;
             this.overwrite = false;
+            this.method = FileCopyMethod.AsyncFileCopy;
         }
 
         #endregion
@@ -143,6 +154,45 @@ namespace Jhu.Graywulf.IO.Tasks
                 Directory.CreateDirectory(Path.GetDirectoryName(destination));
             }
 
+            switch (method)
+            {
+                case FileCopyMethod.Win32FileCopy:
+                    ExecuteWin32FileCopy();
+                    break;
+                case FileCopyMethod.AsyncFileCopy:
+                    ExecuteAsyncFileCopy();
+                    break;
+                case FileCopyMethod.EseUtil:
+                    ExecuteEseUtil();
+                    break;
+                case FileCopyMethod.FastDataTransfer:
+                case FileCopyMethod.Robocopy:
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void ExecuteWin32FileCopy()
+        {
+            File.Copy(source, destination, true);
+        }
+
+        private void ExecuteAsyncFileCopy()
+        {
+            var afc = new AsyncFileCopy()
+            {
+                Source = source,
+                Destination = destination,
+            };
+
+            var guid = Guid.NewGuid();
+            RegisterCancelable(guid, afc);
+            afc.Execute();
+            UnregisterCancelable(guid);
+        }
+
+        private void ExecuteEseUtil()
+        {
             // Figure out the working directory from the service's exe
             var path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 

@@ -132,6 +132,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="IO\Tasks\AsyncFileCopy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Compile Include="IO\Tasks\AsyncFileCopy.Native.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

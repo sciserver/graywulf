@@ -5,6 +5,15 @@ using System.Text;
 
 namespace Jhu.Graywulf.IO.Tasks
 {
+    public enum FileCopyMethod
+    {
+        Win32FileCopy,
+        EseUtil,
+        AsyncFileCopy,
+        FastDataTransfer,
+        Robocopy
+    }
+
     public enum TableCopyStatus
     {
         Success,
