@@ -56,6 +56,9 @@
     <Compile Include="Util\EmailSender.cs" />
     <Compile Include="Util\EmailTemplateUtility.cs" />
     <Compile Include="Util\IIS.cs" />
+    <Compile Include="Web\Api\Util\DateFormatter.cs" />
+    <Compile Include="Web\Api\Util\EnumFormatter.cs" />
+    <Compile Include="Web\Api\Util\XmlReader.cs" />
     <Compile Include="Web\Check\CheckPageBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
