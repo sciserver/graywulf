@@ -294,7 +294,7 @@ namespace Jhu.Graywulf.Registry
                         lf.Growth = 0;
                         lf.GrowthType = smo::FileGrowthType.None;
                         //nf.MaxSize = (double)fi.AllocatedSpace / 0x400; // in kilobytes
-                        lf.Size = (double)fi.AllocatedSpace / 0x400; // in kilobytes
+                        lf.Size = Math.Max(4096, (double)fi.AllocatedSpace / 0x400); // in kilobytes
 
                         dto.LogFiles.Add(lf);
 
@@ -326,7 +326,7 @@ namespace Jhu.Graywulf.Registry
                         nf.Growth = 0;
                         nf.GrowthType = smo::FileGrowthType.None;
                         //nf.MaxSize = (double)fi.AllocatedSpace / 0x400; // in kilobytes
-                        nf.Size = (double)fi.AllocatedSpace / 0x400; // in kilobytes
+                        nf.Size = Math.Max(4096, (double)fi.AllocatedSpace / 0x400); // in kilobytes
 
                         nfg.Files.Add(nf);
 
