@@ -168,6 +168,11 @@ namespace Jhu.Graywulf.Registry
 
         public void Attach()
         {
+            Attach(true);
+        }
+
+        public void Attach(bool attachAsReadOnly)
+        {
             if (this.RunningState == RunningState.Attached)
             {
                 throw new DeployException(ExceptionMessages.CannotAttachDatabase);
@@ -182,13 +187,26 @@ namespace Jhu.Graywulf.Registry
                 fg.LoadAllChildren();
                 foreach (DatabaseInstanceFile f in fg.Files.Values)
                 {
-                    files.Add(f.GetFullLocalFilename());
+                    // Check if file exists and don't attempt to attach if not.
+                    // Useful when database files are deleted manually but are still in the registry.
+                    // Attach will fail anyway, if a database file is really missing.
+
+                    if (File.Exists(f.GetFullUncFilename()))
+                    {
+                        files.Add(f.GetFullLocalFilename());
+                    }
                 }
             }
 
-            smo::Server dserver = this.ServerInstance.GetSmoServer();
+            smo::Server server = this.ServerInstance.GetSmoServer();
 
-            dserver.AttachDatabase(this.DatabaseName, files);
+            server.AttachDatabase(this.DatabaseName, files);
+
+            if (attachAsReadOnly)
+            {
+                var db = GetSmoDatabase();
+                db.ReadOnly = true;
+            }
 
             this.DeploymentState = DeploymentState.Deployed;
             this.RunningState = RunningState.Attached;
