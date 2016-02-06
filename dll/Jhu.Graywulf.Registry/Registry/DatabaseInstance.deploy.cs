@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Registry
             // Get SMO object to the target database
             smo::Server sto = this.ServerInstance.GetSmoServer();
             smo::Database dto = new smo::Database(sto, this.DatabaseName);
-            
+
             // Important non-default settings
             dto.RecoveryModel = smo.RecoveryModel.Simple;
             dto.Collation = "SQL_Latin1_General_CP1_CI_AS";
@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.Registry
                     // Drop database using SMO
                     smo::Database d = this.GetSmoDatabase();
                     d.Parent.KillDatabase(d.Name);
-                    
+
                     this.Context.LogEvent(new Event("Jhu.Graywulf.Registry.DatabaseInstance.Undeploy[Drop database]", this.Guid));
                     break;
                 case RunningState.Detached:
@@ -150,7 +150,7 @@ namespace Jhu.Graywulf.Registry
                 fg.LoadAllChildren();
                 foreach (DatabaseInstanceFile f in fg.Files.Values)
                 {
-                    ResetFilePermission(f.GetFullUncFilename());    
+                    ResetFilePermission(f.GetFullUncFilename());
                 }
             }
 
@@ -187,14 +187,7 @@ namespace Jhu.Graywulf.Registry
                 fg.LoadAllChildren();
                 foreach (DatabaseInstanceFile f in fg.Files.Values)
                 {
-                    // Check if file exists and don't attempt to attach if not.
-                    // Useful when database files are deleted manually but are still in the registry.
-                    // Attach will fail anyway, if a database file is really missing.
-
-                    if (File.Exists(f.GetFullUncFilename()))
-                    {
-                        files.Add(f.GetFullLocalFilename());
-                    }
+                    files.Add(f.GetFullLocalFilename());
                 }
             }
 
