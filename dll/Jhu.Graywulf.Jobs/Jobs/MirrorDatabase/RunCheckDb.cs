@@ -51,6 +51,8 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
 
                 using (var cmd = new SqlCommand("DBCC CHECKDB", cn))
                 {
+                    cmd.CommandTimeout = 0;
+
                     var cc = new CancelableDbCommand(cmd);
                     RegisterCancelable(workflowInstanceGuid, activityInstanceId, cc);
                     cc.ExecuteNonQuery();

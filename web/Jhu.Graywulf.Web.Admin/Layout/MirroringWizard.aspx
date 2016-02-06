@@ -50,7 +50,7 @@
                     </td>
                     <td class="FormField">
                         <asp:CheckBox ID="RunCheckDb" Text="Run DBCC CHECKDB" runat="server"
-                            CssClass="FormField" Checked="true" />
+                            CssClass="FormField" Checked="false" />
                     </td>
                 </tr>
                 <tr runat="server">
