@@ -32,7 +32,8 @@ namespace Jhu.Graywulf.Web.Api.V1
                 }
             };
 
-            var client = session.CreateClient<IAuthService>(new Uri("http://CASTOR/auth/api/v1/auth.svc"));
+            var authuri = String.Format("http://{0}/auth/api/v1/auth.svc", Environment.MachineName);
+            var client = session.CreateClient<IAuthService>(new Uri(authuri));
 
             client.Authenticate(auth);
         }
