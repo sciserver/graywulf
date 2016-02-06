@@ -206,6 +206,7 @@ namespace Jhu.Graywulf.Registry
             {
                 var db = GetSmoDatabase();
                 db.ReadOnly = true;
+                db.Alter();
             }
 
             this.DeploymentState = DeploymentState.Deployed;

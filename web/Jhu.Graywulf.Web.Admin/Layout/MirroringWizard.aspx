@@ -37,6 +37,22 @@
                             CssClass="FormField" Checked="true" />
                     </td>
                 </tr>
+                <tr>
+                    <td class="FormLabel">&nbsp;
+                    </td>
+                    <td class="FormField">
+                        <asp:CheckBox ID="AttachAsReadOnly" Text="Attach as read-only" runat="server"
+                            CssClass="FormField" Checked="true" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="FormLabel">&nbsp;
+                    </td>
+                    <td class="FormField">
+                        <asp:CheckBox ID="RunCheckDb" Text="Run DBCC CHECKDB" runat="server"
+                            CssClass="FormField" Checked="true" />
+                    </td>
+                </tr>
                 <tr runat="server">
                     <td class="FormLabel">
                         <asp:Label ID="QueueInstanceLabel" runat="server" Text="Queue:"></asp:Label>

@@ -140,11 +140,11 @@
               </ForEach>
             </ActivityAction>
           </ParallelForEach>
-          <local:AttachDatabase EntityGuid="{x:Null}" DatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" DisplayName="AttachSourceDatabase" sap:VirtualizedContainerService.HintSize="464,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
-          <local:AttachDatabase EntityGuid="{x:Null}" DatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" DisplayName="AttachDestinationDatabase" sap:VirtualizedContainerService.HintSize="464,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
+          <local:AttachDatabase EntityGuid="{x:Null}" AttachReadOnly="[Parameters.AttachAsReadOnly]" DatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" DisplayName="AttachSourceDatabase" sap:VirtualizedContainerService.HintSize="464,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
           <jga1:ReleaseEntity DisplayName="ReleaseSourceDatabase" EntityGuid="[SourceDatabaseInstanceGuid]" sap:VirtualizedContainerService.HintSize="464,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
-          <jga1:ReleaseEntity DisplayName="ReleaseDestinationDatabase" EntityGuid="[DestinationDatabaseInstanceGuid]" sap:VirtualizedContainerService.HintSize="464,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
           <jga:EnqueueItem x:TypeArguments="s:Guid" DisplayName="EnqueueSourceDatabase" sap:VirtualizedContainerService.HintSize="464,22" InputQueue="[SourceDatabaseQueue]" Item="[SourceDatabaseInstanceGuid]" />
+          <local:AttachDatabase EntityGuid="{x:Null}" AttachReadOnly="[Parameters.AttachAsReadOnly]" DatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" DisplayName="AttachDestinationDatabase" sap:VirtualizedContainerService.HintSize="464,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
+          <jga1:ReleaseEntity DisplayName="ReleaseDestinationDatabase" EntityGuid="[DestinationDatabaseInstanceGuid]" sap:VirtualizedContainerService.HintSize="464,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
           <If Condition="[Parameters.CascadedCopy]" sap:VirtualizedContainerService.HintSize="464,208">
             <If.Then>
               <jga:EnqueueItem x:TypeArguments="s:Guid" DisplayName="EnqueueDestinationDatabase" sap:VirtualizedContainerService.HintSize="200,22" InputQueue="[SourceDatabaseQueue]" Item="[DestinationDatabaseInstanceGuid]" />

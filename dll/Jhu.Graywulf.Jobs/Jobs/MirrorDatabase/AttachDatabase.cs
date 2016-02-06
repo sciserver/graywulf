@@ -28,6 +28,8 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
             Guid databaseinstanceguid = DatabaseInstanceGuid.Get(activityContext);
             bool attachReadOnly = AttachReadOnly.Get(activityContext);
 
+            EntityGuid.Set(activityContext, databaseinstanceguid);
+
             using (Context context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 DatabaseInstance di = new DatabaseInstance(context);
@@ -35,8 +37,6 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                 di.Load();
                 di.Attach(attachReadOnly);
             }
-
-            EntityGuid.Set(activityContext, databaseinstanceguid);
         }
     }
 }

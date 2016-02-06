@@ -66,6 +66,8 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             var par = jf.CreateParameters(dis);
             par.CascadedCopy = CascadedCopy.Checked;
             par.SkipExistingFiles = SkipExistingFiles.Checked;
+            par.AttachAsReadOnly = AttachAsReadOnly.Checked;
+            par.RunCheckDb = RunCheckDb.Checked;
 
             var q = new QueueInstance(RegistryContext);
             q.Guid = new Guid(QueueInstance.SelectedValue);

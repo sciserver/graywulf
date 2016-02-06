@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.MirrorDatabase
 {
@@ -48,7 +49,13 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
             {
                 cn.Open();
 
-                // TODO execute command as cancelable
+                using (var cmd = new SqlCommand("DBCC CHECKDB", cn))
+                {
+                    var cc = new CancelableDbCommand(cmd);
+                    RegisterCancelable(workflowInstanceGuid, activityInstanceId, cc);
+                    cc.ExecuteNonQuery();
+                    UnregisterCancelable(workflowInstanceGuid, activityInstanceId, cc);
+                }
             }
         }
     }
