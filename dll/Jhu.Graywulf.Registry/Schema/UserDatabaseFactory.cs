@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Schema
         }
 
         #endregion
-        #region
+        #region Private member variables
 
         private Federation federation;
 
