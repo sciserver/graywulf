@@ -134,8 +134,11 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             foreach (var q in Context.Federation.ControllerMachine.QueueInstances.Values)
             {
-                queueInstancesByGuid.TryAdd(q.Guid, q);
-                queueInstancesByName.TryAdd(q.Name, q);
+                if (!q.System && !q.Hidden)
+                {
+                    queueInstancesByGuid.TryAdd(q.Guid, q);
+                    queueInstancesByName.TryAdd(q.Name, q);
+                }
             }
 
             queueInstancesLoaded = true;
