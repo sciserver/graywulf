@@ -96,7 +96,7 @@ namespace Jhu.Graywulf.Install
             QueueDefinition qd = new QueueDefinition(cluster)
             {
                 Name = Constants.MaintenanceQueueDefinitionName,
-                System = system,
+                System = true,
             };
             qd.Save();
 
