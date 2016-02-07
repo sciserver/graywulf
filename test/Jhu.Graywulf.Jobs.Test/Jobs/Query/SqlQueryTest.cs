@@ -18,13 +18,13 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
-            InitializeQueryTests();
+            InitializeJobTests();
         }
 
         [ClassCleanup]
         public static void CleanUp()
         {
-            CleanupQueryTests();
+            CleanupJobTests();
         }
 
         [TestMethod]
