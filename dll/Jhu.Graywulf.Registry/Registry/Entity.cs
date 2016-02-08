@@ -703,6 +703,16 @@ namespace Jhu.Graywulf.Registry
             return fullyQualifiedName;
         }
 
+        /// <summary>
+        /// Set the fully qualified name of the entity by bypassing
+        /// access to the registry
+        /// </summary>
+        /// <param name="fullyQualifiedName"></param>
+        public void SetFullyQualifiedName(string fullyQualifiedName)
+        {
+            this.fullyQualifiedName = fullyQualifiedName;
+        }
+
         public override string ToString()
         {
             return GetFullyQualifiedName();
