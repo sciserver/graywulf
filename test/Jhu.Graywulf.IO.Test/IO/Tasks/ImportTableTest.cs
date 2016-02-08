@@ -12,7 +12,7 @@ using Jhu.Graywulf.Test;
 namespace Jhu.Graywulf.IO.Tasks
 {
     [TestClass]
-    public class ImportTableTest
+    public class ImportTableTest : TestClassBase
     {
         protected virtual FileFormatFactory CreateFileFormatFactory()
         {

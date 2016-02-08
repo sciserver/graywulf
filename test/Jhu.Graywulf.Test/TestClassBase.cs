@@ -284,6 +284,12 @@ namespace Jhu.Graywulf.Test
             return Path.Combine(sln, filename);
         }
 
+        protected string GetTestFilePath(params string[] filename)
+        {
+            var sln = Path.GetDirectoryName(Environment.GetEnvironmentVariable("SolutionPath"));
+            return Path.Combine(sln, Path.Combine(filename));
+        }
+
         protected Uri GetTestUniqueFileUri(string extension)
         {
             var fn = GetTestUniqueName() + extension;

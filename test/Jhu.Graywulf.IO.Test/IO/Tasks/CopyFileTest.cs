@@ -40,6 +40,8 @@ namespace Jhu.Graywulf.IO.Tasks
         public void ExecuteTest()
         {
             var fc = GetFileCopy("FileCopyTest_ExecuteTest", false);
+            fc.Overwrite = true;
+            fc.Method = FileCopyMethod.Win32FileCopy;
 
             File.WriteAllText(fc.Source, "test data");
 

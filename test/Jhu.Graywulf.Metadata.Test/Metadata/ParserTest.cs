@@ -12,8 +12,17 @@ namespace Jhu.Graywulf.Metadata
     [TestClass]
     public class ParserTest
     {
-        const string TestFile = @"..\..\..\files\metadata.sql";
         const string TestConnectionString = "Data Source=localhost; Initial Catalog=Graywulf_Metadata_Test;Integrated Security=true;";
+
+        private string TestFile
+        {
+            get
+            {
+                return Path.Combine(
+                    Path.GetDirectoryName(Environment.GetEnvironmentVariable("SolutionPath")),
+                    @"graywulf\test\files\metadata.sql");
+            }
+        }
 
         [TestMethod]
         public void ExtractXmlTest()

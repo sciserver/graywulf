@@ -90,9 +90,9 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         public void JoinQueryTest()
         {
             var sql = @"
-SELECT TOP 10 p.objid, p.ra, p.dec, s.ra, s.dec
+SELECT TOP 100 p.objid, p.ra, p.dec, s.ra, s.dec
 INTO [$into]
-FROM SDSSDR7:PhotoObj p
+FROM SDSSDR7:PhotoPrimary p
 INNER JOIN SDSSDR7:SpecObjAll s
     ON p.objID = s.bestObjID";
 
