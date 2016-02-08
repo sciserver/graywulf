@@ -422,6 +422,32 @@ AS
 GO
 
 
+CREATE PROC [dbo].[spFindEntityAscendants]
+(
+	@Guid uniqueidentifier
+)
+AS
+
+	WITH ascendants AS
+	(
+		SELECT e.Guid, e.EntityType, e.ParentGuid, e.Name, 0 AS level
+		FROM Entity e
+		WHERE Guid = @guid
+	
+		UNION ALL
+
+		SELECT e.Guid, e.EntityType, e.ParentGuid, e.Name, a.level + 1 AS level
+		FROM Entity e
+		INNER JOIN ascendants a
+			ON e.Guid = a.ParentGuid
+	)
+	SELECT guid, entityType, name
+	FROM ascendants
+	ORDER BY level DESC
+
+GO
+
+
 CREATE FUNCTION [dbo].[fGetEntityGuid_byName]
 (
 	@EntityType int,
