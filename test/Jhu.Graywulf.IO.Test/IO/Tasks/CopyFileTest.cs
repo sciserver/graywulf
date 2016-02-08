@@ -61,6 +61,8 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 RemoteServiceTester.Instance.EnsureRunning();
                 var fc = GetFileCopy("FileCopyTest_RemoteExecuteTest", true);
+                fc.Overwrite = true;
+                fc.Method = FileCopyMethod.Win32FileCopy;
 
                 File.WriteAllText(fc.Source, "test data");
 
