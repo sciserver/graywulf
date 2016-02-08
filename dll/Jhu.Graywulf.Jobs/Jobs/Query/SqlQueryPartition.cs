@@ -308,7 +308,56 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         #endregion
-        #region Destination table and copy resultset functions 
+        #region Destination table and copy resultset functions
+
+        /// <summary>
+        /// Generates the query that can be used to copy the results to the final
+        /// destination table (usually in mydb)
+        /// </summary>
+        /// <returns></returns>
+        protected virtual string GetOutputQueryText()
+        {
+            return String.Format(
+                "SELECT __tablealias.* FROM {0} AS __tablealias",
+                CodeGenerator.GetResolvedTableName(GetOutputTable()));
+        }
+
+        /// <summary>
+        /// Gets a query that can be used to figure out the schema of
+        /// the destination table.
+        /// </summary>
+        /// <returns></returns>
+        protected SourceTableQuery GetOutputSourceQuery()
+        {
+            return new SourceTableQuery()
+            {
+                Dataset = TemporaryDataset,
+                Query = GetOutputQueryText()
+            };
+        }
+
+        protected void PrepareDestinationTable()
+        {
+            lock (syncRoot)
+            {
+                // Only initialize target table if it's still uninitialzed
+                if (!query.IsDestinationTableInitialized)
+                {
+                    var source = GetOutputSourceQuery();
+
+                    // TODO: figure out metadata from query
+                    var table = query.Destination.GetTable(BatchName, QueryName, null, null);
+                    var columns = source.GetColumns();
+                    table.Initialize(columns, query.Destination.Options);
+
+                    // At this point the name of the destination is determined
+                    // mark it as the output
+                    query.Output = table;
+                }
+
+                query.IsDestinationTableInitialized = true;
+            }
+        }
 
         /// <summary>
         /// Creates or truncates destination table in the output database (usually MYDB)
@@ -325,33 +374,38 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </remarks>
         public void PrepareDestinationTable(Context context, IScheduler scheduler)
         {
-            switch (query.ExecutionMode)
+            switch (ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
                     // Output is already written to the target table
                     break;
                 case Jobs.Query.ExecutionMode.Graywulf:
+                    InitializeQueryObject(context, scheduler, true);
+                    PrepareDestinationTable();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public void PrepareCreateDestinationTablePrimaryKey(Context context, IScheduler scheduler, out Table table, out IList<Column> columns)
+        {
+            switch (ExecutionMode)
+            {
+                case ExecutionMode.SingleServer:
+                    table = null;
+                    columns = null;
+                    break;
+                case Jobs.Query.ExecutionMode.Graywulf:
                     {
                         InitializeQueryObject(context, scheduler, true);
 
-                        lock (query.syncRoot)
+                        lock (syncRoot)
                         {
-                            // Only initialize target table if it's still uninitialzed
-                            if (!query.IsDestinationTableInitialized)
-                            {
-                                var source = GetOutputSourceQuery();
+                            var source = GetOutputSourceQuery();
 
-                                // TODO: figure out metadata from query
-                                var table = query.Destination.GetTable(query.BatchName, query.QueryName, null, null);
-                                var columns = source.GetColumns();
-                                table.Initialize(columns, query.Destination.Options);
-
-                                // At this point the name of the destination is determined
-                                // mark it as the output
-                                query.Output = table;
-                            }
-
-                            query.IsDestinationTableInitialized = true;
+                            table = query.Destination.GetTable(BatchName, QueryName, null, null);
+                            columns = source.GetColumns();
                         }
                     }
                     break;
@@ -359,6 +413,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     throw new NotImplementedException();
             }
         }
+
 
         public virtual void PrepareCopyResultset(Context context)
         {
@@ -397,32 +452,6 @@ namespace Jhu.Graywulf.Jobs.Query
                 default:
                     throw new NotImplementedException();
             }
-        }
-
-        /// <summary>
-        /// Generates the query that can be used to copy the results to the final
-        /// destination table (usually in mydb)
-        /// </summary>
-        /// <returns></returns>
-        protected virtual string GetOutputQueryText()
-        {
-            return String.Format(
-                "SELECT __tablealias.* FROM {0} AS __tablealias",
-                CodeGenerator.GetResolvedTableName(GetOutputTable()));
-        }
-
-        /// <summary>
-        /// Gets a query that can be used to figure out the schema of
-        /// the destination table.
-        /// </summary>
-        /// <returns></returns>
-        private SourceTableQuery GetOutputSourceQuery()
-        {
-            return new SourceTableQuery()
-            {
-                Dataset = TemporaryDataset,
-                Query = GetOutputQueryText()
-            };
         }
 
         #endregion

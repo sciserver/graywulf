@@ -1029,10 +1029,7 @@ WHERE s.name = @schemaName AND o.name = @objectName
 
         internal override void RenameObject(DatabaseObject obj, string objectName)
         {
-            if (!IsMutable)
-            {
-                throw new InvalidOperationException();
-            }
+            EnsureMutable();
 
             // The stored procedure sp_name expects the old name
             // the the schema.objectname or objectname format.
@@ -1070,10 +1067,7 @@ WHERE s.name = @schemaName AND o.name = @objectName
 
         internal override void DropObject(DatabaseObject obj)
         {
-            if (!IsMutable)
-            {
-                throw new InvalidOperationException();
-            }
+            EnsureMutable();
 
             var sql = String.Format(@"
 IF (OBJECT_ID('{1}') IS NOT NULL)
@@ -1092,16 +1086,13 @@ END",
             }
         }
 
-        internal override void CreateTable(Table table)
+        internal override void CreateTable(Table table, bool createPrimaryKey, bool createIndexes)
         {
-            if (!IsMutable)
-            {
-                throw new InvalidOperationException("Operation valid on mutable datasets only.");   // TODO ***
-            }
+            EnsureMutable();
 
             var tr = new SqlParser.TableReference(table, null, true);
             var codegen = new Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator();
-            var sql = codegen.GenerateCreateTableQuery(tr, true, true);
+            var sql = codegen.GenerateCreateTableQuery(tr, createPrimaryKey, createIndexes);
 
             using (var cn = OpenConnectionInternal())
             {
@@ -1110,6 +1101,30 @@ END",
                     cmd.ExecuteNonQuery();
                 }
             }
+        }
+
+        internal override void CreatePrimaryKey(Table table)
+        {
+            EnsureMutable();
+
+            var tr = new SqlParser.TableReference(table, null, true);
+            var codegen = new Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator();
+            var sql = codegen.GenerateCreatePrimaryKeyQuery(tr);
+
+            using (var cn = OpenConnectionInternal())
+            {
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            // TODO: figure out how to make it into a cancelable command
+        }
+
+        internal override void CreateIndex(Table table, Index index)
+        {
+            throw new NotImplementedException();
         }
 
         internal override void TruncateTable(Table table)

@@ -119,7 +119,9 @@ namespace Jhu.Graywulf.Schema
                 }
                 else if ((options & TableInitializationOptions.Create) != 0)
                 {
-                    Create();
+                    Create(
+                        (options & TableInitializationOptions.CreatePrimaryKey) != 0,
+                        (options & TableInitializationOptions.CreateIndexes) != 0);
                 }
                 else
                 {
@@ -137,9 +139,21 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Creates the table
         /// </summary>
-        public void Create()
+        public void Create(bool createPrimaryKey, bool createIndexes)
         {
-            Dataset.CreateTable(this);
+            Dataset.CreateTable(this, createPrimaryKey, createIndexes);
+        }
+
+        public void CreatePrimaryKey(IList<Column> columns)
+        {
+            // Copy columns from source data reader
+            this.Columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
+            Dataset.CreatePrimaryKey(this);
+        }
+
+        public void CreateIndexes()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

@@ -115,6 +115,8 @@
     <Compile Include="Jobs\Query\CopyResultset.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Jobs\Query\CreateDestinationTableIndexes.cs" />
+    <Compile Include="Jobs\Query\CreateDestinationTablePrimaryKey.cs" />
     <Compile Include="Jobs\Query\DropTemporaryTables.cs">
       <SubType>Code</SubType>
     </Compile>
