@@ -265,6 +265,20 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Final query execution
 
+        /// <summary>
+        /// Gets a query that can be used to figure out the schema of
+        /// the destination table.
+        /// </summary>
+        /// <returns></returns>
+        protected SourceTableQuery GetExecuteSourceQuery()
+        {
+            // Source query will be run on the code database to have
+            // access to UDTs
+            var source = CodeGenerator.GetExecuteQuery(SelectStatement);
+            source.Dataset = CodeDataset;
+            return source;
+        }
+
         public virtual void PrepareExecuteQuery(Context context, IScheduler scheduler, out SourceTableQuery source, out Table destination)
         {
             InitializeQueryObject(context, scheduler, true);
@@ -288,10 +302,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     throw new NotImplementedException();
             }
 
-            // Source query will be run on the code database to have
-            // access to UDTs
-            source = CodeGenerator.GetExecuteQuery(SelectStatement);
-            source.Dataset = CodeDataset;
+            source = GetExecuteSourceQuery();
         }
 
         public void ExecuteQuery(SourceTableQuery source, Table destination)
@@ -317,6 +328,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <returns></returns>
         protected virtual string GetOutputQueryText()
         {
+            // TODO move completely to codegen
             return String.Format(
                 "SELECT __tablealias.* FROM {0} AS __tablealias",
                 CodeGenerator.GetResolvedTableName(GetOutputTable()));
@@ -393,19 +405,16 @@ namespace Jhu.Graywulf.Jobs.Query
             switch (ExecutionMode)
             {
                 case ExecutionMode.SingleServer:
-                    table = null;
-                    columns = null;
-                    break;
+                    throw new NotImplementedException();
                 case Jobs.Query.ExecutionMode.Graywulf:
                     {
                         InitializeQueryObject(context, scheduler, true);
 
                         lock (syncRoot)
                         {
-                            var source = GetOutputSourceQuery();
-
-                            table = query.Destination.GetTable(BatchName, QueryName, null, null);
+                            var source = GetExecuteSourceQuery();
                             columns = source.GetColumns();
+                            table = query.Destination.GetTable(BatchName, QueryName, null, null);
                         }
                     }
                     break;

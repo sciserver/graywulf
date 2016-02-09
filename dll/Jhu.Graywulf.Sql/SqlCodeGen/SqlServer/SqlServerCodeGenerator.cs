@@ -243,6 +243,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 
             sql.AppendFormat("ALTER TABLE {0}", GetResolvedTableName(table));
             sql.AppendLine();
+            sql.Append("ADD ");
             sql.Append(GeneratePrimaryKeyConstraint(table, ColumnContext.PrimaryKey));
 
             return sql.ToString();

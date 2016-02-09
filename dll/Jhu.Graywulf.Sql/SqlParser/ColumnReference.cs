@@ -102,6 +102,13 @@ namespace Jhu.Graywulf.SqlParser
             this.tableReference = tableReference;
             this.columnName = columnDescription.Name;
             this.dataType = columnDescription.DataType;
+
+            if (columnDescription.IsKey)
+            {
+                this.columnContext = Graywulf.SqlParser.ColumnContext.PrimaryKey;
+            }
+
+            // TODO: copy metadata here
         }
 
         public ColumnReference(string name, DataType dataType)

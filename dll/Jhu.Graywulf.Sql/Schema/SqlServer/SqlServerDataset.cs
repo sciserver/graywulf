@@ -1090,6 +1090,8 @@ END",
         {
             EnsureMutable();
 
+            // TODO: instead of creating a table reference here, implement direct
+            // code generation from schema objects
             var tr = new SqlParser.TableReference(table, null, true);
             var codegen = new Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator();
             var sql = codegen.GenerateCreateTableQuery(tr, createPrimaryKey, createIndexes);
@@ -1107,15 +1109,35 @@ END",
         {
             EnsureMutable();
 
+            // TODO: instead of creating a table reference here, implement direct
+            // code generation from schema objects
             var tr = new SqlParser.TableReference(table, null, true);
-            var codegen = new Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator();
-            var sql = codegen.GenerateCreatePrimaryKeyQuery(tr);
 
-            using (var cn = OpenConnectionInternal())
+            if (tr.ColumnReferences.Where(c => (c.ColumnContext & SqlParser.ColumnContext.PrimaryKey) != 0).Count() > 0)
             {
-                using (var cmd = new SqlCommand(sql, cn))
+                var codegen = new Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator();
+                var sql = codegen.GenerateCreatePrimaryKeyQuery(tr);
+
+                using (var cn = OpenConnectionInternal())
                 {
-                    cmd.ExecuteNonQuery();
+                    using (var cmd = new SqlCommand(sql, cn))
+                    {
+                        try
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
+                        catch (SqlException ex)
+                        {
+                            if (ex.Number == 1505)
+                            {
+                                // Duplicate key, eat exception
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                    }
                 }
             }
 

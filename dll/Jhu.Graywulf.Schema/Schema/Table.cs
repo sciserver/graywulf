@@ -81,6 +81,17 @@ namespace Jhu.Graywulf.Schema
             return new Table(this);
         }
 
+        private void CopyColumnsFrom(IList<Column> columns)
+        {
+            this.Columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
+
+            for (int i = 0; i < columns.Count; i++)
+            {
+                var nc = (Column)columns[i].Clone();
+                this.Columns.TryAdd(nc.Name, nc);
+            }
+        }
+
         public void Initialize(IList<Column> columns, TableInitializationOptions options)
         {
             // If the table needs to be dropped do it now
@@ -98,14 +109,7 @@ namespace Jhu.Graywulf.Schema
             }
             else
             {
-                // Copy columns from source data reader
-                this.Columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
-                
-                for (int i = 0; i < columns.Count; i++)
-                {
-                    var nc = (Column)columns[i].Clone();
-                    this.Columns.TryAdd(nc.Name, nc);
-                }
+                CopyColumnsFrom(columns);
 
                 if ((options & TableInitializationOptions.Append) != 0)
                 {
@@ -146,8 +150,7 @@ namespace Jhu.Graywulf.Schema
 
         public void CreatePrimaryKey(IList<Column> columns)
         {
-            // Copy columns from source data reader
-            this.Columns = new ConcurrentDictionary<string, Column>(SchemaManager.Comparer);
+            CopyColumnsFrom(columns);
             Dataset.CreatePrimaryKey(this);
         }
 
