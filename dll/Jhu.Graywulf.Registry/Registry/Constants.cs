@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Registry
         public const string QuickQueueName = "Quick";
         public const string MachineHostName = "localhost";
         public const string MachineAdminUrl = @"http://[$HostName]/gwcontrol";
-        public const string MachineDeployUncPath = @"\\[$HostName]\GWCode\";
+        public const string MachineDeployUncPath = @"\\[$HostName]\Graywulf\";
         public const string DataDiskGroupName = "DATA";
         public const string DiskVolumeName = "Volume";
         public const string DiskVolumeLocalPath = @"C:\Data\[$Name]\Graywulf\";
