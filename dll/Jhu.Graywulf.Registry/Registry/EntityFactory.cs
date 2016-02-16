@@ -474,10 +474,10 @@ ORDER BY Number";
         /// </summary>
         /// <param name="entity">The root entity of the serialization.</param>
         /// <param name="output">The TextWriter object used for writing the XML stream.</param>
-        public void Serialize(Entity entity, TextWriter output, EntityGroup entityGroupMask, bool excludeUserCreated)
+        public void Serialize(Entity entity, TextWriter output, EntityGroup entityGroupMask, bool recursive, bool excludeUserCreated)
         {
             var registry = new Registry();
-            registry.Entities = EnumerateChildrenForSerialize(entity, entityGroupMask, excludeUserCreated).ToArray();
+            registry.Entities = EnumerateChildrenForSerialize(entity, entityGroupMask, recursive, excludeUserCreated).ToArray();
 
             var ser = new XmlSerializer(registry.GetType());
             ser.Serialize(output, registry);
@@ -497,7 +497,7 @@ ORDER BY Number";
         /// Certain entities are excluded but their children are still
         /// included in the search!
         /// </remarks>
-        private IEnumerable<Entity> EnumerateChildrenForSerialize(Entity entity, EntityGroup entityGroupMask, bool excludeUserJobs)
+        private IEnumerable<Entity> EnumerateChildrenForSerialize(Entity entity, EntityGroup entityGroupMask, bool recursive, bool excludeUserJobs)
         {
             /*
             // Make sure it's not a simple user job
@@ -518,15 +518,18 @@ ORDER BY Number";
                 yield return entity;
             }
 
-            // Even if it's excluded, return children.
-            // Some exports (layout) might require exporting certain security
-            // objects (user-mydb mapping)
-            entity.LoadAllChildren(true);
-            foreach (Entity e in entity.EnumerateAllChildren().OrderBy(ei => ei.Number))
+            if (recursive)
             {
-                foreach (Entity ee in EnumerateChildrenForSerialize(e, entityGroupMask, excludeUserJobs))
+                // Even if it's excluded, return children.
+                // Some exports (layout) might require exporting certain security
+                // objects (user-mydb mapping)
+                entity.LoadAllChildren(true);
+                foreach (Entity e in entity.EnumerateAllChildren().OrderBy(ei => ei.Number))
                 {
-                    yield return ee;
+                    foreach (Entity ee in EnumerateChildrenForSerialize(e, entityGroupMask, recursive, excludeUserJobs))
+                    {
+                        yield return ee;
+                    }
                 }
             }
         }

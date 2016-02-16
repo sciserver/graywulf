@@ -17,19 +17,22 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
         [Parameter(Name = "RootEntity", Description = "Name of root entity to serialize", Required = true)]
         public string RootEntitity { get; set; }
 
-        [Option(Name = "Cluster", Description = "Export hardware info", Required = false)]
+        [Option(Name = "Object", Description = "Export single object", Required = false)]
+        public bool Object { get; set; }
+
+        [Option(Name = "Cluster", Description = "Export hardware info recursively", Required = false)]
         public bool Cluster { get; set; }
 
-        [Option(Name = "Domain", Description = "Export domain info", Required = false)]
+        [Option(Name = "Domain", Description = "Export domain info recursively", Required = false)]
         public bool Domain { get; set; }
 
-        [Option(Name = "Federation", Description = "Export federation info", Required = false)]
+        [Option(Name = "Federation", Description = "Export federation info recursively", Required = false)]
         public bool Federation { get; set; }
 
-        [Option(Name = "Layout", Description = "Export layout info", Required = false)]
+        [Option(Name = "Layout", Description = "Export layout info recursively", Required = false)]
         public bool Layout { get; set; }
 
-        [Option(Name = "Jobs", Description = "Export job info", Required = false)]
+        [Option(Name = "Jobs", Description = "Export job info recursively", Required = false)]
         public bool Jobs { get; set; }
 
         [Option(Name = "ExcludeUserCreated", Description = "Exclude user-created items", Required = false)]
@@ -43,23 +46,30 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
             {
                 var f = new EntityFactory(context);
                 var entity = f.LoadEntity(RootEntitity);
-
-                // TODO: move masking logic to entity factory!
-
                 var entityGroupMask = EntityGroup.All;
 
-                if (Cluster || Domain || Federation || Layout || Jobs)
+                if (Object)
                 {
-                    if (!Cluster) entityGroupMask &= ~EntityGroup.Cluster;
-                    if (!Domain) entityGroupMask &= ~EntityGroup.Domain;
-                    if (!Federation) entityGroupMask &= ~EntityGroup.Federation;
-                    if (!Layout) entityGroupMask &= ~EntityGroup.Layout;
-                    if (!Jobs) entityGroupMask &= ~EntityGroup.Jobs;
+                    using (var outfile = new StreamWriter(Output))
+                    {
+                        f.Serialize(entity, outfile, entityGroupMask, false, ExcludeUserCreated);
+                    }
                 }
-
-                using (var outfile = new StreamWriter(Output))
+                else
                 {
-                    f.Serialize(entity, outfile, entityGroupMask, ExcludeUserCreated);
+                    if (Cluster || Domain || Federation || Layout || Jobs)
+                    {
+                        if (!Cluster) entityGroupMask &= ~EntityGroup.Cluster;
+                        if (!Domain) entityGroupMask &= ~EntityGroup.Domain;
+                        if (!Federation) entityGroupMask &= ~EntityGroup.Federation;
+                        if (!Layout) entityGroupMask &= ~EntityGroup.Layout;
+                        if (!Jobs) entityGroupMask &= ~EntityGroup.Jobs;
+                    }
+
+                    using (var outfile = new StreamWriter(Output))
+                    {
+                        f.Serialize(entity, outfile, entityGroupMask, true, ExcludeUserCreated);
+                    }
                 }
             }
         }
