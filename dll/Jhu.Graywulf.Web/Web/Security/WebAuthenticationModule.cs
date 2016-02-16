@@ -258,77 +258,69 @@ namespace Jhu.Graywulf.Web.Security
 
         public string GetSignInUrl()
         {
-            return AddReturnUrl(Configuration.SignInUri);
+            return BuildUrl(Configuration.SignInUri);
         }
 
         public string GetSignOutUrl()
         {
-            return AddReturnUrl(Configuration.SignOutUri);
+            return BuildUrl(Configuration.SignOutUri);
         }
 
         public string GetRegisternUrl()
         {
-            return AddReturnUrl(Configuration.RegisterUri);
+            return BuildUrl(Configuration.RegisterUri);
         }
 
         public string GetUserAccountUrl()
         {
-            return AddReturnUrl(Configuration.AccountUri);
+            return BuildUrl(Configuration.AccountUri);
         }
 
-        private string AddReturnUrl(Uri uri)
-        {
-            var returnUrl = GetReturnUrl();
-            returnUrl = HttpUtility.UrlEncode(returnUrl);
-            var redirectUrl = AppendReturnUrl(uri, returnUrl);
-            return redirectUrl;
-        }
-
-        private string GetReturnUrl()
+        private string BuildUrl(Uri pageUri)
         {
             // Check if the redirect should be made to another host. If so, then the return
             // url should contain the host name, if not, it is enough to use path only
+
+            string returnUrl;
+            string url;
+
             if (Configuration.BaseUri.IsAbsoluteUri)
             {
                 // Different host, use full URL with scheme and host name
 
                 // TODO: figure out how it would work with reverse-proxy, without
                 // URL rewrite...
-
-                return HttpContext.Current.Request.Url.OriginalString;
+                returnUrl = HttpContext.Current.Request.Url.ToString();
+                pageUri = Util.UriConverter.Combine(Configuration.BaseUri, pageUri);
             }
             else
             {
                 // Same host, use path and query only
-                return HttpContext.Current.Request.Url.PathAndQuery;
+                returnUrl = HttpContext.Current.Request.Url.PathAndQuery;
             }
-        }
 
-        private string AppendReturnUrl(Uri uri, string returnUrl)
-        {
-            var path = uri.IsAbsoluteUri ? uri.PathAndQuery : uri.OriginalString;
+            returnUrl = HttpUtility.UrlEncode(returnUrl);
+            url = pageUri.ToString();
 
-            if (path.Contains("[$ReturnUrl]"))
+            if (url.Contains("[$ReturnUrl]"))
             {
-                path = path.Replace("[$ReturnUrl]", returnUrl);
+                url = url.Replace("[$ReturnUrl]", returnUrl);
             }
             else
             {
-                if (path.IndexOf('?') < 0)
+                if (url.IndexOf('?') < 0)
                 {
-                    path += "?";
+                    url += "?";
                 }
                 else
                 {
-                    path += "&";
+                    url += "&";
                 }
 
-                path += "ReturnUrl=" + returnUrl;
+                url += "ReturnUrl=" + returnUrl;
             }
 
-            uri = Util.UriConverter.Combine(Configuration.BaseUri, path);
-
-            return uri.OriginalString;
+            return url;
         }
 
         private void RedirectToLoginPage()
