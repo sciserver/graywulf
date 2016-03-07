@@ -69,6 +69,8 @@ namespace Jhu.Graywulf.Web.Services
                 webHttpBinding.UseDefaultWebProxy = false;
             }
 
+            webHttpBinding.MaxReceivedMessageSize = 0x40000000;
+
             webHttpBinding.ReaderQuotas.MaxArrayLength = 0x7FFFFFFF;
             webHttpBinding.ReaderQuotas.MaxDepth = 0x7FFFFFFF;
             webHttpBinding.ReaderQuotas.MaxStringContentLength = 0x7FFFFFFF;
