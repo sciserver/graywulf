@@ -1,6 +1,6 @@
 ﻿namespace Jhu.Graywulf.BulkOp.Server
 {
-    partial class ProjectInstaller
+    partial class SchedulerInstaller
     {
         /// <summary>
         /// Required designer variable.

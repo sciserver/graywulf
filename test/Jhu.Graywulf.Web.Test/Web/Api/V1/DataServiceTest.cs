@@ -20,7 +20,8 @@ namespace Jhu.Graywulf.Web.Api.V1
         protected IDataService CreateClient(RestClientSession session)
         {
             AuthenticateTestUser(session);
-            var client = session.CreateClient<IDataService>(new Uri("http://localhost/gwui/api/v1/data.svc"));
+            var uri = String.Format("http://{0}/gwui/api/v1/data.svc", Environment.MachineName);
+            var client = session.CreateClient<IDataService>(new Uri(uri));
             return client;
         }
 
@@ -37,7 +38,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 // We create a raw HTTP request here to stream data back.
                 // The WCF interface apparently doesn't support this
 
-                var uri = new Uri("http://localhost/gwui/api/v1/data.svc/MYDB/SampleData");
+                var uri = new Uri(String.Format("http://{0}/gwui/api/v1/data.svc/MYDB/SampleData", Environment.MachineName));
 
                 var req = (HttpWebRequest)WebRequest.Create(uri);
 

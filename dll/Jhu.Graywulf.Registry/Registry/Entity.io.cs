@@ -503,6 +503,27 @@ namespace Jhu.Graywulf.Registry
             Context.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.Move", this.guid));
         }
 
+        private string[] LoadAscendantNames()
+        {
+            var res = new List<string>();
+            var sql = "spFindEntityAscendants";
+
+            using (var cmd = Context.CreateStoredProcedureCommand(sql))
+            {
+                cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = guid;
+
+                using (var dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        res.Add(dr.GetString(2));
+                    }
+                }
+            }
+
+            return res.ToArray();
+        }
+
         public virtual Entity Copy(Entity parent, bool prefixName)
         {
             return null;

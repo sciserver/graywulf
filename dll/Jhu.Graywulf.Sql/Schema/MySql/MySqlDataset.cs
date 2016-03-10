@@ -669,7 +669,17 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
             }*/
         }
 
-        internal override void CreateTable(Table table)
+        internal override void CreateTable(Table table, bool createPrimaryKey, bool createIndexes)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal override void CreatePrimaryKey(Table table)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal override void CreateIndex(Table table, Index index)
         {
             throw new NotImplementedException();
         }

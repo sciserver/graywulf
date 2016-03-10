@@ -20,6 +20,18 @@ namespace Jhu.Graywulf.Jobs.ExportTables
     [TestClass]
     public class ImportTablesTest : TestClassBase
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            InitializeJobTests();
+        }
+
+        [ClassCleanup]
+        public static void CleanUp()
+        {
+            CleanupJobTests();
+        }
+
         protected Guid ScheduleImportTableJob(string path, string tableName, QueueType queueType)
         {
             var queue = GetQueueName(queueType);
@@ -95,8 +107,6 @@ namespace Jhu.Graywulf.Jobs.ExportTables
         {
             using (SchedulerTester.Instance.GetToken())
             {
-                PurgeTestJobs();
-
                 SchedulerTester.Instance.EnsureRunning();
 
                 using (RemoteServiceTester.Instance.GetToken())
@@ -125,8 +135,6 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
             using (SchedulerTester.Instance.GetToken())
             {
-                PurgeTestJobs();
-
                 SchedulerTester.Instance.EnsureRunning();
 
                 using (RemoteServiceTester.Instance.GetToken())

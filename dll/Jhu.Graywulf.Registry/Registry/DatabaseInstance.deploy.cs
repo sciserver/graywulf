@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Registry
             // Get SMO object to the target database
             smo::Server sto = this.ServerInstance.GetSmoServer();
             smo::Database dto = new smo::Database(sto, this.DatabaseName);
-            
+
             // Important non-default settings
             dto.RecoveryModel = smo.RecoveryModel.Simple;
             dto.Collation = "SQL_Latin1_General_CP1_CI_AS";
@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.Registry
                     // Drop database using SMO
                     smo::Database d = this.GetSmoDatabase();
                     d.Parent.KillDatabase(d.Name);
-                    
+
                     this.Context.LogEvent(new Event("Jhu.Graywulf.Registry.DatabaseInstance.Undeploy[Drop database]", this.Guid));
                     break;
                 case RunningState.Detached:
@@ -150,7 +150,7 @@ namespace Jhu.Graywulf.Registry
                 fg.LoadAllChildren();
                 foreach (DatabaseInstanceFile f in fg.Files.Values)
                 {
-                    ResetFilePermission(f.GetFullUncFilename());    
+                    ResetFilePermission(f.GetFullUncFilename());
                 }
             }
 
@@ -167,6 +167,11 @@ namespace Jhu.Graywulf.Registry
         }
 
         public void Attach()
+        {
+            Attach(true);
+        }
+
+        public void Attach(bool attachAsReadOnly)
         {
             if (this.RunningState == RunningState.Attached)
             {
@@ -186,9 +191,16 @@ namespace Jhu.Graywulf.Registry
                 }
             }
 
-            smo::Server dserver = this.ServerInstance.GetSmoServer();
+            smo::Server server = this.ServerInstance.GetSmoServer();
 
-            dserver.AttachDatabase(this.DatabaseName, files);
+            server.AttachDatabase(this.DatabaseName, files);
+
+            if (attachAsReadOnly)
+            {
+                var db = GetSmoDatabase();
+                db.ReadOnly = true;
+                db.Alter();
+            }
 
             this.DeploymentState = DeploymentState.Deployed;
             this.RunningState = RunningState.Attached;
@@ -294,7 +306,7 @@ namespace Jhu.Graywulf.Registry
                         lf.Growth = 0;
                         lf.GrowthType = smo::FileGrowthType.None;
                         //nf.MaxSize = (double)fi.AllocatedSpace / 0x400; // in kilobytes
-                        lf.Size = (double)fi.AllocatedSpace / 0x400; // in kilobytes
+                        lf.Size = Math.Max(4096, (double)fi.AllocatedSpace / 0x400); // in kilobytes
 
                         dto.LogFiles.Add(lf);
 
@@ -326,7 +338,7 @@ namespace Jhu.Graywulf.Registry
                         nf.Growth = 0;
                         nf.GrowthType = smo::FileGrowthType.None;
                         //nf.MaxSize = (double)fi.AllocatedSpace / 0x400; // in kilobytes
-                        nf.Size = (double)fi.AllocatedSpace / 0x400; // in kilobytes
+                        nf.Size = Math.Max(4096, (double)fi.AllocatedSpace / 0x400); // in kilobytes
 
                         nfg.Files.Add(nf);
 

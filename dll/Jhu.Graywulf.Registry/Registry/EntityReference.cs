@@ -157,9 +157,8 @@ namespace Jhu.Graywulf.Registry
 
                 if (this.value != null)
                 {
-                    // Cache guid but name will be lazy-loaded
                     this.guid = this.value.Guid;
-                    this.name = this.value.Name;
+                    this.name = value.GetFullyQualifiedName(); ;
                 }
                 else
                 {

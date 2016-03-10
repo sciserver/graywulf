@@ -13,6 +13,7 @@ using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Scheduler;
 
 namespace Jhu.Graywulf.Test
 {
@@ -60,6 +61,27 @@ namespace Jhu.Graywulf.Test
             context.UserName = user.Name;
 
             return user;
+        }
+
+        protected static void InitializeJobTests()
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                PurgeTestJobs();
+            }
+        }
+
+        protected static void CleanupJobTests()
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                if (SchedulerTester.Instance.IsRunning)
+                {
+                    SchedulerTester.Instance.DrainStop();
+                }
+
+                PurgeTestJobs();
+            }
         }
 
         public static void PurgeTestJobs()
@@ -260,6 +282,12 @@ namespace Jhu.Graywulf.Test
         {
             var sln = Path.GetDirectoryName(Environment.GetEnvironmentVariable("SolutionPath"));
             return Path.Combine(sln, filename);
+        }
+
+        protected string GetTestFilePath(params string[] filename)
+        {
+            var sln = Path.GetDirectoryName(Environment.GetEnvironmentVariable("SolutionPath"));
+            return Path.Combine(sln, Path.Combine(filename));
         }
 
         protected Uri GetTestUniqueFileUri(string extension)

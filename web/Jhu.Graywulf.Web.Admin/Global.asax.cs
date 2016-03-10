@@ -30,8 +30,12 @@ namespace Jhu.Graywulf.Web.Admin
 
         protected override void OnUserArrived(GraywulfPrincipal principal)
         {
-            Session[Constants.SessionClusterGuid] = RegistryUser.Domain.Cluster.Guid;
-            Session[Constants.SessionDomainGuid] = RegistryUser.Domain.Guid;
+            using (var context = CreateRegistryContext())
+            {
+                RegistryUser.Context = context;
+                Session[Constants.SessionClusterGuid] = RegistryUser.Domain.Cluster.Guid;
+                Session[Constants.SessionDomainGuid] = RegistryUser.Domain.Guid;
+            }
         }
 
         protected override void OnUserLeft(GraywulfPrincipal principal)

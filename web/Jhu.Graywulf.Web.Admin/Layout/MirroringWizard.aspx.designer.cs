@@ -85,6 +85,24 @@ namespace Jhu.Graywulf.Web.Admin.Layout {
         protected global::System.Web.UI.WebControls.CheckBox SkipExistingFiles;
         
         /// <summary>
+        /// AttachAsReadOnly control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox AttachAsReadOnly;
+        
+        /// <summary>
+        /// RunCheckDb control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox RunCheckDb;
+        
+        /// <summary>
         /// QueueInstanceLabel control.
         /// </summary>
         /// <remarks>

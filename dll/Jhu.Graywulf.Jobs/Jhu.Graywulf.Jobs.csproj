@@ -101,6 +101,7 @@
     <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseFile.cs" />
     <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseJobFactory.cs" />
     <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseParameters.cs" />
+    <Compile Include="Jobs\MirrorDatabase\RunCheckDb.cs" />
     <Compile Include="Jobs\Query\AssignServerInstance.cs" />
     <Compile Include="Jobs\Query\CheckDestinationTable.cs">
       <SubType>Code</SubType>
@@ -114,6 +115,8 @@
     <Compile Include="Jobs\Query\CopyResultset.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Jobs\Query\CreateDestinationTableIndexes.cs" />
+    <Compile Include="Jobs\Query\CreateDestinationTablePrimaryKey.cs" />
     <Compile Include="Jobs\Query\DropTemporaryTables.cs">
       <SubType>Code</SubType>
     </Compile>

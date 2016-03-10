@@ -81,12 +81,15 @@ namespace Jhu.Graywulf.Activities
         /// <param name="cancelableTask"></param>
         protected void UnregisterCancelable(Guid workflowInstanceGuid, string activityInstanceId, ICancelableTask cancelableTask)
         {
-            ICancelableTask finishedtask;
-            cancelableTasks.TryRemove(GetUniqueActivityID(workflowInstanceGuid, activityInstanceId), out finishedtask);
+            // TODO: apparently, this gets called more than once sometimes
 
-            if (finishedtask != cancelableTask)
+            ICancelableTask finishedtask;
+            if (cancelableTasks.TryRemove(GetUniqueActivityID(workflowInstanceGuid, activityInstanceId), out finishedtask))
             {
-                throw new InvalidOperationException(ExceptionMessages.ObjectsDoNotMatch);
+                if (finishedtask != cancelableTask)
+                {
+                    throw new InvalidOperationException(ExceptionMessages.ObjectsDoNotMatch);
+                }
             }
         }
 

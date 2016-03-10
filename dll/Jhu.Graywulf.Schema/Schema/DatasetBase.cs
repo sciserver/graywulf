@@ -538,6 +538,14 @@ namespace Jhu.Graywulf.Schema
         #endregion
         #region Object modification functions
 
+        internal protected void EnsureMutable()
+        {
+            if (!IsMutable)
+            {
+                throw new InvalidOperationException("Operation valid on mutable datasets only.");   // TODO ***
+            }
+        }
+
         /// <summary>
         /// When overloaded in derived classes, renames an object.
         /// </summary>
@@ -549,7 +557,11 @@ namespace Jhu.Graywulf.Schema
         /// </remarks>
         internal abstract void RenameObject(DatabaseObject obj, string name);
 
-        internal abstract void CreateTable(Table table);
+        internal abstract void CreateTable(Table table, bool createPrimaryKey, bool createIndexes);
+
+        internal abstract void CreatePrimaryKey(Table table);
+
+        internal abstract void CreateIndex(Table table, Index index);
 
         /// <summary>
         /// When overloaded in derived classes, drops an object.

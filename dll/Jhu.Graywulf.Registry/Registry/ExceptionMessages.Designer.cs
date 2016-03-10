@@ -97,6 +97,15 @@ namespace Jhu.Graywulf.Registry {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Database does not exist or is not attached..
+        /// </summary>
+        public static string DatabaseNotAttached {
+            get {
+                return ResourceManager.GetString("DatabaseNotAttached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error deploying Distributed Partitioned View: Mismatch in database versions &apos;{0}&apos; and &apos;{1}&apos;..
         /// </summary>
         public static string DatabaseVersionMismatch {

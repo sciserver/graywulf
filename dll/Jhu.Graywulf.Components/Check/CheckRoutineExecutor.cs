@@ -74,7 +74,11 @@ namespace Jhu.Graywulf.Check
 #endif
 
                     output.Write("<font color=\"red\">Error:</font> ");
-                    output.WriteLine(ex.Message);
+                    while (ex != null)
+                    {
+                        output.WriteLine(ex.Message);
+                        ex = ex.InnerException;
+                    }
                     output.WriteLine("---");
 
                     failed++;

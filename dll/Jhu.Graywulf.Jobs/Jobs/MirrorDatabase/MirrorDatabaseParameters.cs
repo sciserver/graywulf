@@ -19,6 +19,8 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
         private Guid[] destinationDatabaseInstanceGuids;
         private bool cascadedCopy;
         private bool skipExistingFiles;
+        private bool attachAsReadOnly;
+        private bool runCheckDb;
 
         #endregion
         #region Properties
@@ -51,6 +53,20 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
             set { skipExistingFiles = value; }
         }
 
+        [DataMember]
+        public bool AttachAsReadOnly
+        {
+            get { return attachAsReadOnly; }
+            set { attachAsReadOnly = value; }
+        }
+
+        [DataMember]
+        public bool RunCheckDb
+        {
+            get { return runCheckDb; }
+            set { runCheckDb = value; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -67,6 +83,8 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
             this.destinationDatabaseInstanceGuids = null;
             this.cascadedCopy = true;
             this.skipExistingFiles = true;
+            this.attachAsReadOnly = true;
+            this.runCheckDb = false;
         }
 
         #endregion

@@ -17,31 +17,10 @@ namespace Jhu.Graywulf.Jobs.Query
 {
     public class SqlQueryTestBase : TestClassBase
     {
-        protected static void InitializeQueryTests()
-        {
-            using (SchedulerTester.Instance.GetExclusiveToken())
-            {
-                PurgeTestJobs();
-            }
-        }
-
-        protected static void CleanupQueryTests()
-        {
-            using (SchedulerTester.Instance.GetExclusiveToken())
-            {
-                if (SchedulerTester.Instance.IsRunning)
-                {
-                    SchedulerTester.Instance.DrainStop();
-                }
-
-                PurgeTestJobs();
-            }
-        }
-
         protected virtual UserDatabaseFactory CreateUserDatabaseFactory(Context context)
         {
             return UserDatabaseFactory.Create(
-                typeof(GraywulfUserDatabaseFactory).AssemblyQualifiedName,
+                //typeof(GraywulfUserDatabaseFactory).AssemblyQualifiedName,
                 context.Federation);
         }
 

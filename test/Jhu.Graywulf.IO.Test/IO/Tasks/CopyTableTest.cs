@@ -57,7 +57,10 @@ namespace Jhu.Graywulf.IO.Tasks
         [TestMethod]
         public void ImportTableTest()
         {
-            var q = GetTableCopy("TableCopyTest_ImportTableTest", false);
+            var table = GetTestUniqueName();
+            var q = GetTableCopy(table, false);
+
+            DropTable(q.Destination.GetTable());
 
             q.Execute();
 
@@ -70,7 +73,11 @@ namespace Jhu.Graywulf.IO.Tasks
             using (RemoteServiceTester.Instance.GetToken())
             {
                 RemoteServiceTester.Instance.EnsureRunning();
-                var q = GetTableCopy("TableCopyTest_RemoteTableTest", true);
+
+                var table = GetTestUniqueName();
+                var q = GetTableCopy(table, true);
+
+                DropTable(q.Destination.GetTable());
 
                 q.Execute();
 

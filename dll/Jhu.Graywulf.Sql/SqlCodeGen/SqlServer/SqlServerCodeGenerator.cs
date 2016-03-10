@@ -225,5 +225,28 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 
             return sql.ToString();
         }
+
+        public string GenerateCreatePrimaryKeyQuery(TableReference table)
+        {
+            if (table.DatabaseObject == null)
+            {
+                throw new ArgumentNullException("The table reference is not resolved");         // TODO ***
+            }
+
+            if (table.TableOrView.Columns.Count == 0)
+            {
+                throw new InvalidOperationException("The table doesn't have any columns.");     // TODO ***
+            }
+
+            var sql = new StringBuilder();
+            var pk = GetQuotedIdentifier(String.Format("PK_{0}_{1}", table.SchemaName, table.DatabaseObjectName));
+
+            sql.AppendFormat("ALTER TABLE {0}", GetResolvedTableName(table));
+            sql.AppendLine();
+            sql.Append("ADD ");
+            sql.Append(GeneratePrimaryKeyConstraint(table, ColumnContext.PrimaryKey));
+
+            return sql.ToString();
+        }
     }
 }

@@ -60,5 +60,7 @@ namespace Jhu.Graywulf.Schema
         Clear = 4,
         Append = 8,
         GenerateUniqueName = 16,
+        CreatePrimaryKey = 32,
+        CreateIndexes = 64,
     }
 }

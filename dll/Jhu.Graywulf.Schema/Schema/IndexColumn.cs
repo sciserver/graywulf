@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Schema
     /// Reflects an index column
     /// </summary>
     [Serializable]
-    [DataContract(Namespace="")]
+    [DataContract(Namespace = "")]
     public class IndexColumn : Column, ICloneable
     {
         [NonSerialized]
@@ -62,7 +62,7 @@ namespace Jhu.Graywulf.Schema
         /// Creates a new index column and sets its parent index
         /// </summary>
         public IndexColumn(DatabaseObject parent)
-            :base(parent)
+            : base(parent)
         {
             InitializeMembers();
         }
@@ -75,6 +75,12 @@ namespace Jhu.Graywulf.Schema
             : base(old)
         {
             CopyMembers(old);
+        }
+
+        public IndexColumn(Column old)
+            : base(old)
+        {
+            InitializeMembers();
         }
 
         // <summary>

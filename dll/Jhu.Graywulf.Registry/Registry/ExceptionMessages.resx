@@ -153,4 +153,7 @@
   <data name="EntityNullException" xml:space="preserve">
     <value>The referenced entity is null.</value>
   </data>
+  <data name="DatabaseNotAttached" xml:space="preserve">
+    <value>Database does not exist or is not attached.</value>
+  </data>
 </root>

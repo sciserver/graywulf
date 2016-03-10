@@ -684,19 +684,33 @@ namespace Jhu.Graywulf.Registry
         {
             if (fullyQualifiedName == null)
             {
-                string n = this.name;
+                var names = LoadAscendantNames();
+                var fqn = "";
 
-                Entity p = Parent;
-                while (p != null)
+                for (int i = 0; i < names.Length; i ++)
                 {
-                    n = p.Name + Constants.EntityNameSeparator + n;
-                    p = p.Parent;
+                    if (fqn != "")
+                    {
+                        fqn += Constants.EntityNameSeparator;
+                    }
+
+                    fqn += names[i];
                 }
 
-                fullyQualifiedName = EntityType.ToString() + Constants.EntityTypeSeparator + n;
+                fullyQualifiedName = EntityType.ToString() + Constants.EntityTypeSeparator + fqn;
             }
 
             return fullyQualifiedName;
+        }
+
+        /// <summary>
+        /// Set the fully qualified name of the entity by bypassing
+        /// access to the registry
+        /// </summary>
+        /// <param name="fullyQualifiedName"></param>
+        public void SetFullyQualifiedName(string fullyQualifiedName)
+        {
+            this.fullyQualifiedName = fullyQualifiedName;
         }
 
         public override string ToString()
