@@ -2,13 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using Jhu.Graywulf.Entities.AccessControl;
 
 namespace Jhu.Graywulf.Entities
 {
     public class TestClassBase
     {
-        protected Context CreateContext()
+        protected static string MapPath(string path)
+        {
+            return Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\", path);
+        }
+
+        protected static Context CreateContext()
         {
             var context = new Context()
             {

@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Entities
         [DbColumn(Size = 10)]
         public string VarCharText { get; set; }
 
-        [DbColumn(Binding = DbColumnBinding.ReadOnlyColumn)]
+        [DbColumn(Binding = DbColumnBinding.Auxiliary)]
         public string ReadOnly { get; set; }
 
         // Data type tests

@@ -10,8 +10,9 @@ namespace Jhu.Graywulf.Entities.Mapping
 {
     internal class Constants
     {
-        public static readonly Dictionary<Type, SqlDbType> DbTypeMappings = new Dictionary<Type, SqlDbType>()
+        public static readonly Dictionary<Type, SqlDbType> TypeToSqlDbType = new Dictionary<Type, SqlDbType>()
         {
+            { typeof(Boolean), SqlDbType.Bit },
             { typeof(SByte), SqlDbType.TinyInt },
             { typeof(Int16), SqlDbType.SmallInt },
             { typeof(Int32), SqlDbType.Int },
@@ -28,6 +29,34 @@ namespace Jhu.Graywulf.Entities.Mapping
             { typeof(DateTime), SqlDbType.DateTime },
             { typeof(Guid), SqlDbType.UniqueIdentifier },
             { typeof(XmlElement), SqlDbType.Xml },
+        };
+
+        public static readonly Dictionary<SqlDbType, Type> SqlDbTypeToType = new Dictionary<SqlDbType, Type>()
+        {
+            { SqlDbType.Bit, typeof(Boolean) },
+            { SqlDbType.TinyInt, typeof(Byte) },
+            { SqlDbType.SmallInt, typeof(Int16) },
+            { SqlDbType.Int, typeof(Int32) },
+            { SqlDbType.BigInt, typeof(Int64) },
+            { SqlDbType.Real, typeof(Single) },
+            { SqlDbType.Float, typeof(Double) },
+            { SqlDbType.SmallMoney, typeof(Decimal) },
+            { SqlDbType.Money, typeof(Decimal) },
+            { SqlDbType.Char, typeof(String) },
+            { SqlDbType.NChar, typeof(String) },
+            { SqlDbType.Text, typeof(String) },
+            { SqlDbType.NText, typeof(String) },
+            { SqlDbType.VarChar, typeof(String) },
+            { SqlDbType.NVarChar, typeof(String) },
+            { SqlDbType.Image, typeof(Byte[]) },
+            { SqlDbType.Binary, typeof(Byte[]) },
+            { SqlDbType.VarBinary, typeof(Byte[]) },
+            { SqlDbType.SmallDateTime, typeof(DateTime) },
+            { SqlDbType.DateTime, typeof(DateTime) },
+            { SqlDbType.DateTime2, typeof(DateTime) },
+            { SqlDbType.DateTimeOffset, typeof(TimeSpan) },
+            { SqlDbType.UniqueIdentifier, typeof(Guid) },
+            { SqlDbType.Xml, typeof(XmlElement) },
         };
     }
 }

@@ -106,12 +106,12 @@ namespace Jhu.Graywulf.Entities.Mapping
 
             if (!attr.TypeNullable.HasValue)
             {
-                if (!Constants.DbTypeMappings.ContainsKey(p.PropertyType))
+                if (!Constants.TypeToSqlDbType.ContainsKey(p.PropertyType))
                 {
                     throw DbError.InvalidColumnType(p.Name, p.ReflectedType);
                 }
 
-                this.type = Constants.DbTypeMappings[p.PropertyType];
+                this.type = Constants.TypeToSqlDbType[p.PropertyType];
             }
             else
             {
@@ -164,7 +164,18 @@ namespace Jhu.Graywulf.Entities.Mapping
             // Cast value to strongly typed version
             var cv = Expression.Variable(p.PropertyType, "cv");
             vars.Add(cv);
-            exps.Add(Expression.Assign(cv, Expression.ConvertChecked(value, p.PropertyType)));
+
+            if (Constants.SqlDbTypeToType[type] != p.PropertyType)
+            {
+                var tv = Expression.Variable(Constants.SqlDbTypeToType[type], "tv");
+                vars.Add(tv);
+                exps.Add(Expression.Assign(tv, Expression.ConvertChecked(value, Constants.SqlDbTypeToType[type])));
+                exps.Add(Expression.Assign(cv, Expression.ConvertChecked(cv, p.PropertyType)));
+            }
+            else
+            {
+                exps.Add(Expression.Assign(cv, Expression.ConvertChecked(value, p.PropertyType)));
+            }
 
             // Set value of property
             exps.Add(Expression.Assign(Expression.Property(ce, p), cv));
@@ -183,44 +194,39 @@ namespace Jhu.Graywulf.Entities.Mapping
 
         public void SetValue(Entity entity, object value)
         {
-            setValue(entity, value);
+            if (type == SqlDbType.Xml)
+            {
+                var xml = new XmlDocument();
+                xml.LoadXml((string)value);
+                setValue(entity, xml.DocumentElement);
+            }
+            else
+            {
+                setValue(entity, value);
+            }
         }
 
         public SqlParameter GetParameter(Entity entity)
         {
             SqlParameter par;
 
-            switch (type)
+            if (type == SqlDbType.Xml)
             {
-                case SqlDbType.TinyInt:
-                case SqlDbType.SmallInt:
-                case SqlDbType.Int:
-                case SqlDbType.BigInt:
-                case SqlDbType.Real:
-                case SqlDbType.Float:
-                case SqlDbType.Money:
-                case SqlDbType.NVarChar:
-                case SqlDbType.VarChar:
-                case SqlDbType.VarBinary:
-                case SqlDbType.DateTime:
-                case SqlDbType.UniqueIdentifier:
-                    if (size.HasValue)
-                    {
-                        par = new SqlParameter("@" + name, type, size.Value);
-                        par.Value = GetValue(entity);
-                    }
-                    else
-                    {
-                        par = new SqlParameter("@" + name, type);
-                        par.Value = GetValue(entity);
-                    }
-                    break;
-                case SqlDbType.Xml:
+                par = new SqlParameter("@" + name, type);
+                par.Value = ((XmlElement)GetValue(entity)).OuterXml;
+            }
+            else
+            {
+                if (size.HasValue)
+                {
+                    par = new SqlParameter("@" + name, type, size.Value);
+                    par.Value = GetValue(entity);
+                }
+                else
+                {
                     par = new SqlParameter("@" + name, type);
-                    par.Value = ((XmlElement)GetValue(entity)).OuterXml;
-                    break;
-                default:
-                    throw new NotImplementedException();
+                    par.Value = GetValue(entity);
+                }
             }
 
             return par;

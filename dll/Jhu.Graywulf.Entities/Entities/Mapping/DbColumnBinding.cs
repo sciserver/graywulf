@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Entities.Mapping
         Key = 1,
         Identity = 2,
         Column = 4,
-        ReadOnlyColumn = 8,
+        Auxiliary = 8,
 
         Any = 0xFFFF
     }

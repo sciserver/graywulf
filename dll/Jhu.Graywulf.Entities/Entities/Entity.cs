@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.Entities
         {
             get
             {
-                return GetKey() != DbTable.Key.DefaultValue;
+                return !GetKey().Equals(DbTable.Key.DefaultValue);
             }
         }
 
@@ -107,18 +107,7 @@ namespace Jhu.Graywulf.Entities
 
         protected virtual IEnumerable<DbColumn> GetColumnList(DbColumnBinding binding)
         {
-            IEnumerable<DbColumn> columns;
-
-            if ((binding & DbColumnBinding.Key) != 0)
-            {
-                columns = new[] { DbTable.Key }.Concat(DbTable.Columns.Values);
-            }
-            else
-            {
-                columns = DbTable.Columns.Values;
-            }
-
-            return columns.Where(ci => (ci.Binding & binding) != 0).OrderBy(ci => ci.Order);
+            return DbTable.Columns.Values.Where(ci => (ci.Binding & binding) != 0).OrderBy(ci => ci.Order);
         }
 
         private string GetColumnListString(IEnumerable<DbColumn> columns, DbColumnListType type)
@@ -178,7 +167,7 @@ SELECT {0}
 FROM {1}
 ";
 
-            var columns = GetColumnList(DbColumnBinding.Any);
+            var columns = GetColumnList(DbColumnBinding.Key | DbColumnBinding.Column);
 
             return String.Format(
                 sql,
@@ -192,7 +181,29 @@ FROM {1}
 
             foreach (var c in columns)
             {
-                c.SetValue(this, reader.GetValue(reader.GetOrdinal(c.Name)));
+                int i;
+
+                // Auxiliary columns don't always exist in the resultset
+                if ((c.Binding | DbColumnBinding.Auxiliary) != 0)
+                {
+                    try
+                    {
+                        i = reader.GetOrdinal(c.Name);
+                    }
+                    catch (Exception)
+                    {
+                        i = -1;
+                    }
+                }
+                else
+                {
+                    i = reader.GetOrdinal(c.Name);
+                }
+
+                if (i >= 0)
+                {
+                    c.SetValue(this, reader.GetValue(i));
+                }
             }
 
             isLoaded = true;
@@ -271,14 +282,13 @@ WITH __e AS
 )
 SELECT * 
 FROM __e
-WHERE {1} = @{1};
+WHERE [{1}] = @{1};
 ";
 
             var cmd = new SqlCommand(
                 String.Format(
                     sql,
                     GetTableQuery(),
-                    DbTable.Name,
                     DbTable.Key.Name));
 
             cmd.Parameters.Add(DbTable.Key.GetParameter(this));
@@ -289,15 +299,11 @@ WHERE {1} = @{1};
         protected virtual SqlCommand GetUpdateCommand()
         {
             var sql = @"
-SET NOCOUNT ON;
-
-UPDATE {0}
+UPDATE [{0}]
 SET {1}
-WHERE {2} = @{2};
+WHERE [{2}] = @{2};
 
-SET NOCOUNT OFF;
-
-RETURN @@ROWCOUNT;
+SELECT @@ROWCOUNT;
 ";
 
             var columns = GetColumnList(DbColumnBinding.Column);
@@ -306,7 +312,7 @@ RETURN @@ROWCOUNT;
                 String.Format(
                     sql,
                     DbTable.Name,
-                    GetColumnListString(columns, DbColumnListType.Insert),
+                    GetColumnListString(columns, DbColumnListType.Update),
                     DbTable.Key.Name));
 
             cmd.Parameters.Add(DbTable.Key.GetParameter(this));
@@ -341,7 +347,7 @@ RETURN @@ROWCOUNT;
 
         public virtual void Save()
         {
-            if (IsExisting)
+            if (!IsExisting)
             {
                 Create();
             }
@@ -382,9 +388,9 @@ RETURN @@ROWCOUNT;
         {
             using (var cmd = GetUpdateCommand())
             {
-                long retval = (long)Context.ExecuteCommandNonQuery(cmd);
+                long count = (int)Context.ExecuteCommandScalar(cmd);
 
-                if (retval == 0)
+                if (count == 0)
                 {
                     throw Error.ErrorModifyEntity();
                 }

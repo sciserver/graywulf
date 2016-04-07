@@ -316,6 +316,20 @@ namespace Jhu.Graywulf.Entities
             return res;
         }
 
+        public void ExecuteScriptNonQuery(string sql)
+        {
+            var parts = SplitQuery(sql);
+
+            for (int i = 0; i < parts.Length; i++)
+            {
+                using (var cmd = CreateCommand(parts[i]))
+                {
+                    PrepareCommand(cmd);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         public string[] SplitQuery(string sql)
         {
             int i = 0;
