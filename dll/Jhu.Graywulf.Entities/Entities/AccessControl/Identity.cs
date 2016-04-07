@@ -36,6 +36,30 @@ namespace Jhu.Graywulf.Entities.AccessControl
         #endregion
         #region Constructors and initializers
 
+        public static Identity Public
+        {
+            // Authenticated but otherwise unknown
+            get
+            {
+                return new Identity()
+                {
+                    isAuthenticated = true,
+                };
+            }
+        }
+
+        public static Identity Guest
+        {
+            // Not authenticated
+            get
+            {
+                return new Identity()
+                {
+                    isAuthenticated = false,
+                };
+            }
+        }
+
         public Identity()
         {
             InitializeMembers();
