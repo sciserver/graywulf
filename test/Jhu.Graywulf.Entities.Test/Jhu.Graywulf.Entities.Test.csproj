@@ -58,11 +58,11 @@
     <Compile Include="Entities\AccessControl\GroupAceTest.cs" />
     <Compile Include="Entities\AccessControl\IdentityTest.cs" />
     <Compile Include="Entities\AccessControl\UserAceTest.cs" />
+    <Compile Include="Entities\EntityWithIdentityKey.cs" />
     <Compile Include="Entities\EntityWithIdentityKeyTest.cs" />
     <Compile Include="Entities\Mapping\DbColumnTest.cs" />
     <Compile Include="Entities\Mapping\DbTableTest.cs" />
     <Compile Include="Entities\TestClassBase.cs" />
-    <Compile Include="Entities\TestEntityWithIdentityKey.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

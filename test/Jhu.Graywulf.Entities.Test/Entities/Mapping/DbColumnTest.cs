@@ -24,8 +24,8 @@ namespace Jhu.Graywulf.Entities.Mapping
         {
             var t = DbTable.GetDbTable(typeof(EntityWithIdentityKey));
 
-            Assert.AreEqual("ColumnsTestEntity", t.Name);
-            Assert.AreEqual(DbColumnBinding.Key | DbColumnBinding.Identity,  t.Columns["ID"].Binding);
+            Assert.AreEqual(typeof(EntityWithIdentityKey).Name, t.Name);
+            Assert.AreEqual(DbColumnBinding.Key | DbColumnBinding.Identity, t.Columns["ID"].Binding);
             Assert.AreEqual(-1, t.Columns["ID"].DefaultValue);
             Assert.AreEqual("ID", t.Columns["ID"].Name);
 
@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Entities.Mapping
 
             Assert.AreEqual("SomethingElse", t.Columns["Rename"].Name);
 
-            Assert.AreEqual(8, t.Columns["Eight"].Order.Value);
+            Assert.AreEqual(4, t.Columns["Four"].Order.Value);
 
             Assert.AreEqual(SqlDbType.VarChar, t.Columns["AnsiText"].Type);
 
