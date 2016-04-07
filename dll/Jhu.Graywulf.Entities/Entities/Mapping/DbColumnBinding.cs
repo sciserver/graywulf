@@ -9,9 +9,8 @@ namespace Jhu.Graywulf.Entities.Mapping
     public enum DbColumnBinding : int
     {
         Key = 1,
-        Identity = 2,
-        Column = 4,
-        Auxiliary = 8,
+        Column = 2,
+        Auxiliary = 4,
 
         Any = 0xFFFF
     }

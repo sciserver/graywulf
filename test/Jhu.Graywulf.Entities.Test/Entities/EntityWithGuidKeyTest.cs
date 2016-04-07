@@ -26,7 +26,6 @@ namespace Jhu.Graywulf.Entities
         {
             var e = new EntityWithGuidKey(context)
             {
-                Guid = Guid.NewGuid(),
                 Name = "test",
             };
 

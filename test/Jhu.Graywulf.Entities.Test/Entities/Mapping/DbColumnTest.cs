@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Entities.Mapping
         [DbTable]
         class InvalidColumnTypeTestEntity : Entity
         {
-            [DbColumn(Binding = DbColumnBinding.Key | DbColumnBinding.Identity)]
+            [DbColumn(Binding = DbColumnBinding.Key)]
             public int ID { get; set; }
 
             [DbColumn]
@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Entities.Mapping
             var t = DbTable.GetDbTable(typeof(EntityWithIdentityKey));
 
             Assert.AreEqual(typeof(EntityWithIdentityKey).Name, t.Name);
-            Assert.AreEqual(DbColumnBinding.Key | DbColumnBinding.Identity, t.Columns["ID"].Binding);
+            Assert.AreEqual(DbColumnBinding.Key, t.Columns["ID"].Binding);
             Assert.AreEqual(0, t.Columns["ID"].DefaultValue);
             Assert.AreEqual("ID", t.Columns["ID"].Name);
 

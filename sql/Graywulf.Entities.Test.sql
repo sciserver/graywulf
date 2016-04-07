@@ -40,7 +40,7 @@ GO
 
 CREATE TABLE EntityWithGuidKey
 (
-	[Guid] uniqueidentifier NOT NULL PRIMARY KEY,
+	[Guid] uniqueidentifier NOT NULL PRIMARY KEY DEFAULT(NEWID()),
 	[Name] nvarchar(50) NOT NULL
 )
 

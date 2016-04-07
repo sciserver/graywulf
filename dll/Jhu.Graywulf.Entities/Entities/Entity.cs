@@ -212,65 +212,27 @@ FROM {1}
 
         protected virtual SqlCommand GetInsertCommand()
         {
-            if ((DbTable.Key.Binding & DbColumnBinding.Identity) != 0)
-            {
-                var sql = @"
-SET NOCOUNT ON;
-
+            var sql = @"
 INSERT [{0}]
     ({1})
+OUTPUT INSERTED.[{3}]
 VALUES
     ({2});
-
-SET NOCOUNT OFF;
-
-SELECT [{3}]
-FROM [{0}]
-WHERE [{3}] = @@IDENTITY;
 ";
 
-                var columns = GetColumnList(DbColumnBinding.Column);
+            var columns = GetColumnList(DbColumnBinding.Column);
 
-                var cmd = new SqlCommand(
-                    String.Format(
-                        sql,
-                        DbTable.Name,
-                        GetColumnListString(columns, DbColumnListType.Insert),
-                        GetColumnListString(columns, DbColumnListType.InsertValues),
-                        DbTable.Key.Name));
+            var cmd = new SqlCommand(
+                String.Format(
+                    sql,
+                    DbTable.Name,
+                    GetColumnListString(columns, DbColumnListType.Insert),
+                    GetColumnListString(columns, DbColumnListType.InsertValues),
+                    DbTable.Key.Name));
 
-                AppendColumnListParameters(cmd, columns);
+            AppendColumnListParameters(cmd, columns);
 
-                return cmd;
-            }
-            else
-            {
-                var sql = @"
-SET NOCOUNT ON;
-
-INSERT [{0}]
-    ({1})
-VALUES
-    ({2});
-
-SET NOCOUNT OFF;
-
-SELECT @{3}
-";
-
-                var columns = GetColumnList(DbColumnBinding.Column | DbColumnBinding.Key);
-
-                var cmd = new SqlCommand(
-                    String.Format(
-                        sql,
-                        DbTable.Name,
-                        GetColumnListString(columns, DbColumnListType.Insert),
-                        DbTable.Key.Name));
-
-                AppendColumnListParameters(cmd, columns);
-
-                return cmd;
-            }
+            return cmd;
         }
 
         protected virtual SqlCommand GetSelectCommand()
