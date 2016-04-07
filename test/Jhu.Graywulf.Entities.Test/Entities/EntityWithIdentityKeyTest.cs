@@ -115,5 +115,27 @@ namespace Jhu.Graywulf.Entities
                 Assert.AreEqual(id, e.ID);
             }
         }
+
+        [TestMethod]
+        public void DeleteEntity()
+        {
+            int id;
+
+            using (var context = CreateContext())
+            {
+                var e = CreateEntity(context);
+
+                e.Save();
+
+                id = e.ID;
+            }
+
+            using (var context = CreateContext())
+            {
+                var e = new EntityWithIdentityKey(context);
+                e.ID = id;
+                e.Delete();
+            }
+        }
     }
 }

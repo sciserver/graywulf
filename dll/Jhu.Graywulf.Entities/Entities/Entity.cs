@@ -324,14 +324,10 @@ SELECT @@ROWCOUNT;
         protected virtual SqlCommand GetDeleteCommand()
         {
             var sql = @"
-SET NOCOUNT ON;
-
 DELETE {0}
 WHERE {1} = @{1};
 
-SET NOCOUNT OFF;
-
-RETURN @@ROWCOUNT;
+SELECT @@ROWCOUNT;
 ";
 
             var cmd = new SqlCommand(
@@ -388,7 +384,7 @@ RETURN @@ROWCOUNT;
         {
             using (var cmd = GetUpdateCommand())
             {
-                long count = (int)Context.ExecuteCommandScalar(cmd);
+                int count = (int)Context.ExecuteCommandScalar(cmd);
 
                 if (count == 0)
                 {
@@ -401,9 +397,9 @@ RETURN @@ROWCOUNT;
         {
             using (var cmd = GetDeleteCommand())
             {
-                long retval = (long)Context.ExecuteCommandNonQuery(cmd);
+                int count = (int)Context.ExecuteCommandScalar(cmd);
 
-                if (retval == 0)
+                if (count == 0)
                 {
                     throw Error.ErrorDeleteEntity();
                 }
