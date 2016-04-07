@@ -30,6 +30,11 @@ namespace Jhu.Graywulf.Entities.Mapping
             [DbColumn(Size = 10)]
             public string VarCharText { get; set; }
 
+            [DbColumn(Binding = DbColumnBinding.ReadOnlyColumn)]
+            public string ReadOnly { get; set; }
+
+            // Data type tests
+
             [DbColumn]
             public SByte SByte { get; set; }
 
@@ -113,6 +118,8 @@ namespace Jhu.Graywulf.Entities.Mapping
             Assert.AreEqual(SqlDbType.VarChar, t.Columns["AnsiText"].Type);
 
             Assert.AreEqual(10, t.Columns["VarCharText"].Size.Value);
+
+            Assert.AreEqual(23, t.Columns.Count);
         }
 
         [TestMethod]

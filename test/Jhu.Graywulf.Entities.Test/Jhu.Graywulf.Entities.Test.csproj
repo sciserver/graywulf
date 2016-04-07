@@ -60,7 +60,6 @@
     <Compile Include="Entities\AccessControl\UserAceTest.cs" />
     <Compile Include="Entities\Mapping\DbColumnTest.cs" />
     <Compile Include="Entities\Mapping\DbTableTest.cs" />
-    <Compile Include="Entities\NoDbTableTestEntity.cs" />
     <Compile Include="Entities\TestEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
