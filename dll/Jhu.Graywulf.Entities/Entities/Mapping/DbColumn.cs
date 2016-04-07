@@ -22,9 +22,9 @@ namespace Jhu.Graywulf.Entities.Mapping
 
         private string name;
         private DbColumnBinding binding;
-        private object defaultValue;
         private int? order;
-        private SqlDbType type;
+        private Type propertyType;
+        private SqlDbType dbType;
         private int? size;
         private ValueGetterDelegate getValue;
         private ValueSetterDelegate setValue;
@@ -42,24 +42,39 @@ namespace Jhu.Graywulf.Entities.Mapping
             get { return binding; }
         }
 
-        public object DefaultValue
-        {
-            get { return defaultValue; }
-        }
-
         public int? Order
         {
             get { return order; }
         }
 
-        public SqlDbType Type
+        public Type PropertyType
         {
-            get { return type; }
+            get { return propertyType; }
+        }
+
+        public SqlDbType DbType
+        {
+            get { return dbType; }
         }
 
         public int? Size
         {
             get { return size; }
+        }
+
+        public object DefaultValue
+        {
+            get
+            {
+                if (propertyType.IsValueType)
+                {
+                    return Activator.CreateInstance(this.propertyType);
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
         #endregion
@@ -85,9 +100,9 @@ namespace Jhu.Graywulf.Entities.Mapping
         {
             this.name = null;
             this.binding = DbColumnBinding.Column;
-            this.defaultValue = null;
             this.order = null;
-            this.type = SqlDbType.Int;
+            this.propertyType = typeof(Int32);
+            this.dbType = SqlDbType.Int;
             this.size = null;
             this.getValue = null;
             this.setValue = null;
@@ -100,9 +115,9 @@ namespace Jhu.Graywulf.Entities.Mapping
         {
             this.name = attr.Name ?? p.Name;
             this.binding = attr.Binding;
-            this.defaultValue = attr.DefaultValue;
             this.order = attr.OrderNullable;
             this.size = attr.SizeNullable;
+            this.propertyType = p.PropertyType;
 
             if (!attr.TypeNullable.HasValue)
             {
@@ -111,11 +126,11 @@ namespace Jhu.Graywulf.Entities.Mapping
                     throw DbError.InvalidColumnType(p.Name, p.ReflectedType);
                 }
 
-                this.type = Constants.TypeToSqlDbType[p.PropertyType];
+                this.dbType = Constants.TypeToSqlDbType[p.PropertyType];
             }
             else
             {
-                this.type = attr.TypeNullable.Value;
+                this.dbType = attr.TypeNullable.Value;
             }
         }
 
@@ -165,11 +180,11 @@ namespace Jhu.Graywulf.Entities.Mapping
             var cv = Expression.Variable(p.PropertyType, "cv");
             vars.Add(cv);
 
-            if (Constants.SqlDbTypeToType[type] != p.PropertyType)
+            if (Constants.SqlDbTypeToType[dbType] != p.PropertyType)
             {
-                var tv = Expression.Variable(Constants.SqlDbTypeToType[type], "tv");
+                var tv = Expression.Variable(Constants.SqlDbTypeToType[dbType], "tv");
                 vars.Add(tv);
-                exps.Add(Expression.Assign(tv, Expression.ConvertChecked(value, Constants.SqlDbTypeToType[type])));
+                exps.Add(Expression.Assign(tv, Expression.ConvertChecked(value, Constants.SqlDbTypeToType[dbType])));
                 exps.Add(Expression.Assign(cv, Expression.ConvertChecked(cv, p.PropertyType)));
             }
             else
@@ -194,7 +209,7 @@ namespace Jhu.Graywulf.Entities.Mapping
 
         public void SetValue(Entity entity, object value)
         {
-            if (type == SqlDbType.Xml)
+            if (dbType == SqlDbType.Xml)
             {
                 var xml = new XmlDocument();
                 xml.LoadXml((string)value);
@@ -210,21 +225,21 @@ namespace Jhu.Graywulf.Entities.Mapping
         {
             SqlParameter par;
 
-            if (type == SqlDbType.Xml)
+            if (dbType == SqlDbType.Xml)
             {
-                par = new SqlParameter("@" + name, type);
+                par = new SqlParameter("@" + name, dbType);
                 par.Value = ((XmlElement)GetValue(entity)).OuterXml;
             }
             else
             {
                 if (size.HasValue)
                 {
-                    par = new SqlParameter("@" + name, type, size.Value);
+                    par = new SqlParameter("@" + name, dbType, size.Value);
                     par.Value = GetValue(entity);
                 }
                 else
                 {
-                    par = new SqlParameter("@" + name, type);
+                    par = new SqlParameter("@" + name, dbType);
                     par.Value = GetValue(entity);
                 }
             }

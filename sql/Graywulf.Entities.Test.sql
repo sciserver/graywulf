@@ -32,3 +32,16 @@ CREATE TABLE EntityWithIdentityKey
 )
 
 GO
+
+IF (OBJECT_ID('EntityWithGuidKey') IS NOT NULL)
+DROP TABLE EntityWithGuidKey
+GO
+
+
+CREATE TABLE EntityWithGuidKey
+(
+	[Guid] uniqueidentifier NOT NULL PRIMARY KEY,
+	[Name] nvarchar(50) NOT NULL
+)
+
+GO

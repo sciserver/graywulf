@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Entities.Mapping
         {
             private long id;
 
-            [DbColumn(Binding = DbColumnBinding.Key, DefaultValue = -1)]
+            [DbColumn(Binding = DbColumnBinding.Key)]
             public long ID
             {
                 get { return id; }

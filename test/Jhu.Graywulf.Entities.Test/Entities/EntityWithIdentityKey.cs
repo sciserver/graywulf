@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Entities
     [DbTable]
     class EntityWithIdentityKey : Entity
     {
-        [DbColumn(Binding = DbColumnBinding.Key | DbColumnBinding.Identity, DefaultValue = -1)]
+        [DbColumn(Binding = DbColumnBinding.Key | DbColumnBinding.Identity)]
         public int ID { get; set; }
 
         [DbColumn]

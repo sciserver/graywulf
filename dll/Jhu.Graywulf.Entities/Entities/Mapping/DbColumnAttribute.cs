@@ -13,7 +13,6 @@ namespace Jhu.Graywulf.Entities.Mapping
         #region Private member variables
 
         private DbColumnBinding binding;
-        private object defaultValue;
         private int? order;
         private SqlDbType? type;
         private int? size;
@@ -25,12 +24,6 @@ namespace Jhu.Graywulf.Entities.Mapping
         {
             get { return binding; }
             set { binding = value; }
-        }
-
-        public object DefaultValue
-        {
-            get { return defaultValue; }
-            set { defaultValue = value; }
         }
 
         public int Order
@@ -86,7 +79,6 @@ namespace Jhu.Graywulf.Entities.Mapping
         private void InitializeMembers()
         {
             this.binding = DbColumnBinding.Column;
-            this.defaultValue = null;
             this.order = null;
             this.type = null;
             this.size = null;

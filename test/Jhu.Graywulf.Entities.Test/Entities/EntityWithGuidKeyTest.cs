@@ -10,7 +10,7 @@ using Jhu.Graywulf.Entities.Mapping;
 namespace Jhu.Graywulf.Entities
 {
     [TestClass]
-    public class EntityWithIdentityKeyTest : TestClassBase
+    public class EntityWithGuidKeyTest : TestClassBase
     {
         [ClassInitialize]
         public static void Initialize(TestContext testContext)
@@ -22,36 +22,12 @@ namespace Jhu.Graywulf.Entities
             }
         }
 
-        private EntityWithIdentityKey CreateEntity(Context context)
+        private EntityWithGuidKey CreateEntity(Context context)
         {
-            var xml = new XmlDocument();
-            var xn = xml.CreateElement("test");
-            xml.AppendChild(xn);
-
-            var e = new EntityWithIdentityKey(context)
+            var e = new EntityWithGuidKey(context)
             {
-                ID = 0,
+                Guid = Guid.NewGuid(),
                 Name = "test",
-                Rename = "test",
-                Four = "four",
-                AnsiText = "testtest",
-                VarCharText = "moretest",
-                SByte = 1,
-                Int16 = 2,
-                Int32 = 3,
-                Int64 = 4,
-                Byte = 5,
-                UInt16 = 6,
-                UInt32 = 7,
-                UInt64 = 8,
-                Single = 9,
-                Double = 10,
-                Decimal = 11,
-                String = "twelve",
-                ByteArray = new byte[13],
-                DateTime = DateTime.Now,
-                Guid = new Guid(),
-                XmlElement = xml.DocumentElement,
             };
 
             return e;
@@ -67,14 +43,13 @@ namespace Jhu.Graywulf.Entities
                 e.Save();
 
                 Assert.IsFalse(e.IsDirty);
-                Assert.IsTrue(e.ID > 0);
             }
         }
 
         [TestMethod]
         public void LoadTest()
         {
-            int id;
+            Guid guid;
 
             using (var context = CreateContext())
             {
@@ -82,18 +57,18 @@ namespace Jhu.Graywulf.Entities
 
                 e.Save();
 
-                id = e.ID;
+                guid = e.Guid;
             }
 
             using (var context = CreateContext())
             {
-                var e = new EntityWithIdentityKey(context);
-                e.ID = id;
+                var e = new EntityWithGuidKey(context);
+                e.Guid = guid;
                 e.Load();
 
                 Assert.IsTrue(e.IsLoaded);
                 Assert.IsFalse(e.IsDirty);
-                Assert.AreEqual(id, e.ID);
+                Assert.AreEqual(guid, e.Guid);
                 Assert.AreEqual("test", e.Name);
             }
         }
@@ -106,20 +81,20 @@ namespace Jhu.Graywulf.Entities
                 var e = CreateEntity(context);
                 e.Save();
 
-                int id = e.ID;
+                Guid guid = e.Guid;
 
                 e.Name = "modified";
                 e.Save();
 
                 Assert.IsFalse(e.IsDirty);
-                Assert.AreEqual(id, e.ID);
+                Assert.AreEqual(guid, e.Guid);
             }
         }
 
         [TestMethod]
         public void DeleteEntity()
         {
-            int id;
+            Guid guid;
 
             using (var context = CreateContext())
             {
@@ -127,13 +102,13 @@ namespace Jhu.Graywulf.Entities
 
                 e.Save();
 
-                id = e.ID;
+                guid = e.Guid;
             }
 
             using (var context = CreateContext())
             {
-                var e = new EntityWithIdentityKey(context);
-                e.ID = id;
+                var e = new EntityWithGuidKey(context);
+                e.Guid = guid;
                 e.Delete();
             }
         }

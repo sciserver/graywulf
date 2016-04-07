@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Entities.Mapping
         [DbTable]
         class InvalidColumnTypeTestEntity : Entity
         {
-            [DbColumn(Binding = DbColumnBinding.Key | DbColumnBinding.Identity, DefaultValue = -1)]
+            [DbColumn(Binding = DbColumnBinding.Key | DbColumnBinding.Identity)]
             public int ID { get; set; }
 
             [DbColumn]
@@ -26,21 +26,21 @@ namespace Jhu.Graywulf.Entities.Mapping
 
             Assert.AreEqual(typeof(EntityWithIdentityKey).Name, t.Name);
             Assert.AreEqual(DbColumnBinding.Key | DbColumnBinding.Identity, t.Columns["ID"].Binding);
-            Assert.AreEqual(-1, t.Columns["ID"].DefaultValue);
+            Assert.AreEqual(0, t.Columns["ID"].DefaultValue);
             Assert.AreEqual("ID", t.Columns["ID"].Name);
 
             Assert.AreEqual("Name", t.Columns["Name"].Name);
             Assert.AreEqual(DbColumnBinding.Column, t.Columns["Name"].Binding);
             Assert.IsNull(t.Columns["Name"].DefaultValue);
             Assert.IsFalse(t.Columns["Name"].Order.HasValue);
-            Assert.AreEqual(SqlDbType.NVarChar, t.Columns["Name"].Type);
+            Assert.AreEqual(SqlDbType.NVarChar, t.Columns["Name"].DbType);
             Assert.IsFalse(t.Columns["Name"].Size.HasValue);
 
             Assert.AreEqual("SomethingElse", t.Columns["Rename"].Name);
 
             Assert.AreEqual(4, t.Columns["Four"].Order.Value);
 
-            Assert.AreEqual(SqlDbType.VarChar, t.Columns["AnsiText"].Type);
+            Assert.AreEqual(SqlDbType.VarChar, t.Columns["AnsiText"].DbType);
 
             Assert.AreEqual(10, t.Columns["VarCharText"].Size.Value);
 
