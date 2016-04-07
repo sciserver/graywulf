@@ -10,81 +10,6 @@ namespace Jhu.Graywulf.Entities.Mapping
     public class DbColumnTest
     {
         [DbTable]
-        class ColumnsTestEntity : Entity
-        {
-            [DbColumn(Binding = DbColumnBinding.Key | DbColumnBinding.Identity, DefaultValue = -1)]
-            public int ID { get; set; }
-
-            [DbColumn]
-            public string Name { get; set; }
-
-            [DbColumn(Name = "SomethingElse")]
-            public string Rename { get; set; }
-
-            [DbColumn(Order = 8)]
-            public string Eight { get; set; }
-
-            [DbColumn(Type = SqlDbType.VarChar)]
-            public string AnsiText { get; set; }
-
-            [DbColumn(Size = 10)]
-            public string VarCharText { get; set; }
-
-            [DbColumn(Binding = DbColumnBinding.ReadOnlyColumn)]
-            public string ReadOnly { get; set; }
-
-            // Data type tests
-
-            [DbColumn]
-            public SByte SByte { get; set; }
-
-            [DbColumn]
-            public Int16 Int16 { get; set; }
-
-            [DbColumn]
-            public Int32 Int32 { get; set; }
-
-            [DbColumn]
-            public Int64 Int64 { get; set; }
-
-            [DbColumn]
-            public Byte Byte { get; set; }
-
-            [DbColumn]
-            public UInt16 UInt16 { get; set; }
-
-            [DbColumn]
-            public UInt32 UInt32 { get; set; }
-
-            [DbColumn]
-            public UInt64 UInt64 { get; set; }
-
-            [DbColumn]
-            public Single Single { get; set; }
-
-            [DbColumn]
-            public Double Double { get; set; }
-
-            [DbColumn]
-            public Decimal Decimal { get; set; }
-
-            [DbColumn]
-            public String String { get; set; }
-
-            [DbColumn]
-            public byte[] ByteArray { get; set; }
-
-            [DbColumn]
-            public DateTime DateTime { get; set; }
-
-            [DbColumn]
-            public Guid Guid { get; set; }
-
-            [DbColumn]
-            public XmlElement XmlElement { get; set; }
-        }
-
-        [DbTable]
         class InvalidColumnTypeTestEntity : Entity
         {
             [DbColumn(Binding = DbColumnBinding.Key | DbColumnBinding.Identity, DefaultValue = -1)]
@@ -97,7 +22,7 @@ namespace Jhu.Graywulf.Entities.Mapping
         [TestMethod]
         public void DbColumnPropertiesTest()
         {
-            var t = DbTable.GetDbTable(typeof(ColumnsTestEntity));
+            var t = DbTable.GetDbTable(typeof(EntityWithIdentityKey));
 
             Assert.AreEqual("ColumnsTestEntity", t.Name);
             Assert.AreEqual(DbColumnBinding.Key | DbColumnBinding.Identity,  t.Columns["ID"].Binding);
@@ -125,7 +50,7 @@ namespace Jhu.Graywulf.Entities.Mapping
         [TestMethod]
         public void GetKeyTest()
         {
-            var e = new ColumnsTestEntity();
+            var e = new EntityWithIdentityKey();
 
             Assert.AreEqual(0, e.GetKey());
         }
@@ -133,7 +58,7 @@ namespace Jhu.Graywulf.Entities.Mapping
         [TestMethod]
         public void SetKeyTest()
         {
-            var e = new ColumnsTestEntity();
+            var e = new EntityWithIdentityKey();
 
             e.SetKey(10);
 

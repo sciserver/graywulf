@@ -77,7 +77,7 @@ SELECT COUNT(*) FROM ({0}) AS entities
 
                 searchCommand.CommandText = String.Format(sql, GetTableQuery(), where);
 
-                return Context.ExecuteCommandScalar(searchCommand);
+                return Convert.ToInt32(Context.ExecuteCommandScalar(searchCommand));
             }
         }
 

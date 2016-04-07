@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.Entities
         private void InitializeMembers()
         {
             this.isValid = true;
-            this.connectionString = ConfigurationManager.ConnectionStrings["Jhu.Footprint"].ConnectionString;
+            this.connectionString = null;
             this.connection = null;
             this.transaction = null;
             this.identity = null;
@@ -307,13 +307,13 @@ namespace Jhu.Graywulf.Entities
             return cmd.Parameters["RETVAL"].Value;
         }
 
-        public int ExecuteCommandScalar(SqlCommand cmd)
+        public object ExecuteCommandScalar(SqlCommand cmd)
         {
             PrepareCommand(cmd);
 
             var res = cmd.ExecuteScalar();
 
-            return Convert.ToInt32(res);
+            return res;
         }
 
         public string[] SplitQuery(string sql)

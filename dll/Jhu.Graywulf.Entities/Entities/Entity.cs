@@ -129,19 +129,19 @@ namespace Jhu.Graywulf.Entities
             switch (type)
             {
                 case DbColumnListType.Select:
-                    format = "{0}";
+                    format = "[{0}]";
                     break;
                 case DbColumnListType.Insert:
-                    format = "{0}";
+                    format = "[{0}]";
                     break;
                 case DbColumnListType.InsertValues:
                     format = "@{0}";
                     break;
                 case DbColumnListType.Update:
-                    format = "{0} = @{0}";
+                    format = "[{0}] = @{0}";
                     break;
                 case DbColumnListType.Where:
-                    format = "{0} = @{0}";
+                    format = "[{0}] = @{0}";
                     break;
                 default:
                     throw new NotImplementedException();
@@ -160,23 +160,11 @@ namespace Jhu.Graywulf.Entities
             return sb.ToString();
         }
 
-        private void AppendColumnParameter(SqlCommand cmd, DbColumn c)
-        {
-            if (c.Size.HasValue)
-            {
-                cmd.Parameters.Add("@" + c.Name, c.Type, c.Size.Value).Value = c.GetValue(this);
-            }
-            else
-            {
-                cmd.Parameters.Add("@" + c.Name, c.Type).Value = c.GetValue(this);
-            }
-        }
-
         private void AppendColumnListParameters(SqlCommand cmd, IEnumerable<DbColumn> columns)
         {
             foreach (var c in columns)
             {
-                AppendColumnParameter(cmd, c);   
+                cmd.Parameters.Add(c.GetParameter(this));
             }
         }
 
@@ -218,14 +206,16 @@ FROM {1}
                 var sql = @"
 SET NOCOUNT ON;
 
-INSERT {0}
+INSERT [{0}]
     ({1})
 VALUES
     ({2});
 
 SET NOCOUNT OFF;
 
-RETURN @@IDENTITY;
+SELECT [{3}]
+FROM [{0}]
+WHERE [{3}] = @@IDENTITY;
 ";
 
                 var columns = GetColumnList(DbColumnBinding.Column);
@@ -234,7 +224,9 @@ RETURN @@IDENTITY;
                     String.Format(
                         sql,
                         DbTable.Name,
-                        GetColumnListString(columns, DbColumnListType.Insert)));
+                        GetColumnListString(columns, DbColumnListType.Insert),
+                        GetColumnListString(columns, DbColumnListType.InsertValues),
+                        DbTable.Key.Name));
 
                 AppendColumnListParameters(cmd, columns);
 
@@ -245,14 +237,14 @@ RETURN @@IDENTITY;
                 var sql = @"
 SET NOCOUNT ON;
 
-INSERT {0}
+INSERT [{0}]
     ({1})
 VALUES
     ({2});
 
 SET NOCOUNT OFF;
 
-RETURN @{3}
+SELECT @{3}
 ";
 
                 var columns = GetColumnList(DbColumnBinding.Column | DbColumnBinding.Key);
@@ -289,7 +281,7 @@ WHERE {1} = @{1};
                     DbTable.Name,
                     DbTable.Key.Name));
 
-            AppendColumnParameter(cmd, DbTable.Key);
+            cmd.Parameters.Add(DbTable.Key.GetParameter(this));
 
             return cmd;
         }
@@ -317,7 +309,7 @@ RETURN @@ROWCOUNT;
                     GetColumnListString(columns, DbColumnListType.Insert),
                     DbTable.Key.Name));
 
-            AppendColumnParameter(cmd, DbTable.Key);
+            cmd.Parameters.Add(DbTable.Key.GetParameter(this));
             AppendColumnListParameters(cmd, columns);
 
             return cmd;
@@ -342,7 +334,7 @@ RETURN @@ROWCOUNT;
                     DbTable.Name,
                     DbTable.Key.Name));
 
-            AppendColumnParameter(cmd, DbTable.Key);
+            cmd.Parameters.Add(DbTable.Key.GetParameter(this));
 
             return cmd;
         }
@@ -357,21 +349,23 @@ RETURN @@ROWCOUNT;
             {
                 Modify();
             }
+
+            isDirty = false;
         }
 
         private void Create()
         {
             using (var cmd = GetInsertCommand())
             {
-                var retval = Context.ExecuteCommandNonQuery(cmd);   
-                
-                if (retval == DbTable.Key.DefaultValue)
+                var id = Context.ExecuteCommandScalar(cmd);
+
+                if (id == DbTable.Key.DefaultValue)
                 {
                     throw Error.ErrorCreateEntity();
                 }
                 else
                 {
-                    SetKey(retval);
+                    SetKey(id);
                 }
             }
         }
@@ -388,7 +382,7 @@ RETURN @@ROWCOUNT;
         {
             using (var cmd = GetUpdateCommand())
             {
-                long retval = (long)Context.ExecuteCommandNonQuery(cmd); 
+                long retval = (long)Context.ExecuteCommandNonQuery(cmd);
 
                 if (retval == 0)
                 {

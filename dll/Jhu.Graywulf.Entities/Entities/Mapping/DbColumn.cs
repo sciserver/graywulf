@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Linq.Expressions;
 using System.Data;
 using System.Data.SqlClient;
+using System.Xml;
 
 namespace Jhu.Graywulf.Entities.Mapping
 {
@@ -183,6 +184,46 @@ namespace Jhu.Graywulf.Entities.Mapping
         public void SetValue(Entity entity, object value)
         {
             setValue(entity, value);
+        }
+
+        public SqlParameter GetParameter(Entity entity)
+        {
+            SqlParameter par;
+
+            switch (type)
+            {
+                case SqlDbType.TinyInt:
+                case SqlDbType.SmallInt:
+                case SqlDbType.Int:
+                case SqlDbType.BigInt:
+                case SqlDbType.Real:
+                case SqlDbType.Float:
+                case SqlDbType.Money:
+                case SqlDbType.NVarChar:
+                case SqlDbType.VarChar:
+                case SqlDbType.VarBinary:
+                case SqlDbType.DateTime:
+                case SqlDbType.UniqueIdentifier:
+                    if (size.HasValue)
+                    {
+                        par = new SqlParameter("@" + name, type, size.Value);
+                        par.Value = GetValue(entity);
+                    }
+                    else
+                    {
+                        par = new SqlParameter("@" + name, type);
+                        par.Value = GetValue(entity);
+                    }
+                    break;
+                case SqlDbType.Xml:
+                    par = new SqlParameter("@" + name, type);
+                    par.Value = ((XmlElement)GetValue(entity)).OuterXml;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return par;
         }
 
         #endregion
