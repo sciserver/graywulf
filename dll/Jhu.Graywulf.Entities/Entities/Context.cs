@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using Jhu.Graywulf.Entities.AccessControl;
 
 namespace Jhu.Graywulf.Entities
 {
@@ -15,7 +16,7 @@ namespace Jhu.Graywulf.Entities
         private string connectionString;
         private SqlConnection connection;
         private SqlTransaction transaction;
-        private string user;
+        private Identity identity;
 
         #region Properties
 
@@ -51,10 +52,10 @@ namespace Jhu.Graywulf.Entities
             }
         }
 
-        public string User
+        public Identity Identity
         {
-            get { return user; }
-            set { user = value; }
+            get { return identity; }
+            set { identity = value; }
         }
 
         #endregion
@@ -71,7 +72,7 @@ namespace Jhu.Graywulf.Entities
             this.connectionString = ConfigurationManager.ConnectionStrings["Jhu.Footprint"].ConnectionString;
             this.connection = null;
             this.transaction = null;
-            this.user = "";
+            this.identity = null;
         }
 
         public void Dispose()
