@@ -271,6 +271,41 @@ namespace Jhu.Graywulf.Entities.Mapping
             return par;
         }
 
+        public void LoadFromDataReader(Entity entity, SqlDataReader reader)
+        {
+            int i;
+
+            // Auxiliary columns don't always exist in the resultset
+            if ((binding & DbColumnBinding.Acl) != 0)
+            {
+                i = reader.GetOrdinal(name);
+                var xml = reader.GetString(i);
+                ((SecurableEntity)entity).Permissions = EntityAcl.FromXml(xml);
+
+                return;
+            }
+            else if ((binding | DbColumnBinding.Auxiliary) != 0)
+            {
+                try
+                {
+                    i = reader.GetOrdinal(name);
+                }
+                catch (Exception)
+                {
+                    i = -1;
+                }
+            }
+            else
+            {
+                i = reader.GetOrdinal(name);
+            }
+
+            if (i >= 0)
+            {
+                SetValue(entity, reader.GetValue(i));
+            }
+        }
+
         #endregion
     }
 }

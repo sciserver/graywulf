@@ -207,6 +207,9 @@ namespace Jhu.Graywulf.Entities.AccessControl
     </user>
 </acl>";
             acl = EntityAcl.FromXml(xml);
+
+            Assert.AreEqual("test", acl.Owner);
+            Assert.AreEqual(4, acl.Count);
         }
     }
 }

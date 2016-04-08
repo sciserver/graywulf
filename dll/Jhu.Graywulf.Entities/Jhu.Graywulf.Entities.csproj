@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\AccessControl\Access.cs" />
     <Compile Include="Entities\AccessControl\EntityAce.cs" />
     <Compile Include="Entities\AccessControl\EntityAcl.cs" />
     <Compile Include="Entities\AccessControl\DefaultAccess.cs" />

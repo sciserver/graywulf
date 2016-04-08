@@ -15,6 +15,7 @@ namespace Jhu.Graywulf.Entities
         #region Private member variables
 
         private EntityAcl acl;
+        private Access access;
 
         #endregion
         #region Properties
@@ -70,124 +71,27 @@ namespace Jhu.Graywulf.Entities
         #endregion
         #region CRUD functions
 
-
-
-
-
-        // -----------------------------------------
-
-        /*
-        public virtual void Save()
+        protected override void OnLoaded()
         {
-            Save(true);
+            base.OnLoaded();
+
+            access = acl.EvaluateAccess(Context.Identity);
         }
 
-        public virtual void Save(bool checkAccess)
+        protected override void OnModifying(ref bool cancel)
         {
-            if (IsExisting)
-            {
-                if (checkAccess && !access.Update)
-                {
-                    throw Error.AccessDenied();
-                }
+            base.OnModifying(ref cancel);
 
-                Create();
-            }
-            else
-            {
-                if (checkAccess && !access.Create)
-                {
-                    throw Error.AccessDenied();
-                }
-
-                Modify();
-            }
-        }*/
-
-        #endregion
-
-#if false
-        /*
-        protected bool CheckAccess()
-        {
-            // TODO
-            return false;
+            // TODO: test permissions
         }
 
-        // ------------------------------------------------------------
-
-        /*
-        protected virtual Rules GetAccess()
+        protected override void OnDeleting(ref bool cancel)
         {
-            return Rules.Default;
-        }*/
+            base.OnDeleting(ref cancel);
 
-
-        /*
-        private void Create()
-        {
-            /*using (var cmd = GetCreateCommand())
-            {
-                long retval = (long)Context.ExecuteCommandNonQuery(cmd);   
-                
-                if (retval == 0)
-                {
-                    // TODO
-                    throw new Exception("Cannot create Footprint.");
-                }
-                else
-                {
-                    this.id = (long)cmd.Parameters["@NewID"].Value;
-                }
-            }*/
-        }
-
-        private void Modify()
-        {
-            /*using (var cmd = GetModifyCommand())
-            {
-                long retval = (long)Context.ExecuteCommandNonQuery(cmd); 
-
-                if (retval == 0)
-                {
-                    // TODO
-                    throw new Exception("Cannot update Footprint");
-                }
-            }*/
-        }
-
-        public virtual void Delete()
-        {
-            /*using (var cmd = GetDeleteCommand())
-            {
-                long retval = (long)Context.ExecuteCommandNonQuery(cmd);
-
-                if (retval == 0)
-                {
-                    // TODO
-                    throw new Exception("Cannot delete Footprint.");
-                }
-            }*/
-        }
-
-        public void Load()
-        {
-            /*using (var cmd = GetLoadCommand())
-            {
-                Context.ExecuteCommandAsSingleObject(cmd, this);
-            }*/
+            // TODO: test permissions
         }
         
-        protected virtual void AppendCreateModifyParameters(SqlCommand cmd)
-        {
-            /*cmd.Parameters.Add("@Owner", SqlDbType.NVarChar, 256).Value = owner;
-            cmd.Parameters.Add("@Name", SqlDbType.NVarChar, 256).Value = name;
-            cmd.Parameters.Add("@Description", SqlDbType.NVarChar, 256).Value = description;
-            cmd.Parameters.Add("@Hidden", SqlDbType.Bit).Value = hidden;
-            cmd.Parameters.Add("@ReadOnly", SqlDbType.Bit).Value = readOnly;
-            cmd.Parameters.Add("@Comments", SqlDbType.NVarChar).Value = comments;
-            cmd.Parameters.Add("@Permissions", SqlDbType.NVarChar).Value = permissions.ToXml();*/
-        }
-#endif
+        #endregion
     }
 }

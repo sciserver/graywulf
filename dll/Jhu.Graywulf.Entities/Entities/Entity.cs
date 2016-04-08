@@ -190,29 +190,7 @@ FROM {1}
 
         protected virtual void LoadColumnFromDataReader(SqlDataReader reader, DbColumn c)
         {
-            int i;
-
-                // Auxiliary columns don't always exist in the resultset
-                if ((c.Binding | DbColumnBinding.Auxiliary) != 0)
-                {
-                    try
-                    {
-                        i = reader.GetOrdinal(c.Name);
-                    }
-                    catch (Exception)
-                    {
-                        i = -1;
-                    }
-                }
-                else
-                {
-                    i = reader.GetOrdinal(c.Name);
-                }
-
-                if (i >= 0)
-                {
-                    c.SetValue(this, reader.GetValue(i));
-                }
+            c.LoadFromDataReader(this, reader);
         }
 
         protected virtual SqlCommand GetInsertCommand()
@@ -310,6 +288,15 @@ SELECT @@ROWCOUNT;
 
         public virtual void Save()
         {
+            bool cancel = false;
+            
+            OnSaving(ref cancel);
+
+            if (cancel)
+            {
+                return;
+            }
+
             if (!IsExisting)
             {
                 Create();
@@ -320,10 +307,29 @@ SELECT @@ROWCOUNT;
             }
 
             isDirty = false;
+
+            OnSaved();
+        }
+
+        protected virtual void OnSaving(ref bool cancel)
+        {
+        }
+
+        protected virtual void OnSaved()
+        {
         }
 
         private void Create()
         {
+            bool cancel = false;
+
+            OnCreating(ref cancel);
+
+            if (cancel)
+            {
+                return;
+            }
+
             using (var cmd = GetInsertCommand())
             {
                 var id = Context.ExecuteCommandScalar(cmd);
@@ -337,18 +343,56 @@ SELECT @@ROWCOUNT;
                     SetKey(id);
                 }
             }
+
+            OnCreated();
+        }
+
+        protected virtual void OnCreating(ref bool cancel)
+        {
+        }
+
+        protected virtual void OnCreated()
+        {
         }
 
         public void Load()
         {
+            bool cancel = false;
+
+            OnLoading(ref cancel);
+
+            if (cancel)
+            {
+                return;
+            }
+
             using (var cmd = GetSelectCommand())
             {
                 Context.ExecuteCommandAsSingleObject(cmd, this);
             }
+
+            OnLoaded();
+        }
+
+        protected virtual void OnLoading(ref bool cancel)
+        {
+        }
+
+        protected virtual void OnLoaded()
+        {
         }
 
         private void Modify()
         {
+            bool cancel = false;
+
+            OnModifying(ref cancel);
+
+            if (cancel)
+            {
+                return;
+            }
+
             using (var cmd = GetUpdateCommand())
             {
                 int count = (int)Context.ExecuteCommandScalar(cmd);
@@ -358,10 +402,29 @@ SELECT @@ROWCOUNT;
                     throw Error.ErrorModifyEntity();
                 }
             }
+
+            OnModified();
+        }
+
+        protected virtual void OnModifying(ref bool cancel)
+        {
+        }
+
+        protected virtual void OnModified()
+        {
         }
 
         public virtual void Delete()
         {
+            bool cancel = false;
+
+            OnDeleting(ref cancel);
+
+            if (cancel)
+            {
+                return;
+            }
+
             using (var cmd = GetDeleteCommand())
             {
                 int count = (int)Context.ExecuteCommandScalar(cmd);
@@ -371,6 +434,16 @@ SELECT @@ROWCOUNT;
                     throw Error.ErrorDeleteEntity();
                 }
             }
+
+            OnDeleted();
+        }
+
+        protected virtual void OnDeleting(ref bool cancel)
+        {
+        }
+
+        protected virtual void OnDeleted()
+        {
         }
 
         #endregion

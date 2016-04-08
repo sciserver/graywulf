@@ -155,9 +155,9 @@ namespace Jhu.Graywulf.Entities.AccessControl
             SetDirty();
         }
 
-        public Dictionary<string, AccessType> EvaluateAccess(Identity identity)
+        public Access EvaluateAccess(Identity identity)
         {
-            var access = new Dictionary<string, AccessType>(EntityAcl.Comparer);
+            var access = new Access();
 
             bool isauthenticated = identity.IsAuthenticated;
 
@@ -289,9 +289,11 @@ namespace Jhu.Graywulf.Entities.AccessControl
                     IgnoreWhitespace = true,
                 });
 
-            r.ReadStartElement("acl");
+            r.Read();
 
             var acl = new EntityAcl();
+            acl.owner = r.GetAttribute("owner");
+            r.ReadStartElement("acl");
 
             // Read users and groups
             while (r.NodeType == XmlNodeType.Element)
