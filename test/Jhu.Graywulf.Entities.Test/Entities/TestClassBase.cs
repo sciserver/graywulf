@@ -9,6 +9,9 @@ namespace Jhu.Graywulf.Entities
 {
     public class TestClassBase
     {
+        protected const string TestUser = "test";
+        protected const string OtherUser = "other";
+
         protected static string MapPath(string path)
         {
             return Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\", path);
@@ -19,7 +22,16 @@ namespace Jhu.Graywulf.Entities
             return new Identity()
             {
                 IsAuthenticated = true,
-                Name = "test"
+                Name = TestUser
+            };
+        }
+
+        protected static Identity CreateOtherIdentity()
+        {
+            return new Identity()
+            {
+                IsAuthenticated = true,
+                Name = OtherUser
             };
         }
 

@@ -97,22 +97,34 @@ namespace Jhu.Graywulf.Entities.AccessControl
 
         public void EnsureCreate()
         {
-            Ensure(DefaultAccess.Create);
+            if (!CanCreate())
+            {
+                throw Error.AccessDenied();
+            }
         }
 
         public void EnsureRead()
         {
-            Ensure(DefaultAccess.Read);
+            if (!CanRead())
+            {
+                throw Error.AccessDenied();
+            }
         }
 
         public void EnsureUpdate()
         {
-            Ensure(DefaultAccess.Update);
+            if (!CanUpdate())
+            {
+                throw Error.AccessDenied();
+            }
         }
 
         public void EnsureDelete()
         {
-            Ensure(DefaultAccess.Delete);
+            if (!CanDelete())
+            {
+                throw Error.AccessDenied();
+            }
         }
     }
 }

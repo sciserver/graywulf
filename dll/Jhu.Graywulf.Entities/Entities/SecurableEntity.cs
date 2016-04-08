@@ -26,13 +26,13 @@ namespace Jhu.Graywulf.Entities
             internal set { acl = value; }
         }
 
-        public AccessCollection Access
+        internal AccessCollection Access
         {
             get
             {
                 if (access == null || acl.IsDirty)
                 {
-                    acl.EvaluateAccess(Context.Identity);
+                    access = acl.EvaluateAccess(Context.Identity);
                 }
 
                 return access;
@@ -51,8 +51,6 @@ namespace Jhu.Graywulf.Entities
             : base(context)
         {
             InitializeMembers(new StreamingContext());
-
-            this.acl.Owner = context.Identity.Name;
         }
 
         protected SecurableEntity(SecurableEntity old)
@@ -90,21 +88,31 @@ namespace Jhu.Graywulf.Entities
         {
             base.OnLoaded();
 
-            
+            Access.EnsureRead();
+        }
+
+        protected override void OnCreating(ref bool cancel)
+        {
+            if (this.acl.Owner == null)
+            {
+                this.acl.Owner = Context.Identity.Name;
+            }
+
+            base.OnCreating(ref cancel);
         }
 
         protected override void OnModifying(ref bool cancel)
         {
-            base.OnModifying(ref cancel);
+            Access.EnsureUpdate();
 
-            // TODO: test permissions
+            base.OnModifying(ref cancel);
         }
 
         protected override void OnDeleting(ref bool cancel)
         {
-            base.OnDeleting(ref cancel);
+            Access.EnsureDelete();
 
-            // TODO: test permissions
+            base.OnDeleting(ref cancel);
         }
         
         #endregion

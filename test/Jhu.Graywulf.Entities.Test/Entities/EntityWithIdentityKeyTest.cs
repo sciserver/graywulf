@@ -95,14 +95,23 @@ namespace Jhu.Graywulf.Entities
         }
 
         [TestMethod]
-        public void ModifyEntity()
+        public void ModifyTest()
         {
+            int id;
+
             using (var context = CreateContext())
             {
                 var e = CreateEntity(context);
                 e.Save();
 
-                int id = e.ID;
+                id = e.ID;
+            }
+
+            using (var context = CreateContext())
+            {
+                var e = new EntityWithIdentityKey(context);
+                e.ID = id;
+                e.Load();
 
                 e.Name = "modified";
                 e.Save();
@@ -113,7 +122,7 @@ namespace Jhu.Graywulf.Entities
         }
 
         [TestMethod]
-        public void DeleteEntity()
+        public void DeleteTest()
         {
             int id;
 
