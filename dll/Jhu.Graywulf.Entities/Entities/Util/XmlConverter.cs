@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Xml;
+using System.Data.SqlTypes;
 
 namespace Jhu.Graywulf.Entities.Util
 {
@@ -51,6 +52,7 @@ namespace Jhu.Graywulf.Entities.Util
             var w = new XmlTextWriter(stream, Encoding.Unicode);
             action(w);
         }
+                
 
         public static T FromXml<T>(Stream stream, FromXmlDelegate<T> action)
         {

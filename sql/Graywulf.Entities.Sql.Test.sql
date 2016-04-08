@@ -1,0 +1,1 @@
+SELECT entities.[Identity]::FromXml('<id name="a" auth="1"><group name="a" role="x" /><group name="b" role="y" /></id>')
