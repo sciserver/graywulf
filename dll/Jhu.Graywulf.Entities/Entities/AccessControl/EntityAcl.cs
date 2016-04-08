@@ -20,6 +20,11 @@ namespace Jhu.Graywulf.Entities.AccessControl
         #endregion
         #region Properties
 
+        internal bool IsDirty
+        {
+            get { return isDirty; }
+        }
+
         public string Owner
         {
             get { return owner; }
@@ -155,9 +160,9 @@ namespace Jhu.Graywulf.Entities.AccessControl
             SetDirty();
         }
 
-        public Access EvaluateAccess(Identity identity)
+        public AccessCollection EvaluateAccess(Identity identity)
         {
-            var access = new Access();
+            var access = new AccessCollection();
 
             bool isauthenticated = identity.IsAuthenticated;
 
@@ -205,18 +210,7 @@ namespace Jhu.Graywulf.Entities.AccessControl
 
                 if (applies)
                 {
-                    if (access.ContainsKey(ace.Access))
-                    {
-                        // Deny has precedence over grant
-                        if (ace.Type == AccessType.Deny)
-                        {
-                            access[ace.Access] = AccessType.Deny;
-                        }
-                    }
-                    else
-                    {
-                        access.Add(ace.Access, ace.Type);
-                    }
+                    access.Set(ace.Access, ace.Type);
                 }
             }
 

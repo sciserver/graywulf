@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Entities
         #region Private member variables
 
         private EntityAcl acl;
-        private Access access;
+        private AccessCollection access;
 
         #endregion
         #region Properties
@@ -24,6 +24,19 @@ namespace Jhu.Graywulf.Entities
         {
             get { return acl; }
             internal set { acl = value; }
+        }
+
+        public AccessCollection Access
+        {
+            get
+            {
+                if (access == null || acl.IsDirty)
+                {
+                    acl.EvaluateAccess(Context.Identity);
+                }
+
+                return access;
+            }
         }
 
         #endregion
@@ -51,11 +64,13 @@ namespace Jhu.Graywulf.Entities
         private void InitializeMembers(StreamingContext context)
         {
             this.acl = EntityAcl.Default;
+            this.access = null;
         }
 
         private void CopyMembers(SecurableEntity old)
         {
             this.acl = new EntityAcl(old.acl);
+            this.access = new AccessCollection(old.access);
         }
 
         #endregion
@@ -75,7 +90,7 @@ namespace Jhu.Graywulf.Entities
         {
             base.OnLoaded();
 
-            access = acl.EvaluateAccess(Context.Identity);
+            
         }
 
         protected override void OnModifying(ref bool cancel)
