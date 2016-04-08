@@ -176,15 +176,11 @@ namespace Jhu.Graywulf.Entities.AccessControl
             var res = acl.ToXml();
         }
 
-
         [TestMethod]
         public void DeserializeFromXmlTest()
         {
-            string xml;
-            EntityAcl acl;
-
-            xml = "<acl owner=\"test\"><group name=\"testgroup\" role=\"member\"><grant access=\"read\" /></group><user name=\"@owner\"><grant access=\"all\" /></user><user name=\"test\"><grant access=\"write\" /><grant access=\"read\" /></user></acl>";
-            acl = EntityAcl.FromXml(xml);
+            var xml = "<acl owner=\"test\"><group name=\"testgroup\" role=\"member\"><grant access=\"read\" /></group><user name=\"@owner\"><grant access=\"all\" /></user><user name=\"test\"><grant access=\"write\" /><grant access=\"read\" /></user></acl>";
+            var acl = EntityAcl.FromXml(xml);
         }
 
         [TestMethod]

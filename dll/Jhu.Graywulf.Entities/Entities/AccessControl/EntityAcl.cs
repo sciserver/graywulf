@@ -221,9 +221,16 @@ namespace Jhu.Graywulf.Entities.AccessControl
 
         public string ToXml()
         {
-            var sw = new StringWriter();
-            var w = new XmlTextWriter(sw);
+            return Util.XmlConverter.ToXml(this, this.ToXml);
+        }
 
+        public void ToXml(Stream stream)
+        {
+            Util.XmlConverter.ToXml(this, stream, this.ToXml);
+        }
+
+        private void ToXml(XmlWriter w)
+        {
             w.WriteStartElement("acl");
             w.WriteAttributeString("owner", owner);
 
@@ -269,20 +276,20 @@ namespace Jhu.Graywulf.Entities.AccessControl
             }
 
             w.WriteEndElement();
+        }
 
-            return sw.ToString();
+        public static EntityAcl FromXml(Stream stream)
+        {
+            return Util.XmlConverter.FromXml(stream, FromXml);
         }
 
         public static EntityAcl FromXml(string xml)
         {
-            var sr = new StringReader(xml);
-            var r = (XmlReader)XmlTextReader.Create(
-                sr,
-                new XmlReaderSettings()
-                {
-                    IgnoreWhitespace = true,
-                });
+            return Util.XmlConverter.FromXml(xml, FromXml);
+        }
 
+        private static EntityAcl FromXml(XmlReader r)
+        {
             r.Read();
 
             var acl = new EntityAcl();
@@ -337,10 +344,16 @@ namespace Jhu.Graywulf.Entities.AccessControl
                     r.Read();
                 }
 
-                r.ReadEndElement();
+                if (r.NodeType == XmlNodeType.EndElement)
+                {
+                    r.ReadEndElement();
+                }
             }
 
-            r.ReadEndElement();
+            if (r.NodeType == XmlNodeType.EndElement)
+            {
+                r.ReadEndElement();
+            }
 
             return acl;
         }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using System.Xml;
 
 namespace Jhu.Graywulf.Entities.AccessControl
 {
@@ -87,6 +89,88 @@ namespace Jhu.Graywulf.Entities.AccessControl
         public object Clone()
         {
             return new Identity(this);
+        }
+
+        #endregion
+        #region XML serialization
+
+        public string ToXml()
+        {
+            return Util.XmlConverter.ToXml(this, this.ToXml);
+        }
+
+        public void ToXml(Stream stream)
+        {
+            Util.XmlConverter.ToXml(this, stream, this.ToXml);
+        }
+
+        private void ToXml(XmlWriter w)
+        {
+            w.WriteStartElement("id");
+            w.WriteAttributeString("name", name);
+            w.WriteAttributeString("auth", IsAuthenticated ? "1" : "0");
+
+            IdentityRole lastentry = null;
+
+            foreach (var role in roles)
+            {
+                if (lastentry != null)
+                {
+                    w.WriteEndElement();
+                }
+
+                lastentry = role;
+
+                w.WriteStartElement("group");
+                w.WriteAttributeString("name", role.Group);
+                w.WriteAttributeString("role", role.Role);
+            }
+
+            if (lastentry != null)
+            {
+                w.WriteEndElement();
+            }
+
+            w.WriteEndElement();
+        }
+
+        public static Identity FromXml(Stream stream)
+        {
+            return Util.XmlConverter.FromXml(stream, FromXml);
+        }
+
+        public static Identity FromXml(string xml)
+        {
+            return Util.XmlConverter.FromXml(xml, FromXml);
+        }
+
+        private static Identity FromXml(XmlReader r)
+        {
+            var id = new Identity();
+
+            r.Read();   
+            id.name = r.GetAttribute("name");
+            id.isAuthenticated = r.GetAttribute("auth") == "1";
+            r.ReadStartElement("id");
+
+            // Read group and role membership
+            while (r.NodeType == XmlNodeType.Element)
+            {
+                var role = new IdentityRole();
+                role.Group = r.GetAttribute("name");
+                role.Role = r.GetAttribute("role");
+
+                id.roles.Add(role);
+
+                r.Read();
+            }
+
+            if (r.NodeType == XmlNodeType.EndElement)
+            {
+                r.ReadEndElement();
+            }
+
+            return id;
         }
 
         #endregion
