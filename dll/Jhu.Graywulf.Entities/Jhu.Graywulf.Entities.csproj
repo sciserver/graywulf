@@ -81,6 +81,7 @@
     <Compile Include="Entities\EntityException.cs" />
     <Compile Include="Entities\NoResultsException.cs" />
     <Compile Include="Entities\AccessControl\IdentityRole.cs" />
+    <Compile Include="Entities\SecurableEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SqlDataReaderEnumerator.cs" />
     <Compile Include="Entities\SqlDataReaderExtensions.cs" />

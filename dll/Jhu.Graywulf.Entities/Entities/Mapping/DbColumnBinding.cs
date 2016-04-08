@@ -10,7 +10,8 @@ namespace Jhu.Graywulf.Entities.Mapping
     {
         Key = 1,
         Column = 2,
-        Auxiliary = 4,
+        Acl = 4,
+        Auxiliary = 8,
 
         Any = 0xFFFF
     }

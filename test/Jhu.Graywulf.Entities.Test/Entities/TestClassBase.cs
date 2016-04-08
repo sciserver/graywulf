@@ -14,15 +14,33 @@ namespace Jhu.Graywulf.Entities
             return Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\", path);
         }
 
+        protected static Identity CreateTestIdentity()
+        {
+            return new Identity()
+            {
+                IsAuthenticated = true,
+                Name = "test"
+            };
+        }
+
         protected static Context CreateContext()
         {
             var context = new Context()
             {
                 ConnectionString = "Data Source=localhost;Initial Catalog=GraywulfEntitiesTest;Integrated Security=true",
-                Identity = Identity.Guest
+                Identity = CreateTestIdentity()
             };
 
             return context;
+        }
+
+        protected static void InitializeDatabase()
+        {
+            using (var context = CreateContext())
+            {
+                string script = File.ReadAllText(MapPath(@"sql\Graywulf.Entities.Test.sql"));
+                context.ExecuteScriptNonQuery(script);
+            }
         }
     }
 }

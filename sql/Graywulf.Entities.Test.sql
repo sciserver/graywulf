@@ -45,3 +45,17 @@ CREATE TABLE EntityWithGuidKey
 )
 
 GO
+
+IF (OBJECT_ID('SecuredEntity') IS NOT NULL)
+DROP TABLE SecuredEntity
+GO
+
+
+CREATE TABLE SecuredEntity
+(
+	[ID] int NOT NULL IDENTITY(1, 1) PRIMARY KEY,
+	[Name] nvarchar(50) NOT NULL,
+	[Acl] xml NOT NULL
+)
+
+GO

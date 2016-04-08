@@ -175,13 +175,22 @@ FROM {1}
                 DbTable.Name);
         }
 
-        public virtual void LoadFromDataReader(SqlDataReader reader)
+        public void LoadFromDataReader(SqlDataReader reader)
         {
             var columns = GetColumnList(DbColumnBinding.Any);
 
             foreach (var c in columns)
             {
-                int i;
+                LoadColumnFromDataReader(reader, c);
+            }
+
+            isLoaded = true;
+            isDirty = false;
+        }
+
+        protected virtual void LoadColumnFromDataReader(SqlDataReader reader, DbColumn c)
+        {
+            int i;
 
                 // Auxiliary columns don't always exist in the resultset
                 if ((c.Binding | DbColumnBinding.Auxiliary) != 0)
@@ -204,10 +213,6 @@ FROM {1}
                 {
                     c.SetValue(this, reader.GetValue(i));
                 }
-            }
-
-            isLoaded = true;
-            isDirty = false;
         }
 
         protected virtual SqlCommand GetInsertCommand()

@@ -15,11 +15,7 @@ namespace Jhu.Graywulf.Entities
         [ClassInitialize]
         public static void Initialize(TestContext testContext)
         {
-            using (var context = CreateContext())
-            {
-                string script = File.ReadAllText(MapPath(@"sql\Graywulf.Entities.Test.sql"));
-                context.ExecuteScriptNonQuery(script);
-            }
+            InitializeDatabase();
         }
 
         private EntityWithGuidKey CreateEntity(Context context)

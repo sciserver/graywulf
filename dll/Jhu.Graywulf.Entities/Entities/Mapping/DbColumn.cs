@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Data;
 using System.Data.SqlClient;
 using System.Xml;
+using Jhu.Graywulf.Entities.AccessControl;
 
 namespace Jhu.Graywulf.Entities.Mapping
 {
@@ -79,6 +80,20 @@ namespace Jhu.Graywulf.Entities.Mapping
 
         #endregion
         #region Constructors and initializers
+
+        public static DbColumn AclColumn
+        {
+            get
+            {
+                return new DbColumn()
+                {
+                    name = "Acl",
+                    binding = DbColumnBinding.Acl,
+                    propertyType = typeof(String),
+                    dbType = SqlDbType.Xml,
+                };                
+            }
+        }
 
         public static DbColumn Create(PropertyInfo p, DbColumnAttribute attr)
         {
@@ -209,7 +224,11 @@ namespace Jhu.Graywulf.Entities.Mapping
 
         public void SetValue(Entity entity, object value)
         {
-            if (dbType == SqlDbType.Xml)
+            if ((binding & DbColumnBinding.Acl) != 0)
+            {
+                ((SecurableEntity)entity).Permissions = EntityAcl.FromXml((string)value);
+            }
+            else if (dbType == SqlDbType.Xml)
             {
                 var xml = new XmlDocument();
                 xml.LoadXml((string)value);
@@ -225,7 +244,12 @@ namespace Jhu.Graywulf.Entities.Mapping
         {
             SqlParameter par;
 
-            if (dbType == SqlDbType.Xml)
+            if ((binding & DbColumnBinding.Acl) != 0)
+            {
+                par = new SqlParameter("@" + name, dbType);
+                par.Value = ((SecurableEntity)entity).Permissions.ToXml();
+            }
+            else if (dbType == SqlDbType.Xml)
             {
                 par = new SqlParameter("@" + name, dbType);
                 par.Value = ((XmlElement)GetValue(entity)).OuterXml;

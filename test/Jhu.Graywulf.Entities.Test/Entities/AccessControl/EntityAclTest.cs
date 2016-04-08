@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Jhu.Graywulf.Entities.AccessControl
 {
     [TestClass]
-    public class EntityAclTest
+    public class EntityAclTest : TestClassBase
     {
         [TestMethod]
         public void EvaluateOwnerTest()
@@ -19,11 +19,7 @@ namespace Jhu.Graywulf.Entities.AccessControl
             acl.Grant(DefaultIdentity.Owner, "read");
             acl.Deny(DefaultIdentity.Owner, "write");
 
-            var id = new Identity()
-            {
-                IsAuthenticated = true,
-                Name = "test"
-            };
+            var id = CreateTestIdentity();
 
             var access = acl.EvaluateAccess(id);
 
@@ -39,11 +35,7 @@ namespace Jhu.Graywulf.Entities.AccessControl
             acl.Grant("test", "read");
             acl.Deny("test", "write");
 
-            var id = new Identity()
-            {
-                IsAuthenticated = true,
-                Name = "test"
-            };
+            var id = CreateTestIdentity();
 
             var access = acl.EvaluateAccess(id);
 
@@ -59,11 +51,7 @@ namespace Jhu.Graywulf.Entities.AccessControl
             acl.Grant(DefaultIdentity.Public, "read");
             acl.Deny(DefaultIdentity.Public, "write");
 
-            var id = new Identity()
-            {
-                IsAuthenticated = true,
-                Name = "test"
-            };
+            var id = CreateTestIdentity();
 
             var access = acl.EvaluateAccess(id);
 
@@ -98,11 +86,7 @@ namespace Jhu.Graywulf.Entities.AccessControl
             acl.Grant("testgroup", "member", "read");
             acl.Deny("testgroup", "member", "write");
 
-            var id = new Identity()
-            {
-                IsAuthenticated = true,
-                Name = "test",
-            };
+            var id = CreateTestIdentity();
 
             id.Roles.Add("testgroup", "member");
 
@@ -121,11 +105,7 @@ namespace Jhu.Graywulf.Entities.AccessControl
             acl.Grant("testgroup", "member", "write");
             acl.Deny(DefaultIdentity.Guest, "write");
 
-            var id = new Identity()
-            {
-                IsAuthenticated = true,
-                Name = "test",
-            };
+            var id = CreateTestIdentity();
 
             id.Roles.Add("testgroup", "member");
 
