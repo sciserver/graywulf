@@ -14,6 +14,11 @@ namespace Jhu.Graywulf.Entities.Sql
     {
         private Identity identity;
 
+        public bool IsNull
+        {
+            get { return identity == null; }
+        }
+
         public static SqlIdentity Null
         {
             get
@@ -29,12 +34,7 @@ namespace Jhu.Graywulf.Entities.Sql
 
         public override string ToString()
         {
-            return identity.ToString();
-        }
-
-        public static SqlIdentity FromXml(SqlChars xml)
-        {
-            return new SqlIdentity(xml.ToString());
+            return identity.ToXml();
         }
 
         public SqlIdentity(string xml)
@@ -42,24 +42,14 @@ namespace Jhu.Graywulf.Entities.Sql
             this.identity = Identity.FromXml(xml);
         }
 
-        public SqlChars ToXml()
-        {
-            return new SqlChars(identity.ToXml());
-        }
-
         public void Read(System.IO.BinaryReader r)
         {
-            identity = Identity.FromXml(r.BaseStream);
+            identity = Identity.FromBinary(r);
         }
 
         public void Write(System.IO.BinaryWriter w)
         {
-            identity.ToXml(w.BaseStream);
-        }
-
-        public bool IsNull
-        {
-            get { return identity == null; }
+            identity.ToBinary(w);
         }
     }
 }

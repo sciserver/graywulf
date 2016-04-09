@@ -81,6 +81,7 @@
     <Compile Include="Entities\SecurableEntity.cs" />
     <Compile Include="Entities\Sql\SqlEntityAcl.cs" />
     <Compile Include="Entities\Sql\SqlIdentity.cs" />
+    <Compile Include="Entities\Util\BinaryIOExtensions.cs" />
     <Compile Include="Entities\Util\XmlConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SqlDataReaderEnumerator.cs" />

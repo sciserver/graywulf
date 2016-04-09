@@ -10,10 +10,6 @@ CREATE SCHEMA entities
 
 GO
 
-DROP ASSEMBLY [Jhu.Graywulf.Entities]
-
-GO
-
 CREATE ASSEMBLY [Jhu.Graywulf.Entities]
 FROM 'C:\Data\dobos\project\graywulf-entities\dll\Jhu.Graywulf.Entities\bin\Debug\Jhu.Graywulf.Entities.dll'
 WITH PERMISSION_SET = UNSAFE;

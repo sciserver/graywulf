@@ -40,6 +40,27 @@ namespace Jhu.Graywulf.Entities.AccessControl
         }
 
         [TestMethod]
+        public void BinarySerializationTest()
+        {
+            var ms = new MemoryStream();
+            var id = CreateIdentity();
+
+            var w = new BinaryWriter(ms);
+            id.ToBinary(w);
+
+            ms.Seek(0, SeekOrigin.Begin);
+
+            var r = new BinaryReader(ms);
+            var id2 = Identity.FromBinary(r);
+
+            Assert.AreEqual(id.Name, id2.Name);
+            Assert.AreEqual(id.IsAuthenticated, id2.IsAuthenticated);
+            Assert.AreEqual(id.Roles.Count, id2.Roles.Count);
+            Assert.AreEqual(id.Roles[0].Group, id2.Roles[0].Group);
+            Assert.AreEqual(id.Roles[0].Role, id2.Roles[0].Role);
+        }
+
+        [TestMethod]
         public void SerializeToXmlTest()
         {
             var id = CreateIdentity();

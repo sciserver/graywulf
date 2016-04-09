@@ -52,12 +52,21 @@ namespace Jhu.Graywulf.Entities.Util
             var w = new XmlTextWriter(stream, Encoding.Unicode);
             action(w);
         }
-                
+
+        public static void ToXml<T>(T obj, BinaryWriter writer, ToXmlDelegate action)
+        {
+            writer.Write(ToXml(obj, action));
+        }
 
         public static T FromXml<T>(Stream stream, FromXmlDelegate<T> action)
         {
             var r = (XmlReader)XmlTextReader.Create(stream, XmlReaderSettings);
             return action(r);
+        }
+
+        public static T FromXml<T>(BinaryReader reader, FromXmlDelegate<T> action)
+        {
+            return FromXml(reader.ReadString(), action);
         }
 
         public static T FromXml<T>(string xml, FromXmlDelegate<T> action)

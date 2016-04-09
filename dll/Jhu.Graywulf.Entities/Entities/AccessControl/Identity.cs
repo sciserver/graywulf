@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Xml;
+using Jhu.Graywulf.Entities.Util;
 
 namespace Jhu.Graywulf.Entities.AccessControl
 {
@@ -89,6 +90,55 @@ namespace Jhu.Graywulf.Entities.AccessControl
         public object Clone()
         {
             return new Identity(this);
+        }
+
+        #endregion
+        #region Binary serialization
+
+        public void ToBinary(BinaryWriter w)
+        {
+            w.Write('I');
+            w.Write('D');
+            w.Write((short)1);
+
+            w.Write(isAuthenticated);
+
+            w.WriteNullString(name);
+
+            w.Write((short)roles.Count);
+
+            foreach (var role in roles)
+            {
+                w.WriteNullString(role.Group);
+                w.WriteNullString(role.Role);
+            }
+        }
+
+        public static Identity FromBinary(BinaryReader r)
+        {
+            var id = new Identity();
+
+            r.ReadChar();
+            r.ReadChar();
+            r.ReadInt16();
+
+            id.isAuthenticated = r.ReadBoolean();
+            id.name = r.ReadNullString();
+
+            int rc = (int)r.ReadInt16();
+
+            for (int i = 0; i < rc; i++)
+            {
+                var role = new IdentityRole()
+                {
+                    Group = r.ReadNullString(),
+                    Role = r.ReadNullString()
+                };
+
+                id.roles.Add(role);
+            }
+
+            return id;
         }
 
         #endregion
