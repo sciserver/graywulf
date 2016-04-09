@@ -159,6 +159,42 @@ namespace Jhu.Graywulf.Entities.AccessControl
             // TODO: test evaluate
         }
 
+        [TestMethod]
+        public void BinarySerializationTest()
+        {
+            var ms = new MemoryStream();
+
+            var acl = new EntityAcl()
+            {
+                Owner = "test",
+            };
+
+            acl.Grant(DefaultIdentity.Owner, DefaultAccess.All);
+            acl.Grant("test", "create");
+            acl.Grant("test", "write");
+            acl.Deny("test", "read");
+            acl.Grant("testgroup", "member", "read");
+
+            var w = new BinaryWriter(ms);
+            acl.ToBinary(w);
+
+            ms.Seek(0, SeekOrigin.Begin);
+
+            var r = new BinaryReader(ms);
+            var acl2 = EntityAcl.FromBinary(r);
+
+            Assert.AreEqual(acl.Owner, acl2.Owner);
+            Assert.AreEqual(acl.Count, acl2.Count);
+
+            for (int i = 0; i < acl.Count; i++)
+            {
+                Assert.AreEqual(acl[i].GetType(), acl2[i].GetType());
+                Assert.AreEqual(acl[i].Name, acl2[i].Name);
+                Assert.AreEqual(acl[i].Access, acl2[i].Access);
+                Assert.AreEqual(acl[i].Type, acl2[i].Type);
+            }
+        }
+
 
         [TestMethod]
         public void SerializeToXmlTest()

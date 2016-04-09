@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Xml;
+using Jhu.Graywulf.Entities.Util;
 
 namespace Jhu.Graywulf.Entities.AccessControl
 {
@@ -34,6 +35,11 @@ namespace Jhu.Graywulf.Entities.AccessControl
         public int Count
         {
             get { return acl.Count; }
+        }
+
+        public EntityAce this[int index]
+        {
+            get { return acl[index]; }
         }
 
         #endregion
@@ -217,6 +223,122 @@ namespace Jhu.Graywulf.Entities.AccessControl
             return access;
         }
 
+        #region Binary serialization
+
+        public void ToBinary(BinaryWriter w)
+        {
+            w.Write('A');
+            w.Write('C');
+            w.Write('L');
+            w.Write((short)1);
+
+            w.WriteNullString(owner);
+
+            EntityAce lastentry = null;
+
+            foreach (var ace in acl)
+            {
+                if (ace.CompareTo(lastentry) != 0)
+                {
+                    if (ace is UserAce)
+                    {
+                        w.Write('U');
+                        w.WriteNullString(ace.Name);
+                    }
+                    else if (ace is GroupAce)
+                    {
+                        w.Write('G');
+                        w.WriteNullString(ace.Name);
+                        w.WriteNullString(((GroupAce)ace).Role);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+                }
+
+                w.Write('A');
+
+                switch (ace.Type)
+                {
+                    case AccessType.Grant:
+                        w.Write('+');
+                        break;
+                    case AccessType.Deny:
+                        w.Write('-');
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                w.Write(ace.Access);
+            }
+
+            w.Write('X');
+        }
+
+        public static EntityAcl FromBinary(BinaryReader r)
+        {
+            var acl = new EntityAcl();
+
+            r.ReadChar();
+            r.ReadChar();
+            r.ReadChar();
+            r.ReadInt16();
+
+            acl.owner = r.ReadNullString();
+
+            EntityAce lastentry = null;
+            
+            var c = r.ReadChar();
+
+            while (true)
+            {
+                switch (c)
+                {
+                    case 'X':
+                        return acl;
+                    case 'U':
+                        lastentry = new UserAce()
+                        {
+                            Name = r.ReadNullString()
+                        };
+                        break;
+                    case 'G':
+                        lastentry = new GroupAce()
+                        {
+                            Name = r.ReadNullString(),
+                            Role = r.ReadNullString()
+                        };
+                        break;
+                    case 'A':
+                        var nace = (EntityAce)lastentry.Clone();
+
+                        switch (r.ReadChar())
+                        {
+                            case '+':
+                                nace.Type = AccessType.Grant;
+                                break;
+                            case '-':
+                                nace.Type = AccessType.Deny;
+                                break;
+                            default:
+                                throw new InvalidOperationException();
+                        }
+
+                        nace.Access = r.ReadString();
+                        acl.acl.Add(nace);
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+                        
+                }
+
+                c = r.ReadChar();
+            }
+        }
+
+        #endregion
         #region XML serialization
 
         public string ToXml()
@@ -260,7 +382,7 @@ namespace Jhu.Graywulf.Entities.AccessControl
                     }
                     else
                     {
-                        throw new InvalidOperationException();
+                        throw new NotImplementedException();
                     }
                 }
 
