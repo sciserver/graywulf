@@ -4,39 +4,62 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlTypes;
+using System.IO;
 using Microsoft.SqlServer.Server;
 using Jhu.Graywulf.Entities.AccessControl;
 
 namespace Jhu.Graywulf.Entities.Sql
 {
     [SqlUserDefinedType(Format.UserDefined, IsByteOrdered = false, MaxByteSize = -1, IsFixedLength = false, Name="entities.EntityAcl")]
-    public struct SqlEntityAcl : IBinarySerialize
+    public struct SqlEntityAcl : IBinarySerialize, INullable
     {
         private EntityAcl acl;
 
-        public static SqlEntityAcl FromXml(SqlChars xml)
+        public bool IsNull
         {
-            return new SqlEntityAcl(xml);
-        }
-        
-        public SqlEntityAcl(SqlChars xml)
-        {
-            this.acl = EntityAcl.FromXml(xml.ToString());
+            get { return acl == null; }
         }
 
-        public SqlChars ToXml()
+        public static SqlEntityAcl Null
         {
-            return new SqlChars(acl.ToXml());
+            get
+            {
+                return new SqlEntityAcl();
+            }
+        }
+
+        public static SqlEntityAcl Parse(SqlString xml)
+        {
+            return new SqlEntityAcl(xml.Value);
+        }
+
+        public override string ToString()
+        {
+            return acl.ToXml();
+        }
+
+        public SqlEntityAcl(string xml)
+        {
+            this.acl = EntityAcl.FromXml(xml);
         }
 
         public void Read(System.IO.BinaryReader r)
         {
-            acl = EntityAcl.FromXml(r.BaseStream);
+            acl = EntityAcl.FromBinary(r);
         }
 
         public void Write(System.IO.BinaryWriter w)
         {
-            acl.ToXml(w.BaseStream);
+            acl.ToBinary(w);
+        }
+
+        public SqlBytes ToBinary()
+        {
+            var ms = new MemoryStream();
+            var w = new BinaryWriter(ms);
+            acl.ToBinary(w);
+            ms.Seek(0, SeekOrigin.Begin);
+            return new SqlBytes(ms);
         }
     }
 }

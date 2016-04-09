@@ -20,3 +20,8 @@ CREATE TYPE [entities].[Identity]
 EXTERNAL NAME [Jhu.Graywulf.Entities].[Jhu.Graywulf.Entities.Sql.SqlIdentity]
 
 GO
+
+CREATE TYPE [entities].[EntityAcl]
+EXTERNAL NAME [Jhu.Graywulf.Entities].[Jhu.Graywulf.Entities.Sql.SqlEntityAcl]
+
+GO

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlTypes;
+using System.IO;
 using Microsoft.SqlServer.Server;
 using Jhu.Graywulf.Entities.AccessControl;
 
@@ -50,6 +51,50 @@ namespace Jhu.Graywulf.Entities.Sql
         public void Write(System.IO.BinaryWriter w)
         {
             identity.ToBinary(w);
+        }
+
+        public SqlBytes ToBinary()
+        {
+            var ms = new MemoryStream();
+            var w = new BinaryWriter(ms);
+            identity.ToBinary(w);
+            ms.Seek(0, SeekOrigin.Begin);
+            return new SqlBytes(ms);
+        }
+
+        public SqlBoolean CanRead(SqlBytes aclbytes, SqlString access)
+        {
+            var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
+            var a = acl.EvaluateAccess(identity);
+            return a.Can(access.Value);
+        }
+
+        public SqlBoolean CanCreate(SqlBytes aclbytes)
+        {
+            var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
+            var access = acl.EvaluateAccess(identity);
+            return access.CanCreate();
+        }
+
+        public SqlBoolean CanRead(SqlBytes aclbytes)
+        {
+            var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
+            var access = acl.EvaluateAccess(identity);
+            return access.CanRead();
+        }
+
+        public SqlBoolean CanUpdate(SqlBytes aclbytes)
+        {
+            var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
+            var access = acl.EvaluateAccess(identity);
+            return access.CanUpdate();
+        }
+
+        public SqlBoolean CanDelete(SqlBytes aclbytes)
+        {
+            var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
+            var access = acl.EvaluateAccess(identity);
+            return access.CanDelete();
         }
     }
 }
