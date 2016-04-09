@@ -53,16 +53,12 @@ namespace Jhu.Graywulf.Entities.Sql
             identity.ToBinary(w);
         }
 
-        public SqlBytes ToBinary()
+        public SqlBinary ToBinary()
         {
-            var ms = new MemoryStream();
-            var w = new BinaryWriter(ms);
-            identity.ToBinary(w);
-            ms.Seek(0, SeekOrigin.Begin);
-            return new SqlBytes(ms);
+            return new SqlBinary(identity.ToBinary());
         }
 
-        public SqlBoolean CanRead(SqlBytes aclbytes, SqlString access)
+        public SqlBoolean Can(SqlBytes aclbytes, SqlString access)
         {
             var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
             var a = acl.EvaluateAccess(identity);

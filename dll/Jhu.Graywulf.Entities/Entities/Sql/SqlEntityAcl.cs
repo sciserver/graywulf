@@ -53,13 +53,9 @@ namespace Jhu.Graywulf.Entities.Sql
             acl.ToBinary(w);
         }
 
-        public SqlBytes ToBinary()
+        public SqlBinary ToBinary()
         {
-            var ms = new MemoryStream();
-            var w = new BinaryWriter(ms);
-            acl.ToBinary(w);
-            ms.Seek(0, SeekOrigin.Begin);
-            return new SqlBytes(ms);
+            return new SqlBinary(acl.ToBinary());
         }
     }
 }

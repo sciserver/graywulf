@@ -95,6 +95,19 @@ namespace Jhu.Graywulf.Entities.AccessControl
         #endregion
         #region Binary serialization
 
+        public byte[] ToBinary()
+        {
+            using (var ms = new MemoryStream())
+            {
+                using (var w = new BinaryWriter(ms))
+                {
+                    ToBinary(w);
+                }
+
+                return ms.ToArray();
+            }
+        }
+
         public void ToBinary(BinaryWriter w)
         {
             w.Write('I');
@@ -111,6 +124,17 @@ namespace Jhu.Graywulf.Entities.AccessControl
             {
                 w.WriteNullString(role.Group);
                 w.WriteNullString(role.Role);
+            }
+        }
+
+        public static Identity FromBinary(byte[] bytes)
+        {
+            using (var ms = new MemoryStream(bytes))
+            {
+                using (var r = new BinaryReader(ms))
+                {
+                    return FromBinary(r);
+                }
             }
         }
 

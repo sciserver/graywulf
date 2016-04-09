@@ -90,7 +90,7 @@ namespace Jhu.Graywulf.Entities.Mapping
                     name = "Acl",
                     binding = DbColumnBinding.Acl,
                     propertyType = typeof(String),
-                    dbType = SqlDbType.Xml,
+                    dbType = SqlDbType.Binary,
                 };                
             }
         }
@@ -226,7 +226,7 @@ namespace Jhu.Graywulf.Entities.Mapping
         {
             if ((binding & DbColumnBinding.Acl) != 0)
             {
-                ((SecurableEntity)entity).Permissions = EntityAcl.FromXml((string)value);
+                ((SecurableEntity)entity).Permissions = EntityAcl.FromBinary((byte[])value);
             }
             else if (dbType == SqlDbType.Xml)
             {
@@ -247,7 +247,7 @@ namespace Jhu.Graywulf.Entities.Mapping
             if ((binding & DbColumnBinding.Acl) != 0)
             {
                 par = new SqlParameter("@" + name, dbType);
-                par.Value = ((SecurableEntity)entity).Permissions.ToXml();
+                par.Value = ((SecurableEntity)entity).Permissions.ToBinary();
             }
             else if (dbType == SqlDbType.Xml)
             {

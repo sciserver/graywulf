@@ -225,6 +225,19 @@ namespace Jhu.Graywulf.Entities.AccessControl
 
         #region Binary serialization
 
+        public byte[] ToBinary()
+        {
+            using (var ms = new MemoryStream())
+            {
+                using (var w = new BinaryWriter(ms))
+                {
+                    ToBinary(w);
+                }
+
+                return ms.ToArray();
+            }
+        }
+
         public void ToBinary(BinaryWriter w)
         {
             w.Write('A');
@@ -275,6 +288,17 @@ namespace Jhu.Graywulf.Entities.AccessControl
             }
 
             w.Write('X');
+        }
+
+        public static EntityAcl FromBinary(byte[] bytes)
+        {
+            using (var ms = new MemoryStream(bytes))
+            {
+                using (var r = new BinaryReader(ms))
+                {
+                    return FromBinary(r);
+                }
+            }
         }
 
         public static EntityAcl FromBinary(BinaryReader r)
