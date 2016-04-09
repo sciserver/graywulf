@@ -279,8 +279,8 @@ namespace Jhu.Graywulf.Entities.Mapping
             if ((binding & DbColumnBinding.Acl) != 0)
             {
                 i = reader.GetOrdinal(name);
-                var xml = reader.GetString(i);
-                ((SecurableEntity)entity).Permissions = EntityAcl.FromXml(xml);
+                var bytes = reader.GetSqlBinary(i).Value;
+                ((SecurableEntity)entity).Permissions = EntityAcl.FromBinary(bytes);
 
                 return;
             }
