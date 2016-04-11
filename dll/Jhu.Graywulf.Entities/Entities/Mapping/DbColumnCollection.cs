@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Entities.Mapping
 {
-    public class DbColumnCollection : Dictionary<string, DbColumn>
+    internal class DbColumnCollection : Dictionary<string, DbColumn>
     {
         public DbColumnCollection()
             : base(StringComparer.InvariantCultureIgnoreCase)

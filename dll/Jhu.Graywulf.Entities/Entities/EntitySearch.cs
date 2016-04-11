@@ -6,44 +6,44 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
+using Jhu.Graywulf.Entities.Mapping;
 
 namespace Jhu.Graywulf.Entities
 {
     public abstract class EntitySearch<T> : ContextObject
-        where T : IDatabaseTableObject, new()
+        where T : Entity, new()
     {
         private static readonly Regex OrderByRegex = new Regex(@"[a-z]+\s*(asc|desc){0,1}", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        private long? id;
-        private string name;
-        private bool? readOnly;
-        private bool? hidden;
-
+        private DbTable dbTable_cache;
+        private DbTable searchDbTable_cache;
         private StringBuilder whereCriteria;
         private SqlCommand searchCommand;
 
-        public long? ID
+        private DbTable DbTable
         {
-            get { return id; }
-            set { id = value; }
+            get
+            {
+                if (dbTable_cache == null)
+                {
+                    dbTable_cache = DbTable.GetDbTable(this.GetType().GetGenericArguments()[0]);
+                }
+
+                return dbTable_cache;
+            }
         }
 
-        public string Name
+        private DbTable SearchDbTable
         {
-            get { return name; }
-            set { name = value; }
-        }
+            get
+            {
+                if (searchDbTable_cache == null)
+                {
+                    searchDbTable_cache = DbTable.GetDbTable(this.GetType());
+                }
 
-        public bool? ReadOnly
-        {
-            get { return readOnly; }
-            set { readOnly = value; }
-        }
-
-        public bool? Hidden
-        {
-            get { return hidden; }
-            set { hidden = value; }
+                return searchDbTable_cache;
+            }
         }
 
         public EntitySearch()
@@ -59,9 +59,6 @@ namespace Jhu.Graywulf.Entities
 
         private void InitializeMembers()
         {
-            this.name = null;
-            this.readOnly = null;
-            this.hidden = false;
         }
 
         public int Count()
@@ -69,13 +66,19 @@ namespace Jhu.Graywulf.Entities
             using (searchCommand = Context.CreateCommand())
             {
                 string sql = @"
-SELECT COUNT(*) FROM ({0}) AS entities
+WITH __e AS
+(
+{0}
+)
+SELECT COUNT(*)
+FROM __e
 {1}";
 
+                var t = new T();
+                var tableQuery = t.GetTableQuery();
                 var where = BuildWhereClause();
-                var tableQuery = GetTableQuery();
 
-                searchCommand.CommandText = String.Format(sql, GetTableQuery(), where);
+                searchCommand.CommandText = String.Format(sql, tableQuery, where);
 
                 return Convert.ToInt32(Context.ExecuteCommandScalar(searchCommand));
             }
@@ -97,34 +100,37 @@ SELECT COUNT(*) FROM ({0}) AS entities
             using (searchCommand = Context.CreateCommand())
             {
                 string sql = @"
-WITH q AS
+WITH 
+__e AS
 (
-    SELECT entities.*, ROW_NUMBER() OVER({1}) AS rn
-    FROM ({0}) AS entities
+    {0}
+)
+__r AS
+(
+    SELECT __e.*, ROW_NUMBER() OVER({1}) AS __rn
+    FROM __e
     {2}
 )
-SELECT * FROM q
+SELECT __r.* FROM __r
 {3}
-{1}
+ORDER BY __rn
 ";
 
+                var t = new T();
+                var tableQuery = t.GetTableQuery();
                 var where = BuildWhereClause();
                 var orderby = BuildOrderByClause(orderBy);
 
-                var limit = from > 0 || max > 0 ? "WHERE rn BETWEEN @from AND @to" : "";
+                var limit = from > 0 || max > 0 ? "WHERE __rn BETWEEN @__from AND @__to" : "";
 
-                var table = GetTableQuery();
+                searchCommand.CommandText = String.Format(sql, tableQuery, orderby, where, limit);
 
-                searchCommand.CommandText = String.Format(sql, table, orderby, where, limit);
-
-                searchCommand.Parameters.Add("@from", SqlDbType.Int).Value = from;
-                searchCommand.Parameters.Add("@to", SqlDbType.Int).Value = from + max;
+                searchCommand.Parameters.Add("@__from", SqlDbType.Int).Value = from;
+                searchCommand.Parameters.Add("@__to", SqlDbType.Int).Value = from + max;
 
                 return Context.ExecuteCommandAsEnumerable<T>(searchCommand);
             }
         }
-
-        protected abstract string GetTableQuery();
 
         protected string BuildWhereClause()
         {
@@ -141,39 +147,28 @@ SELECT * FROM q
 
         protected virtual void AppendSearchCriteria()
         {
-            if (id.HasValue)
+            foreach (var c in SearchDbTable.Columns.Values)
             {
-                AppendSearchCriterion("ID = @ID");
-                AppendSearchParameter("@ID", SqlDbType.BigInt, id.Value);
-            }
-            else
-            {
-                if (name != null)
-                {
-                    if (name.IndexOf('%') >= 0)
-                    {
-                        AppendSearchCriterion("Name LIKE @Name");
-                    }
-                    else
-                    {
-                        AppendSearchCriterion("Name = @Name");
-                    }
+                string criterion;
+                SqlParameter parameter;
 
-                    AppendSearchParameter("@Name", SqlDbType.NVarChar, name);
+                if (c.GetSearchCriterion(this, out criterion, out parameter))
+                {
+                    bool cancel = false;
+
+                    OnAppendingSearchCriterion(c, ref criterion, ref parameter, ref cancel);
+
+                    if (!cancel)
+                    {
+                        AppendSearchCriterion(criterion);
+                        AppendSearchParameter(parameter);
+                    }
                 }
             }
+        }
 
-            if (readOnly.HasValue)
-            {
-                AppendSearchCriterion("ReadOnly = @ReadOnly");
-                AppendSearchParameter("@ReadOnly", SqlDbType.Bit, readOnly.Value);
-            }
-
-            if (hidden.HasValue)
-            {
-                AppendSearchCriterion("Hidden = @Hidden");
-                AppendSearchParameter("@Hidden", SqlDbType.Bit, hidden.Value);
-            }
+        protected virtual void OnAppendingSearchCriterion(DbColumn column, ref string criterion, ref SqlParameter parameter, ref bool cancel)
+        {
         }
 
         protected void AppendSearchCriterion(string criterion)
@@ -205,11 +200,6 @@ SELECT * FROM q
             searchCommand.Parameters.Add(parameter);
         }
 
-        protected virtual string GetDefaultOrderBy()
-        {
-            return "ID ASC";
-        }
-
         protected string BuildOrderByClause(string orderBy)
         {
             if (!String.IsNullOrWhiteSpace(orderBy))
@@ -220,6 +210,11 @@ SELECT * FROM q
             {
                 return "ORDER BY " + GetDefaultOrderBy();
             }
+        }
+
+        protected virtual string GetDefaultOrderBy()
+        {
+            return String.Format("[{0}] ASC", DbTable.Key.Name);
         }
     }
 }

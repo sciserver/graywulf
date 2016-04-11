@@ -15,8 +15,8 @@ namespace Jhu.Graywulf.Entities.Mapping
     {
         #region Delegates
 
-        private delegate object ValueGetterDelegate(Entity entity);
-        private delegate void ValueSetterDelegate(Entity entity, object value);
+        private delegate object PropertyValueGetterDelegate(object obj);
+        private delegate void PropertyValueSetterDelegate(object obj, object value);
 
         #endregion
         #region Private member variables
@@ -27,8 +27,9 @@ namespace Jhu.Graywulf.Entities.Mapping
         private Type propertyType;
         private SqlDbType dbType;
         private int? size;
-        private ValueGetterDelegate getValue;
-        private ValueSetterDelegate setValue;
+        private bool? isNullable;
+        private PropertyValueGetterDelegate getPropertyValue;
+        private PropertyValueSetterDelegate setPropertyValue;
 
         #endregion
         #region Properties
@@ -63,6 +64,11 @@ namespace Jhu.Graywulf.Entities.Mapping
             get { return size; }
         }
 
+        public bool? IsNullable
+        {
+            get { return isNullable; }
+        }
+
         public object DefaultValue
         {
             get
@@ -91,7 +97,7 @@ namespace Jhu.Graywulf.Entities.Mapping
                     binding = DbColumnBinding.Acl,
                     propertyType = typeof(String),
                     dbType = SqlDbType.Binary,
-                };                
+                };
             }
         }
 
@@ -119,8 +125,8 @@ namespace Jhu.Graywulf.Entities.Mapping
             this.propertyType = typeof(Int32);
             this.dbType = SqlDbType.Int;
             this.size = null;
-            this.getValue = null;
-            this.setValue = null;
+            this.getPropertyValue = null;
+            this.setPropertyValue = null;
         }
 
         #endregion
@@ -133,15 +139,28 @@ namespace Jhu.Graywulf.Entities.Mapping
             this.order = attr.OrderNullable;
             this.size = attr.SizeNullable;
             this.propertyType = p.PropertyType;
+            // TODO: add IsNullable to attribute and use value if provided
 
             if (!attr.TypeNullable.HasValue)
             {
-                if (!Constants.TypeToSqlDbType.ContainsKey(p.PropertyType))
+                Type type = null;
+
+                if (p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    this.isNullable = true;
+                    type = p.PropertyType.GetGenericArguments()[0];
+                }
+                else
+                {
+                    type = p.PropertyType;
+                }
+
+                if (!Constants.TypeToSqlDbType.ContainsKey(type))
                 {
                     throw DbError.InvalidColumnType(p.Name, p.ReflectedType);
                 }
 
-                this.dbType = Constants.TypeToSqlDbType[p.PropertyType];
+                this.dbType = Constants.TypeToSqlDbType[type];
             }
             else
             {
@@ -158,12 +177,12 @@ namespace Jhu.Graywulf.Entities.Mapping
             var vars = new List<ParameterExpression>();
 
             // Function parameters
-            var entity = Expression.Parameter(typeof(Entity), "entity");
+            var obj = Expression.Parameter(typeof(object), "obj");
 
             // Cast entity to strongly typed version
             var ce = Expression.Variable(p.ReflectedType, "ce");
             vars.Add(ce);
-            exps.Add(Expression.Assign(ce, Expression.ConvertChecked(entity, p.ReflectedType)));
+            exps.Add(Expression.Assign(ce, Expression.ConvertChecked(obj, p.ReflectedType)));
 
             // Get value of property
             var pp = Expression.Variable(typeof(object), "pp");
@@ -172,9 +191,9 @@ namespace Jhu.Graywulf.Entities.Mapping
 
             var blk = Expression.Block(vars, exps);
 
-            var exp = Expression.Lambda<ValueGetterDelegate>(blk, entity);
+            var exp = Expression.Lambda<PropertyValueGetterDelegate>(blk, obj);
 
-            this.getValue = exp.Compile();
+            this.getPropertyValue = exp.Compile();
         }
 
         private void CreateValueSetterDelegate(PropertyInfo p)
@@ -183,13 +202,13 @@ namespace Jhu.Graywulf.Entities.Mapping
             var vars = new List<ParameterExpression>();
 
             // Function parameters
-            var entity = Expression.Parameter(typeof(Entity), "entity");
+            var obj = Expression.Parameter(typeof(object), "obj");
             var value = Expression.Parameter(typeof(object), "value");
 
             // Cast entity to strongly typed version
             var ce = Expression.Variable(p.ReflectedType, "ce");
             vars.Add(ce);
-            exps.Add(Expression.Assign(ce, Expression.ConvertChecked(entity, p.ReflectedType)));
+            exps.Add(Expression.Assign(ce, Expression.ConvertChecked(obj, p.ReflectedType)));
 
             // Cast value to strongly typed version
             var cv = Expression.Variable(p.PropertyType, "cv");
@@ -212,59 +231,59 @@ namespace Jhu.Graywulf.Entities.Mapping
 
             var blk = Expression.Block(vars, exps);
 
-            var exp = Expression.Lambda<ValueSetterDelegate>(blk, entity, value);
+            var exp = Expression.Lambda<PropertyValueSetterDelegate>(blk, obj, value);
 
-            this.setValue = exp.Compile();
+            this.setPropertyValue = exp.Compile();
         }
 
-        public object GetValue(Entity entity)
+        public object GetPropertyValue(object obj)
         {
-            return getValue(entity);
+            return getPropertyValue(obj);
         }
 
-        public void SetValue(Entity entity, object value)
+        public void SetPropertyValue(object obj, object value)
         {
             if ((binding & DbColumnBinding.Acl) != 0)
             {
-                ((SecurableEntity)entity).Permissions = EntityAcl.FromBinary((byte[])value);
+                ((SecurableEntity)obj).Permissions = EntityAcl.FromBinary((byte[])value);
             }
             else if (dbType == SqlDbType.Xml)
             {
                 var xml = new XmlDocument();
                 xml.LoadXml((string)value);
-                setValue(entity, xml.DocumentElement);
+                setPropertyValue(obj, xml.DocumentElement);
             }
             else
             {
-                setValue(entity, value);
+                setPropertyValue(obj, value);
             }
         }
 
-        public SqlParameter GetParameter(Entity entity)
+        public SqlParameter GetParameter(object obj)
         {
             SqlParameter par;
 
             if ((binding & DbColumnBinding.Acl) != 0)
             {
                 par = new SqlParameter("@" + name, dbType);
-                par.Value = ((SecurableEntity)entity).Permissions.ToBinary();
+                par.Value = ((SecurableEntity)obj).Permissions.ToBinary();
             }
             else if (dbType == SqlDbType.Xml)
             {
                 par = new SqlParameter("@" + name, dbType);
-                par.Value = ((XmlElement)GetValue(entity)).OuterXml;
+                par.Value = ((XmlElement)GetPropertyValue(obj)).OuterXml;
             }
             else
             {
                 if (size.HasValue)
                 {
                     par = new SqlParameter("@" + name, dbType, size.Value);
-                    par.Value = GetValue(entity);
+                    par.Value = GetPropertyValue(obj);
                 }
                 else
                 {
                     par = new SqlParameter("@" + name, dbType);
-                    par.Value = GetValue(entity);
+                    par.Value = GetPropertyValue(obj);
                 }
             }
 
@@ -302,8 +321,45 @@ namespace Jhu.Graywulf.Entities.Mapping
 
             if (i >= 0)
             {
-                SetValue(entity, reader.GetValue(i));
+                SetPropertyValue(entity, reader.GetValue(i));
             }
+        }
+
+        internal bool GetSearchCriterion(object obj, out string criterion, out SqlParameter parameter)
+        {
+            criterion = null;
+            parameter = null;
+
+            var val = GetPropertyValue(obj);
+
+            if (val == null || val.Equals(DefaultValue))
+            {
+                return false;
+            }
+
+            if (propertyType == typeof(string))
+            {
+                var str = (string)GetPropertyValue(obj);
+
+                if (str.IndexOf('%') >= 0)
+                {
+                    criterion = String.Format("[{0}] LIKE @{0}", name);
+                }
+                else
+                {
+                    criterion = String.Format("[{0}] = @{0}", name);
+                }
+
+                parameter = GetParameter(obj);
+            }
+            // TODO: add range search
+            else
+            {
+                criterion = String.Format("[{0}] = @{0}", name);
+                parameter = GetParameter(obj);
+            }
+
+            return true;
         }
 
         #endregion

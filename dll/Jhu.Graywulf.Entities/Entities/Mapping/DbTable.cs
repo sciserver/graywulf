@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Jhu.Graywulf.Entities.Mapping
 {
-    public sealed class DbTable
+    internal sealed class DbTable
     {
         #region Static cache
 
@@ -73,7 +73,11 @@ namespace Jhu.Graywulf.Entities.Mapping
         {
             var table = new DbTable();
 
-            table.ReflectEntity(t);
+            if (t.IsSubclassOf(typeof(Entity)))
+            {
+                table.ReflectEntity(t);
+            }
+
             table.ReflectColumns(t);
 
             return table;

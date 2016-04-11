@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Entities.Mapping
 {
-    public enum DbColumnListType
+    internal enum DbColumnListType
     {
         Select,
         Insert,

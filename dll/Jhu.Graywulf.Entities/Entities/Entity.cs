@@ -93,12 +93,12 @@ namespace Jhu.Graywulf.Entities
 
         public object GetKey()
         {
-            return DbTable.Key.GetValue(this);
+            return DbTable.Key.GetPropertyValue(this);
         }
 
         public void SetKey(object value)
         {
-            DbTable.Key.SetValue(this, value);
+            DbTable.Key.SetPropertyValue(this, value);
             SetDirty();
         }
 
@@ -160,7 +160,7 @@ namespace Jhu.Graywulf.Entities
         #endregion
         #region CRUD functions
 
-        protected virtual string GetTableQuery()
+        protected internal virtual string GetTableQuery()
         {
             var sql = @"
 SELECT {0}
