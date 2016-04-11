@@ -291,7 +291,6 @@ namespace Jhu.Graywulf.Web.Security
                 // TODO: figure out how it would work with reverse-proxy, without
                 // URL rewrite...
                 returnUrl = HttpContext.Current.Request.Url.ToString();
-                pageUri = Util.UriConverter.Combine(Configuration.BaseUri, pageUri);
             }
             else
             {
@@ -299,8 +298,10 @@ namespace Jhu.Graywulf.Web.Security
                 returnUrl = HttpContext.Current.Request.Url.PathAndQuery;
             }
 
-            returnUrl = HttpUtility.UrlEncode(returnUrl);
+            pageUri = Util.UriConverter.Combine(Configuration.BaseUri, pageUri);
             url = pageUri.ToString();
+
+            returnUrl = HttpUtility.UrlEncode(returnUrl);
 
             if (url.Contains("[$ReturnUrl]"))
             {
