@@ -65,6 +65,7 @@
     </Compile>
     <Compile Include="Entities\IDatabaseTableObject.cs" />
     <Compile Include="Entities\AccessControl\Identity.cs" />
+    <Compile Include="Entities\IRange.cs" />
     <Compile Include="Entities\Mapping\DbColumnBinding.cs" />
     <Compile Include="Entities\Mapping\DbColumnListType.cs" />
     <Compile Include="Entities\Mapping\Constants.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Entities\EntityException.cs" />
     <Compile Include="Entities\NoResultsException.cs" />
     <Compile Include="Entities\AccessControl\IdentityRole.cs" />
+    <Compile Include="Entities\Range.cs" />
     <Compile Include="Entities\SecurableEntity.cs" />
     <Compile Include="Entities\Sql\SqlEntityAcl.cs" />
     <Compile Include="Entities\Sql\SqlIdentity.cs" />

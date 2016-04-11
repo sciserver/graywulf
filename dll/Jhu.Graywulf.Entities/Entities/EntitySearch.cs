@@ -150,24 +150,31 @@ ORDER BY __rn
             foreach (var c in SearchDbTable.Columns.Values)
             {
                 string criterion;
-                SqlParameter parameter;
+                SqlParameter[] parameters;
 
-                if (c.GetSearchCriterion(this, out criterion, out parameter))
+                if (c.GetSearchCriterion(this, out criterion, out parameters))
                 {
                     bool cancel = false;
 
-                    OnAppendingSearchCriterion(c, ref criterion, ref parameter, ref cancel);
+                    OnAppendingSearchCriterion(c, ref criterion, ref parameters, ref cancel);
 
                     if (!cancel)
                     {
                         AppendSearchCriterion(criterion);
-                        AppendSearchParameter(parameter);
+
+                        for (int i = 0; i < parameters.Length; i++)
+                        {
+                            if (parameters[i] != null)
+                            {
+                                AppendSearchParameter(parameters[i]);
+                            }
+                        }
                     }
                 }
             }
         }
 
-        protected virtual void OnAppendingSearchCriterion(DbColumn column, ref string criterion, ref SqlParameter parameter, ref bool cancel)
+        protected virtual void OnAppendingSearchCriterion(DbColumn column, ref string criterion, ref SqlParameter[] parameters, ref bool cancel)
         {
         }
 

@@ -28,6 +28,7 @@ namespace Jhu.Graywulf.Entities.Mapping
         private SqlDbType dbType;
         private int? size;
         private bool? isNullable;
+        private bool isRange;
         private PropertyValueGetterDelegate getPropertyValue;
         private PropertyValueSetterDelegate setPropertyValue;
 
@@ -67,6 +68,11 @@ namespace Jhu.Graywulf.Entities.Mapping
         public bool? IsNullable
         {
             get { return isNullable; }
+        }
+
+        public bool IsRange
+        {
+            get { return isRange; }
         }
 
         public object DefaultValue
@@ -125,6 +131,8 @@ namespace Jhu.Graywulf.Entities.Mapping
             this.propertyType = typeof(Int32);
             this.dbType = SqlDbType.Int;
             this.size = null;
+            this.isNullable = null;
+            this.isRange = false;
             this.getPropertyValue = null;
             this.setPropertyValue = null;
         }
@@ -148,6 +156,11 @@ namespace Jhu.Graywulf.Entities.Mapping
                 if (p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
                     this.isNullable = true;
+                    type = p.PropertyType.GetGenericArguments()[0];
+                }
+                else if (p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(Range<>))
+                {
+                    this.isRange = true;
                     type = p.PropertyType.GetGenericArguments()[0];
                 }
                 else
@@ -278,16 +291,44 @@ namespace Jhu.Graywulf.Entities.Mapping
                 if (size.HasValue)
                 {
                     par = new SqlParameter("@" + name, dbType, size.Value);
-                    par.Value = GetPropertyValue(obj);
                 }
                 else
                 {
                     par = new SqlParameter("@" + name, dbType);
-                    par.Value = GetPropertyValue(obj);
                 }
+
+                par.Value = GetPropertyValue(obj);
             }
 
             return par;
+        }
+
+        public SqlParameter[] GetRangeParameters(object obj)
+        {
+            var pars = new SqlParameter[2];
+            var val = (IRange)GetPropertyValue(obj);
+
+            for (int i = 0; i < 2; i++)
+            {
+                if (i == 0 && val.From != null ||
+                    i == 1 && val.To != null)
+                {
+                    var name = "@" + this.name + (i == 0 ? "_from" : "_to");
+
+                    if (size.HasValue)
+                    {
+                        pars[i] = new SqlParameter(name, dbType, size.Value);
+                    }
+                    else
+                    {
+                        pars[i] = new SqlParameter(name, dbType);
+                    }
+
+                    pars[i].Value = i == 0 ? val.From : val.To;
+                }
+            }
+
+            return pars;
         }
 
         public void LoadFromDataReader(Entity entity, SqlDataReader reader)
@@ -325,10 +366,10 @@ namespace Jhu.Graywulf.Entities.Mapping
             }
         }
 
-        internal bool GetSearchCriterion(object obj, out string criterion, out SqlParameter parameter)
+        internal bool GetSearchCriterion(object obj, out string criterion, out SqlParameter[] parameters)
         {
             criterion = null;
-            parameter = null;
+            parameters = null;
 
             var val = GetPropertyValue(obj);
 
@@ -350,13 +391,32 @@ namespace Jhu.Graywulf.Entities.Mapping
                     criterion = String.Format("[{0}] = @{0}", name);
                 }
 
-                parameter = GetParameter(obj);
+                parameters = new[] { GetParameter(obj) };
             }
-            // TODO: add range search
+            else if (isRange)
+            {
+                var from = ((IRange)val).From;
+                var to = ((IRange)val).To;
+
+                if (from != null && to != null)
+                {
+                    criterion = String.Format("[{0}] BETWEEN @{0}_from AND @{0}_to", name);
+                }
+                else if (to == null)
+                {
+                    criterion = String.Format("[{0}] >= @{0}_from", name);
+                }
+                else if (from == null)
+                {
+                    criterion = String.Format("[{0}] <= @{0}_to", name);
+                }
+
+                parameters = GetRangeParameters(obj);
+            }
             else
             {
                 criterion = String.Format("[{0}] = @{0}", name);
-                parameter = GetParameter(obj);
+                parameters = new [] { GetParameter(obj) };
             }
 
             return true;
