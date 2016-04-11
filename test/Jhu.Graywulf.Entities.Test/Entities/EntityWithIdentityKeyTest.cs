@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Entities
             InitializeDatabase();
         }
 
-        private EntityWithIdentityKey CreateEntity(Context context)
+        protected EntityWithIdentityKey CreateEntity(Context context)
         {
             var xml = new XmlDocument();
             var xn = xml.CreateElement("test");

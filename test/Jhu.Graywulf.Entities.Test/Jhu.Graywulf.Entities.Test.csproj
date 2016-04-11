@@ -58,9 +58,11 @@
     <Compile Include="Entities\AccessControl\GroupAceTest.cs" />
     <Compile Include="Entities\AccessControl\IdentityTest.cs" />
     <Compile Include="Entities\AccessControl\UserAceTest.cs" />
+    <Compile Include="Entities\EntitySearchTest.cs" />
     <Compile Include="Entities\EntityWithGuidKey.cs" />
     <Compile Include="Entities\EntityWithIdentityKey.cs" />
     <Compile Include="Entities\EntityWithGuidKeyTest.cs" />
+    <Compile Include="Entities\EntityWithIdentityKeySearch.cs" />
     <Compile Include="Entities\EntityWithIdentityKeyTest.cs" />
     <Compile Include="Entities\Mapping\DbColumnTest.cs" />
     <Compile Include="Entities\Mapping\DbTableTest.cs" />

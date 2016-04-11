@@ -10,7 +10,7 @@ using Jhu.Graywulf.Entities.Mapping;
 namespace Jhu.Graywulf.Entities
 {
     [DbTable]
-    class EntityWithIdentityKey : Entity
+    public class EntityWithIdentityKey : Entity
     {
         [DbColumn(Binding = DbColumnBinding.Key)]
         public int ID { get; set; }
