@@ -8,10 +8,11 @@ using System.Data.SqlClient;
 namespace Jhu.Graywulf.Entities.Mapping
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public class DbColumnAttribute : DbObjectAttributeBase
+    public class DbColumnAttribute : Attribute
     {
         #region Private member variables
 
+        private string name;
         private DbColumnBinding binding;
         private int? order;
         private SqlDbType? type;
@@ -19,6 +20,12 @@ namespace Jhu.Graywulf.Entities.Mapping
 
         #endregion
         #region Properties
+
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
 
         public DbColumnBinding Binding
         {
@@ -71,13 +78,15 @@ namespace Jhu.Graywulf.Entities.Mapping
         }
 
         public DbColumnAttribute(string name)
-            : base(name)
         {
             InitializeMembers();
+
+            this.name = name;
         }
 
         private void InitializeMembers()
         {
+            this.name = null;
             this.binding = DbColumnBinding.Column;
             this.order = null;
             this.type = null;
