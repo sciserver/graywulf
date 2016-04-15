@@ -59,7 +59,9 @@
     <Compile Include="Entities\AccessControl\IdentityTest.cs" />
     <Compile Include="Entities\AccessControl\UserAceTest.cs" />
     <Compile Include="Entities\EntitySearchTest.cs" />
+    <Compile Include="Entities\AuxColumnEntity.cs" />
     <Compile Include="Entities\EntityWithGuidKey.cs" />
+    <Compile Include="Entities\AuxColumnEntityTest.cs" />
     <Compile Include="Entities\NullableColumnEntityTest.cs" />
     <Compile Include="Entities\NullableColumnEntity.cs" />
     <Compile Include="Entities\EntityWithIdentityKey.cs" />

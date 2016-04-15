@@ -64,6 +64,19 @@ CREATE TABLE NullableColumnEntity
 
 GO
 
+IF (OBJECT_ID('AuxColumnEntity') IS NOT NULL)
+DROP TABLE AuxColumnEntity
+GO
+
+CREATE TABLE AuxColumnEntity
+(
+	[ID] int NOT NULL IDENTITY(1, 1) PRIMARY KEY,
+	[Name] nvarchar(50) NOT NULL,
+	[SomeValue] nvarchar(50) NOT NULL DEFAULT('the value')
+)
+
+GO
+
 
 IF (OBJECT_ID('SecuredEntity') IS NOT NULL)
 DROP TABLE SecuredEntity
