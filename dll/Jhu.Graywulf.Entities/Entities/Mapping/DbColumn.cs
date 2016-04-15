@@ -275,16 +275,17 @@ namespace Jhu.Graywulf.Entities.Mapping
         public SqlParameter GetParameter(object obj)
         {
             SqlParameter par;
+            object value;
 
             if ((binding & DbColumnBinding.Acl) != 0)
             {
                 par = new SqlParameter("@" + name, dbType);
-                par.Value = ((SecurableEntity)obj).Permissions.ToBinary();
+                value = ((SecurableEntity)obj).Permissions.ToBinary();
             }
             else if (dbType == SqlDbType.Xml)
             {
                 par = new SqlParameter("@" + name, dbType);
-                par.Value = ((XmlElement)GetPropertyValue(obj)).OuterXml;
+                value = ((XmlElement)GetPropertyValue(obj)).OuterXml;
             }
             else
             {
@@ -297,8 +298,10 @@ namespace Jhu.Graywulf.Entities.Mapping
                     par = new SqlParameter("@" + name, dbType);
                 }
 
-                par.Value = GetPropertyValue(obj);
+                value = GetPropertyValue(obj);
             }
+
+            par.Value = value == null ? DBNull.Value : value;
 
             return par;
         }

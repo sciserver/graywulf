@@ -46,6 +46,25 @@ CREATE TABLE EntityWithGuidKey
 
 GO
 
+
+IF (OBJECT_ID('NullableColumnEntity') IS NOT NULL)
+DROP TABLE NullableColumnEntity
+GO
+
+CREATE TABLE NullableColumnEntity
+(
+	[ID] int NOT NULL IDENTITY(1, 1) PRIMARY KEY,
+	[Name] nvarchar(50) NULL,
+	[Int32] int NULL,
+	[Double] float NULL,
+	[ByteArray] varbinary(50) NULL,
+	[DateTime] datetime NULL,
+	[Guid] uniqueidentifier NULL
+)
+
+GO
+
+
 IF (OBJECT_ID('SecuredEntity') IS NOT NULL)
 DROP TABLE SecuredEntity
 GO
