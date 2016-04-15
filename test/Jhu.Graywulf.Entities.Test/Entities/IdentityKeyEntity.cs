@@ -10,7 +10,7 @@ using Jhu.Graywulf.Entities.Mapping;
 namespace Jhu.Graywulf.Entities
 {
     [DbTable]
-    public class EntityWithIdentityKey : Entity
+    public class IdentityKeyEntity : Entity
     {
         [DbColumn(Binding = DbColumnBinding.Key)]
         public int ID { get; set; }
@@ -83,11 +83,11 @@ namespace Jhu.Graywulf.Entities
         [DbColumn]
         public XmlElement XmlElement { get; set; }
 
-        public EntityWithIdentityKey()
+        public IdentityKeyEntity()
         {
         }
 
-        public EntityWithIdentityKey(Context context)
+        public IdentityKeyEntity(Context context)
             : base(context)
         {
         }

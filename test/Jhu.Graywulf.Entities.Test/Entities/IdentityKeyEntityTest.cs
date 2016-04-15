@@ -10,7 +10,7 @@ using Jhu.Graywulf.Entities.Mapping;
 namespace Jhu.Graywulf.Entities
 {
     [TestClass]
-    public class EntityWithIdentityKeyTest : TestClassBase
+    public class IdentityKeyEntityTest : TestClassBase
     {
         [ClassInitialize]
         public static void Initialize(TestContext testContext)
@@ -18,13 +18,13 @@ namespace Jhu.Graywulf.Entities
             InitializeDatabase();
         }
 
-        protected EntityWithIdentityKey CreateEntity(Context context)
+        protected IdentityKeyEntity CreateEntity(Context context)
         {
             var xml = new XmlDocument();
             var xn = xml.CreateElement("test");
             xml.AppendChild(xn);
 
-            var e = new EntityWithIdentityKey(context)
+            var e = new IdentityKeyEntity(context)
             {
                 ID = 0,
                 Name = "test",
@@ -83,7 +83,7 @@ namespace Jhu.Graywulf.Entities
 
             using (var context = CreateContext())
             {
-                var e = new EntityWithIdentityKey(context);
+                var e = new IdentityKeyEntity(context);
                 e.ID = id;
                 e.Load();
 
@@ -109,7 +109,7 @@ namespace Jhu.Graywulf.Entities
 
             using (var context = CreateContext())
             {
-                var e = new EntityWithIdentityKey(context);
+                var e = new IdentityKeyEntity(context);
                 e.ID = id;
                 e.Load();
 
@@ -137,7 +137,7 @@ namespace Jhu.Graywulf.Entities
 
             using (var context = CreateContext())
             {
-                var e = new EntityWithIdentityKey(context);
+                var e = new IdentityKeyEntity(context);
                 e.ID = id;
                 e.Delete();
             }

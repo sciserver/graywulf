@@ -1,11 +1,11 @@
 USE [GraywulfEntitiesTest]
 GO
 
-IF (OBJECT_ID('EntityWithIdentityKey') IS NOT NULL)
-DROP TABLE EntityWithIdentityKey
+IF (OBJECT_ID('IdentityKeyEntity') IS NOT NULL)
+DROP TABLE IdentityKeyEntity
 GO
 
-CREATE TABLE EntityWithIdentityKey
+CREATE TABLE IdentityKeyEntity
 (
 	[ID] int NOT NULL IDENTITY(1, 1) PRIMARY KEY,
     [Name] nvarchar(50) NOT NULL,
@@ -33,12 +33,12 @@ CREATE TABLE EntityWithIdentityKey
 
 GO
 
-IF (OBJECT_ID('EntityWithGuidKey') IS NOT NULL)
-DROP TABLE EntityWithGuidKey
+IF (OBJECT_ID('GuidKeyEntity') IS NOT NULL)
+DROP TABLE GuidKeyEntity
 GO
 
 
-CREATE TABLE EntityWithGuidKey
+CREATE TABLE GuidKeyEntity
 (
 	[Guid] uniqueidentifier NOT NULL PRIMARY KEY DEFAULT(NEWID()),
 	[Name] nvarchar(50) NOT NULL

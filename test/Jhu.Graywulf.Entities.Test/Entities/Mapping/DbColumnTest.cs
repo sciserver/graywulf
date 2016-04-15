@@ -22,9 +22,9 @@ namespace Jhu.Graywulf.Entities.Mapping
         [TestMethod]
         public void DbColumnPropertiesTest()
         {
-            var t = DbTable.GetDbTable(typeof(EntityWithIdentityKey));
+            var t = DbTable.GetDbTable(typeof(IdentityKeyEntity));
 
-            Assert.AreEqual(typeof(EntityWithIdentityKey).Name, t.Name);
+            Assert.AreEqual(typeof(IdentityKeyEntity).Name, t.Name);
             Assert.AreEqual(DbColumnBinding.Key, t.Columns["ID"].Binding);
             Assert.AreEqual(0, t.Columns["ID"].DefaultValue);
             Assert.AreEqual("ID", t.Columns["ID"].Name);
@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.Entities.Mapping
         [TestMethod]
         public void GetKeyTest()
         {
-            var e = new EntityWithIdentityKey();
+            var e = new IdentityKeyEntity();
 
             Assert.AreEqual(0, e.GetKey());
         }
@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Entities.Mapping
         [TestMethod]
         public void SetKeyTest()
         {
-            var e = new EntityWithIdentityKey();
+            var e = new IdentityKeyEntity();
 
             e.SetKey(10);
 

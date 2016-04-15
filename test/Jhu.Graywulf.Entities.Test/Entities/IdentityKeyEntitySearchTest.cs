@@ -9,15 +9,15 @@ namespace Jhu.Graywulf.Entities
 {
 
     [TestClass]
-    public class EntitySearchTest : TestClassBase
+    public class IdentityKeyEntitySearchTest : TestClassBase
     {
-        protected static EntityWithIdentityKey CreateEntity(Context context)
+        protected static IdentityKeyEntity CreateEntity(Context context)
         {
             var xml = new XmlDocument();
             var xn = xml.CreateElement("test");
             xml.AppendChild(xn);
 
-            var e = new EntityWithIdentityKey(context)
+            var e = new IdentityKeyEntity(context)
             {
                 ID = 0,
                 Name = "test",
@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Entities
         {
             using (var context = CreateContext())
             {
-                var s = new EntityWithIdentityKeySearch(context);
+                var s = new IdentityKeyEntitySearch(context);
 
                 s.Name = "tes%";
 
@@ -83,7 +83,7 @@ namespace Jhu.Graywulf.Entities
         {
             using (var context = CreateContext())
             {
-                var s = new EntityWithIdentityKeySearch(context)
+                var s = new IdentityKeyEntitySearch(context)
                 {
                     Int16 = new Range<short>(-10, 20)
                 };

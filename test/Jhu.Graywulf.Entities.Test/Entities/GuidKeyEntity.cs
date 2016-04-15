@@ -2,26 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml;
+using System.Data;
+using System.Data.SqlClient;
 using Jhu.Graywulf.Entities.Mapping;
 
 namespace Jhu.Graywulf.Entities
 {
-    class EntityWithIdentityKeySearch : EntitySearch<EntityWithIdentityKey>
+    [DbTable]
+    class GuidKeyEntity : Entity
     {
-        [DbColumn]
-        public long? ID { get; set; }
+        [DbColumn(Binding = DbColumnBinding.Key)]
+        public Guid Guid { get; set; }
 
         [DbColumn]
         public string Name { get; set; }
 
-        [DbColumn]
-        public Range<Int16> Int16 { get; set; }
-
-        public EntityWithIdentityKeySearch()
+        public GuidKeyEntity()
         {
         }
 
-        public EntityWithIdentityKeySearch(Context context)
+        public GuidKeyEntity(Context context)
             : base(context)
         {
         }

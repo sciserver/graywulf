@@ -10,7 +10,7 @@ using Jhu.Graywulf.Entities.Mapping;
 namespace Jhu.Graywulf.Entities
 {
     [TestClass]
-    public class EntityWithGuidKeyTest : TestClassBase
+    public class GuidKeyEntityTest : TestClassBase
     {
         [ClassInitialize]
         public static void Initialize(TestContext testContext)
@@ -18,9 +18,9 @@ namespace Jhu.Graywulf.Entities
             InitializeDatabase();
         }
 
-        private EntityWithGuidKey CreateEntity(Context context)
+        private GuidKeyEntity CreateEntity(Context context)
         {
-            var e = new EntityWithGuidKey(context)
+            var e = new GuidKeyEntity(context)
             {
                 Name = "test",
             };
@@ -57,7 +57,7 @@ namespace Jhu.Graywulf.Entities
 
             using (var context = CreateContext())
             {
-                var e = new EntityWithGuidKey(context);
+                var e = new GuidKeyEntity(context);
                 e.Guid = guid;
                 e.Load();
 
@@ -102,7 +102,7 @@ namespace Jhu.Graywulf.Entities
 
             using (var context = CreateContext())
             {
-                var e = new EntityWithGuidKey(context);
+                var e = new GuidKeyEntity(context);
                 e.Guid = guid;
                 e.Delete();
             }
