@@ -67,7 +67,10 @@
     <Compile Include="Entities\Mapping\DbColumnTest.cs" />
     <Compile Include="Entities\Mapping\DbTableTest.cs" />
     <Compile Include="Entities\SecurableEntityTest.cs" />
+    <Compile Include="Entities\SecuredEntity.cs" />
+    <Compile Include="Entities\SecuredEntitySearch.cs" />
     <Compile Include="Entities\TestClassBase.cs" />
+    <Compile Include="Entities\SecurableEntitySearchTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

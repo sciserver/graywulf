@@ -55,7 +55,7 @@ CREATE TABLE SecuredEntity
 (
 	[ID] int NOT NULL IDENTITY(1, 1) PRIMARY KEY,
 	[Name] nvarchar(50) NOT NULL,
-	[Acl] varbinary(1000) NOT NULL
+	[__acl] varbinary(1000) NOT NULL
 )
 
 GO

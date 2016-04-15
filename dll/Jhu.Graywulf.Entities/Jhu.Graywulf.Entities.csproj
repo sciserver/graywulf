@@ -80,6 +80,7 @@
     <Compile Include="Entities\AccessControl\IdentityRole.cs" />
     <Compile Include="Entities\Range.cs" />
     <Compile Include="Entities\SecurableEntity.cs" />
+    <Compile Include="Entities\SecurableEntitySearch.cs" />
     <Compile Include="Entities\Sql\SqlEntityAcl.cs" />
     <Compile Include="Entities\Sql\SqlIdentity.cs" />
     <Compile Include="Entities\Util\BinaryIOExtensions.cs" />

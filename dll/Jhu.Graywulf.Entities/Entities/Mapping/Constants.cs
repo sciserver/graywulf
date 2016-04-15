@@ -10,6 +10,12 @@ namespace Jhu.Graywulf.Entities.Mapping
 {
     internal class Constants
     {
+        public const string IdentityParameterName = "@__identity";
+        public const string IdentityVariableName = "@__id";
+        public const string FromParameterName = "@__from";
+        public const string ToParameterName = "@__to";
+        public const string AclColumnName = "__acl";
+
         public static readonly Dictionary<Type, SqlDbType> TypeToSqlDbType = new Dictionary<Type, SqlDbType>()
         {
             { typeof(Boolean), SqlDbType.Bit },

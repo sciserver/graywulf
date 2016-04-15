@@ -19,25 +19,6 @@ namespace Jhu.Graywulf.Entities
             InitializeDatabase();
         }
 
-        [DbTable]
-        public class SecuredEntity : SecurableEntity
-        {
-            [DbColumn(Binding = DbColumnBinding.Key)]
-            public int ID { get; set; }
-
-            [DbColumn]
-            public string Name { get; set; }
-
-            public SecuredEntity()
-            {
-            }
-
-            public SecuredEntity(Context context)
-                : base(context)
-            {
-            }
-        }
-
         public SecuredEntity CreateEntity(Context context)
         {
             var e = new SecuredEntity(context)

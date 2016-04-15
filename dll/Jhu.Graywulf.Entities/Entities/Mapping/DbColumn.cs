@@ -99,9 +99,9 @@ namespace Jhu.Graywulf.Entities.Mapping
             {
                 return new DbColumn()
                 {
-                    name = "Acl",
+                    name = Constants.AclColumnName,
                     binding = DbColumnBinding.Acl,
-                    propertyType = typeof(String),
+                    propertyType = null,
                     dbType = SqlDbType.Binary,
                 };
             }

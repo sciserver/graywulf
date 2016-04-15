@@ -17,7 +17,9 @@ namespace Jhu.Graywulf.Entities
 
         private DbTable dbTable_cache;
         private DbTable searchDbTable_cache;
-        private StringBuilder whereCriteria;
+
+        private StringBuilder queryPreamble;
+        private StringBuilder queryWhereCriteria;
         private SqlCommand searchCommand;
 
         private DbTable DbTable
@@ -46,12 +48,12 @@ namespace Jhu.Graywulf.Entities
             }
         }
 
-        public EntitySearch()
+        protected EntitySearch()
         {
             InitializeMembers();
         }
 
-        public EntitySearch(Context context)
+        protected EntitySearch(Context context)
             : base(context)
         {
             InitializeMembers();
@@ -66,19 +68,22 @@ namespace Jhu.Graywulf.Entities
             using (searchCommand = Context.CreateCommand())
             {
                 string sql = @"
+{0}
+
 WITH __e AS
 (
-{0}
+{1}
 )
 SELECT COUNT(*)
 FROM __e
-{1}";
+{2}";
 
                 var t = new T();
+                var preamble = BuildPreamble();
                 var tableQuery = t.GetTableQuery();
                 var where = BuildWhereClause();
 
-                searchCommand.CommandText = String.Format(sql, tableQuery, where);
+                searchCommand.CommandText = String.Format(sql, preamble, tableQuery, where);
 
                 return Convert.ToInt32(Context.ExecuteCommandScalar(searchCommand));
             }
@@ -100,49 +105,79 @@ FROM __e
             using (searchCommand = Context.CreateCommand())
             {
                 string sql = @"
+{0}
+
 WITH 
 __e AS
 (
-    {0}
+    {1}
 )
 __r AS
 (
-    SELECT __e.*, ROW_NUMBER() OVER({1}) AS __rn
+    SELECT __e.*, ROW_NUMBER() OVER({2}) AS __rn
     FROM __e
-    {2}
+    {3}
 )
 SELECT __r.* FROM __r
-{3}
+{4}
 ORDER BY __rn
 ";
 
                 var t = new T();
+                var preamble = BuildPreamble();
                 var tableQuery = t.GetTableQuery();
                 var where = BuildWhereClause();
                 var orderby = BuildOrderByClause(orderBy);
 
-                var limit = from > 0 || max > 0 ? "WHERE __rn BETWEEN @__from AND @__to" : "";
+                string limit;
 
-                searchCommand.CommandText = String.Format(sql, tableQuery, orderby, where, limit);
+                if (from > 0 || max > 0)
+                {
+                    limit = "WHERE __rn BETWEEN " + Constants.FromParameterName + " AND " + Constants.ToParameterName;
+                }
+                else
+                {
+                    limit = "";
+                }
 
-                searchCommand.Parameters.Add("@__from", SqlDbType.Int).Value = from;
-                searchCommand.Parameters.Add("@__to", SqlDbType.Int).Value = from + max;
+                searchCommand.CommandText = String.Format(sql, preamble, tableQuery, orderby, where, limit);
+
+                searchCommand.Parameters.Add(Constants.FromParameterName, SqlDbType.Int).Value = from;
+                searchCommand.Parameters.Add(Constants.ToParameterName, SqlDbType.Int).Value = from + max;
 
                 return Context.ExecuteCommandAsEnumerable<T>(searchCommand);
             }
         }
 
+        protected string BuildPreamble()
+        {
+            queryPreamble = new StringBuilder();
+
+            AppendPreambleItems();
+
+            return queryPreamble.ToString();
+        }
+
+        protected virtual void AppendPreambleItems()
+        {
+        }
+
+        protected void AppendPreambleItem(string sql)
+        {
+            queryPreamble.AppendLine(sql);
+        }
+
         protected string BuildWhereClause()
         {
-            whereCriteria = new StringBuilder();
+            queryWhereCriteria = new StringBuilder();
             AppendSearchCriteria();
 
-            if (whereCriteria.Length > 0)
+            if (queryWhereCriteria.Length > 0)
             {
-                whereCriteria.Insert(0, "WHERE ");
+                queryWhereCriteria.Insert(0, "WHERE ");
             }
 
-            return whereCriteria.ToString();
+            return queryWhereCriteria.ToString();
         }
 
         protected virtual void AppendSearchCriteria()
@@ -185,16 +220,16 @@ ORDER BY __rn
 
         protected void AppendSearchCriterion(string criterion, string op)
         {
-            if (whereCriteria.Length > 0)
+            if (queryWhereCriteria.Length > 0)
             {
-                whereCriteria.Append(" ");
-                whereCriteria.Append(op);
-                whereCriteria.Append(" ");
+                queryWhereCriteria.Append(" ");
+                queryWhereCriteria.Append(op);
+                queryWhereCriteria.Append(" ");
             }
 
-            whereCriteria.Append("(");
-            whereCriteria.Append(criterion);
-            whereCriteria.AppendLine(")");
+            queryWhereCriteria.Append("(");
+            queryWhereCriteria.Append(criterion);
+            queryWhereCriteria.AppendLine(")");
         }
 
         protected void AppendSearchParameter(string name, SqlDbType type, object value)
