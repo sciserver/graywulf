@@ -65,6 +65,20 @@ namespace Jhu.Graywulf.Entities
         }
 
         [TestMethod]
+        public void CreateNullTest()
+        {
+            using (var context = CreateContext())
+            {
+                var e = CreateNullEntity(context);
+
+                e.Save();
+
+                Assert.IsFalse(e.IsDirty);
+                Assert.IsTrue(e.ID > 0);
+            }
+        }
+
+        [TestMethod]
         public void LoadTest()
         {
             int id;
@@ -88,6 +102,38 @@ namespace Jhu.Graywulf.Entities
                 Assert.IsFalse(e.IsDirty);
                 Assert.AreEqual(id, e.ID);
                 Assert.AreEqual("test", e.Name);
+            }
+        }
+
+        [TestMethod]
+        public void LoadNullTest()
+        {
+            int id;
+
+            using (var context = CreateContext())
+            {
+                var e = CreateNullEntity(context);
+
+                e.Save();
+
+                id = e.ID;
+            }
+
+            using (var context = CreateContext())
+            {
+                var e = new NullableColumnEntity(context);
+                e.ID = id;
+                e.Load();
+
+                Assert.IsTrue(e.IsLoaded);
+                Assert.IsFalse(e.IsDirty);
+                Assert.AreEqual(id, e.ID);
+                Assert.IsNull(e.Name);
+                Assert.IsNull(e.Int32);
+                Assert.IsNull(e.Double);
+                Assert.IsNull(e.ByteArray);
+                Assert.IsNull(e.DateTime);
+                Assert.IsNull(e.Guid);
             }
         }
 
@@ -119,6 +165,33 @@ namespace Jhu.Graywulf.Entities
         }
 
         [TestMethod]
+        public void ModifyNullTest()
+        {
+            int id;
+
+            using (var context = CreateContext())
+            {
+                var e = CreateNullEntity(context);
+                e.Save();
+
+                id = e.ID;
+            }
+
+            using (var context = CreateContext())
+            {
+                var e = new NullableColumnEntity(context);
+                e.ID = id;
+                e.Load();
+
+                e.Name = "modified";
+                e.Save();
+
+                Assert.IsFalse(e.IsDirty);
+                Assert.AreEqual(id, e.ID);
+            }
+        }
+
+        [TestMethod]
         public void DeleteTest()
         {
             int id;
@@ -126,6 +199,28 @@ namespace Jhu.Graywulf.Entities
             using (var context = CreateContext())
             {
                 var e = CreateEntity(context);
+
+                e.Save();
+
+                id = e.ID;
+            }
+
+            using (var context = CreateContext())
+            {
+                var e = new NullableColumnEntity(context);
+                e.ID = id;
+                e.Delete();
+            }
+        }
+
+        [TestMethod]
+        public void DeleteNullTest()
+        {
+            int id;
+
+            using (var context = CreateContext())
+            {
+                var e = CreateNullEntity(context);
 
                 e.Save();
 

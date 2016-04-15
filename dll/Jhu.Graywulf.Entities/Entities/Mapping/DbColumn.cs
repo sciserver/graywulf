@@ -227,7 +227,18 @@ namespace Jhu.Graywulf.Entities.Mapping
             var cv = Expression.Variable(p.PropertyType, "cv");
             vars.Add(cv);
 
-            if (Constants.SqlDbTypeToType[dbType] != p.PropertyType)
+            // Handle nullable types
+            Type basetype;
+            if (p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                basetype = p.PropertyType.GetGenericArguments()[0];
+            }
+            else
+            {
+                basetype = p.PropertyType;
+            }
+
+            if (Constants.SqlDbTypeToType[dbType] != basetype)
             {
                 var tv = Expression.Variable(Constants.SqlDbTypeToType[dbType], "tv");
                 vars.Add(tv);
@@ -268,7 +279,7 @@ namespace Jhu.Graywulf.Entities.Mapping
             }
             else
             {
-                setPropertyValue(obj, value);
+                setPropertyValue(obj, value == DBNull.Value ? null : value);
             }
         }
 
