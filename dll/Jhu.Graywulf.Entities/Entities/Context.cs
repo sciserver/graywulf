@@ -166,7 +166,7 @@ namespace Jhu.Graywulf.Entities
         {
             if (!isValid)
             {
-                throw new InvalidOperationException();
+                throw Error.ContextInvalid();
             }
 
             if (transaction == null)
@@ -186,7 +186,7 @@ namespace Jhu.Graywulf.Entities
         {
             if (!isValid)
             {
-                throw new InvalidOperationException();
+                throw Error.ContextInvalid();
             }
 
             if (transaction == null)
