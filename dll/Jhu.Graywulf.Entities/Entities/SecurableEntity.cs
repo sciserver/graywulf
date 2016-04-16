@@ -84,35 +84,35 @@ namespace Jhu.Graywulf.Entities
         #endregion
         #region CRUD functions
 
-        protected override void OnLoaded()
+        protected override void OnLoaded(EntityEventArgs e)
         {
-            base.OnLoaded();
+            base.OnLoaded(e);
 
             Access.EnsureRead();
         }
 
-        protected override void OnCreating(ref bool cancel)
+        protected override void OnCreating(EntityEventArgs e)
         {
             if (this.acl.Owner == null)
             {
                 this.acl.Owner = Context.Identity.Name;
             }
 
-            base.OnCreating(ref cancel);
+            base.OnCreating(e);
         }
 
-        protected override void OnModifying(ref bool cancel)
+        protected override void OnModifying(EntityEventArgs e)
         {
             Access.EnsureUpdate();
 
-            base.OnModifying(ref cancel);
+            base.OnModifying(e);
         }
 
-        protected override void OnDeleting(ref bool cancel)
+        protected override void OnDeleting(EntityEventArgs e)
         {
             Access.EnsureDelete();
 
-            base.OnDeleting(ref cancel);
+            base.OnDeleting(e);
         }
         
         #endregion

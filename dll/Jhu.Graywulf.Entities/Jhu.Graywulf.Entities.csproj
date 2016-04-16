@@ -56,6 +56,7 @@
     <Compile Include="Entities\Context.cs" />
     <Compile Include="Entities\ContextObject.cs" />
     <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\EntityEventArgs.cs" />
     <Compile Include="Entities\EntitySearch.cs" />
     <Compile Include="Entities\Error.cs" />
     <Compile Include="Entities\ErrorMessages.Designer.cs">

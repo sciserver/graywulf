@@ -286,46 +286,47 @@ SELECT @@ROWCOUNT;
             return cmd;
         }
 
-        public virtual void Save()
+        public void Save()
         {
-            bool cancel = false;
-            
-            OnSaving(ref cancel);
+            Save(new EntityEventArgs());
+        }
 
-            if (cancel)
+        protected void Save(EntityEventArgs e)
+        {
+            OnSaving(e);
+
+            if (e.Cancel)
             {
                 return;
             }
 
             if (!IsExisting)
             {
-                Create();
+                Create(e);
             }
             else
             {
-                Modify();
+                Modify(e);
             }
 
             isDirty = false;
 
-            OnSaved();
+            OnSaved(e);
         }
 
-        protected virtual void OnSaving(ref bool cancel)
+        protected virtual void OnSaving(EntityEventArgs e)
         {
         }
 
-        protected virtual void OnSaved()
+        protected virtual void OnSaved(EntityEventArgs e)
         {
         }
 
-        private void Create()
+        protected void Create(EntityEventArgs e)
         {
-            bool cancel = false;
+            OnCreating(e);
 
-            OnCreating(ref cancel);
-
-            if (cancel)
+            if (e.Cancel)
             {
                 return;
             }
@@ -344,24 +345,27 @@ SELECT @@ROWCOUNT;
                 }
             }
 
-            OnCreated();
+            OnCreated(e);
         }
 
-        protected virtual void OnCreating(ref bool cancel)
+        protected virtual void OnCreating(EntityEventArgs e)
         {
         }
 
-        protected virtual void OnCreated()
+        protected virtual void OnCreated(EntityEventArgs e)
         {
         }
 
         public void Load()
         {
-            bool cancel = false;
+            Load(new EntityEventArgs());
+        }
 
-            OnLoading(ref cancel);
+        protected void Load(EntityEventArgs e)
+        {
+            OnLoading(e);
 
-            if (cancel)
+            if (e.Cancel)
             {
                 return;
             }
@@ -371,24 +375,22 @@ SELECT @@ROWCOUNT;
                 Context.ExecuteCommandAsSingleObject(cmd, this);
             }
 
-            OnLoaded();
+            OnLoaded(e);
         }
 
-        protected virtual void OnLoading(ref bool cancel)
+        protected virtual void OnLoading(EntityEventArgs e)
         {
         }
 
-        protected virtual void OnLoaded()
+        protected virtual void OnLoaded(EntityEventArgs e)
         {
         }
 
-        private void Modify()
+        private void Modify(EntityEventArgs e)
         {
-            bool cancel = false;
+            OnModifying(e);
 
-            OnModifying(ref cancel);
-
-            if (cancel)
+            if (e.Cancel)
             {
                 return;
             }
@@ -403,24 +405,27 @@ SELECT @@ROWCOUNT;
                 }
             }
 
-            OnModified();
+            OnModified(e);
         }
 
-        protected virtual void OnModifying(ref bool cancel)
+        protected virtual void OnModifying(EntityEventArgs e)
         {
         }
 
-        protected virtual void OnModified()
+        protected virtual void OnModified(EntityEventArgs e)
         {
         }
 
-        public virtual void Delete()
+        public void Delete()
         {
-            bool cancel = false;
+            Delete(new EntityEventArgs());
+        }
 
-            OnDeleting(ref cancel);
+        protected virtual void Delete(EntityEventArgs e)
+        {
+            OnDeleting(e);
 
-            if (cancel)
+            if (e.Cancel)
             {
                 return;
             }
@@ -435,14 +440,14 @@ SELECT @@ROWCOUNT;
                 }
             }
 
-            OnDeleted();
+            OnDeleted(e);
         }
 
-        protected virtual void OnDeleting(ref bool cancel)
+        protected virtual void OnDeleting(EntityEventArgs e)
         {
         }
 
-        protected virtual void OnDeleted()
+        protected virtual void OnDeleted(EntityEventArgs e)
         {
         }
 
