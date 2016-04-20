@@ -51,6 +51,8 @@ namespace Jhu.Graywulf.Entities
             : base(context)
         {
             InitializeMembers(new StreamingContext());
+
+            this.acl.Owner = context.Identity.Name;
         }
 
         protected SecurableEntity(SecurableEntity old)
