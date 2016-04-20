@@ -60,7 +60,9 @@
     <Compile Include="Entities\AccessControl\UserAceTest.cs" />
     <Compile Include="Entities\AuxColumnEntity.cs" />
     <Compile Include="Entities\AuxColumnEntityTest.cs" />
+    <Compile Include="Entities\EnumEntity.cs" />
     <Compile Include="Entities\GuidKeyEntity.cs" />
+    <Compile Include="Entities\EnumEntityTest.cs" />
     <Compile Include="Entities\GuidKeyEntityTest.cs" />
     <Compile Include="Entities\IdentityKeyEntity.cs" />
     <Compile Include="Entities\IdentityKeyEntitySearch.cs" />

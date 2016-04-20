@@ -55,7 +55,14 @@ CREATE TABLE NullableColumnEntity
 (
 	[ID] int NOT NULL IDENTITY(1, 1) PRIMARY KEY,
 	[Name] nvarchar(50) NULL,
-	[Int32] int NULL,
+	[SByte] tinyint NULL,
+    [Int16] smallint NULL,
+    [Int32] int NULL,
+    [Int64] bigint NULL,
+	[Byte] tinyint NULL,
+    [UInt16] smallint NULL,
+    [UInt32] int NULL,
+    [UInt64] bigint NULL,
 	[Double] float NULL,
 	[ByteArray] varbinary(50) NULL,
 	[DateTime] datetime NULL,
@@ -88,6 +95,37 @@ CREATE TABLE SecuredEntity
 	[ID] int NOT NULL IDENTITY(1, 1) PRIMARY KEY,
 	[Name] nvarchar(50) NOT NULL,
 	[__acl] varbinary(1000) NOT NULL
+)
+
+GO
+
+IF (OBJECT_ID('EnumEntity') IS NOT NULL)
+DROP TABLE EnumEntity
+GO
+
+
+CREATE TABLE EnumEntity
+(
+	[ID] int NOT NULL IDENTITY(1, 1) PRIMARY KEY,
+	[Name] nvarchar(50) NOT NULL,
+    [DefaultEnum] int NOT NULL,
+    [ByteEnum] tinyint NOT NULL,
+    [UInt16Enum] smallint NOT NULL,
+    [UInt32Enum] int NOT NULL,
+    [UInt64Enum] bigint NOT NULL,
+    [SByteEnum] tinyint NOT NULL,
+    [Int16Enum] smallint NOT NULL,
+    [Int32Enum] int NOT NULL,
+    [Int64Enum] bigint NOT NULL,
+    [DefaultEnumNullable] int NULL,
+    [ByteEnumNullable] tinyint NULL,
+    [UInt16EnumNullable] smallint NULL,
+    [UInt32EnumNullable] int NULL,
+    [UInt64EnumNullable] bigint NULL,
+    [SByteEnumNullable] tinyint NULL,
+    [Int16EnumNullable] smallint NULL,
+    [Int32EnumNullable] int NULL,
+    [Int64EnumNullable] bigint NULL
 )
 
 GO

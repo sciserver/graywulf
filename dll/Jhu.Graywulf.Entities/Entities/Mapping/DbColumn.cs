@@ -151,25 +151,23 @@ namespace Jhu.Graywulf.Entities.Mapping
 
             if (!attr.TypeNullable.HasValue)
             {
-                Type type = null;
+                Type type = p.PropertyType;
 
-                if (p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
                     this.isNullable = true;
-                    type = p.PropertyType.GetGenericArguments()[0];
+                    type = type.GetGenericArguments()[0];
                 }
-                else if (p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(Range<>))
+
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Range<>))
                 {
                     this.isRange = true;
-                    type = p.PropertyType.GetGenericArguments()[0];
+                    type = type.GetGenericArguments()[0];
                 }
-                else if (p.PropertyType.IsEnum)
+
+                if (type.IsEnum)
                 {
-                    type = p.PropertyType.GetEnumUnderlyingType();
-                }
-                else
-                {
-                    type = p.PropertyType;
+                    type = type.GetEnumUnderlyingType();
                 }
 
                 if (!Constants.TypeToSqlDbType.ContainsKey(type))
@@ -232,21 +230,31 @@ namespace Jhu.Graywulf.Entities.Mapping
             vars.Add(cv);
 
             // Handle nullable types
-            Type basetype;
-            if (p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            Type basetype = p.PropertyType;
+            Type sqltype = Constants.SqlDbTypeToType[dbType];
+            bool nullable = false;
+
+            if (basetype.IsGenericType && basetype.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
-                basetype = p.PropertyType.GetGenericArguments()[0];
-            }
-            else
-            {
-                basetype = p.PropertyType;
+                basetype = basetype.GetGenericArguments()[0];
+                nullable = true;
             }
 
-            if (Constants.SqlDbTypeToType[dbType] != basetype)
+            if (basetype.IsEnum)
             {
-                var tv = Expression.Variable(Constants.SqlDbTypeToType[dbType], "tv");
+                basetype = basetype.GetEnumUnderlyingType();
+            }
+
+            if (sqltype != basetype)
+            {
+                if (nullable)
+                {
+                    sqltype = typeof(Nullable<>).MakeGenericType(sqltype);
+                }
+
+                var tv = Expression.Variable(sqltype, "tv");
                 vars.Add(tv);
-                exps.Add(Expression.Assign(tv, Expression.ConvertChecked(value, Constants.SqlDbTypeToType[dbType])));
+                exps.Add(Expression.Assign(tv, Expression.ConvertChecked(value, sqltype)));
                 exps.Add(Expression.Assign(cv, Expression.ConvertChecked(cv, p.PropertyType)));
             }
             else
