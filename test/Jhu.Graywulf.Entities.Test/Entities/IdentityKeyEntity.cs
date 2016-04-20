@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml;
 using System.Data;
 using System.Data.SqlClient;
+using System.ComponentModel.DataAnnotations;
 using Jhu.Graywulf.Entities.Mapping;
 
 namespace Jhu.Graywulf.Entities
@@ -16,9 +17,11 @@ namespace Jhu.Graywulf.Entities
         public int ID { get; set; }
 
         [DbColumn]
+        [RegularExpression("[a-zA-Z]+")]
         public string Name { get; set; }
 
         [DbColumn(Name = "SomethingElse")]
+
         public string Rename { get; set; }
 
         [DbColumn(Order = 4)]

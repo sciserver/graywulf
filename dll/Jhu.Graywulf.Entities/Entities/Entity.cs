@@ -286,6 +286,20 @@ SELECT @@ROWCOUNT;
             return cmd;
         }
 
+        private void Validate(EntityEventArgs e)
+        {
+            OnValidating(e);
+
+            foreach (var c in DbTable.Columns.Values)
+            {
+                c.Validate(this);
+            }
+        }
+
+        protected void OnValidating(EntityEventArgs e)
+        {
+        }
+
         public object Save()
         {
             return Save(new EntityEventArgs());
@@ -293,6 +307,8 @@ SELECT @@ROWCOUNT;
 
         protected object Save(EntityEventArgs e)
         {
+            Validate(e);
+
             OnSaving(e);
 
             if (e.Cancel)

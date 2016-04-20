@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.IO;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Entities.Mapping;
 
@@ -64,6 +65,19 @@ namespace Jhu.Graywulf.Entities
 
                 Assert.IsFalse(e.IsDirty);
                 Assert.IsTrue(e.ID > 0);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ValidationException))]
+        public void InvalidEntityTest()
+        {
+            using (var context = CreateContext())
+            {
+                var e = CreateEntity(context);
+
+                e.Name = "123";
+                e.Save();
             }
         }
 

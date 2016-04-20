@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Data;
 using System.Data.SqlClient;
 using System.Xml;
+using System.ComponentModel.DataAnnotations;
 using Jhu.Graywulf.Entities.AccessControl;
 
 namespace Jhu.Graywulf.Entities.Mapping
@@ -31,6 +32,7 @@ namespace Jhu.Graywulf.Entities.Mapping
         private bool isRange;
         private PropertyValueGetterDelegate getPropertyValue;
         private PropertyValueSetterDelegate setPropertyValue;
+        private ValidationAttribute[] validators;
 
         #endregion
         #region Properties
@@ -181,6 +183,8 @@ namespace Jhu.Graywulf.Entities.Mapping
             {
                 this.dbType = attr.TypeNullable.Value;
             }
+
+            validators = (ValidationAttribute[])p.GetCustomAttributes(typeof(ValidationAttribute), true);
         }
 
         #endregion
@@ -446,6 +450,17 @@ namespace Jhu.Graywulf.Entities.Mapping
             }
 
             return true;
+        }
+
+        public void Validate(object obj)
+        {
+            if (validators != null)
+            {
+                for (int i = 0; i < validators.Length; i++)
+                {
+                    validators[i].Validate(GetPropertyValue(obj), name);
+                }
+            }
         }
 
         #endregion
