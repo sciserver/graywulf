@@ -28,6 +28,11 @@ namespace Jhu.Graywulf.Entities.Sql
             }
         }
 
+        public static SqlEntityAcl FromBinary(SqlBytes bytes)
+        {
+            return new SqlEntityAcl(bytes.Value);
+        }
+
         public static SqlEntityAcl Parse(SqlString xml)
         {
             return new SqlEntityAcl(xml.Value);
@@ -36,6 +41,11 @@ namespace Jhu.Graywulf.Entities.Sql
         public override string ToString()
         {
             return acl.ToXml();
+        }
+
+        public SqlEntityAcl(byte[] bytes)
+        {
+            this.acl = EntityAcl.FromBinary(bytes);
         }
 
         public SqlEntityAcl(string xml)

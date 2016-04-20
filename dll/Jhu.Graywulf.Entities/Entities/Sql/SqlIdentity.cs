@@ -28,6 +28,11 @@ namespace Jhu.Graywulf.Entities.Sql
             }
         }
 
+        public static SqlIdentity FromBinary(SqlBytes bytes)
+        {
+            return new SqlIdentity(bytes.Value);
+        }
+
         public static SqlIdentity Parse(SqlString xml)
         {
             return new SqlIdentity(xml.Value);
@@ -36,6 +41,11 @@ namespace Jhu.Graywulf.Entities.Sql
         public override string ToString()
         {
             return identity.ToXml();
+        }
+
+        public SqlIdentity(byte[] bytes)
+        {
+            this.identity = Identity.FromBinary(bytes);
         }
 
         public SqlIdentity(string xml)
