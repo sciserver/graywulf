@@ -35,6 +35,14 @@ namespace Jhu.Graywulf.Entities
             };
         }
 
+        protected static Identity CreateAnonIdentity()
+        {
+            return new Identity()
+            {
+                IsAuthenticated = false,
+            };
+        }
+
         protected static Context CreateContext()
         {
             var context = new Context()
