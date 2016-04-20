@@ -286,18 +286,18 @@ SELECT @@ROWCOUNT;
             return cmd;
         }
 
-        public void Save()
+        public object Save()
         {
-            Save(new EntityEventArgs());
+            return Save(new EntityEventArgs());
         }
 
-        protected void Save(EntityEventArgs e)
+        protected object Save(EntityEventArgs e)
         {
             OnSaving(e);
 
             if (e.Cancel)
             {
-                return;
+                return null;
             }
 
             if (!IsExisting)
@@ -312,6 +312,8 @@ SELECT @@ROWCOUNT;
             isDirty = false;
 
             OnSaved(e);
+
+            return GetKey();
         }
 
         protected virtual void OnSaving(EntityEventArgs e)
@@ -358,6 +360,12 @@ SELECT @@ROWCOUNT;
 
         public void Load()
         {
+            Load(new EntityEventArgs());
+        }
+
+        public void Load(object key)
+        {
+            SetKey(key);
             Load(new EntityEventArgs());
         }
 
