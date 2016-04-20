@@ -163,6 +163,10 @@ namespace Jhu.Graywulf.Entities.Mapping
                     this.isRange = true;
                     type = p.PropertyType.GetGenericArguments()[0];
                 }
+                else if (p.PropertyType.IsEnum)
+                {
+                    type = p.PropertyType.GetEnumUnderlyingType();
+                }
                 else
                 {
                     type = p.PropertyType;
