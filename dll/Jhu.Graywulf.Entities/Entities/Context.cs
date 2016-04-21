@@ -232,12 +232,20 @@ namespace Jhu.Graywulf.Entities
 
         private void PrepareCommand(SqlCommand cmd)
         {
+            PrepareCommand(cmd, true);
+        }
+
+        private void PrepareCommand(SqlCommand cmd, bool transaction)
+        {
             EnsureOpenConnection();
-            EnsureOpenTransaction();
-
             cmd.Connection = connection;
-            cmd.Transaction = transaction;
 
+            if (transaction)
+            {
+                EnsureOpenTransaction();
+                cmd.Transaction = this.transaction;
+            }
+            
             cmd.CommandTimeout = 30;        // TODO: from settings
         }
 
@@ -324,7 +332,7 @@ namespace Jhu.Graywulf.Entities
             {
                 using (var cmd = CreateCommand(parts[i]))
                 {
-                    PrepareCommand(cmd);
+                    PrepareCommand(cmd, false);
                     cmd.ExecuteNonQuery();
                 }
             }

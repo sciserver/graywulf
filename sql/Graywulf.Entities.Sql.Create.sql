@@ -1,7 +1,5 @@
-USE [GraywulfEntitiesTest]
-GO
-
-ALTER DATABASE [GraywulfEntitiesTest]
+SET IMPLICIT_TRANSACTIONS OFF
+ALTER DATABASE CURRENT
 SET TRUSTWORTHY ON
 
 GO
@@ -10,8 +8,14 @@ CREATE SCHEMA entities
 
 GO
 
+CREATE ASSEMBLY [System.ComponentModel.DataAnnotations]
+FROM 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.ComponentModel.DataAnnotations.dll'
+WITH PERMISSION_SET = UNSAFE
+
+GO
+
 CREATE ASSEMBLY [Jhu.Graywulf.Entities]
-FROM 'C:\Data\dobos\project\graywulf-entities\dll\Jhu.Graywulf.Entities\bin\Debug\Jhu.Graywulf.Entities.dll'
+FROM 0x[$bin]
 WITH PERMISSION_SET = UNSAFE;
 
 GO
