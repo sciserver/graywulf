@@ -9,10 +9,24 @@ namespace Jhu.Graywulf.Entities.AccessControl
     {
         #region Private member variables
 
+        private bool isAuthenticated;
+        private bool isOwner;
         private Dictionary<string, AccessType> list;
 
         #endregion
         #region Properties
+
+        public bool IsAuthenticated
+        {
+            get { return isAuthenticated; }
+            internal set { isAuthenticated = value; }
+        }
+
+        public bool IsOwner
+        {
+            get { return isOwner; }
+            internal set { isOwner = value; }
+        }
 
         public AccessType this[string access]
         {

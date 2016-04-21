@@ -170,9 +170,9 @@ namespace Jhu.Graywulf.Entities.AccessControl
         {
             var access = new AccessCollection();
 
-            bool isauthenticated = identity.IsAuthenticated;
+            access.IsAuthenticated = identity.IsAuthenticated;
 
-            bool isowner =
+            access.IsOwner =
                 identity.IsAuthenticated &&
                 owner != null &&
                 EntityAcl.Comparer.Compare(identity.Name, owner) == 0;
@@ -184,13 +184,13 @@ namespace Jhu.Graywulf.Entities.AccessControl
                 if (ace is UserAce)
                 {
                     // Identity is owner of the resource
-                    applies = applies ? true : (isowner && EntityAcl.Comparer.Compare(DefaultIdentity.Owner, ace.Name) == 0);
+                    applies = applies ? true : (access.IsOwner && EntityAcl.Comparer.Compare(DefaultIdentity.Owner, ace.Name) == 0);
 
                     // Indentity has explicit rights
-                    applies = applies ? true : (isauthenticated && EntityAcl.Comparer.Compare(identity.Name, ace.Name) == 0);
+                    applies = applies ? true : (access.IsAuthenticated && EntityAcl.Comparer.Compare(identity.Name, ace.Name) == 0);
 
                     // Authenticated users
-                    applies = applies ? true : (isauthenticated && EntityAcl.Comparer.Compare(DefaultIdentity.Public, ace.Name) == 0);
+                    applies = applies ? true : (access.IsAuthenticated && EntityAcl.Comparer.Compare(DefaultIdentity.Public, ace.Name) == 0);
 
                     // Everyone is a guest
                     applies = applies ? true : (EntityAcl.Comparer.Compare(DefaultIdentity.Guest, ace.Name) == 0);
@@ -203,7 +203,7 @@ namespace Jhu.Graywulf.Entities.AccessControl
                     foreach (var role in identity.Roles)
                     {
                         applies = applies ? true :
-                            isauthenticated &&
+                            access.IsAuthenticated &&
                             EntityAcl.Comparer.Compare(role.Group, gace.Name) == 0 &&
                             EntityAcl.Comparer.Compare(role.Role, gace.Role) == 0;
 

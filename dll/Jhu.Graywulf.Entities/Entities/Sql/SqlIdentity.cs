@@ -28,6 +28,11 @@ namespace Jhu.Graywulf.Entities.Sql
             }
         }
 
+        public bool IsAuthenticated
+        {
+            get { return identity.IsAuthenticated; }
+        }
+
         public static SqlIdentity FromBinary(SqlBytes bytes)
         {
             return new SqlIdentity(bytes.Value);
@@ -66,6 +71,13 @@ namespace Jhu.Graywulf.Entities.Sql
         public SqlBinary ToBinary()
         {
             return new SqlBinary(identity.ToBinary());
+        }
+
+        public SqlBoolean IsOwner(SqlBytes aclbytes)
+        {
+            var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
+            var access = acl.EvaluateAccess(identity);
+            return access.IsOwner;
         }
 
         public SqlBoolean Can(SqlBytes aclbytes, SqlString access)
