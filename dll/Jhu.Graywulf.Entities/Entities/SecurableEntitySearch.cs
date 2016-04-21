@@ -9,7 +9,7 @@ using Jhu.Graywulf.Entities.Mapping;
 namespace Jhu.Graywulf.Entities
 {
     public abstract class SecurableEntitySearch<T> : EntitySearch<T>
-        where T : SecurableEntity, new()
+        where T : Entity, new()
     {
         #region Constructors and initializers
 
