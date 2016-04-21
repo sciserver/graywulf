@@ -93,6 +93,28 @@ namespace Jhu.Graywulf.Entities.AccessControl
         }
 
         #endregion
+
+        public bool IsSame(string other)
+        {
+            return EntityAcl.Comparer.Compare(this.name, other) == 0;
+        }
+
+        public bool IsInRole(string group, string role)
+        {
+            // TODO: optimize this using hashtables
+
+            foreach (var r in roles)
+            {
+                if (EntityAcl.Comparer.Compare(r.Group, group) == 0 &&
+                    EntityAcl.Comparer.Compare(r.Role, role) == 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         #region Binary serialization
 
         public byte[] ToBinary()
