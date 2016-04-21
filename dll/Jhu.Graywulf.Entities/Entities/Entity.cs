@@ -296,7 +296,7 @@ SELECT @@ROWCOUNT;
             }
         }
 
-        protected void OnValidating(EntityEventArgs e)
+        protected virtual void OnValidating(EntityEventArgs e)
         {
         }
 
