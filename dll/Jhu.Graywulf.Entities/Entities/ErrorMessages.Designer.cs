@@ -160,6 +160,15 @@ namespace Jhu.Graywulf.Entities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot reflect type &apos;{0}&apos;: no table class found..
+        /// </summary>
+        internal static string NoTableClassFound {
+            get {
+                return ResourceManager.GetString("NoTableClassFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Transaction is already open..
         /// </summary>
         internal static string TransactionAlreadyOpen {

@@ -150,6 +150,9 @@
   <data name="NoResults" xml:space="preserve">
     <value>The query returned no results.</value>
   </data>
+  <data name="NoTableClassFound" xml:space="preserve">
+    <value>Cannot reflect type '{0}': no table class found.</value>
+  </data>
   <data name="TransactionAlreadyOpen" xml:space="preserve">
     <value>Transaction is already open.</value>
   </data>

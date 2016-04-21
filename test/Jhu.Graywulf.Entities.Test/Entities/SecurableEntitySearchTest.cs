@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Jhu.Graywulf.Entities
@@ -56,6 +57,38 @@ namespace Jhu.Graywulf.Entities
                 s.Name = "tes%";
 
                 var cnt = s.Count();
+
+                Assert.AreEqual(0, cnt);
+            }
+        }
+
+        [TestMethod]
+        public void FindTest()
+        {
+            using (var context = CreateContext())
+            {
+                var s = new SecuredEntitySearch(context);
+
+                s.Name = "tes%";
+
+                var cnt = s.Find().Count();
+
+                Assert.AreEqual(1, cnt);
+            }
+        }
+
+        [TestMethod]
+        public void FindDeniedTest()
+        {
+            using (var context = CreateContext())
+            {
+                context.Identity = CreateAnonIdentity();
+
+                var s = new SecuredEntitySearch(context);
+
+                s.Name = "tes%";
+
+                var cnt = s.Find().Count();
 
                 Assert.AreEqual(0, cnt);
             }

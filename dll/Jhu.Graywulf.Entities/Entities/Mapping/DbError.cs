@@ -15,6 +15,14 @@ namespace Jhu.Graywulf.Entities.Mapping
                     type.FullName));
         }
 
+        public static EntityException NoTableClassFound(Type type)
+        {
+            return new EntityException(
+                String.Format(
+                    ErrorMessages.NoTableClassFound,
+                    type.FullName));
+        }
+
         public static EntityException DuplicateKeyColumn(string column, Type t)
         {
             return new EntityException(

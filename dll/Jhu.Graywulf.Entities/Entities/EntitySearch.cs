@@ -28,7 +28,25 @@ namespace Jhu.Graywulf.Entities
             {
                 if (dbTable_cache == null)
                 {
-                    dbTable_cache = DbTable.GetDbTable(this.GetType().GetGenericArguments()[0]);
+                    var t = this.GetType();
+
+                    while (t != typeof(object))
+                    {
+                        if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(EntitySearch<>))
+                        {
+                            t = t.GetGenericArguments()[0];
+                            break;
+                        }
+
+                        t = t.BaseType;
+                    }
+
+                    if (t == typeof(object))
+                    {
+                        throw DbError.NoTableClassFound(this.GetType());
+                    }
+
+                    dbTable_cache = DbTable.GetDbTable(t);
                 }
 
                 return dbTable_cache;
@@ -111,7 +129,7 @@ WITH
 __e AS
 (
     {1}
-)
+),
 __r AS
 (
     SELECT __e.*, ROW_NUMBER() OVER({2}) AS __rn

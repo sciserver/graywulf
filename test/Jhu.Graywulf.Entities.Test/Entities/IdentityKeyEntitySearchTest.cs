@@ -76,6 +76,16 @@ namespace Jhu.Graywulf.Entities
         [TestMethod]
         public void FindTest()
         {
+            using (var context = CreateContext())
+            {
+                var s = new IdentityKeyEntitySearch(context);
+
+                s.Name = "tes%";
+
+                var cnt = s.Find().Count();
+
+                Assert.AreEqual(1, cnt);
+            }
         }
 
         [TestMethod]
