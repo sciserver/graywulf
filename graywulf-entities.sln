@@ -1,7 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jhu.Graywulf.Entities", "dll\Jhu.Graywulf.Entities\Jhu.Graywulf.Entities.csproj", "{CF0CEC0A-139F-40F5-A6DD-2708400B539D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DFC2C453-4CE2-403E-8C91-CB28588E4B81} = {DFC2C453-4CE2-403E-8C91-CB28588E4B81}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jhu.Graywulf.Entities.Test", "test\Jhu.Graywulf.Entities.Test\Jhu.Graywulf.Entities.Test.csproj", "{D665C558-0E22-49C4-8ADC-F9526E895C3C}"
 EndProject
@@ -11,6 +16,22 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{72AAEE
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dll", "Dll", "{6A2B0C76-B26F-45FC-A799-5C8D573EC406}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{719351FB-5EC1-44DD-9E09-33FD6301E23C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{37E2D850-8232-46FA-B9DE-3B791C7A1ED8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sql", "Sql", "{0E69203D-01FF-42D4-A4B1-E43047A0FD5D}"
+	ProjectSection(SolutionItems) = preProject
+		sql\Graywulf.Entities.Sql.Create.sql = sql\Graywulf.Entities.Sql.Create.sql
+		sql\Graywulf.Entities.Sql.Drop.sql = sql\Graywulf.Entities.Sql.Drop.sql
+		sql\Graywulf.Entities.Sql.Test.sql = sql\Graywulf.Entities.Sql.Test.sql
+		sql\Graywulf.Entities.Test.sql = sql\Graywulf.Entities.Test.sql
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jhu.Graywulf.Entities.Build", "build\Jhu.Graywulf.Entities.Build\Jhu.Graywulf.Entities.Build.csproj", "{DFC2C453-4CE2-403E-8C91-CB28588E4B81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,8 +47,17 @@ Global
 		{D665C558-0E22-49C4-8ADC-F9526E895C3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D665C558-0E22-49C4-8ADC-F9526E895C3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D665C558-0E22-49C4-8ADC-F9526E895C3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFC2C453-4CE2-403E-8C91-CB28588E4B81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFC2C453-4CE2-403E-8C91-CB28588E4B81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFC2C453-4CE2-403E-8C91-CB28588E4B81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFC2C453-4CE2-403E-8C91-CB28588E4B81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CF0CEC0A-139F-40F5-A6DD-2708400B539D} = {6A2B0C76-B26F-45FC-A799-5C8D573EC406}
+		{D665C558-0E22-49C4-8ADC-F9526E895C3C} = {719351FB-5EC1-44DD-9E09-33FD6301E23C}
+		{DFC2C453-4CE2-403E-8C91-CB28588E4B81} = {37E2D850-8232-46FA-B9DE-3B791C7A1ED8}
 	EndGlobalSection
 EndGlobal
