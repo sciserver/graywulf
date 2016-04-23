@@ -59,9 +59,6 @@ namespace Jhu.Graywulf.Registry
         public const string SystemDomainName = "System";
         public const string SystemFederationName = "System";
 
-        public const string DefaultUserGroupName = "Public";
-        public const string DefaultUserRoleName = "User";
-
         public const string TempDbName = "TEMP";
         public const string TempDbInstanceNamePattern = "[$DatabaseDefinition.Name]_[$ServerInstance.Machine.Name]_[$ServerInstance.Name]";
         public const string TempDbNamePattern = "[$DatabaseDefinition.Federation.Domain.Cluster.Name]_[$DatabaseDefinition.Name]";

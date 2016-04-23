@@ -49,20 +49,6 @@ namespace Jhu.Graywulf.Install
 
         public void GenerateDefaultChildren()
         {
-            // Create standard user group
-            var ug = new UserGroup(domain)
-            {
-                Name = Constants.DefaultUserGroupName
-            };
-            ug.Save();
-
-            // Create standard user role
-            var ur = new UserRole(domain)
-            {
-                Name = Constants.DefaultUserRoleName,
-                Default = true
-            };
-            ur.Save();
         }
 
         private string GenerateKey(int numBytes)
