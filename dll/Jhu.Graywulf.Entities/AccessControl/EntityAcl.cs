@@ -166,16 +166,16 @@ namespace Jhu.Graywulf.AccessControl
             SetDirty();
         }
 
-        public AccessCollection EvaluateAccess(Identity identity)
+        public AccessCollection EvaluateAccess(Principal principal)
         {
             var access = new AccessCollection();
 
-            access.IsAuthenticated = identity.IsAuthenticated;
+            access.IsAuthenticated = principal.Identity.IsAuthenticated;
 
             access.IsOwner =
-                identity.IsAuthenticated &&
+                principal.Identity.IsAuthenticated &&
                 owner != null &&
-                EntityAcl.Comparer.Compare(identity.Name, owner) == 0;
+                EntityAcl.Comparer.Compare(principal.Identity.Name, owner) == 0;
 
             foreach (var ace in acl)
             {
@@ -187,7 +187,7 @@ namespace Jhu.Graywulf.AccessControl
                     applies = applies ? true : (access.IsOwner && EntityAcl.Comparer.Compare(DefaultIdentity.Owner, ace.Name) == 0);
 
                     // Indentity has explicit rights
-                    applies = applies ? true : (access.IsAuthenticated && EntityAcl.Comparer.Compare(identity.Name, ace.Name) == 0);
+                    applies = applies ? true : (access.IsAuthenticated && EntityAcl.Comparer.Compare(principal.Identity.Name, ace.Name) == 0);
 
                     // Authenticated users
                     applies = applies ? true : (access.IsAuthenticated && EntityAcl.Comparer.Compare(DefaultIdentity.Public, ace.Name) == 0);
@@ -200,7 +200,7 @@ namespace Jhu.Graywulf.AccessControl
                     var gace = (GroupAce)ace;
 
                     // TODO: try to speed this up
-                    foreach (var role in identity.Roles)
+                    foreach (var role in principal.Roles)
                     {
                         applies = applies ? true :
                             access.IsAuthenticated &&

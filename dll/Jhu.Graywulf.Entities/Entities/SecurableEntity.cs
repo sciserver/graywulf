@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Entities
             {
                 if (access == null || acl.IsDirty)
                 {
-                    access = acl.EvaluateAccess(Context.Identity);
+                    access = acl.EvaluateAccess(Context.Principal);
                 }
 
                 return access;
@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.Entities
         {
             InitializeMembers(new StreamingContext());
 
-            this.acl.Owner = context.Identity.Name;
+            this.acl.Owner = context.Principal.Name;
         }
 
         protected SecurableEntity(SecurableEntity old)
@@ -97,7 +97,7 @@ namespace Jhu.Graywulf.Entities
         {
             if (this.acl.Owner == null)
             {
-                this.acl.Owner = Context.Identity.Name;
+                this.acl.Owner = Context.Principal.Name;
             }
 
             base.OnCreating(e);

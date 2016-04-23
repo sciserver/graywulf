@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Entities
         private string connectionString;
         private SqlConnection connection;
         private SqlTransaction transaction;
-        private Identity identity;
+        private Principal principal;
 
         #region Properties
 
@@ -52,10 +52,10 @@ namespace Jhu.Graywulf.Entities
             }
         }
 
-        public Identity Identity
+        public Principal Principal
         {
-            get { return identity; }
-            set { identity = value; }
+            get { return principal; }
+            set { principal = value; }
         }
 
         #endregion
@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Entities
             this.connectionString = null;
             this.connection = null;
             this.transaction = null;
-            this.identity = null;
+            this.principal = null;
         }
 
         public void Dispose()

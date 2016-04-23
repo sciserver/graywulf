@@ -21,7 +21,7 @@ WITH PERMISSION_SET = UNSAFE;
 GO
 
 CREATE TYPE [entities].[Identity]
-EXTERNAL NAME [Jhu.Graywulf.Entities].[Jhu.Graywulf.Entities.Sql.SqlIdentity]
+EXTERNAL NAME [Jhu.Graywulf.Entities].[Jhu.Graywulf.Entities.Sql.SqlPrincipal]
 
 GO
 

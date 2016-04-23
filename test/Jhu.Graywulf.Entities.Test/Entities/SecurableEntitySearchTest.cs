@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.Entities
         {
             using (var context = CreateContext())
             {
-                context.Identity = CreateAnonIdentity();
+                context.Principal = CreateAnonIdentity();
 
                 var s = new SecuredEntitySearch(context);
 
@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.Entities
         {
             using (var context = CreateContext())
             {
-                context.Identity = CreateAnonIdentity();
+                context.Principal = CreateAnonIdentity();
 
                 var s = new SecuredEntitySearch(context);
 

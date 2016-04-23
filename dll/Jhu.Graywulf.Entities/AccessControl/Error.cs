@@ -12,5 +12,10 @@ namespace Jhu.Graywulf.AccessControl
         {
             return new SecurityException(ErrorMessages.AccessDenied);
         }
+
+        public static SecurityException InvalidRole()
+        {
+            return new SecurityException(ErrorMessages.InvalidRole);
+        }
     }
 }

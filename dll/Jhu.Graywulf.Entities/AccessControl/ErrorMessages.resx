@@ -120,4 +120,7 @@
   <data name="AccessDenied" xml:space="preserve">
     <value>Access denied.</value>
   </data>
+  <data name="InvalidRole" xml:space="preserve">
+    <value>Invalid role.</value>
+  </data>
 </root>

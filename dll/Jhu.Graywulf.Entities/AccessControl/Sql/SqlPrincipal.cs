@@ -11,107 +11,107 @@ using Jhu.Graywulf.AccessControl;
 namespace Jhu.Graywulf.Entities.Sql
 {
     [SqlUserDefinedType(Format.UserDefined, IsByteOrdered = false, MaxByteSize = -1, IsFixedLength = false, Name = "entities.Identity")]
-    public struct SqlIdentity : IBinarySerialize, INullable
+    public struct SqlPrincipal : IBinarySerialize, INullable
     {
-        private Identity identity;
+        private Principal principal;
 
         public bool IsNull
         {
-            get { return identity == null; }
+            get { return principal == null; }
         }
 
-        public static SqlIdentity Null
+        public static SqlPrincipal Null
         {
             get
             {
-                return new SqlIdentity();
+                return new SqlPrincipal();
             }
         }
 
         public bool IsAuthenticated
         {
-            get { return identity.IsAuthenticated; }
+            get { return principal.Identity.IsAuthenticated; }
         }
 
-        public static SqlIdentity FromBinary(SqlBytes bytes)
+        public static SqlPrincipal FromBinary(SqlBytes bytes)
         {
-            return new SqlIdentity(bytes.Value);
+            return new SqlPrincipal(bytes.Value);
         }
 
-        public static SqlIdentity Parse(SqlString xml)
+        public static SqlPrincipal Parse(SqlString xml)
         {
-            return new SqlIdentity(xml.Value);
+            return new SqlPrincipal(xml.Value);
         }
 
         public override string ToString()
         {
-            return identity.ToXml();
+            return principal.ToXml();
         }
 
-        public SqlIdentity(byte[] bytes)
+        public SqlPrincipal(byte[] bytes)
         {
-            this.identity = Identity.FromBinary(bytes);
+            this.principal = Principal.FromBinary(bytes);
         }
 
-        public SqlIdentity(string xml)
+        public SqlPrincipal(string xml)
         {
-            this.identity = Identity.FromXml(xml);
+            this.principal = Principal.FromXml(xml);
         }
 
         public void Read(System.IO.BinaryReader r)
         {
-            identity = Identity.FromBinary(r);
+            principal = Principal.FromBinary(r);
         }
 
         public void Write(System.IO.BinaryWriter w)
         {
-            identity.ToBinary(w);
+            principal.ToBinary(w);
         }
 
         public SqlBinary ToBinary()
         {
-            return new SqlBinary(identity.ToBinary());
+            return new SqlBinary(principal.ToBinary());
         }
 
         public SqlBoolean IsOwner(SqlBytes aclbytes)
         {
             var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
-            var access = acl.EvaluateAccess(identity);
+            var access = acl.EvaluateAccess(principal);
             return access.IsOwner;
         }
 
         public SqlBoolean Can(SqlBytes aclbytes, SqlString access)
         {
             var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
-            var a = acl.EvaluateAccess(identity);
+            var a = acl.EvaluateAccess(principal);
             return a.Can(access.Value);
         }
 
         public SqlBoolean CanCreate(SqlBytes aclbytes)
         {
             var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
-            var access = acl.EvaluateAccess(identity);
+            var access = acl.EvaluateAccess(principal);
             return access.CanCreate();
         }
 
         public SqlBoolean CanRead(SqlBytes aclbytes)
         {
             var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
-            var access = acl.EvaluateAccess(identity);
+            var access = acl.EvaluateAccess(principal);
             return access.CanRead();
         }
 
         public SqlBoolean CanUpdate(SqlBytes aclbytes)
         {
             var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
-            var access = acl.EvaluateAccess(identity);
+            var access = acl.EvaluateAccess(principal);
             return access.CanUpdate();
         }
 
         public SqlBoolean CanDelete(SqlBytes aclbytes)
         {
             var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
-            var access = acl.EvaluateAccess(identity);
+            var access = acl.EvaluateAccess(principal);
             return access.CanDelete();
         }
     }

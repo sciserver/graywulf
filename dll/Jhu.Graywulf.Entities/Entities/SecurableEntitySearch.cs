@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.Entities
             var criterion = String.Format("{0}.CanRead([{1}]) = 1", Constants.IdentityVariableName, Constants.AclColumnName);
             var id = new SqlParameter(Constants.IdentityParameterName, SqlDbType.NVarChar)
             {
-                Value = Context.Identity.ToXml()
+                Value = Context.Principal.ToXml()
             };
 
             AppendSearchCriterion(criterion);

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.AccessControl
 {
-    public class IdentityRole : ICloneable
+    public class PrincipalRole : ICloneable
     {
         #region Private member variables
 
@@ -30,12 +30,12 @@ namespace Jhu.Graywulf.AccessControl
         #endregion
         #region Constructors and initializers
 
-        public IdentityRole()
+        public PrincipalRole()
         {
             InitializeMembers();
         }
 
-        public IdentityRole(string group, string role)
+        public PrincipalRole(string group, string role)
         {
             InitializeMembers();
 
@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.AccessControl
             this.role = role;
         }
 
-        public IdentityRole(IdentityRole old)
+        public PrincipalRole(PrincipalRole old)
         {
             CopyMembers(old);
         }
@@ -54,7 +54,7 @@ namespace Jhu.Graywulf.AccessControl
             this.role = null;
         }
 
-        private void CopyMembers(IdentityRole old)
+        private void CopyMembers(PrincipalRole old)
         {
             this.group = old.group;
             this.role = old.role;
@@ -62,7 +62,7 @@ namespace Jhu.Graywulf.AccessControl
 
         public object Clone()
         {
-            return new IdentityRole(this);
+            return new PrincipalRole(this);
         }
 
         #endregion

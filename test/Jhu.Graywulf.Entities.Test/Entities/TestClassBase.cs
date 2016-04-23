@@ -48,7 +48,7 @@ namespace Jhu.Graywulf.Entities
             var context = new Context()
             {
                 ConnectionString = "Data Source=localhost;Initial Catalog=GraywulfEntitiesTest;Integrated Security=true",
-                Identity = CreateTestIdentity()
+                Principal = CreateTestIdentity()
             };
 
             return context;

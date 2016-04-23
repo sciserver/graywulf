@@ -59,9 +59,11 @@
     </Compile>
     <Compile Include="AccessControl\GroupAce.cs" />
     <Compile Include="AccessControl\Identity.cs" />
-    <Compile Include="AccessControl\IdentityRole.cs" />
-    <Compile Include="AccessControl\IdentityRoleCollection.cs" />
     <Compile Include="AccessControl\Principal.cs" />
+    <Compile Include="AccessControl\PrincipalRole.cs" />
+    <Compile Include="AccessControl\PrincipalRoleCollection.cs" />
+    <Compile Include="AccessControl\Sql\SqlEntityAcl.cs" />
+    <Compile Include="AccessControl\Sql\SqlPrincipal.cs" />
     <Compile Include="AccessControl\UserAce.cs" />
     <Compile Include="Entities\Context.cs" />
     <Compile Include="Entities\ContextObject.cs" />
@@ -90,8 +92,6 @@
     <Compile Include="Entities\Range.cs" />
     <Compile Include="Entities\SecurableEntity.cs" />
     <Compile Include="Entities\SecurableEntitySearch.cs" />
-    <Compile Include="Entities\Sql\SqlEntityAcl.cs" />
-    <Compile Include="Entities\Sql\SqlIdentity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SqlDataReaderEnumerator.cs" />
     <Compile Include="Entities\SqlDataReaderExtensions.cs" />
