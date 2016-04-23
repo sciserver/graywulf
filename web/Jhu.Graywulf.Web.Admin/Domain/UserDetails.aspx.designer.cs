@@ -517,42 +517,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain {
         protected global::System.Web.UI.WebControls.Button RemoveUserGroupButton;
         
         /// <summary>
-        /// UserRoleMemberList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.MultiSelectGridView UserRoleMemberList;
-        
-        /// <summary>
-        /// UserRoleSelectedValidator control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator UserRoleSelectedValidator;
-        
-        /// <summary>
-        /// AddUserRoleButton control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button AddUserRoleButton;
-        
-        /// <summary>
-        /// RemoveUserRoleButton control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button RemoveUserRoleButton;
-        
-        /// <summary>
         /// IdentitiesList control.
         /// </summary>
         /// <remarks>

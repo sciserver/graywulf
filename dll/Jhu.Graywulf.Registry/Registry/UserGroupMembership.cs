@@ -14,7 +14,8 @@ namespace Jhu.Graywulf.Registry
     {
         public enum ReferenceType : int
         {
-            UserGroup = 1
+            UserGroup = 1,
+            UserRole = 2
         }
 
         #region Member Variables
@@ -40,6 +41,13 @@ namespace Jhu.Graywulf.Registry
         {
             get { return UserGroupReference.Value; }
             set { UserGroupReference.Value = value; }
+        }
+
+        [XmlIgnore]
+        public UserRole UserRole
+        {
+            get { return UserRoleReference.Value; }
+            set { UserRoleReference.Value = value; }
         }
 
         #endregion
@@ -68,6 +76,22 @@ namespace Jhu.Graywulf.Registry
         {
             get { return UserGroupReference.Name; }
             set { UserGroupReference.Name = value; }
+        }
+
+        [XmlIgnore]
+        public EntityReference<UserRole> UserRoleReference
+        {
+            get { return (EntityReference<UserRole>)EntityReferences[(int)ReferenceType.UserRole]; }
+        }
+
+        /// <summary>
+        /// For internal use only.
+        /// </summary>
+        [XmlElement("UserRole")]
+        public string UserRole_ForXml
+        {
+            get { return UserRoleReference.Name; }
+            set { UserRoleReference.Name = value; }
         }
 
         #endregion
@@ -144,6 +168,7 @@ namespace Jhu.Graywulf.Registry
             return new IEntityReference[]
             {
                 new EntityReference<UserGroup>((int)ReferenceType.UserGroup),
+                new EntityReference<UserRole>((int)ReferenceType.UserRole),
             };
         }
 

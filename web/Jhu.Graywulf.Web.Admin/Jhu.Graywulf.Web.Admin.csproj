@@ -145,7 +145,6 @@
     <Content Include="Docs\images\jhu.png" />
     <Content Include="Docs\images\nsf.png" />
     <Content Include="Docs\images\vao.png" />
-    <Content Include="Domain\AddUserRoleMember.aspx" />
     <Content Include="Domain\AddUserGroupMember.aspx" />
     <Content Include="Domain\ClusterDetails.aspx" />
     <Content Include="Domain\DomainForm.aspx" />
@@ -832,13 +831,6 @@
     </Compile>
     <Compile Include="Controls\UserStatus.cs">
       <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Domain\AddUserRoleMember.aspx.cs">
-      <DependentUpon>AddUserRoleMember.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Domain\AddUserRoleMember.aspx.designer.cs">
-      <DependentUpon>AddUserRoleMember.aspx</DependentUpon>
     </Compile>
     <Compile Include="Domain\AddUserGroupMember.aspx.cs">
       <DependentUpon>AddUserGroupMember.aspx</DependentUpon>

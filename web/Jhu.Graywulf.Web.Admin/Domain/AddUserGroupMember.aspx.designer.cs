@@ -31,6 +31,15 @@ namespace Jhu.Graywulf.Web.Admin.Domain {
         protected global::System.Web.UI.WebControls.DropDownList UserGroup;
         
         /// <summary>
+        /// UserRole control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList UserRole;
+        
+        /// <summary>
         /// Ok control.
         /// </summary>
         /// <remarks>

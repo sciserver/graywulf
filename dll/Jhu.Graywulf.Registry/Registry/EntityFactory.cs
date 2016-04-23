@@ -51,7 +51,6 @@ namespace Jhu.Graywulf.Registry
             [XmlArrayItem(typeof(UserGroup))]
             [XmlArrayItem(typeof(UserGroupMembership))]
             [XmlArrayItem(typeof(UserRole))]
-            [XmlArrayItem(typeof(UserRoleMembership))]
             [XmlArrayItem(typeof(UserIdentity))]
             public Entity[] Entities;
         }

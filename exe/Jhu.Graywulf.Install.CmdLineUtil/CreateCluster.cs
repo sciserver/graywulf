@@ -51,9 +51,9 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
         private void InitializeMembers()
         {
             this.clusterName = null;
-            this.adminUsername = Constants.ClusterAdminName;
-            this.adminEmail = Constants.ClusterAdminEmail;
-            this.adminPassword = Constants.ClusterAdminPassword;
+            this.adminUsername = Constants.ClusterAdminUserName;
+            this.adminEmail = Constants.ClusterAdminUserEmail;
+            this.adminPassword = Constants.ClusterAdminUserPassword;
         }
 
         public override void Run()

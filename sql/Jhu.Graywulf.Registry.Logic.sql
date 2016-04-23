@@ -840,7 +840,6 @@ AS
 	DELETE UserGroup
 	DELETE UserRole
 	DELETE UserGroupMembership
-	DELETE UserRoleMembership
 	
 	DELETE Entity
 	DELETE EntityReference

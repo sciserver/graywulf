@@ -44,7 +44,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain
             NtlmUser.Text = Item.NtlmUser;
 
             AddUserGroupButton.OnClientClick = Util.UrlFormatter.GetClientRedirect(AddUserGroupMember.GetUrl(Item.Guid));
-            AddUserRoleButton.OnClientClick = Util.UrlFormatter.GetClientRedirect(AddUserRoleMember.GetUrl(Item.Guid));
 
             if (Item.DeploymentState == DeploymentState.Deployed)
             {
@@ -63,9 +62,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain
             Item.LoadUserGroupMemberships(true);
             UserGroupMemberList.DataSource = Item.UserGroupMemberships.Values;
 
-            Item.LoadUserRoleMemberships(true);
-            UserRoleMemberList.DataSource = Item.UserRoleMemberships.Values;
-
             Item.LoadUserIdentities(true);
             IdentitiesList.ParentEntity = Item;
         }
@@ -79,21 +75,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain
                 foreach (var g in guids)
                 {
                     Item.RemoveFromGroup(g);
-                }
-            }
-
-            InitLists();
-        }
-
-        private void RemoveUserRole(Guid[] guids)
-        {
-            Validate();
-
-            if (IsValid)
-            {
-                foreach (var g in guids)
-                {
-                    Item.RemoveFromRole(g);
                 }
             }
 
@@ -119,9 +100,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain
                 case "RemoveUserGroup":
                     RemoveUserGroup(UserGroupMemberList.SelectedDataKeys.Select(g => new Guid(g)).ToArray());
                     break;
-                case "RemoveUserRole":
-                    RemoveUserRole(UserRoleMemberList.SelectedDataKeys.Select(g => new Guid(g)).ToArray());
-                    break;
                 default:
                     base.OnButtonCommand(sender, e);
                     break;
@@ -132,11 +110,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain
         protected void UserGroupSelectedValidator_ServerValidate(object sender, ServerValidateEventArgs e)
         {
             e.IsValid = UserGroupMemberList.SelectedDataKeys.Count > 0;
-        }
-
-        protected void UserRoleSelectedValidator_ServerValidate(object sender, ServerValidateEventArgs e)
-        {
-            e.IsValid = UserRoleMemberList.SelectedDataKeys.Count > 0;
         }
     }
 }

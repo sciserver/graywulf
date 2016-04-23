@@ -10,6 +10,10 @@
             <td class="FormLabel"><asp:Label runat="server" Text="User Group:" /></td>
             <td class="FormField"><asp:DropDownList runat="server" ID="UserGroup" CssClass="FormField" /></td>
         </tr>
+        <tr>
+            <td class="FormLabel"><asp:Label runat="server" Text="User Role:" /></td>
+            <td class="FormField"><asp:DropDownList runat="server" ID="UserRole" CssClass="FormField" /></td>
+        </tr>
     </table>
     <p class="FormButton">
         <asp:Button ID="Ok" runat="server" Text="OK" CssClass="FormButton" OnClick="Ok_Click" />

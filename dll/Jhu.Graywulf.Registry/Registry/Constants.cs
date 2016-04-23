@@ -14,10 +14,11 @@ namespace Jhu.Graywulf.Registry
         public const char EntityFieldSeparator = '.';       // Used in expressions
 
         public const string ClusterName = "Graywulf";
-        public const string ClusterAdministratorUserGroupName = "Administrators";
-        public const string ClusterAdminName = "admin";
-        public const string ClusterAdminEmail = "admin@graywulf.org";
-        public const string ClusterAdminPassword = "graywulf";
+        public const string ClusterAdminUserGroupName = "Administrators";
+        public const string ClusterAdminUserRoleName = "Administrator";
+        public const string ClusterAdminUserName = "admin";
+        public const string ClusterAdminUserEmail = "admin@graywulf.org";
+        public const string ClusterAdminUserPassword = "graywulf";
         public const string ControllerMachineRoleName = "Controller";
         public const string ControllerMachineName = "Controller";
         public const string NodeMachineRoleName = "Node";
@@ -112,7 +113,6 @@ namespace Jhu.Graywulf.Registry
             { EntityType.UserGroup, typeof(UserGroup) },
             { EntityType.UserGroupMembership, typeof(UserGroupMembership) },
             { EntityType.UserRole, typeof(UserRole) },
-            { EntityType.UserRoleMembership, typeof(UserRoleMembership) },
         };
 
         public static readonly Dictionary<EntityType, string> EntityNames_Singular = new Dictionary<EntityType, string>()
@@ -130,7 +130,6 @@ namespace Jhu.Graywulf.Registry
             { EntityType.User, EntityNames.User_Singular},
             { EntityType.UserGroupMembership, EntityNames.UserGroupMembership_Singular},
             { EntityType.UserRole, EntityNames.UserRole_Singular},
-            { EntityType.UserRoleMembership, EntityNames.UserRoleMembership_Singular},
             { EntityType.UserIdentity, EntityNames.UserIdentity_Singular},
             { EntityType.Domain, EntityNames.Domain_Singular},
             { EntityType.Federation, EntityNames.Federation_Singular},
@@ -167,7 +166,6 @@ namespace Jhu.Graywulf.Registry
             { EntityType.User, EntityNames.User_Plural},
             { EntityType.UserGroupMembership, EntityNames.UserGroupMembership_Plural},
             { EntityType.UserRole, EntityNames.UserRole_Plural},
-            { EntityType.UserRoleMembership, EntityNames.UserRoleMembership_Plural},
             { EntityType.UserIdentity, EntityNames.UserIdentity_Plural},
             { EntityType.Domain, EntityNames.Domain_Plural},
             { EntityType.Federation, EntityNames.Federation_Plural},

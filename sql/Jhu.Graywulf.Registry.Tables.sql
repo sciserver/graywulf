@@ -753,24 +753,6 @@ GO
 
 ---------------------------------------------------------------
 
-IF (OBJECT_ID('[dbo].[UserRoleMembership]') IS NOT NULL)
-DROP TABLE [dbo].[UserRoleMembership]
-
-GO
-
-CREATE TABLE [dbo].[UserRoleMembership]
-(
-	[EntityGuid] [uniqueidentifier] NOT NULL,
-	CONSTRAINT [PK_UserRoleMembership] PRIMARY KEY CLUSTERED 
-	(
-		[EntityGuid] ASC
-	)
-)
-
-GO
-
----------------------------------------------------------------
-
 IF (OBJECT_ID('[dbo].[UserIdentity]') IS NOT NULL)
 DROP TABLE [dbo].[UserIdentity]
 

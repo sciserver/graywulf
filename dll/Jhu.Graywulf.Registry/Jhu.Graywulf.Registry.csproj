@@ -75,7 +75,6 @@
     <Compile Include="Registry\IContextObject.cs" />
     <Compile Include="Registry\DiskGroup.io.cs" />
     <Compile Include="Registry\RegistryConfiguration.cs" />
-    <Compile Include="Registry\UserRoleMembership.cs" />
     <Compile Include="Registry\UserRole.cs" />
     <Compile Include="Registry\UserGroupMembership.cs" />
     <Compile Include="Registry\UserGroupMembership.io.cs" />

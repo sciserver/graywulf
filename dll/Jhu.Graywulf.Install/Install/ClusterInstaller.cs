@@ -27,9 +27,9 @@ namespace Jhu.Graywulf.Install
             return Install(
                 true,
                 Constants.ClusterName,
-                Constants.ClusterAdminName,
-                Constants.ClusterAdminEmail,
-                Constants.ClusterAdminPassword);
+                Constants.ClusterAdminUserName,
+                Constants.ClusterAdminUserEmail,
+                Constants.ClusterAdminUserPassword);
         }
 
         public Cluster Install(bool system, string clusterName, string username, string email, string password)
@@ -253,10 +253,23 @@ namespace Jhu.Graywulf.Install
 
             var ug = new UserGroup(domain)
             {
-                Name = Constants.ClusterAdministratorUserGroupName,
+                Name = Constants.ClusterAdminUserGroupName,
                 System = system,
             };
             ug.Save();
+        }
+
+        private void GenerateAdminRole(bool system)
+        {
+            cluster.LoadDomains(true);
+            var domain = cluster.Domains[Constants.SystemDomainName];
+
+            var ur = new UserRole(domain)
+            {
+                Name = Constants.ClusterAdminUserRoleName,
+                System = system,
+            };
+            ur.Save();
         }
 
         public void GenerateAdmin(bool system, string username, string email, string password)
@@ -265,7 +278,10 @@ namespace Jhu.Graywulf.Install
             var domain = cluster.Domains[Constants.SystemDomainName];
 
             domain.LoadUserGroups(true);
-            var ug = domain.UserGroups[Constants.ClusterAdministratorUserGroupName];
+            var ug = domain.UserGroups[Constants.ClusterAdminUserGroupName];
+
+            domain.LoadUserRoles(true);
+            var ur = domain.UserGroups[Constants.ClusterAdminUserRoleName];
 
             var u = new User(domain)
             {
@@ -277,7 +293,7 @@ namespace Jhu.Graywulf.Install
             u.SetPassword(password);
             u.Save();
 
-            u.AddToGroup(ug.Guid);
+            u.AddToGroup(ug.Guid, ur.Guid);
         }
     }
 }

@@ -176,14 +176,6 @@ namespace Jhu.Graywulf.Web.Security
             }
 
             user.Save();
-
-            // Add user to default roles
-            user.Domain.LoadUserRoles(true);
-
-            foreach (var role in user.Domain.UserRoles.Values)
-            {
-                user.AddToRole(role.Guid);
-            }
         }
 
         /// <summary>

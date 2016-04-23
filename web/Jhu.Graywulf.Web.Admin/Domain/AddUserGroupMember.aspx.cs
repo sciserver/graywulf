@@ -35,16 +35,22 @@ namespace Jhu.Graywulf.Web.Admin.Domain
 
         private void UpdateForm()
         {
-            IEnumerable<Registry.UserGroup> usergroups;
-
             var d = user.Domain;
             d.LoadUserGroups(true);
-            usergroups = d.UserGroups.Values;
+            d.LoadUserRoles(true);
+            var usergroups = d.UserGroups.Values;
+            var userroles = d.UserRoles.Values;
 
             UserGroup.Items.Add(new ListItem("(select user group)", Guid.Empty.ToString()));
             foreach (var ug in usergroups)
             {
                 UserGroup.Items.Add(new ListItem(ug.Name, ug.Guid.ToString()));
+            }
+
+            UserRole.Items.Add(new ListItem("(select user role)", Guid.Empty.ToString()));
+            foreach (var ur in userroles)
+            {
+                UserRole.Items.Add(new ListItem(ur.Name, ur.Guid.ToString()));
             }
         }
 
@@ -55,7 +61,7 @@ namespace Jhu.Graywulf.Web.Admin.Domain
             if (IsValid)
             {
                 LoadItem();
-                user.AddToGroup(new Guid(UserGroup.SelectedValue));
+                user.AddToGroup(new Guid(UserGroup.SelectedValue), new Guid(UserRole.SelectedValue));
 
                 Response.Redirect(user.GetDetailsUrl(), false);
             }

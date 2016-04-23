@@ -385,13 +385,6 @@ namespace Jhu.Graywulf.Registry
         }
 
         [XmlIgnore]
-        public Dictionary<string, UserRoleMembership> UserRoleMemberships
-        {
-            get { return GetChildren<UserRoleMembership>(); }
-            set { SetChildren<UserRoleMembership>(value); }
-        }
-
-        [XmlIgnore]
         public Dictionary<string, UserIdentity> UserIdentities
         {
             get { return GetChildren<UserIdentity>(); }
@@ -531,7 +524,6 @@ namespace Jhu.Graywulf.Registry
             return new EntityType[] 
             {
                 EntityType.UserGroupMembership,
-                EntityType.UserRoleMembership,
                 EntityType.UserIdentity,
             };
         }

@@ -175,11 +175,6 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         UserRole = Security | 0x1000,
 
-        /// <summary>
-        /// User role membership
-        /// </summary>
-        UserRoleMembership = Security | 0x2000,
-
         AllSecurity = Security | 0xFFFF,
 
         #endregion
