@@ -662,7 +662,6 @@ GO
 CREATE TABLE [dbo].[UserRole]
 (
 	[EntityGuid] [uniqueidentifier] NOT NULL,
-	[Default] [bit] NOT NULL,
 	CONSTRAINT [PK_UserRole] PRIMARY KEY CLUSTERED 
 	(
 		[EntityGuid] ASC

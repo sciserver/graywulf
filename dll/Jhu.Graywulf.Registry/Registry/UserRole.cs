@@ -19,8 +19,6 @@ namespace Jhu.Graywulf.Registry
     {
         #region Member Variables
 
-        private bool @default;
-
         #endregion
         #region Member Access Properties
 
@@ -34,13 +32,6 @@ namespace Jhu.Graywulf.Registry
         public override EntityGroup EntityGroup
         {
             get { return EntityGroup.Domain; }
-        }
-
-        [DBColumn]
-        public bool Default
-        {
-            get { return @default; }
-            set { @default = value; }
         }
 
         #endregion
@@ -109,7 +100,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            this.@default = false;
         }
 
         /// <summary>
@@ -118,7 +108,6 @@ namespace Jhu.Graywulf.Registry
         /// <param name="old">A <b>User Role</b> object to create the deep copy from.</param>
         private void CopyMembers(UserRole old)
         {
-            this.@default = old.@default;
         }
 
         public override object Clone()

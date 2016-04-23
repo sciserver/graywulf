@@ -19,15 +19,11 @@ namespace Jhu.Graywulf.Web.Admin.Domain
         protected override void OnUpdateForm()
         {
             base.OnUpdateForm();
-
-            Default.Checked = Item.Default;
         }
 
         protected override void OnSaveForm()
         {
             base.OnSaveForm();
-
-            Item.Default = Default.Checked;
         }
     }
 }

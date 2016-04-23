@@ -19,8 +19,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain
         protected override void UpdateForm()
         {
             base.UpdateForm();
-
-            Default.Checked = Item.Default;
         }
     }
 }
