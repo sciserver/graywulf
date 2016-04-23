@@ -199,6 +199,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\graywulf-entities\dll\Jhu.Graywulf.Entities\Jhu.Graywulf.Entities.csproj">
+      <Project>{cf0cec0a-139f-40f5-a6dd-2708400b539d}</Project>
+      <Name>Jhu.Graywulf.Entities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{abb4c403-720a-47e1-9485-cfaadd696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
