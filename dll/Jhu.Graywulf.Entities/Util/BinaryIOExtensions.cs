@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace Jhu.Graywulf.Entities.Util
+namespace Jhu.Graywulf.Util
 {
-    public static class BinaryIOExtensions
+    static class BinaryIOExtensions
     {
         public static void WriteNullString(this BinaryWriter writer, string value)
         {

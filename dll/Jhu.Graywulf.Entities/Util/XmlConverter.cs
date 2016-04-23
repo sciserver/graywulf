@@ -6,9 +6,9 @@ using System.IO;
 using System.Xml;
 using System.Data.SqlTypes;
 
-namespace Jhu.Graywulf.Entities.Util
+namespace Jhu.Graywulf.Util
 {
-    public static class XmlConverter
+    static class XmlConverter
     {
         public delegate void ToXmlDelegate(XmlWriter w);
         public delegate T FromXmlDelegate<T>(XmlReader r);

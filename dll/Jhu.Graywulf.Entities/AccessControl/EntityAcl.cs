@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Xml;
-using Jhu.Graywulf.Entities.Util;
+using Jhu.Graywulf.Util;
 
 namespace Jhu.Graywulf.AccessControl
 {
