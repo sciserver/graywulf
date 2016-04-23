@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Web.Security
     /// authentication.
     /// </summary>
     [Serializable]
-    public class GraywulfIdentity : IIdentity
+    public class GraywulfIdentity : Jhu.Graywulf.AccessControl.Identity, IIdentity
     {
         #region Private member variables
 
@@ -113,7 +113,7 @@ namespace Jhu.Graywulf.Web.Security
         /// <remarks>
         /// Required by the IIdentity interface
         /// </remarks>
-        public string Name
+        public new string Name
         {
             get { return userReference.Value.Name; }
         }

@@ -10,50 +10,23 @@ namespace Jhu.Graywulf.Web.Security
     /// <summary>
     /// Implements a security principal for the Graywulf authentication framework.
     /// </summary>
-    public class GraywulfPrincipal : IPrincipal
-    {
-        private HashSet<string> roles;
-        private GraywulfIdentity identity;
-
-        public HashSet<string> Roles
+    public class GraywulfPrincipal : Graywulf.AccessControl.Principal, IPrincipal
+    {       
+        public new GraywulfIdentity Identity
         {
-            get { return roles; }
+            get { return (GraywulfIdentity)base.Identity; }
         }
 
         public GraywulfPrincipal(GraywulfIdentity identity)
+            :base(identity)
         {
-            this.roles = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
-            this.identity = identity;
-        }
-
-        /// <summary>
-        /// Gets the identity associated with the principal.
-        /// </summary>
-        IIdentity IPrincipal.Identity
-        {
-            get { return identity; }
-        }
-
-        public GraywulfIdentity Identity
-        {
-            get { return identity; }
-        }
-
-        /// <summary>
-        /// Returns truw if the identity is in the specified role.
-        /// </summary>
-        /// <param name="role"></param>
-        /// <returns></returns>
-        public bool IsInRole(string role)
-        {
-            return roles.Contains(role);
         }
 
         public string UniqueID
         {
             get
             {
-                return String.Format("{0}|{1}", identity.AuthorityUri, identity.Identifier);
+                return String.Format("{0}|{1}", Identity.AuthorityUri, Identity.Identifier);
             }
         }
     }
