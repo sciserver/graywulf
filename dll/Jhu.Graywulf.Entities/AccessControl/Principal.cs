@@ -102,6 +102,11 @@ namespace Jhu.Graywulf.AccessControl
             return roles.Contains(role);
         }
 
+        public bool IsInRole(string group, string role)
+        {
+            return roles.Contains(group + "|" + role);
+        }
+
         #region Binary serialization
 
         public byte[] ToBinary()
