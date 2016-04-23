@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.AccessControl
         #region Private member variables
 
         private Identity identity;
-        private PrincipalRoleCollection roles;
+        private HashSet<string> roles;
 
         #endregion
         #region Properties
@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.AccessControl
             set { identity = value; }
         }
 
-        public PrincipalRoleCollection Roles
+        public HashSet<string> Roles
         {
             get { return roles; }
         }
@@ -81,13 +81,13 @@ namespace Jhu.Graywulf.AccessControl
         private void InitializeMembers()
         {
             this.identity = null;
-            this.roles = new PrincipalRoleCollection();
+            this.roles = new HashSet<string>(EntityAcl.Comparer);
         }
 
         private void CopyMembers(Principal old)
         {
             this.identity = new Identity(identity);
-            this.roles = new PrincipalRoleCollection(old.roles);
+            this.roles = new HashSet<string>(old.roles);
         }
 
         public object Clone()
@@ -99,33 +99,7 @@ namespace Jhu.Graywulf.AccessControl
 
         public bool IsInRole(string role)
         {
-            var idx = role.IndexOf('|');
-
-            if (idx < 0)
-            {
-                throw Error.InvalidRole();
-            }
-
-            var g = role.Substring(0, idx);
-            var r = role.Substring(idx + 1);
-
-            return IsInRole(g, r);
-        }
-
-        public bool IsInRole(string group, string role)
-        {
-            // TODO: optimize this using hashtables
-
-            foreach (var r in roles)
-            {
-                if (EntityAcl.Comparer.Compare(r.Group, group) == 0 &&
-                    EntityAcl.Comparer.Compare(r.Role, role) == 0)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return roles.Contains(role);
         }
 
         #region Binary serialization
@@ -157,8 +131,7 @@ namespace Jhu.Graywulf.AccessControl
 
             foreach (var role in roles)
             {
-                w.WriteNullString(role.Group);
-                w.WriteNullString(role.Role);
+                w.WriteNullString(role);
             }
         }
 
@@ -190,12 +163,7 @@ namespace Jhu.Graywulf.AccessControl
 
             for (int i = 0; i < rc; i++)
             {
-                var role = new PrincipalRole()
-                {
-                    Group = r.ReadNullString(),
-                    Role = r.ReadNullString()
-                };
-
+                var role = r.ReadNullString();
                 principal.roles.Add(role);
             }
 
@@ -221,24 +189,10 @@ namespace Jhu.Graywulf.AccessControl
             w.WriteAttributeString("name", identity.Name);
             w.WriteAttributeString("auth", identity.IsAuthenticated ? "1" : "0");
 
-            PrincipalRole lastentry = null;
-
             foreach (var role in roles)
             {
-                if (lastentry != null)
-                {
-                    w.WriteEndElement();
-                }
-
-                lastentry = role;
-
-                w.WriteStartElement("group");
-                w.WriteAttributeString("name", role.Group);
-                w.WriteAttributeString("role", role.Role);
-            }
-
-            if (lastentry != null)
-            {
+                w.WriteStartElement("role");
+                w.WriteAttributeString("name", role);
                 w.WriteEndElement();
             }
 
@@ -266,13 +220,10 @@ namespace Jhu.Graywulf.AccessControl
             identity.IsAuthenticated = r.GetAttribute("auth") == "1";
             r.ReadStartElement("id");
 
-            // Read group and role membership
+            // Read roles
             while (r.NodeType == XmlNodeType.Element)
             {
-                var role = new PrincipalRole();
-                role.Group = r.GetAttribute("name");
-                role.Role = r.GetAttribute("role");
-
+                var role = r.GetAttribute("name");
                 principal.roles.Add(role);
 
                 r.Read();

@@ -199,19 +199,9 @@ namespace Jhu.Graywulf.AccessControl
                 {
                     var gace = (GroupAce)ace;
 
-                    // TODO: try to speed this up
-                    foreach (var role in principal.Roles)
-                    {
-                        applies = applies ? true :
-                            access.IsAuthenticated &&
-                            EntityAcl.Comparer.Compare(role.Group, gace.Name) == 0 &&
-                            EntityAcl.Comparer.Compare(role.Role, gace.Role) == 0;
-
-                        if (applies)
-                        {
-                            break;
-                        }
-                    }
+                    applies = applies ? true :
+                        access.IsAuthenticated &&
+                        principal.IsInRole(gace.Name + "|" + gace.Role);
                 }
 
                 if (applies)

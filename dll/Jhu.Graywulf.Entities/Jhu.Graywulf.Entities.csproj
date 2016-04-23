@@ -60,8 +60,6 @@
     <Compile Include="AccessControl\GroupAce.cs" />
     <Compile Include="AccessControl\Identity.cs" />
     <Compile Include="AccessControl\Principal.cs" />
-    <Compile Include="AccessControl\PrincipalRole.cs" />
-    <Compile Include="AccessControl\PrincipalRoleCollection.cs" />
     <Compile Include="AccessControl\Sql\SqlEntityAcl.cs" />
     <Compile Include="AccessControl\Sql\SqlPrincipal.cs" />
     <Compile Include="AccessControl\UserAce.cs" />
