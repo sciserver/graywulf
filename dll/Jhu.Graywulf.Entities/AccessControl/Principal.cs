@@ -73,6 +73,13 @@ namespace Jhu.Graywulf.AccessControl
             InitializeMembers();
         }
 
+        public Principal(Identity identity)
+        {
+            InitializeMembers();
+
+            this.identity = identity;
+        }
+
         public Principal(Principal old)
         {
             CopyMembers(old);
