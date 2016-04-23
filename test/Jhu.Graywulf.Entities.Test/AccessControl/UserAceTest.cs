@@ -3,7 +3,7 @@ using System.IO;
 using System.Xml.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Jhu.Graywulf.Entities.AccessControl
+namespace Jhu.Graywulf.AccessControl
 {
     [TestClass]
     public class UserAceTest

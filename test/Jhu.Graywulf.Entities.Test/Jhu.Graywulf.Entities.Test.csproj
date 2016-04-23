@@ -54,11 +54,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Entities\AccessControl\IdentityRoleTest.cs" />
-    <Compile Include="Entities\AccessControl\EntityAclTest.cs" />
-    <Compile Include="Entities\AccessControl\GroupAceTest.cs" />
-    <Compile Include="Entities\AccessControl\IdentityTest.cs" />
-    <Compile Include="Entities\AccessControl\UserAceTest.cs" />
+    <Compile Include="AccessControl\EntityAclTest.cs" />
+    <Compile Include="AccessControl\GroupAceTest.cs" />
+    <Compile Include="AccessControl\PrincipalTest.cs" />
+    <Compile Include="AccessControl\UserAceTest.cs" />
     <Compile Include="Entities\AuxColumnEntity.cs" />
     <Compile Include="Entities\AuxColumnEntityTest.cs" />
     <Compile Include="Entities\EnumEntity.cs" />

@@ -7,13 +7,15 @@ namespace Jhu.Graywulf.Entities
     [TestClass]
     public class SecurableEntitySearchTest : TestClassBase
     {
-        protected static SecuredEntity CreateEntity(Context context)
+        protected static SecuredEntity CreateEntity(Context context, string name)
         {
             var e = new SecuredEntity(context)
             {
                 ID = 0,
-                Name = "test",
+                Name = name,
             };
+
+            e.Save();
 
             return e;
         }
@@ -22,12 +24,6 @@ namespace Jhu.Graywulf.Entities
         public static void Initialize(TestContext testContext)
         {
             InitializeDatabase();
-
-            using (var context = CreateContext())
-            {
-                var e = CreateEntity(context);
-                e.Save();
-            }
         }
 
         [TestMethod]
@@ -35,9 +31,11 @@ namespace Jhu.Graywulf.Entities
         {
             using (var context = CreateContext())
             {
+                CreateEntity(context, "CountTest");
+
                 var s = new SecuredEntitySearch(context);
 
-                s.Name = "tes%";
+                s.Name = "CountTest";
 
                 var cnt = s.Count();
 
@@ -50,11 +48,13 @@ namespace Jhu.Graywulf.Entities
         {
             using (var context = CreateContext())
             {
-                context.Principal = CreateAnonIdentity();
+                CreateEntity(context, "CountDeniedTest");
+
+                context.Principal = CreateAnonPrincipal();
 
                 var s = new SecuredEntitySearch(context);
 
-                s.Name = "tes%";
+                s.Name = "CountDeniedTest";
 
                 var cnt = s.Count();
 
@@ -67,9 +67,11 @@ namespace Jhu.Graywulf.Entities
         {
             using (var context = CreateContext())
             {
+                CreateEntity(context, "FindTest");
+
                 var s = new SecuredEntitySearch(context);
 
-                s.Name = "tes%";
+                s.Name = "FindTest";
 
                 var cnt = s.Find().Count();
 
@@ -82,11 +84,13 @@ namespace Jhu.Graywulf.Entities
         {
             using (var context = CreateContext())
             {
-                context.Principal = CreateAnonIdentity();
+                CreateEntity(context, "FindDeniedTest");
+
+                context.Principal = CreateAnonPrincipal();
 
                 var s = new SecuredEntitySearch(context);
 
-                s.Name = "tes%";
+                s.Name = "FindDeniedTest";
 
                 var cnt = s.Find().Count();
 

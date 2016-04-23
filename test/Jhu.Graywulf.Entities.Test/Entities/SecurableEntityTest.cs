@@ -6,7 +6,7 @@ using System.IO;
 using System.Security;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Entities.Mapping;
-using Jhu.Graywulf.Entities.AccessControl;
+using Jhu.Graywulf.AccessControl;
 
 namespace Jhu.Graywulf.Entities
 {
@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Entities
 
                 Assert.IsFalse(e.IsDirty);
                 Assert.IsTrue(e.ID > 0);
-                Assert.AreEqual(context.Principal.Name, e.Permissions.Owner);
+                Assert.AreEqual(context.Principal.Identity.Name, e.Permissions.Owner);
             }
         }
 
@@ -70,7 +70,7 @@ namespace Jhu.Graywulf.Entities
                 Assert.IsFalse(e.IsDirty);
                 Assert.AreEqual(id, e.ID);
                 Assert.AreEqual("test", e.Name);
-                Assert.AreEqual(context.Principal.Name, e.Permissions.Owner);
+                Assert.AreEqual(context.Principal.Identity.Name, e.Permissions.Owner);
             }
         }
 
@@ -145,7 +145,7 @@ namespace Jhu.Graywulf.Entities
 
             using (var context = CreateContext())
             {
-                context.Principal = CreateOtherIdentity();
+                context.Principal = CreateOtherPrincipal();
 
                 var e = new SecuredEntity(context);
                 e.ID = id;
@@ -175,7 +175,7 @@ namespace Jhu.Graywulf.Entities
 
             using (var context = CreateContext())
             {
-                context.Principal = CreateOtherIdentity();
+                context.Principal = CreateOtherPrincipal();
 
                 var e = new SecuredEntity(context);
                 e.ID = id;
@@ -207,7 +207,7 @@ namespace Jhu.Graywulf.Entities
 
             using (var context = CreateContext())
             {
-                context.Principal = CreateOtherIdentity();
+                context.Principal = CreateOtherPrincipal();
 
                 var e = new SecuredEntity(context);
                 e.ID = id;
@@ -236,7 +236,7 @@ namespace Jhu.Graywulf.Entities
 
             using (var context = CreateContext())
             {
-                context.Principal = CreateOtherIdentity();
+                context.Principal = CreateOtherPrincipal();
 
                 var e = new SecuredEntity(context);
                 e.ID = id;
@@ -268,7 +268,7 @@ namespace Jhu.Graywulf.Entities
 
             using (var context = CreateContext())
             {
-                context.Principal = CreateOtherIdentity();
+                context.Principal = CreateOtherPrincipal();
 
                 var e = new SecuredEntity(context);
                 e.ID = id;
@@ -303,7 +303,7 @@ namespace Jhu.Graywulf.Entities
 
             using (var context = CreateContext())
             {
-                context.Principal = CreateOtherIdentity();
+                context.Principal = CreateOtherPrincipal();
 
                 var e = new SecuredEntity(context);
                 e.ID = id;

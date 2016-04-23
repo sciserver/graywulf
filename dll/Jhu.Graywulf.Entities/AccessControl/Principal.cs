@@ -86,7 +86,7 @@ namespace Jhu.Graywulf.AccessControl
 
         private void CopyMembers(Principal old)
         {
-            this.identity = new Identity(identity);
+            this.identity = new Identity(old.identity);
             this.roles = new HashSet<string>(old.roles);
         }
 

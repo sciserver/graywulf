@@ -3,10 +3,10 @@ using System.IO;
 using System.Xml.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Jhu.Graywulf.Entities.AccessControl
+namespace Jhu.Graywulf.AccessControl
 {
     [TestClass]
-    public class EntityAclTest : TestClassBase
+    public class EntityAclTest : Jhu.Graywulf.Entities.TestClassBase
     {
         [TestMethod]
         public void EvaluateOwnerTest()
@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Entities.AccessControl
             acl.Grant(DefaultIdentity.Owner, "read");
             acl.Deny(DefaultIdentity.Owner, "write");
 
-            var id = CreateTestIdentity();
+            var id = CreateTestPrincipal();
 
             var access = acl.EvaluateAccess(id);
 
@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.Entities.AccessControl
             acl.Grant("test", "read");
             acl.Deny("test", "write");
 
-            var id = CreateTestIdentity();
+            var id = CreateTestPrincipal();
 
             var access = acl.EvaluateAccess(id);
 
@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.Entities.AccessControl
             acl.Grant(DefaultIdentity.Public, "read");
             acl.Deny(DefaultIdentity.Public, "write");
 
-            var id = CreateTestIdentity();
+            var id = CreateTestPrincipal();
 
             var access = acl.EvaluateAccess(id);
 
@@ -67,12 +67,9 @@ namespace Jhu.Graywulf.Entities.AccessControl
             acl.Grant(DefaultIdentity.Guest, "read");
             acl.Deny(DefaultIdentity.Guest, "write");
 
-            var id = new Identity()
-            {
-                IsAuthenticated = false,
-            };
+            var principal = CreateAnonPrincipal();
 
-            var access = acl.EvaluateAccess(id);
+            var access = acl.EvaluateAccess(principal);
 
             Assert.AreEqual(AccessType.Grant, access["read"]);
             Assert.AreEqual(AccessType.Deny, access["write"]);
@@ -86,9 +83,9 @@ namespace Jhu.Graywulf.Entities.AccessControl
             acl.Grant("testgroup", "member", "read");
             acl.Deny("testgroup", "member", "write");
 
-            var id = CreateTestIdentity();
+            var id = CreateTestPrincipal();
 
-            id.Roles.Add("testgroup", "member");
+            id.Roles.Add("testgroup|member");
 
             var access = acl.EvaluateAccess(id);
 
@@ -105,9 +102,9 @@ namespace Jhu.Graywulf.Entities.AccessControl
             acl.Grant("testgroup", "member", "write");
             acl.Deny(DefaultIdentity.Guest, "write");
 
-            var id = CreateTestIdentity();
+            var id = CreateTestPrincipal();
 
-            id.Roles.Add("testgroup", "member");
+            id.Roles.Add("testgroup|member");
 
             var access = acl.EvaluateAccess(id);
 

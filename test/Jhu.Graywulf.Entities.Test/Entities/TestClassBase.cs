@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using Jhu.Graywulf.Entities.AccessControl;
+using Jhu.Graywulf.AccessControl;
 
 namespace Jhu.Graywulf.Entities
 {
@@ -17,29 +17,38 @@ namespace Jhu.Graywulf.Entities
             return Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\", path);
         }
 
-        protected static Identity CreateTestIdentity()
+        protected static Principal CreateTestPrincipal()
         {
-            return new Identity()
+            return new Principal()
             {
-                IsAuthenticated = true,
-                Name = TestUser
+                Identity = new Identity()
+                {
+                    IsAuthenticated = true,
+                    Name = TestUser
+                }
             };
         }
 
-        protected static Identity CreateOtherIdentity()
+        protected static Principal CreateOtherPrincipal()
         {
-            return new Identity()
+            return new Principal()
             {
-                IsAuthenticated = true,
-                Name = OtherUser
+                Identity = new Identity()
+                {
+                    IsAuthenticated = true,
+                    Name = OtherUser
+                }
             };
         }
 
-        protected static Identity CreateAnonIdentity()
+        protected static Principal CreateAnonPrincipal()
         {
-            return new Identity()
+            return new Principal()
             {
-                IsAuthenticated = false,
+                Identity = new Identity()
+                {
+                    IsAuthenticated = false,
+                }
             };
         }
 
@@ -48,7 +57,7 @@ namespace Jhu.Graywulf.Entities
             var context = new Context()
             {
                 ConnectionString = "Data Source=localhost;Initial Catalog=GraywulfEntitiesTest;Integrated Security=true",
-                Principal = CreateTestIdentity()
+                Principal = CreateTestPrincipal()
             };
 
             return context;
