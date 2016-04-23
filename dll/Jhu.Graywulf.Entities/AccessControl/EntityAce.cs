@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using System.Xml;
 
-namespace Jhu.Graywulf.Entities.AccessControl
+namespace Jhu.Graywulf.AccessControl
 {
     public abstract class EntityAce : IComparable, ICloneable
     {

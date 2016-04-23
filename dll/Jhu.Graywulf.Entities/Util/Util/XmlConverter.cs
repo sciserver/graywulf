@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Entities.Util
         public static T FromXml<T>(string xml, FromXmlDelegate<T> action)
         {
             var sr = new StringReader(xml);
-            var r = (XmlReader)XmlTextReader.Create(             sr, XmlReaderSettings);
+            var r = (XmlReader)XmlTextReader.Create(sr, XmlReaderSettings);
             return action(r);
         }
     }

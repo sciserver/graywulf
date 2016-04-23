@@ -6,7 +6,7 @@ using System.IO;
 using System.Xml;
 using Jhu.Graywulf.Entities.Util;
 
-namespace Jhu.Graywulf.Entities.AccessControl
+namespace Jhu.Graywulf.AccessControl
 {
     public sealed class EntityAcl : IEnumerable<EntityAce>
     {

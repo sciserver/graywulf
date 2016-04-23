@@ -4,15 +4,17 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Xml;
+using System.Security.Principal;
 using Jhu.Graywulf.Entities.Util;
 
-namespace Jhu.Graywulf.Entities.AccessControl
+namespace Jhu.Graywulf.AccessControl
 {
-    public class Identity : ICloneable
+    public class Identity : IIdentity, ICloneable
     {
         #region Private member variables
 
         private string name;
+        private string authenticationType;
         private bool isAuthenticated;
         private IdentityRoleCollection roles;
 
@@ -23,6 +25,12 @@ namespace Jhu.Graywulf.Entities.AccessControl
         {
             get { return name; }
             set { name = value; }
+        }
+
+        public string AuthenticationType
+        {
+            get { return authenticationType; }
+            set { authenticationType = value; }
         }
 
         public bool IsAuthenticated
@@ -76,6 +84,7 @@ namespace Jhu.Graywulf.Entities.AccessControl
         private void InitializeMembers()
         {
             this.name = null;
+            this.authenticationType = null;
             this.isAuthenticated = false;
             this.roles = new IdentityRoleCollection();
         }
@@ -83,7 +92,8 @@ namespace Jhu.Graywulf.Entities.AccessControl
         private void CopyMembers(Identity old)
         {
             this.name = old.name;
-            this.isAuthenticated = true;
+            this.authenticationType = old.authenticationType;
+            this.isAuthenticated = old.isAuthenticated;
             this.roles = new IdentityRoleCollection(old.roles);
         }
 

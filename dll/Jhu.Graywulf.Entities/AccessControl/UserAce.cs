@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jhu.Graywulf.Entities.AccessControl
+namespace Jhu.Graywulf.AccessControl
 {
     public sealed class UserAce : EntityAce, IComparable, ICloneable
     {

@@ -6,7 +6,7 @@ using System.Data;
 using System.Data.SqlTypes;
 using System.IO;
 using Microsoft.SqlServer.Server;
-using Jhu.Graywulf.Entities.AccessControl;
+using Jhu.Graywulf.AccessControl;
 
 namespace Jhu.Graywulf.Entities.Sql
 {

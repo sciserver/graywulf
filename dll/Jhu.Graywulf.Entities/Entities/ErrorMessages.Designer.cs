@@ -61,15 +61,6 @@ namespace Jhu.Graywulf.Entities {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Access denied..
-        /// </summary>
-        internal static string AccessDenied {
-            get {
-                return ResourceManager.GetString("AccessDenied", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Connection is already open..
         /// </summary>
         internal static string ConnectionAlreadyOpen {

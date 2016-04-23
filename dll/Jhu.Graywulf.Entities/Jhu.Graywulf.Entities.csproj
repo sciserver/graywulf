@@ -45,15 +45,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\AccessControl\AccessCollection.cs" />
-    <Compile Include="Entities\AccessControl\EntityAce.cs" />
-    <Compile Include="Entities\AccessControl\EntityAcl.cs" />
-    <Compile Include="Entities\AccessControl\DefaultAccess.cs" />
-    <Compile Include="Entities\AccessControl\AccessType.cs" />
-    <Compile Include="Entities\AccessControl\DefaultIdentity.cs" />
-    <Compile Include="Entities\AccessControl\GroupAce.cs" />
-    <Compile Include="Entities\AccessControl\IdentityRoleCollection.cs" />
-    <Compile Include="Entities\AccessControl\UserAce.cs" />
+    <Compile Include="AccessControl\AccessCollection.cs" />
+    <Compile Include="AccessControl\AccessType.cs" />
+    <Compile Include="AccessControl\DefaultAccess.cs" />
+    <Compile Include="AccessControl\DefaultIdentity.cs" />
+    <Compile Include="AccessControl\EntityAce.cs" />
+    <Compile Include="AccessControl\EntityAcl.cs" />
+    <Compile Include="AccessControl\Error.cs" />
+    <Compile Include="AccessControl\ErrorMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ErrorMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="AccessControl\GroupAce.cs" />
+    <Compile Include="AccessControl\Identity.cs" />
+    <Compile Include="AccessControl\IdentityRole.cs" />
+    <Compile Include="AccessControl\IdentityRoleCollection.cs" />
+    <Compile Include="AccessControl\Principal.cs" />
+    <Compile Include="AccessControl\UserAce.cs" />
     <Compile Include="Entities\Context.cs" />
     <Compile Include="Entities\ContextObject.cs" />
     <Compile Include="Entities\Entity.cs" />
@@ -66,7 +75,6 @@
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Entities\IDatabaseTableObject.cs" />
-    <Compile Include="Entities\AccessControl\Identity.cs" />
     <Compile Include="Entities\IRange.cs" />
     <Compile Include="Entities\Mapping\DbColumnBinding.cs" />
     <Compile Include="Entities\Mapping\DbColumnListType.cs" />
@@ -79,7 +87,6 @@
     <Compile Include="Entities\Mapping\DbTableAttribute.cs" />
     <Compile Include="Entities\EntityException.cs" />
     <Compile Include="Entities\NoResultsException.cs" />
-    <Compile Include="Entities\AccessControl\IdentityRole.cs" />
     <Compile Include="Entities\Range.cs" />
     <Compile Include="Entities\SecurableEntity.cs" />
     <Compile Include="Entities\SecurableEntitySearch.cs" />
@@ -92,6 +99,10 @@
     <Compile Include="Entities\SqlDataReaderExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AccessControl\ErrorMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Entities\ErrorMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>

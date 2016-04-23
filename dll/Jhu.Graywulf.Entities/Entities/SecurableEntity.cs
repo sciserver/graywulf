@@ -6,7 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Entities.Mapping;
-using Jhu.Graywulf.Entities.AccessControl;
+using Jhu.Graywulf.AccessControl;
 
 namespace Jhu.Graywulf.Entities
 {

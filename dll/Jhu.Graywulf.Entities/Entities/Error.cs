@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Security;
 
 namespace Jhu.Graywulf.Entities
 {
@@ -37,11 +36,6 @@ namespace Jhu.Graywulf.Entities
         public static NoResultsException NoResults(int expected)
         {
             return new NoResultsException(String.Format(ErrorMessages.NoResults, expected));
-        }
-
-        public static SecurityException AccessDenied()
-        {
-            return new SecurityException(ErrorMessages.AccessDenied);
         }
 
         public static EntityException ErrorCreateEntity()
