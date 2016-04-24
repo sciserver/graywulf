@@ -23,11 +23,16 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         protected void AuthenticateTestUser(RestClientSession session)
         {
+            AuthenticateUser(session, "test");
+        }
+
+        protected void AuthenticateUser(RestClientSession session, string user)
+        {
             var auth = new AuthRequest()
             {
                 Credentials = new Credentials()
                 {
-                    Username = "test",
+                    Username = user,
                     Password = "alma"
                 }
             };
