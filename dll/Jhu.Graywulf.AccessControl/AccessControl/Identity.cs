@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.AccessControl
             set { name = value; }
         }
 
-        public string AuthenticationType
+        public virtual string AuthenticationType
         {
             get { return authenticationType; }
             set { authenticationType = value; }
