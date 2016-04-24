@@ -123,4 +123,7 @@
   <data name="InvalidRole" xml:space="preserve">
     <value>Invalid role.</value>
   </data>
+  <data name="NoSqlPrincipal" xml:space="preserve">
+    <value>Principal type does not support SQL-level access control. Please inherit from Jhu.Graywulf.AccessControl.Principal.</value>
+  </data>
 </root>

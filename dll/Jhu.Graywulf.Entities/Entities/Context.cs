@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Entities
         private string connectionString;
         private SqlConnection connection;
         private SqlTransaction transaction;
-        private Principal principal;
+        private IPrincipal principal;
 
         #region Properties
 
@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Entities
             }
         }
 
-        public Principal Principal
+        public IPrincipal Principal
         {
             get { return principal; }
             set { principal = value; }

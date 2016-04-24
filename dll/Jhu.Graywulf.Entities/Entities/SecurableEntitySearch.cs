@@ -40,10 +40,17 @@ namespace Jhu.Graywulf.Entities
         {
             base.AppendSearchCriteria();
 
+            if (!(Context.Principal is AccessControl.Principal))
+            {
+                throw AccessControl.Error.NoSqlPrincipal();
+            }
+
+            var p = (AccessControl.Principal)Context.Principal;
+
             var criterion = String.Format("{0}.CanRead([{1}]) = 1", Constants.IdentityVariableName, Constants.AclColumnName);
             var id = new SqlParameter(Constants.IdentityParameterName, SqlDbType.NVarChar)
             {
-                Value = Context.Principal.ToXml()
+                Value = p.ToXml()
             };
 
             AppendSearchCriterion(criterion);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Xml;
+using System.Security.Principal;
 using Jhu.Graywulf.Util;
 
 namespace Jhu.Graywulf.AccessControl
@@ -166,7 +167,7 @@ namespace Jhu.Graywulf.AccessControl
             SetDirty();
         }
 
-        public AccessCollection EvaluateAccess(Principal principal)
+        public AccessCollection EvaluateAccess(IPrincipal principal)
         {
             var access = new AccessCollection();
 
