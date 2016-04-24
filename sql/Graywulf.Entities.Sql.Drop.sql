@@ -8,8 +8,8 @@ DROP TYPE [entities].[EntityAcl]
 
 GO
 
-IF EXISTS(SELECT * FROM sys.assemblies WHERE name = 'Jhu.Graywulf.Entities')
-DROP ASSEMBLY [Jhu.Graywulf.Entities]
+IF EXISTS(SELECT * FROM sys.assemblies WHERE name = 'Jhu.Graywulf.AccessControl')
+DROP ASSEMBLY [Jhu.Graywulf.AccessControl]
 
 GO
 
