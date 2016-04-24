@@ -86,21 +86,26 @@ namespace Jhu.Graywulf.Entities
         #endregion
         #region CRUD functions
 
+        protected virtual void OnSetDefaultPermissions(EntityEventArgs e)
+        {
+            if (Permissions.Owner == null)
+            {
+                Permissions.Owner = Context.Principal.Identity.Name;
+            }
+        }
+
+        protected override void OnSaving(EntityEventArgs e)
+        {
+            OnSetDefaultPermissions(e);
+
+            base.OnSaving(e);
+        }
+
         protected override void OnLoaded(EntityEventArgs e)
         {
             base.OnLoaded(e);
 
             Access.EnsureRead();
-        }
-
-        protected override void OnCreating(EntityEventArgs e)
-        {
-            if (this.acl.Owner == null)
-            {
-                this.acl.Owner = Context.Principal.Identity.Name;
-            }
-
-            base.OnCreating(e);
         }
 
         protected override void OnModifying(EntityEventArgs e)
