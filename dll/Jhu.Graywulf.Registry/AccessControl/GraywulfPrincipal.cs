@@ -5,7 +5,7 @@ using System.Text;
 using System.Web;
 using System.Security.Principal;
 
-namespace Jhu.Graywulf.Web.Security
+namespace Jhu.Graywulf.AccessControl
 {
     /// <summary>
     /// Implements a security principal for the Graywulf authentication framework.

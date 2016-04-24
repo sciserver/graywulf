@@ -7,7 +7,6 @@ namespace Jhu.Graywulf.Web.Security
 {
     static class Constants
     {
-        public const string AuthenticationTypeName = "Graywulf";
         public const string AuthorityNameGraywulf = "Graywulf";
 
         public const string ProtocolNameForms = "Forms";

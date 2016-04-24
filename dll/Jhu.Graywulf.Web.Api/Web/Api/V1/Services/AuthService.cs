@@ -6,6 +6,7 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Runtime.Serialization;
 using System.ComponentModel;
+using Jhu.Graywulf.AccessControl;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Web.Services;
 

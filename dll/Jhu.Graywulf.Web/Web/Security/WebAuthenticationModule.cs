@@ -6,6 +6,7 @@ using System.Web;
 using System.Configuration;
 using System.Security.Principal;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.AccessControl;
 using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Security

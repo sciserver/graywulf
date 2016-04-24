@@ -6,7 +6,7 @@ using System.Security.Principal;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Web.Security
+namespace Jhu.Graywulf.AccessControl
 {
     /// <summary>
     /// Implements an identity for Graywulf authentication schemes that
@@ -23,7 +23,6 @@ namespace Jhu.Graywulf.Web.Security
         private string authorityUri;
         private bool isMasterAuthority;
         private string identifier;
-        private bool isAuthenticated;
         private EntityReference<User> userReference;
 
         #endregion
@@ -35,7 +34,7 @@ namespace Jhu.Graywulf.Web.Security
         /// <remarks>
         /// Required by the interface.
         /// </remarks>
-        public string AuthenticationType
+        public override string AuthenticationType
         {
             get { return Constants.AuthenticationTypeName; }
         }
@@ -90,15 +89,6 @@ namespace Jhu.Graywulf.Web.Security
         }
 
         /// <summary>
-        /// Gets or sets whether this identity has been authenticated.
-        /// </summary>
-        public bool IsAuthenticated
-        {
-            get { return isAuthenticated; }
-            set { isAuthenticated = value; }
-        }
-
-        /// <summary>
         /// Gets or sets an object holding a reference to
         /// the registry user object.
         /// </summary>
@@ -147,7 +137,6 @@ namespace Jhu.Graywulf.Web.Security
             this.authorityName = String.Empty;
             this.authorityUri = String.Empty;
             this.identifier = String.Empty;
-            this.isAuthenticated = false;
             this.userReference = new EntityReference<User>(null);
         }
 
@@ -157,7 +146,6 @@ namespace Jhu.Graywulf.Web.Security
             this.authorityName = old.authorityName;
             this.authorityUri = old.authorityUri;
             this.identifier = old.identifier;
-            this.isAuthenticated = old.isAuthenticated;
             this.userReference = new EntityReference<User>(null, old.userReference);
         }
 

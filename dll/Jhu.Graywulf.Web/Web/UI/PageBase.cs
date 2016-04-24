@@ -5,8 +5,8 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.Security;
-using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.AccessControl;
 
 namespace Jhu.Graywulf.Web.UI
 {

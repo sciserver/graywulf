@@ -7,6 +7,7 @@ using System.Xml.Serialization;
 using System.Web;
 using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.AccessControl;
 
 namespace Jhu.Graywulf.Web.Security
 {

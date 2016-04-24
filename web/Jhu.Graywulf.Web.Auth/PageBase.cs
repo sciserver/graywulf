@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Jhu.Graywulf.Web.Security;
+using Jhu.Graywulf.AccessControl;
 using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Auth

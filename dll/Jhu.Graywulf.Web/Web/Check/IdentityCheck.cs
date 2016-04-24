@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using System.Web;
 using Jhu.Graywulf.Check;
-using Jhu.Graywulf.Web.Security;
+using Jhu.Graywulf.AccessControl;
 
 namespace Jhu.Graywulf.Web.Check
 {

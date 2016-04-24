@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Security;
 using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.AccessControl;
 
 namespace Jhu.Graywulf.Web.Security
 {

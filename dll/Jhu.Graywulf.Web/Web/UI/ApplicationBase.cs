@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Hosting;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.AccessControl;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Logging;
 

@@ -61,6 +61,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccessControl\Constants.cs" />
+    <Compile Include="AccessControl\GraywulfIdentity.cs" />
+    <Compile Include="AccessControl\GraywulfPrincipal.cs" />
     <Compile Include="Install\DatabaseInstanceInstaller.cs" />
     <Compile Include="Install\InstallerBase.cs" />
     <Compile Include="Install\UserDatabaseInstanceInstaller.cs" />
@@ -230,6 +233,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\graywulf-entities\dll\Jhu.Graywulf.AccessControl\Jhu.Graywulf.AccessControl.csproj">
+      <Project>{73396997-e14a-44bf-b5d4-2e442424f766}</Project>
+      <Name>Jhu.Graywulf.AccessControl</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
       <Project>{57392DA3-E280-48EE-80C8-64E09FD8AFB5}</Project>
       <Name>Jhu.Graywulf.Activities</Name>

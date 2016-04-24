@@ -4,7 +4,7 @@ using System.Text;
 using System.Web.Mail;
 using System.Web;
 using System.Web.UI.WebControls;
-using Jhu.Graywulf.Web.Security;
+using Jhu.Graywulf.AccessControl;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Web;
 

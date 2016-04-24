@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using System.Net;
 using System.Security.Principal;
+using Jhu.Graywulf.AccessControl;
 
 namespace Jhu.Graywulf.Web.Security
 {
