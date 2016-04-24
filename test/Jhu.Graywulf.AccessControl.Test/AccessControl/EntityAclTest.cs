@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Jhu.Graywulf.AccessControl
 {
     [TestClass]
-    public class EntityAclTest : Jhu.Graywulf.Entities.TestClassBase
+    public class EntityAclTest : TestClassBase
     {
         [TestMethod]
         public void EvaluateOwnerTest()

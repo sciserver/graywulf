@@ -17,10 +17,5 @@ namespace Jhu.Graywulf.AccessControl
         {
             return new SecurityException(ErrorMessages.InvalidRole);
         }
-
-        public static SecurityException NoSqlPrincipal()
-        {
-            return new SecurityException(ErrorMessages.NoSqlPrincipal);
-        }
     }
 }

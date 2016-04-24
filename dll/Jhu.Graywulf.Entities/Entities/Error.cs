@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security;
 
 namespace Jhu.Graywulf.Entities
 {
@@ -51,6 +52,16 @@ namespace Jhu.Graywulf.Entities
         public static EntityException ErrorDeleteEntity()
         {
             return new EntityException(ErrorMessages.ErrorDeleteEntity);
+        }
+
+        public static EntityException NoSqlPrincipal()
+        {
+            return new EntityException(ErrorMessages.NoSqlPrincipal);
+        }
+
+        public static SecurityException AccessDenied()
+        {
+            return new SecurityException(ErrorMessages.AccessDenied);
         }
     }
 }

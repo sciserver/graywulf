@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AccessDenied" xml:space="preserve">
+    <value>Access denied.</value>
+  </data>
   <data name="ConnectionAlreadyOpen" xml:space="preserve">
     <value>Connection is already open.</value>
   </data>
@@ -146,6 +149,9 @@
   </data>
   <data name="NoResults" xml:space="preserve">
     <value>The query returned no results.</value>
+  </data>
+  <data name="NoSqlPrincipal" xml:space="preserve">
+    <value>Principal type does not support SQL-level access control. Please inherit from Jhu.Graywulf.AccessControl.Principal.</value>
   </data>
   <data name="NoTableClassFound" xml:space="preserve">
     <value>Cannot reflect type '{0}': no table class found.</value>

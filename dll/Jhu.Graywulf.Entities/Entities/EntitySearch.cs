@@ -117,7 +117,7 @@ FROM __e
             // Prevent any injection attacks
             if (!String.IsNullOrWhiteSpace(orderBy) && !OrderByRegex.Match(orderBy).Success)
             {
-                AccessControl.Error.AccessDenied();
+                Error.AccessDenied();
             }
 
             using (searchCommand = Context.CreateCommand())

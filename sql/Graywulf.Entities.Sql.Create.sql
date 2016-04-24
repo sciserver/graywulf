@@ -14,18 +14,18 @@ WITH PERMISSION_SET = UNSAFE
 
 GO
 
-CREATE ASSEMBLY [Jhu.Graywulf.Entities]
+CREATE ASSEMBLY [Jhu.Graywulf.AccessControl]
 FROM 0x[$bin]
 WITH PERMISSION_SET = UNSAFE;
 
 GO
 
 CREATE TYPE [entities].[Identity]
-EXTERNAL NAME [Jhu.Graywulf.Entities].[Jhu.Graywulf.Entities.Sql.SqlPrincipal]
+EXTERNAL NAME [Jhu.Graywulf.AccessControl].[Jhu.Graywulf.AccessControl.Sql.SqlPrincipal]
 
 GO
 
 CREATE TYPE [entities].[EntityAcl]
-EXTERNAL NAME [Jhu.Graywulf.Entities].[Jhu.Graywulf.Entities.Sql.SqlEntityAcl]
+EXTERNAL NAME [Jhu.Graywulf.AccessControl].[Jhu.Graywulf.AccessControl.Sql.SqlEntityAcl]
 
 GO

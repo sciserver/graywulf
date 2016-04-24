@@ -61,6 +61,15 @@ namespace Jhu.Graywulf.Entities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Access denied..
+        /// </summary>
+        internal static string AccessDenied {
+            get {
+                return ResourceManager.GetString("AccessDenied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Connection is already open..
         /// </summary>
         internal static string ConnectionAlreadyOpen {
@@ -147,6 +156,15 @@ namespace Jhu.Graywulf.Entities {
         internal static string NoResults {
             get {
                 return ResourceManager.GetString("NoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Principal type does not support SQL-level access control. Please inherit from Jhu.Graywulf.AccessControl.Principal..
+        /// </summary>
+        internal static string NoSqlPrincipal {
+            get {
+                return ResourceManager.GetString("NoSqlPrincipal", resourceCulture);
             }
         }
         

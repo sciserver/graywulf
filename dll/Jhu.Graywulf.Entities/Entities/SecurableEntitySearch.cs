@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Entities
 
             if (!(Context.Principal is AccessControl.Principal))
             {
-                throw AccessControl.Error.NoSqlPrincipal();
+                throw Error.NoSqlPrincipal();
             }
 
             var p = (AccessControl.Principal)Context.Principal;

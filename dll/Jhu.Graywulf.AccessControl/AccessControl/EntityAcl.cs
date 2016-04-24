@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.AccessControl
         #endregion
         #region Properties
 
-        internal bool IsDirty
+        public bool IsDirty
         {
             get { return isDirty; }
         }

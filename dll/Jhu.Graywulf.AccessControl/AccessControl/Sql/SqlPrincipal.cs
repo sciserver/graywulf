@@ -8,7 +8,7 @@ using System.IO;
 using Microsoft.SqlServer.Server;
 using Jhu.Graywulf.AccessControl;
 
-namespace Jhu.Graywulf.Entities.Sql
+namespace Jhu.Graywulf.AccessControl.Sql
 {
     [SqlUserDefinedType(Format.UserDefined, IsByteOrdered = false, MaxByteSize = -1, IsFixedLength = false, Name = "entities.Identity")]
     public struct SqlPrincipal : IBinarySerialize, INullable

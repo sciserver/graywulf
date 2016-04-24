@@ -77,14 +77,5 @@ namespace Jhu.Graywulf.AccessControl {
                 return ResourceManager.GetString("InvalidRole", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Principal type does not support SQL-level access control. Please inherit from Jhu.Graywulf.AccessControl.Principal..
-        /// </summary>
-        internal static string NoSqlPrincipal {
-            get {
-                return ResourceManager.GetString("NoSqlPrincipal", resourceCulture);
-            }
-        }
     }
 }
