@@ -69,9 +69,14 @@ namespace Jhu.Graywulf.AccessControl
 
         #endregion
 
-        public bool CompareByName(string other)
+        public static int Compare(IIdentity one, IIdentity other)
         {
-            return EntityAcl.Comparer.Compare(this.name, other) == 0;
+            return EntityAcl.Comparer.Compare(one.Name, other.Name);
+        }
+
+        public static int Compare(string one, string other)
+        {
+            return EntityAcl.Comparer.Compare(one, other);
         }
     }
 }
