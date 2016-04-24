@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.AccessControl
 
         #endregion
 
-        public AccessType Set(string access, AccessType type)
+        internal AccessType Set(string access, AccessType type)
         {
             // Deny has precedence over grant
             if (list.ContainsKey(access) && type == AccessType.Deny)
