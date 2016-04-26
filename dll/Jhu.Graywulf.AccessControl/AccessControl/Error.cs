@@ -8,14 +8,9 @@ namespace Jhu.Graywulf.AccessControl
 {
     static class Error
     {
-        public static SecurityException AccessDenied()
+        public static AccessDeniedException AccessDenied()
         {
-            return new SecurityException(ErrorMessages.AccessDenied);
-        }
-
-        public static SecurityException InvalidRole()
-        {
-            return new SecurityException(ErrorMessages.InvalidRole);
+            return new AccessDeniedException(ErrorMessages.AccessDenied);
         }
     }
 }

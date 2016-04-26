@@ -68,14 +68,5 @@ namespace Jhu.Graywulf.AccessControl {
                 return ResourceManager.GetString("AccessDenied", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid role..
-        /// </summary>
-        internal static string InvalidRole {
-            get {
-                return ResourceManager.GetString("InvalidRole", resourceCulture);
-            }
-        }
     }
 }

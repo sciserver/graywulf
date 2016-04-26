@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccessControl\AccessCollection.cs" />
+    <Compile Include="AccessControl\AccessDeniedException.cs" />
     <Compile Include="AccessControl\AccessType.cs" />
     <Compile Include="AccessControl\DefaultAccess.cs" />
     <Compile Include="AccessControl\DefaultIdentity.cs" />
