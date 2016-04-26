@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Xml.Serialization;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Jhu.Graywulf.AccessControl
@@ -183,12 +184,15 @@ namespace Jhu.Graywulf.AccessControl
             Assert.AreEqual(acl.Owner, acl2.Owner);
             Assert.AreEqual(acl.Count, acl2.Count);
 
+            var aacl = acl.ToArray();
+            var aacl2 = acl2.ToArray();
+
             for (int i = 0; i < acl.Count; i++)
             {
-                Assert.AreEqual(acl[i].GetType(), acl2[i].GetType());
-                Assert.AreEqual(acl[i].Name, acl2[i].Name);
-                Assert.AreEqual(acl[i].Access, acl2[i].Access);
-                Assert.AreEqual(acl[i].Type, acl2[i].Type);
+                Assert.AreEqual(aacl[i].GetType(), aacl2[i].GetType());
+                Assert.AreEqual(aacl[i].Name, aacl2[i].Name);
+                Assert.AreEqual(aacl[i].Access, aacl2[i].Access);
+                Assert.AreEqual(aacl[i].Type, aacl2[i].Type);
             }
         }
 

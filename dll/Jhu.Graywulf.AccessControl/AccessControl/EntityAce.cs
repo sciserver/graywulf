@@ -36,6 +36,14 @@ namespace Jhu.Graywulf.AccessControl
             set { type = value; }
         }
 
+        internal virtual string UniqueKey
+        {
+            get
+            {
+                return name + "|" + access;
+            }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -47,7 +55,7 @@ namespace Jhu.Graywulf.AccessControl
         public EntityAce(string name, string access, AccessType type)
         {
             InitializeMembers();
-            
+
             this.name = name;
             this.access = access;
             this.type = type;

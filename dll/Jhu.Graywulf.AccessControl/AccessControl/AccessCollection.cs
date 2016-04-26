@@ -63,12 +63,14 @@ namespace Jhu.Graywulf.AccessControl
 
         internal AccessType Set(string access, AccessType type)
         {
+            bool contains = list.ContainsKey(access);
+
             // Deny has precedence over grant
-            if (list.ContainsKey(access) && type == AccessType.Deny)
+            if (contains && type == AccessType.Deny)
             {
                 list[access] = AccessType.Deny;
             }
-            else
+            else if (!contains)
             {
                 list.Add(access, type);
             }

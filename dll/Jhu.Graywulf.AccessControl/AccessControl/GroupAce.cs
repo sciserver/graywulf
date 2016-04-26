@@ -20,6 +20,14 @@ namespace Jhu.Graywulf.AccessControl
             set { role = value; }
         }
 
+        internal override string UniqueKey
+        {
+            get
+            {
+                return Name + "|" + role + "|" + Access;
+            }
+        }
+
         #endregion
         #region Constructors and initializers
 

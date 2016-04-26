@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.AccessControl
 
         private bool isDirty;
         private string owner;
-        private List<EntityAce> acl;
+        private Dictionary<string, EntityAce> acl;
 
         #endregion
         #region Properties
@@ -36,11 +36,6 @@ namespace Jhu.Graywulf.AccessControl
         public int Count
         {
             get { return acl.Count; }
-        }
-
-        public EntityAce this[int index]
-        {
-            get { return acl[index]; }
         }
 
         #endregion
@@ -71,14 +66,19 @@ namespace Jhu.Graywulf.AccessControl
         {
             this.isDirty = false;
             this.owner = null;
-            this.acl = new List<EntityAce>();
+            this.acl = new Dictionary<string, EntityAce>(EntityAcl.Comparer);
         }
 
         private void CopyMembers(EntityAcl old)
         {
             this.isDirty = old.isDirty;
             this.owner = old.owner;
-            this.acl = new List<EntityAce>(old.acl.Select(ace => (EntityAce)ace.Clone()));
+            this.acl = new Dictionary<string, EntityAce>(EntityAcl.Comparer);
+
+            foreach (var ace in acl.Values)
+            {
+                this.acl.Add(ace.UniqueKey, (EntityAce)ace.Clone());
+            }
         }
 
         #endregion
@@ -88,76 +88,105 @@ namespace Jhu.Graywulf.AccessControl
             this.isDirty = true;
         }
 
+        private void Add(EntityAce ace)
+        {
+            var key = ace.UniqueKey;
+
+            if (acl.ContainsKey(key))
+            {
+                acl[key].Access = ace.Access;
+            }
+            else
+            {
+                acl.Add(key, ace);
+            }
+
+            SetDirty();
+        }
+
+        private void Remove(IEnumerable<string> keys)
+        {
+            foreach (var key in keys)
+            {
+                acl.Remove(key);
+            }
+        }
+
         public void Grant(string name, string access)
         {
-            acl.Add(new UserAce(name, access, AccessType.Grant));
-            SetDirty();
+            Add(new UserAce(name, access, AccessType.Grant));
         }
 
         public void Deny(string name, string access)
         {
-            acl.Add(new UserAce(name, access, AccessType.Deny));
-            SetDirty();
+            Add(new UserAce(name, access, AccessType.Deny));
         }
 
         public void Grant(string name, string role, string access)
         {
-            acl.Add(new GroupAce(name, role, access, AccessType.Grant));
-            SetDirty();
+            Add(new GroupAce(name, role, access, AccessType.Grant));
         }
 
         public void Deny(string name, string role, string access)
         {
-            acl.Add(new GroupAce(name, role, access, AccessType.Deny));
-            SetDirty();
+            Add(new GroupAce(name, role, access, AccessType.Deny));
         }
 
         public void Clear(string name, string role, string access)
         {
-            for (int i = acl.Count - 1; i >= 0; i--)
+            var keys = new List<string>();
+
+            foreach (var key in acl.Keys)
             {
-                var ace = acl[i];
+                var ace = acl[key];
 
                 if (ace is GroupAce &&
                     Comparer.Compare(ace.Access, access) == 0 &&
                     Comparer.Compare(ace.Name, name) == 0 &&
                     Comparer.Compare(((GroupAce)ace).Role, role) == 0)
                 {
-                    acl.RemoveAt(i);
+                    keys.Add(key);
                 }
             }
 
+            Remove(keys);
             SetDirty();
         }
 
         public void Clear(string name, string access)
         {
-            for (int i = acl.Count - 1; i >= 0; i--)
+            var keys = new List<string>();
+
+            foreach (var key in acl.Keys)
             {
-                var ace = acl[i];
+                var ace = acl[key];
 
                 if (Comparer.Compare(ace.Access, access) == 0 &&
                     Comparer.Compare(ace.Name, name) == 0)
                 {
-                    acl.RemoveAt(i);
+                    keys.Add(key);
                 }
             }
 
+            Remove(keys);
             SetDirty();
         }
 
         public void Clear(string name)
         {
-            for (int i = acl.Count - 1; i >= 0; i--)
+            var keys = new List<string>();
+
+            foreach (var key in acl.Keys)
             {
-                var ace = acl[i];
+                var ace = acl[key];
 
                 if (Comparer.Compare(ace.Name, name) == 0)
                 {
-                    acl.RemoveAt(i);
+                    keys.Add(key);
                 }
             }
 
+            Remove(keys);
             SetDirty();
         }
 
@@ -178,7 +207,7 @@ namespace Jhu.Graywulf.AccessControl
                 owner != null &&
                 EntityAcl.Comparer.Compare(principal.Identity.Name, owner) == 0;
 
-            foreach (var ace in acl)
+            foreach (var ace in acl.Values)
             {
                 var applies = false;
 
@@ -240,7 +269,7 @@ namespace Jhu.Graywulf.AccessControl
 
             EntityAce lastentry = null;
 
-            foreach (var ace in acl)
+            foreach (var ace in acl.Values)
             {
                 if (ace.CompareTo(lastentry) != 0)
                 {
@@ -342,7 +371,7 @@ namespace Jhu.Graywulf.AccessControl
                         }
 
                         nace.Access = r.ReadString();
-                        acl.acl.Add(nace);
+                        acl.acl.Add(nace.UniqueKey, nace);
                         break;
                     default:
                         throw new InvalidOperationException();
@@ -373,7 +402,7 @@ namespace Jhu.Graywulf.AccessControl
 
             EntityAce lastentry = null;
 
-            foreach (var ace in acl)
+            foreach (var ace in acl.Values)
             {
                 if (ace.CompareTo(lastentry) != 0)
                 {
@@ -476,7 +505,7 @@ namespace Jhu.Graywulf.AccessControl
                             throw new NotImplementedException();
                     }
 
-                    acl.acl.Add(nace);
+                    acl.acl.Add(nace.UniqueKey, nace);
 
                     r.Read();
                 }
@@ -500,12 +529,12 @@ namespace Jhu.Graywulf.AccessControl
 
         public IEnumerator<EntityAce> GetEnumerator()
         {
-            return acl.GetEnumerator();
+            return acl.Values.GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return acl.GetEnumerator();
+            return acl.Values.GetEnumerator();
         }
 
         #endregion
