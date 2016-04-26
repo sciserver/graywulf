@@ -40,6 +40,9 @@ namespace Jhu.Graywulf.Web.Services
         /// <param name="fault"></param>
         public void ProvideFault(Exception error, System.ServiceModel.Channels.MessageVersion version, ref System.ServiceModel.Channels.Message fault)
         {
+            // Notice: certain exception types are automatically wrapped into
+            // a fault by WCF, such as SecurityException!
+
             var restError = GetRestError(error);
             fault = SerializeRestError(restError);
             SetHttpResponseStatus(restError.InnerException);
@@ -98,12 +101,14 @@ namespace Jhu.Graywulf.Web.Services
 
             HttpStatusCode statusCode;
             
-            if (ex is System.Security.SecurityException)
+            if (ex is System.Security.SecurityException ||
+                ex is Jhu.Graywulf.AccessControl.AccessDeniedException)
             {
                 statusCode = HttpStatusCode.Forbidden;
             }
             else if (ex is KeyNotFoundException ||
-                ex is ResourceNotFoundException)
+                ex is ResourceNotFoundException ||
+                ex is Jhu.Graywulf.Entities.NoResultsException)
             {
                 statusCode = HttpStatusCode.NotFound;
             }
