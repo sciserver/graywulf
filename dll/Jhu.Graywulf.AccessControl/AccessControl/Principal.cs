@@ -91,7 +91,7 @@ namespace Jhu.Graywulf.AccessControl
         private void InitializeMembers()
         {
             this.identity = null;
-            this.roles = new HashSet<string>(EntityAcl.Comparer);
+            this.roles = new HashSet<string>(AccessControlList.Comparer);
         }
 
         private void CopyMembers(Principal old)

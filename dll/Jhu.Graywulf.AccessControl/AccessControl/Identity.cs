@@ -71,12 +71,12 @@ namespace Jhu.Graywulf.AccessControl
 
         public static int Compare(IIdentity one, IIdentity other)
         {
-            return EntityAcl.Comparer.Compare(one.Name, other.Name);
+            return AccessControlList.Comparer.Compare(one.Name, other.Name);
         }
 
         public static int Compare(string one, string other)
         {
-            return EntityAcl.Comparer.Compare(one, other);
+            return AccessControlList.Comparer.Compare(one, other);
         }
     }
 }

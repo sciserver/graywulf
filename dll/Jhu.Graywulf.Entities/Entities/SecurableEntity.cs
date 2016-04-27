@@ -14,13 +14,13 @@ namespace Jhu.Graywulf.Entities
     {
         #region Private member variables
 
-        private EntityAcl acl;
+        private AccessControlList acl;
         private AccessCollection access;
 
         #endregion
         #region Properties
 
-        public EntityAcl Permissions
+        public AccessControlList Permissions
         {
             get { return acl; }
             internal set { acl = value; }
@@ -63,13 +63,13 @@ namespace Jhu.Graywulf.Entities
         [OnDeserialized]
         private void InitializeMembers(StreamingContext context)
         {
-            this.acl = EntityAcl.Default;
+            this.acl = AccessControlList.Default;
             this.access = null;
         }
 
         private void CopyMembers(SecurableEntity old)
         {
-            this.acl = new EntityAcl(old.acl);
+            this.acl = new AccessControlList(old.acl);
             this.access = new AccessCollection(old.access);
         }
 

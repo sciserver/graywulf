@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.AccessControl
         [TestMethod]
         public void EvaluateOwnerTest()
         {
-            var acl = new EntityAcl()
+            var acl = new AccessControlList()
             {
                 Owner = "test"
             };
@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.AccessControl
         [TestMethod]
         public void EvaluateUserPermissionTest()
         {
-            var acl = new EntityAcl();
+            var acl = new AccessControlList();
 
             acl.Grant("test", "read");
             acl.Deny("test", "write");
@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.AccessControl
         [TestMethod]
         public void EvaluatePublicPermissionTest()
         {
-            var acl = new EntityAcl();
+            var acl = new AccessControlList();
 
             acl.Grant(DefaultIdentity.Public, "read");
             acl.Deny(DefaultIdentity.Public, "write");
@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.AccessControl
         [TestMethod]
         public void EvaluateGuestPermissionTest()
         {
-            var acl = new EntityAcl();
+            var acl = new AccessControlList();
 
             acl.Grant(DefaultIdentity.Guest, "read");
             acl.Deny(DefaultIdentity.Guest, "write");
@@ -79,7 +79,7 @@ namespace Jhu.Graywulf.AccessControl
         [TestMethod]
         public void EvaluateGroupPermissionTest()
         {
-            var acl = new EntityAcl();
+            var acl = new AccessControlList();
 
             acl.Grant("testgroup", "member", "read");
             acl.Deny("testgroup", "member", "write");
@@ -97,7 +97,7 @@ namespace Jhu.Graywulf.AccessControl
         [TestMethod]
         public void EvaluateDenyPrecedenceTest()
         {
-            var acl = new EntityAcl();
+            var acl = new AccessControlList();
 
             acl.Grant("testgroup", "member", "read");
             acl.Grant("testgroup", "member", "write");
@@ -116,7 +116,7 @@ namespace Jhu.Graywulf.AccessControl
         [TestMethod]
         public void ClearAceTest()
         {
-            var acl = new EntityAcl();
+            var acl = new AccessControlList();
 
             acl.Grant("user", "read");
             acl.Grant("user", "write");
@@ -140,7 +140,7 @@ namespace Jhu.Graywulf.AccessControl
         [TestMethod]
         public void CopyTest()
         {
-            var a = new EntityAcl()
+            var a = new AccessControlList()
             {
                 Owner = "a"
             };
@@ -150,7 +150,7 @@ namespace Jhu.Graywulf.AccessControl
             a.Grant("testgroup", "member", "read");
             a.Deny("testgroup", "member", "write");
 
-            var b = new EntityAcl(a);
+            var b = new AccessControlList(a);
 
             Assert.AreEqual(a.Owner, b.Owner);
 
@@ -162,7 +162,7 @@ namespace Jhu.Graywulf.AccessControl
         {
             var ms = new MemoryStream();
 
-            var acl = new EntityAcl()
+            var acl = new AccessControlList()
             {
                 Owner = "test",
             };
@@ -179,7 +179,7 @@ namespace Jhu.Graywulf.AccessControl
             ms.Seek(0, SeekOrigin.Begin);
 
             var r = new BinaryReader(ms);
-            var acl2 = EntityAcl.FromBinary(r);
+            var acl2 = AccessControlList.FromBinary(r);
 
             Assert.AreEqual(acl.Owner, acl2.Owner);
             Assert.AreEqual(acl.Count, acl2.Count);
@@ -200,7 +200,7 @@ namespace Jhu.Graywulf.AccessControl
         [TestMethod]
         public void SerializeToXmlTest()
         {
-            var acl = new EntityAcl()
+            var acl = new AccessControlList()
             {
                 Owner = "test",
             };
@@ -217,14 +217,14 @@ namespace Jhu.Graywulf.AccessControl
         public void DeserializeFromXmlTest()
         {
             var xml = "<acl owner=\"test\"><group name=\"testgroup\" role=\"member\"><grant access=\"read\" /></group><user name=\"@owner\"><grant access=\"all\" /></user><user name=\"test\"><grant access=\"write\" /><grant access=\"read\" /></user></acl>";
-            var acl = EntityAcl.FromXml(xml);
+            var acl = AccessControlList.FromXml(xml);
         }
 
         [TestMethod]
         public void DeserializeFromXml2Test()
         {
             string xml;
-            EntityAcl acl;
+            AccessControlList acl;
 
             xml = @"
 <acl owner=""test"">
@@ -239,7 +239,7 @@ namespace Jhu.Graywulf.AccessControl
         <grant access=""read"" />
     </user>
 </acl>";
-            acl = EntityAcl.FromXml(xml);
+            acl = AccessControlList.FromXml(xml);
 
             Assert.AreEqual("test", acl.Owner);
             Assert.AreEqual(4, acl.Count);

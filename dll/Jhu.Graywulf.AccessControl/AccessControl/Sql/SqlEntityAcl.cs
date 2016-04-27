@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.AccessControl.Sql
     [SqlUserDefinedType(Format.UserDefined, IsByteOrdered = false, MaxByteSize = -1, IsFixedLength = false, Name="entities.EntityAcl")]
     public struct SqlEntityAcl : IBinarySerialize, INullable
     {
-        private EntityAcl acl;
+        private AccessControlList acl;
 
         public bool IsNull
         {
@@ -45,17 +45,17 @@ namespace Jhu.Graywulf.AccessControl.Sql
 
         public SqlEntityAcl(byte[] bytes)
         {
-            this.acl = EntityAcl.FromBinary(bytes);
+            this.acl = AccessControlList.FromBinary(bytes);
         }
 
         public SqlEntityAcl(string xml)
         {
-            this.acl = EntityAcl.FromXml(xml);
+            this.acl = AccessControlList.FromXml(xml);
         }
 
         public void Read(System.IO.BinaryReader r)
         {
-            acl = EntityAcl.FromBinary(r);
+            acl = AccessControlList.FromBinary(r);
         }
 
         public void Write(System.IO.BinaryWriter w)

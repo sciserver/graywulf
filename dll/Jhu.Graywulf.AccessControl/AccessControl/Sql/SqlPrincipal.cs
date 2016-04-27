@@ -75,42 +75,42 @@ namespace Jhu.Graywulf.AccessControl.Sql
 
         public SqlBoolean IsOwner(SqlBytes aclbytes)
         {
-            var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
+            var acl = AccessControlList.FromBinary(new BinaryReader(aclbytes.Stream));
             var access = acl.EvaluateAccess(principal);
             return access.IsOwner;
         }
 
         public SqlBoolean Can(SqlBytes aclbytes, SqlString access)
         {
-            var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
+            var acl = AccessControlList.FromBinary(new BinaryReader(aclbytes.Stream));
             var a = acl.EvaluateAccess(principal);
             return a.Can(access.Value);
         }
 
         public SqlBoolean CanCreate(SqlBytes aclbytes)
         {
-            var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
+            var acl = AccessControlList.FromBinary(new BinaryReader(aclbytes.Stream));
             var access = acl.EvaluateAccess(principal);
             return access.CanCreate();
         }
 
         public SqlBoolean CanRead(SqlBytes aclbytes)
         {
-            var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
+            var acl = AccessControlList.FromBinary(new BinaryReader(aclbytes.Stream));
             var access = acl.EvaluateAccess(principal);
             return access.CanRead();
         }
 
         public SqlBoolean CanUpdate(SqlBytes aclbytes)
         {
-            var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
+            var acl = AccessControlList.FromBinary(new BinaryReader(aclbytes.Stream));
             var access = acl.EvaluateAccess(principal);
             return access.CanUpdate();
         }
 
         public SqlBoolean CanDelete(SqlBytes aclbytes)
         {
-            var acl = EntityAcl.FromBinary(new BinaryReader(aclbytes.Stream));
+            var acl = AccessControlList.FromBinary(new BinaryReader(aclbytes.Stream));
             var access = acl.EvaluateAccess(principal);
             return access.CanDelete();
         }

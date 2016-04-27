@@ -41,12 +41,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccessControl\AccessCollection.cs" />
+    <Compile Include="AccessControl\AccessControlEntry.cs" />
+    <Compile Include="AccessControl\AccessControlList.cs" />
     <Compile Include="AccessControl\AccessDeniedException.cs" />
     <Compile Include="AccessControl\AccessType.cs" />
     <Compile Include="AccessControl\DefaultAccess.cs" />
     <Compile Include="AccessControl\DefaultIdentity.cs" />
-    <Compile Include="AccessControl\EntityAce.cs" />
-    <Compile Include="AccessControl\EntityAcl.cs" />
     <Compile Include="AccessControl\Error.cs" />
     <Compile Include="AccessControl\ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>

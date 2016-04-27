@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace Jhu.Graywulf.AccessControl
 {
-    public abstract class EntityAce : IComparable, ICloneable
+    public abstract class AccessControlEntry : IComparable, ICloneable
     {
         #region Private member variables
 
@@ -47,12 +47,12 @@ namespace Jhu.Graywulf.AccessControl
         #endregion
         #region Constructors and initializers
 
-        public EntityAce()
+        public AccessControlEntry()
         {
             InitializeMembers();
         }
 
-        public EntityAce(string name, string access, AccessType type)
+        public AccessControlEntry(string name, string access, AccessType type)
         {
             InitializeMembers();
 
@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.AccessControl
             this.type = type;
         }
 
-        public EntityAce(EntityAce old)
+        public AccessControlEntry(AccessControlEntry old)
         {
             CopyMembers(old);
         }
@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.AccessControl
             this.type = AccessType.Undefined;
         }
 
-        private void CopyMembers(EntityAce old)
+        private void CopyMembers(AccessControlEntry old)
         {
             this.name = old.name;
             this.access = old.access;

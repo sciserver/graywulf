@@ -285,7 +285,7 @@ namespace Jhu.Graywulf.Entities.Mapping
         {
             if ((binding & DbColumnBinding.Acl) != 0)
             {
-                ((SecurableEntity)obj).Permissions = EntityAcl.FromBinary((byte[])value);
+                ((SecurableEntity)obj).Permissions = AccessControlList.FromBinary((byte[])value);
             }
             else if (dbType == SqlDbType.Xml)
             {
@@ -370,7 +370,7 @@ namespace Jhu.Graywulf.Entities.Mapping
             {
                 i = reader.GetOrdinal(name);
                 var bytes = reader.GetSqlBinary(i).Value;
-                ((SecurableEntity)entity).Permissions = EntityAcl.FromBinary(bytes);
+                ((SecurableEntity)entity).Permissions = AccessControlList.FromBinary(bytes);
 
                 return;
             }

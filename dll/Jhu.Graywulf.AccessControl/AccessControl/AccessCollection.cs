@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.AccessControl
 
         private void InitializeMembers()
         {
-            list = new Dictionary<string, AccessType>(EntityAcl.Comparer);
+            list = new Dictionary<string, AccessType>(AccessControlList.Comparer);
         }
 
         private void CopyMembers(AccessCollection old)

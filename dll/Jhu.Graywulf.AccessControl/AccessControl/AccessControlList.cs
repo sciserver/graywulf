@@ -9,7 +9,7 @@ using Jhu.Graywulf.Util;
 
 namespace Jhu.Graywulf.AccessControl
 {
-    public sealed class EntityAcl : IEnumerable<EntityAce>
+    public sealed class AccessControlList : IEnumerable<AccessControlEntry>
     {
         public static readonly StringComparer Comparer = StringComparer.InvariantCultureIgnoreCase;
 
@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.AccessControl
 
         private bool isDirty;
         private string owner;
-        private Dictionary<string, EntityAce> acl;
+        private Dictionary<string, AccessControlEntry> acl;
 
         #endregion
         #region Properties
@@ -41,23 +41,23 @@ namespace Jhu.Graywulf.AccessControl
         #endregion
         #region Constructors and initializers
 
-        public static EntityAcl Default
+        public static AccessControlList Default
         {
             get
             {
-                var acl = new EntityAcl();
+                var acl = new AccessControlList();
                 acl.Grant(DefaultIdentity.Owner, DefaultAccess.All);
 
                 return acl;
             }
         }
 
-        public EntityAcl()
+        public AccessControlList()
         {
             InitializeMembers();
         }
 
-        public EntityAcl(EntityAcl old)
+        public AccessControlList(AccessControlList old)
         {
             CopyMembers(old);
         }
@@ -66,18 +66,18 @@ namespace Jhu.Graywulf.AccessControl
         {
             this.isDirty = false;
             this.owner = null;
-            this.acl = new Dictionary<string, EntityAce>(EntityAcl.Comparer);
+            this.acl = new Dictionary<string, AccessControlEntry>(AccessControlList.Comparer);
         }
 
-        private void CopyMembers(EntityAcl old)
+        private void CopyMembers(AccessControlList old)
         {
             this.isDirty = old.isDirty;
             this.owner = old.owner;
-            this.acl = new Dictionary<string, EntityAce>(EntityAcl.Comparer);
+            this.acl = new Dictionary<string, AccessControlEntry>(AccessControlList.Comparer);
 
             foreach (var ace in acl.Values)
             {
-                this.acl.Add(ace.UniqueKey, (EntityAce)ace.Clone());
+                this.acl.Add(ace.UniqueKey, (AccessControlEntry)ace.Clone());
             }
         }
 
@@ -88,7 +88,7 @@ namespace Jhu.Graywulf.AccessControl
             this.isDirty = true;
         }
 
-        private void Add(EntityAce ace)
+        private void Add(AccessControlEntry ace)
         {
             var key = ace.UniqueKey;
 
@@ -205,7 +205,7 @@ namespace Jhu.Graywulf.AccessControl
             access.IsOwner =
                 principal.Identity.IsAuthenticated &&
                 owner != null &&
-                EntityAcl.Comparer.Compare(principal.Identity.Name, owner) == 0;
+                AccessControlList.Comparer.Compare(principal.Identity.Name, owner) == 0;
 
             foreach (var ace in acl.Values)
             {
@@ -214,16 +214,16 @@ namespace Jhu.Graywulf.AccessControl
                 if (ace is UserAce)
                 {
                     // Identity is owner of the resource
-                    applies = applies ? true : (access.IsOwner && EntityAcl.Comparer.Compare(DefaultIdentity.Owner, ace.Name) == 0);
+                    applies = applies ? true : (access.IsOwner && AccessControlList.Comparer.Compare(DefaultIdentity.Owner, ace.Name) == 0);
 
                     // Indentity has explicit rights
-                    applies = applies ? true : (access.IsAuthenticated && EntityAcl.Comparer.Compare(principal.Identity.Name, ace.Name) == 0);
+                    applies = applies ? true : (access.IsAuthenticated && AccessControlList.Comparer.Compare(principal.Identity.Name, ace.Name) == 0);
 
                     // Authenticated users
-                    applies = applies ? true : (access.IsAuthenticated && EntityAcl.Comparer.Compare(DefaultIdentity.Public, ace.Name) == 0);
+                    applies = applies ? true : (access.IsAuthenticated && AccessControlList.Comparer.Compare(DefaultIdentity.Public, ace.Name) == 0);
 
                     // Everyone is a guest
-                    applies = applies ? true : (EntityAcl.Comparer.Compare(DefaultIdentity.Guest, ace.Name) == 0);
+                    applies = applies ? true : (AccessControlList.Comparer.Compare(DefaultIdentity.Guest, ace.Name) == 0);
                 }
                 else if (ace is GroupAce)
                 {
@@ -267,7 +267,7 @@ namespace Jhu.Graywulf.AccessControl
 
             w.WriteNullString(owner);
 
-            EntityAce lastentry = null;
+            AccessControlEntry lastentry = null;
 
             foreach (var ace in acl.Values)
             {
@@ -310,7 +310,7 @@ namespace Jhu.Graywulf.AccessControl
             w.Write('X');
         }
 
-        public static EntityAcl FromBinary(byte[] bytes)
+        public static AccessControlList FromBinary(byte[] bytes)
         {
             using (var ms = new MemoryStream(bytes))
             {
@@ -321,9 +321,9 @@ namespace Jhu.Graywulf.AccessControl
             }
         }
 
-        public static EntityAcl FromBinary(BinaryReader r)
+        public static AccessControlList FromBinary(BinaryReader r)
         {
-            var acl = new EntityAcl();
+            var acl = new AccessControlList();
 
             r.ReadChar();
             r.ReadChar();
@@ -332,7 +332,7 @@ namespace Jhu.Graywulf.AccessControl
 
             acl.owner = r.ReadNullString();
 
-            EntityAce lastentry = null;
+            AccessControlEntry lastentry = null;
             
             var c = r.ReadChar();
 
@@ -356,7 +356,7 @@ namespace Jhu.Graywulf.AccessControl
                         };
                         break;
                     case 'A':
-                        var nace = (EntityAce)lastentry.Clone();
+                        var nace = (AccessControlEntry)lastentry.Clone();
 
                         switch (r.ReadChar())
                         {
@@ -400,7 +400,7 @@ namespace Jhu.Graywulf.AccessControl
             w.WriteStartElement("acl");
             w.WriteAttributeString("owner", owner);
 
-            EntityAce lastentry = null;
+            AccessControlEntry lastentry = null;
 
             foreach (var ace in acl.Values)
             {
@@ -444,28 +444,28 @@ namespace Jhu.Graywulf.AccessControl
             w.WriteEndElement();
         }
 
-        public static EntityAcl FromXml(Stream stream)
+        public static AccessControlList FromXml(Stream stream)
         {
             return Util.XmlConverter.FromXml(stream, FromXml);
         }
 
-        public static EntityAcl FromXml(string xml)
+        public static AccessControlList FromXml(string xml)
         {
             return Util.XmlConverter.FromXml(xml, FromXml);
         }
 
-        private static EntityAcl FromXml(XmlReader r)
+        private static AccessControlList FromXml(XmlReader r)
         {
             r.Read();
 
-            var acl = new EntityAcl();
+            var acl = new AccessControlList();
             acl.owner = r.GetAttribute("owner");
             r.ReadStartElement("acl");
 
             // Read users and groups
             while (r.NodeType == XmlNodeType.Element)
             {
-                EntityAce ace;
+                AccessControlEntry ace;
 
                 switch (r.Name.ToLowerInvariant())
                 {
@@ -490,7 +490,7 @@ namespace Jhu.Graywulf.AccessControl
 
                 while (r.NodeType == XmlNodeType.Element)
                 {
-                    var nace = (EntityAce)ace.Clone();
+                    var nace = (AccessControlEntry)ace.Clone();
                     nace.Access = r.GetAttribute("access");
 
                     switch (r.Name.ToLowerInvariant())
@@ -527,7 +527,7 @@ namespace Jhu.Graywulf.AccessControl
         #endregion
         #region Interface implementations
 
-        public IEnumerator<EntityAce> GetEnumerator()
+        public IEnumerator<AccessControlEntry> GetEnumerator()
         {
             return acl.Values.GetEnumerator();
         }

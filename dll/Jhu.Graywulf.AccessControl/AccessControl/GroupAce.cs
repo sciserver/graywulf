@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.AccessControl
 {
-    public sealed class GroupAce : EntityAce, IComparable, ICloneable
+    public sealed class GroupAce : AccessControlEntry, IComparable, ICloneable
     {
         #region Private member variables
 
@@ -80,11 +80,11 @@ namespace Jhu.Graywulf.AccessControl
             }
             else
             {
-                int res = EntityAcl.Comparer.Compare(this.Name, ((GroupAce)obj).Name);
+                int res = AccessControlList.Comparer.Compare(this.Name, ((GroupAce)obj).Name);
 
                 if (res == 0)
                 {
-                    res = EntityAcl.Comparer.Compare(this.Role, ((GroupAce)obj).Role);
+                    res = AccessControlList.Comparer.Compare(this.Role, ((GroupAce)obj).Role);
                 }
 
                 return res;

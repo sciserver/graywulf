@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.AccessControl
 {
-    public sealed class UserAce : EntityAce, IComparable, ICloneable
+    public sealed class UserAce : AccessControlEntry, IComparable, ICloneable
     {
         #region Constructors and initializers
 
@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.AccessControl
             }
             else
             {
-                return EntityAcl.Comparer.Compare(this.Name, ((UserAce)obj).Name);
+                return AccessControlList.Comparer.Compare(this.Name, ((UserAce)obj).Name);
             }
         }
 
