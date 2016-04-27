@@ -244,19 +244,21 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region User group membership
 
+        public abstract void LoadRoles(GraywulfPrincipal principal);
+
         /// <summary>
         /// Makes a user a member of a given group.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="group"></param>
-        public abstract void MakeMemberOf(User user, UserGroup group);
+        public abstract void MakeMemberOf(string user, string group, string role);
 
         /// <summary>
         /// Removes a user from a given group.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="group"></param>
-        public abstract void RevokeMemberOf(User user, UserGroup group);
+        public abstract void RevokeMemberOf(string user, string group, string role);
 
         #endregion
         #region Check routines

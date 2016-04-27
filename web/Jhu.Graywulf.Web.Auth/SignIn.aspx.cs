@@ -230,13 +230,12 @@ namespace Jhu.Graywulf.Web.Auth
                 if (response.Principal != null)
                 {
                     var gwip = new GraywulfIdentityProvider(RegistryContext.Domain);
-                    var identity = response.Principal.Identity;
 
                     // This call will load the user from the registry. If the authenticator
                     // is marked as master, it also created the user if necessary
-                    gwip.LoadOrCreateUser(identity);
+                    gwip.LoadOrCreateUser(response.Principal);
 
-                    if (identity.IsAuthenticated)
+                    if (response.Principal.Identity.IsAuthenticated)
                     {
                         return true;
                     }

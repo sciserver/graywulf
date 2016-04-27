@@ -215,7 +215,7 @@ namespace Jhu.Graywulf.Web.Security
                 using (var registryContext = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
                 {
                     var ip = new GraywulfIdentityProvider(registryContext);
-                    ip.LoadOrCreateUser(principal.Identity);
+                    ip.LoadOrCreateUser(principal);
                 }
 
                 principalCache.TryAdd(principal.UniqueID, principal);

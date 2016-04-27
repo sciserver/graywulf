@@ -13,15 +13,6 @@ namespace Jhu.Graywulf.Web.Admin.Domain {
     public partial class AddUserGroupMember {
         
         /// <summary>
-        /// Message control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Message;
-        
-        /// <summary>
         /// UserGroup control.
         /// </summary>
         /// <remarks>
@@ -38,6 +29,15 @@ namespace Jhu.Graywulf.Web.Admin.Domain {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList UserRole;
+        
+        /// <summary>
+        /// Message control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Message;
         
         /// <summary>
         /// Ok control.

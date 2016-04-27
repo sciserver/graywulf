@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Web.Security
         /// user is marked as authenticated by a master authority and the graywulf
         /// user doesn't exists, this function creates it automatically.
         /// </summary>
-        public User LoadOrCreateUser(GraywulfIdentity identity)
+        public User LoadOrCreateUser(GraywulfPrincipal principal)
         {
             // TODO: we could create roles here too
 
@@ -49,33 +49,34 @@ namespace Jhu.Graywulf.Web.Security
 
             User user = null;
 
-            if (identity.Protocol == Constants.ProtocolNameForms)
+            if (principal.Identity.Protocol == Constants.ProtocolNameForms)
             {
-                user = GetUser(identity.Identifier);
+                user = GetUser(principal.Identity.Identifier);
             }
-            else if (identity.IsMasterAuthority)
+            else if (principal.Identity.IsMasterAuthority)
             {
-                // If the user ahs been authenticated by a master authority
+                // If the user has been authenticated by a master authority
                 // we try to find it first, then we create a new user if
-                // necessary
+                // necessary, otherwise we just attach the indentity to the user
 
-                user = GetUserByIdentity(identity);
+                user = GetUserByIdentity(principal.Identity);
 
                 if (user == null)
                 {
                     // No user found by identity, try to load by name
-                    user = GetUserByUserName(identity.User.Name);
+                    user = GetUserByUserName(principal.Identity.User.Name);
 
                     // If the user is still not found, create an entirely new user
+                    // TODO: how to set group membership?
                     if (user == null)
                     {
-                        CreateUserInternal(identity.User, null);
-                        user = identity.User;
+                        CreateUserInternal(principal.Identity.User, null);
+                        user = principal.Identity.User;
                     }
 
                     // Now we have a user but no identifier is associated with it
                     // Simply create a new identity in the Graywulf registry
-                    var uid = AddUserIdentity(user, identity);
+                    var uid = AddUserIdentity(user, principal.Identity);
                 }
             }
             else
@@ -83,7 +84,7 @@ namespace Jhu.Graywulf.Web.Security
                 // If the user was authenticated by a non-master authority
                 // we simply look it up by identifier
 
-                user = GetUserByIdentity(identity);
+                user = GetUserByIdentity(principal.Identity);
             }
 
             if (user == null)
@@ -91,12 +92,16 @@ namespace Jhu.Graywulf.Web.Security
                 throw new SecurityException(ExceptionMessages.AccessDenied);
             }
 
-            identity.IsAuthenticated = true;
-            identity.UserReference.Value = user;
+            principal.Identity.IsAuthenticated = true;
+            principal.Identity.UserReference.Value = user;
 
             // Cache name for later, make sure it has a valid context
-            identity.UserReference.Value.Context = Context;
-            identity.UserReference.Value.GetFullyQualifiedName();
+            principal.Identity.UserReference.Value.Context = Context;
+            principal.Identity.UserReference.Value.GetFullyQualifiedName();
+
+            // At this point the user is loaded from the registry,
+            // now load the roles
+            LoadRoles(principal);
 
             return user;
         }
@@ -168,6 +173,8 @@ namespace Jhu.Graywulf.Web.Security
 
         private void CreateUserInternal(User user, string password)
         {
+            // TODO: figure out how to create user roles here
+
             user.Context = Context;
             user.ParentReference.Value = Context.Domain;
 
@@ -325,13 +332,26 @@ namespace Jhu.Graywulf.Web.Security
         #endregion
         #region User group membership
 
-        public override void MakeMemberOf(User user, UserGroup group)
+        public override void LoadRoles(GraywulfPrincipal principal)
+        {
+            var user = principal.Identity.User;
+
+            user.Context = Context;
+            user.LoadUserGroupMemberships(true);
+
+            foreach (var ugm in user.UserGroupMemberships.Values)
+            {
+                principal.AddRole(ugm.UserGroup.Name, ugm.UserRole.Name);
+            }
+        }
+
+        public override void MakeMemberOf(string user, string group, string role)
         {
             // TODO: implement this if necessary
             throw new NotImplementedException();
         }
 
-        public override void RevokeMemberOf(User user, UserGroup group)
+        public override void RevokeMemberOf(string user, string group, string role)
         {
             // TODO: implement this if necessary
             throw new NotImplementedException();
