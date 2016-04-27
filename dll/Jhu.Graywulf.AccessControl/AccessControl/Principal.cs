@@ -30,9 +30,12 @@ namespace Jhu.Graywulf.AccessControl
             set { identity = value; }
         }
 
-        public HashSet<string> Roles
+        public int RoleCount
         {
-            get { return roles; }
+            get
+            {
+                return roles.Count;
+            }
         }
 
         #endregion
@@ -103,6 +106,16 @@ namespace Jhu.Graywulf.AccessControl
         }
 
         #endregion
+
+        public void AddRole(string role)
+        {
+            roles.Add(role);
+        }
+
+        public void AddRole(string group, string role)
+        {
+            roles.Add(group + "|" + role);
+        }
 
         public bool IsInRole(string role)
         {

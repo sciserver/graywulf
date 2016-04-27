@@ -86,7 +86,7 @@ namespace Jhu.Graywulf.AccessControl
 
             var id = CreateTestPrincipal();
 
-            id.Roles.Add("testgroup|member");
+            id.AddRole("testgroup", "member");
 
             var access = acl.EvaluateAccess(id);
 
@@ -105,7 +105,7 @@ namespace Jhu.Graywulf.AccessControl
 
             var id = CreateTestPrincipal();
 
-            id.Roles.Add("testgroup|member");
+            id.AddRole("testgroup", "member");
 
             var access = acl.EvaluateAccess(id);
 

@@ -19,8 +19,8 @@ namespace Jhu.Graywulf.AccessControl
                 }
             };
 
-            principal.Roles.Add("a|x");
-            principal.Roles.Add("b|y");
+            principal.AddRole("a", "x");
+            principal.AddRole("b", "y");
 
             return principal;
         }
@@ -33,13 +33,13 @@ namespace Jhu.Graywulf.AccessControl
 
             Assert.AreEqual(a.Identity.Name, b.Identity.Name);
             Assert.AreEqual(a.Identity.IsAuthenticated, b.Identity.IsAuthenticated);
-            Assert.AreEqual(a.Roles.Count, b.Roles.Count);
+            Assert.AreEqual(a.RoleCount, b.RoleCount);
 
             b = (Principal)a.Clone();
 
             Assert.AreEqual(a.Identity.Name, b.Identity.Name);
             Assert.AreEqual(a.Identity.IsAuthenticated, b.Identity.IsAuthenticated);
-            Assert.AreEqual(a.Roles.Count, b.Roles.Count);
+            Assert.AreEqual(a.RoleCount, b.RoleCount);
         }
 
         [TestMethod]
@@ -58,12 +58,10 @@ namespace Jhu.Graywulf.AccessControl
 
             Assert.AreEqual(principal.Identity.Name, principal2.Identity.Name);
             Assert.AreEqual(principal.Identity.IsAuthenticated, principal2.Identity.IsAuthenticated);
-            Assert.AreEqual(principal.Roles.Count, principal2.Roles.Count);
+            Assert.AreEqual(principal.RoleCount, principal2.RoleCount);
 
-            foreach (var role in principal.Roles)
-            {
-                Assert.IsTrue(principal2.Roles.Contains(role));
-            }
+            Assert.IsTrue(principal2.IsInRole("a", "x"));
+            Assert.IsTrue(principal2.IsInRole("b", "y"));
         }
 
         [TestMethod]
@@ -85,7 +83,7 @@ namespace Jhu.Graywulf.AccessControl
             var principal = Principal.FromXml(xml);
 
             Assert.AreEqual("a", principal.Identity.Name);
-            Assert.AreEqual(2, principal.Roles.Count);
+            Assert.AreEqual(2, principal.RoleCount);
         }
 
         [TestMethod]
@@ -95,7 +93,7 @@ namespace Jhu.Graywulf.AccessControl
             var principal = Principal.FromXml(xml);
 
             Assert.AreEqual("a", principal.Identity.Name);
-            Assert.AreEqual(0, principal.Roles.Count);
+            Assert.AreEqual(0, principal.RoleCount);
         }
 
         [TestMethod]
@@ -105,7 +103,7 @@ namespace Jhu.Graywulf.AccessControl
             var principal = Principal.FromXml(xml);
 
             Assert.AreEqual("a", principal.Identity.Name);
-            Assert.AreEqual(0, principal.Roles.Count);
+            Assert.AreEqual(0, principal.RoleCount);
         }
     }
 }
