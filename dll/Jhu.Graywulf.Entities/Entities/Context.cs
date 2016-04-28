@@ -246,7 +246,7 @@ namespace Jhu.Graywulf.Entities
                 EnsureOpenTransaction();
                 cmd.Transaction = this.transaction;
             }
-            
+
             cmd.CommandTimeout = 30;        // TODO: from settings
         }
 
@@ -312,7 +312,7 @@ namespace Jhu.Graywulf.Entities
             PrepareCommand(cmd);
 
             cmd.ExecuteNonQuery();
-            
+
             return cmd.Parameters["RETVAL"].Value;
         }
 
