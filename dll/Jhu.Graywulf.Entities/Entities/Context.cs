@@ -313,7 +313,14 @@ namespace Jhu.Graywulf.Entities
 
             cmd.ExecuteNonQuery();
 
-            return cmd.Parameters["RETVAL"].Value;
+            if (cmd.Parameters.Contains("RETVAL"))
+            {
+                return cmd.Parameters["RETVAL"].Value;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public object ExecuteCommandScalar(SqlCommand cmd)
