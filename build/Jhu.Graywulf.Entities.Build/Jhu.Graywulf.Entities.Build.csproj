@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DFC2C453-4CE2-403E-8C91-CB28588E4B81}</ProjectGuid>
+    <ProjectGuid>{B25AD38F-0515-481F-A7CB-2A252B9257FA}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Jhu.Graywulf.Entities.Build</RootNamespace>

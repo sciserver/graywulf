@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{705995AF-35D2-4EFE-B0B5-852F30D2B40D}</ProjectGuid>
+    <ProjectGuid>{96B78C89-3E68-450B-B08B-48A7E8073759}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Jhu.Graywulf</RootNamespace>
@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.AccessControl\Jhu.Graywulf.AccessControl.csproj">
-      <Project>{73396997-e14a-44bf-b5d4-2e442424f766}</Project>
+      <Project>{da689d40-edcd-433d-8d9b-4e96829f8c6a}</Project>
       <Name>Jhu.Graywulf.AccessControl</Name>
     </ProjectReference>
   </ItemGroup>

@@ -220,6 +220,7 @@ namespace Jhu.Graywulf.Entities
         #region Denied access operations
 
         [TestMethod]
+        [ExpectedException(typeof(AccessDeniedException))]
         public void LoadDeniedest()
         {
             int id;
@@ -241,18 +242,12 @@ namespace Jhu.Graywulf.Entities
                 var e = new SecuredEntity(context);
                 e.ID = id;
 
-                try
-                {
-                    e.Load();
-                    Assert.Fail();
-                }
-                catch (SecurityException)
-                {
-                }
+                e.Load();
             }
         }
 
         [TestMethod]
+        [ExpectedException(typeof(AccessDeniedException))]
         public void ModifyDeniedTest()
         {
             int id;
@@ -276,18 +271,12 @@ namespace Jhu.Graywulf.Entities
 
                 e.Name = "modified";
 
-                try
-                {
-                    e.Save();
-                    Assert.Fail();
-                }
-                catch (SecurityException)
-                {
-                }
+                e.Save();
             }
         }
 
         [TestMethod]
+        [ExpectedException(typeof(AccessDeniedException))]
         public void DeleteDeniedTest()
         {
             int id;
@@ -309,14 +298,7 @@ namespace Jhu.Graywulf.Entities
                 e.ID = id;
                 e.Load();
 
-                try
-                {
-                    e.Delete();
-                    Assert.Fail();
-                }
-                catch (SecurityException)
-                {
-                }
+                e.Delete();
             }
         }
 

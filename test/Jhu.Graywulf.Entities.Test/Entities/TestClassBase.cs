@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Entities
         {
             using (var context = CreateContext())
             {
-                string script = File.ReadAllText(MapPath(@"sql\Graywulf.Entities.Test.sql"));
+                string script = File.ReadAllText(MapPath(@"sql\Jhu.Graywulf.Entities.Test.sql"));
                 context.ExecuteScriptNonQuery(script);
             }
         }

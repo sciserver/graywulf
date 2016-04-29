@@ -728,8 +728,8 @@
     <Content Include="Templates\RequestResetEmail.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\graywulf-entities\dll\Jhu.Graywulf.AccessControl\Jhu.Graywulf.AccessControl.csproj">
-      <Project>{73396997-e14a-44bf-b5d4-2e442424f766}</Project>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.AccessControl\Jhu.Graywulf.AccessControl.csproj">
+      <Project>{da689d40-edcd-433d-8d9b-4e96829f8c6a}</Project>
       <Name>Jhu.Graywulf.AccessControl</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
