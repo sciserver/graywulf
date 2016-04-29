@@ -76,6 +76,8 @@ namespace Jhu.Graywulf.Entities
         [TestMethod]
         public void FindTest()
         {
+            // TODO: create an entity first
+
             using (var context = CreateContext())
             {
                 var s = new IdentityKeyEntitySearch(context);
