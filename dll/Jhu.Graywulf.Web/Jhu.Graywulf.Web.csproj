@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,10 +10,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Jhu.Graywulf</RootNamespace>
     <AssemblyName>Jhu.Graywulf.Web</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +33,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -105,6 +108,7 @@
     <Compile Include="Web\Services\Constants.cs" />
     <Compile Include="Web\Services\DynamicResponseFormatAttribute.cs" />
     <Compile Include="Web\Services\DynamicResponseMessageFormatter.cs" />
+    <Compile Include="Web\Services\GraywulfMessageFormatter.cs" />
     <Compile Include="Web\Services\HttpMethod.cs" />
     <Compile Include="Web\Services\ResourceNotFoundException.cs" />
     <Compile Include="Web\Services\RestAuthenticationModule.cs" />
@@ -121,8 +125,13 @@
     <Compile Include="Web\Services\RestCorsMessageInspector.cs" />
     <Compile Include="Web\Services\RestServiceBase.cs" />
     <Compile Include="Web\Services\RestServiceBehavior.cs" />
+    <Compile Include="Web\Services\StreamingListFormatter.cs" />
+    <Compile Include="Web\Services\StreamingListFormatAttribute.cs" />
+    <Compile Include="Web\Services\StreamingListResponse.cs" />
+    <Compile Include="Web\Services\StreamingListXmlWriter.cs" />
     <Compile Include="Web\Services\TextResponseMessageBodyWriter.cs" />
     <Compile Include="Web\Services\TextResponseMessageFormatter.cs" />
+    <Compile Include="Web\Services\StreamingListXmlMessageBodyWriter.cs" />
     <Compile Include="Web\UI\ApplicationBase.cs" />
     <Compile Include="Web\UI\Captcha.aspx.cs">
       <DependentUpon>Captcha.aspx</DependentUpon>

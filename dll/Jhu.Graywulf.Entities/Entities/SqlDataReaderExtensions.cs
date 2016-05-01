@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Entities
         public static IEnumerable<T> AsEnumerable<T>(this SqlDataReader reader)
             where T : IDatabaseTableObject, new()
         {
-            return new DataReaderEnumerator<T>(reader);
+            return new SqlDataReaderEnumerator<T>(reader);
         }
 
         public static T AsSingleObject<T>(this SqlDataReader reader)

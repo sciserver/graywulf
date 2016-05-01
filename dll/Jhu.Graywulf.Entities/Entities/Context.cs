@@ -14,12 +14,19 @@ namespace Jhu.Graywulf.Entities
     public class Context : IDisposable
     {
         private bool isValid;
+        private bool autoDispose;
         private string connectionString;
         private SqlConnection connection;
         private SqlTransaction transaction;
         private IPrincipal principal;
 
         #region Properties
+
+        public bool AutoDispose
+        {
+            get { return autoDispose; }
+            set { autoDispose = value; }
+        }
 
         public string ConnectionString
         {
@@ -254,10 +261,8 @@ namespace Jhu.Graywulf.Entities
             where T : IDatabaseTableObject, new()
         {
             PrepareCommand(cmd);
-
             var dr = cmd.ExecuteReader();
-
-            return dr.AsEnumerable<T>();
+            return new SqlDataReaderEnumerator<T>(dr, this);
         }
 
         public T ExecuteCommandAsSingleObject<T>(SqlCommand cmd)

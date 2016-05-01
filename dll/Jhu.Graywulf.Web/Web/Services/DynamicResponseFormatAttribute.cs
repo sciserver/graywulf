@@ -15,6 +15,13 @@ namespace Jhu.Graywulf.Web.Services
     /// </summary>
     public class DynamicResponseFormatAttribute : Attribute, IOperationBehavior
     {
+        private Type formatterType;
+
+        public DynamicResponseFormatAttribute(Type formatterType)
+        {
+            this.formatterType = formatterType;
+        }
+
         public void AddBindingParameters(OperationDescription operationDescription, BindingParameterCollection bindingParameters)
         {
         }
@@ -25,12 +32,21 @@ namespace Jhu.Graywulf.Web.Services
 
         public void ApplyDispatchBehavior(OperationDescription operationDescription, DispatchOperation dispatchOperation)
         {
+            var formats = new Dictionary<string, IDispatchMessageFormatter>();
+            var formatter = (GraywulfMessageFormatter)Activator.CreateInstance(formatterType);
+            var mimetypes = formatter.GetSupportedMimeTypes();
+
+            // Create a separate instance for each supported type
+            foreach (var mimetype in mimetypes)
+            {
+                formatter = (GraywulfMessageFormatter)Activator.CreateInstance(formatterType);
+                formatter.MimeType = mimetype;
+                formats.Add(mimetype, formatter);
+            }
+
             dispatchOperation.Formatter = new DynamicResponseMessageFormatter(
                 dispatchOperation.Formatter,
-                new Dictionary<string, IDispatchMessageFormatter>()
-                {
-                        {TextResponseMessageFormatter.MimeType, new TextResponseMessageFormatter() }
-                });
+                formats);
         }
 
         public void Validate(OperationDescription operationDescription)

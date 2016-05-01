@@ -8,13 +8,21 @@ using System.Data.SqlClient;
 
 namespace Jhu.Graywulf.Entities
 {
-    public class DataReaderEnumerator<T> : IEnumerable<T>, IEnumerator<T>
+    public class SqlDataReaderEnumerator<T> : IEnumerable<T>, IEnumerator<T>
             where T : IDatabaseTableObject, new()
     {
-        SqlDataReader reader;
+        private Context context;
+        private SqlDataReader reader;
 
-        public DataReaderEnumerator(SqlDataReader reader)
+        public SqlDataReaderEnumerator(SqlDataReader reader)
         {
+            this.context = null;
+            this.reader = reader;
+        }
+
+        public SqlDataReaderEnumerator(SqlDataReader reader, Context context)
+        {
+            this.context = context;
             this.reader = reader;
         }
 
@@ -53,6 +61,12 @@ namespace Jhu.Graywulf.Entities
                 reader.Dispose();
                 reader = null;
             }
+
+            if (context != null && context.AutoDispose)
+            {
+                context.Dispose();
+                context = null;
+            }
         }
 
         object System.Collections.IEnumerator.Current
@@ -62,6 +76,8 @@ namespace Jhu.Graywulf.Entities
 
         public bool MoveNext()
         {
+            System.Threading.Thread.Sleep(1000);
+
             if (reader == null)
             {
                 return false;
@@ -72,9 +88,7 @@ namespace Jhu.Graywulf.Entities
 
                 if (!res)
                 {
-                    reader.Close();
-                    reader.Dispose();
-                    reader = null;
+                    Dispose();
                 }
 
                 return res;

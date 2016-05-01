@@ -56,6 +56,11 @@ namespace Jhu.Graywulf.Web.Services
                         break;
                     }
                 }
+
+                if (formatter != null)
+                {
+                    break;
+                }
             }
 
             if (formatter == null)

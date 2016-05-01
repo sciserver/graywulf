@@ -9,18 +9,21 @@ using System.IO;
 
 namespace Jhu.Graywulf.Web.Services
 {
-    class TextResponseMessageFormatter : IDispatchMessageFormatter
+    public class TextResponseMessageFormatter : GraywulfMessageFormatter, IDispatchMessageFormatter
     {
-        public const string MimeType = "text/plain";
+        public override string[] GetSupportedMimeTypes()
+        {
+            return new string[] { Constants.MimeTypeText };
+        }
 
-        public void DeserializeRequest(Message message, object[] parameters)
+        public override void DeserializeRequest(Message message, object[] parameters)
         {
             throw new NotImplementedException();
         }
 
-        public Message SerializeReply(MessageVersion messageVersion, object[] parameters, object result)
+        public override Message SerializeReply(MessageVersion messageVersion, object[] parameters, object result)
         {
-            return WebOperationContext.Current.CreateStreamResponse(new TextResponseMessageBodyWriter(result), MimeType);
+            return WebOperationContext.Current.CreateStreamResponse(new TextResponseMessageBodyWriter(result), Constants.MimeTypeText);
         }
     }
 }
