@@ -10,11 +10,6 @@ namespace Jhu.Graywulf.Entities
 {
     public static class SqlDataReaderExtensions
     {
-        public static IEnumerable<T> AsEnumerable<T>(this SqlDataReader reader)
-            where T : IDatabaseTableObject, new()
-        {
-            return new SqlDataReaderEnumerator<T>(reader);
-        }
 
         public static T AsSingleObject<T>(this SqlDataReader reader)
             where T : IDatabaseTableObject, new()

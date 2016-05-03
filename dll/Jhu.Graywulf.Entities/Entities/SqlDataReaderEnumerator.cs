@@ -12,18 +12,21 @@ namespace Jhu.Graywulf.Entities
             where T : IDatabaseTableObject, new()
     {
         private Context context;
+        private SqlCommand command;
         private SqlDataReader reader;
 
-        public SqlDataReaderEnumerator(SqlDataReader reader)
+        public SqlDataReaderEnumerator(SqlCommand command)
         {
             this.context = null;
-            this.reader = reader;
+            this.command = command;
+            this.reader = null;
         }
 
-        public SqlDataReaderEnumerator(SqlDataReader reader, Context context)
+        public SqlDataReaderEnumerator(SqlCommand command, Context context)
         {
             this.context = context;
-            this.reader = reader;
+            this.command = command;
+            this.reader = null;
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -62,6 +65,12 @@ namespace Jhu.Graywulf.Entities
                 reader = null;
             }
 
+            if (command != null)
+            {
+                command.Dispose();
+                command = null;
+            }
+
             if (context != null && context.AutoDispose)
             {
                 context.Dispose();
@@ -78,19 +87,17 @@ namespace Jhu.Graywulf.Entities
         {
             if (reader == null)
             {
-                return false;
+                reader = command.ExecuteReader(CommandBehavior.SequentialAccess);
             }
-            else
+
+            var res = this.reader.Read();
+
+            if (!res)
             {
-                var res = this.reader.Read();
-
-                if (!res)
-                {
-                    Dispose();
-                }
-
-                return res;
+                Dispose();
             }
+
+            return res;
         }
 
         public void Reset()

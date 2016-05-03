@@ -261,8 +261,7 @@ namespace Jhu.Graywulf.Entities
             where T : IDatabaseTableObject, new()
         {
             PrepareCommand(cmd);
-            var dr = cmd.ExecuteReader();
-            return new SqlDataReaderEnumerator<T>(dr, this);
+            return new SqlDataReaderEnumerator<T>(cmd, this);
         }
 
         public T ExecuteCommandAsSingleObject<T>(SqlCommand cmd)
