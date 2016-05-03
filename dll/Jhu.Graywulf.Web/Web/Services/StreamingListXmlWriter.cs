@@ -10,26 +10,48 @@ namespace Jhu.Graywulf.Web.Services
 {
     class StreamingListXmlWriter : XmlTextWriter
     {
-        private bool ignoreAttr = false;
+        private bool skipNamespace;
+        private bool ignoreAttr;
+
+        public bool SkipNamespace
+        {
+            get { return skipNamespace; }
+            set { skipNamespace = value; }
+        }
 
         public StreamingListXmlWriter(TextWriter writer)
             : base(writer)
         {
+            InitializeMembers();
         }
 
         public StreamingListXmlWriter(Stream stream, Encoding encoding)
             : base(stream, encoding)
         {
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
+        {
+            this.skipNamespace = false;
+            this.ignoreAttr = false;
         }
 
         public override string LookupPrefix(string ns)
         {
-            return string.Empty;
+            if (skipNamespace)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return base.LookupPrefix(ns);
+            }
         }
 
         public override void WriteStartAttribute(string prefix, string localName, string ns)
         {
-            if (String.Compare(prefix, "xmlns", true) == 0)
+            if (skipNamespace && String.Compare(prefix, "xmlns", true) == 0)
             {
                 this.ignoreAttr = true;
                 return;
@@ -51,7 +73,7 @@ namespace Jhu.Graywulf.Web.Services
 
         public override void WriteString(string text)
         {
-            if (String.Compare(text, "http://www.w3.org/2001/XMLSchema-instance", true) == 0)
+            if (skipNamespace && String.Compare(text, "http://www.w3.org/2001/XMLSchema-instance", true) == 0)
             {
                 return;
             }

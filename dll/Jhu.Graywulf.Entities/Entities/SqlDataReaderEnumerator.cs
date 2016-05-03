@@ -76,8 +76,6 @@ namespace Jhu.Graywulf.Entities
 
         public bool MoveNext()
         {
-            System.Threading.Thread.Sleep(1000);
-
             if (reader == null)
             {
                 return false;

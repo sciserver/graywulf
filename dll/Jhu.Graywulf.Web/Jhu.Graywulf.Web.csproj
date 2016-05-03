@@ -127,7 +127,6 @@
     <Compile Include="Web\Services\RestServiceBehavior.cs" />
     <Compile Include="Web\Services\StreamingListFormatter.cs" />
     <Compile Include="Web\Services\StreamingListFormatAttribute.cs" />
-    <Compile Include="Web\Services\StreamingListResponse.cs" />
     <Compile Include="Web\Services\StreamingListXmlWriter.cs" />
     <Compile Include="Web\Services\TextResponseMessageBodyWriter.cs" />
     <Compile Include="Web\Services\TextResponseMessageFormatter.cs" />
