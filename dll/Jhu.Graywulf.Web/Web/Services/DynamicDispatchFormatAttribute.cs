@@ -13,11 +13,11 @@ namespace Jhu.Graywulf.Web.Services
     /// When applied to a REST web service operation, selects the return format
     /// based on the accept header sent by the client.
     /// </summary>
-    public class DynamicResponseFormatAttribute : Attribute, IOperationBehavior
+    public class DynamicDispatchFormatAttribute : Attribute, IOperationBehavior
     {
         private Type formatterType;
 
-        public DynamicResponseFormatAttribute(Type formatterType)
+        public DynamicDispatchFormatAttribute(Type formatterType)
         {
             this.formatterType = formatterType;
         }
@@ -44,7 +44,7 @@ namespace Jhu.Graywulf.Web.Services
                 formats.Add(mimetype, formatter);
             }
 
-            dispatchOperation.Formatter = new DynamicResponseMessageFormatter(
+            dispatchOperation.Formatter = new DynamicDispatchMessageFormatter(
                 dispatchOperation.Formatter,
                 formats);
         }

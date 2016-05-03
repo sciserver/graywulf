@@ -11,7 +11,7 @@ using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Web.Services
 {
-    class DynamicResponseMessageFormatter : IDispatchMessageFormatter
+    class DynamicDispatchMessageFormatter : IDispatchMessageFormatter
     {
         private IDispatchMessageFormatter fallbackFormatter;
         private Dictionary<string, IDispatchMessageFormatter> formatters;
@@ -21,15 +21,34 @@ namespace Jhu.Graywulf.Web.Services
             get { return formatters; }
         }
 
-        public DynamicResponseMessageFormatter(IDispatchMessageFormatter fallbackFormatter, IDictionary<string, IDispatchMessageFormatter> formatters)
+        public DynamicDispatchMessageFormatter(IDispatchMessageFormatter fallbackFormatter, IDictionary<string, IDispatchMessageFormatter> formatters)
         {
             this.fallbackFormatter = fallbackFormatter;
             this.formatters = new Dictionary<string, IDispatchMessageFormatter>(formatters, StringComparer.InvariantCultureIgnoreCase);
         }
 
-        public void DeserializeRequest(Message message, object[] parameters)
+        public void DeserializeRequest(Message request, object[] parameters)
         {
-            fallbackFormatter.DeserializeRequest(message, parameters);
+            var prop = (HttpRequestMessageProperty)request.Properties[HttpRequestMessageProperty.Name];
+            var contentType = prop.Headers[HttpRequestHeader.ContentType];
+
+            IDispatchMessageFormatter formatter = null;
+
+            foreach (var formatMime in formatters.Keys)
+            {
+                if (Jhu.Graywulf.Util.MediaTypeComparer.Compare(contentType, formatMime))
+                {
+                    formatter = formatters[formatMime];
+                    break;
+                }
+            }
+
+            if (formatter == null)
+            {
+                formatter = fallbackFormatter;
+            }
+
+            fallbackFormatter.DeserializeRequest(request, parameters);
         }
 
         public Message SerializeReply(MessageVersion messageVersion, object[] parameters, object result)
