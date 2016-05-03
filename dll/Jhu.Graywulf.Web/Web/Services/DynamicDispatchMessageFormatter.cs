@@ -48,7 +48,7 @@ namespace Jhu.Graywulf.Web.Services
                 formatter = fallbackFormatter;
             }
 
-            fallbackFormatter.DeserializeRequest(request, parameters);
+            formatter.DeserializeRequest(request, parameters);
         }
 
         public Message SerializeReply(MessageVersion messageVersion, object[] parameters, object result)

@@ -106,8 +106,8 @@
     <Compile Include="Web\Security\AuthenticationRequest.cs" />
     <Compile Include="Web\Security\WebAuthenticationModule.cs" />
     <Compile Include="Web\Services\Constants.cs" />
-    <Compile Include="Web\Services\DynamicResponseFormatAttribute.cs" />
-    <Compile Include="Web\Services\DynamicResponseMessageFormatter.cs" />
+    <Compile Include="Web\Services\DynamicDispatchMessageFormatter.cs" />
+    <Compile Include="Web\Services\DynamicFormatAttribute.cs" />
     <Compile Include="Web\Services\GraywulfMessageFormatter.cs" />
     <Compile Include="Web\Services\HttpMethod.cs" />
     <Compile Include="Web\Services\ResourceNotFoundException.cs" />
