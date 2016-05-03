@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Xml;
 
 namespace Jhu.Graywulf.Web.Services
 {
@@ -16,6 +17,11 @@ namespace Jhu.Graywulf.Web.Services
     {
         private object result;
         private Encoding encoding;
+
+        protected object Result
+        {
+            get { return result; }
+        }
 
         public StreamingListXmlMessageBodyWriter(object result)
             : this(result, System.Text.Encoding.ASCII)
@@ -39,65 +45,145 @@ namespace Jhu.Graywulf.Web.Services
             //writer.WriteEndElement();
         }
 
-        protected override void OnWriteBodyContents(Stream stream)
+        protected StreamWriter CreateStreamWriter(Stream stream)
         {
-            var w = new StreamWriter(stream, encoding);
-            var x = new StreamingListXmlWriter(w);
-
-            var type = result.GetType();
-
-            // Figure out list name
-            string className, classNamespace;
-            Dictionary<string, PropertyInfo> properties;
-            StreamingListFormatter.ReflectClass(type, out className, out classNamespace, out properties);
-
-            x.WriteStartElement(className, classNamespace);
-            x.WriteAttributeString("xmlns", classNamespace);
-            x.WriteAttributeString("xmlns:i", "http://www.w3.org/2001/XMLSchema-instance");
-
-            x.SkipNamespace = true;
-
-            foreach (var propName in properties.Keys)
-            {
-                var prop = properties[propName];
-
-                x.WriteStartElement(propName);
-
-                if (prop.PropertyType.IsGenericType &&
-                    prop.PropertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                {
-                    
-                    var itemType = prop.PropertyType.GetGenericArguments()[0];
-                    WriteEnumerableItems(w, x, itemType, (IEnumerable)prop.GetValue(result));   
-                }
-                else
-                {
-                    // fallback to DataContractSerializer
-                    var s = new DataContractSerializer(prop.PropertyType);
-                    s.WriteObjectContent(x, prop.GetValue(result));
-                }
-
-                x.WriteEndElement();
-            }
-
-            x.SkipNamespace = false;
-
-            x.WriteEndElement();
-            w.WriteLine();
-            w.Flush();
+            return new StreamWriter(stream, encoding);
         }
 
-        private void WriteEnumerableItems(StreamWriter w,  StreamingListXmlWriter x, Type itemType, IEnumerable items)
+        protected virtual XmlWriter CreateXmlWriter(Stream stream)
         {
-            // Iterate through the collection
-            var s = new DataContractSerializer(itemType);
-            foreach (var i in items)
-            {
-                s.WriteObject(x, i);
+            return new StreamingListXmlWriter(stream, encoding);
+        }
 
-                // For some reason, this is necessary here to flush buffer to output
-                w.WriteLine();
-                w.Flush();
+        protected virtual XmlObjectSerializer CreateSerializer(Type type)
+        {
+            return new DataContractSerializer(type);
+        }
+
+        protected virtual void WriteStartRoot(XmlWriter x, string name, string ns)
+        {
+            x.WriteStartElement(name, ns);
+            x.WriteAttributeString("xmlns", ns);
+            x.WriteAttributeString("xmlns:i", "http://www.w3.org/2001/XMLSchema-instance");
+
+            ((StreamingListXmlWriter)x).SkipNamespace = true;
+        }
+
+        protected virtual void WriteEndRoot(XmlWriter x)
+        {
+            ((StreamingListXmlWriter)x).SkipNamespace = false;
+
+            x.WriteEndElement();
+        }
+
+        protected virtual void WriteStartObject(XmlWriter x, string name)
+        {
+            x.WriteStartElement(name);
+        }
+
+        protected virtual void WriteEndObject(XmlWriter x)
+        {
+            x.WriteEndElement();
+        }
+
+        protected virtual void WriteStartArray(XmlWriter x, string name)
+        {
+            x.WriteStartElement(name);
+        }
+
+        protected virtual void WriteEndArray(XmlWriter x)
+        {
+            x.WriteEndElement();
+        }
+
+        protected virtual void WriteStartArrayItem(XmlWriter x, string name)
+        {
+            x.WriteStartElement(name);
+        }
+
+        protected virtual void WriteEndArrayItem(XmlWriter x)
+        {
+            x.WriteEndElement();
+        }
+
+        protected override void OnWriteBodyContents(Stream stream)
+        {
+            using (var w = CreateStreamWriter(stream))
+            {
+                using (var x = CreateXmlWriter(stream))
+                {
+                    var type = result.GetType();
+
+                    // Figure out list name
+                    string className, classNamespace;
+                    Dictionary<string, PropertyInfo> properties;
+                    StreamingListFormatter.ReflectClass(type, out className, out classNamespace, out properties);
+
+                    WriteStartRoot(x, className, classNamespace);
+
+                    foreach (var propName in properties.Keys)
+                    {
+                        var prop = properties[propName];
+
+                        if (prop.PropertyType.IsGenericType &&
+                            prop.PropertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                        {
+                            var itemType = prop.PropertyType.GetGenericArguments()[0];
+
+                            WriteStartArray(x, propName);
+                            WriteEnumerableItems(w, x, itemType, (IEnumerable)prop.GetValue(result));
+                            WriteEndArray(x);
+                        }
+                        else
+                        {
+                            // fallback to DataContractSerializer
+                            var s = CreateSerializer(prop.PropertyType);
+
+                            WriteStartObject(x, propName);
+                            s.WriteObjectContent(x, prop.GetValue(result));
+                            WriteEndObject(x);
+                        }
+                    }
+
+                    WriteEndRoot(x);
+
+                    w.WriteLine();
+                    w.Flush();
+                }
+            }
+        }
+
+        private void WriteEnumerableItems(StreamWriter w,  XmlWriter x, Type itemType, IEnumerable items)
+        {
+            string name, ns;
+            var s = CreateSerializer(itemType);
+            StreamingListFormatter.ReflectClass(itemType, out name, out ns);
+            
+            var ienum = items.GetEnumerator();
+
+            try
+            {
+                while (ienum.MoveNext())
+                {
+                    WriteStartArrayItem(x, name);
+                    s.WriteObjectContent(x, ienum.Current);
+                    WriteEndArrayItem(x);
+
+                    // For some reason, this is necessary here to flush buffer to output
+                    w.WriteLine();
+                    w.Flush();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                if (ienum != null && ienum is IDisposable)
+                {
+                    ((IDisposable)ienum).Dispose();
+                }
             }
         }
     }

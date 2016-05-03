@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Net;
+using System.ServiceModel;
 using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Web;
@@ -57,7 +59,37 @@ namespace Jhu.Graywulf.Web.Services
 
         public override Message SerializeReply(MessageVersion messageVersion, object[] parameters, object result)
         {
-            var writer = new StreamingListXmlMessageBodyWriter(result);
+            var request = OperationContext.Current.RequestContext.RequestMessage;
+            var prop = (HttpRequestMessageProperty)request.Properties[HttpRequestMessageProperty.Name];
+            var acceptHeader = prop.Headers[HttpRequestHeader.Accept] ?? prop.Headers[HttpRequestHeader.ContentType];
+            var accept = WebOperationContext.Current.IncomingRequest.GetAcceptHeaderElements();
+
+            StreamBodyWriter writer = null;
+            string mimetype = null;
+
+            foreach (var a in accept)
+            {
+                if (Jhu.Graywulf.Util.MediaTypeComparer.Compare(a.MediaType, Constants.MimeTypeXml))
+                {
+                    writer = new StreamingListXmlMessageBodyWriter(result);
+                    mimetype = Constants.MimeTypeXml;
+                    break;
+                }
+                else if (Jhu.Graywulf.Util.MediaTypeComparer.Compare(a.MediaType, Constants.MimeTypeJson))
+                {
+                    writer = new StreamingListJsonMessageBodyWriter(result);
+                    mimetype = Constants.MimeTypeJson;
+                    break;
+                }
+            }
+
+            if (writer == null)
+            {
+                // Default to XML
+                writer = new StreamingListXmlMessageBodyWriter(result);
+                mimetype = Constants.MimeTypeXml;
+            }
+
             var message = WebOperationContext.Current.CreateStreamResponse(writer, Constants.MimeTypeXml);
             return message;
         }
@@ -73,15 +105,8 @@ namespace Jhu.Graywulf.Web.Services
             return reader.ReadBodyContents(message.GetReaderAtBodyContents());
         }
 
-        internal static void ReflectClass(Type type, out string name, out string ns, out Dictionary<string, PropertyInfo> properties)
+        internal static void ReflectClass(Type type, out string name, out string ns)
         {
-            // No attribute present
-            // <ArrayOffootprint xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
-
-            // Inside class:
-            // <footprintList xmlns="" xmlns:i="http://www.w3.org/2001/XMLSchema-instance"><footprints>
-            // <footprint>....
-
             name = ns = null;
 
             // Look for any attributes that control serialization of name
@@ -107,7 +132,11 @@ namespace Jhu.Graywulf.Web.Services
 
             name = name ?? type.Name;
             ns = ns ?? "http://schemas.datacontract.org/2004/07/" + type.Namespace;
+        }
 
+        internal static void ReflectClass(Type type, out string name, out string ns, out Dictionary<string, PropertyInfo> properties)
+        {
+            ReflectClass(type, out name, out ns);
             properties = ReflectProperties(type);
         }
 
