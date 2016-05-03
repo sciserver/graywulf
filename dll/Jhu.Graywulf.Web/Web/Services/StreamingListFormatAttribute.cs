@@ -21,11 +21,17 @@ namespace Jhu.Graywulf.Web.Services
 
         public void ApplyClientBehavior(OperationDescription operationDescription, ClientOperation clientOperation)
         {
+            // Find output message
+            var outmsg = operationDescription.Messages.First(m => m.Direction == MessageDirection.Output);
+            var retval = outmsg.Body.ReturnValue;
+            var rettype = retval.Type;
+
+            clientOperation.Formatter = new StreamingListFormatter(clientOperation.Formatter, rettype);
         }
 
         public void ApplyDispatchBehavior(OperationDescription operationDescription, DispatchOperation dispatchOperation)
         {
-            dispatchOperation.Formatter = new StreamingListFormatter();
+            dispatchOperation.Formatter = new StreamingListFormatter(dispatchOperation.Formatter);
         }
 
         public void Validate(OperationDescription operationDescription)

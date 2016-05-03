@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Jhu.Graywulf.Web.Services
 {
-    public abstract class GraywulfMessageFormatter : IDispatchMessageFormatter
+    public abstract class GraywulfMessageFormatter : IDispatchMessageFormatter, IClientMessageFormatter 
     {
         private string mimeType;
 
@@ -34,5 +34,9 @@ namespace Jhu.Graywulf.Web.Services
         public abstract void DeserializeRequest(Message message, object[] parameters);
 
         public abstract Message SerializeReply(MessageVersion messageVersion, object[] parameters, object result);
+
+        public abstract Message SerializeRequest(MessageVersion messageVersion, object[] parameters);
+
+        public abstract object DeserializeReply(Message message, object[] parameters);
     }
 }

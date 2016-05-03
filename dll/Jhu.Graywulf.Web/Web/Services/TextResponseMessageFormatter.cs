@@ -25,5 +25,15 @@ namespace Jhu.Graywulf.Web.Services
         {
             return WebOperationContext.Current.CreateStreamResponse(new TextResponseMessageBodyWriter(result), Constants.MimeTypeText);
         }
+
+        public override Message SerializeRequest(MessageVersion messageVersion, object[] parameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object DeserializeReply(Message message, object[] parameters)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

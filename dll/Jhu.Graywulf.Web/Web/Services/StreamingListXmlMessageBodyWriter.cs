@@ -48,7 +48,8 @@ namespace Jhu.Graywulf.Web.Services
 
             // Figure out list name
             string className, classNamespace;
-            ReflectClass(type, out className, out classNamespace);
+            Dictionary<string, PropertyInfo> properties;
+            StreamingListFormatter.ReflectClass(type, out className, out classNamespace, out properties);
 
             x.WriteStartElement(className, classNamespace);
             x.WriteAttributeString("xmlns", classNamespace);
@@ -56,15 +57,9 @@ namespace Jhu.Graywulf.Web.Services
 
             x.SkipNamespace = true;
 
-            // Iterate through properties
-            var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.SetProperty);
-
-            for (int i = 0; i < props.Length; i++)
+            foreach (var propName in properties.Keys)
             {
-                var prop = props[i];
-
-                string propName;
-                ReflectProperty(prop, out propName);
+                var prop = properties[propName];
 
                 x.WriteStartElement(propName);
 
@@ -103,66 +98,6 @@ namespace Jhu.Graywulf.Web.Services
                 // For some reason, this is necessary here to flush buffer to output
                 w.WriteLine();
                 w.Flush();
-            }
-        }
-
-        private void ReflectClass(Type type, out string name, out string ns)
-        {
-            // No attribute present
-            // <ArrayOffootprint xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
-
-            // Inside class:
-            // <footprintList xmlns="" xmlns:i="http://www.w3.org/2001/XMLSchema-instance"><footprints>
-            // <footprint>....
-
-            name = ns = null;
-
-            // Look for any attributes that control serialization of name
-            var attrs = type.GetCustomAttributes(true);
-
-            for (int i = 0; i < attrs.Length; i++)
-            {
-                var attr = attrs[i];
-
-                if (attr is XmlRootAttribute)
-                {
-                    var a = (XmlRootAttribute)attr;
-                    name = a.ElementName;
-                    ns = a.Namespace;
-                }
-                else if (attr is DataContractAttribute)
-                {
-                    var a = (DataContractAttribute)attr;
-                    name = a.Name;
-                    ns = a.Namespace;
-                }
-            }
-
-            name = name ?? type.Name;
-            ns = ns ?? "http://schemas.datacontract.org/2004/07/" + type.Namespace;
-        }
-
-        private void ReflectProperty(PropertyInfo prop, out string name)
-        {
-            name = null;
-
-            // Look for any attributes that control serialization of name
-            var attrs = prop.GetCustomAttributes(true);
-
-            for (int i = 0; i < attrs.Length; i++)
-            {
-                var attr = attrs[i];
-
-                if (attr is XmlElementAttribute)
-                {
-                    var a = (XmlElementAttribute)attr;
-                    name = a.ElementName;
-                }
-                else if (attr is DataMemberAttribute)
-                {
-                    var a = (DataMemberAttribute)attr;
-                    name = a.Name;
-                }
             }
         }
     }

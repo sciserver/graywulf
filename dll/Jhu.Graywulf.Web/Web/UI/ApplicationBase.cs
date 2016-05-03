@@ -91,6 +91,10 @@ namespace Jhu.Graywulf.Web.UI
 
         protected virtual void Session_Start(object sender, EventArgs e)
         {
+            // This is a workaround that's required by WCF not to throw an exception
+            // when first request by a client to the web service returns streaming
+            // response
+            string sessionId = Session.SessionID; 
         }
 
         protected virtual void Session_End(object sender, EventArgs e)
