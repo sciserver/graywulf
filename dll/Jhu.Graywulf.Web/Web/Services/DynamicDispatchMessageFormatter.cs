@@ -11,6 +11,10 @@ using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Web.Services
 {
+    /// <summary>
+    /// Implements dynamic message format selection based on HTTP request
+    /// headers.
+    /// </summary>
     class DynamicDispatchMessageFormatter : IDispatchMessageFormatter
     {
         private IDispatchMessageFormatter fallbackFormatter;

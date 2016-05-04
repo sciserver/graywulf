@@ -15,5 +15,6 @@ namespace Jhu.Graywulf.Web.Services
         public const string MimeTypeText = "text/plain";
         public const string MimeTypeXml = "application/xml";
         public const string MimeTypeJson = "application/json";
+        public const string MimeTypeBinary = "application/octet-stream";
     }
 }

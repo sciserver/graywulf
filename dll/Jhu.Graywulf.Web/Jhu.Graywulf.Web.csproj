@@ -108,7 +108,6 @@
     <Compile Include="Web\Services\Constants.cs" />
     <Compile Include="Web\Services\DynamicDispatchMessageFormatter.cs" />
     <Compile Include="Web\Services\DynamicFormatAttribute.cs" />
-    <Compile Include="Web\Services\GraywulfMessageFormatter.cs" />
     <Compile Include="Web\Services\HttpMethod.cs" />
     <Compile Include="Web\Services\ResourceNotFoundException.cs" />
     <Compile Include="Web\Services\RestAuthenticationModule.cs" />
@@ -119,12 +118,14 @@
     <Compile Include="Web\Services\RestError.cs" />
     <Compile Include="Web\Services\RestErrorHandler.cs" />
     <Compile Include="Web\Services\RestErrorResponse.cs" />
+    <Compile Include="Web\Services\RestMessageFormatter.cs" />
     <Compile Include="Web\Services\RestOperationBehavior.cs" />
     <Compile Include="Web\Services\RestOperationException.cs" />
     <Compile Include="Web\Services\RestOperationInvoker.cs" />
     <Compile Include="Web\Services\RestCorsMessageInspector.cs" />
     <Compile Include="Web\Services\RestServiceBase.cs" />
     <Compile Include="Web\Services\RestServiceBehavior.cs" />
+    <Compile Include="Web\Services\RestStreamingAdapter.cs" />
     <Compile Include="Web\Services\StreamingListFormatter.cs" />
     <Compile Include="Web\Services\StreamingListFormatAttribute.cs" />
     <Compile Include="Web\Services\StreamingListXmlMessageBodyReader.cs" />

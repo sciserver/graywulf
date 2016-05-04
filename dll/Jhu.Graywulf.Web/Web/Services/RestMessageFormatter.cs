@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Jhu.Graywulf.Web.Services
 {
-    public abstract class GraywulfMessageFormatter : IDispatchMessageFormatter, IClientMessageFormatter 
+    public abstract class RestMessageFormatter : IDispatchMessageFormatter, IClientMessageFormatter 
     {
         private string mimeType;
 
@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Web.Services
             set { mimeType = value; }
         }
 
-        protected GraywulfMessageFormatter()
+        protected RestMessageFormatter()
         {
             InititializeMembers();
         }

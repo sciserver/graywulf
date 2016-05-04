@@ -8,6 +8,8 @@ namespace Jhu.Graywulf.Web.Services
     [Serializable]
     public class ResourceNotFoundException : Exception
     {
+        // TODO: consider using exception from entities instead
+
         public ResourceNotFoundException()
         {
         }

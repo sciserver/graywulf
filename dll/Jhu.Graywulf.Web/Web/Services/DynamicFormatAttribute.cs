@@ -33,13 +33,13 @@ namespace Jhu.Graywulf.Web.Services
         public void ApplyDispatchBehavior(OperationDescription operationDescription, DispatchOperation dispatchOperation)
         {
             var formats = new Dictionary<string, IDispatchMessageFormatter>();
-            var formatter = (GraywulfMessageFormatter)Activator.CreateInstance(formatterType);
+            var formatter = (RestMessageFormatter)Activator.CreateInstance(formatterType);
             var mimetypes = formatter.GetSupportedMimeTypes();
 
             // Create a separate instance for each supported type
             foreach (var mimetype in mimetypes)
             {
-                formatter = (GraywulfMessageFormatter)Activator.CreateInstance(formatterType);
+                formatter = (RestMessageFormatter)Activator.CreateInstance(formatterType);
                 formatter.MimeType = mimetype;
                 formats.Add(mimetype, formatter);
             }

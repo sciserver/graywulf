@@ -15,7 +15,7 @@ using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Web.Services
 {
-    class StreamingListFormatter : GraywulfMessageFormatter, IDispatchMessageFormatter, IClientMessageFormatter
+    class StreamingListFormatter : RestMessageFormatter, IDispatchMessageFormatter, IClientMessageFormatter
     {
 
         private IDispatchMessageFormatter fallbackDispatchMessageFormatter;

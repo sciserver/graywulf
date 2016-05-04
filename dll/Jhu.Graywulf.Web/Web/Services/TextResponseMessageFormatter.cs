@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Jhu.Graywulf.Web.Services
 {
-    public class TextResponseMessageFormatter : GraywulfMessageFormatter, IDispatchMessageFormatter
+    public class TextResponseMessageFormatter : RestMessageFormatter, IDispatchMessageFormatter
     {
         public override string[] GetSupportedMimeTypes()
         {
