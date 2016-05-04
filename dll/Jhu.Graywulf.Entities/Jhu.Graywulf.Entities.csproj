@@ -89,6 +89,10 @@
       <Project>{da689d40-edcd-433d-8d9b-4e96829f8c6a}</Project>
       <Name>Jhu.Graywulf.AccessControl</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
+      <Project>{abb4c403-720a-47e1-9485-cfaadd696656}</Project>
+      <Name>Jhu.Graywulf.Components</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
