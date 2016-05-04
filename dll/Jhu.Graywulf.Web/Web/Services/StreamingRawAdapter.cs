@@ -11,7 +11,7 @@ using System.ServiceModel.Channels;
 
 namespace Jhu.Graywulf.Web.Services
 {
-    public abstract class RestRawStreamingAdapter<T>
+    public abstract class StreamingRawAdapter<T>
     {
         public abstract string[] GetSupportedMimeTypes();
 

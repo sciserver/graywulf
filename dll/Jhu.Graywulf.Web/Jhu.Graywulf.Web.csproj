@@ -125,15 +125,17 @@
     <Compile Include="Web\Services\RestCorsMessageInspector.cs" />
     <Compile Include="Web\Services\RestServiceBase.cs" />
     <Compile Include="Web\Services\RestServiceBehavior.cs" />
-    <Compile Include="Web\Services\RestStreamingAdapter.cs" />
-    <Compile Include="Web\Services\StreamingListFormatter.cs" />
+    <Compile Include="Web\Services\StreamingRawFormatAttribute.cs" />
     <Compile Include="Web\Services\StreamingListFormatAttribute.cs" />
-    <Compile Include="Web\Services\StreamingListXmlMessageBodyReader.cs" />
+    <Compile Include="Web\Services\StreamingListFormatter.cs" />
     <Compile Include="Web\Services\StreamingListJsonMessageBodyWriter.cs" />
+    <Compile Include="Web\Services\StreamingListXmlMessageBodyReader.cs" />
+    <Compile Include="Web\Services\StreamingListXmlMessageBodyWriter.cs" />
     <Compile Include="Web\Services\StreamingListXmlWriter.cs" />
+    <Compile Include="Web\Services\StreamingRawAdapter.cs" />
+    <Compile Include="Web\Services\StreamingRawFormatter.cs" />
     <Compile Include="Web\Services\TextResponseMessageBodyWriter.cs" />
     <Compile Include="Web\Services\TextResponseMessageFormatter.cs" />
-    <Compile Include="Web\Services\StreamingListXmlMessageBodyWriter.cs" />
     <Compile Include="Web\UI\ApplicationBase.cs" />
     <Compile Include="Web\UI\Captcha.aspx.cs">
       <DependentUpon>Captcha.aspx</DependentUpon>
