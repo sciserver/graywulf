@@ -16,5 +16,12 @@ namespace Jhu.Graywulf.Web.Services
         public const string MimeTypeXml = "application/xml";
         public const string MimeTypeJson = "application/json";
         public const string MimeTypeBinary = "application/octet-stream";
+        public const string MimeTypeJpeg = "image/jpeg";
+        public const string MimeTypePng = "image/png";
+        public const string MimeTypeGif = "image/gif";
+        public const string MimeTypeBmp = "image/bmp";
+        public const string MimeTypePdf = "application/pdf";
+        public const string MimeTypeEps = "application/postscript";
+        public const string MimeTypeEmf = "windows/metafile";
     }
 }

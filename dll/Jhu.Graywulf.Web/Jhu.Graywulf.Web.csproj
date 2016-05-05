@@ -134,6 +134,7 @@
     <Compile Include="Web\Services\StreamingListXmlWriter.cs" />
     <Compile Include="Web\Services\StreamingRawAdapter.cs" />
     <Compile Include="Web\Services\StreamingRawFormatter.cs" />
+    <Compile Include="Web\Services\TestJsonXmlFormatAttribute.cs" />
     <Compile Include="Web\Services\TextResponseMessageBodyWriter.cs" />
     <Compile Include="Web\Services\TextResponseMessageFormatter.cs" />
     <Compile Include="Web\UI\ApplicationBase.cs" />
