@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Security.Principal;
-using Jhu.Graywulf.AccessControl;
+using System.IO;
 
 namespace Jhu.Graywulf.Entities
 {
     public class Context : IDisposable
     {
+
+#if DEBUG
+        private StringWriter connectionMessages;
+#endif
+
         private bool isValid;
         private bool autoDispose;
         private string connectionString;
@@ -123,8 +124,20 @@ namespace Jhu.Graywulf.Entities
             connection = new SqlConnection(connectionString);
             connection.Open();
 
+#if DEBUG
+            connectionMessages = new StringWriter();
+            connection.InfoMessage += Connection_InfoMessage;
+#endif
+
             return connection;
         }
+
+#if DEBUG
+        private void Connection_InfoMessage(object sender, SqlInfoMessageEventArgs e)
+        {
+            connectionMessages.WriteLine(e.Message);
+        }
+#endif
 
         private void CloseConnection()
         {
@@ -137,6 +150,14 @@ namespace Jhu.Graywulf.Entities
                 connection.Dispose();
                 connection = null;
             }
+
+#if DEBUG
+            if (connectionMessages != null)
+            {
+                connectionMessages.Dispose();
+                connectionMessages = null;
+            }
+#endif
         }
 
         private void EnsureOpenTransaction()
