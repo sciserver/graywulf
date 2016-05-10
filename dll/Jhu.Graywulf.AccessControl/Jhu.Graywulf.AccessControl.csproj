@@ -73,9 +73,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.Entities.Build\$(OutDir)\Jhu.Graywulf.Entities.Build.exe $(ProjectDir)..\..\sql\Jhu.Graywulf.Entities\Jhu.Graywulf.Entities.Sql.Create.sql $(TargetPath) $(SolutionDir)bin\$(ConfigurationName)\Jhu.Graywulf.Entities.Sql.Create.sql
-
-copy $(ProjectDir)..\..\sql\Jhu.Graywulf.Entities\Jhu.Graywulf.Entities.Sql.Drop.sql $(SolutionDir)bin\$(ConfigurationName)\</PostBuildEvent>
+    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)
+copy $(TargetDir)$(TargetName).pdb $(SolutionDir)$(OutDir)
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

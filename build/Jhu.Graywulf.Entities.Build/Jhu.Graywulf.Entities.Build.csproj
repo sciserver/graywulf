@@ -48,7 +48,25 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.AccessControl\Jhu.Graywulf.AccessControl.csproj">
+      <Project>{da689d40-edcd-433d-8d9b-4e96829f8c6a}</Project>
+      <Name>Jhu.Graywulf.AccessControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Entities\Jhu.Graywulf.Entities.csproj">
+      <Project>{10b184e6-825d-4498-98d5-a42939e4bd2d}</Project>
+      <Name>Jhu.Graywulf.Entities</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>$(TargetPath) $(ProjectDir)..\..\sql\Jhu.Graywulf.Entities\Jhu.Graywulf.Entities.Sql.Create.sql $(ProjectDir)..\..\dll\Jhu.Graywulf.AccessControl\$(OutDir)\Jhu.Graywulf.AccessControl.dll $(SolutionDir)$(OutDir)\Jhu.Graywulf.Entities.Sql.Create.sql
+copy $(ProjectDir)..\..\sql\Jhu.Graywulf.Entities\Jhu.Graywulf.Entities.Sql.Drop.sql $(SolutionDir)$(OutDir)\</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

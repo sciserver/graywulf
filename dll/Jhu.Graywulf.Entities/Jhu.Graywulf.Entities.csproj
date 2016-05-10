@@ -67,6 +67,7 @@
     <Compile Include="Entities\Mapping\DbColumnAttribute.cs" />
     <Compile Include="Entities\Mapping\DbColumnCollection.cs" />
     <Compile Include="Entities\Mapping\DbError.cs" />
+    <Compile Include="Entities\Mapping\DbKeyAttribute.cs" />
     <Compile Include="Entities\Mapping\DbTable.cs" />
     <Compile Include="Entities\Mapping\DbTableAttribute.cs" />
     <Compile Include="Entities\EntityException.cs" />
@@ -103,8 +104,9 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)
+copy $(TargetDir)$(TargetName).pdb $(SolutionDir)$(OutDir)
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
