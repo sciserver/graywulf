@@ -133,7 +133,7 @@ namespace Jhu.Graywulf.Web.Controls
                 if (scriptManager != null)
                 {
                     scriptManager.RegisterScriptControl(this);
-                    Util.JQuery.Register(scriptManager);
+                    // Util.JQuery.Register(scriptManager);
                 }
                 else
                 {
