@@ -9,7 +9,7 @@ namespace Jhu.Graywulf.Util
     public static class JQuery
     {
         //public const string JQueryUrl = "http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js";
-        public const string JQueryUrl = "http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.2.min.js";
+        public const string JQueryUrl = "http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.0.min.js";
         //public const string JQueryUrl = "http://code.jquery.com/jquery-1.8.3.min.js";
 
         public static void Register(ScriptManager scriptManager)
