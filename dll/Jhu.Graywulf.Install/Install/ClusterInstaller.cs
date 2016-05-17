@@ -60,6 +60,7 @@ namespace Jhu.Graywulf.Install
 
             // Create administrator group and user
             GenerateAdminGroup(system);
+            GenerateAdminRole(system);
             GenerateAdmin(system, username, email, password);
 
             // Create the shared feredation
@@ -281,7 +282,7 @@ namespace Jhu.Graywulf.Install
             var ug = domain.UserGroups[Constants.ClusterAdminUserGroupName];
 
             domain.LoadUserRoles(true);
-            var ur = domain.UserGroups[Constants.ClusterAdminUserRoleName];
+            var ur = domain.UserRoles[Constants.ClusterAdminUserRoleName];
 
             var u = new User(domain)
             {
