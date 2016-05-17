@@ -387,6 +387,7 @@ namespace Jhu.Graywulf.Registry
             {
                 case JobExecutionState.Cancelled:
                 case JobExecutionState.CancelRequested:
+                case JobExecutionState.Executing | JobExecutionState.CancelRequested:
                 case JobExecutionState.Cancelling:
                 case JobExecutionState.Completed:
                 case JobExecutionState.Failed:
