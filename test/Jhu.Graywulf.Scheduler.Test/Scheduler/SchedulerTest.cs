@@ -74,6 +74,8 @@ namespace Jhu.Graywulf.Scheduler
         [TestCategory("Scheduler")]
         public void ManySimpleJobsTest()
         {
+            PurgeTestJobs();
+
             using (SchedulerTester.Instance.GetToken())
             {
                 SchedulerTester.Instance.EnsureRunning();
