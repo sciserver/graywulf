@@ -76,3 +76,15 @@ div.LayoutContent
     background-color: #FFFFFF;
     color: #000000;
 }
+
+#PlotCanvasContainer 
+{
+    position: relative;
+}
+
+#refreshCanvasButton 
+{
+    position: absolute;
+    left: 22px;
+    top: 22px;
+}
