@@ -59,6 +59,7 @@
     <Compile Include="Util\EmailSender.cs" />
     <Compile Include="Util\EmailTemplateUtility.cs" />
     <Compile Include="Util\IIS.cs" />
+    <Compile Include="Util\PageUtility.cs" />
     <Compile Include="Web\Api\Util\DateFormatter.cs" />
     <Compile Include="Web\Api\Util\EnumFormatter.cs" />
     <Compile Include="Web\Api\Util\XmlReader.cs" />
