@@ -83,7 +83,9 @@ namespace Jhu.Graywulf.Web.UI
 
             HostingEnvironment.RegisterVirtualPathProvider(virtualPathProvider);
 
-
+            // Register script mappings
+            Scripts.Script.RegisterMapping(new Scripts.JQuery());
+            Scripts.Script.RegisterMapping(new Scripts.Bootstrap());
 
             // Start logger
             Logger.Instance.Writers.Add(new SqlLogWriter());

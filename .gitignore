@@ -23,6 +23,10 @@ web/Jhu.Graywulf.Web.Auth/Web.config
 web/Jhu.Graywulf.Web.Shared/web.config
 web/Jhu.Graywulf.Web.UI/Web.config
 
+**/Content
+**/fonts
+**/Scripts
+
 
 ## Parser class is generated on build
 dll/Jhu.Graywulf.Sql/SqlParser/SqlParser.cs

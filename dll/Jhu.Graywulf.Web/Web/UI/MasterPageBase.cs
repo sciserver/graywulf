@@ -8,7 +8,7 @@ namespace Jhu.Graywulf.Web.UI
 {
     public abstract class MasterPageBase : System.Web.UI.MasterPage
     {
-        protected ScriptManager ScriptManager
+        protected virtual ScriptManager ScriptManager
         {
             get
             {

@@ -132,8 +132,8 @@ namespace Jhu.Graywulf.Web.Controls
                 var scriptManager = ScriptManager.GetCurrent(this.Page);
                 if (scriptManager != null)
                 {
+                    Scripts.Script.Register(scriptManager, new Scripts.JQuery());
                     scriptManager.RegisterScriptControl(this);
-                    Util.JQuery.Register(scriptManager);
                 }
                 else
                 {

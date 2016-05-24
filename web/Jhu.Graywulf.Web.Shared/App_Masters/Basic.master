@@ -6,11 +6,13 @@
 <head runat="server">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Graywulf User Interface</title>
+    <link runat="server" href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link runat="server" href="~/Content/bootstrap-theme.min.css" rel="stylesheet" />
     <asp:ContentPlaceHolder ID="head" runat="server" />
 </head>
 <body class="Layout dock-container">
     <form id="theForm" runat="server" class="Layout dock-fill dock-container">
-    <asp:ScriptManager ID="theScriptManager" runat="server" />
+    <asp:ScriptManager ID="scriptManager" runat="server" />
     <table class="Layout Headline dock-top">
         <tr>
             <td class="HeadlineLeft">

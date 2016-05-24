@@ -31,13 +31,13 @@ namespace Jhu.Graywulf.Web {
         protected global::System.Web.UI.HtmlControls.HtmlForm theForm;
         
         /// <summary>
-        /// theScriptManager control.
+        /// scriptManager control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.ScriptManager theScriptManager;
+        protected global::System.Web.UI.ScriptManager scriptManager;
         
         /// <summary>
         /// Caption control.
