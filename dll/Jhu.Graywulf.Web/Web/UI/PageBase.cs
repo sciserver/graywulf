@@ -155,25 +155,7 @@ namespace Jhu.Graywulf.Web.UI
 
         public Control FindControlRecursive(string id)
         {
-            return FindControlRecursive(this, id);
-        }
-
-        public Control FindControlRecursive(Control root, string id)
-        {
-            Control f = root.FindControl(id);
-            if (f == null)
-            {
-                foreach (Control c in root.Controls)
-                {
-                    Control x = FindControlRecursive(c, id);
-                    if (x != null) return x;
-                }
-                return null;
-            }
-            else
-            {
-                return f;
-            }
+            return Util.PageUtility.FindControlRecursive(this, id);
         }
     }
 }
