@@ -26,6 +26,11 @@ namespace Jhu.Graywulf.Web.Api.V1
         void Authenticate(
             [Description("User credentials.")]
             AuthRequest authRequest);
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/owner")]
+        [Description("Returns information on the authenticated user.")]
+        UserResponse GetOwner();
     }
 
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
@@ -62,6 +67,25 @@ namespace Jhu.Graywulf.Web.Api.V1
             {
                 throw new System.Security.Authentication.AuthenticationException("Access denied");  // TODO
             }
+        }
+
+        public UserResponse GetOwner()
+        {
+            var principal = System.Threading.Thread.CurrentPrincipal as GraywulfPrincipal;
+                    
+
+            if (principal != null && principal.Identity.IsAuthenticated)
+            {
+                var user = new User(principal.Identity);
+                var userResp = new UserResponse(user);
+                return userResp;
+            }
+
+            else
+            {
+                throw new NotImplementedException();
+            }
+
         }
     }
 }
