@@ -116,10 +116,6 @@
     <Content Include="Common\Delete.aspx" />
     <Content Include="Common\Discover.aspx" />
     <Content Include="Common\Serialize.aspx" />
-    <Content Include="Content\bootstrap-theme.css" />
-    <Content Include="Content\bootstrap-theme.min.css" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
     <Content Include="Controls\EntityButtons.ascx" />
     <Content Include="Controls\EntityChildren.ascx" />
     <Content Include="Controls\EntityProperties.ascx" />
@@ -187,7 +183,6 @@
     <Content Include="Federation\SliceDetails.aspx" />
     <Content Include="Federation\SliceForm.aspx" />
     <Content Include="Federation\SlicingWizard.aspx" />
-    <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Icons\Large\Cluster.gif" />
     <Content Include="Icons\Large\DatabaseDefinition.gif" />
@@ -283,8 +278,14 @@
     <Content Include="Log\LogFilterControl.ascx" />
     <Content Include="Monitor\ClusterDetails.aspx" />
     <Content Include="Monitor\Default.aspx" />
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap-theme.css" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap-theme.min.css" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap.css" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap.min.css" />
+    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Scripts\Bootstrap\js\bootstrap.js" />
+    <Content Include="Scripts\Bootstrap\js\bootstrap.min.js" />
+    <Content Include="Scripts\Bootstrap\js\npm.js" />
     <Content Include="Scripts\CodeMirror\addon\comment\comment.js" />
     <Content Include="Scripts\CodeMirror\addon\comment\continuecomment.js" />
     <Content Include="Scripts\CodeMirror\addon\dialog\dialog.css" />
@@ -545,17 +546,16 @@
     <Content Include="Scripts\CodeMirror\theme\vibrant-ink.css" />
     <Content Include="Scripts\CodeMirror\theme\xq-dark.css" />
     <Content Include="Scripts\CodeMirror\theme\xq-light.css" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\bootstrap.min.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
-    <Content Include="Content\bootstrap-theme.min.css.map" />
-    <Content Include="Content\bootstrap-theme.css.map" />
-    <None Include="Scripts\jquery-2.2.3.intellisense.js" />
-    <Content Include="Scripts\jquery-2.2.3.js" />
-    <Content Include="Scripts\jquery-2.2.3.min.js" />
+    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap.min.css.map" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap.css.map" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap-theme.min.css.map" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap-theme.css.map" />
+    <Content Include="Scripts\jQuery\jquery-2.2.4.js" />
+    <Content Include="Scripts\jQuery\jquery-2.2.4.min.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shAutoloader.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushAppleScript.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushAS3.js" />
@@ -604,6 +604,7 @@
     <Content Include="User\SignIn.aspx" />
     <Content Include="User\SignOut.aspx" />
     <Content Include="Web.config" />
+    <Content Include="Scripts\jQuery\jquery-2.2.4.min.map" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Admin.master.cs">
@@ -1493,7 +1494,6 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <None Include="Scripts\CodeMirror\mode\livescript\livescript.ls" />
-    <Content Include="Scripts\jquery-2.2.3.min.map" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -1532,6 +1532,12 @@ IF EXIST $(ProjectDir)App_Themes rmdir $(ProjectDir)App_Themes /s /q
 mklink /D $(ProjectDir)App_Themes $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Themes
 
 REM Create symlinks to directories under packages
+
+IF EXIST $(ProjectDir)Scripts\jQuery rmdir $(ProjectDir)Scripts\jQuery /s /q
+mklink /D $(ProjectDir)Scripts\jQuery $(SolutionDir)packages\jQuery.NuGet.2.2.4\content\Scripts\jQuery
+
+IF EXIST $(ProjectDir)Scripts\Bootstrap rmdir $(ProjectDir)Scripts\Bootstrap /s /q
+mklink /D $(ProjectDir)Scripts\Bootstrap $(SolutionDir)packages\Bootstrap.NuGet.3.3.6\content\Scripts\Bootstrap
 
 IF EXIST $(ProjectDir)Scripts\CodeMirror rmdir $(ProjectDir)Scripts\CodeMirror /s /q
 mklink /D $(ProjectDir)Scripts\CodeMirror $(SolutionDir)packages\CodeMirror.NuGet.3.20.01\content\Scripts\CodeMirror

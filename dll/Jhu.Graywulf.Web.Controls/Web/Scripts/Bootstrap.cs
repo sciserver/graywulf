@@ -22,8 +22,8 @@ namespace Jhu.Graywulf.Web.Scripts
             {
                 return new ScriptResourceDefinition
                 {
-                    Path = "~/Scripts/bootstrap.min.js",
-                    DebugPath = "~/Scripts/bootstrap.js",
+                    Path = "~/Scripts/Bootstrap/js/bootstrap.min.js",
+                    DebugPath = "~/Scripts/Bootstrap/js/bootstrap.js",
                     CdnPath = "http://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js",
                     CdnDebugPath = "http://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.js",
                 };

@@ -385,13 +385,8 @@
     <Content Include="App_Themes\Basic\Icons\userstatus.png" />
     <Content Include="App_Themes\Basic\Icons\welcome.png" />
     <Content Include="Check.aspx" />
-    <Content Include="Content\bootstrap-theme.css" />
-    <Content Include="Content\bootstrap-theme.min.css" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
     <Content Include="Controls\Footer.ascx" />
     <Content Include="Docs\Default.aspx" />
-    <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Jobs\CancelJob.aspx" />
     <Content Include="Jobs\Default.aspx" />
     <Content Include="Jobs\ErrorForm.ascx" />
@@ -425,8 +420,14 @@
     <Content Include="Schema\Peek.aspx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap-theme.css" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap-theme.min.css" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap.css" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap.min.css" />
+    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Scripts\Bootstrap\js\bootstrap.js" />
+    <Content Include="Scripts\Bootstrap\js\bootstrap.min.js" />
+    <Content Include="Scripts\Bootstrap\js\npm.js" />
     <Content Include="Scripts\CodeMirror\addon\comment\comment.js" />
     <Content Include="Scripts\CodeMirror\addon\comment\continuecomment.js" />
     <Content Include="Scripts\CodeMirror\addon\dialog\dialog.css" />
@@ -687,17 +688,8 @@
     <Content Include="Scripts\CodeMirror\theme\vibrant-ink.css" />
     <Content Include="Scripts\CodeMirror\theme\xq-dark.css" />
     <Content Include="Scripts\CodeMirror\theme\xq-light.css" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\bootstrap.min.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
-    <Content Include="Content\bootstrap-theme.min.css.map" />
-    <Content Include="Content\bootstrap-theme.css.map" />
-    <None Include="Scripts\jquery-2.2.3.intellisense.js" />
-    <Content Include="Scripts\jquery-2.2.3.js" />
-    <Content Include="Scripts\jquery-2.2.3.min.js" />
+    <Content Include="Scripts\jQuery\jquery-2.2.4.js" />
+    <Content Include="Scripts\jQuery\jquery-2.2.4.min.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shAutoloader.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushAppleScript.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shBrushAS3.js" />
@@ -847,9 +839,17 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap.min.css.map" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap.css.map" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap-theme.min.css.map" />
+    <Content Include="Scripts\Bootstrap\css\bootstrap-theme.css.map" />
     <None Include="Scripts\CodeMirror\mode\livescript\livescript.ls" />
     <Content Include="Web.original.config" />
-    <Content Include="Scripts\jquery-2.2.3.min.map" />
+    <Content Include="Scripts\jQuery\jquery-2.2.4.min.map" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\CodeMirror\keymap\lib\" />
@@ -897,6 +897,12 @@ REM IF EXIST $(ProjectDir)Docs\pages rmdir $(ProjectDir)Docs\pages /s /q
 REM mklink /D $(ProjectDir)Docs\pages $(SolutionDir)docs\pages
 
 REM Create symlinks to directories under packages
+
+IF EXIST $(ProjectDir)Scripts\jQuery rmdir $(ProjectDir)Scripts\jQuery /s /q
+mklink /D $(ProjectDir)Scripts\jQuery $(SolutionDir)packages\jQuery.NuGet.2.2.4\content\Scripts\jQuery
+
+IF EXIST $(ProjectDir)Scripts\Bootstrap rmdir $(ProjectDir)Scripts\Bootstrap /s /q
+mklink /D $(ProjectDir)Scripts\Bootstrap $(SolutionDir)packages\Bootstrap.NuGet.3.3.6\content\Scripts\Bootstrap
 
 IF EXIST $(ProjectDir)Scripts\CodeMirror rmdir $(ProjectDir)Scripts\CodeMirror /s /q
 mklink /D $(ProjectDir)Scripts\CodeMirror $(SolutionDir)packages\CodeMirror.NuGet.3.20.01\content\Scripts\CodeMirror

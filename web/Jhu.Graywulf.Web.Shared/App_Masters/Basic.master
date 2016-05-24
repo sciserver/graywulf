@@ -6,8 +6,8 @@
 <head runat="server">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Graywulf User Interface</title>
-    <link runat="server" href="~/Content/bootstrap.min.css" rel="stylesheet" />
-    <link runat="server" href="~/Content/bootstrap-theme.min.css" rel="stylesheet" />
+    <link runat="server" href="~/Scripts/Bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link runat="server" href="~/Scripts/Bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" />
     <asp:ContentPlaceHolder ID="head" runat="server" />
 </head>
 <body class="Layout dock-container">

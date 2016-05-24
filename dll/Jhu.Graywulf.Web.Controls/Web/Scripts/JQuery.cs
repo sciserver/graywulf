@@ -22,10 +22,10 @@ namespace Jhu.Graywulf.Web.Scripts
             {
                 return new ScriptResourceDefinition
                 {
-                    Path = "~/Scripts/jquery-2.2.3.min.js",
-                    DebugPath = "~/Scripts/jquery-2.2.3.min.js",
-                    CdnPath = "http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.3.min.js",
-                    CdnDebugPath = "http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.3.js",
+                    Path = "~/Scripts/jQuery/jquery-2.2.4.min.js",
+                    DebugPath = "~/Scripts/jQuery/jquery-2.2.4.min.js",
+                    CdnPath = "http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.min.js",
+                    CdnDebugPath = "http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js",
                 };
             }
         }
