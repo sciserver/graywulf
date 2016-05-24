@@ -2,8 +2,6 @@
 using System.Web.UI;
 using Jhu.Graywulf.Web.UI;
 
-// Maybe this should be put somewhere else
-[assembly: WebResource("Jhu.Footprint.Web.UI.Scripts.Editor.js", "text/javascript", PerformSubstitution = true)]
 
 namespace Jhu.Graywulf.Web
 {
