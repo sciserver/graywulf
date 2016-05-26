@@ -90,6 +90,30 @@ namespace Jhu.Graywulf.IO.Tasks
             sourceStream = null;
             destinationStream = null;
 
+            ExecuteNet4_5();
+        }
+
+        private void ExecuteNet4_5()
+        {
+            try
+            {
+                sourceStream = OpenStream(source, FileMode.Open, FileAccess.Read, FileShare.None, unbuffered, true, true, blockSize);
+                destinationStream = OpenStream(destination, FileMode.CreateNew, FileAccess.Write, FileShare.None, unbuffered, true, true, blockSize);
+
+                var t = sourceStream.CopyToAsync(destinationStream, blockSize);
+
+                t.Wait();
+
+                // TODO: implement cancelation
+            }
+            finally
+            {
+                Dispose();
+            }
+        }
+
+        private void ExecutePreNet4_5()
+        {
             try
             {
                 // TODO: in .Net 4.5, this is implemented by the framework, use

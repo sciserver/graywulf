@@ -64,6 +64,13 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             }
 
             var par = jf.CreateParameters(dis);
+
+            if (par.SourceDatabaseInstanceGuids.Length == 0 ||
+                par.DestinationDatabaseInstanceGuids.Length == 0)
+            {
+                throw new Exception("No source or destination databases found");    // *** TODO
+            }
+
             par.CascadedCopy = CascadedCopy.Checked;
             par.SkipExistingFiles = SkipExistingFiles.Checked;
             par.AttachAsReadOnly = AttachAsReadOnly.Checked;

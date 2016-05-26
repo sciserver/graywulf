@@ -165,8 +165,10 @@ namespace Jhu.Graywulf.IO.Tasks
                 case FileCopyMethod.EseUtil:
                     ExecuteEseUtil();
                     break;
-                case FileCopyMethod.FastDataTransfer:
                 case FileCopyMethod.Robocopy:
+                    ExecuteRobocopy();
+                    break;
+                case FileCopyMethod.FastDataTransfer:
                 default:
                     throw new NotImplementedException();
             }
@@ -201,6 +203,36 @@ namespace Jhu.Graywulf.IO.Tasks
                 Path.Combine(path, "eseutil.exe"),
                 String.Format("/y \"{0}\" /d \"{1}\"", source, destination));
 
+            var exit = ExecuteProcess(info);
+
+            if (exit > 0)
+            {
+                throw new Exception(String.Format(ExceptionMessages.FileCopyFailed, exit));
+            }
+        }
+
+        private void ExecuteRobocopy()
+        {
+            // Execute robocopy to perform copy
+            var info = new ProcessStartInfo(
+                "robocopy.exe",
+                String.Format(
+                    "\"{0}\" \"{1}\" \"{2}\" /Z /MT /R:1",
+                    Path.GetDirectoryName(source), 
+                    Path.GetDirectoryName(destination),
+                    Path.GetFileName(source)));
+
+            var exit = ExecuteProcess(info);
+
+            if (exit != 1)
+            {
+                throw new Exception(String.Format(ExceptionMessages.FileCopyFailed, exit));
+            }
+            
+        }
+
+        private int ExecuteProcess(ProcessStartInfo info)
+        {
             // These are important to run program under the delegated account
             info.UseShellExecute = false;
             info.CreateNoWindow = true;
@@ -217,9 +249,9 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 throw new OperationCanceledException(ExceptionMessages.FileCopyCanceled);
             }
-            else if (cproc.ExitCode > 0)
+            else 
             {
-                throw new Exception(String.Format(ExceptionMessages.FileCopyFailed, cproc.ExitCode));
+                return cproc.ExitCode;
             }
         }
     }

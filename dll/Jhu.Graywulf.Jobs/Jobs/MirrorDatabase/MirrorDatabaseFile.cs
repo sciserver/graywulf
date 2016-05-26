@@ -93,6 +93,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                 fc.Source = sourceFilename;
                 fc.Destination = destinationFilename;
                 fc.Overwrite = true;
+                fc.Method = FileCopyMethod.AsyncFileCopy;
 
                 RegisterCancelable(workflowInstanceGuid, activityInstanceId, fc);
                 fc.Execute();
