@@ -322,6 +322,30 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             Assert.IsTrue(v.Indexes.FirstOrDefault().Value.IsUnique);
         }
 
+        [TestMethod]
+        public void GetViewIndexesTest()
+        {
+            var ds = CreateTestDataset();
+
+            // Get a single table
+            var t1 = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"];
+
+            Assert.IsTrue(t1.Indexes.Count == 1);
+            Assert.IsTrue(t1.Indexes["PK_TableWithPrimaryKey"].IsPrimaryKey);
+
+        }
+
+        [TestMethod]
+        public void GetViewIndexColumnsTest()
+        {
+            var ds = CreateTestDataset();
+
+            // Get a single table
+            var ic = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"].Indexes["PK_TableWithPrimaryKey"].Columns["ID"];
+            Assert.IsTrue(ic.Ordering == IndexColumnOrdering.Ascending);
+
+        }
+
         #endregion
         #region Table-valued function tests
 

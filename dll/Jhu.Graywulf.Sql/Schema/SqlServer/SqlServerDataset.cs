@@ -568,25 +568,68 @@ WHERE   i.type IN (1, 2)";
         /// <returns></returns>
         internal override IEnumerable<KeyValuePair<string, IndexColumn>> LoadIndexColumns(Index index)
         {
-            var sql = @"
+            string sql;
+
+            if (index.TableOrView is Table)
+            {
+                sql = @"
 SELECT ic.column_id, ic.is_included_column, ic.key_ordinal, c.name, ic.is_descending_key, ty.name, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
 FROM sys.indexes AS i
-INNER JOIN sys.tables AS t
-    ON i.object_id = t.object_id
+INNER JOIN sys.objects AS o
+    ON i.object_id = o.object_id
+INNER JOIN sys.schemas AS s
+    ON s.schema_id = o.schema_id
 INNER JOIN sys.index_columns AS ic 
     ON i.object_id = ic.object_id AND i.index_id = ic.index_id
 INNER JOIN sys.columns AS c 
     ON ic.object_id = c.object_id AND c.column_id = ic.column_id
 INNER JOIN sys.types ty 
     ON ty.user_type_id = c.user_type_id
-WHERE t.name = @tableName AND i.name = @indexName
+WHERE s.name = @schemaName AND
+    o.name = @objectName AND
+    i.name = @indexName
 ORDER BY ic.key_ordinal";
+            }
+            else
+            {
+                sql = @"
+WITH refs AS
+(
+	SELECT d.referenced_id
+	FROM sys.objects o
+	INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
+	INNER JOIN sys.sql_expression_dependencies d ON d.referencing_id = o.object_id
+	WHERE d.referenced_class = 1 AND d.referenced_minor_id = 0
+		AND s.name = @schemaName AND o.name = @objectName
+
+	UNION ALL
+
+	SELECT d.referenced_id
+	FROM refs r
+	INNER JOIN sys.sql_expression_dependencies d ON d.referencing_id = r.referenced_id
+	WHERE d.referenced_class = 1 AND d.referenced_minor_id = 0
+)
+
+SELECT ic.column_id, ic.is_included_column, ic.key_ordinal, c.name, ic.is_descending_key, ty.name, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
+FROM sys.indexes AS i
+INNER JOIN refs ON refs.referenced_id = i.object_id
+INNER JOIN sys.index_columns AS ic 
+    ON i.object_id = ic.object_id AND i.index_id = ic.index_id
+INNER JOIN sys.columns AS c 
+    ON ic.object_id = c.object_id AND c.column_id = ic.column_id
+INNER JOIN sys.types ty 
+    ON ty.user_type_id = c.user_type_id
+WHERE 
+    i.name = @indexName
+ORDER BY ic.key_ordinal";
+            }
 
             using (var cn = OpenConnectionInternal())
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@tableName", SqlDbType.NVarChar, 128).Value = index.TableOrView.ObjectName;
+                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = index.TableOrView.SchemaName;
+                    cmd.Parameters.Add("@objectName", SqlDbType.NVarChar, 128).Value = index.TableOrView.ObjectName;
                     cmd.Parameters.Add("@indexName", SqlDbType.NVarChar, 128).Value = index.IndexName;
 
                     using (var dr = cmd.ExecuteReader())
