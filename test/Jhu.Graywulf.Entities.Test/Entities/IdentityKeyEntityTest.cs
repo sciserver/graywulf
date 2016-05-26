@@ -109,6 +109,39 @@ namespace Jhu.Graywulf.Entities
         }
 
         [TestMethod]
+        public void CheckExistingTest()
+        {
+            int id;
+
+            using (var context = CreateContext())
+            {
+                var e = CreateEntity(context);
+
+                e.Save();
+
+                id = e.ID;
+            }
+
+            using (var context = CreateContext())
+            {
+                var e = new IdentityKeyEntity(context);
+                e.ID = id;
+                var exists = e.CheckExists();
+
+                Assert.IsTrue(exists);
+            }
+
+            using (var context = CreateContext())
+            {
+                var e = new IdentityKeyEntity(context);
+                e.ID = -9999;
+                var exists = e.CheckExists();
+
+                Assert.IsFalse(exists);
+            }
+        }
+
+        [TestMethod]
         public void ModifyTest()
         {
             int id;

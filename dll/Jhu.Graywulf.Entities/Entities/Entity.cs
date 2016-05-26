@@ -241,6 +241,29 @@ WHERE [{1}] = @{1};
             return cmd;
         }
 
+        protected virtual SqlCommand GetCheckExistsCommand()
+        {
+            var sql = @"
+WITH __e AS
+(
+{0}
+)
+SELECT ISNULL(COUNT(*), 0)
+FROM __e
+WHERE [{1}] = @{1};
+";
+
+            var cmd = new SqlCommand(
+                String.Format(
+                    sql,
+                    GetTableQuery(),
+                    DbTable.Key.Name));
+
+            cmd.Parameters.Add(DbTable.Key.GetParameter(this));
+
+            return cmd;
+        }
+
         protected virtual SqlCommand GetUpdateCommand()
         {
             var sql = @"
@@ -407,6 +430,43 @@ SELECT @@ROWCOUNT;
         }
 
         protected virtual void OnLoaded(EntityEventArgs e)
+        {
+        }
+
+        public bool CheckExists()
+        {
+            return CheckExists(new EntityEventArgs());
+        }
+
+        public bool CheckExists(object key)
+        {
+            SetKey(key);
+            return CheckExists(new EntityEventArgs());
+        }
+
+        protected bool CheckExists(EntityEventArgs e)
+        {
+            OnCheckingExists(e);
+
+            if (e.Cancel)
+            {
+                return false;
+            }
+
+            using (var cmd = GetCheckExistsCommand())
+            {
+                var res = (int)Context.ExecuteCommandScalar(cmd);
+                return res == 1;
+            }
+
+            OnCheckedExists(e);
+        }
+
+        protected virtual void OnCheckingExists(EntityEventArgs e)
+        {
+        }
+
+        protected virtual void OnCheckedExists(EntityEventArgs e)
         {
         }
 
