@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.AccessControl
         #endregion
         #region Properties
 
-        public string Name
+        public virtual string Name
         {
             get { return name; }
             set { name = value; }

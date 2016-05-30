@@ -103,9 +103,10 @@ namespace Jhu.Graywulf.AccessControl
         /// <remarks>
         /// Required by the IIdentity interface
         /// </remarks>
-        public new string Name
+        public override string Name
         {
             get { return userReference.Value.Name; }
+            set { throw new NotImplementedException(); }
         }
 
         /// <summary>
