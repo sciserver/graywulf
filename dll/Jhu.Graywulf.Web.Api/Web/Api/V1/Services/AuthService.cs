@@ -28,9 +28,44 @@ namespace Jhu.Graywulf.Web.Api.V1
             AuthRequest authRequest);
 
         [OperationContract]
-        [WebGet(UriTemplate = "/owner")]
+        [WebGet(UriTemplate = "/me")]
         [Description("Returns information on the authenticated user.")]
-        UserResponse GetOwner();
+        UserResponse GetCurrentUser();
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/me/roles")]
+        [Description("Returns information on group membership.")]
+        UserMembershipListResponse GetCurrentUserRoles();
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/me/roles/{groupName}")]
+        [Description("Returns information on group membership.")]
+        UserMembershipResponse GetCurrentUserRoleInGroup(string groupName);
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/users/{name}")]
+        UserResponse GetUser(string name);
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/users/{name}/roles")]
+        UserMembershipListResponse GetUserRoles(string name);
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/users/{name}/roles/{groupName}")]
+        [Description("Returns information on group membership.")]
+        UserMembershipResponse GetUserRoleInGroup(string name, string groupName);
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/groups")]
+        UserGroupListResponse FindUserGroups();
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/groups/{name}")]
+        UserGroupResponse GetUserGroup(string name);
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/groups/{name}/members")]
+        UserMembershipListResponse GetUserGroupMembers(string name);
     }
 
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
@@ -69,23 +104,62 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        public UserResponse GetOwner()
+        public UserResponse GetCurrentUser()
         {
+            User user;
             var principal = System.Threading.Thread.CurrentPrincipal as GraywulfPrincipal;
                     
-
             if (principal != null && principal.Identity.IsAuthenticated)
             {
-                var user = new User(principal.Identity);
-                var userResp = new UserResponse(user);
-                return userResp;
+                user = new User(principal.Identity);
             }
-
             else
             {
-                throw new NotImplementedException();
+                user = User.Guest;
             }
 
+            var userResp = new UserResponse(user);
+            return userResp;
+        }
+
+        public UserMembershipListResponse GetCurrentUserRoles()
+        {
+            throw new NotImplementedException();
+        }
+
+        public UserMembershipResponse GetCurrentUserRoleInGroup(string groupName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public UserResponse GetUser(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public UserMembershipListResponse GetUserRoles(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public UserMembershipResponse GetUserRoleInGroup(string name, string groupName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public UserGroupListResponse FindUserGroups()
+        {
+            throw new NotImplementedException();
+        }
+
+        public UserGroupResponse GetUserGroup(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public UserMembershipListResponse GetUserGroupMembers(string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -86,6 +86,7 @@
     <Compile Include="Web\Api\V1\Objects\QueryJob.cs" />
     <Compile Include="Web\Api\V1\Objects\Queue.cs" />
     <Compile Include="Web\Api\V1\Objects\User.cs" />
+    <Compile Include="Web\Api\V1\Objects\UserGroup.cs" />
     <Compile Include="Web\Api\V1\Objects\View.cs" />
     <Compile Include="Web\Api\V1\Objects\Table.cs" />
     <Compile Include="Web\Api\V1\Requests\AuthRequest.cs" />
@@ -96,6 +97,12 @@
     <Compile Include="Web\Api\V1\Responses\JobResponse.cs" />
     <Compile Include="Web\Api\V1\Responses\QueueListResponse.cs" />
     <Compile Include="Web\Api\V1\Responses\QueueResponse.cs" />
+    <Compile Include="Web\Api\V1\Objects\UserMembership.cs" />
+    <Compile Include="Web\Api\V1\Responses\UserGroupListResponse.cs" />
+    <Compile Include="Web\Api\V1\Responses\UserListResponse.cs" />
+    <Compile Include="Web\Api\V1\Responses\UserMembershipListResponse.cs" />
+    <Compile Include="Web\Api\V1\Responses\UserGroupResponse.cs" />
+    <Compile Include="Web\Api\V1\Responses\UserMembershipResponse.cs" />
     <Compile Include="Web\Api\V1\Responses\UserResponse.cs" />
     <Compile Include="Web\Api\V1\Responses\ViewListResponse.cs" />
     <Compile Include="Web\Api\V1\Responses\TableListResponse.cs" />

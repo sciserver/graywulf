@@ -9,12 +9,12 @@ namespace Jhu.Graywulf.Web.Api.V1
     {
         [DataMember(Name = "user")]
         [Description("A user.")]
-        public User User;
+        public User User
+        { get; set; }
 
         public UserResponse(User user)
         {
             User = user;
         }
-
     }
 }
