@@ -65,7 +65,7 @@ namespace Jhu.Graywulf.Web.Services
             var accept = WebOperationContext.Current.IncomingRequest.GetAcceptHeaderElements();
 
             StreamBodyWriter writer = null;
-            string mimetype = null;
+            string mimetype;
 
             foreach (var a in accept)
             {

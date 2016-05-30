@@ -38,11 +38,7 @@ namespace Jhu.Graywulf.Web.Services
 
         protected override void OnWriteBodyContents(System.Xml.XmlDictionaryWriter writer)
         {
-            //writer.WriteStartElement("Binary");
-
             base.OnWriteBodyContents(writer);
-
-            //writer.WriteEndElement();
         }
 
         protected StreamWriter CreateStreamWriter(Stream stream)
@@ -146,9 +142,7 @@ namespace Jhu.Graywulf.Web.Services
                     }
 
                     WriteEndRoot(x);
-
-                    w.WriteLine();
-                    w.Flush();
+                    Flush(w, x);
                 }
             }
         }
@@ -169,9 +163,7 @@ namespace Jhu.Graywulf.Web.Services
                     s.WriteObjectContent(x, ienum.Current);
                     WriteEndArrayItem(x);
 
-                    // For some reason, this is necessary here to flush buffer to output
-                    w.WriteLine();
-                    w.Flush();
+                    Flush(w, x);
                 }
             }
             catch (Exception)
@@ -185,6 +177,17 @@ namespace Jhu.Graywulf.Web.Services
                     ((IDisposable)ienum).Dispose();
                 }
             }
+        }
+
+        private void Flush(StreamWriter w, XmlWriter x)
+        {
+            x.Flush();
+
+            // For some reason, a new line is necessary to force flushing the
+            // output to the web server. It is likely in connection with chunked
+            // HTTP response.
+            w.WriteLine();
+            w.Flush();
         }
     }
 }
