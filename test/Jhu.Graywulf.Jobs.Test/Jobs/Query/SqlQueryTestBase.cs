@@ -68,10 +68,10 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected Guid ScheduleQueryJob(string query, QueueType queueType)
         {
-            return ScheduleQueryJob(query, queueType, 0);
+            return ScheduleQueryJob(query, queueType, 0, false);
         }
 
-        protected Guid ScheduleQueryJob(string query, QueueType queueType, int maxPartitions)
+        protected Guid ScheduleQueryJob(string query, QueueType queueType, int maxPartitions, bool dumpsql)
         {
             var queue = GetQueueName(queueType);
 
@@ -81,6 +81,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 var q = CreateQuery(qf, query);
 
                 q.MaxPartitions = maxPartitions;
+                q.DumpSql = dumpsql;
 
                 var ji = qf.ScheduleAsJob(null, q, queue, "testjob");
 
@@ -92,16 +93,19 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected void RunQuery(string sql)
         {
-            //RunQuery(sql, 1, new TimeSpan(0, 10, 0));
-            RunQuery(sql, 0, new TimeSpan(0, 2, 0));
+            var timeout = new TimeSpan(0, 2, 0);
+            var partitions = 1;
+            var dumpsql = false;
+
+            RunQuery(sql, partitions, timeout, dumpsql);
         }
 
-        protected void RunQuery(string sql, int maxPartitions)
+        protected void RunQuery(string sql, int maxPartitions, bool dumpsql)
         {
-            RunQuery(sql, maxPartitions, new TimeSpan(0, 2, 0));
+            RunQuery(sql, maxPartitions, new TimeSpan(0, 2, 0), dumpsql);
         }
 
-        protected void RunQuery(string sql, int maxPartitions, TimeSpan timeout)
+        protected void RunQuery(string sql, int maxPartitions, TimeSpan timeout, bool dumpsql)
         {
             var testName = GetTestUniqueName();
 
@@ -116,7 +120,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                     sql = sql.Replace("[$into]", testName);
 
-                    var guid = ScheduleQueryJob(sql, QueueType.Long, maxPartitions);
+                    var guid = ScheduleQueryJob(sql, QueueType.Long, maxPartitions, dumpsql);
 
                     WaitJobComplete(guid, TimeSpan.FromSeconds(10), timeout);
 
