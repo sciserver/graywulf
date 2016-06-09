@@ -40,6 +40,7 @@ namespace Jhu.Graywulf.Web.Services
         public CookieContainer Cookies
         {
             get { return cookies; }
+            set { cookies = value; }
         }
 
         public string ContentType

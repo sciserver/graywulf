@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
@@ -84,6 +85,32 @@ namespace Jhu.Graywulf.Web.Services
         private EndpointAddress CreateEndpointAddress(Uri uri)
         {
             return new EndpointAddress(uri);
+        }
+
+        public byte[] MakeWebRequest(string url)
+        {
+            var req = (HttpWebRequest)WebRequest.Create(url);
+            req.CookieContainer = Cookies;
+
+            var res = (HttpWebResponse)req.GetResponse();
+            Cookies.Add(res.Cookies);
+
+            var stream = res.GetResponseStream();
+            var ms = new MemoryStream();
+            var buffer = new byte[0x10000];
+            while (true)
+            {
+                var b = stream.Read(buffer, 0, buffer.Length);
+
+                if (b <= 0)
+                {
+                    break;
+                }
+
+                ms.Write(buffer, 0, b);
+            }
+            
+            return ms.ToArray();
         }
     }
 }
