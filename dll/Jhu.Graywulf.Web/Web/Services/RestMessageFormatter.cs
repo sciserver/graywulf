@@ -11,7 +11,25 @@ namespace Jhu.Graywulf.Web.Services
 {
     public abstract class RestMessageFormatter : IDispatchMessageFormatter, IClientMessageFormatter 
     {
+        private IDispatchMessageFormatter fallbackDispatchMessageFormatter;
+        private IClientMessageFormatter fallbackClientMessageFormatter;
         private string mimeType;
+
+        protected IDispatchMessageFormatter FallbackDispatchMessageFormatter
+        {
+            get
+            {
+                return fallbackDispatchMessageFormatter;
+            }
+        }
+
+        protected IClientMessageFormatter FallbackClientMessageFormatter
+        {
+            get
+            {
+                return fallbackClientMessageFormatter;
+            }
+        }
 
         public string MimeType
         {
@@ -21,22 +39,49 @@ namespace Jhu.Graywulf.Web.Services
 
         protected RestMessageFormatter()
         {
+        }
+
+        protected RestMessageFormatter(IDispatchMessageFormatter dispatchMessageFormatter)
+        {
             InititializeMembers();
+
+            this.fallbackDispatchMessageFormatter = dispatchMessageFormatter;
+        }
+
+        protected RestMessageFormatter(IClientMessageFormatter clientMessageFormatter)
+        {
+            InititializeMembers();
+
+            this.fallbackClientMessageFormatter = clientMessageFormatter;
         }
 
         private void InititializeMembers()
         {
+            this.fallbackDispatchMessageFormatter = null;
+            this.fallbackClientMessageFormatter = null;
             this.mimeType = null;
         }
 
         public abstract string[] GetSupportedMimeTypes();
 
-        public abstract void DeserializeRequest(Message message, object[] parameters);
+        public virtual void DeserializeRequest(Message message, object[] parameters)
+        {
+            fallbackDispatchMessageFormatter.DeserializeRequest(message, parameters);
+        }
 
-        public abstract Message SerializeReply(MessageVersion messageVersion, object[] parameters, object result);
+        public virtual Message SerializeReply(MessageVersion messageVersion, object[] parameters, object result)
+        {
+            return fallbackDispatchMessageFormatter.SerializeReply(messageVersion, parameters, result);
+        }
 
-        public abstract Message SerializeRequest(MessageVersion messageVersion, object[] parameters);
+        public virtual Message SerializeRequest(MessageVersion messageVersion, object[] parameters)
+        {
+            return fallbackClientMessageFormatter.SerializeRequest(messageVersion, parameters);
+        }
 
-        public abstract object DeserializeReply(Message message, object[] parameters);
+        public virtual object DeserializeReply(Message message, object[] parameters)
+        {
+            return fallbackClientMessageFormatter.DeserializeReply(message, parameters);
+        }
     }
 }

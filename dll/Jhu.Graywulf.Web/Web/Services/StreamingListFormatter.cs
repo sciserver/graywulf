@@ -18,29 +18,24 @@ namespace Jhu.Graywulf.Web.Services
     class StreamingListFormatter : RestMessageFormatter, IDispatchMessageFormatter, IClientMessageFormatter
     {
 
-        private IDispatchMessageFormatter fallbackDispatchMessageFormatter;
-        private IClientMessageFormatter fallbackClientMessageFormatter;
         private Type returnType;
 
         public StreamingListFormatter(IDispatchMessageFormatter dispatchMessageFormatter)
+            :base(dispatchMessageFormatter)
         {
             InitializeMembers();
-
-            this.fallbackDispatchMessageFormatter = dispatchMessageFormatter;
         }
 
         public StreamingListFormatter(IClientMessageFormatter clientMessageFormatter, Type returnType)
+            :base(clientMessageFormatter)
         {
             InitializeMembers();
-
-            this.fallbackClientMessageFormatter = clientMessageFormatter;
+            
             this.returnType = returnType;
         }
 
         private void InitializeMembers()
         {
-            this.fallbackClientMessageFormatter = null;
-            this.fallbackClientMessageFormatter = null;
             this.returnType = null;
         }
 
@@ -54,7 +49,7 @@ namespace Jhu.Graywulf.Web.Services
 
         public override void DeserializeRequest(Message message, object[] parameters)
         {
-            fallbackDispatchMessageFormatter.DeserializeRequest(message, parameters);
+            FallbackDispatchMessageFormatter.DeserializeRequest(message, parameters);
         }
 
         public override Message SerializeReply(MessageVersion messageVersion, object[] parameters, object result)
@@ -96,7 +91,7 @@ namespace Jhu.Graywulf.Web.Services
 
         public override Message SerializeRequest(MessageVersion messageVersion, object[] parameters)
         {
-            return fallbackClientMessageFormatter.SerializeRequest(messageVersion, parameters);
+            return FallbackClientMessageFormatter.SerializeRequest(messageVersion, parameters);
         }
 
         public override object DeserializeReply(Message message, object[] parameters)

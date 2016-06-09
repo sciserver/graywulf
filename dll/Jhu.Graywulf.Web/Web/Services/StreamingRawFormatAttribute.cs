@@ -11,30 +11,65 @@ namespace Jhu.Graywulf.Web.Services
 {
     public abstract class StreamingRawFormatAttribute : Attribute, IOperationBehavior
     {
-        protected abstract IDispatchMessageFormatter CreateDispatchFormatter();
-
-        protected abstract IClientMessageFormatter CreateClientFormatter();
-
         public void AddBindingParameters(OperationDescription operationDescription, BindingParameterCollection bindingParameters)
         {
         }
 
-        public void ApplyClientBehavior(OperationDescription operationDescription, ClientOperation clientOperation)
+        private Type[] GetParameterTypes(OperationDescription operationDescription)
+        {
+            var inmsg = operationDescription.Messages.First(m => m.Direction == MessageDirection.Input);
+            var res = new Type[inmsg.Body.Parts.Count];
+
+            for (int i = 0; i < res.Length; i++)
+            {
+                res[i] = inmsg.Body.Parts[i].Type;
+            }
+
+            return res;
+        }
+
+        private Type GetRetvalType(OperationDescription operationDescription)
         {
             var outmsg = operationDescription.Messages.First(m => m.Direction == MessageDirection.Output);
-            var retval = outmsg.Body.ReturnValue;
-            var rettype = retval.Type;
+            return outmsg.Body.ReturnValue.Type;
+        }
 
-            clientOperation.Formatter = CreateClientFormatter();
+        public void ApplyClientBehavior(OperationDescription operationDescription, ClientOperation clientOperation)
+        {
+            var formatter = CreateClientFormatter(clientOperation.Formatter);
+            ConfigureFormatter(formatter, operationDescription);
+            clientOperation.Formatter = formatter;
         }
 
         public void ApplyDispatchBehavior(OperationDescription operationDescription, DispatchOperation dispatchOperation)
         {
-            dispatchOperation.Formatter = CreateDispatchFormatter();
+            var formatter = CreateDispatchFormatter(dispatchOperation.Formatter);
+            ConfigureFormatter(formatter, operationDescription);
+            dispatchOperation.Formatter = formatter;
         }
 
         public void Validate(OperationDescription operationDescription)
         {
+        }
+
+        protected abstract StreamingRawFormatterBase CreateDispatchFormatter(IDispatchMessageFormatter formatter);
+
+        protected abstract StreamingRawFormatterBase CreateClientFormatter(IClientMessageFormatter formatter);
+
+        private void ConfigureFormatter(StreamingRawFormatterBase formatter, OperationDescription operationDescription)
+        {
+            var parameterTypes = GetParameterTypes(operationDescription);
+            var retvalType = GetRetvalType(operationDescription);
+
+            if (formatter.FormattedType == retvalType)
+            {
+                formatter.Direction |= StreamingRawFormatterDirection.ReturnValue;
+            }
+
+            if (parameterTypes.Length == 1 && formatter.FormattedType == parameterTypes[0])
+            {
+                formatter.Direction |= StreamingRawFormatterDirection.Parameters;
+            }
         }
     }
 }

@@ -13,26 +13,35 @@ namespace Jhu.Graywulf.Web.Services
 {
     public abstract class StreamingRawAdapter<T>
     {
-        public abstract string[] GetSupportedMimeTypes();
+        private WebHeaderCollection headers;
 
-        private WebHeaderCollection GetRequestHeaders()
+        public WebHeaderCollection Headers
         {
-            var request = OperationContext.Current.RequestContext.RequestMessage;
-            var prop = (HttpRequestMessageProperty)request.Properties[HttpRequestMessageProperty.Name];
-            return prop.Headers;
+            get { return headers; }
+            set { headers = value; }
         }
+
+        protected StreamingRawAdapter()
+        {
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
+        {
+            this.headers = null;
+        }
+
+        public abstract string[] GetSupportedMimeTypes();
 
         internal string GetPostedContentType()
         {
-            var headers = GetRequestHeaders();
             var contentType = headers[HttpRequestHeader.ContentType];
             return contentType;
         }
 
         internal string GetRequestedContentType()
         {
-            var headers = GetRequestHeaders();
-            var acceptHeader = headers[HttpRequestHeader.Accept] ?? 
+            var acceptHeader = headers[HttpRequestHeader.Accept] ??
                                headers[HttpRequestHeader.ContentType];
 
             // Parse accept header
@@ -49,7 +58,7 @@ namespace Jhu.Graywulf.Web.Services
                 }
             }
 
-            return null;
+            return Constants.MimeTypeText;
         }
 
         public T ReadFromStream(Stream stream)
