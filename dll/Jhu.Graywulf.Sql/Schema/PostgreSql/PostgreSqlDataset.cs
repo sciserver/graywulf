@@ -787,7 +787,7 @@ WHERE nspname = @schemaName and proname= @objectName;";
         {
             NpgsqlConnectionStringBuilder csb = new NpgsqlConnectionStringBuilder(connectionString);
             csb.IntegratedSecurity = integratedSecurity;
-            csb.UserName = username;
+            csb.Username = username;
             csb.Password = password;
             csb.Enlist = enlist;
 

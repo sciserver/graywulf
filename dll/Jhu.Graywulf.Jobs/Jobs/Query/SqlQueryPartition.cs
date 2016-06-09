@@ -502,6 +502,7 @@ namespace Jhu.Graywulf.Jobs.Query
         protected internal override string GetDumpFileName(CommandTarget target)
         {
             string server = GetSystemDatabaseConnectionStringOnAssignedServer(target).DataSource;
+            server = server.Replace('\\', '_').Replace('/', '_');
             return String.Format("dump_{0}_{1}.sql", server, this.id);
         }
 

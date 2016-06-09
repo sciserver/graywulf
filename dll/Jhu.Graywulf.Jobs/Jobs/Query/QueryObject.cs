@@ -279,7 +279,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <summary>
         /// Gets or sets whether SQL scripts are dumped to files during query execution.
         /// </summary>
-        [IgnoreDataMember]
+        [DataMember]
         public bool DumpSql
         {
             get { return dumpSql; }
@@ -1415,7 +1415,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected internal virtual string GetDumpFileName(CommandTarget target)
         {
-            string server = GetSystemDatabaseConnectionStringOnAssignedServer(target).DataSource;
+            var server = GetSystemDatabaseConnectionStringOnAssignedServer(target).DataSource;
+            server = server.Replace('\\', '_').Replace('/', '_');
             return String.Format("dump_{0}.sql", server);
         }
 
@@ -1432,7 +1433,10 @@ namespace Jhu.Graywulf.Jobs.Query
                 sw.WriteLine("GO");
                 sw.WriteLine();
 
-                File.AppendAllText(filename, sw.ToString());
+                lock (syncRoot)
+                {
+                    File.AppendAllText(filename, sw.ToString());
+                }
             }
         }
 
@@ -1468,7 +1472,10 @@ namespace Jhu.Graywulf.Jobs.Query
                 sw.WriteLine(cmd.CommandText);
                 sw.WriteLine("GO");
 
-                File.AppendAllText(filename, sw.ToString());
+                lock (syncRoot)
+                {
+                    File.AppendAllText(filename, sw.ToString());
+                }
             }
         }
 
