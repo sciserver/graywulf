@@ -94,7 +94,7 @@ namespace Jhu.Graywulf.Jobs.Query
         protected void RunQuery(string sql)
         {
             var timeout = new TimeSpan(0, 2, 0);
-            var partitions = 1;
+            var partitions = 0;
             var dumpsql = false;
 
             RunQuery(sql, partitions, timeout, dumpsql);
