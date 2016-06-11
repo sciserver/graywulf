@@ -103,9 +103,13 @@ namespace Jhu.Graywulf.Util
 
         public static Uri Combine(Uri baseUri, Uri relativeUri)
         {
-            if (relativeUri.IsAbsoluteUri)
+            if (baseUri == null || relativeUri.IsAbsoluteUri)
             {
                 return relativeUri;
+            }
+            else if (relativeUri == null)
+            {
+                return baseUri;
             }
             else
             {
