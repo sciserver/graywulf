@@ -225,7 +225,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             var trnode = node as ITableReference;
-            if (trnode != null && trnode.TableReference.Compare(old, false))
+            if (trnode != null && trnode.TableReference.Compare(old))
             {
                 trnode.TableReference = other;
             }
@@ -423,7 +423,7 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 var cr = ci.ColumnReference;
 
-                if (original.Compare(cr.TableReference, false))
+                if (original.Compare(cr.TableReference))
                 {
                     // TODO. this might be needed
                     //cr.ColumnName = EscapePropagatedColumnName(cr.TableReference, cr.ColumnName);
