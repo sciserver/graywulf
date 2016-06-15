@@ -192,17 +192,76 @@ namespace Jhu.Graywulf.SqlCodeGen
 
         protected abstract string GetQuotedIdentifier(string identifier);
 
+        private string GetTableAlias()
+        {
+            string alias;
+
+            if (tableAlias == String.Empty)
+            {
+                alias = String.Empty;
+            }
+            else if (tableAlias != null)
+            {
+                alias = GetQuotedIdentifier(tableAlias) + ".";
+            }
+            else if (String.IsNullOrWhiteSpace(table.Alias))
+            {
+                alias = String.Empty;
+            }
+            else
+            {
+                alias = GetQuotedIdentifier(table.Alias) + ".";
+            }
+
+            return alias;
+        }
+
+        private string GetNullSpec(Column column, string nullstring)
+        {
+            string nullspec;
+
+            if (nullType == ColumnListNullType.Defined)
+            {
+                nullspec = column.DataType.IsNullable ? columnNull : columnNotNull;
+            }
+            else
+            {
+                nullspec = nullstring;
+            }
+
+            return nullspec;
+        }
+
         /// <summary>
         /// Returns a SQL snippet with the list of primary keys
         /// and propagated columns belonging to the table.
         /// </summary>
-        /// <param name="table">Reference to the table.</param>
-        /// <param name="type">Column list type.</param>
-        /// <param name="nullType">Column nullable type.</param>
-        /// <param name="tableAlias">Optional table alias prefix, specify null to omit.</param>
         /// <returns>A SQL snippet with the list of columns.</returns>
         public string GetColumnListString()
         {
+            // Alias
+            var alias = GetTableAlias();
+
+            // Shortcuts to nothing and SELECT *
+
+            if (columnContext == ColumnContext.None)
+            {
+                return String.Empty;
+            }
+            else if (columnContext == ColumnContext.All && listType == ColumnListType.ForSelectWithOriginalNameNoAlias)
+            {
+                if (leadingComma)
+                {
+                    return String.Format(", {0}*", alias);
+                }
+                else
+                {
+                    return String.Format("{0}*", alias);
+                }
+            }
+
+            // Process column by column
+
             var nullstring = GetNullString(nullType);
             var format = GetFormatString(listType);
 
@@ -216,37 +275,7 @@ namespace Jhu.Graywulf.SqlCodeGen
                     columnlist.Append(", ");
                 }
 
-                // Alias
-                string alias;
-
-                if (tableAlias == String.Empty)
-                {
-                    alias = String.Empty;
-                }
-                else if (tableAlias != null)
-                {
-                    alias = GetQuotedIdentifier(tableAlias) + ".";
-                }
-                else if (String.IsNullOrWhiteSpace(table.Alias))
-                {
-                    alias = String.Empty;
-                }
-                else
-                {
-                    alias = GetQuotedIdentifier(table.Alias) + ".";
-                }
-
-                // Null
-                string nullspec;
-
-                if (nullType == ColumnListNullType.Defined)
-                {
-                    nullspec = column.DataType.IsNullable ? columnNull : columnNotNull;
-                }
-                else
-                {
-                    nullspec = nullstring;
-                }
+                string nullspec = GetNullSpec(column, nullstring);
 
                 columnlist.AppendFormat(
                     format,
