@@ -207,6 +207,13 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Name substitution
 
+        /// <summary>
+        /// Descends recursively the parsing tree and replaces the occurances of one table
+        /// reference with another.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="old"></param>
+        /// <param name="other"></param>
         protected void SubstituteTableReference(Node node, TableReference old, TableReference other)
         {
             foreach (var t in node.Stack)
@@ -397,7 +404,18 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        protected Expression SubstituteTableName(Expression exp, TableReference original, TableReference other)
+        /// <summary>
+        /// Creates a clone of the expression tree, then descends it  and replaces the occurances
+        /// of one table reference with another.
+        /// </summary>
+        /// <remarks>
+        /// This function is used to add a table alias to columns.
+        /// </remarks>
+        /// <param name="exp"></param>
+        /// <param name="original"></param>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        protected Expression SubstituteColumnTableReference(Expression exp, TableReference original, TableReference other)
         {
             exp = (Expression)exp.Clone();
 
