@@ -48,6 +48,8 @@ namespace Jhu.Graywulf.Test
             RetryWithFaultInCancel,
             QueryDelay,
             QueryTimeout,
+            QueryDelayRetry,
+            QueryTimeoutRetry,
         }
 
         protected Task scheduler;

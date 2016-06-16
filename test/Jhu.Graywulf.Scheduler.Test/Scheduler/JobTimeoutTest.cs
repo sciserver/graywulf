@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Scheduler
 
         [TestMethod]
         [TestCategory("Scheduler")]
-        public void TimeOutAtomicJobTest()
+        public void AtomicJobTest()
         {
             using (SchedulerTester.Instance.GetToken())
             {
@@ -56,7 +56,7 @@ namespace Jhu.Graywulf.Scheduler
 
         [TestMethod]
         [TestCategory("Scheduler")]
-        public void TimeOutCancelableTest()
+        public void CancelableTest()
         {
             using (SchedulerTester.Instance.GetToken())
             {
@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.Scheduler
 
         [TestMethod]
         [TestCategory("Scheduler")]
-        public void TimeOutQueryJobTest()
+        public void QueryDelayTest()
         {
             // Job times out causing query to cancel
 
@@ -96,7 +96,29 @@ namespace Jhu.Graywulf.Scheduler
 
         [TestMethod]
         [TestCategory("Scheduler")]
-        public void TimeOutQueryJobTest2()
+        public void QueryDelayRetryTest()
+        {
+            // Job times out causing query to cancel
+
+            using (SchedulerTester.Instance.GetToken())
+            {
+                SchedulerTester.Instance.EnsureRunning();
+
+                // Time must be longer than the time-out of quick queue!
+                var guid = ScheduleTestJob(new TimeSpan(0, 1, 0), JobType.QueryDelayRetry, QueueType.Quick, new TimeSpan(0, 0, 15));
+
+                WaitJobStarted(guid, TimeSpan.FromSeconds(10));
+
+                WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+
+                var ji = LoadJob(guid);
+                Assert.AreEqual(JobExecutionState.TimedOut, ji.JobExecutionStatus);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Scheduler")]
+        public void QueryTimeoutTest()
         {
             // Query times out causing job to cancel.
 
@@ -106,6 +128,28 @@ namespace Jhu.Graywulf.Scheduler
 
                 // Time must be longer than the time-out of quick queue!
                 var guid = ScheduleTestJob(new TimeSpan(0, 1, 0), JobType.QueryTimeout, QueueType.Quick, new TimeSpan(0, 0, 15));
+
+                WaitJobStarted(guid, TimeSpan.FromSeconds(10));
+
+                WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+
+                var ji = LoadJob(guid);
+                Assert.AreEqual(JobExecutionState.Failed, ji.JobExecutionStatus);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Scheduler")]
+        public void QueryTimeoutRetryTest()
+        {
+            // Query times out causing job to cancel.
+
+            using (SchedulerTester.Instance.GetToken())
+            {
+                SchedulerTester.Instance.EnsureRunning();
+
+                // Time must be longer than the time-out of quick queue!
+                var guid = ScheduleTestJob(new TimeSpan(0, 0, 10), JobType.QueryTimeoutRetry, QueueType.Quick, new TimeSpan(0, 0, 50));
 
                 WaitJobStarted(guid, TimeSpan.FromSeconds(10));
 
