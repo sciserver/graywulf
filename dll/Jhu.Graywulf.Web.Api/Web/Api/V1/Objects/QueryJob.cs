@@ -189,7 +189,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             // Schedule as a job
             var qf = QueryFactory.Create(context.Federation);
 
-            this.JobInstance = qf.ScheduleAsJob(this.Name, query, GetQueueName(context), Comments);
+            this.JobInstance = qf.ScheduleAsJob(this.Name, query, GetQueueName(context), TimeSpan.MinValue, Comments);
             this.JobInstance.Save();
 
             // Save dependencies

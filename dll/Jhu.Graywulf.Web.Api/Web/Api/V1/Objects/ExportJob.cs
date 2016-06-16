@@ -183,7 +183,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             var p = CreateParameters(context);
 
             var ef = ExportTablesJobFactory.Create(context.Federation);
-            var job = ef.ScheduleAsJob(p, GetQueueName(context), Comments);
+            var job = ef.ScheduleAsJob(p, GetQueueName(context), TimeSpan.MinValue, Comments);
 
             job.Save();
 

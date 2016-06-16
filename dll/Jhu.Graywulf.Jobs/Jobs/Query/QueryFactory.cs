@@ -116,7 +116,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
         #region Job scheduling functions
 
-        public abstract JobInstance ScheduleAsJob(string jobName, SqlQuery query, string queueName, string comments);
+        public abstract JobInstance ScheduleAsJob(string jobName, SqlQuery query, string queueName, TimeSpan timeout, string comments);
 
         #endregion
     }

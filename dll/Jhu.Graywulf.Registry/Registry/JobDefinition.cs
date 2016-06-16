@@ -186,17 +186,17 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
-        public JobInstance CreateJobInstance(string queueName, ScheduleType scheduleType)
+        public JobInstance CreateJobInstance(string queueName, ScheduleType scheduleType, TimeSpan timeout)
         {
             JobInstance job = new JobInstance(Context);
 
             job.Name = GenerateJobID();
-            // TODO: delete if works job.JobDefinitionReference.Name = GetFullyQualifiedName();
             job.JobDefinition = this;
             job.ParentReference.Name = queueName;
             job.WorkflowTypeName = this.workflowTypeName;
             job.JobExecutionStatus = Jhu.Graywulf.Registry.JobExecutionState.Scheduled;
             job.ScheduleType = scheduleType;
+            job.JobTimeout = timeout;
 
             // Create workflow parameters
             var rh = JobReflectionHelper.CreateInstance(this.workflowTypeName);

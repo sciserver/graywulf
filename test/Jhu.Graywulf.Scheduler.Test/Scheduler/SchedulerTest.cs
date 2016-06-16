@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Scheduler
             {
                 SchedulerTester.Instance.EnsureRunning();
 
-                var guid = ScheduleTestJob(new TimeSpan(0, 0, 10), JobType.AtomicDelay, QueueType.Long);
+                var guid = ScheduleTestJob(new TimeSpan(0, 0, 10), JobType.AtomicDelay, QueueType.Long, new TimeSpan(0, 2, 0));
 
                 WaitJobComplete(guid, TimeSpan.FromSeconds(10));
 
@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.Scheduler
 
                 Parallel.For(0, 20, i =>
                 {
-                    var guid = ScheduleTestJob(new TimeSpan(0, 0, 1), JobType.AtomicDelay, QueueType.Quick);
+                    var guid = ScheduleTestJob(new TimeSpan(0, 0, 1), JobType.AtomicDelay, QueueType.Quick, new TimeSpan(0, 2, 0));
 
                     WaitJobComplete(guid, TimeSpan.FromSeconds(10));
 
@@ -103,7 +103,7 @@ namespace Jhu.Graywulf.Scheduler
             {
                 SchedulerTester.Instance.EnsureRunning();
 
-                var guid = ScheduleTestJob(new TimeSpan(0, 0, 30), JobType.AtomicDelay, QueueType.Long);
+                var guid = ScheduleTestJob(new TimeSpan(0, 0, 30), JobType.AtomicDelay, QueueType.Long, new TimeSpan(0, 2, 0));
 
                 WaitJobStarted(guid, TimeSpan.FromSeconds(10));
 
@@ -125,7 +125,7 @@ namespace Jhu.Graywulf.Scheduler
                 SchedulerTester.Instance.EnsureRunning();
 
                 // Make delay long enough but cancelable
-                var guid = ScheduleTestJob(new TimeSpan(0, 10, 0), JobType.CancelableDelay, QueueType.Long);
+                var guid = ScheduleTestJob(new TimeSpan(0, 10, 0), JobType.CancelableDelay, QueueType.Long, new TimeSpan(0, 2, 0));
 
                 WaitJobStarted(guid, TimeSpan.FromSeconds(10));
 
@@ -147,7 +147,7 @@ namespace Jhu.Graywulf.Scheduler
                 SchedulerTester.Instance.EnsureRunning();
 
                 // Make delay long enough but cancelable
-                var guid = ScheduleTestJob(new TimeSpan(0, 2, 0), JobType.CancelableDelay, QueueType.Long);
+                var guid = ScheduleTestJob(new TimeSpan(0, 2, 0), JobType.CancelableDelay, QueueType.Long, new TimeSpan(0, 2, 0));
 
                 WaitJobStarted(guid, TimeSpan.FromSeconds(10));
 
@@ -170,7 +170,7 @@ namespace Jhu.Graywulf.Scheduler
                 SchedulerTester.Instance.EnsureRunning();
 
                 // Time must be longer than the time-out of quick queue!
-                var guid = ScheduleTestJob(new TimeSpan(0, 1, 20), JobType.CancelableDelay, QueueType.Quick);
+                var guid = ScheduleTestJob(new TimeSpan(0, 1, 20), JobType.CancelableDelay, QueueType.Quick, new TimeSpan(0, 2, 0));
 
                 WaitJobComplete(guid, TimeSpan.FromSeconds(10));
 
@@ -188,7 +188,7 @@ namespace Jhu.Graywulf.Scheduler
                 SchedulerTester.Instance.EnsureRunning();
 
                 // Time must be longer than the time-out of quick queue!
-                var guid = ScheduleTestJob(new TimeSpan(0, 1, 0), JobType.AtomicDelay, QueueType.Quick);
+                var guid = ScheduleTestJob(new TimeSpan(0, 1, 0), JobType.AtomicDelay, QueueType.Quick, new TimeSpan(0, 2, 0));
 
                 WaitJobStarted(guid, TimeSpan.FromSeconds(10));
 
@@ -216,7 +216,7 @@ namespace Jhu.Graywulf.Scheduler
                 SchedulerTester.Instance.EnsureRunning();
 
                 // Time must be longer than the time-out of quick queue!
-                var guid = ScheduleTestJob(new TimeSpan(0, 0, 30), JobType.MultipleDelay, QueueType.Long);
+                var guid = ScheduleTestJob(new TimeSpan(0, 0, 30), JobType.MultipleDelay, QueueType.Long, new TimeSpan(0, 2, 0));
 
                 WaitJobStarted(guid, TimeSpan.FromSeconds(10));
 
@@ -248,7 +248,7 @@ namespace Jhu.Graywulf.Scheduler
                 SchedulerTester.Instance.EnsureRunning();
 
                 // Time must be longer than the time-out of quick queue!
-                var guid = ScheduleTestJob(new TimeSpan(0, 0, 30), JobType.MultipleDelay, QueueType.Long);
+                var guid = ScheduleTestJob(new TimeSpan(0, 0, 30), JobType.MultipleDelay, QueueType.Long, new TimeSpan(0, 2, 0));
 
                 WaitJobStarted(guid, TimeSpan.FromSeconds(10));
 
