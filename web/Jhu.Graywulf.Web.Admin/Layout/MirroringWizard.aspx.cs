@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             q.Guid = new Guid(QueueInstance.SelectedValue);
             q.Load();
 
-            var job = jf.ScheduleAsJob(par, q.GetFullyQualifiedName(), TimeSpan.MinValue, "");
+            var job = jf.ScheduleAsJob(par, q.GetFullyQualifiedName(), TimeSpan.Zero, "");
             job.Save();
 
             Response.Redirect(OriginalReferer);

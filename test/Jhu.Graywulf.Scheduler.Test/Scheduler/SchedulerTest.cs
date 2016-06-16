@@ -12,29 +12,18 @@ using Jhu.Graywulf.Registry;
 namespace Jhu.Graywulf.Scheduler
 {
     [TestClass]
-    public class SchedulerTest : TestClassBase
+    public class SchedulerTest : SchedulerTestBase
     {
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
-            using (SchedulerTester.Instance.GetExclusiveToken())
-            {
-                PurgeTestJobs();
-            }
+            ClassInitialize();
         }
 
         [ClassCleanup]
         public static void CleanUp()
         {
-            using (SchedulerTester.Instance.GetExclusiveToken())
-            {
-                if (SchedulerTester.Instance.IsRunning)
-                {
-                    SchedulerTester.Instance.DrainStop();
-                }
-
-                PurgeTestJobs();
-            }
+            ClassCleanUp();
         }
 
         [TestMethod]
@@ -161,51 +150,6 @@ namespace Jhu.Graywulf.Scheduler
             }
         }
 
-        [TestMethod]
-        [TestCategory("Scheduler")]
-        public void TimeOutCancelableTest()
-        {
-            using (SchedulerTester.Instance.GetToken())
-            {
-                SchedulerTester.Instance.EnsureRunning();
-
-                // Time must be longer than the time-out of quick queue!
-                var guid = ScheduleTestJob(new TimeSpan(0, 1, 20), JobType.CancelableDelay, QueueType.Quick, new TimeSpan(0, 2, 0));
-
-                WaitJobComplete(guid, TimeSpan.FromSeconds(10));
-
-                var ji = LoadJob(guid);
-                Assert.AreEqual(JobExecutionState.TimedOut, ji.JobExecutionStatus);
-            }
-        }
-
-        [TestMethod]
-        [TestCategory("Scheduler")]
-        public void TimeOutAtomicJobTest()
-        {
-            using (SchedulerTester.Instance.GetToken())
-            {
-                SchedulerTester.Instance.EnsureRunning();
-
-                // Time must be longer than the time-out of quick queue!
-                var guid = ScheduleTestJob(new TimeSpan(0, 1, 0), JobType.AtomicDelay, QueueType.Quick, new TimeSpan(0, 2, 0));
-
-                WaitJobStarted(guid, TimeSpan.FromSeconds(10));
-
-                WaitJobComplete(guid, TimeSpan.FromSeconds(10));
-
-                var ji = LoadJob(guid);
-
-                // TODO: It is not clear whether the job gets cancelled or timed out
-                // Most of the time it gets cancelled before it could competed when
-                // but this is a timing issue that needs further investigation.
-                // Nevertheless, job status is accurate
-
-                Assert.IsTrue(
-                    ji.JobExecutionStatus == JobExecutionState.Completed ||
-                    ji.JobExecutionStatus == JobExecutionState.TimedOut);
-            }
-        }
 
         [TestMethod]
         [TestCategory("Scheduler")]

@@ -223,7 +223,7 @@ WHERE Entity.Guid = @Guid
 
                     var val = Expression.Condition(
                         Expression.Call(dr, typeof(SqlDataReader).GetMethod("IsDBNull"), o),
-                        Expression.Constant(TimeSpan.MinValue),
+                        Expression.Constant(TimeSpan.Zero),
                         Expression.New(ctor, Expression.ConvertChecked(getval, typeof(Int64))));
 
                     exps.Add(Expression.Assign(prop, val));
@@ -392,7 +392,7 @@ WHERE Entity.Guid = @Guid
 
                         ptype = Expression.Constant(SqlDbType.BigInt);
                         pval = Expression.Condition(
-                            Expression.Equal(prop, Expression.Constant(TimeSpan.MinValue)),
+                            Expression.Equal(prop, Expression.Constant(TimeSpan.Zero)),
                             Expression.Convert(Expression.Constant(DBNull.Value), typeof(object)),
                             Expression.Convert(eticks, typeof(object)));
                     }

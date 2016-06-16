@@ -540,6 +540,7 @@ namespace Jhu.Graywulf.Scheduler
                             UserName = user.Name,
                             QueueGuid = ji.ParentReference.Guid,
                             WorkflowTypeName = ji.WorkflowTypeName,
+                            Timeout = ji.JobTimeout,
                         };
 
                         if ((ji.JobExecutionStatus & JobExecutionState.Scheduled) != 0)

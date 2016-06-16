@@ -56,7 +56,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 };
 
                 var etf = ExportTablesJobFactory.Create(context.Federation);
-                var ji = etf.ScheduleAsJob(parameters, queue, TimeSpan.MinValue, "");
+                var ji = etf.ScheduleAsJob(parameters, queue, TimeSpan.Zero, "");
 
                 ji.Save();
 

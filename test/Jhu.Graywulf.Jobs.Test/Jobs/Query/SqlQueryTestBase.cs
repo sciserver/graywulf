@@ -83,7 +83,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 q.MaxPartitions = maxPartitions;
                 q.DumpSql = dumpsql;
 
-                var ji = qf.ScheduleAsJob(null, q, queue, TimeSpan.MinValue, "testjob");
+                var ji = qf.ScheduleAsJob(null, q, queue, TimeSpan.Zero, "testjob");
 
                 ji.Save();
 

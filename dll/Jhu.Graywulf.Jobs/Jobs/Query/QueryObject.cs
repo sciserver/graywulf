@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Jobs.Query
     /// </remarks>
     [Serializable]
     [DataContract(Namespace = "")]
-    public abstract class QueryObject : IContextObject, ICancelableTask, ICloneable
+    public abstract class QueryObject : CancelableCollection, IContextObject, ICancelableTask, ICloneable
     {
         #region Property storage member variables
 
@@ -135,20 +135,6 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Query execution mode, either single server or Graywulf cluster
         /// </summary>
         private ExecutionMode executionMode;
-
-        /// <summary>
-        /// Flag to know if query was already cancelled. Used in ICancelableTask
-        /// implementation
-        /// </summary>
-        [NonSerialized]
-        private bool isCanceled;
-
-        /// <summary>
-        /// Holds a list of ICancelableTask instances that are all to be canceled
-        /// if the query workflow is canceled.
-        /// </summary>
-        [NonSerialized]
-        private Dictionary<string, ICancelableTask> cancelableTasks;
 
         /// <summary>
         /// Holds a list of temporary tables created during query execution.
@@ -416,16 +402,6 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
         /// <summary>
-        /// Gets if the query has been canceled.
-        /// </summary>
-        [IgnoreDataMember]
-        public bool IsCanceled
-        {
-            get { return isCanceled; }
-        }
-
-
-        /// <summary>
         /// Gets or sets the reference to the assigned server instance registry object.
         /// </summary>
         [DataMember]
@@ -514,9 +490,6 @@ namespace Jhu.Graywulf.Jobs.Query
 
             this.executionMode = ExecutionMode.SingleServer;
 
-            this.isCanceled = false;
-            this.cancelableTasks = new Dictionary<string, ICancelableTask>();
-
             this.federationReference = new EntityReference<Federation>(this);
             this.assignedServerInstanceReference = new EntityReference<ServerInstance>(this);
             this.temporaryDatabaseInstanceReference = new EntityReference<DatabaseInstance>(this);
@@ -565,9 +538,6 @@ namespace Jhu.Graywulf.Jobs.Query
             this.customDatasets = new List<DatasetBase>(old.customDatasets);
 
             this.executionMode = old.executionMode;
-
-            this.isCanceled = false;
-            this.cancelableTasks = new Dictionary<string, ICancelableTask>();
 
             this.federationReference = new EntityReference<Registry.Federation>(this, old.federationReference);
             this.assignedServerInstanceReference = new EntityReference<ServerInstance>(this, old.assignedServerInstanceReference);
@@ -1486,50 +1456,6 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             // Required by cancelable interface
             throw new NotImplementedException();
-        }
-
-        protected void RegisterCancelable(Guid key, ICancelableTask task)
-        {
-            RegisterCancelable(key.ToString(), task);
-        }
-
-        protected void RegisterCancelable(string key, ICancelableTask task)
-        {
-            lock (cancelableTasks)
-            {
-                cancelableTasks.Add(key, task);
-            }
-        }
-
-        protected void UnregisterCancelable(Guid key)
-        {
-            UnregisterCancelable(key.ToString());
-        }
-
-        protected void UnregisterCancelable(string key)
-        {
-            lock (cancelableTasks)
-            {
-                cancelableTasks.Remove(key);
-            }
-        }
-
-        public virtual void Cancel()
-        {
-            if (isCanceled)
-            {
-                throw new InvalidOperationException(ExceptionMessages.TaskAlreadyCanceled);
-            }
-
-            lock (cancelableTasks)
-            {
-                foreach (var t in cancelableTasks.Values)
-                {
-                    t.Cancel();
-                }
-            }
-
-            isCanceled = true;
         }
 
         #endregion

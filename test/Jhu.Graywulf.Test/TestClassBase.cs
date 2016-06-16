@@ -45,7 +45,9 @@ namespace Jhu.Graywulf.Test
             AsyncException,
             AsyncExceptionWithRetry,
             RetryWithFaultInFinally,
-            RetryWithFaultInCancel
+            RetryWithFaultInCancel,
+            QueryDelay,
+            QueryTimeout,
         }
 
         protected Task scheduler;
@@ -125,7 +127,7 @@ namespace Jhu.Graywulf.Test
 
         protected Guid ScheduleTestJob(JobType jobType, QueueType queueType)
         {
-            return ScheduleTestJob(TimeSpan.Zero, jobType, queueType, TimeSpan.MinValue);
+            return ScheduleTestJob(TimeSpan.Zero, jobType, queueType, TimeSpan.Zero);
         }
 
         protected Guid ScheduleTestJob(JobType jobType, QueueType queueType, TimeSpan timeout)

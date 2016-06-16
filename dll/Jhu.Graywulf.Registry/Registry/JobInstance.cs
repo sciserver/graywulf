@@ -320,7 +320,7 @@ namespace Jhu.Graywulf.Registry
             this.dateStarted = DateTime.MinValue;
             this.dateFinished = DateTime.MinValue;
             this.jobExecutionStatus = JobExecutionState.Unknown;
-            this.jobTimeout = TimeSpan.MinValue;
+            this.jobTimeout = TimeSpan.Zero;
             this.suspendTimeout = DateTime.MinValue;
             this.scheduleType = ScheduleType.Unknown;
             this.scheduleTime = DateTime.MinValue;

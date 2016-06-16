@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                     null,
                     destination);
 
-                var ji = itf.ScheduleAsJob(parameters, queue, TimeSpan.MinValue, "comments");
+                var ji = itf.ScheduleAsJob(parameters, queue, TimeSpan.Zero, "comments");
 
                 ji.Save();
 

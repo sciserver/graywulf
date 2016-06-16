@@ -21,6 +21,7 @@ namespace Jhu.Graywulf.Scheduler
         private string workflowTypeName;
         private Guid workflowInstanceId;
         private DateTime timeStarted;
+        private TimeSpan timeout;
         private JobStatus status;
 
         /// <summary>
@@ -95,6 +96,12 @@ namespace Jhu.Graywulf.Scheduler
             set { timeStarted = value; }
         }
 
+        public TimeSpan Timeout
+        {
+            get { return timeout; }
+            set { timeout = value; }
+        }
+
         /// <summary>
         /// Last known execution status of the job.
         /// </summary>
@@ -109,8 +116,23 @@ namespace Jhu.Graywulf.Scheduler
             set { status = value; }
         }
 
-        public bool IsTimedOut(TimeSpan timeout)
+        public bool IsTimedOut(TimeSpan queueTimeout)
         {
+            TimeSpan timeout;
+
+            if (this.timeout == TimeSpan.Zero)
+            {
+                timeout = queueTimeout;
+            }
+            else if (queueTimeout == TimeSpan.Zero)
+            {
+                timeout = this.timeout;
+            }
+            else
+            {
+                timeout = this.timeout <= queueTimeout ? this.timeout : queueTimeout;
+            }
+
             var runtime = DateTime.Now - timeStarted;
 
             return runtime > timeout &&
@@ -135,6 +157,7 @@ namespace Jhu.Graywulf.Scheduler
             this.workflowTypeName = null;
             this.workflowInstanceId = Guid.Empty;
             this.timeStarted = DateTime.MinValue;
+            this.timeout = TimeSpan.Zero;
             this.status = JobStatus.Unknown;
         }
 

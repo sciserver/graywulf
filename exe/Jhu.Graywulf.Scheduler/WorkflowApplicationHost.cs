@@ -467,7 +467,6 @@ namespace Jhu.Graywulf.Scheduler
             // *** TODO: handle timeout exception here
             workflows[instanceId].Job.Status = JobStatus.Cancelled;
             workflows[instanceId].WorkflowApplication.Cancel(Scheduler.Configuration.CancelTimeout);
-            //workflows[instanceId].WorkflowApplication.Cancel();
 
             return instanceId;
         }
@@ -497,6 +496,10 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="instanceId"></param>
         private void FinishWorkflow(Guid instanceId)
         {
+            // Workflows can get here two ways
+            // -- workflow uploded
+            // -- workflow aborted
+
             lock (syncRoot)
             {
                 workflows.Remove(instanceId);
