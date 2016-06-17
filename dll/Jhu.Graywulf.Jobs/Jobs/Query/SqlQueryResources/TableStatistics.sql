@@ -1,13 +1,7 @@
 -- Create temp table to store keys
 
-CREATE TABLE [$temptable]
-(
-	[rn] bigint PRIMARY KEY,
-	[key] [$keytype]
-);
-
-INSERT [$temptable] WITH(TABLOCKX)
-SELECT ROW_NUMBER() OVER (ORDER BY [$keycol]), [$keycol]
+SELECT ROW_NUMBER() OVER (ORDER BY [$keycol]) AS [rn], [$keycol] AS [key]
+INTO [$temptable]
 FROM [$tablename]
 [$where];
 
