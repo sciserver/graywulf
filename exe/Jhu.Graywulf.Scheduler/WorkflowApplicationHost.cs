@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Collections.Concurrent;
 using System.Activities;
 using System.Activities.DurableInstancing;
-using System.Runtime.DurableInstancing;
-using System.Xml.Serialization;
-using System.Reflection;
-using System.IO;
-using System.Configuration;
 using System.Threading;
-using System.Threading.Tasks;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
@@ -37,7 +30,6 @@ namespace Jhu.Graywulf.Scheduler
 
         #region Private variables
 
-        private object syncRoot;
         private bool stopRequested;
 
         private Guid contextGuid;
@@ -50,7 +42,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <summary>
         /// Holds the workflows hosted in the app domain
         /// </summary>
-        private Dictionary<Guid, WorkflowDetails> workflows;
+        private ConcurrentDictionary<Guid, WorkflowDetails> workflows;
 
         /// <summary>
         /// Logging participant, same for all WorkflowApplications
@@ -73,7 +65,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <summary>
         /// Reports workflow events to the main scheduler class
         /// </summary>
-        public event EventHandler<HostEventArgs> WorkflowEvent;
+        public event EventHandler<WorkflowApplicationHostEventArgs> WorkflowEvent;
 
         public WorkflowApplicationHost()
         {
@@ -82,14 +74,13 @@ namespace Jhu.Graywulf.Scheduler
 
         private void InitializeMembers()
         {
-            this.syncRoot = new object();
             this.stopRequested = false;
             this.contextGuid = Guid.Empty;
-            this.workflows = new Dictionary<Guid, WorkflowDetails>();
+            this.workflows = new ConcurrentDictionary<Guid, WorkflowDetails>();
             this.graywulfLogger = null;
             this.workflowInstanceStore = null;
         }
-
+        
         public override object InitializeLifetimeService()
         {
             // Prevent remoting timeouts
@@ -98,12 +89,9 @@ namespace Jhu.Graywulf.Scheduler
 
         private void EnsureNotStopping()
         {
-            lock (syncRoot)
+            if (stopRequested)
             {
-                if (stopRequested)
-                {
-                    throw new InvalidOperationException();
-                }
+                throw new InvalidOperationException();
             }
         }
 
@@ -114,18 +102,18 @@ namespace Jhu.Graywulf.Scheduler
         {
             EnsureNotStopping();
 
-            // Store a reference to the proxy to the scheduler
+            // Store a reference to the scheduler
             this.scheduler = scheduler;
 
             // Initialize logging participant
-            Jhu.Graywulf.Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.SqlLogWriter());
+            Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.SqlLogWriter());
 
             if (interactive)
             {
-                Jhu.Graywulf.Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.StreamLogWriter(Console.Out));
+                Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.StreamLogWriter(Console.Out));
             }
 
-            graywulfLogger = new Jhu.Graywulf.Activities.GraywulfTrackingParticipant();
+            graywulfLogger = new GraywulfTrackingParticipant();
 
             // Initialize persistence participant
             workflowInstanceStore = new SqlWorkflowInstanceStore(Scheduler.Configuration.PersistenceConnectionString);
@@ -137,28 +125,12 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         public void Stop(TimeSpan timeout)
         {
-            lock (syncRoot)
-            {
-                if (stopRequested)
-                {
-                    throw new InvalidOperationException();
-                }
-
-                stopRequested = true;
-            }
+            EnsureNotStopping();
+            stopRequested = true;
 
             // Wait until all workflows complete
-
-            while (true)
+            while (!workflows.IsEmpty)
             {
-                lock (syncRoot)
-                {
-                    if (workflows.Count == 0)
-                    {
-                        break;
-                    }
-                }
-
                 Thread.Sleep(100);  // TODO: use constant
             }
 
@@ -246,9 +218,11 @@ namespace Jhu.Graywulf.Scheduler
         {
             EnsureNotStopping();
 
-            lock (syncRoot)
+            WorkflowDetails workflow;
+
+            if (workflows.TryGetValue(job.WorkflowInstanceId, out workflow))
             {
-                workflows[job.WorkflowInstanceId].WorkflowApplication.Run();
+                workflow.WorkflowApplication.Run();
             }
         }
 
@@ -443,50 +417,58 @@ namespace Jhu.Graywulf.Scheduler
 
             return wfapp.Id;
         }
-
-
-
+        
         /// <summary>
         /// Do bookkeeping required when a workflow starts
         /// </summary>
         /// <param name="wfapp"></param>
         private void RegisterWorkflow(Job job, WorkflowApplication wfapp)
         {
-            lock (syncRoot)
+            var workflow = new WorkflowDetails()
             {
-                workflows.Add(wfapp.Id, new WorkflowDetails()
-                {
-                    Job = job,
-                    WorkflowApplication = wfapp,
-                });
-            }
+                Job = job,
+                WorkflowApplication = wfapp,
+            };
+
+            workflows.TryAdd(wfapp.Id, workflow);
         }
 
         private Guid CancelWorkflow(Guid instanceId)
         {
-            // *** TODO: handle timeout exception here
-            workflows[instanceId].Job.Status = JobStatus.Cancelled;
-            workflows[instanceId].WorkflowApplication.Cancel(Scheduler.Configuration.CancelTimeout);
+            WorkflowDetails workflow;
 
+            if (workflows.TryGetValue(instanceId, out workflow))
+            {
+                workflow.Job.Status = JobStatus.Cancelled;
+                workflow.WorkflowApplication.Cancel(Scheduler.Configuration.CancelTimeout);
+            }
+            
             return instanceId;
         }
 
         private Guid TimeOutWorkflow(Guid instanceId)
         {
-            // *** TODO: handle timeout exception here
-            workflows[instanceId].Job.Status = JobStatus.TimedOut;
-            workflows[instanceId].WorkflowApplication.Cancel(Scheduler.Configuration.CancelTimeout);
+            WorkflowDetails workflow;
 
+            if (workflows.TryGetValue(instanceId, out workflow))
+            {
+                workflow.Job.Status = JobStatus.TimedOut;
+                workflow.WorkflowApplication.Cancel(Scheduler.Configuration.CancelTimeout);
+            }
+            
             return instanceId;
         }
 
         private Guid PersistWorkflow(Guid instanceId)
         {
-            // *** TODO: this might sometime throw a KeyNotFoundException (after persist and cancel?)
-            // *** TODO: handle timeout exception here
-            workflows[instanceId].Job.Status = JobStatus.Persisted;
-            workflows[instanceId].WorkflowApplication.Unload(Scheduler.Configuration.PersistTimeout);
+            WorkflowDetails workflow;
 
+            if (workflows.TryGetValue(instanceId, out workflow))
+            {
+                workflow.Job.Status = JobStatus.Persisted;
+                workflow.WorkflowApplication.Unload(Scheduler.Configuration.PersistTimeout);
+            }
+            
             return instanceId;
         }
 
@@ -496,14 +478,8 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="instanceId"></param>
         private void FinishWorkflow(Guid instanceId)
         {
-            // Workflows can get here two ways
-            // -- workflow uploded
-            // -- workflow aborted
-
-            lock (syncRoot)
-            {
-                workflows.Remove(instanceId);
-            }
+            WorkflowDetails workflow;
+            workflows.TryRemove(instanceId, out workflow);
         }
 
         #endregion
@@ -518,9 +494,10 @@ namespace Jhu.Graywulf.Scheduler
 
             // First we have to store the exception because it won't be available after the
             // workflow gracefully cancels
-            lock (syncRoot)
+            WorkflowDetails workflow;
+
+            if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                var workflow = workflows[e.InstanceId];
                 workflow.Job.Status = JobStatus.Failed;
                 workflow.LastException = e.UnhandledException;
             }
@@ -536,54 +513,53 @@ namespace Jhu.Graywulf.Scheduler
         private void wfapp_WorkflowCompleted(WorkflowApplicationCompletedEventArgs e)
         {
             WorkflowDetails workflow;
-            lock (syncRoot)
+
+            if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                workflow = workflows[e.InstanceId];
-            }
+                // This is the point to save output parameters
+                SaveWorkflowParameters(workflow.Job, e.Outputs);
 
-            // This is the point to save output parameters
-            SaveWorkflowParameters(workflow.Job, e.Outputs);
-
-            if (WorkflowEvent != null)
-            {
-
-                switch (e.CompletionState)
+                if (WorkflowEvent != null)
                 {
-                    case ActivityInstanceState.Closed:
-                        // Completed successfully
-                        WorkflowEvent(this, new HostEventArgs(WorkflowEventType.Completed, e.InstanceId));
-                        break;
-                    case ActivityInstanceState.Canceled:
-                        switch (workflow.Job.Status)
-                        {
-                            case JobStatus.Cancelled:
-                                WorkflowEvent(this, new HostEventArgs(WorkflowEventType.Cancelled, e.InstanceId));
-                                break;
-                            case JobStatus.TimedOut:
-                                WorkflowEvent(this, new HostEventArgs(WorkflowEventType.TimedOut, e.InstanceId));
-                                break;
-                            case JobStatus.Failed:
+
+                    switch (e.CompletionState)
+                    {
+                        case ActivityInstanceState.Closed:
+                            // Completed successfully
+                            WorkflowEvent(this, new WorkflowApplicationHostEventArgs(WorkflowEventType.Completed, e.InstanceId));
+                            break;
+                        case ActivityInstanceState.Canceled:
+                            switch (workflow.Job.Status)
+                            {
+                                case JobStatus.Cancelled:
+                                    WorkflowEvent(this, new WorkflowApplicationHostEventArgs(WorkflowEventType.Cancelled, e.InstanceId));
+                                    break;
+                                case JobStatus.TimedOut:
+                                    WorkflowEvent(this, new WorkflowApplicationHostEventArgs(WorkflowEventType.TimedOut, e.InstanceId));
+                                    break;
+                                case JobStatus.Failed:
 
 #if BREAKDEBUG
                                 System.Diagnostics.Debugger.Break();
 #endif
 
-                                WorkflowEvent(
-                                    this,
-                                    new HostEventArgs(
-                                        WorkflowEventType.Failed, 
-                                        e.InstanceId, 
-                                        GetExceptionMessage(workflow.LastException)));
-                                break;
-                            default:
-                                throw new NotImplementedException();
-                        }
-                        break;
-                    case ActivityInstanceState.Faulted:
-                    // This should not happen, workflows are forced to cancel
-                    case ActivityInstanceState.Executing:
-                    default:
-                        throw new NotImplementedException();
+                                    WorkflowEvent(
+                                        this,
+                                        new WorkflowApplicationHostEventArgs(
+                                            WorkflowEventType.Failed,
+                                            e.InstanceId,
+                                            GetExceptionMessage(workflow.LastException)));
+                                    break;
+                                default:
+                                    throw new NotImplementedException();
+                            }
+                            break;
+                        case ActivityInstanceState.Faulted:
+                        // This should not happen, workflows are forced to cancel
+                        case ActivityInstanceState.Executing:
+                        default:
+                            throw new NotImplementedException();
+                    }
                 }
             }
         }
@@ -591,48 +567,47 @@ namespace Jhu.Graywulf.Scheduler
         private void wfapp_WorkflowUnloaded(WorkflowApplicationEventArgs e)
         {
             WorkflowDetails workflow;
-            lock (syncRoot)
-            {
-                workflow = workflows[e.InstanceId];
-            }
 
-            // Assume that event is wired-up, otherwise it won't work anyway
-            switch (workflow.Job.Status)
+            if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                case JobStatus.Persisted:
-                    WorkflowEvent(this, new HostEventArgs(WorkflowEventType.Persisted, e.InstanceId));
-                    break;
-                default:
-                    break;
-            }
+                // Assume that event is wired-up, otherwise it won't work anyway
+                switch (workflow.Job.Status)
+                {
+                    case JobStatus.Persisted:
+                        WorkflowEvent(this, new WorkflowApplicationHostEventArgs(WorkflowEventType.Persisted, e.InstanceId));
+                        break;
+                    default:
+                        break;
+                }
 
-            FinishWorkflow(e.InstanceId);
+                FinishWorkflow(e.InstanceId);
+            }
         }
 
         private void wfapp_WorkflowAborted(WorkflowApplicationEventArgs e)
         {
             WorkflowDetails workflow;
-            lock (syncRoot)
-            {
-                workflow = workflows[e.InstanceId];
-            }
 
-            // Workflows are aborted when an exception is thrown during cancellation
-            if (workflow.LastException != null)
+            if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                WorkflowEvent(
-                    this,
-                    new HostEventArgs(
-                        WorkflowEventType.Failed, 
-                        e.InstanceId, 
-                        GetExceptionMessage(workflow.LastException)));
-            }
-            else
-            {
-                WorkflowEvent(this, new HostEventArgs(WorkflowEventType.Failed, e.InstanceId));
-            }
 
-            FinishWorkflow(e.InstanceId);
+                // Workflows are aborted when an exception is thrown during cancellation
+                if (workflow.LastException != null)
+                {
+                    WorkflowEvent(
+                        this,
+                        new WorkflowApplicationHostEventArgs(
+                            WorkflowEventType.Failed,
+                            e.InstanceId,
+                            GetExceptionMessage(workflow.LastException)));
+                }
+                else
+                {
+                    WorkflowEvent(this, new WorkflowApplicationHostEventArgs(WorkflowEventType.Failed, e.InstanceId));
+                }
+
+                FinishWorkflow(e.InstanceId);
+            }
         }
 
         private void wfapp_WorkflowIdle(WorkflowApplicationIdleEventArgs e)

@@ -7,6 +7,8 @@ using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Tasks
 {
+    [Serializable]
+    [DataContract(Namespace = "")]
     public class CancelableCollection
     {
         /// <summary>
@@ -34,10 +36,11 @@ namespace Jhu.Graywulf.Tasks
 
         protected CancelableCollection()
         {
-            InitializeMembers();
+            InitializeMembers(new StreamingContext());
         }
-        
-        private void InitializeMembers()
+
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
         {
             this.isCanceled = false;
             this.cancelableTasks = new Dictionary<string, ICancelableTask>();
