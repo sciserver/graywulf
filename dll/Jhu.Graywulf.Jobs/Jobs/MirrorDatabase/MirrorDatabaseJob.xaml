@@ -1,166 +1,271 @@
-﻿<Activity mc:Ignorable="sads sap" x:Class="Jhu.Graywulf.Jobs.MirrorDatabase.MirrorDatabaseJob"
+﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="Jhu.Graywulf.Jobs.MirrorDatabase.MirrorDatabaseJob"
  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
  xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
  xmlns:jga="clr-namespace:Jhu.Graywulf.Activities;assembly=Jhu.Graywulf.Activities"
  xmlns:jga1="clr-namespace:Jhu.Graywulf.Activities;assembly=Jhu.Graywulf.Registry"
- xmlns:jgr="clr-namespace:Jhu.Graywulf.Registry;assembly=Jhu.Graywulf.Registry"
  xmlns:local="clr-namespace:Jhu.Graywulf.Jobs.MirrorDatabase"
  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
- xmlns:mv="clr-namespace:Microsoft.VisualBasic;assembly=System"
  xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
  xmlns:s="clr-namespace:System;assembly=mscorlib"
- xmlns:s1="clr-namespace:System;assembly=System"
- xmlns:s2="clr-namespace:System;assembly=System.Xml"
- xmlns:s3="clr-namespace:System;assembly=System.Core"
- xmlns:s4="clr-namespace:System;assembly=System.ServiceModel"
- xmlns:sa="clr-namespace:System.Activities;assembly=System.Activities"
- xmlns:sad="clr-namespace:System.Activities.Debugger;assembly=System.Activities"
  xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
  xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
- xmlns:sc="clr-namespace:System.Collections;assembly=mscorlib"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
  xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System"
- xmlns:scg1="clr-namespace:System.Collections.Generic;assembly=System.ServiceModel"
- xmlns:scg2="clr-namespace:System.Collections.Generic;assembly=System.Core"
- xmlns:scg3="clr-namespace:System.Collections.Generic;assembly=mscorlib"
- xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
- xmlns:sl="clr-namespace:System.Linq;assembly=System.Core"
- xmlns:st="clr-namespace:System.Text;assembly=mscorlib"
+ xmlns:scg1="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
     <x:Property Name="UserGuid" Type="InArgument(s:Guid)" />
     <x:Property Name="JobGuid" Type="InArgument(s:Guid)" />
     <x:Property Name="Parameters" Type="InArgument(local:MirrorDatabaseParameters)" />
   </x:Members>
-  <sap:VirtualizedContainerService.HintSize>578,2319</sap:VirtualizedContainerService.HintSize>
-  <mva:VisualBasic.Settings>Assembly references and imported namespaces for internal implementation</mva:VisualBasic.Settings>
-  <Sequence DisplayName="MirrorDatabase" sad:XamlDebuggerXmlReader.FileName="C:\Data\dobos\project\skyquery-all\graywulf\dll\Jhu.Graywulf.Jobs\Jobs\MirrorDatabase\MirrorDatabaseJob.xaml" sap:VirtualizedContainerService.HintSize="538,2239">
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>System.Windows.Controls</x:String>
+      <x:String>System.Windows.Documents</x:String>
+      <x:String>System.Windows.Shapes</x:String>
+      <x:String>System.Windows.Shell</x:String>
+      <x:String>System.Windows.Navigation</x:String>
+      <x:String>System.Windows.Data</x:String>
+      <x:String>System.Windows</x:String>
+      <x:String>System.Windows.Controls.Primitives</x:String>
+      <x:String>System.Windows.Media.Animation</x:String>
+      <x:String>System.Windows.Input</x:String>
+      <x:String>System.Windows.Media</x:String>
+      <x:String>System.Diagnostics</x:String>
+      <x:String>System.Windows.Media.Media3D</x:String>
+      <x:String>System.Windows.Media.Imaging</x:String>
+      <x:String>System.Windows.Media.Effects</x:String>
+      <x:String>System.Windows.Automation</x:String>
+      <x:String>System.Windows.Media.TextFormatting</x:String>
+      <x:String>System.Windows.Ink</x:String>
+      <x:String>Jhu.Graywulf.Activities</x:String>
+      <x:String>Jhu.Graywulf.Registry</x:String>
+      <x:String>Microsoft.VisualBasic</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System</x:String>
+      <x:String>System.Activities.Debugger</x:String>
+      <x:String>System.Activities.Debugger.Symbol</x:String>
+      <x:String>System.Collections</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Text</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>Jhu.Graywulf.Jobs.MirrorDatabase</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.Activities</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.Registry</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.ServiceModel</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.Jobs</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Sequence DisplayName="MirrorDatabase">
     <Sequence.Variables>
       <Variable x:TypeArguments="scg:Queue(s:Guid)" Default="[Nothing]" Name="SourceDatabaseQueue" />
       <Variable x:TypeArguments="scg:Queue(s:Guid)" Default="[Nothing]" Name="DestinationDatabaseQueue" />
     </Sequence.Variables>
-    <sap:WorkflowViewStateService.ViewState>
-      <scg3:Dictionary x:TypeArguments="x:String, x:Object">
-        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-      </scg3:Dictionary>
-    </sap:WorkflowViewStateService.ViewState>
-    <local:FindSourcesAndDestinations EntityGuid="{x:Null}" DestinationDatabaseInstanceGuids="[Parameters.DestinationDatabaseInstanceGuids]" DestinationDatabaseQueue="[DestinationDatabaseQueue]" sap:VirtualizedContainerService.HintSize="516,22" JobGuid="[JobGuid]" SourceDatabaseInstanceGuids="[Parameters.SourceDatabaseInstanceGuids]" SourceDatabaseQueue="[SourceDatabaseQueue]" UserGuid="[UserGuid]" />
-    <ParallelForEach x:TypeArguments="s:Guid" DisplayName="ParallelForEach DestinationDatabaseInstance" sap:VirtualizedContainerService.HintSize="516,2053" Values="[DestinationDatabaseQueue]">
-      <sap:WorkflowViewStateService.ViewState>
-        <scg3:Dictionary x:TypeArguments="x:String, x:Object">
-          <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-          <x:Boolean x:Key="IsPinned">False</x:Boolean>
-        </scg3:Dictionary>
-      </sap:WorkflowViewStateService.ViewState>
+    <local:FindSourcesAndDestinations EntityGuid="{x:Null}" DestinationDatabaseInstanceGuids="[Parameters.DestinationDatabaseInstanceGuids]" DestinationDatabaseQueue="[DestinationDatabaseQueue]" JobGuid="[JobGuid]" SourceDatabaseInstanceGuids="[Parameters.SourceDatabaseInstanceGuids]" SourceDatabaseQueue="[SourceDatabaseQueue]" UserGuid="[UserGuid]" sap2010:WorkflowViewState.IdRef="FindSourcesAndDestinations_1" />
+    <ParallelForEach x:TypeArguments="s:Guid" DisplayName="ParallelForEach DestinationDatabaseInstance" Values="[DestinationDatabaseQueue]">
       <ActivityAction x:TypeArguments="s:Guid">
         <ActivityAction.Argument>
           <DelegateInArgument x:TypeArguments="s:Guid" Name="databaseInstanceGuid" />
         </ActivityAction.Argument>
-        <Sequence DisplayName="MirrorDatabaseInstance" sap:VirtualizedContainerService.HintSize="486,1905">
+        <Sequence DisplayName="MirrorDatabaseInstance">
           <Sequence.Variables>
             <Variable x:TypeArguments="s:Guid" Default="[Guid.Empty]" Name="SourceDatabaseInstanceGuid" />
             <Variable x:TypeArguments="s:Guid" Default="[databaseInstanceGuid]" Name="DestinationDatabaseInstanceGuid" />
-            <Variable x:TypeArguments="scg3:Dictionary(s:Guid, scg3:List(s:Guid))" Name="SourceDatabaseInstanceFileGuids" />
+            <Variable x:TypeArguments="scg1:Dictionary(s:Guid, scg1:List(s:Guid))" Name="SourceDatabaseInstanceFileGuids" />
           </Sequence.Variables>
-          <sap:WorkflowViewStateService.ViewState>
-            <scg3:Dictionary x:TypeArguments="x:String, x:Object">
-              <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-              <x:Boolean x:Key="IsPinned">False</x:Boolean>
-            </scg3:Dictionary>
-          </sap:WorkflowViewStateService.ViewState>
-          <Flowchart DisplayName="DequeueSourceDatabaseInstance" sap:VirtualizedContainerService.HintSize="464,51">
-            <sap:WorkflowViewStateService.ViewState>
-              <scg3:Dictionary x:TypeArguments="x:String, x:Object">
-                <x:Boolean x:Key="IsExpanded">False</x:Boolean>
-                <av:Point x:Key="ShapeLocation">270,2.5</av:Point>
-                <av:Size x:Key="ShapeSize">60,75</av:Size>
-                <av:PointCollection x:Key="ConnectorLocation">300,77.5 300,107.5 300,129</av:PointCollection>
-                <x:Boolean x:Key="IsPinned">False</x:Boolean>
-              </scg3:Dictionary>
-            </sap:WorkflowViewStateService.ViewState>
+          <Flowchart DisplayName="DequeueSourceDatabaseInstance">
             <Flowchart.StartNode>
-              <x:Reference>__ReferenceID0</x:Reference>
+              <FlowStep x:Name="__ReferenceID0">
+                <jga:DequeueItem x:TypeArguments="s:Guid" InputQueue="[SourceDatabaseQueue]" Result="[SourceDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="DequeueItem`1_1" />
+                <FlowStep.Next>
+                  <FlowDecision x:Name="__ReferenceID1" Condition="[SourceDatabaseInstanceGuid = Guid.Empty]">
+                    <FlowDecision.True>
+                      <FlowStep x:Name="__ReferenceID2">
+                        <Delay Duration="00:00:05" sap2010:WorkflowViewState.IdRef="Delay_1" />
+                        <FlowStep.Next>
+                          <x:Reference>__ReferenceID0</x:Reference>
+                        </FlowStep.Next>
+                        <sap2010:WorkflowViewState.IdRef>FlowStep_1</sap2010:WorkflowViewState.IdRef>
+                      </FlowStep>
+                    </FlowDecision.True>
+                    <sap2010:WorkflowViewState.IdRef>FlowDecision_1</sap2010:WorkflowViewState.IdRef>
+                  </FlowDecision>
+                </FlowStep.Next>
+                <sap2010:WorkflowViewState.IdRef>FlowStep_2</sap2010:WorkflowViewState.IdRef>
+              </FlowStep>
             </Flowchart.StartNode>
-            <FlowStep x:Name="__ReferenceID0">
-              <sap:WorkflowViewStateService.ViewState>
-                <scg3:Dictionary x:TypeArguments="x:String, x:Object">
-                  <av:Point x:Key="ShapeLocation">200,129</av:Point>
-                  <av:Size x:Key="ShapeSize">200,22</av:Size>
-                  <av:PointCollection x:Key="ConnectorLocation">300,151 300,181 305,181 305,202.5</av:PointCollection>
-                </scg3:Dictionary>
-              </sap:WorkflowViewStateService.ViewState>
-              <jga:DequeueItem x:TypeArguments="s:Guid" sap:VirtualizedContainerService.HintSize="200,22" InputQueue="[SourceDatabaseQueue]" Result="[SourceDatabaseInstanceGuid]" />
-              <FlowStep.Next>
-                <FlowDecision x:Name="__ReferenceID1" Condition="[SourceDatabaseInstanceGuid = Guid.Empty]" sap:VirtualizedContainerService.HintSize="70,87">
-                  <sap:WorkflowViewStateService.ViewState>
-                    <scg3:Dictionary x:TypeArguments="x:String, x:Object">
-                      <av:Point x:Key="ShapeLocation">270,202.5</av:Point>
-                      <av:Size x:Key="ShapeSize">70,87</av:Size>
-                      <av:PointCollection x:Key="TrueConnector">270,246 160,246 160,319</av:PointCollection>
-                    </scg3:Dictionary>
-                  </sap:WorkflowViewStateService.ViewState>
-                  <FlowDecision.True>
-                    <FlowStep x:Name="__ReferenceID2">
-                      <sap:WorkflowViewStateService.ViewState>
-                        <scg3:Dictionary x:TypeArguments="x:String, x:Object">
-                          <av:Point x:Key="ShapeLocation">60,319</av:Point>
-                          <av:Size x:Key="ShapeSize">200,22</av:Size>
-                          <av:PointCollection x:Key="ConnectorLocation">60,330 30,330 30,140 200,140</av:PointCollection>
-                        </scg3:Dictionary>
-                      </sap:WorkflowViewStateService.ViewState>
-                      <Delay Duration="00:00:05" sap:VirtualizedContainerService.HintSize="200,22" />
-                      <FlowStep.Next>
-                        <x:Reference>__ReferenceID0</x:Reference>
-                      </FlowStep.Next>
-                    </FlowStep>
-                  </FlowDecision.True>
-                </FlowDecision>
-              </FlowStep.Next>
-            </FlowStep>
+            <x:Reference>__ReferenceID0</x:Reference>
             <x:Reference>__ReferenceID1</x:Reference>
             <x:Reference>__ReferenceID2</x:Reference>
+            <sap2010:WorkflowViewState.IdRef>Flowchart_1</sap2010:WorkflowViewState.IdRef>
           </Flowchart>
-          <jga1:LockEntity DisplayName="LockSourceDatabase" EntityGuid="[SourceDatabaseInstanceGuid]" sap:VirtualizedContainerService.HintSize="464,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
-          <jga1:LockEntity DisplayName="LockDestinationDatabase" EntityGuid="[DestinationDatabaseInstanceGuid]" sap:VirtualizedContainerService.HintSize="464,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
-          <local:FindDatabaseInstanceFiles EntityGuid="{x:Null}" sap:VirtualizedContainerService.HintSize="464,22" JobGuid="[JobGuid]" SourceDatabaseInstanceFileGuids="[SourceDatabaseInstanceFileGuids]" SourceDatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" UserGuid="[UserGuid]" />
-          <local:DetachDatabase EntityGuid="{x:Null}" DatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" DisplayName="DetachSourceDatabase" sap:VirtualizedContainerService.HintSize="464,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
-          <ParallelForEach x:TypeArguments="s:Guid" DisplayName="ParallelForEach DatabaseInstanceFile" sap:VirtualizedContainerService.HintSize="464,424" Values="[SourceDatabaseInstanceFileGuids.Keys]">
+          <jga1:LockEntity DisplayName="LockSourceDatabase" EntityGuid="[SourceDatabaseInstanceGuid]" JobGuid="[JobGuid]" UserGuid="[UserGuid]" sap2010:WorkflowViewState.IdRef="LockEntity_1" />
+          <jga1:LockEntity DisplayName="LockDestinationDatabase" EntityGuid="[DestinationDatabaseInstanceGuid]" JobGuid="[JobGuid]" UserGuid="[UserGuid]" sap2010:WorkflowViewState.IdRef="LockEntity_2" />
+          <local:FindDatabaseInstanceFiles EntityGuid="{x:Null}" JobGuid="[JobGuid]" SourceDatabaseInstanceFileGuids="[SourceDatabaseInstanceFileGuids]" SourceDatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" UserGuid="[UserGuid]" sap2010:WorkflowViewState.IdRef="FindDatabaseInstanceFiles_1" />
+          <local:DetachDatabase EntityGuid="{x:Null}" DatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" DisplayName="DetachSourceDatabase" JobGuid="[JobGuid]" UserGuid="[UserGuid]" sap2010:WorkflowViewState.IdRef="DetachDatabase_1" />
+          <ParallelForEach x:TypeArguments="s:Guid" DisplayName="ParallelForEach DatabaseInstanceFile" Values="[SourceDatabaseInstanceFileGuids.Keys]">
             <ActivityAction x:TypeArguments="s:Guid">
               <ActivityAction.Argument>
                 <DelegateInArgument x:TypeArguments="s:Guid" Name="diskVolumeGuid" />
               </ActivityAction.Argument>
-              <ForEach x:TypeArguments="s:Guid" DisplayName="ForEach DatabaseInstanceFile" sap:VirtualizedContainerService.HintSize="287,276" Values="[SourceDatabaseInstanceFileGuids(diskVolumeGuid)]">
+              <ForEach x:TypeArguments="s:Guid" DisplayName="ForEach DatabaseInstanceFile" Values="[SourceDatabaseInstanceFileGuids(diskVolumeGuid)]">
                 <ActivityAction x:TypeArguments="s:Guid">
                   <ActivityAction.Argument>
                     <DelegateInArgument x:TypeArguments="s:Guid" Name="sourceFileGuid" />
                   </ActivityAction.Argument>
-                  <jga:Retry Finally="{x:Null}" JobGuid="{x:Null}" UserGuid="{x:Null}" sap:VirtualizedContainerService.HintSize="214,128" MaxRetries="3">
-                    <local:MirrorDatabaseFile EntityGuid="{x:Null}" EntityGuidFrom="{x:Null}" EntityGuidTo="{x:Null}" DestinationDatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" FileCopyDirection="[Jhu.Graywulf.Registry.FileCopyDirection.Push]" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" SkipExistingFile="[Parameters.SkipExistingFiles]" SourceFileGuid="[sourceFileGuid]" UserGuid="[UserGuid]" />
+                  <jga:Retry Finally="{x:Null}" JobGuid="{x:Null}" UserGuid="{x:Null}" MaxRetries="3">
+                    <local:MirrorDatabaseFile EntityGuid="{x:Null}" EntityGuidFrom="{x:Null}" EntityGuidTo="{x:Null}" DestinationDatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" FileCopyDirection="[Jhu.Graywulf.Registry.FileCopyDirection.Push]" JobGuid="[JobGuid]" SkipExistingFile="[Parameters.SkipExistingFiles]" SourceFileGuid="[sourceFileGuid]" UserGuid="[UserGuid]" sap2010:WorkflowViewState.IdRef="MirrorDatabaseFile_1" />
+                    <sap2010:WorkflowViewState.IdRef>Retry_1</sap2010:WorkflowViewState.IdRef>
                   </jga:Retry>
                 </ActivityAction>
+                <sap2010:WorkflowViewState.IdRef>ForEach`1_1</sap2010:WorkflowViewState.IdRef>
               </ForEach>
             </ActivityAction>
+            <sap2010:WorkflowViewState.IdRef>ParallelForEach`1_1</sap2010:WorkflowViewState.IdRef>
           </ParallelForEach>
-          <jga:Retry Finally="{x:Null}" sap:VirtualizedContainerService.HintSize="464,128" JobGuid="[JobGuid]" MaxRetries="5" UserGuid="[UserGuid]">
-            <local:AttachDatabase EntityGuid="{x:Null}" AttachReadOnly="[Parameters.AttachAsReadOnly]" DatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" DisplayName="AttachSourceDatabase" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
+          <jga:Retry Finally="{x:Null}" JobGuid="[JobGuid]" MaxRetries="5" UserGuid="[UserGuid]">
+            <local:AttachDatabase EntityGuid="{x:Null}" AttachReadOnly="[Parameters.AttachAsReadOnly]" DatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" DisplayName="AttachSourceDatabase" JobGuid="[JobGuid]" UserGuid="[UserGuid]" sap2010:WorkflowViewState.IdRef="AttachDatabase_1" />
+            <sap2010:WorkflowViewState.IdRef>Retry_2</sap2010:WorkflowViewState.IdRef>
           </jga:Retry>
-          <jga1:ReleaseEntity DisplayName="ReleaseSourceDatabase" EntityGuid="[SourceDatabaseInstanceGuid]" sap:VirtualizedContainerService.HintSize="464,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
-          <jga:EnqueueItem x:TypeArguments="s:Guid" DisplayName="EnqueueSourceDatabase" sap:VirtualizedContainerService.HintSize="464,22" InputQueue="[SourceDatabaseQueue]" Item="[SourceDatabaseInstanceGuid]" />
-          <jga:Retry Finally="{x:Null}" sap:VirtualizedContainerService.HintSize="464,128" JobGuid="[JobGuid]" MaxRetries="5" UserGuid="[UserGuid]">
-            <local:AttachDatabase EntityGuid="{x:Null}" AttachReadOnly="[Parameters.AttachAsReadOnly]" DatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" DisplayName="AttachDestinationDatabase" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
+          <jga1:ReleaseEntity DisplayName="ReleaseSourceDatabase" EntityGuid="[SourceDatabaseInstanceGuid]" JobGuid="[JobGuid]" UserGuid="[UserGuid]" sap2010:WorkflowViewState.IdRef="ReleaseEntity_1" />
+          <jga:EnqueueItem x:TypeArguments="s:Guid" DisplayName="EnqueueSourceDatabase" InputQueue="[SourceDatabaseQueue]" Item="[SourceDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="EnqueueItem`1_1" />
+          <jga:Retry Finally="{x:Null}" JobGuid="[JobGuid]" MaxRetries="5" UserGuid="[UserGuid]">
+            <local:AttachDatabase EntityGuid="{x:Null}" AttachReadOnly="[Parameters.AttachAsReadOnly]" DatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" DisplayName="AttachDestinationDatabase" JobGuid="[JobGuid]" UserGuid="[UserGuid]" sap2010:WorkflowViewState.IdRef="AttachDatabase_2" />
+            <sap2010:WorkflowViewState.IdRef>Retry_3</sap2010:WorkflowViewState.IdRef>
           </jga:Retry>
-          <If Condition="[Parameters.RunCheckDb]" sap:VirtualizedContainerService.HintSize="464,208">
+          <If Condition="[Parameters.RunCheckDb]">
             <If.Then>
-              <local:RunCheckDb DatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" EntityGuid="[DestinationDatabaseInstanceGuid]" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
+              <local:RunCheckDb DatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" EntityGuid="[DestinationDatabaseInstanceGuid]" JobGuid="[JobGuid]" UserGuid="[UserGuid]" sap2010:WorkflowViewState.IdRef="RunCheckDb_1" />
             </If.Then>
+            <sap2010:WorkflowViewState.IdRef>If_1</sap2010:WorkflowViewState.IdRef>
           </If>
-          <jga1:ReleaseEntity DisplayName="ReleaseDestinationDatabase" EntityGuid="[DestinationDatabaseInstanceGuid]" sap:VirtualizedContainerService.HintSize="464,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
-          <If Condition="[Parameters.CascadedCopy]" sap:VirtualizedContainerService.HintSize="464,208">
+          <jga1:ReleaseEntity DisplayName="ReleaseDestinationDatabase" EntityGuid="[DestinationDatabaseInstanceGuid]" JobGuid="[JobGuid]" UserGuid="[UserGuid]" sap2010:WorkflowViewState.IdRef="ReleaseEntity_2" />
+          <If Condition="[Parameters.CascadedCopy]">
             <If.Then>
-              <jga:EnqueueItem x:TypeArguments="s:Guid" DisplayName="EnqueueDestinationDatabase" sap:VirtualizedContainerService.HintSize="200,22" InputQueue="[SourceDatabaseQueue]" Item="[DestinationDatabaseInstanceGuid]" />
+              <jga:EnqueueItem x:TypeArguments="s:Guid" DisplayName="EnqueueDestinationDatabase" InputQueue="[SourceDatabaseQueue]" Item="[DestinationDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="EnqueueItem`1_2" />
             </If.Then>
+            <sap2010:WorkflowViewState.IdRef>If_2</sap2010:WorkflowViewState.IdRef>
           </If>
+          <sap2010:WorkflowViewState.IdRef>Sequence_1</sap2010:WorkflowViewState.IdRef>
         </Sequence>
       </ActivityAction>
+      <sap2010:WorkflowViewState.IdRef>ParallelForEach`1_2</sap2010:WorkflowViewState.IdRef>
     </ParallelForEach>
+    <sap2010:WorkflowViewState.IdRef>Sequence_2</sap2010:WorkflowViewState.IdRef>
+    <sads:DebugSymbol.Symbol>d2xDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsXGdyYXl3dWxmXGRsbFxKaHUuR3JheXd1bGYuSm9ic1xKb2JzXE1pcnJvckRhdGFiYXNlXE1pcnJvckRhdGFiYXNlSm9iLnhhbWxdVAO1AQ4CAQFWPVZIAgEDVz1XSAIBAlkFWaIDAwGHAVoFsgEXAgEEWbMCWcoCAwGQAVleWY0BAwGPAVnUAlngAgMBjQFZ9AFZngIDAYwBWcwBWdcBAwGKAVmnAVnDAQMBiAFacFqMAQMBhQFfCa8BFAIBBWE4YUYCAQhiOGJQAgEGZQt+FwIBfH8Lf8IBAgF1gAELgAHMAQIBboEBC4EBqgICAWWCAQuCAe0BAgFegwELlgEdAgFKlwELmgEXAgE8mwELmwHLAQIBNZwBC5wB1AECATCdAQugARcCASKhAQumARACARenAQunAdUBAgEQqAELrQEQAgEJaBFouAEDAYABakNqbgIBf20ZbWACAX1/hAF/kAECAXp/b396AgF4f0h/ZgIBdoABjgGAAZoBAgFzgAF5gAGEAQIBcYABTYABcAIBb4EBtQGBAdMBAgFsgQHdAYEB6QECAWqBAUqBAVUCAWiBAXaBAZkBAgFmggFMggFqAgFjggGrAYIBtwECAWGCAZYBggGhAQIBX4MBb4MBlwECAVyIAQ+TARkCAUuXAUiXAUsCAUGXAVWXAWECAT+XATGXATwCAT2YAQ2YAZ4CAgFCmwGKAZsBlgECATqbAXWbAYABAgE4mwFOmwFsAgE2nAFknAF7AgEznAGBAZwBnwECATGdAUidAUsCASedAVWdAWECASWdATGdATwCASOeAQ2eAagCAgEooQEZoQEyAgEYowEPowHkAQIBGacBlAGnAaABAgEVpwF/pwGKAQIBE6cBU6cBdgIBEagBGagBNAIBCqoBD6oB4gECAQtoRmhdAwGDAWhlaIMBAwGBAW0pbTMCAX6IAWOIAZYBAgFZjQETkAEfAgFMmAF9mAGbAQIBSJgB3AGYAegBAgFGmAHHAZgB0gECAUSYAUiYAWcCAUOeAX2eAaABAgEungHmAZ4B8gECASyeAdEBngHcAQIBKp4BSJ4BZwIBKaMBNqMBWQIBIKMBpgGjAbIBAgEeowGRAaMBnAECARyjAWWjAYgBAgEaqgFtqgGEAQIBDqoBigGqAa0BAgEMjQFjjQFmAgFNjgEVjgG1AwIBTo4BzQGOAf0BAgFYjgGjAo4BwwICAVeOAe8CjgH7AgIBVY4B0wKOAeUCAgFTjgGGAo4BkQICAVGOAZcBjgG6AQIBTw==</sads:DebugSymbol.Symbol>
   </Sequence>
+  <sap2010:WorkflowViewState.IdRef>Jhu.Graywulf.Jobs.MirrorDatabase.MirrorDatabaseJob_1</sap2010:WorkflowViewState.IdRef>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="FindSourcesAndDestinations_1" sap:VirtualizedContainerService.HintSize="516,22" />
+      <sap2010:ViewStateData Id="DequeueItem`1_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Delay_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="FlowStep_1">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg1:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">60,319</av:Point>
+            <av:Size x:Key="ShapeSize">200,22</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">60,330 30,330 30,140 200,140</av:PointCollection>
+          </scg1:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowDecision_1" sap:VirtualizedContainerService.HintSize="70,87">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg1:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">270,202.5</av:Point>
+            <av:Size x:Key="ShapeSize">70,87</av:Size>
+            <av:PointCollection x:Key="TrueConnector">270,246 160,246 160,319</av:PointCollection>
+          </scg1:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_2">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg1:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">200,129</av:Point>
+            <av:Size x:Key="ShapeSize">200,22</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">300,151 300,181 305,181 305,202.5</av:PointCollection>
+          </scg1:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Flowchart_1" sap:VirtualizedContainerService.HintSize="464,51">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg1:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <av:Point x:Key="ShapeLocation">270,2.5</av:Point>
+            <av:Size x:Key="ShapeSize">60,75</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">300,77.5 300,107.5 300,129</av:PointCollection>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg1:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LockEntity_1" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="LockEntity_2" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="FindDatabaseInstanceFiles_1" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="DetachDatabase_1" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="MirrorDatabaseFile_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Retry_1" sap:VirtualizedContainerService.HintSize="214,128" />
+      <sap2010:ViewStateData Id="ForEach`1_1" sap:VirtualizedContainerService.HintSize="287,276" />
+      <sap2010:ViewStateData Id="ParallelForEach`1_1" sap:VirtualizedContainerService.HintSize="464,424" />
+      <sap2010:ViewStateData Id="AttachDatabase_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Retry_2" sap:VirtualizedContainerService.HintSize="464,128" />
+      <sap2010:ViewStateData Id="ReleaseEntity_1" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="EnqueueItem`1_1" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="AttachDatabase_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Retry_3" sap:VirtualizedContainerService.HintSize="464,128" />
+      <sap2010:ViewStateData Id="RunCheckDb_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="464,208" />
+      <sap2010:ViewStateData Id="ReleaseEntity_2" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="EnqueueItem`1_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="464,208" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="486,1905">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg1:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg1:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ParallelForEach`1_2" sap:VirtualizedContainerService.HintSize="516,2053">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg1:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg1:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="538,2239">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg1:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg1:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Jhu.Graywulf.Jobs.MirrorDatabase.MirrorDatabaseJob_1" sap:VirtualizedContainerService.HintSize="578,2319" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

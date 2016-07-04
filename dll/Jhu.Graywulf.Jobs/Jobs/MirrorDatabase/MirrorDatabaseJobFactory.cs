@@ -72,9 +72,9 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
             };
         }
 
-        public JobInstance ScheduleAsJob(MirrorDatabaseParameters parameters, string queueName, string comments)
+        public JobInstance ScheduleAsJob(MirrorDatabaseParameters parameters, string queueName, TimeSpan timeout, string comments)
         {
-            var job = CreateJobInstance(null, GetJobDefinitionName(), queueName, comments);
+            var job = CreateJobInstance(null, GetJobDefinitionName(), queueName, timeout, comments);
 
             job.Parameters[Constants.JobParameterMirrorDatabase].Value = parameters;
 

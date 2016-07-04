@@ -128,9 +128,9 @@ namespace Jhu.Graywulf.Jobs.ImportTables
             }
         }
 
-        public JobInstance ScheduleAsJob(ImportTablesParameters parameters, string queueName, string comments)
+        public JobInstance ScheduleAsJob(ImportTablesParameters parameters, string queueName, TimeSpan timeout, string comments)
         {
-            JobInstance job = CreateJobInstance(null, GetJobDefinitionName(), queueName, comments);
+            JobInstance job = CreateJobInstance(null, GetJobDefinitionName(), queueName, timeout, comments);
 
             job.Parameters[Constants.JobParameterImport].Value = parameters;
 

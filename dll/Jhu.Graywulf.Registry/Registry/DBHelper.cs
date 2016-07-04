@@ -27,6 +27,7 @@ namespace Jhu.Graywulf.Registry
             { typeof(Decimal), SqlDbType.Money },
             { typeof(String), SqlDbType.NVarChar },
             { typeof(DateTime), SqlDbType.DateTime },
+            { typeof(TimeSpan), SqlDbType.Int },
             { typeof(Byte[]), SqlDbType.VarBinary },
             { typeof(Guid), SqlDbType.UniqueIdentifier },
             { typeof(ParameterCollection), SqlDbType.Xml },
@@ -44,6 +45,7 @@ namespace Jhu.Graywulf.Registry
             { typeof(Decimal), false },
             { typeof(String), true },
             { typeof(DateTime), false },
+            { typeof(TimeSpan), false },
             { typeof(Byte[]), true },
             { typeof(Guid), false },
             { typeof(ParameterCollection), false },
@@ -215,6 +217,17 @@ WHERE Entity.Guid = @Guid
 
                     exps.Add(Expression.Assign(prop, val));
                 }
+                else if (column.PropertyInfo.PropertyType == typeof(TimeSpan))
+                {
+                    var ctor = typeof(TimeSpan).GetConstructor(new Type[] { typeof(Int64) });
+
+                    var val = Expression.Condition(
+                        Expression.Call(dr, typeof(SqlDataReader).GetMethod("IsDBNull"), o),
+                        Expression.Constant(TimeSpan.Zero),
+                        Expression.New(ctor, Expression.ConvertChecked(getval, typeof(Int64))));
+
+                    exps.Add(Expression.Assign(prop, val));
+                }
                 else if (column.PropertyInfo.PropertyType == typeof(ParameterCollection))
                 {
                     var val = Expression.Condition(
@@ -371,6 +384,17 @@ WHERE Entity.Guid = @Guid
                             Expression.Equal(prop, Expression.Constant(DateTime.MinValue)),
                             Expression.Convert(Expression.Constant(DBNull.Value), typeof(object)),
                             Expression.Convert(prop, typeof(object)));
+                    }
+                    else if (column.PropertyInfo.PropertyType == typeof(TimeSpan))
+                    {
+                        var pticks = typeof(TimeSpan).GetProperty("Ticks");
+                        var eticks = Expression.Property(prop, pticks);
+
+                        ptype = Expression.Constant(SqlDbType.BigInt);
+                        pval = Expression.Condition(
+                            Expression.Equal(prop, Expression.Constant(TimeSpan.Zero)),
+                            Expression.Convert(Expression.Constant(DBNull.Value), typeof(object)),
+                            Expression.Convert(eticks, typeof(object)));
                     }
                     else if (column.PropertyInfo.PropertyType == typeof(ParameterCollection))
                     {

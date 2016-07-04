@@ -454,7 +454,7 @@ namespace Jhu.Graywulf.SqlParser
             this.columnReferences.AddRange(td.Columns.Values.OrderBy(c => c.ID).Select(c => new ColumnReference(this, c)));
         }
 
-        public bool Compare(TableReference other, bool matchAnyIfNoAlias)
+        public bool Compare(TableReference other)
         {
             // If object are the same
             if (this == other)
@@ -465,31 +465,27 @@ namespace Jhu.Graywulf.SqlParser
             // Otherwise compare strings
             bool res = true;
 
-            res &= (this.DatasetName == null || other.DatasetName == null ||
+            res = res && (this.DatasetName == null || other.DatasetName == null ||
                     SchemaManager.Comparer.Compare(this.DatasetName, other.DatasetName) == 0);
 
-            res &= (this.DatabaseName == null || other.DatabaseName == null ||
+            res = res && (this.DatabaseName == null || other.DatabaseName == null ||
                     SchemaManager.Comparer.Compare(this.DatabaseName, other.DatabaseName) == 0);
 
-            res &= (this.SchemaName == null || other.SchemaName == null ||
+            res = res && (this.SchemaName == null || other.SchemaName == null ||
                     SchemaManager.Comparer.Compare(this.SchemaName, other.SchemaName) == 0);
 
-            res &= (this.DatabaseObjectName == null || other.DatabaseObjectName == null ||
+            res = res && (this.DatabaseObjectName == null || other.DatabaseObjectName == null ||
                     SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.DatabaseObjectName) == 0);
 
-            if (matchAnyIfNoAlias)
-            {
-                res &= (this.alias == null || other.alias == null || 
-                    SchemaManager.Comparer.Compare(this.alias, other.alias) == 0);
-            }
-            else
-            {
-                res &= (this.alias == null && other.alias == null ||
-                        this.alias == null && this.DatabaseObjectName != null && other.alias != null && SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.alias) == 0 ||
-                        this.alias == null && this.DatabaseObjectName != null && other.DatabaseObjectName != null && SchemaManager.Comparer.Compare(this.DatabaseObjectName, other.DatabaseObjectName) == 0 ||
-                        this.alias != null && other.alias != null && SchemaManager.Comparer.Compare(this.alias, other.alias) == 0 ||
-                        this.alias != null && other.DatabaseObjectName != null && SchemaManager.Comparer.Compare(this.alias, other.DatabaseObjectName) == 0);
-            }
+            // When resolving columns, a table reference of a column may match any table or alias
+            // if no alias, nor table name is specified but
+            // the two aliases, if specified, must always match
+
+            res = res &&
+                (this.DatasetName == null && this.DatabaseName == null && this.SchemaName == null && this.DatabaseObjectName == null && this.alias == null ||
+                 other.DatasetName == null && other.DatabaseName == null && other.SchemaName == null && other.DatabaseObjectName == null && other.alias == null ||
+                 this.alias == null && other.alias == null ||
+                 this.alias != null && other.alias != null && SchemaManager.Comparer.Compare(this.alias, other.alias) == 0);
 
             return res;
         }

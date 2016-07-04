@@ -12,19 +12,30 @@ namespace Jhu.Graywulf.Components
     /// </summary>
     class AppDomainHelper : MarshalByRefObject
     {
+        private int id;
+
+        public int ID
+        {
+            get { return id; }
+        }
+
         public static AppDomainHelper CreateInstanceAndUnwrap(AppDomain ad)
         {
             var adh = (AppDomainHelper)ad.CreateInstanceAndUnwrap(
                 typeof(AppDomainHelper).Assembly.FullName,
                 typeof(AppDomainHelper).FullName);
 
-            adh.InitializeAppDomain();
-
             return adh;
         }
 
         public AppDomainHelper()
         {
+            InitializeAppDomain();
+        }
+
+        private void InitializeMembers()
+        {
+            this.id = -1;
         }
 
         public override object InitializeLifetimeService()
@@ -33,30 +44,12 @@ namespace Jhu.Graywulf.Components
             return null;
         }
 
-        public void InitializeAppDomain()
+        private void InitializeAppDomain()
         {
             var ad = AppDomain.CurrentDomain;
-
-            ad.UnhandledException += new UnhandledExceptionEventHandler(ad_UnhandledException);
+            id = ad.Id;
         }
-
-        #region AppDomain event handlers
-
-        void ad_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-#if BREAKDEBUG
-            System.Diagnostics.Debugger.Break();
-#endif
-
-            Console.WriteLine("UNHANDLED EXCEPTION");
-
-            // **** TODO: handle app domain level exception here
-            // to prevent failing of the entire scheduler
-            throw (Exception)e.ExceptionObject;
-        }
-
-        #endregion
-
+        
         /// <summary>
         /// Returns the names of assemblies already loaded into the
         /// current AppDomain

@@ -61,6 +61,7 @@
     <Compile Include="RemoteService\RemoteServiceBase.cs" />
     <Compile Include="RemoteService\RemoteServiceConfiguration.cs" />
     <Compile Include="RemoteService\RemoteServiceHelper.cs" />
+    <Compile Include="Tasks\CancelableCollection.cs" />
     <Compile Include="Tasks\CancelableDbCommand.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -49,12 +49,12 @@ namespace Jhu.Graywulf.Jobs
         /// <param name="comments"></param>
         /// <returns></returns>
         /// <remarks>The parameters of the job are not initialized.</remarks>
-        protected JobInstance CreateJobInstance(string jobName, string jobDefinitionName, string queueName, string comments)
+        protected JobInstance CreateJobInstance(string jobName, string jobDefinitionName, string queueName, TimeSpan timeout, string comments)
         {
             var ef = new EntityFactory(Context);
             var jd = ef.LoadEntity<JobDefinition>(jobDefinitionName);
 
-            var job = jd.CreateJobInstance(queueName, Jhu.Graywulf.Registry.ScheduleType.Queued);
+            var job = jd.CreateJobInstance(queueName, ScheduleType.Queued, timeout);
 
             job.Name = String.IsNullOrWhiteSpace(jobName) ? JobInstanceFactory.GenerateUniqueJobID(Context) : jobName;
             job.Comments = comments;

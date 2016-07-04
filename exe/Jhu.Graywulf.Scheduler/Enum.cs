@@ -31,13 +31,6 @@ namespace Jhu.Graywulf.Scheduler
     /// </summary>
     public enum WorkflowEventType
     {
-        /* TODO: delete
-        /// <summary>
-        /// Workflow has aborted without cancelation and persistence
-        /// </summary>
-        WorkflowAborted,
-         * */
-
         /// <summary>
         /// Workflow completed without unhandled exceptions.
         /// </summary>
@@ -52,9 +45,5 @@ namespace Jhu.Graywulf.Scheduler
 
         Failed,
         Persisted,
-        
-        //WorkflowIdle,
-        
-        //WorkflowUnloaded,
     }
 }

@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Scheduler
     /// the event handlers.
     /// </summary>
     [Serializable]
-    public class HostEventArgs : EventArgs
+    public class WorkflowApplicationHostEventArgs : EventArgs
     {
         /// <summary>
         /// Type of event happened.
@@ -27,13 +27,13 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         public string ExceptionMessage;
 
-        public HostEventArgs(WorkflowEventType eventType, Guid instanceId)
+        public WorkflowApplicationHostEventArgs(WorkflowEventType eventType, Guid instanceId)
         {
             this.EventType = eventType;
             this.InstanceId = instanceId;
         }
 
-        public HostEventArgs(WorkflowEventType eventType, Guid instanceId, string exceptionMessage)
+        public WorkflowApplicationHostEventArgs(WorkflowEventType eventType, Guid instanceId, string exceptionMessage)
         {
             this.EventType = eventType;
             this.InstanceId = instanceId;

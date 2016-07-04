@@ -1,26 +1,15 @@
-﻿<Activity mc:Ignorable="sads sap" x:Class="Jhu.Graywulf.Jobs.Test.TestJob"
+﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="Jhu.Graywulf.Jobs.Test.TestJob"
  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
  xmlns:jga="clr-namespace:Jhu.Graywulf.Activities;assembly=Jhu.Graywulf.Activities"
  xmlns:local="clr-namespace:Jhu.Graywulf.Jobs.Test"
  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
- xmlns:mv="clr-namespace:Microsoft.VisualBasic;assembly=System"
  xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
  xmlns:s="clr-namespace:System;assembly=mscorlib"
- xmlns:s1="clr-namespace:System;assembly=System"
- xmlns:s2="clr-namespace:System;assembly=System.Xml"
- xmlns:s3="clr-namespace:System;assembly=System.Core"
- xmlns:s4="clr-namespace:System;assembly=System.ServiceModel"
- xmlns:sa="clr-namespace:System.Activities;assembly=System.Activities"
- xmlns:sad="clr-namespace:System.Activities.Debugger;assembly=System.Activities"
  xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
  xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
- xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System"
- xmlns:scg1="clr-namespace:System.Collections.Generic;assembly=System.ServiceModel"
- xmlns:scg2="clr-namespace:System.Collections.Generic;assembly=System.Core"
- xmlns:scg3="clr-namespace:System.Collections.Generic;assembly=mscorlib"
- xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
- xmlns:sl="clr-namespace:System.Linq;assembly=System.Core"
- xmlns:st="clr-namespace:System.Text;assembly=mscorlib"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
     <x:Property Name="UserGuid" Type="InArgument(s:Guid)" />
@@ -29,20 +18,55 @@
     <x:Property Name="DelayPeriod" Type="InArgument(x:Int32)" />
     <x:Property Name="Result" Type="OutArgument(x:String)" />
   </x:Members>
-  <sap:VirtualizedContainerService.HintSize>516,954</sap:VirtualizedContainerService.HintSize>
-  <mva:VisualBasic.Settings>Assembly references and imported namespaces for internal implementation</mva:VisualBasic.Settings>
-  <Switch x:TypeArguments="x:String" Expression="[TestMethod]" sad:XamlDebuggerXmlReader.FileName="C:\Data\dobos\project\skyquery-all\graywulf\dll\Jhu.Graywulf.Jobs\Jobs\Test\TestJob.xaml" sap:VirtualizedContainerService.HintSize="476,874">
+  <mva:VisualBasic.Settings>
+    <x:Null />
+  </mva:VisualBasic.Settings>
+  <sap2010:WorkflowViewState.IdRef>Jhu.Graywulf.Jobs.Test.TestJob_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Jhu.Graywulf.Activities</x:String>
+      <x:String>Microsoft.VisualBasic</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System</x:String>
+      <x:String>System.Activities.Debugger</x:String>
+      <x:String>System.Activities.Debugger.Symbol</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Text</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>Jhu.Graywulf.Jobs.Test</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.Activities</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.ServiceModel</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>Jhu.Graywulf.Jobs</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <Switch x:TypeArguments="x:String" Expression="[TestMethod]" sap2010:WorkflowViewState.IdRef="Switch`1_1">
     <Switch.Default>
-      <Throw Exception="[New NotImplementedException()]" sap:VirtualizedContainerService.HintSize="455,100" />
+      <Throw Exception="[New NotImplementedException()]" sap2010:WorkflowViewState.IdRef="Throw_1" />
     </Switch.Default>
-    <Sequence x:Key="AtomicDelay" sap:VirtualizedContainerService.HintSize="264,243">
-      <sap:WorkflowViewStateService.ViewState>
-        <scg3:Dictionary x:TypeArguments="x:String, x:Object">
-          <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-        </scg3:Dictionary>
-      </sap:WorkflowViewStateService.ViewState>
-      <local:TestDelay Cancelable="False" DelayPeriod="[DelayPeriod]" sap:VirtualizedContainerService.HintSize="242,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
-      <Assign sap:VirtualizedContainerService.HintSize="242,60">
+    <Sequence x:Key="AtomicDelay" sap2010:WorkflowViewState.IdRef="Sequence_1">
+      <local:TestDelay Cancelable="False" DelayPeriod="[DelayPeriod]" sap2010:WorkflowViewState.IdRef="TestDelay_1" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
+      <Assign sap2010:WorkflowViewState.IdRef="Assign_1">
         <Assign.To>
           <OutArgument x:TypeArguments="x:String">[Result]</OutArgument>
         </Assign.To>
@@ -51,14 +75,9 @@
         </Assign.Value>
       </Assign>
     </Sequence>
-    <Sequence x:Key="CancelableDelay" sap:VirtualizedContainerService.HintSize="264,243">
-      <sap:WorkflowViewStateService.ViewState>
-        <scg3:Dictionary x:TypeArguments="x:String, x:Object">
-          <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-        </scg3:Dictionary>
-      </sap:WorkflowViewStateService.ViewState>
-      <local:TestDelay Cancelable="True" DelayPeriod="[DelayPeriod]" sap:VirtualizedContainerService.HintSize="242,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
-      <Assign sap:VirtualizedContainerService.HintSize="242,60">
+    <Sequence x:Key="CancelableDelay" sap2010:WorkflowViewState.IdRef="Sequence_2">
+      <local:TestDelay Cancelable="True" DelayPeriod="[DelayPeriod]" sap2010:WorkflowViewState.IdRef="TestDelay_2" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
+      <Assign sap2010:WorkflowViewState.IdRef="Assign_2">
         <Assign.To>
           <OutArgument x:TypeArguments="x:String">[Result]</OutArgument>
         </Assign.To>
@@ -67,15 +86,10 @@
         </Assign.Value>
       </Assign>
     </Sequence>
-    <Sequence x:Key="MultipleDelay" sap:VirtualizedContainerService.HintSize="264,305">
-      <sap:WorkflowViewStateService.ViewState>
-        <scg3:Dictionary x:TypeArguments="x:String, x:Object">
-          <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-        </scg3:Dictionary>
-      </sap:WorkflowViewStateService.ViewState>
-      <local:TestDelay Cancelable="True" DelayPeriod="[DelayPeriod]" sap:VirtualizedContainerService.HintSize="242,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
-      <local:TestDelay Cancelable="True" DelayPeriod="[DelayPeriod]" DisplayName="TestDelay2" sap:VirtualizedContainerService.HintSize="242,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
-      <Assign sap:VirtualizedContainerService.HintSize="242,60">
+    <Sequence x:Key="MultipleDelay" sap2010:WorkflowViewState.IdRef="Sequence_3">
+      <local:TestDelay Cancelable="True" DelayPeriod="[DelayPeriod]" sap2010:WorkflowViewState.IdRef="TestDelay_3" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
+      <local:TestDelay Cancelable="True" DelayPeriod="[DelayPeriod]" DisplayName="TestDelay2" sap2010:WorkflowViewState.IdRef="TestDelay_4" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
+      <Assign sap2010:WorkflowViewState.IdRef="Assign_3">
         <Assign.To>
           <OutArgument x:TypeArguments="x:String">[Result]</OutArgument>
         </Assign.To>
@@ -84,55 +98,186 @@
         </Assign.Value>
       </Assign>
     </Sequence>
-    <Throw x:Key="Exception" Exception="[New Exception(&quot;Test exception thrown.&quot;)]" sap:VirtualizedContainerService.HintSize="200,22" />
-    <local:TestAsyncException x:Key="AsyncException" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Message="From simple test" UserGuid="[UserGuid]" />
-    <CancellationScope x:Key="AsyncExceptionWithRetry" sap:VirtualizedContainerService.HintSize="272,536">
-      <jga:Retry Finally="{x:Null}" sap:VirtualizedContainerService.HintSize="236,314" JobGuid="[JobGuid]" MaxRetries="3" UserGuid="[UserGuid]">
-        <Sequence sap:VirtualizedContainerService.HintSize="222,208">
-          <sap:WorkflowViewStateService.ViewState>
-            <scg3:Dictionary x:TypeArguments="x:String, x:Object">
-              <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-            </scg3:Dictionary>
-          </sap:WorkflowViewStateService.ViewState>
-          <local:TestAsyncException sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Message="From try" UserGuid="[UserGuid]" />
-          <local:TestDelay Cancelable="True" DelayPeriod="5000" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
+    <Throw x:Key="Exception" Exception="[New Exception(&quot;Test exception thrown.&quot;)]" sap2010:WorkflowViewState.IdRef="Throw_2" />
+    <local:TestAsyncException x:Key="AsyncException" sap2010:WorkflowViewState.IdRef="TestAsyncException_1" JobGuid="[JobGuid]" Message="From simple test" UserGuid="[UserGuid]" />
+    <CancellationScope x:Key="AsyncExceptionWithRetry" sap2010:WorkflowViewState.IdRef="CancellationScope_1">
+      <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_1" JobGuid="[JobGuid]" MaxRetries="3" UserGuid="[UserGuid]">
+        <Sequence sap2010:WorkflowViewState.IdRef="Sequence_4">
+          <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_2" JobGuid="[JobGuid]" Message="From try" UserGuid="[UserGuid]" />
+          <local:TestDelay Cancelable="True" DelayPeriod="5000" sap2010:WorkflowViewState.IdRef="TestDelay_5" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
         </Sequence>
       </jga:Retry>
     </CancellationScope>
-    <CancellationScope x:Key="RetryWithFaultInFinally" sap:VirtualizedContainerService.HintSize="272,550">
-      <jga:Retry sap:VirtualizedContainerService.HintSize="236,321" JobGuid="[JobGuid]" MaxRetries="3" UserGuid="[UserGuid]">
+    <CancellationScope x:Key="RetryWithFaultInFinally" sap2010:WorkflowViewState.IdRef="CancellationScope_2">
+      <jga:Retry sap2010:WorkflowViewState.IdRef="Retry_2" JobGuid="[JobGuid]" MaxRetries="3" UserGuid="[UserGuid]">
         <jga:Retry.Finally>
-          <local:TestAsyncException sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Message="From finally" UserGuid="[JobGuid]" />
+          <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_3" JobGuid="[JobGuid]" Message="From finally" UserGuid="[JobGuid]" />
         </jga:Retry.Finally>
-        <Sequence sap:VirtualizedContainerService.HintSize="222,208">
-          <sap:WorkflowViewStateService.ViewState>
-            <scg3:Dictionary x:TypeArguments="x:String, x:Object">
-              <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-            </scg3:Dictionary>
-          </sap:WorkflowViewStateService.ViewState>
-          <local:TestAsyncException sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Message="From try" UserGuid="[UserGuid]" />
-          <local:TestDelay Cancelable="True" DelayPeriod="5000" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
+        <Sequence sap2010:WorkflowViewState.IdRef="Sequence_5">
+          <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_4" JobGuid="[JobGuid]" Message="From try" UserGuid="[UserGuid]" />
+          <local:TestDelay Cancelable="True" DelayPeriod="5000" sap2010:WorkflowViewState.IdRef="TestDelay_6" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
         </Sequence>
       </jga:Retry>
       <CancellationScope.CancellationHandler>
-        <local:TestAsyncException sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Message="From cancel" UserGuid="[JobGuid]" />
+        <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_5" JobGuid="[JobGuid]" Message="From cancel" UserGuid="[JobGuid]" />
       </CancellationScope.CancellationHandler>
     </CancellationScope>
-    <CancellationScope x:Key="RetryWithFaultInCancel" sap:VirtualizedContainerService.HintSize="272,543">
-      <jga:Retry Finally="{x:Null}" sap:VirtualizedContainerService.HintSize="236,314" JobGuid="[JobGuid]" MaxRetries="3" UserGuid="[UserGuid]">
-        <Sequence sap:VirtualizedContainerService.HintSize="222,208">
-          <sap:WorkflowViewStateService.ViewState>
-            <scg3:Dictionary x:TypeArguments="x:String, x:Object">
-              <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-            </scg3:Dictionary>
-          </sap:WorkflowViewStateService.ViewState>
-          <local:TestAsyncException sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Message="From try" UserGuid="[UserGuid]" />
-          <local:TestDelay Cancelable="True" DelayPeriod="5000" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
+    <CancellationScope x:Key="RetryWithFaultInCancel" sap2010:WorkflowViewState.IdRef="CancellationScope_3">
+      <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_3" JobGuid="[JobGuid]" MaxRetries="3" UserGuid="[UserGuid]">
+        <Sequence sap2010:WorkflowViewState.IdRef="Sequence_6">
+          <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_6" JobGuid="[JobGuid]" Message="From try" UserGuid="[UserGuid]" />
+          <local:TestDelay Cancelable="True" DelayPeriod="5000" sap2010:WorkflowViewState.IdRef="TestDelay_7" JobGuid="[JobGuid]" UserGuid="[UserGuid]" />
         </Sequence>
       </jga:Retry>
       <CancellationScope.CancellationHandler>
-        <local:TestAsyncException sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Message="From cancel" UserGuid="[JobGuid]" />
+        <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_7" JobGuid="[JobGuid]" Message="From cancel" UserGuid="[JobGuid]" />
       </CancellationScope.CancellationHandler>
     </CancellationScope>
+    <Sequence x:Key="QueryDelay" sap2010:WorkflowViewState.IdRef="Sequence_7">
+      <local:TestQueryDelay DelayPeriod="[DelayPeriod]" DisplayName="QueryDelay" sap2010:WorkflowViewState.IdRef="TestQueryDelay_1" JobGuid="[JobGuid]" QueryTimeout="120" UserGuid="[UserGuid]" />
+      <Assign sap2010:WorkflowViewState.IdRef="Assign_4">
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:String">[Result]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:String">OK</InArgument>
+        </Assign.Value>
+      </Assign>
+    </Sequence>
+    <Sequence x:Key="QueryTimeout" sap2010:WorkflowViewState.IdRef="Sequence_8">
+      <local:TestQueryDelay DelayPeriod="[DelayPeriod]" DisplayName="QueryTimeout" sap2010:WorkflowViewState.IdRef="TestQueryDelay_2" JobGuid="[JobGuid]" QueryTimeout="10" UserGuid="[UserGuid]" />
+      <Assign sap2010:WorkflowViewState.IdRef="Assign_5">
+        <Assign.To>
+          <OutArgument x:TypeArguments="x:String">[Result]</OutArgument>
+        </Assign.To>
+        <Assign.Value>
+          <InArgument x:TypeArguments="x:String">OK</InArgument>
+        </Assign.Value>
+      </Assign>
+    </Sequence>
+    <jga:Retry x:Key="QueryDelayRetry" sap2010:WorkflowViewState.IdRef="Retry_4" JobGuid="[JobGuid]" MaxRetries="5" UserGuid="[UserGuid]">
+      <jga:Retry.Finally>
+        <Assign sap2010:WorkflowViewState.IdRef="Assign_6">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[Result]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">OK</InArgument>
+          </Assign.Value>
+        </Assign>
+      </jga:Retry.Finally>
+      <local:TestQueryDelay DelayPeriod="[DelayPeriod]" DisplayName="QueryDelayRetry" sap2010:WorkflowViewState.IdRef="TestQueryDelay_3" JobGuid="[JobGuid]" QueryTimeout="120" UserGuid="[UserGuid]" />
+    </jga:Retry>
+    <jga:Retry x:Key="QueryTimeoutRetry" sap2010:WorkflowViewState.IdRef="Retry_5" JobGuid="[JobGuid]" MaxRetries="5" UserGuid="[UserGuid]">
+      <jga:Retry.Finally>
+        <Assign sap2010:WorkflowViewState.IdRef="Assign_7">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:String">[Result]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:String">OK</InArgument>
+          </Assign.Value>
+        </Assign>
+      </jga:Retry.Finally>
+      <local:TestQueryDelay DelayPeriod="[DelayPeriod]" DisplayName="QueryTimeoutRetry" sap2010:WorkflowViewState.IdRef="TestQueryDelay_4" JobGuid="[JobGuid]" QueryTimeout="10" UserGuid="[UserGuid]" />
+    </jga:Retry>
+    <sads:DebugSymbol.Symbol>d1hDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsXGdyYXl3dWxmXGRsbFxKaHUuR3JheXd1bGYuSm9ic1xKb2JzXFRlc3RcVGVzdEpvYi54YW1sjQE/A7kBDAIBAT8xPz8CAQJDBU0QAwG/AU4FWBADAbIBWQVkEAMBnQFlBWWKAQMBmwFmBWa0AQMBlQFnBW4ZAwGAAW8FfBkCAV99BYcBGQIBRIgBBZIBEAIBN5MBBZ0BEAIBKp4BBaoBEQIBGKsBBbcBEQIBBkEHQWYCAQREB0ShAQMBxAFFB0wQAwHAAU8HT6ABAwG3AVAHVxADAbMBWgdaoAEDAaoBWwdbuQEDAaIBXAdjEAMBngFlKGVdAwGcAWaJAWabAQMBmgFmpQFmsQEDAZgBZnVmgAEDAZYBaAdtEwMBgQFwB3gTAgFmegl6mwECAWB+B4MBEwIBS4UBCYUBmwECAUWJAQeJAcQBAgE8igEHkQEQAgE4lAEHlAHFAQIBL5UBB5wBEAIBK54BcZ4BdAIBHZ4Bfp4BigECARueAVqeAWUCARmpAQepAckBAgEioAEJpwESAgEeqwFzqwF2AgELqwGAAasBjAECAQmrAVyrAWcCAQe2AQe2AcoBAgEQrQEJtAESAgEMQRhBOQIBBUQjRCoDAcsBRJIBRJ4BAwHJAUQ3REYDAccBRH1EiAEDAcUBSjJKNAMBwwFHM0c7AwHBAU8jTykDAb4BT5EBT50BAwG8AU82T0UDAboBT3xPhwEDAbgBVTJVNAMBtgFSM1I7AwG0AVojWikDAbEBWpEBWp0BAwGvAVo2WkUDAa0BWnxahwEDAasBWyNbKQMBqQFbqgFbtgEDAacBWzZbRQMBpQFblQFboAEDAaMBYTJhNAMBoQFeM147AwGfAWhuaHEDAYYBaHtohwEDAYQBaFdoYgMBggFpCWwUAwGHAXBbcF4CAWtwaHB0AgFpcERwTwIBZ3QJdxQCAXJyC3KeAQIBbHp2eoMBAgFleo0BepgBAgFjemJ6bQIBYX5ufnECAVB+e36HAQIBTn5XfmICAUx/CYIBFAIBUYUBdoUBgwECAUqFAY0BhQGYAQIBSIUBYoUBbQIBRokBpgGJAasBAgFDiQG1AYkBwQECAUGJASmJATgCAT+JAY0BiQGYAQIBPY8BMo8BNAIBO4wBM4wBOwIBOZQBqAGUAawBAgE2lAG2AZQBwgECATSUASmUATgCATKUAY8BlAGaAQIBMJoBMpoBNAIBLpcBM5cBOwIBLKkBqwGpAbABAgEpqQG6AakBxgECASepASmpATgCASWpAZIBqQGdAQIBI6UBNKUBNgIBIaIBNaIBPQIBH7YBrQG2AbEBAgEXtgG7AbYBxwECARW2ASm2ATgCARO2AZQBtgGfAQIBEbIBNLIBNgIBD68BNa8BPQIBDWoLapsBAwGPAWsLa5sBAwGIAXULdZsBAgF6dgt2mwECAXNyeHKGAQIBcXKQAXKbAQIBb3Jkcm8CAW2AAQuAAZsBAgFZgQELgQGbAQIBUmp4aoIBAwGUAWqMAWqYAQMBkgFqZGpvAwGQAWsnay0DAY4Ba4wBa5gBAwGMAWs6a0ADAYsBa3drggEDAYkBdXh1ggECAX91jAF1mAECAX11ZHVvAgF7did2LQIBeXaMAXaYAQIBd3Y6dkACAXZ2d3aCAQIBdIABeIABggECAV6AAYwBgAGYAQIBXIABZIABbwIBWoEBJ4EBLQIBWIEBjAGBAZgBAgFWgQE6gQFAAgFVgQF3gQGCAQIBUw==</sads:DebugSymbol.Symbol>
   </Switch>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="Throw_1" sap:VirtualizedContainerService.HintSize="455,100" />
+      <sap2010:ViewStateData Id="TestDelay_1" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="264,243">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="TestDelay_2" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="264,243">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="TestDelay_3" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="TestDelay_4" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="Assign_3" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="264,305">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Throw_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="TestAsyncException_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="TestAsyncException_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="TestDelay_5" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_4" sap:VirtualizedContainerService.HintSize="222,208">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Retry_1" sap:VirtualizedContainerService.HintSize="236,314" />
+      <sap2010:ViewStateData Id="CancellationScope_1" sap:VirtualizedContainerService.HintSize="272,536" />
+      <sap2010:ViewStateData Id="TestAsyncException_3" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="TestAsyncException_4" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="TestDelay_6" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="222,208">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Retry_2" sap:VirtualizedContainerService.HintSize="236,321" />
+      <sap2010:ViewStateData Id="TestAsyncException_5" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="CancellationScope_2" sap:VirtualizedContainerService.HintSize="272,550" />
+      <sap2010:ViewStateData Id="TestAsyncException_6" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="TestDelay_7" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_6" sap:VirtualizedContainerService.HintSize="222,208">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Retry_3" sap:VirtualizedContainerService.HintSize="236,314" />
+      <sap2010:ViewStateData Id="TestAsyncException_7" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="CancellationScope_3" sap:VirtualizedContainerService.HintSize="272,543" />
+      <sap2010:ViewStateData Id="TestQueryDelay_1" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="Assign_4" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Sequence_7" sap:VirtualizedContainerService.HintSize="264,243">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="TestQueryDelay_2" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="Assign_5" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Sequence_8" sap:VirtualizedContainerService.HintSize="264,243">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_6" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="TestQueryDelay_3" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Retry_4" sap:VirtualizedContainerService.HintSize="256,173" />
+      <sap2010:ViewStateData Id="Assign_7" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="TestQueryDelay_4" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Retry_5" sap:VirtualizedContainerService.HintSize="256,173" />
+      <sap2010:ViewStateData Id="Switch`1_1" sap:VirtualizedContainerService.HintSize="476,599" />
+      <sap2010:ViewStateData Id="Jhu.Graywulf.Jobs.Test.TestJob_1" sap:VirtualizedContainerService.HintSize="516,679" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

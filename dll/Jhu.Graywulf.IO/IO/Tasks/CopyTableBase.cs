@@ -421,7 +421,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
             if (!BypassExceptions)
             {
-                throw new TableCopyException("Table copy failed.", ex);     // TODO
+                throw new TableCopyException("Table copy failed: " + ex.Message , ex);     // TODO
             }
         }
     }

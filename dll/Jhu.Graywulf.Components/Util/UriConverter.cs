@@ -103,19 +103,21 @@ namespace Jhu.Graywulf.Util
 
         public static Uri Combine(Uri baseUri, Uri relativeUri)
         {
-            if (relativeUri.IsAbsoluteUri)
+            if (baseUri == null || relativeUri.IsAbsoluteUri)
             {
                 return relativeUri;
             }
-            else if (baseUri.IsAbsoluteUri)
+            else if (relativeUri == null)
             {
-                return new Uri(baseUri, relativeUri);
+                return baseUri;
             }
             else
             {
-                var basestr = baseUri.ToString().TrimEnd('/', '\\');
-                var relstr = relativeUri.ToString().TrimStart('/', '\\');
-                return new Uri(basestr + "/" + relstr, UriKind.Relative);
+                var uristr = baseUri.ToString().TrimEnd('/', '\\') + "/" +
+                    relativeUri.ToString().TrimStart('/', '\\');
+
+                var uri = new Uri(uristr, UriKind.RelativeOrAbsolute);
+                return uri;
             }
         }
 

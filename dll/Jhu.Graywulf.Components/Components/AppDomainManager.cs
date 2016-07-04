@@ -17,6 +17,7 @@ namespace Jhu.Graywulf.Components
     /// created every time when an assembly has to be loaded that
     /// has an incompatible version with the already loaded ones.
     /// </remarks>
+    [Serializable]
     public class AppDomainManager
     {
         #region Singleton
@@ -91,12 +92,12 @@ namespace Jhu.Graywulf.Components
         {
             InitializeMembers();
         }
-
+        
         private void InitializeMembers()
         {
             this.syncRoot = new object();
             this.appDomains = new Dictionary<int, AppDomainHandle>();
-            this.baseDirectory = Configuration.AssemblyPath;
+            this.baseDirectory = Configuration?.AssemblyPath ?? Environment.CurrentDirectory;
         }
 
         #endregion

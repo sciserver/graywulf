@@ -30,6 +30,7 @@ namespace Jhu.Graywulf.Registry
         private DateTime dateStarted;
         private DateTime dateFinished;
         private JobExecutionState jobExecutionStatus;
+        private TimeSpan jobTimeout;
         private DateTime suspendTimeout;
         private ScheduleType scheduleType;
         private DateTime scheduleTime;
@@ -90,6 +91,13 @@ namespace Jhu.Graywulf.Registry
         {
             get { return jobExecutionStatus; }
             set { jobExecutionStatus = value; }
+        }
+
+        [DBColumn]
+        public TimeSpan JobTimeout
+        {
+            get { return jobTimeout; }
+            set { jobTimeout = value; }
         }
 
         [DBColumn]
@@ -312,6 +320,7 @@ namespace Jhu.Graywulf.Registry
             this.dateStarted = DateTime.MinValue;
             this.dateFinished = DateTime.MinValue;
             this.jobExecutionStatus = JobExecutionState.Unknown;
+            this.jobTimeout = TimeSpan.Zero;
             this.suspendTimeout = DateTime.MinValue;
             this.scheduleType = ScheduleType.Unknown;
             this.scheduleTime = DateTime.MinValue;
@@ -336,6 +345,7 @@ namespace Jhu.Graywulf.Registry
             this.dateStarted = old.dateStarted;
             this.dateFinished = old.dateFinished;
             this.jobExecutionStatus = old.jobExecutionStatus;
+            this.jobTimeout = old.jobTimeout;
             this.suspendTimeout = old.suspendTimeout;
             this.scheduleType = old.scheduleType;
             this.scheduleTime = old.scheduleTime;

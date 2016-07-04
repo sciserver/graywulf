@@ -38,7 +38,9 @@ namespace Jhu.Graywulf.Scheduler
         /// Event handler to forward workflow events to the
         /// main program.
         /// </summary>
-        public event EventHandler<HostEventArgs> WorkflowEvent;
+        public event EventHandler<WorkflowApplicationHostEventArgs> WorkflowEvent;
+
+        public event EventHandler<UnhandledExceptionEventArgs> UnhandledException;
 
         /// <summary>
         /// Reference to the workflow event handler
@@ -47,7 +49,7 @@ namespace Jhu.Graywulf.Scheduler
         /// This on is necessary to keep the event handler alive
         /// when events are marshaled accross AppDomain boundaries.
         /// </remarks>
-        private EventHandler<HostEventArgs> workflowEventHandler;
+        private EventHandler<WorkflowApplicationHostEventArgs> workflowEventHandler;
 
         /// <summary>
         /// Gets the unique ID of the AppDomain.
@@ -121,13 +123,13 @@ namespace Jhu.Graywulf.Scheduler
             // workflowEventHandler. This is necessary to keep the delegate alive because
             // workflowHost is a proxy class and events are marshaled accross AppDomain 
             // boundaries.
-            workflowEventHandler = new EventHandler<HostEventArgs>(workflowHost_WorkflowEvent);
+            workflowEventHandler = new EventHandler<WorkflowApplicationHostEventArgs>(workflowHost_WorkflowEvent);
             workflowHost.WorkflowEvent += workflowEventHandler;
 
             // Start the new workflow host inside the new AppDomain
             workflowHost.Start(scheduler, interactive);
         }
-
+        
         /// <summary>
         /// Drain-stops the workflows hosted inside the app domain
         /// and unloads the AppDomain itself.
@@ -140,7 +142,6 @@ namespace Jhu.Graywulf.Scheduler
             }
 
             workflowHost.Stop(timeout);
-
             workflowHost = null;
         }
 
@@ -156,8 +157,6 @@ namespace Jhu.Graywulf.Scheduler
         {
             lastTimeActive = DateTime.Now;
             return workflowHost.PrepareStartJob(job);
-
-            // *** TODO: handle initialization errors here
         }
 
         /// <summary>
@@ -170,8 +169,6 @@ namespace Jhu.Graywulf.Scheduler
         {
             lastTimeActive = DateTime.Now;
             return workflowHost.PrepareResumeJob(job);
-
-            // *** TODO: handle initialization errors here
         }
 
         public void RunJob(Job job)
@@ -179,7 +176,6 @@ namespace Jhu.Graywulf.Scheduler
             lastTimeActive = DateTime.Now;
             workflowHost.RunJob(job);
 
-            // *** TODO: handle errors here
         }
 
         /// <summary>
@@ -191,8 +187,6 @@ namespace Jhu.Graywulf.Scheduler
         {
             lastTimeActive = DateTime.Now;
             workflowHost.CancelJob(job);
-
-            // *** TODO: handle errors here
         }
 
         /// <summary>
@@ -203,8 +197,6 @@ namespace Jhu.Graywulf.Scheduler
         {
             lastTimeActive = DateTime.Now;
             workflowHost.TimeOutJob(job);
-
-            // *** TODO: handle errors here
         }
 
         /// <summary>
@@ -215,8 +207,6 @@ namespace Jhu.Graywulf.Scheduler
         {
             lastTimeActive = DateTime.Now;
             workflowHost.PersistJob(job);
-
-            // *** TODO: handle errors here
         }
 
         #endregion
@@ -227,12 +217,16 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void workflowHost_WorkflowEvent(object sender, HostEventArgs e)
+        void workflowHost_WorkflowEvent(object sender, WorkflowApplicationHostEventArgs e)
         {
             lastTimeActive = DateTime.Now;
-
-            // Assume that event is wired-up, otherwise it won't work anyway
             WorkflowEvent(this, e);
+        }
+
+        private void workflowHost_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            lastTimeActive = DateTime.Now;
+            UnhandledException(sender, e);
         }
 
         #endregion

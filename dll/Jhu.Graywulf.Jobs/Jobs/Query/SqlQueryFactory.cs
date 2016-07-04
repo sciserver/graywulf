@@ -131,12 +131,13 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="queueName"></param>
         /// <param name="comments"></param>
         /// <returns></returns>
-        public override JobInstance ScheduleAsJob(string jobName, SqlQuery query, string queueName, string comments)
+        public override JobInstance ScheduleAsJob(string jobName, SqlQuery query, string queueName, TimeSpan timeout, string comments)
         {
             var job = CreateJobInstance(
                 jobName,
                 EntityFactory.CombineName(EntityType.JobDefinition, Registry.ContextManager.Configuration.FederationName, typeof(SqlQueryJob).Name),
                 queueName,
+                timeout,
                 comments);
 
             job.Parameters[Constants.JobParameterQuery].Value = query;

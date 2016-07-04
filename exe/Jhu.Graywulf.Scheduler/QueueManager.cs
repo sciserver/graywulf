@@ -228,7 +228,7 @@ namespace Jhu.Graywulf.Scheduler
 
             StartPoller();
         }
-
+        
         /// <summary>
         /// Persists all jobs and stops the scheduler.
         /// </summary>
@@ -540,6 +540,7 @@ namespace Jhu.Graywulf.Scheduler
                             UserName = user.Name,
                             QueueGuid = ji.ParentReference.Guid,
                             WorkflowTypeName = ji.WorkflowTypeName,
+                            Timeout = ji.JobTimeout,
                         };
 
                         if ((ji.JobExecutionStatus & JobExecutionState.Scheduled) != 0)
@@ -741,7 +742,7 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         /// <param name="workflowInstanceId"></param>
         /// <param name="eventType"></param>
-        private void FinishJob(Guid instanceID, HostEventArgs e)
+        private void FinishJob(Guid instanceID, WorkflowApplicationHostEventArgs e)
         {
             // TODO: certain workflows (probably failing ones) raise more than
             // one event that mark the job as finished. For now, we do the bookeeping
@@ -841,7 +842,8 @@ namespace Jhu.Graywulf.Scheduler
             {
                 // New app domain, create host
                 var adh = new AppDomainHost(ad, contextGuid);
-                adh.WorkflowEvent += new EventHandler<HostEventArgs>(adh_WorkflowEvent);
+                adh.WorkflowEvent += new EventHandler<WorkflowApplicationHostEventArgs>(adh_WorkflowEvent);
+                adh.UnhandledException += adh_UnhandledException;
 
                 appDomains.TryAdd(ad.Id, adh);
 
@@ -901,11 +903,19 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void adh_WorkflowEvent(object sender, HostEventArgs e)
+        void adh_WorkflowEvent(object sender, WorkflowApplicationHostEventArgs e)
         {
             new DelayedRetryLoop(5).Execute(
                 () => FinishJob(e.InstanceId, e),
                 ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.adh_WorkflowEvent[FinishJob]", ex)));
+        }
+
+        private void adh_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            // TODO: terminate failing app domain
+
+            var ex = e.ExceptionObject as Exception;
+            LogEvent(new Event("Jhu.Graywulf.Scheduler.WorkflowApplicationHost.UnhandledException", ex));
         }
 
         #endregion

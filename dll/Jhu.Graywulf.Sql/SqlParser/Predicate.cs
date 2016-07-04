@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.SqlParser
         {
             foreach (var tr in NodeExtensions.EnumerateTableReferences(this))
             {
-                if (tr != null && !tr.Compare(table, true))
+                if (tr != null && !tr.Compare(table))
                 {
                     return false;
                 }

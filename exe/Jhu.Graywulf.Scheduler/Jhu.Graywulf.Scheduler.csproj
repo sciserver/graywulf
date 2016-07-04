@@ -77,7 +77,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
-    <Compile Include="HostEventArgs.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="Machine.cs" />
     <Compile Include="Program.cs" />
@@ -101,6 +100,7 @@
     </Compile>
     <Compile Include="ServerInstance.cs" />
     <Compile Include="WorkflowApplicationHost.cs" />
+    <Compile Include="WorkflowApplicationHostEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ExceptionMessages.resx">

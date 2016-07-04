@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
                 var jf = MirrorDatabaseJobFactory.Create(context);
                 var parameters = jf.CreateParameters(databaseVersion);
-                var ji = jf.ScheduleAsJob(parameters, jf.GetDefaultMaintenanceQueue(), "test job");
+                var ji = jf.ScheduleAsJob(parameters, jf.GetDefaultMaintenanceQueue(), TimeSpan.Zero, "test job");
                 
                 ji.Save();
 

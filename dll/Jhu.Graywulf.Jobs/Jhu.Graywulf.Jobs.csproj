@@ -171,6 +171,7 @@
       <DependentUpon>SqlQueryScripts.resx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\Test\TestAsyncException.cs" />
+    <Compile Include="Jobs\Test\TestQueryDelay.cs" />
     <Compile Include="Jobs\Test\TestJob.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Jobs\Test\TestDelay.cs" />

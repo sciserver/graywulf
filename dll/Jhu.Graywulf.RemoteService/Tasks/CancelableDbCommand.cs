@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.Tasks
             }
             catch (Exception ex)
             {
-                throw ProcessException(ex);
+                throw DispatchException(ex);
             }
         }
 
@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Tasks
             }
             catch (Exception ex)
             {
-                throw ProcessException(ex);
+                throw DispatchException(ex);
             }
         }
 
@@ -94,7 +94,7 @@ namespace Jhu.Graywulf.Tasks
             }
             catch (Exception ex)
             {
-                throw ProcessException(ex);
+                throw DispatchException(ex);
             }
         }
 
@@ -113,7 +113,7 @@ namespace Jhu.Graywulf.Tasks
             }
             catch (Exception ex)
             {
-                throw ProcessException(ex);
+                throw DispatchException(ex);
             }
         }
 
@@ -128,7 +128,7 @@ namespace Jhu.Graywulf.Tasks
             }
             catch (Exception ex)
             {
-                throw ProcessException(ex);
+                throw DispatchException(ex);
             }
         }
 
@@ -147,7 +147,7 @@ namespace Jhu.Graywulf.Tasks
         /// </summary>
         /// <param name="exception"></param>
         /// <returns></returns>
-        private Exception ProcessException(Exception exception)
+        private Exception DispatchException(Exception exception)
         {
             // When a command is canceled, a SqlException is thrown by the
             // client. Handle this and throw an OperationCanceledException instead.
@@ -155,9 +155,13 @@ namespace Jhu.Graywulf.Tasks
             if (exception is SqlException)
             {
                 var ex = (SqlException)exception;
-                if (ex.ErrorCode == -2146232060 && ex.Class == 11)
-                {
 
+                if (ex.Class == 11 && ex.Number == -2)
+                {
+                    return new TimeoutException(ex.Message, ex);
+                }
+                if (ex.Class == 11 && ex.Number == 0 && ex.ErrorCode == -2146232060)
+                {
                     return new OperationCanceledException(ex.Message, ex);
                 }
             }

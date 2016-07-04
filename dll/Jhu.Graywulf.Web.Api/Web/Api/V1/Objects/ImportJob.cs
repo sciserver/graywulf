@@ -213,7 +213,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             var p = CreateParameters(context);
 
             var ff = ImportTablesJobFactory.Create(context.Federation);
-            var job = ff.ScheduleAsJob(p, GetQueueName(context), Comments);
+            var job = ff.ScheduleAsJob(p, GetQueueName(context), TimeSpan.Zero, Comments);
 
             job.Save();
 

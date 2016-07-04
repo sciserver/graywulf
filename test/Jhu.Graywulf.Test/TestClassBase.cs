@@ -45,7 +45,11 @@ namespace Jhu.Graywulf.Test
             AsyncException,
             AsyncExceptionWithRetry,
             RetryWithFaultInFinally,
-            RetryWithFaultInCancel
+            RetryWithFaultInCancel,
+            QueryDelay,
+            QueryTimeout,
+            QueryDelayRetry,
+            QueryTimeoutRetry,
         }
 
         protected Task scheduler;
@@ -125,10 +129,15 @@ namespace Jhu.Graywulf.Test
 
         protected Guid ScheduleTestJob(JobType jobType, QueueType queueType)
         {
-            return ScheduleTestJob(TimeSpan.Zero, jobType, queueType);
+            return ScheduleTestJob(TimeSpan.Zero, jobType, queueType, TimeSpan.Zero);
         }
 
-        protected Guid ScheduleTestJob(TimeSpan delayPeriod, JobType jobType, QueueType queueType)
+        protected Guid ScheduleTestJob(JobType jobType, QueueType queueType, TimeSpan timeout)
+        {
+            return ScheduleTestJob(TimeSpan.Zero, jobType, queueType, timeout);
+        }
+
+        protected Guid ScheduleTestJob(TimeSpan delayPeriod, JobType jobType, QueueType queueType, TimeSpan timeout)
         {
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
@@ -139,7 +148,7 @@ namespace Jhu.Graywulf.Test
 
                 var queue = GetQueueName(queueType);
 
-                JobInstance job = jd.CreateJobInstance(queue, Jhu.Graywulf.Registry.ScheduleType.Queued);
+                JobInstance job = jd.CreateJobInstance(queue, ScheduleType.Queued, timeout);
 
                 job.Parameters["DelayPeriod"].Value = (int)delayPeriod.TotalMilliseconds;
                 job.Parameters["TestMethod"].Value = jobType.ToString();

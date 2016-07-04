@@ -121,9 +121,9 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             return export;
         }
 
-        public JobInstance ScheduleAsJob(ExportTablesParameters parameters, string queueName, string comments)
+        public JobInstance ScheduleAsJob(ExportTablesParameters parameters, string queueName, TimeSpan timeout, string comments)
         {
-            JobInstance job = CreateJobInstance(null, GetJobDefinitionName(), queueName, comments);
+            JobInstance job = CreateJobInstance(null, GetJobDefinitionName(), queueName, timeout, comments);
 
             job.Parameters[Constants.JobParameterExport].Value = parameters;
 
