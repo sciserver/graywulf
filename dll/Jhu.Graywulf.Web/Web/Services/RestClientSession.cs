@@ -87,10 +87,26 @@ namespace Jhu.Graywulf.Web.Services
             return new EndpointAddress(uri);
         }
 
-        public byte[] MakeWebRequest(string url)
+        public byte[] HttpGet(string url)
+        {
+            return HttpGet(url, null);
+        }
+
+        public byte[] HttpGet(string url, string accept)
+        {
+            return MakeWebRequest(url, "GET", accept);
+        }
+
+        private byte[] MakeWebRequest(string url, string method, string accept)
         {
             var req = (HttpWebRequest)WebRequest.Create(url);
+            req.Method = method;
             req.CookieContainer = Cookies;
+
+            if (accept != null)
+            {
+                req.Accept = accept;
+            }
 
             var res = (HttpWebResponse)req.GetResponse();
             Cookies.Add(res.Cookies);
