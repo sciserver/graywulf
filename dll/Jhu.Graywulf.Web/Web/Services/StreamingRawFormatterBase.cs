@@ -4,40 +4,90 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ServiceModel.Dispatcher;
+using System.ServiceModel.Description;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Web;
 using System.IO;
 
 namespace Jhu.Graywulf.Web.Services
 {
-    public abstract class StreamingRawFormatterBase : RestMessageFormatter, IDispatchMessageFormatter, IClientMessageFormatter
+    public abstract class StreamingRawFormatterBase : RestMessageFormatter
     {
+        private OperationDescription operation;
+        private Uri operationUri;
+        private ServiceEndpoint endpoint;
         private StreamingRawFormatterDirection direction;
 
-        public StreamingRawFormatterDirection Direction
+        internal OperationDescription Operation
+        {
+            get { return operation; }
+        }
+
+        internal Uri OperationUri
+        {
+            get
+            {
+                if (operationUri == null)
+                {
+                    CreateOperationUri();
+                }
+
+                return operationUri;
+            }
+        }
+
+        internal ServiceEndpoint Endpoint
+        {
+            get { return endpoint; }
+        }
+
+        internal StreamingRawFormatterDirection Direction
         {
             get { return direction; }
             set { direction = value; }
         }
 
         internal abstract Type FormattedType
-        { get; }
-
-        protected StreamingRawFormatterBase(IDispatchMessageFormatter dispatchMessageFormatter)
-            : base(dispatchMessageFormatter)
         {
-            InitializeMembers();
+            get;
         }
 
-        protected StreamingRawFormatterBase(IClientMessageFormatter clientMessageFormatter)
-            : base(clientMessageFormatter)
+        protected StreamingRawFormatterBase(OperationDescription operationDescription, ServiceEndpoint endpoint, IDispatchMessageFormatter fallbackFormatter)
+            : base(fallbackFormatter)
         {
             InitializeMembers();
+
+            this.operation = operationDescription;
+            this.endpoint = endpoint;
+        }
+
+        protected StreamingRawFormatterBase(OperationDescription operationDescription, ServiceEndpoint endpoint, IClientMessageFormatter fallbackFormatter)
+            : base(fallbackFormatter)
+        {
+            InitializeMembers();
+
+            this.operation = operationDescription;
+            this.endpoint = endpoint;
         }
 
         private void InitializeMembers()
         {
+            this.operation = null;
+            this.endpoint = null;
+            this.operationUri = null;
             this.direction = StreamingRawFormatterDirection.None;
+        }
+
+        private void CreateOperationUri()
+        {
+            var endpointAddress = endpoint.Address.Uri.ToString();
+
+            if (!endpointAddress.EndsWith("/"))
+            {
+                endpointAddress = endpointAddress + "/";
+            }
+
+            this.operationUri = new Uri(endpointAddress + operation.Name);
         }
     }
 }

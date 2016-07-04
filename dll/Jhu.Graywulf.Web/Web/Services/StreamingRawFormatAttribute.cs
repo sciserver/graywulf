@@ -36,27 +36,37 @@ namespace Jhu.Graywulf.Web.Services
 
         public void ApplyClientBehavior(OperationDescription operationDescription, ClientOperation clientOperation)
         {
-            var formatter = CreateClientFormatter(clientOperation.Formatter);
-            ConfigureFormatter(formatter, operationDescription);
-            clientOperation.Formatter = formatter;
+            // Intentionally do nothing, just register as a dummy behavior
         }
 
         public void ApplyDispatchBehavior(OperationDescription operationDescription, DispatchOperation dispatchOperation)
         {
-            var formatter = CreateDispatchFormatter(dispatchOperation.Formatter);
-            ConfigureFormatter(formatter, operationDescription);
-            dispatchOperation.Formatter = formatter;
+            // Intentionally do nothing, just register as a dummy behavior
         }
-
+        
         public void Validate(OperationDescription operationDescription)
         {
         }
 
-        protected abstract StreamingRawFormatterBase CreateDispatchFormatter(IDispatchMessageFormatter formatter);
+        internal StreamingRawFormatterBase CreateDispatchFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint, IDispatchMessageFormatter fallbackFormatter)
+        {
+            var formatter = OnCreateDispatchFormatter(operationDescription, endpoint, fallbackFormatter);
+            ConfigureFormatter(formatter, operationDescription);
+            return formatter;
+        }
 
-        protected abstract StreamingRawFormatterBase CreateClientFormatter(IClientMessageFormatter formatter);
+        internal StreamingRawFormatterBase CreateClientFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint, IClientMessageFormatter fallbackFormatter)
+        {
+            var formatter = OnCreateClientFormatter(operationDescription, endpoint, fallbackFormatter);
+            ConfigureFormatter(formatter, operationDescription);
+            return formatter;
+        }
 
-        private void ConfigureFormatter(StreamingRawFormatterBase formatter, OperationDescription operationDescription)
+        protected internal abstract StreamingRawFormatterBase OnCreateDispatchFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint, IDispatchMessageFormatter fallbackFormatter);
+
+        protected internal abstract StreamingRawFormatterBase OnCreateClientFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint, IClientMessageFormatter fallbackFormatter);
+
+        internal void ConfigureFormatter(StreamingRawFormatterBase formatter, OperationDescription operationDescription)
         {
             var parameterTypes = GetParameterTypes(operationDescription);
             var retvalType = GetRetvalType(operationDescription);
@@ -68,7 +78,7 @@ namespace Jhu.Graywulf.Web.Services
 
             if (parameterTypes.Length == 1 && formatter.FormattedType == parameterTypes[0])
             {
-                formatter.Direction |= StreamingRawFormatterDirection.Parameters;
+                formatter.Direction |= StreamingRawFormatterDirection.ParameterIn;
             }
         }
     }

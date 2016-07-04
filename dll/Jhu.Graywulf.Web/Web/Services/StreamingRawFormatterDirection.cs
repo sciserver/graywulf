@@ -10,8 +10,9 @@ namespace Jhu.Graywulf.Web.Services
     public enum StreamingRawFormatterDirection
     {
         None = 0,
-        Parameters = 1,
-        ReturnValue = 2,
-        Both = Parameters | ReturnValue
+        ParameterIn = 1,
+        ParameterOut = 2,
+        ReturnValue = 4,
+        All = ParameterIn | ParameterOut | ReturnValue
     }
 }

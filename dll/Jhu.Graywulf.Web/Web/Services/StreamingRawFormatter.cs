@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Dispatcher;
+using System.ServiceModel.Description;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Web;
 using System.IO;
 
 namespace Jhu.Graywulf.Web.Services
 {
-    public abstract class StreamingRawFormatter<T> : StreamingRawFormatterBase, IDispatchMessageFormatter, IClientMessageFormatter
+    public abstract class StreamingRawFormatter<T> : StreamingRawFormatterBase
     {
         internal override Type FormattedType
         {
@@ -22,14 +23,13 @@ namespace Jhu.Graywulf.Web.Services
             }
         }
 
-
-        protected StreamingRawFormatter(IDispatchMessageFormatter dispatchMessageFormatter)
-            : base(dispatchMessageFormatter)
+        protected StreamingRawFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint, IDispatchMessageFormatter fallbackFormatter)
+            : base(operationDescription, endpoint, fallbackFormatter)
         {
         }
 
-        protected StreamingRawFormatter(IClientMessageFormatter clientMessageFormatter)
-            : base(clientMessageFormatter)
+        protected StreamingRawFormatter(OperationDescription operationDescription, ServiceEndpoint endpoint, IClientMessageFormatter fallbackFormatter)
+            : base(operationDescription, endpoint, fallbackFormatter)
         {
         }
 
@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Web.Services
         public override void DeserializeRequest(Message message, object[] parameters)
         {
             if (!message.IsEmpty &&
-                (Direction & StreamingRawFormatterDirection.Parameters) != 0)
+                (Direction & StreamingRawFormatterDirection.ParameterIn) != 0)
             {
                 var body = message.GetReaderAtBodyContents();
                 byte[] raw = body.ReadContentAsBase64();
@@ -109,16 +109,27 @@ namespace Jhu.Graywulf.Web.Services
 
         public override Message SerializeRequest(MessageVersion messageVersion, object[] parameters)
         {
-            /*
-            if ((Direction & StreamingRawFormatterDirection.Parameters) != 0)
+            if ((Direction & StreamingRawFormatterDirection.ParameterIn) != 0 &&
+                parameters != null && parameters.Length == 1 && parameters[0] is T)
             {
                 var adapter = CreateAdapter();
-                var contentType = adapter.GetRequestedContentType();
+                var contentType = adapter.GetPreferredContentType();
+                var data = (T)parameters[0];
+                var body = new StreamingRawBodyWriter<T>(adapter, contentType, (T)parameters[0]);
+                var prop = new HttpRequestMessageProperty();
+                prop.Headers[HttpRequestHeader.ContentType] = contentType;
+                var action = Operation.Messages[0].Action;
+                var message = Message.CreateMessage(messageVersion, action, body);
+                message.Headers.To = OperationUri;
+                message.Properties.Add(WebBodyFormatMessageProperty.Name, new WebBodyFormatMessageProperty(WebContentFormat.Raw));
+                message.Properties.Add(HttpRequestMessageProperty.Name, prop);
 
-                
-            }*/
-
-            return base.SerializeRequest(messageVersion, parameters);
+                return message;
+            }
+            else
+            {
+                return base.SerializeRequest(messageVersion, parameters);
+            }
         }
 
         public override object DeserializeReply(Message message, object[] parameters)

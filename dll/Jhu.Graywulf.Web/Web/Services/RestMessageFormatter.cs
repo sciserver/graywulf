@@ -9,27 +9,11 @@ using System.IO;
 
 namespace Jhu.Graywulf.Web.Services
 {
-    public abstract class RestMessageFormatter : IDispatchMessageFormatter, IClientMessageFormatter 
+    public abstract class RestMessageFormatter : IDispatchMessageFormatter, IClientMessageFormatter
     {
         private IDispatchMessageFormatter fallbackDispatchMessageFormatter;
         private IClientMessageFormatter fallbackClientMessageFormatter;
         private string mimeType;
-
-        protected IDispatchMessageFormatter FallbackDispatchMessageFormatter
-        {
-            get
-            {
-                return fallbackDispatchMessageFormatter;
-            }
-        }
-
-        protected IClientMessageFormatter FallbackClientMessageFormatter
-        {
-            get
-            {
-                return fallbackClientMessageFormatter;
-            }
-        }
 
         public string MimeType
         {
@@ -37,25 +21,36 @@ namespace Jhu.Graywulf.Web.Services
             set { mimeType = value; }
         }
 
+        protected IDispatchMessageFormatter FallbackDispatchMessageFormatter
+        {
+            get { return fallbackDispatchMessageFormatter; }
+        }
+
+        protected IClientMessageFormatter FallbackClientMessageFormatter
+        {
+            get { return fallbackClientMessageFormatter; }
+        }
+
         protected RestMessageFormatter()
         {
+            InitializeMembers();
         }
 
-        protected RestMessageFormatter(IDispatchMessageFormatter dispatchMessageFormatter)
+        protected RestMessageFormatter(IDispatchMessageFormatter fallbackFormatter)
         {
-            InititializeMembers();
+            InitializeMembers();
 
-            this.fallbackDispatchMessageFormatter = dispatchMessageFormatter;
+            this.fallbackDispatchMessageFormatter = fallbackFormatter;
         }
 
-        protected RestMessageFormatter(IClientMessageFormatter clientMessageFormatter)
+        protected RestMessageFormatter(IClientMessageFormatter fallbackFormatter)
         {
-            InititializeMembers();
+            InitializeMembers();
 
-            this.fallbackClientMessageFormatter = clientMessageFormatter;
+            this.fallbackClientMessageFormatter = fallbackFormatter;
         }
 
-        private void InititializeMembers()
+        private void InitializeMembers()
         {
             this.fallbackDispatchMessageFormatter = null;
             this.fallbackClientMessageFormatter = null;
@@ -71,17 +66,20 @@ namespace Jhu.Graywulf.Web.Services
 
         public virtual Message SerializeReply(MessageVersion messageVersion, object[] parameters, object result)
         {
-            return fallbackDispatchMessageFormatter.SerializeReply(messageVersion, parameters, result);
+            var message = fallbackDispatchMessageFormatter.SerializeReply(messageVersion, parameters, result);
+            return message;
         }
 
         public virtual Message SerializeRequest(MessageVersion messageVersion, object[] parameters)
         {
-            return fallbackClientMessageFormatter.SerializeRequest(messageVersion, parameters);
+            var message = fallbackClientMessageFormatter.SerializeRequest(messageVersion, parameters);
+            return message;
         }
 
         public virtual object DeserializeReply(Message message, object[] parameters)
         {
-            return fallbackClientMessageFormatter.DeserializeReply(message, parameters);
+            var retval = fallbackClientMessageFormatter.DeserializeReply(message, parameters);
+            return retval;
         }
     }
 }

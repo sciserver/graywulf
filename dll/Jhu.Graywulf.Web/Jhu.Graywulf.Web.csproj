@@ -116,6 +116,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Web\Services\RestClientSession.cs" />
+    <Compile Include="Web\Services\RestEndpointBehavior.cs" />
     <Compile Include="Web\Services\RestError.cs" />
     <Compile Include="Web\Services\RestErrorHandler.cs" />
     <Compile Include="Web\Services\RestErrorResponse.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="Web\Services\RestCorsMessageInspector.cs" />
     <Compile Include="Web\Services\RestServiceBase.cs" />
     <Compile Include="Web\Services\RestServiceBehavior.cs" />
+    <Compile Include="Web\Services\StreamingRawBodyWriter.cs" />
     <Compile Include="Web\Services\StreamingRawFormatAttribute.cs" />
     <Compile Include="Web\Services\StreamingListFormatAttribute.cs" />
     <Compile Include="Web\Services\StreamingListFormatter.cs" />

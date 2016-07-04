@@ -39,6 +39,12 @@ namespace Jhu.Graywulf.Web.Services
             return contentType;
         }
 
+        internal string GetPreferredContentType()
+        {
+            var mimes = GetSupportedMimeTypes();
+            return mimes[0];
+        }
+
         internal string GetRequestedContentType()
         {
             var acceptHeader = headers[HttpRequestHeader.Accept] ??

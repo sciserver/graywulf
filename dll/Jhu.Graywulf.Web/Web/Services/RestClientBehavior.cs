@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.Web.Services
         public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
         {
             // Add REST support
-            endpoint.Behaviors.Add(new WebHttpBehavior());
+            endpoint.Behaviors.Add(new RestEndpointBehavior());
 
             // Add this class to inspectors
             clientRuntime.MessageInspectors.Add(this);

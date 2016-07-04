@@ -20,14 +20,14 @@ namespace Jhu.Graywulf.Web.Services
 
         private Type returnType;
 
-        public StreamingListFormatter(IDispatchMessageFormatter dispatchMessageFormatter)
-            :base(dispatchMessageFormatter)
+        public StreamingListFormatter(IDispatchMessageFormatter fallbackFormatter)
+            :base(fallbackFormatter)
         {
             InitializeMembers();
         }
 
-        public StreamingListFormatter(IClientMessageFormatter clientMessageFormatter, Type returnType)
-            :base(clientMessageFormatter)
+        public StreamingListFormatter(IClientMessageFormatter fallbackFormatter, Type returnType)
+            :base(fallbackFormatter)
         {
             InitializeMembers();
             

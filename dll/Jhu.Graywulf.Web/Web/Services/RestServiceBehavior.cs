@@ -63,12 +63,17 @@ namespace Jhu.Graywulf.Web.Services
                     htbe.MaxReceivedMessageSize = 0x40000000;     // 1 GB
                 }
 
-                var whb = ep.Behaviors.Find<WebHttpBehavior>();
-
-                if (whb != null)
+                // Exchange WHB with custom implementation
+                if (ep.EndpointBehaviors.Contains(typeof(WebHttpBehavior)))
                 {
-                    whb.HelpEnabled = true;
-                    whb.AutomaticFormatSelectionEnabled = true;
+                    var whb = ep.EndpointBehaviors[typeof(WebHttpBehavior)];
+
+                    var reb = new RestEndpointBehavior();
+                    reb.HelpEnabled = true;
+                    reb.AutomaticFormatSelectionEnabled = true;
+
+                    ep.EndpointBehaviors.Remove(whb);
+                    ep.Behaviors.Add(reb);
                 }
             }
         }
