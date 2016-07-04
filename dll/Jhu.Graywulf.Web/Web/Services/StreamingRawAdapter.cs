@@ -46,10 +46,11 @@ namespace Jhu.Graywulf.Web.Services
 
             // Parse accept header
             var accept = WebOperationContext.Current.IncomingRequest.GetAcceptHeaderElements();
+            var mimes = GetSupportedMimeTypes();
 
             for (int i = 0; i < accept.Count; i++)
             {
-                foreach (var mime in GetSupportedMimeTypes())
+                foreach (var mime in mimes)
                 {
                     if (Jhu.Graywulf.Util.MediaTypeComparer.Compare(accept[i].MediaType, mime))
                     {

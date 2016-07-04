@@ -7,10 +7,22 @@ namespace Jhu.Graywulf.Util
 {
     public static class MediaTypeComparer
     {
-        public static bool Compare(string a, string b)
+        public static bool Compare(string accept, string mime)
         {
             // TODO: add logic to handle wild-cards
-            return StringComparer.InvariantCultureIgnoreCase.Compare(a, b) == 0;
+            var partsa = accept.Split('/');
+            var partsm = mime.Split('/');
+
+            if (partsa.Length < 2 || partsm.Length < 2)
+            {
+                return false;
+            }
+
+            return
+                (StringComparer.InvariantCultureIgnoreCase.Compare(partsa[0], partsm[0]) == 0 ||
+                 partsa[0] == "*" || partsm[0] == "*") &&
+                 (StringComparer.InvariantCultureIgnoreCase.Compare(partsa[1], partsm[1]) == 0 ||
+                 partsa[1] == "*" || partsm[1] == "*");
         }
     }
 }
