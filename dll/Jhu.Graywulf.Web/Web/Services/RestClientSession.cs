@@ -94,12 +94,18 @@ namespace Jhu.Graywulf.Web.Services
 
         public byte[] HttpGet(string url, string accept)
         {
-            return MakeWebRequest(url, "GET", accept);
+            return MakeWebRequest(url, "GET", accept, null, null);
         }
 
-        private byte[] MakeWebRequest(string url, string method, string accept)
+        public byte[] HttpPost(string url, string accept, string contentType, byte[] data)
+        {
+            return MakeWebRequest(url, "POST", accept, contentType, data);
+        }
+
+        private byte[] MakeWebRequest(string url, string method, string accept, string contentType, byte[] data)
         {
             var req = (HttpWebRequest)WebRequest.Create(url);
+            req.Timeout = System.Threading.Timeout.Infinite;
             req.Method = method;
             req.CookieContainer = Cookies;
 
@@ -108,9 +114,20 @@ namespace Jhu.Graywulf.Web.Services
                 req.Accept = accept;
             }
 
+            if (contentType != null)
+            {
+                req.ContentType = contentType;
+            }
+            
+            if (data != null)
+            {
+                req.ContentLength = data.Length;
+                var s = req.GetRequestStream();
+                s.Write(data, 0, data.Length);
+            }
+
             var res = (HttpWebResponse)req.GetResponse();
             Cookies.Add(res.Cookies);
-
             var stream = res.GetResponseStream();
             var ms = new MemoryStream();
             var buffer = new byte[0x10000];
