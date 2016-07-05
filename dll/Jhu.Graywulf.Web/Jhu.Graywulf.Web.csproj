@@ -139,7 +139,7 @@
     <Compile Include="Web\Services\StreamingRawFormatter.cs" />
     <Compile Include="Web\Services\StreamingRawFormatterBase.cs" />
     <Compile Include="Web\Services\StreamingRawFormatterDirection.cs" />
-    <Compile Include="Web\Services\TestJsonXmlFormatAttribute.cs" />
+    <Compile Include="Web\Services\TextJsonXmlFormatAttribute.cs" />
     <Compile Include="Web\Services\TextResponseMessageBodyWriter.cs" />
     <Compile Include="Web\Services\TextResponseMessageFormatter.cs" />
     <Compile Include="Web\UI\ApplicationBase.cs" />

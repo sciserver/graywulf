@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Web.Services
 {
-    public class TestJsonXmlFormatAttribute : DynamicFormatAttribute
+    public class TextJsonXmlFormatAttribute : DynamicFormatAttribute
     {
-        public TestJsonXmlFormatAttribute()
+        public TextJsonXmlFormatAttribute()
             : base(typeof(TextResponseMessageFormatter))
         {
         }
