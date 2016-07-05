@@ -7,10 +7,15 @@ namespace Jhu.Graywulf.Util
 {
     public static class MediaTypeComparer
     {
-        public static bool Compare(string accept, string mime)
+        public static bool Compare(string pattern, string mime)
         {
+            if (pattern == null || mime == null)
+            {
+                return false;
+            }
+
             // TODO: add logic to handle wild-cards
-            var partsa = accept.Split('/');
+            var partsa = pattern.Split('/');
             var partsm = mime.Split('/');
 
             if (partsa.Length < 2 || partsm.Length < 2)
