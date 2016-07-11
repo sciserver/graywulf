@@ -10,14 +10,9 @@ namespace Jhu.Graywulf.SqlClrUtil
 {
     class SqlClrReflector : IDisposable
     {
-        private Dictionary<string, Assembly> assemblies;
+        private SqlAssembly assembly;
         private List<SqlObject> objects;
         private Dictionary<Type, string> types;
-
-        public Dictionary<string, Assembly> Assemblies
-        {
-            get { return assemblies; }
-        }
 
         public List<SqlObject> Objects
         {
@@ -29,21 +24,14 @@ namespace Jhu.Graywulf.SqlClrUtil
             get { return types; }
         }
 
-        public SqlClrReflector(Assembly assembly)
+        public SqlClrReflector(Assembly assembly, AssemblySecurityLevel sec)
         {
             InitializeMembers();
-
-            ReflectAssembly(assembly);
-
-            foreach (var a in assemblies.Values)
-            {
-                Console.WriteLine("Using assembly: {0}", a.Location);
-            }
+            ReflectAssembly(assembly, sec);
         }
 
         private void InitializeMembers()
         {
-            this.assemblies = new Dictionary<string, Assembly>(StringComparer.InvariantCultureIgnoreCase);
             this.objects = new List<SqlObject>();
             this.types = new Dictionary<Type, string>(Constants.SqlTypes);
         }
@@ -52,9 +40,10 @@ namespace Jhu.Graywulf.SqlClrUtil
         {
         }
 
-        private void ReflectAssembly(Assembly a)
+        private void ReflectAssembly(Assembly a, AssemblySecurityLevel sec)
         {
-            CollectReferences(a);
+            assembly = new SqlAssembly(a);
+            assembly.AssemblySecurityLevel = sec;
 
             foreach (var type in a.GetTypes())
             {
@@ -83,54 +72,6 @@ namespace Jhu.Graywulf.SqlClrUtil
             }
         }
 
-        private void CollectReferences(Assembly assembly)
-        {
-            var name = assembly.GetName().Name;
-
-            if (!assemblies.ContainsKey(name))
-            {
-                foreach (var a in assembly.GetReferencedAssemblies())
-                {
-                    if (!a.Name.StartsWith("System") && !a.Name.StartsWith("ms"))
-                    {
-                        var dir = Path.GetDirectoryName(assembly.Location);
-                        var aaa = LoadAssembly(dir, a);
-
-                        if (aaa != null)
-                        {
-                            CollectReferences(aaa);
-                        }
-                    }
-                }
-
-                assemblies.Add(name, assembly);
-            }
-        }
-
-        private Assembly LoadAssembly(string dir, AssemblyName name)
-        {
-            Assembly a = null;
-            
-            // Attempt default location
-            try
-            {
-                a = Assembly.Load(name);
-            }
-            catch { }
-
-            if (a == null)
-            {
-                // Try from the directory of referencing
-                try
-                {
-                    a = Assembly.LoadFrom(Path.Combine(dir, name.Name + ".dll"));
-                }
-                catch { }
-            }
-
-            return a;
-        }
-
         public void ScriptCreate(TextWriter writer)
         {
             foreach (var schema in CollectSchemaNames())
@@ -138,10 +79,12 @@ namespace Jhu.Graywulf.SqlClrUtil
                 ScriptCreateSchema(writer, schema);
             }
 
-            foreach (var a in assemblies.Values)
+            foreach (var a in assembly.References.Values)
             {
-                ScriptCreateAssembly(writer, a);
+                a.ScriptCreate(writer);
             }
+
+            assembly.ScriptCreate(writer);
 
             foreach (var obj in objects.OrderBy(i => i.Rank))
             {
@@ -156,10 +99,12 @@ namespace Jhu.Graywulf.SqlClrUtil
                 obj.ScriptDrop(this, writer);
             }
 
-            foreach (var a in assemblies.Values.Reverse())
+            foreach (var a in assembly.References.Values.Reverse())
             {
-                ScriptDropAssembly(writer, a);
+                a.ScriptDrop(writer);
             }
+
+            assembly.ScriptDrop(writer);
 
             foreach (var schema in CollectSchemaNames())
             {
@@ -196,54 +141,18 @@ GO
                    schema);
             }
         }
-
-        private void ScriptCreateAssembly(TextWriter writer, Assembly a)
-        {
-            writer.Write(
-@"
-CREATE ASSEMBLY [{0}]
-    AUTHORIZATION [dbo]
-    FROM 0x",
-                a.GetName().Name);
-
-            using (var infile = new FileStream(a.Location, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                var buffer = new byte[0x10000];
-                int res;
-
-                while ((res = infile.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    for (int i = 0; i < res; i++)
-                    {
-                        writer.Write(BitConverter.ToString(buffer, i, 1));
-                    }
-                }
-            }
-
-            writer.WriteLine();
-            writer.WriteLine("GO");
-            writer.WriteLine();
-            writer.WriteLine();
-        }
-
-        private void ScriptDropAssembly(TextWriter writer, Assembly a)
-        {
-            writer.Write(@"
-DROP ASSEMBLY [{0}]
-
-GO
-
-",
-                a.GetName().Name);  
-        }
-
+        
         private HashSet<string> CollectSchemaNames()
         {
             var res = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 
             foreach (var obj in objects)
             {
-                if (!res.Contains(obj.Schema))
+                var schema = obj.Schema;
+
+                if (!String.IsNullOrEmpty(schema) &&
+                    !Constants.SystemSchemas.Contains(schema) &&
+                    !res.Contains(obj.Schema))
                 {
                     res.Add(obj.Schema);
                 }

@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.SqlClrUtil
 
         public static readonly HashSet<string> SystemSchemas = new HashSet<string>(StringComparer)
         {
-            "dbo", "sys"
+            "dbo", "sys", "guest"
         };
 
         public static readonly Dictionary<Type, string> SqlTypes = new Dictionary<Type, string>()
@@ -50,6 +50,13 @@ namespace Jhu.Graywulf.SqlClrUtil
             { typeof(SqlBytes), "varbinary(max)" },
             { typeof(SqlString), "nvarchar(max)" },
             { typeof(SqlChars), "nvarchar(max)" },
+        };
+
+        public static readonly Dictionary<AssemblySecurityLevel, string> AssemblySecurityLevels = new Dictionary<AssemblySecurityLevel, string>()
+        {
+            { AssemblySecurityLevel.Safe, "SAFE" },
+            { AssemblySecurityLevel.External, "EXTERNAL_ACCESS" },
+            { AssemblySecurityLevel.Unrestricted, "UNSAFE" },
         };
     }
 }

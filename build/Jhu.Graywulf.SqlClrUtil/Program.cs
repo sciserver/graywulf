@@ -13,18 +13,27 @@ namespace Jhu.Graywulf.SqlClrUtil
         static void Main(string[] args)
         {
             var a = Assembly.LoadFrom(args[0]);
+            var sec = AssemblySecurityLevel.Safe;
 
-            var r = new SqlClrReflector(a);
+            if (args.Length > 1)
+            {
+                Enum.TryParse<AssemblySecurityLevel>(args[1], out sec);
+            }
 
-            var name = a.GetName().Name;
+            var r = new SqlClrReflector(a, sec);
+
             var dir = Path.GetDirectoryName(a.Location);
+            var name = Path.GetFileNameWithoutExtension(a.Location);
+            var path = Path.Combine(dir, name);
+            var crpath = path + ".Create.sql";
+            var drpath = path + ".Drop.sql";
 
-            using (var outfile = new StreamWriter(Path.Combine(dir, name + ".Create.sql")))
+            using (var outfile = new StreamWriter(crpath))
             {
                 r.ScriptCreate(outfile);
             }
 
-            using (var outfile = new StreamWriter(Path.Combine(dir, name + ".Drop.sql")))
+            using (var outfile = new StreamWriter(drpath))
             {
                 r.ScriptDrop(outfile);
             }
