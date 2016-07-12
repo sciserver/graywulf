@@ -16,7 +16,7 @@
     <table class="Layout Headline dock-top">
         <tr>
             <td class="HeadlineLeft">
-                <div style="width: 8px; height: 22px;" />
+                <div style="width: 8px; height: 22px;"></div>
             </td>
             <td class="HeadlineLogo">
                 <asp:Label ID="Caption" runat="server" Text="WebUI"></asp:Label>
