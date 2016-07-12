@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using smo = Microsoft.SqlServer.Management.Smo;
 using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Schema.SqlServer
@@ -1285,7 +1286,7 @@ END",
             }
         }
 
-        private DataType CreateDataType(SqlDbType type)
+        public static DataType CreateDataType(SqlDbType type)
         {
             DataType dt;
 
@@ -1389,7 +1390,7 @@ END",
             return dt;
         }
 
-        public DataType CreateDataType(SqlDbType type, int length, byte precision, byte scale, bool isNullable)
+        public static DataType CreateDataType(SqlDbType type, int length, byte precision, byte scale, bool isNullable)
         {
             var dt = CreateDataType(type);
 
@@ -1409,6 +1410,145 @@ END",
             }
 
             dt.IsNullable = isNullable;
+
+            return dt;
+        }
+
+        public static DataType CreateDataType(smo::DataType type)
+        {
+            DataType dt = null;
+
+            switch (type.SqlDataType)
+            {
+                case smo.SqlDataType.BigInt:
+                    dt = DataTypes.SqlBigInt;
+                    break;
+                case smo.SqlDataType.Binary:
+                    dt = DataTypes.SqlBinary;
+                    break;
+                case smo.SqlDataType.Bit:
+                    dt = DataTypes.SqlBit;
+                    break;
+                case smo.SqlDataType.Char:
+                    dt = DataTypes.SqlChar;
+                    break;
+                case smo.SqlDataType.Date:
+                    dt = DataTypes.SqlDate;
+                    break;
+                case smo.SqlDataType.DateTime:
+                    dt = DataTypes.SqlDateTime;
+                    break;
+                case smo.SqlDataType.DateTime2:
+                    dt = DataTypes.SqlDateTime2;
+                    break;
+                case smo.SqlDataType.DateTimeOffset:
+                    dt = DataTypes.DateTimeOffset;
+                    break;
+                case smo.SqlDataType.Decimal:
+                    dt = DataTypes.SqlDecimal;
+                    break;
+                case smo.SqlDataType.Float:
+                    dt = DataTypes.SqlFloat;
+                    break;
+                case smo.SqlDataType.Geography:
+                case smo.SqlDataType.Geometry:
+                case smo.SqlDataType.HierarchyId:
+                    throw new NotImplementedException();
+                case smo.SqlDataType.Image:
+                    dt = DataTypes.SqlImage;
+                    break;
+                case smo.SqlDataType.Int:
+                    dt = DataTypes.SqlInt;
+                    break;
+                case smo.SqlDataType.Money:
+                    dt = DataTypes.SqlMoney;
+                    break;
+                case smo.SqlDataType.NChar:
+                    dt = DataTypes.SqlNChar;
+                    break;
+                case smo.SqlDataType.None:
+                    throw new NotImplementedException();
+                case smo.SqlDataType.NText:
+                    dt = DataTypes.SqlNText;
+                    break;
+                case smo.SqlDataType.Numeric:
+                    dt = DataTypes.SqlNumeric;
+                    break;
+                case smo.SqlDataType.NVarChar:
+                    dt = DataTypes.SqlNVarChar;
+                    break;
+                case smo.SqlDataType.NVarCharMax:
+                    dt = DataTypes.SqlNVarCharMax;
+                    break;
+                case smo.SqlDataType.Real:
+                    dt = DataTypes.SqlReal;
+                    break;
+                case smo.SqlDataType.SmallDateTime:
+                    dt = DataTypes.SqlSmallDateTime;
+                    break;
+                case smo.SqlDataType.SmallInt:
+                    dt = DataTypes.SqlSmallInt;
+                    break;
+                case smo.SqlDataType.SmallMoney:
+                    dt = DataTypes.SqlSmallMoney;
+                    break;
+                case smo.SqlDataType.SysName:
+                    throw new NotImplementedException();
+                case smo.SqlDataType.Text:
+                    dt = DataTypes.SqlText;
+                    break;
+                case smo.SqlDataType.Time:
+                    dt = DataTypes.SqlTime;
+                    break;
+                case smo.SqlDataType.Timestamp:
+                    dt = DataTypes.SqlTimestamp;
+                    break;
+                case smo.SqlDataType.TinyInt:
+                    dt = DataTypes.SqlTinyInt;
+                    break;
+                case smo.SqlDataType.UniqueIdentifier:
+                    dt = DataTypes.SqlUniqueIdentifier;
+                    break;
+                case smo.SqlDataType.UserDefinedDataType:
+                case smo.SqlDataType.UserDefinedTableType:
+                case smo.SqlDataType.UserDefinedType:
+                    throw new NotImplementedException();
+                case smo.SqlDataType.VarBinary:
+                    dt = DataTypes.SqlVarBinary;
+                    break;
+                case smo.SqlDataType.VarBinaryMax:
+                    dt = DataTypes.SqlVarBinaryMax;
+                    break;
+                case smo.SqlDataType.VarChar:
+                    dt = DataTypes.SqlVarChar;
+                    break;
+                case smo.SqlDataType.VarCharMax:
+                    dt = DataTypes.SqlVarCharMax;
+                    break;
+                case smo.SqlDataType.Variant:
+                    dt = DataTypes.SqlVariant;
+                    break;
+                case smo.SqlDataType.Xml:
+                    dt = DataTypes.SqlXml;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            if (!dt.IsMaxLength && dt.HasLength)
+            {
+                dt.Length = type.MaximumLength;
+            }
+
+            if (dt.HasScale)
+            {
+                dt.Scale = (byte)type.NumericScale;
+            }
+
+            if (dt.HasPrecision)
+            {
+                dt.Precision = (byte)type.NumericPrecision;
+            }
 
             return dt;
         }
