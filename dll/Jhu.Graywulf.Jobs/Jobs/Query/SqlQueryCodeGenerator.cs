@@ -214,7 +214,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="node"></param>
         /// <param name="old"></param>
         /// <param name="other"></param>
-        protected void SubstituteTableReference(Node node, TableReference old, TableReference other)
+        public void SubstituteTableReference(Node node, TableReference old, TableReference other)
         {
             foreach (var t in node.Stack)
             {
@@ -229,6 +229,11 @@ namespace Jhu.Graywulf.Jobs.Query
             {
                 trnode.TableReference = other;
             }
+        }
+
+        public void SubstituteTableReference(ITableSource tableSource, TableReference tr)
+        {
+            tableSource.TableReference = tr;
         }
 
         protected void SubstituteServerSpecificDatabaseNames(SelectStatement ss)

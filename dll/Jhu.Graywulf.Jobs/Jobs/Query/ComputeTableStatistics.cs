@@ -34,6 +34,7 @@ namespace Jhu.Graywulf.Jobs.Query
             using (Context context = query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 query.InitializeQueryObject(context, activityContext.GetExtension<IScheduler>(), true);
+                tableSource = query.SubstituteStatisticsDataset(tableSource);
             }
 
             Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;

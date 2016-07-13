@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.SqlParser
 {
-    public interface ITableSource : ITableReference
+    public interface ITableSource : ITableReference, ICloneable
     {
         bool IsSubquery { get; }
         bool IsMultiTable { get; }

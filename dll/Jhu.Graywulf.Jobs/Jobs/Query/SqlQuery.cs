@@ -260,6 +260,39 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
+        public virtual ITableSource SubstituteStatisticsDataset(ITableSource tableSource)
+        {
+            if (!String.IsNullOrEmpty(StatDatabaseVersionName))
+            {
+                var nts = (ITableSource)tableSource.Clone();
+                var sm = GetSchemaManager();
+                var ds = sm.Datasets[tableSource.TableReference.DatasetName];
+
+                if (ds is GraywulfDataset)
+                {
+                    var dd = ((GraywulfDataset)ds).DatabaseDefinitionReference.Value;
+                    var sis = GetAvailableDatabaseInstances(AssignedServerInstance, dd, StatDatabaseVersionName, SourceDatabaseVersionName);
+
+                    if (sis.Length > 0)
+                    {
+                        var nds = sis[0].GetDataset();
+                        var ntr = new TableReference(tableSource.TableReference);
+                        ntr.DatabaseName = nds.DatabaseName;
+                        ntr.DatabaseObject = nds.GetObject(ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName);
+
+                        var nstat = new SqlParser.TableStatistics(tableSource.TableReference.Statistics);
+
+                        CodeGenerator.SubstituteTableReference(nstat.KeyColumn, tableSource.TableReference, ntr);
+                        CodeGenerator.SubstituteTableReference(nts, ntr);
+
+                        return nts;
+                    }
+                }
+            }
+
+            return tableSource;
+        }
+
         /// <summary>
         /// Gather statistics for the table with the specified bin size
         /// </summary>
