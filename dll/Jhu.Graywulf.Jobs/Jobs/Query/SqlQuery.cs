@@ -260,7 +260,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        public virtual ITableSource SubstituteStatisticsDataset(ITableSource tableSource)
+        public Jhu.Graywulf.Schema.DatasetBase GetStatisticsDataset(ITableSource tableSource)
         {
             if (!String.IsNullOrEmpty(StatDatabaseVersionName))
             {
@@ -276,21 +276,12 @@ namespace Jhu.Graywulf.Jobs.Query
                     if (sis.Length > 0)
                     {
                         var nds = sis[0].GetDataset();
-                        var ntr = new TableReference(tableSource.TableReference);
-                        ntr.DatabaseName = nds.DatabaseName;
-                        ntr.DatabaseObject = nds.GetObject(ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName);
-
-                        var nstat = new SqlParser.TableStatistics(tableSource.TableReference.Statistics);
-
-                        CodeGenerator.SubstituteTableReference(nstat.KeyColumn, tableSource.TableReference, ntr);
-                        CodeGenerator.SubstituteTableReference(nts, ntr);
-
-                        return nts;
+                        return nds;
                     }
                 }
             }
 
-            return tableSource;
+            return null;
         }
 
         /// <summary>
@@ -298,11 +289,11 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="tr"></param>
         /// <param name="binSize"></param>
-        public void ComputeTableStatistics(ITableSource tableSource)
+        public void ComputeTableStatistics(ITableSource tableSource, DatasetBase statisticsDataset)
         {
             var stat = tableSource.TableReference.Statistics;
 
-            using (var cmd = CodeGenerator.GetTableStatisticsCommand(tableSource))
+            using (var cmd = CodeGenerator.GetTableStatisticsCommand(tableSource, statisticsDataset))
             {
                 ExecuteSqlOnAssignedServerReader(cmd, CommandTarget.Code, dr =>
                 {

@@ -99,7 +99,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
             return source;
         }
-        
+
         protected virtual void RewriteForExecute(SelectStatement selectStatement)
         {
             int i = 0;
@@ -214,7 +214,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="node"></param>
         /// <param name="old"></param>
         /// <param name="other"></param>
-        public void SubstituteTableReference(Node node, TableReference old, TableReference other)
+        protected void SubstituteTableReference(Node node, TableReference old, TableReference other)
         {
             foreach (var t in node.Stack)
             {
@@ -231,7 +231,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        public void SubstituteTableReference(ITableSource tableSource, TableReference tr)
+        protected void SubstituteTableReference(ITableSource tableSource, TableReference tr)
         {
             tableSource.TableReference = tr;
         }
@@ -442,12 +442,32 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Table statistics
 
+        public virtual ITableSource SubstituteStatisticsDataset(ITableSource tableSource, DatasetBase statisticsDataset)
+        {
+            if (statisticsDataset != null)
+            {
+                var nts = (ITableSource)tableSource.Clone();
+
+                var ntr = new TableReference(tableSource.TableReference);
+                ntr.DatabaseName = statisticsDataset.DatabaseName;
+                ntr.DatabaseObject = statisticsDataset.GetObject(ntr.DatabaseName, ntr.SchemaName, ntr.DatabaseObjectName);
+
+                var nstat = new SqlParser.TableStatistics(tableSource.TableReference.Statistics);
+                SubstituteTableReference(nstat.KeyColumn, tableSource.TableReference, ntr);
+                SubstituteTableReference(nts, ntr);
+
+                return nts;
+            }
+
+            return tableSource;
+        }
+
         /// <summary>
         /// Returns a command initialized for computing table statistics
         /// </summary>
         /// <param name="tableSource"></param>
         /// <returns></returns>
-        public virtual SqlCommand GetTableStatisticsCommand(ITableSource tableSource)
+        public virtual SqlCommand GetTableStatisticsCommand(ITableSource tableSource, DatasetBase statisticsDataset)
         {
             if (tableSource.TableReference.Statistics == null)
             {
@@ -460,7 +480,8 @@ namespace Jhu.Graywulf.Jobs.Query
             }
 
             var sql = new StringBuilder(SqlQueryScripts.TableStatistics);
-            SubstituteTableStatisticsQueryTokens(sql, tableSource);
+            var statts = SubstituteStatisticsDataset(tableSource, statisticsDataset);
+            SubstituteTableStatisticsQueryTokens(sql, statts);
 
             var cmd = new SqlCommand(sql.ToString());
             AppendTableStatisticsCommandParameters(tableSource, cmd);

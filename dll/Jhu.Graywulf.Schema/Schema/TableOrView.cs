@@ -133,5 +133,21 @@ namespace Jhu.Graywulf.Schema
                 return new TableStatistics();
             }
         }
+
+        public Index FindIndexWithFirstKey(string columnName)
+        {
+            foreach (var idx in Indexes.Values)
+            {
+                // TODO: modify this once columns are also stored by ordinal index and not just by name
+                var col = idx.Columns.Values.Where(c => !c.IsIncluded).OrderBy(c => c.KeyOrdinal).FirstOrDefault();
+
+                if (SchemaManager.Comparer.Compare(columnName, col.Name) == 0)
+                {
+                    return idx;
+                }
+            }
+
+            return null;
+        }
     }
 }

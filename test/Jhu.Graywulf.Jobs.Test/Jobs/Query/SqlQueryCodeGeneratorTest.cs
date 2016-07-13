@@ -236,7 +236,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 KeyColumnDataType = DataTypes.SqlFloat
             };
 
-            var cmd = cg.GetTableStatisticsCommand(ts);
+            var cmd = cg.GetTableStatisticsCommand(ts, null);
 
             return cmd.CommandText;
         }
