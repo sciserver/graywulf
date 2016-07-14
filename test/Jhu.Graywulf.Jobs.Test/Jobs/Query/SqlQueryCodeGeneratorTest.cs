@@ -249,8 +249,8 @@ SELECT objID
 FROM TEST:SDSSDR7PhotoObjAll
 WHERE ra > 2";
 
-            var gt = @"INSERT [Graywulf_Temp].[dbo].[test__stat_TEST_dbo_SDSSDR7PhotoObjAll] WITH(TABLOCKX)
-SELECT ROW_NUMBER() OVER (ORDER BY [dec]), [dec]
+            var gt = @"SELECT ROW_NUMBER() OVER (ORDER BY [dec]) AS [rn], [dec] AS [key]
+INTO [Graywulf_Temp].[dbo].[test__stat_TEST_dbo_SDSSDR7PhotoObjAll]
 FROM [SkyNode_Test].[dbo].[SDSSDR7PhotoObjAll]
 WHERE [SkyNode_Test].[dbo].[SDSSDR7PhotoObjAll].[ra] > 2;";
 
@@ -267,8 +267,8 @@ FROM TEST:SDSSDR7PhotoObjAll p
 INNER JOIN TEST:SDSSDR7PhotoObjAll b ON p.objID = b.objID
 WHERE p.ra > 2";
 
-            var gt = @"INSERT [Graywulf_Temp].[dbo].[test__stat_TEST_dbo_SDSSDR7PhotoObjAll_p] WITH(TABLOCKX)
-SELECT ROW_NUMBER() OVER (ORDER BY [dec]), [dec]
+            var gt = @"SELECT ROW_NUMBER() OVER (ORDER BY [dec]) AS [rn], [dec] AS [key]
+INTO [Graywulf_Temp].[dbo].[test__stat_TEST_dbo_SDSSDR7PhotoObjAll_p]
 FROM [SkyNode_Test].[dbo].[SDSSDR7PhotoObjAll] AS [p]
 WHERE [p].[ra] > 2;";
 

@@ -18,7 +18,7 @@ using Jhu.Graywulf.Schema;
 namespace Jhu.Graywulf.Jobs.Query
 {
     [TestClass]
-    public class TableReferenceTest : SqlQueryCodeGeneratorTest
+    public class TableReferenceTest : SqlQueryTestBase
     {
         #region Column list functions
 
