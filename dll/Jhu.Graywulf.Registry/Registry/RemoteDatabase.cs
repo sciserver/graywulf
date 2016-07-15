@@ -214,6 +214,32 @@ namespace Jhu.Graywulf.Registry
             this.sshPassword = old.sshPassword;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as RemoteDatabase;
+
+            eq &= this.providerName == o.providerName;
+            eq &= this.connectionString == o.connectionString;
+            eq &= this.integratedSecurity == o.integratedSecurity;
+            eq &= this.username == o.username;
+            eq &= this.password == o.password;
+            eq &= this.requiresSshTunnel == o.requiresSshTunnel;
+            eq &= this.sshHostName == o.sshHostName;
+            eq &= this.sshPortNumber == o.sshPortNumber;
+            eq &= this.sshUsername == o.sshUsername;
+            eq &= this.sshPassword == o.sshPassword;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as RemoteDatabase;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new RemoteDatabase(this);

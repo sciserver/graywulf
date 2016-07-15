@@ -36,7 +36,7 @@ namespace Jhu.Graywulf.Registry
         [XmlIgnore]
         public override EntityGroup EntityGroup
         {
-            get { return EntityGroup.Federation; }
+            get { return EntityGroup.Jobs; }
         }
 
         /// <summary>
@@ -154,6 +154,24 @@ namespace Jhu.Graywulf.Registry
         {
             this.workflowTypeName = old.workflowTypeName;
             this.parameters = new ParameterCollection(old.parameters);
+        }
+
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as JobDefinition;
+
+            eq &= this.workflowTypeName == o.workflowTypeName;
+            eq &= this.parameters.CompareItems(o.parameters);
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as JobDefinition;
+            CopyMembers(o);
         }
 
         public override object Clone()

@@ -182,7 +182,25 @@ namespace Jhu.Graywulf.Registry
         private void CopyMembers(QueueInstance old)
         {
             this.maxOutstandingJobs = old.maxOutstandingJobs;
-            this.timeout = 0;
+            this.timeout = old.timeout;
+        }
+
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as QueueInstance;
+
+            eq &= this.maxOutstandingJobs == o.maxOutstandingJobs;
+            eq &= this.timeout == o.timeout;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as QueueInstance;
+            CopyMembers(o);
         }
 
         public override object Clone()

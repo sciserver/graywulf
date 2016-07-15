@@ -234,6 +234,27 @@ namespace Jhu.Graywulf.Registry
             this.reservedSpace = old.reservedSpace;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as DatabaseInstanceFileGroup;
+
+            eq &= this.fileGroupName == o.fileGroupName;
+            eq &= this.fileGroupType == o.fileGroupType;
+            eq &= this.allocatedSpace == o.allocatedSpace;
+            eq &= this.usedSpace == o.usedSpace;
+            eq &= this.reservedSpace == o.reservedSpace;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as DatabaseInstanceFileGroup;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new DatabaseInstanceFileGroup(this);

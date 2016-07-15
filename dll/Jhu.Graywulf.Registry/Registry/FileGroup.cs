@@ -208,6 +208,29 @@ namespace Jhu.Graywulf.Registry
             this.fileCount = old.fileCount;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as FileGroup;
+
+            eq &= this.fileGroupType == o.fileGroupType;
+            eq &= this.layoutType == o.layoutType;
+            eq &= this.allocationType == o.allocationType;
+            eq &= this.diskDesignation == o.diskDesignation;
+            eq &= this.fileGroupName == o.fileGroupName;
+            eq &= this.allocatedSpace == o.allocatedSpace;
+            eq &= this.fileCount == o.fileCount;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as FileGroup;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new FileGroup(this);

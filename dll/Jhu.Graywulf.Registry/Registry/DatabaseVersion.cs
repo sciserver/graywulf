@@ -162,6 +162,23 @@ namespace Jhu.Graywulf.Registry
             this.sizeMultiplier = old.sizeMultiplier;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as DatabaseVersion;
+
+            eq &= this.sizeMultiplier == o.sizeMultiplier;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as DatabaseVersion;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new DatabaseVersion(this);

@@ -176,6 +176,26 @@ namespace Jhu.Graywulf.Registry
             this.adminPassword = old.adminPassword;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as ServerVersion;
+
+            eq &= this.instanceName == o.instanceName;
+            eq &= this.integratedSecurity == o.integratedSecurity;
+            eq &= this.adminUser == o.adminUser;
+            eq &= this.adminPassword == o.adminPassword;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as ServerVersion;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new ServerVersion(this);

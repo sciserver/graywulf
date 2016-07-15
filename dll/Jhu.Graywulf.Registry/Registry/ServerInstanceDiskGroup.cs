@@ -155,6 +155,23 @@ namespace Jhu.Graywulf.Registry
             this.diskDesignation = old.diskDesignation;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as ServerInstanceDiskGroup;
+
+            eq &= this.diskDesignation == o.diskDesignation;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as ServerInstanceDiskGroup;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new ServerInstanceDiskGroup(this);

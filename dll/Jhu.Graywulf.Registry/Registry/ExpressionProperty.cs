@@ -114,6 +114,20 @@ namespace Jhu.Graywulf.Registry
             this.value = old.value;
         }
 
+        internal virtual bool CompareMembers(ExpressionProperty other)
+        {
+            bool eq = true;
+
+            eq &= this.value == other.value;
+
+            return eq;
+        }
+
+        internal virtual void UpdateMembers(ExpressionProperty other)
+        {
+            this.value = other.value;
+        }
+
         #endregion
 
         /// <summary>

@@ -157,6 +157,16 @@ namespace Jhu.Graywulf.Components
             this.xmlValue = old.xmlValue;
         }
 
+        public virtual bool CompareMembers(Parameter other)
+        {
+            bool eq = true;
+
+            eq &= this.direction == other.direction;
+            eq &= this.value.Equals(other.value);       // TODO: how to do member-wise comparison?
+
+            return eq;
+        }
+
         public virtual object Clone()
         {
             return new Parameter(this);

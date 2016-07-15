@@ -360,6 +360,44 @@ namespace Jhu.Graywulf.Registry
             this.parameters = new ParameterCollection(old.parameters);
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as JobInstance;
+
+            eq &= this.workflowTypeName == o.workflowTypeName;
+            eq &= this.jobExecutionStatus == o.jobExecutionStatus;
+            eq &= this.jobTimeout == o.jobTimeout;
+            eq &= this.suspendTimeout == o.suspendTimeout;
+            eq &= this.scheduleType == o.scheduleType;
+            eq &= this.scheduleTime == o.scheduleTime;
+            eq &= this.recurringPeriod == o.recurringPeriod;
+            eq &= this.recurringInterval == o.recurringInterval;
+            eq &= this.recurringMask == o.recurringMask;
+            eq &= this.exceptionMessage == o.exceptionMessage;
+            eq &= this.parameters.CompareItems(o.parameters);
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as JobInstance;
+
+            this.workflowTypeName = o.workflowTypeName;
+            this.jobExecutionStatus = o.jobExecutionStatus;
+            this.jobTimeout = o.jobTimeout;
+            this.suspendTimeout = o.suspendTimeout;
+            this.scheduleType = o.scheduleType;
+            this.scheduleTime = o.scheduleTime;
+            this.recurringPeriod = o.recurringPeriod;
+            this.recurringInterval = o.recurringInterval;
+            this.recurringMask = o.recurringMask;
+            this.exceptionMessage = o.exceptionMessage;
+            this.parameters = new ParameterCollection(o.parameters);
+        }
+
         public override object Clone()
         {
             return new JobInstance(this);

@@ -388,6 +388,33 @@ namespace Jhu.Graywulf.Registry
             this.disclaimer = old.disclaimer;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as Federation;
+
+            eq &= this.schemaManager == o.schemaManager;
+            eq &= this.queryFactory == o.queryFactory;
+            eq &= this.fileFormatFactory == o.fileFormatFactory;
+            eq &= this.streamFactory == o.streamFactory;
+            eq &= this.importTablesJobFactory == o.importTablesJobFactory;
+            eq &= this.exportTablesJobFactory == o.exportTablesJobFactory;
+            eq &= this.shortTitle == o.shortTitle;
+            eq &= this.longTitle == o.longTitle;
+            eq &= this.email == o.email;
+            eq &= this.copyright == o.copyright;
+            eq &= this.disclaimer == o.disclaimer;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as Federation;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new Federation(this);

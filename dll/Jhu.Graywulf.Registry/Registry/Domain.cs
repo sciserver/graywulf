@@ -210,6 +210,29 @@ namespace Jhu.Graywulf.Registry
             this.disclaimer = old.disclaimer;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as Domain;
+
+            eq &= this.identityProvider == o.identityProvider;
+            eq &= this.authenticatorFactory == o.authenticatorFactory;
+            eq &= this.shortTitle == o.shortTitle;
+            eq &= this.longTitle == o.longTitle;
+            eq &= this.email == o.email;
+            eq &= this.copyright == o.copyright;
+            eq &= this.disclaimer == o.disclaimer;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as Domain;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new Domain(this);

@@ -156,6 +156,24 @@ namespace Jhu.Graywulf.Registry
             this.timeout = old.timeout;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as QueueDefinition;
+
+            eq &= this.maxOutstandingJobs == o.maxOutstandingJobs;
+            eq &= this.timeout == o.timeout;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as QueueDefinition;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new QueueDefinition(this);

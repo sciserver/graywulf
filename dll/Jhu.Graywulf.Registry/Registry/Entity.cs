@@ -567,6 +567,42 @@ namespace Jhu.Graywulf.Registry
             InitializeChildTypes();
         }
 
+        internal virtual bool CompareMembers(Entity other)
+        {
+            bool eq = true;
+
+            eq &= Entity.StringComparer.Compare(this.name, other.name) == 0;
+            eq &= Entity.StringComparer.Compare(this.version, other.version) == 0;
+            eq &= this.system == other.system;
+            eq &= this.hidden == other.hidden;
+            eq &= this.readOnly == other.readOnly;
+            eq &= this.primary == other.primary;
+            eq &= this.deleted == other.deleted;
+            eq &= this.runningState == other.runningState;
+            eq &= this.alertState == other.alertState;
+            eq &= this.deploymentState == other.deploymentState;
+            eq &= this.settings.CompareItems(other.settings);
+            eq &= this.comments == other.comments;
+
+            return eq;
+        }
+
+        internal virtual void UpdateMembers(Entity other)
+        {
+            this.name = other.name;
+            this.version = other.version;
+            this.system = other.system;
+            this.hidden = other.hidden;
+            this.readOnly = other.readOnly;
+            this.primary = other.primary;
+            this.deleted = other.deleted;
+            this.runningState = other.runningState;
+            this.alertState = other.alertState;
+            this.deploymentState = other.deploymentState;
+            this.settings = new ParameterCollection(other.settings);
+            this.comments = other.comments;
+        }
+
         public virtual object Clone()
         {
             return new Entity(this);

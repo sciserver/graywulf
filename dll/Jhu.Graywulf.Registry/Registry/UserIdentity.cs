@@ -137,6 +137,25 @@ namespace Jhu.Graywulf.Registry
             this.identifier = old.identifier;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as UserIdentity;
+
+            eq &= this.protocol == o.protocol;
+            eq &= this.authority == o.authority;
+            eq &= this.identifier == o.identifier;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as UserIdentity;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new UserIdentity(this);

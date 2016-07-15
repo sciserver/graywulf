@@ -173,6 +173,28 @@ namespace Jhu.Graywulf.Registry
             this.deployUncPath = new ExpressionProperty(old.deployUncPath);
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as Machine;
+
+            eq &= this.hostName == o.hostName;
+            eq &= this.adminUrl.CompareMembers(o.adminUrl);
+            eq &= this.deployUncPath.CompareMembers(o.deployUncPath);
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as Machine;
+
+            this.hostName = o.hostName;
+            this.adminUrl.UpdateMembers(o.adminUrl);
+            this.deployUncPath.UpdateMembers(o.deployUncPath);
+        }
+
         public override object Clone()
         {
             return new Machine(this);

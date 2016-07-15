@@ -40,6 +40,35 @@ namespace Jhu.Graywulf.Components
             }
         }
 
+        public bool CompareItems(ParameterCollection other)
+        {
+            // Compare keys
+            foreach (var k in this.Keys)
+            {
+                if (!other.ContainsKey(k))
+                {
+                    return false;
+                }
+            }
+
+            foreach (var k in other.Keys)
+            {
+                if (!this.ContainsKey(k))
+                {
+                    return false;
+                }
+            }
+
+            bool eq = true;
+
+            foreach (var k in this.Keys)
+            {
+                eq &= this[k].CompareMembers(other[k]); 
+            }
+
+            return eq;
+        }
+
         #endregion
         #region Collection implementation
 

@@ -284,6 +284,30 @@ namespace Jhu.Graywulf.Registry
             this.partitionFunction = old.partitionFunction;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as DatabaseDefinition;
+            
+            eq &= this.schemaSourceDatabaseName == o.schemaSourceDatabaseName;
+            eq &= this.layoutType == o.layoutType;
+            eq &= this.databaseInstanceNamePattern == o.databaseInstanceNamePattern;
+            eq &= this.databaseNamePattern == o.databaseNamePattern;
+            eq &= this.sliceCount == o.sliceCount;
+            eq &= this.partitionCount == o.partitionCount;
+            eq &= this.partitionRangeType == o.partitionRangeType;
+            eq &= this.partitionFunction == o.partitionFunction;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as DatabaseDefinition;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new DatabaseDefinition(this);

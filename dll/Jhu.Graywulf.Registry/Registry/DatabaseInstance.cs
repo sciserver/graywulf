@@ -228,6 +228,23 @@ namespace Jhu.Graywulf.Registry
             this.databaseName = old.databaseName;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as DatabaseInstance;
+
+            eq &= this.databaseName == o.databaseName;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as DatabaseInstance;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new DatabaseInstance(this);

@@ -212,6 +212,28 @@ namespace Jhu.Graywulf.Registry
             this.writeBandwidth = old.writeBandwidth;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as DiskGroup;
+
+            eq &= this.type == o.type;
+            eq &= this.fullSpace == o.fullSpace;
+            eq &= this.allocatedSpace == o.allocatedSpace;
+            eq &= this.reservedSpace == o.reservedSpace;
+            eq &= this.readBandwidth == o.readBandwidth;
+            eq &= this.writeBandwidth == o.writeBandwidth;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as DiskGroup;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new DiskGroup(this);

@@ -128,6 +128,23 @@ namespace Jhu.Graywulf.Registry
             this.filename = old.filename;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as DeploymentPackage;
+
+            eq &= this.filename == o.filename;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as DeploymentPackage;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new DeploymentPackage(this);

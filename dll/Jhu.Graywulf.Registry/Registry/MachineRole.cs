@@ -141,6 +141,23 @@ namespace Jhu.Graywulf.Registry
             this.machineRoleType = old.machineRoleType;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as MachineRole;
+
+            eq &= this.machineRoleType == o.machineRoleType;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as MachineRole;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new MachineRole(this);

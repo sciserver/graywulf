@@ -137,6 +137,24 @@ namespace Jhu.Graywulf.Registry
             this.to = old.to;
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as Partition;
+
+            eq &= this.from == o.from;
+            eq &= this.to == o.to;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as Partition;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new Partition(this);

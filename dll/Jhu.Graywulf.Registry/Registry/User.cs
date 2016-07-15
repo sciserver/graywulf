@@ -514,6 +514,46 @@ namespace Jhu.Graywulf.Registry
             this.passwordHash = Jhu.Graywulf.Util.DeepCloner.CopyArray(old.passwordHash);
         }
 
+        internal override bool CompareMembers(Entity other)
+        {
+            bool eq = base.CompareMembers(other);
+            var o = other as User;
+
+            eq &= this.title == o.title;
+            eq &= this.firstName == o.firstName;
+            eq &= this.middleName == o.middleName;
+            eq &= this.lastName == o.lastName;
+            eq &= this.gender == o.gender;
+            eq &= this.nonValidatedEmail == o.nonValidatedEmail;
+            eq &= this.email == o.email;
+            eq &= this.dateOfBirth == o.dateOfBirth;
+            eq &= this.company == o.company;
+            eq &= this.jobTitle == o.jobTitle;
+            eq &= this.address == o.address;
+            eq &= this.address2 == o.address2;
+            eq &= this.state == o.state;
+            eq &= this.stateCode == o.stateCode;
+            eq &= this.city == o.city;
+            eq &= this.country == o.country;
+            eq &= this.countryCode == o.countryCode;
+            eq &= this.zipCode == o.zipCode;
+            eq &= this.workPhone == o.workPhone;
+            eq &= this.homePhone == o.homePhone;
+            eq &= this.cellPhone == o.cellPhone;
+            eq &= this.timeZone == o.timeZone;
+            eq &= this.integrated == o.integrated;
+            eq &= this.ntlmUser == o.ntlmUser;
+
+            return eq;
+        }
+
+        internal override void UpdateMembers(Entity other)
+        {
+            base.UpdateMembers(other);
+            var o = other as User;
+            CopyMembers(o);
+        }
+
         public override object Clone()
         {
             return new User(this);
