@@ -27,8 +27,8 @@ namespace Jhu.Graywulf.Registry
             this.Filename = smofile.FileName;
             this.DatabaseFileType = DatabaseFileType.Data;
 
-            this.DeploymentState = Registry.DeploymentState.Deployed;
-            this.RunningState = Registry.RunningState.Running;
+            this.DeploymentState = DeploymentState.Deployed;
+            this.RunningState = RunningState.Running;
 
             this.AllocatedSpace = (long)Math.Ceiling(smofile.Size * 0x400L);     // given in KB, bug in docs!
             this.UsedSpace = (long)(smofile.UsedSpace * 0x400L);
@@ -42,8 +42,8 @@ namespace Jhu.Graywulf.Registry
             this.Filename = smolf.FileName;
             this.DatabaseFileType = DatabaseFileType.Log;
 
-            this.DeploymentState = Registry.DeploymentState.Deployed;
-            this.RunningState = Registry.RunningState.Running;
+            this.DeploymentState = DeploymentState.Deployed;
+            this.RunningState = RunningState.Running;
 
             this.AllocatedSpace = (long)Math.Ceiling(smolf.Size * 0x400L);     // given in KB, bug in docs!
             this.UsedSpace = (long)(smolf.UsedSpace * 0x400L);

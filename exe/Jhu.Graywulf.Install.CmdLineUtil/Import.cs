@@ -25,11 +25,14 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
             {
                 try
                 {
-                    var f = new EntityFactory(context);
+                    var s = new RegistryDeserializer(context)
+                    {
+                        IgnoreDuplicates = IgnoreDuplicates
+                    };
 
                     using (var infile = new StreamReader(Input))
                     {
-                        f.Deserialize(infile, IgnoreDuplicates);
+                        s.Deserialize(infile);
                     }
 
                     context.CommitTransaction();

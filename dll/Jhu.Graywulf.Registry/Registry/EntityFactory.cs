@@ -18,43 +18,6 @@ namespace Jhu.Graywulf.Registry
     /// </remarks>
     public class EntityFactory : ContextObject
     {
-        [XmlRoot(ElementName = "Registry", Namespace = "")]
-        [XmlType(TypeName = "Registry", Namespace = "")]
-        public class Registry
-        {
-            [XmlArrayItem(typeof(Cluster))]
-            [XmlArrayItem(typeof(DatabaseDefinition))]
-            [XmlArrayItem(typeof(DatabaseInstance))]
-            [XmlArrayItem(typeof(DatabaseInstanceFile))]
-            [XmlArrayItem(typeof(DatabaseInstanceFileGroup))]
-            [XmlArrayItem(typeof(DatabaseVersion))]
-            [XmlArrayItem(typeof(DeploymentPackage))]
-            [XmlArrayItem(typeof(DiskGroup))]
-            [XmlArrayItem(typeof(DiskVolume))]
-            [XmlArrayItem(typeof(Domain))]
-            [XmlArrayItem(typeof(Federation))]
-            [XmlArrayItem(typeof(FileGroup))]
-            [XmlArrayItem(typeof(JobDefinition))]
-            [XmlArrayItem(typeof(JobInstance))]
-            [XmlArrayItem(typeof(JobInstanceDependency))]
-            [XmlArrayItem(typeof(Machine))]
-            [XmlArrayItem(typeof(MachineRole))]
-            [XmlArrayItem(typeof(Partition))]
-            [XmlArrayItem(typeof(QueueDefinition))]
-            [XmlArrayItem(typeof(QueueInstance))]
-            [XmlArrayItem(typeof(ServerInstance))]
-            [XmlArrayItem(typeof(ServerInstanceDiskGroup))]
-            [XmlArrayItem(typeof(ServerVersion))]
-            [XmlArrayItem(typeof(Slice))]
-            [XmlArrayItem(typeof(User))]
-            [XmlArrayItem(typeof(UserDatabaseInstance))]
-            [XmlArrayItem(typeof(UserGroup))]
-            [XmlArrayItem(typeof(UserGroupMembership))]
-            [XmlArrayItem(typeof(UserRole))]
-            [XmlArrayItem(typeof(UserIdentity))]
-            public Entity[] Entities;
-        }
-
         public static string CombineName(EntityType entityType, params string[] nameParts)
         {
             var name = entityType.ToString() + Constants.EntityTypeSeparator;
@@ -119,9 +82,11 @@ namespace Jhu.Graywulf.Registry
         public EntityFactory(Context context)
             : base(context)
         {
+            
         }
 
         #endregion
+        
         #region Entity Search Functions
 
         /// <summary>
@@ -466,188 +431,6 @@ ORDER BY Number";
             }
         }
 
-        #region Serialization Functions
-
-        /// <summary>
-        /// Serializes an entity and all its child elements into XML.
-        /// </summary>
-        /// <param name="entity">The root entity of the serialization.</param>
-        /// <param name="output">The TextWriter object used for writing the XML stream.</param>
-        public void Serialize(Entity entity, TextWriter output, EntityGroup entityGroupMask, bool recursive, bool excludeUserCreated)
-        {
-            var registry = new Registry();
-            registry.Entities = EnumerateChildrenForSerialize(entity, entityGroupMask, recursive, excludeUserCreated).ToArray();
-
-            var ser = new XmlSerializer(registry.GetType());
-            ser.Serialize(output, registry);
-        }
-
-        /// <summary>
-        /// Recursively enumerate entities in the registry tree
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="excludeEntities"></param>
-        /// <param name="excludeUserJobs"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// The function enumerates nodes of a subtree of the registry,
-        /// returning parent items first, then immediate children in their
-        /// appropriate order by the field 'Number'.
-        /// Certain entities are excluded but their children are still
-        /// included in the search!
-        /// </remarks>
-        private IEnumerable<Entity> EnumerateChildrenForSerialize(Entity entity, EntityGroup entityGroupMask, bool recursive, bool excludeUserJobs)
-        {
-            /*
-            // Make sure it's not a simple user job
-            // TODO: exclude user jobs is an ad-hoc solution
-            // maybe filtering on name prefixes?
-            if (excludeUserJobs &&
-                entity.EntityType == EntityType.JobInstance &&
-                (((JobInstance)entity).ScheduleType != ScheduleType.Recurring ||
-                 ((JobInstance)entity).JobExecutionStatus != JobExecutionState.Scheduled))
-            {
-                yield break;
-            }
-            */
-
-            // See if this particular type of entity is included by the mask
-            if ((entity.EntityGroup & entityGroupMask) != 0)
-            {
-                yield return entity;
-            }
-
-            if (recursive)
-            {
-                // Even if it's excluded, return children.
-                // Some exports (layout) might require exporting certain security
-                // objects (user-mydb mapping)
-                entity.LoadAllChildren(true);
-                foreach (Entity e in entity.EnumerateAllChildren().OrderBy(ei => ei.Number))
-                {
-                    foreach (Entity ee in EnumerateChildrenForSerialize(e, entityGroupMask, recursive, excludeUserJobs))
-                    {
-                        yield return ee;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Deserializes entities from an XML stream.
-        /// </summary>
-        /// <param name="input">The TextReader object used for reading from the XML stream.</param>
-        /// <returns>An IEnumerable interface to the deserialized objects.</returns>
-        public IEnumerable<Entity> Deserialize(TextReader input, bool ignoreDuplicates)
-        {
-            Registry registry;
-            var ser = new XmlSerializer(typeof(Registry));
-
-            // Deserialize object into memory, they don't have GUIDs now
-            registry = (Registry)ser.Deserialize(input);
-
-            int depth = 0;
-            int count = 0;
-
-            while (count < registry.Entities.Length)
-            {
-                foreach (var entity in registry.Entities)
-                {
-                    if (entity.ParentReference.IsEmpty && depth == 0 ||
-                        !entity.ParentReference.IsEmpty && depth == entity.ParentReference.Name.Count(c => c == Constants.EntityNameSeparator) + 1)
-                    {
-                        Console.Error.Write("Deserializing {0}... ", entity.Name);
-
-                        entity.IsDeserializing = true;
-                        entity.Context = this.Context;
-
-                        if (!entity.ParentReference.IsEmpty)
-                        {
-                            ResolveParentReference(entity);
-                        }
-
-                        try
-                        {
-                            entity.Save();
-                            Console.Error.WriteLine("done.");
-                        }
-                        catch (DuplicateNameException)
-                        {
-                            if (!ignoreDuplicates)
-                            {
-                                throw;
-                            }
-                            Console.Error.WriteLine("ignored duplicate.");
-                        }
-                        catch (Exception)
-                        {
-                            Console.Error.WriteLine("failed.");
-                            throw;
-                        }
-
-                        count++;
-                    }
-                }
-
-                depth++;
-            }
-
-            foreach (var entity in registry.Entities)
-            {
-                Console.Error.Write("Resolving references of {0}... ", entity.Name);
-
-                try
-                {
-                    entity.IsDeserializing = false;     // Allows saving entity references
-                    ResolveNameReferences(entity);
-                    entity.Save();
-
-                    Console.Error.WriteLine("done.");
-                }
-                catch (DuplicateNameException)
-                {
-                    if (!ignoreDuplicates)
-                    {
-                        throw;
-                    }
-                    Console.Error.WriteLine("ignored duplicate.");
-                }
-                catch (Exception)
-                {
-                    Console.Error.WriteLine("failed.");
-                    throw;
-                }
-            }
-
-            return registry.Entities;
-        }
-
-        private void ResolveParentReference(Entity entity)
-        {
-            entity.ParentReference.EnsureEntityLoaded();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <remarks>
-        /// This is used by the XML deserializer
-        /// </remarks>
-        private void ResolveNameReferences(Entity entity)
-        {
-            foreach (IEntityReference r in entity.EntityReferences.Values)
-            {
-                if (!r.IsEmpty)
-                {
-                    // Make sure entity reference is loaded by retrieving its value
-                    var o = r.Value;
-                }
-            }
-
-            entity.IsEntityReferencesLoaded = true;
-        }
-
-        #endregion
         #region Utility function
 
         protected DataTable CreateGuidListTable(HashSet<Guid> guids)

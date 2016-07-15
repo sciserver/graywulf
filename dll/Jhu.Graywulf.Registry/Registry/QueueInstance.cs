@@ -170,7 +170,7 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            this.RunningState = Registry.RunningState.Paused;
+            this.RunningState = RunningState.Paused;
             this.maxOutstandingJobs = 1;
             this.timeout = 0;
         }

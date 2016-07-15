@@ -215,7 +215,7 @@ namespace Jhu.Graywulf.Registry
         private void InitializeMembers()
         {
             this.fileGroupName = string.Empty;
-            this.fileGroupType = Registry.FileGroupType.Unknown;
+            this.fileGroupType = FileGroupType.Unknown;
             this.allocatedSpace = 0;
             this.usedSpace = 0;
             this.reservedSpace = 0;

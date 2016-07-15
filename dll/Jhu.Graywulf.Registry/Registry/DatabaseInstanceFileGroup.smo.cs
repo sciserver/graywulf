@@ -27,8 +27,8 @@ namespace Jhu.Graywulf.Registry
             this.FileGroupType = FileGroupType.Data;
             // this.PartitionReference        // TODO: how to discover it automatically?
 
-            this.DeploymentState = Registry.DeploymentState.Deployed;
-            this.RunningState = Registry.RunningState.Running;
+            this.DeploymentState = DeploymentState.Deployed;
+            this.RunningState = RunningState.Running;
 
             this.AllocatedSpace = 0;
             this.UsedSpace = 0;
@@ -48,8 +48,8 @@ namespace Jhu.Graywulf.Registry
             this.FileGroupType = FileGroupType.Log;
             this.PartitionReference.Guid = Guid.Empty;
 
-            this.DeploymentState = Registry.DeploymentState.Deployed;
-            this.RunningState = Registry.RunningState.Running;
+            this.DeploymentState = DeploymentState.Deployed;
+            this.RunningState = RunningState.Running;
 
             // Calculate log size
             this.AllocatedSpace = 0;

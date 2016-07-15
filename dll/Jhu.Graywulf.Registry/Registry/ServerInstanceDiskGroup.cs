@@ -143,7 +143,7 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            this.diskDesignation = Registry.DiskDesignation.Unknown;
+            this.diskDesignation = DiskDesignation.Unknown;
         }
 
         /// <summary>

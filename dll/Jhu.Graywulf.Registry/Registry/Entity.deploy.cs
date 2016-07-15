@@ -9,13 +9,13 @@ namespace Jhu.Graywulf.Registry
     {
         public virtual void Deploy()
         {
-            this.deploymentState = Registry.DeploymentState.Deployed;
+            this.deploymentState = DeploymentState.Deployed;
             Save();
         }
 
         public virtual void Undeploy()
         {
-            this.deploymentState = Registry.DeploymentState.Undeployed;
+            this.deploymentState = DeploymentState.Undeployed;
             Save();
         }
     }

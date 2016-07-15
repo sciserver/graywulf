@@ -20,13 +20,13 @@ namespace Jhu.Graywulf.Registry
 
                 if (smodb != null)
                 {
-                    this.DeploymentState = Registry.DeploymentState.Deployed;
-                    this.RunningState = Registry.RunningState.Attached;
+                    this.DeploymentState = DeploymentState.Deployed;
+                    this.RunningState = RunningState.Attached;
                 }
                 else
                 {
-                    this.DeploymentState = Registry.DeploymentState.Undeployed;
-                    this.RunningState = Registry.RunningState.Detached;     // TODO
+                    this.DeploymentState = DeploymentState.Undeployed;
+                    this.RunningState = RunningState.Detached;     // TODO
                 }
             }
             else

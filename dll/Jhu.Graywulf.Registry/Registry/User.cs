@@ -457,7 +457,7 @@ namespace Jhu.Graywulf.Registry
             this.firstName = String.Empty;
             this.middleName = String.Empty;
             this.lastName = String.Empty;
-            this.gender = Registry.Gender.Male;
+            this.gender = Gender.Male;
             this.nonValidatedEmail = String.Empty;
             this.email = String.Empty;
             this.dateOfBirth = new DateTime(1950, 1, 1);
@@ -576,14 +576,14 @@ namespace Jhu.Graywulf.Registry
         {
             activationCode = string.Empty;
             DeploymentState = DeploymentState.Deployed;
-            RunningState = Registry.RunningState.Running;
+            RunningState = RunningState.Running;
         }
 
         public void Deactivate()
         {
             GenerateActivationCode();
             DeploymentState = DeploymentState.Undeployed;
-            RunningState = Registry.RunningState.Stopped;
+            RunningState = RunningState.Stopped;
         }
 
         #endregion

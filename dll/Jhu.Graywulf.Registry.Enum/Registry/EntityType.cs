@@ -15,6 +15,7 @@ namespace Jhu.Graywulf.Registry
         /// Default value for entity type
         /// </summary>
         Unknown = -1,
+        All = 0x0FFFFFFF,
 
         #region Cluster
 

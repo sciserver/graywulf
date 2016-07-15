@@ -19,10 +19,15 @@ namespace Jhu.Graywulf.Registry
             {
                 var f = new EntityFactory(context);
                 var entity = f.LoadEntity(EntityType.Cluster, Constants.ClusterName);
+                var s = new RegistrySerializer(entity)
+                {
+                    Recursive = true,
+                    ExcludeUserCreated = false
+                };
 
                 using (var outfile = new StreamWriter(filename))
                 {
-                    f.Serialize(entity, outfile, EntityGroup.All, true, false);
+                    s.Serialize(outfile);
                 }
             }
         }
@@ -59,12 +64,14 @@ namespace Jhu.Graywulf.Registry
 
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-
-                var f = new EntityFactory(context);
+                var s = new RegistryDeserializer(context)
+                {
+                    IgnoreDuplicates = true
+                };
 
                 using (var infile = new StreamReader(filename))
                 {
-                    f.Deserialize(infile, true);
+                    s.Deserialize(infile);
                 }
             }
         }

@@ -29,9 +29,14 @@ namespace Jhu.Graywulf.Web.Admin.Common
         {
             var f = new EntityFactory(RegistryContext);
             var entity = f.LoadEntity(new Guid(Request.QueryString["guid"]));
+            var s = new RegistrySerializer(entity)
+            {
+                Recursive = true,
+                ExcludeUserCreated = false,
+            };
 
             Response.ContentType = "text/xml";
-            f.Serialize(entity, Response.Output, EntityGroup.All, true, false);
+            s.Serialize(Response.Output);
             Response.End();
         }
     }

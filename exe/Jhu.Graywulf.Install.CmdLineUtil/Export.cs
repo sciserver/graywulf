@@ -46,29 +46,34 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
             {
                 var f = new EntityFactory(context);
                 var entity = f.LoadEntity(RootEntitity);
-                var entityGroupMask = EntityGroup.All;
+                var s = new RegistrySerializer(entity)
+                {
+                    ExcludeUserCreated = ExcludeUserCreated
+                };
 
                 if (Object)
                 {
                     using (var outfile = new StreamWriter(Output))
                     {
-                        f.Serialize(entity, outfile, entityGroupMask, false, ExcludeUserCreated);
+                        s.Recursive = false;
+                        s.Serialize(outfile);
                     }
                 }
                 else
                 {
                     if (Cluster || Domain || Federation || Layout || Jobs)
                     {
-                        if (!Cluster) entityGroupMask &= ~EntityGroup.Cluster;
-                        if (!Domain) entityGroupMask &= ~EntityGroup.Domain;
-                        if (!Federation) entityGroupMask &= ~EntityGroup.Federation;
-                        if (!Layout) entityGroupMask &= ~EntityGroup.Layout;
-                        if (!Jobs) entityGroupMask &= ~EntityGroup.Jobs;
+                        if (!Cluster) s.EntityGroupMask &= ~EntityGroup.Cluster;
+                        if (!Domain) s.EntityGroupMask &= ~EntityGroup.Domain;
+                        if (!Federation) s.EntityGroupMask &= ~EntityGroup.Federation;
+                        if (!Layout) s.EntityGroupMask &= ~EntityGroup.Layout;
+                        if (!Jobs) s.EntityGroupMask &= ~EntityGroup.Jobs;
                     }
 
                     using (var outfile = new StreamWriter(Output))
                     {
-                        f.Serialize(entity, outfile, entityGroupMask, true, ExcludeUserCreated);
+                        s.Recursive = true;
+                        s.Serialize(outfile);
                     }
                 }
             }

@@ -15,10 +15,10 @@ namespace Jhu.Graywulf.Registry
         {
             switch (DatabaseFileType)
             {
-                case Registry.DatabaseFileType.Data:
+                case DatabaseFileType.Data:
                     DiscoverFile(GetSmoFile(), update, delete, create);
                     break;
-                case Registry.DatabaseFileType.Log:
+                case DatabaseFileType.Log:
                     DiscoverLogFile(GetSmoLogFile(), update, delete, create);
                     break;
                 default:

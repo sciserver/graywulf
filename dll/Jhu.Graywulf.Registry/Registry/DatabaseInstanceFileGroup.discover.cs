@@ -14,10 +14,10 @@ namespace Jhu.Graywulf.Registry
         {
             switch (FileGroupType)
             {
-                case Registry.FileGroupType.Data:
+                case FileGroupType.Data:
                     DiscoverFileGroup(GetSmoFileGroup(), update, delete, create);
                     break;
-                case Registry.FileGroupType.Log:
+                case FileGroupType.Log:
                     DiscoverLogFileGroup(GetSmoDatabase(), update, delete, create);
                     break;
                 default:

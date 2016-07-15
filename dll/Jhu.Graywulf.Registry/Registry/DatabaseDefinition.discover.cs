@@ -75,8 +75,8 @@ namespace Jhu.Graywulf.Registry
             fg.DiskDesignation = DiskDesignation.Data;
             fg.FileCount = 0;   // TODO: check this to be one file/volume
 
-            fg.DeploymentState = Registry.DeploymentState.Deployed;
-            fg.RunningState = Registry.RunningState.Running;
+            fg.DeploymentState = DeploymentState.Deployed;
+            fg.RunningState = RunningState.Running;
 
             fg.AllocatedSpace = (long)Math.Ceiling(smofg.Size * 0x400L);     // given in KB, bug in docs!
             fg.AllocatedSpace = Math.Max(0x1000000L, fg.AllocatedSpace);        // 16 MB minimum
@@ -99,8 +99,8 @@ namespace Jhu.Graywulf.Registry
             fg.DiskDesignation = DiskDesignation.Log;
             fg.FileCount = 0;   // TODO: check this to be one file/volume
 
-            fg.DeploymentState = Registry.DeploymentState.Deployed;
-            fg.RunningState = Registry.RunningState.Running;
+            fg.DeploymentState = DeploymentState.Deployed;
+            fg.RunningState = RunningState.Running;
 
             // Calculate log size
             fg.AllocatedSpace = 0;

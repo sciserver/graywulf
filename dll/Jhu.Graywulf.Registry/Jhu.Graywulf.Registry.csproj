@@ -71,6 +71,9 @@
     <Compile Include="Install\InstallerBase.cs" />
     <Compile Include="Install\UserDatabaseInstanceInstaller.cs" />
     <Compile Include="Registry\Check\EntityCheck.cs" />
+    <Compile Include="Registry\Registry.cs" />
+    <Compile Include="Registry\RegistrySerializer.cs" />
+    <Compile Include="Registry\RegistryDeserializer.cs" />
     <Compile Include="Registry\ServerInstanceDiskGroup.io.cs" />
     <Compile Include="Registry\ServerInstanceDiskGroup.cs" />
     <Compile Include="Registry\DiskGroup.cs" />

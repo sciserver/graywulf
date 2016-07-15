@@ -84,7 +84,7 @@ namespace Jhu.Graywulf.Registry
             get { return isDeserializing; }
             set { isDeserializing = value; }
         }
-
+        
         /// <summary>
         /// Globally unique identifier of the entity, acts like the primary key in the database. When creating
         /// a new entity has to have the values of <c>Guid.Empty</c>. A new Guid is generated when the entity

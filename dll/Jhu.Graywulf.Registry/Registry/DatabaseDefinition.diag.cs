@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Registry
             // Get schema source server
             // Only for federations, cluster level DBs don't have schemas (TEMP)
 
-            if (DeploymentState == Registry.DeploymentState.Deployed && Parent is Federation)
+            if (DeploymentState == DeploymentState.Deployed && Parent is Federation)
             {
                 msg.Add(TestSqlConnection());
             }

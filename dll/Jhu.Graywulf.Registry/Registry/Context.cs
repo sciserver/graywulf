@@ -263,8 +263,8 @@ namespace Jhu.Graywulf.Registry
             this.showDeleted = false;
 
             this.connectionString = null;
-            this.connectionMode = Registry.ConnectionMode.None;
-            this.transactionMode = Registry.TransactionMode.None;
+            this.connectionMode = ConnectionMode.None;
+            this.transactionMode = TransactionMode.None;
 
             this.databaseConnection = null;
             this.databaseTransaction = null;
@@ -290,9 +290,9 @@ namespace Jhu.Graywulf.Registry
             {
                 switch (connectionMode)
                 {
-                    case Registry.ConnectionMode.None:
+                    case ConnectionMode.None:
                         throw new InvalidOperationException();
-                    case Registry.ConnectionMode.AutoOpen:
+                    case ConnectionMode.AutoOpen:
                         OpenConnection();
                         break;
                     default:
@@ -339,12 +339,12 @@ namespace Jhu.Graywulf.Registry
             {
                 switch (transactionMode)
                 {
-                    case Registry.TransactionMode.AutoCommit:
-                    case Registry.TransactionMode.ManualCommit:
-                    case Registry.TransactionMode.DirtyRead:
+                    case TransactionMode.AutoCommit:
+                    case TransactionMode.ManualCommit:
+                    case TransactionMode.DirtyRead:
                         BeginTransaction();
                         break;
-                    case Registry.TransactionMode.None:
+                    case TransactionMode.None:
                         throw new InvalidOperationException();
                     default:
                         throw new NotImplementedException();
@@ -359,7 +359,7 @@ namespace Jhu.Graywulf.Registry
             if (databaseTransaction == null)
             {
                 IsolationLevel iso;
-                if (transactionMode == Registry.TransactionMode.DirtyRead)
+                if (transactionMode == TransactionMode.DirtyRead)
                 {
                     iso = IsolationLevel.ReadUncommitted;
                 }
@@ -558,13 +558,13 @@ namespace Jhu.Graywulf.Registry
             {
                 switch (transactionMode)
                 {
-                    case Registry.TransactionMode.None:
+                    case TransactionMode.None:
                         break;
-                    case Registry.TransactionMode.AutoCommit:
+                    case TransactionMode.AutoCommit:
                         CommitTransaction();
                         break;
-                    case Registry.TransactionMode.DirtyRead:
-                    case Registry.TransactionMode.ManualCommit:
+                    case TransactionMode.DirtyRead:
+                    case TransactionMode.ManualCommit:
                         RollbackTransaction();
                         break;
                     default:

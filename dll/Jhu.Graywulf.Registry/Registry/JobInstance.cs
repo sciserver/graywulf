@@ -250,9 +250,9 @@ namespace Jhu.Graywulf.Registry
             {
                 switch (jobExecutionStatus)
                 {
-                    case Registry.JobExecutionState.Executing:
-                    case Registry.JobExecutionState.Persisted:
-                    case Registry.JobExecutionState.Scheduled:
+                    case JobExecutionState.Executing:
+                    case JobExecutionState.Persisted:
+                    case JobExecutionState.Scheduled:
                         return true;
                     default:
                         return false;
@@ -453,9 +453,9 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         public JobInstance RescheduleIfRecurring()
         {
-            if ((jobExecutionStatus == Registry.JobExecutionState.Completed ||
-                jobExecutionStatus == Registry.JobExecutionState.Failed ||
-                jobExecutionStatus == Registry.JobExecutionState.Cancelled)
+            if ((jobExecutionStatus == JobExecutionState.Completed ||
+                jobExecutionStatus == JobExecutionState.Failed ||
+                jobExecutionStatus == JobExecutionState.Cancelled)
                 && scheduleType == ScheduleType.Recurring)
             {
                 // Create a copy first

@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Registry
     {
         public override IList<DiagnosticMessage> RunDiagnostics()
         {
-            if (Machine.RunningState == Registry.RunningState.Running)
+            if (Machine.RunningState == RunningState.Running)
             {
                 List<DiagnosticMessage> msg = new List<DiagnosticMessage>();
 
