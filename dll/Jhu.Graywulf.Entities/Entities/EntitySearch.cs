@@ -81,6 +81,12 @@ namespace Jhu.Graywulf.Entities
         {
         }
 
+        protected virtual string GetTableQuery()
+        {
+            var t = new T();
+            return t.GetTableQuery();
+        }
+
         public int Count()
         {
             using (searchCommand = Context.CreateCommand())
@@ -96,12 +102,13 @@ SELECT COUNT(*)
 FROM __e
 {2}";
 
-                var t = new T();
                 var preamble = BuildPreamble();
-                var tableQuery = t.GetTableQuery();
+                var tableQuery = GetTableQuery();
                 var where = BuildWhereClause();
 
                 searchCommand.CommandText = String.Format(sql, preamble, tableQuery, where);
+
+                AppendParameters();
 
                 return Convert.ToInt32(Context.ExecuteCommandScalar(searchCommand));
             }
@@ -141,9 +148,8 @@ SELECT __r.* FROM __r
 ORDER BY __rn
 ";
 
-                var t = new T();
                 var preamble = BuildPreamble();
-                var tableQuery = t.GetTableQuery();
+                var tableQuery = GetTableQuery();
                 var where = BuildWhereClause();
                 var orderby = BuildOrderByClause(orderBy);
 
@@ -162,6 +168,8 @@ ORDER BY __rn
 
                 searchCommand.Parameters.Add(Constants.FromParameterName, SqlDbType.Int).Value = from;
                 searchCommand.Parameters.Add(Constants.ToParameterName, SqlDbType.Int).Value = from + max;
+
+                AppendParameters();
 
                 return Context.ExecuteCommandAsEnumerable<T>(searchCommand);
             }
@@ -196,6 +204,11 @@ ORDER BY __rn
             }
 
             return queryWhereCriteria.ToString();
+        }
+
+        protected virtual void AppendParameters()
+        {
+
         }
 
         protected virtual void AppendSearchCriteria()
