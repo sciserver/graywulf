@@ -82,6 +82,20 @@ namespace Jhu.Graywulf.Registry
                 ResolveParentReference(entity);
             }
 
+            SaveEntity(entity);
+        }
+
+        private void ResolveReferences(Entity entity)
+        {
+            Console.Error.Write("Resolving references of {0}... ", entity.Name);
+
+            entity.IsDeserializing = false;     // Allows saving entity references
+            ResolveNameReferences(entity);
+            SaveEntity(entity);
+        }
+
+        private void SaveEntity(Entity entity)
+        {
             try
             {
                 entity.Save();
@@ -96,6 +110,7 @@ namespace Jhu.Graywulf.Registry
                         break;
                     case DuplicateMergeMethod.Update:
                         // TODO: load existing, update and save
+                        UpdateEntity(entity);
                         Console.Error.WriteLine("updated duplicate.");
                         break;
                     case DuplicateMergeMethod.Fail:
@@ -111,32 +126,12 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
-        private void ResolveReferences(Entity entity)
+        private void UpdateEntity(Entity entity)
         {
-            Console.Error.Write("Resolving references of {0}... ", entity.Name);
-
-            // TODO: delete catch block, name collision cannot happen here
-            try
-            {
-                entity.IsDeserializing = false;     // Allows saving entity references
-                ResolveNameReferences(entity);
-                entity.Save();
-
-                Console.Error.WriteLine("done.");
-            }
-            /*catch (DuplicateNameException)
-            {
-                if (!ignoreDuplicates)
-                {
-                    throw;
-                }
-                Console.Error.WriteLine("ignored duplicate.");
-            }*/
-            catch (Exception)
-            {
-                Console.Error.WriteLine("failed.");
-                throw;
-            }
+            var ef = new EntityFactory(Context);
+            var e = ef.LoadEntity(entity.GetFullyQualifiedName());
+            e.UpdateMembers(entity);
+            e.Save();
         }
 
         private void ResolveParentReference(Entity entity)

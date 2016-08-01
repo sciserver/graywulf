@@ -85,7 +85,7 @@ namespace Jhu.Graywulf.Registry
         [TestMethod]
         public void IgnoreDuplicateTest()
         {
-            var filename = "EntityFactoryTest_LoadRegistryTest.xml";
+            var filename = "EntityFactoryTest_IgnoreDuplicateTest.xml";
             SaveRegistry(filename);
             CleanUpTestRegistry();
             LoadTestRegistry(filename, DuplicateMergeMethod.Ignore);
@@ -95,11 +95,22 @@ namespace Jhu.Graywulf.Registry
         [TestMethod]
         public void UpdateDuplicateTest()
         {
+            var filename = "EntityFactoryTest_UpdateDuplicateTest.xml";
+            SaveRegistry(filename);
+            CleanUpTestRegistry();
+            LoadTestRegistry(filename, DuplicateMergeMethod.Ignore);
+            LoadTestRegistry(filename, DuplicateMergeMethod.Update);
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DuplicateNameException))]
         public void FailOnDuplicateTest()
         {
+            var filename = "EntityFactoryTest_FailOnDuplicateTest.xml";
+            SaveRegistry(filename);
+            CleanUpTestRegistry();
+            LoadTestRegistry(filename, DuplicateMergeMethod.Ignore);
+            LoadTestRegistry(filename, DuplicateMergeMethod.Fail);
         }
     }
 }

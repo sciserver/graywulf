@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Registry
         static Entity()
         {
             DBHelpers = new Components.LazyDictionary<Type, DBHelper>();
-            DBHelpers.ItemLoading += delegate(object sender, Components.LazyItemLoadingEventArgs<Type, DBHelper> e)
+            DBHelpers.ItemLoading += delegate (object sender, Components.LazyItemLoadingEventArgs<Type, DBHelper> e)
             {
                 e.Value = new DBHelper(e.Key);
                 e.IsFound = true;
@@ -29,6 +29,18 @@ namespace Jhu.Graywulf.Registry
 
         #endregion
         #region Database IO Functions
+
+        private void DispatchException(SqlException ex)
+        {
+            if (ex.Number == 51000)
+            {
+                throw new DuplicateNameException();
+            }
+            else
+            {
+                throw ex;
+            }
+        }
 
         /// <summary>
         /// Loads the entity from a <b>SqlDataReader</b> object.
@@ -209,7 +221,14 @@ namespace Jhu.Graywulf.Registry
 
                 AppendEntityCreateModifyParameters(cmd);
 
-                cmd.ExecuteNonQuery();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (SqlException ex)
+                {
+                    DispatchException(ex);
+                }
 
                 // Read return values
                 this.concurrencyVersion = BitConverter.ToInt64((byte[])cmd.Parameters["@ConcurrencyVersion"].Value, 0);
@@ -666,7 +685,7 @@ namespace Jhu.Graywulf.Registry
 
         public void LoadChildren(EntityType entityType, bool forceReload)
         {
-            var gm = this.GetType().GetMethod("LoadChildren", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, new [] { typeof(bool) }, null);
+            var gm = this.GetType().GetMethod("LoadChildren", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, new[] { typeof(bool) }, null);
             gm = gm.MakeGenericMethod(Constants.EntityTypeMap[entityType]);
             gm.Invoke(this, new object[] { forceReload });
         }

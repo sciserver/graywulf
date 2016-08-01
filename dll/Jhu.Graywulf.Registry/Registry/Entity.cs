@@ -720,20 +720,31 @@ namespace Jhu.Graywulf.Registry
         {
             if (fullyQualifiedName == null)
             {
-                var names = LoadAscendantNames();
-                var fqn = "";
-
-                for (int i = 0; i < names.Length; i ++)
+                if (isExisting)
                 {
-                    if (fqn != "")
+                    var names = LoadAscendantNames();
+                    var fqn = "";
+
+                    for (int i = 0; i < names.Length; i++)
                     {
-                        fqn += Constants.EntityNameSeparator;
+                        if (fqn != "")
+                        {
+                            fqn += Constants.EntityNameSeparator;
+                        }
+
+                        fqn += names[i];
                     }
 
-                    fqn += names[i];
+                    fullyQualifiedName = EntityType.ToString() + Constants.EntityTypeSeparator + fqn;
                 }
-
-                fullyQualifiedName = EntityType.ToString() + Constants.EntityTypeSeparator + fqn;
+                else if (!parentReference.IsEmpty && !String.IsNullOrEmpty(name))
+                {
+                    fullyQualifiedName = EntityFactory.CombineName(EntityType, parentReference.Name, name);
+                }
+                else if (EntityType == EntityType.Cluster)
+                {
+                    fullyQualifiedName = EntityFactory.CombineName(EntityType.Cluster, name);
+                }
             }
 
             return fullyQualifiedName;
