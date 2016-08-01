@@ -11,12 +11,12 @@ namespace Jhu.Graywulf.Registry
 {
     public class RegistryDeserializer : ContextObject
     {
-        private bool ignoreDuplicates;
+        private DuplicateMergeMethod duplicateMergeMethod;
 
-        public bool IgnoreDuplicates
+        public DuplicateMergeMethod DuplicateMergeMethod
         {
-            get { return ignoreDuplicates; }
-            set { ignoreDuplicates = value; }
+            get { return duplicateMergeMethod; }
+            set { duplicateMergeMethod = value; }
         }
 
         public RegistryDeserializer(Context context)
@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Registry
 
         private void InitializeMembers()
         {
-            this.ignoreDuplicates = true;
+            this.duplicateMergeMethod = DuplicateMergeMethod.Ignore;
         }
 
         /// <summary>
@@ -37,12 +37,13 @@ namespace Jhu.Graywulf.Registry
         /// <returns>An IEnumerable interface to the deserialized objects.</returns>
         public IEnumerable<Entity> Deserialize(TextReader input)
         {
-            Registry registry;
             var ser = new XmlSerializer(typeof(Registry));
+            var registry = (Registry)ser.Deserialize(input);
+            return DeserializeRegistry(registry);
+        }
 
-            // Deserialize object into memory, they don't have GUIDs now
-            registry = (Registry)ser.Deserialize(input);
-
+        private IEnumerable<Entity> DeserializeRegistry(Registry registry)
+        {
             int depth = 0;
             int count = 0;
 
@@ -53,35 +54,7 @@ namespace Jhu.Graywulf.Registry
                     if (entity.ParentReference.IsEmpty && depth == 0 ||
                         !entity.ParentReference.IsEmpty && depth == entity.ParentReference.Name.Count(c => c == Constants.EntityNameSeparator) + 1)
                     {
-                        Console.Error.Write("Deserializing {0}... ", entity.Name);
-
-                        entity.IsDeserializing = true;
-                        entity.Context = this.Context;
-
-                        if (!entity.ParentReference.IsEmpty)
-                        {
-                            ResolveParentReference(entity);
-                        }
-
-                        try
-                        {
-                            entity.Save();
-                            Console.Error.WriteLine("done.");
-                        }
-                        catch (DuplicateNameException)
-                        {
-                            if (!ignoreDuplicates)
-                            {
-                                throw;
-                            }
-                            Console.Error.WriteLine("ignored duplicate.");
-                        }
-                        catch (Exception)
-                        {
-                            Console.Error.WriteLine("failed.");
-                            throw;
-                        }
-
+                        DeserializeEntity(entity);
                         count++;
                     }
                 }
@@ -91,32 +64,79 @@ namespace Jhu.Graywulf.Registry
 
             foreach (var entity in registry.Entities)
             {
-                Console.Error.Write("Resolving references of {0}... ", entity.Name);
-
-                try
-                {
-                    entity.IsDeserializing = false;     // Allows saving entity references
-                    ResolveNameReferences(entity);
-                    entity.Save();
-
-                    Console.Error.WriteLine("done.");
-                }
-                catch (DuplicateNameException)
-                {
-                    if (!ignoreDuplicates)
-                    {
-                        throw;
-                    }
-                    Console.Error.WriteLine("ignored duplicate.");
-                }
-                catch (Exception)
-                {
-                    Console.Error.WriteLine("failed.");
-                    throw;
-                }
+                ResolveReferences(entity);
             }
 
             return registry.Entities;
+        }
+
+        private void DeserializeEntity(Entity entity)
+        {
+            Console.Error.Write("Deserializing {0}... ", entity.Name);
+
+            entity.IsDeserializing = true;
+            entity.Context = this.Context;
+
+            if (!entity.ParentReference.IsEmpty)
+            {
+                ResolveParentReference(entity);
+            }
+
+            try
+            {
+                entity.Save();
+                Console.Error.WriteLine("done.");
+            }
+            catch (DuplicateNameException)
+            {
+                switch (duplicateMergeMethod)
+                {
+                    case DuplicateMergeMethod.Ignore:
+                        Console.Error.WriteLine("ignored duplicate.");
+                        break;
+                    case DuplicateMergeMethod.Update:
+                        // TODO: load existing, update and save
+                        Console.Error.WriteLine("updated duplicate.");
+                        break;
+                    case DuplicateMergeMethod.Fail:
+                        throw;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+            catch (Exception)
+            {
+                Console.Error.WriteLine("failed.");
+                throw;
+            }
+        }
+
+        private void ResolveReferences(Entity entity)
+        {
+            Console.Error.Write("Resolving references of {0}... ", entity.Name);
+
+            // TODO: delete catch block, name collision cannot happen here
+            try
+            {
+                entity.IsDeserializing = false;     // Allows saving entity references
+                ResolveNameReferences(entity);
+                entity.Save();
+
+                Console.Error.WriteLine("done.");
+            }
+            /*catch (DuplicateNameException)
+            {
+                if (!ignoreDuplicates)
+                {
+                    throw;
+                }
+                Console.Error.WriteLine("ignored duplicate.");
+            }*/
+            catch (Exception)
+            {
+                Console.Error.WriteLine("failed.");
+                throw;
+            }
         }
 
         private void ResolveParentReference(Entity entity)

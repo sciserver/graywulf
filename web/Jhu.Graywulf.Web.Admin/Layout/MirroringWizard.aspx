@@ -14,7 +14,7 @@
             <asp:Button ID="Cancel" runat="server" Text="Cancel" CssClass="FormButton" OnClick="Cancel_Click" />
         </p>
     </div>
-    <div class="dock-fill">
+    <div class="dock-fill dock-scroll">
         <h3>
             <asp:Image ID="Icon" runat="server" />
             Mirroring Wizard:

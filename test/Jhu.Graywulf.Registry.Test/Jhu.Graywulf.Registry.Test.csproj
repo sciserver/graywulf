@@ -54,6 +54,7 @@
     <Compile Include="Registry\EntityFactoryTest.cs" />
     <Compile Include="Registry\InstallerTest.cs" />
     <Compile Include="Registry\ParameterCollectionTest.cs" />
+    <Compile Include="Registry\RegistrySerializerTest.cs" />
     <Compile Include="Registry\XmlSerializationTest.cs" />
   </ItemGroup>
   <ItemGroup>

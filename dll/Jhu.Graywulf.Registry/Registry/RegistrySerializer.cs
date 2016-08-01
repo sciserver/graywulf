@@ -78,6 +78,7 @@ namespace Jhu.Graywulf.Registry
             var sysdom = Context.Cluster.Domains[Constants.SystemDomainName];
             sysdom.LoadUsers(true);
             systemUsers = new HashSet<Guid>();
+            systemUsers.Add(Guid.Empty);
             systemUsers.UnionWith(sysdom.Users.Values.Select(u => u.Guid));
         }
 

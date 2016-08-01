@@ -24,4 +24,11 @@ namespace Jhu.Graywulf.Registry
         OK,
         Error
     }
+
+    public enum DuplicateMergeMethod
+    {
+        Ignore,
+        Update,
+        Fail
+    }
 }

@@ -14,8 +14,8 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
         [Parameter(Name = "Input", Description = "Name of input file", Required = true)]
         public string Input { get; set; }
 
-        [Option(Name = "IgnoreDuplicates", Description = "Ignore duplicates")]
-        public bool IgnoreDuplicates { get; set; }
+        [Option(Name = "Duplicates", Description = "Duplicate merge method")]
+        public DuplicateMergeMethod DuplicateMergeMethod { get; set; }
 
         public override void Run()
         {
@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
                 {
                     var s = new RegistryDeserializer(context)
                     {
-                        IgnoreDuplicates = IgnoreDuplicates
+                        DuplicateMergeMethod = DuplicateMergeMethod
                     };
 
                     using (var infile = new StreamReader(Input))
