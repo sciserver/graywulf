@@ -15,18 +15,18 @@ namespace Jhu.Graywulf.Registry
         [TestMethod]
         public void FullInstallTest()
         {
-            // Change context connection string to test
-            ContextManager.Instance.ConnectionString = Jhu.Graywulf.Test.AppSettings.RegistryTestConnectionString;
-
-            var dbi = new DBInstaller();
-
+            var dbi = new DBInstaller()
+            {
+                ConnectionString = Jhu.Graywulf.Test.AppSettings.RegistryTestConnectionString
+            };
             dbi.DropDatabase(true);
-
             dbi.CreateDatabase();
-
             dbi.CreateSchema();
 
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateContext(
+                Jhu.Graywulf.Test.AppSettings.RegistryTestConnectionString,
+                ConnectionMode.AutoOpen, 
+                TransactionMode.AutoCommit))
             {
                 // Create a cluster
                 var ci = new ClusterInstaller(context);

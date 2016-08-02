@@ -7,6 +7,7 @@ using System.IO;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using smo = Microsoft.SqlServer.Management.Smo;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Install
@@ -20,6 +21,24 @@ namespace Jhu.Graywulf.Install
     /// </remarks>
     public class DBInstaller
     {
+        private string connectionString;
+
+        public string ConnectionString
+        {
+            get { return connectionString; }
+            set { connectionString = value; }
+        }
+
+        public DBInstaller()
+        {
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
+        {
+            this.connectionString = null;
+        }
+
         /// <summary>
         /// Creates a new database on the server and with the name specified in the app.config file.
         /// </summary>
@@ -27,7 +46,7 @@ namespace Jhu.Graywulf.Install
         {
             string catalog;
 
-            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(Registry.ContextManager.Instance.ConnectionString);
+            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(this.connectionString);
             catalog = csb.InitialCatalog;
             csb.InitialCatalog = string.Empty;
 
@@ -87,11 +106,17 @@ namespace Jhu.Graywulf.Install
         /// </remarks>
         public void DropDatabase(string catalog, bool checkExistance)
         {
+            var csb = new SqlConnectionStringBuilder(this.connectionString);
+            var s = new smo::Server(csb.DataSource);
+            s.KillDatabase(catalog != null ? catalog : csb.InitialCatalog);
+
+            /*
+
             SqlConnection.ClearAllPools();
 
             string dropcatalog;
 
-            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(ContextManager.Instance.ConnectionString);
+            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(this.connectionString);
             if (catalog == null)
             {
                 dropcatalog = csb.InitialCatalog;
@@ -103,10 +128,15 @@ namespace Jhu.Graywulf.Install
             csb.InitialCatalog = string.Empty;
 
             string sql;
+
             if (checkExistance)
+            {
                 sql = string.Format(@"IF EXISTS (SELECT * FROM master..sysdatabases WHERE name = '{0}') DROP DATABASE {0}", dropcatalog);
+            }
             else
+            {
                 sql = string.Format(@"ALTER DATABASE {0} SET RESTRICTED_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE {0}", dropcatalog);
+            }
 
             using (SqlConnection cn = new SqlConnection(csb.ConnectionString))
             {
@@ -116,9 +146,9 @@ namespace Jhu.Graywulf.Install
                 {
                     cmd.ExecuteNonQuery();
                 }
-            }
+            }*/
         }
-
+        
         /// <summary>
         /// Creates the schema required by this library to store its state in a database.
         /// </summary>
@@ -137,7 +167,10 @@ namespace Jhu.Graywulf.Install
 
         private void ExecuteSqlScript(string sql)
         {
-            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (Context context = ContextManager.Instance.CreateContext(
+                this.connectionString,
+                ConnectionMode.AutoOpen,
+                TransactionMode.AutoCommit))
             {
                 string[] scripts = SplitSqlScript(sql);
 

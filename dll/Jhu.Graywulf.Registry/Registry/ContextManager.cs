@@ -103,6 +103,11 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Context Creation Functions
 
+        public Context CreateContext(ConnectionMode connectionMode, TransactionMode transactionMode)
+        {
+            return CreateContext(this.connectionString, connectionMode, transactionMode);
+        }
+
         /// <summary>
         /// Creates a context with an optionally open database and SMTP connection.
         /// </summary>
@@ -110,7 +115,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="beginTransaction">True if a transaction is required.</param>
         /// <param name="openSmtp">True if an SMTP connection should be opened.</param>
         /// <returns>A valid connection.</returns>
-        public Context CreateContext(ConnectionMode connectionMode, TransactionMode transactionMode)
+        public Context CreateContext(string connectionString, ConnectionMode connectionMode, TransactionMode transactionMode)
         {
             var context = new Context()
             {

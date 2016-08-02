@@ -49,9 +49,10 @@ namespace Jhu.Graywulf.Registry
 
         private void LoadTestRegistry(string filename, DuplicateMergeMethod duplicateMergeMethod)
         {
-            ContextManager.Instance.ConnectionString = Jhu.Graywulf.Test.AppSettings.RegistryTestConnectionString;
-
-            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateContext(
+                Jhu.Graywulf.Test.AppSettings.RegistryTestConnectionString,
+                ConnectionMode.AutoOpen,
+                TransactionMode.AutoCommit))
             {
                 var s = new RegistryDeserializer(context)
                 {
@@ -68,49 +69,64 @@ namespace Jhu.Graywulf.Registry
         [TestMethod]
         public void SaveRegistryTest()
         {
-            // If this test fails with an XML serialization error, make sure
-            // to modify EntityFactory.Registry
-            SaveRegistry("RegistrySerializerTest_SaveRegistryTest.xml");
+            using (RegistryTester.Instance.GetExclusiveToken())
+            {
+                // If this test fails with an XML serialization error, make sure
+                // to modify EntityFactory.Registry
+                SaveRegistry("RegistrySerializerTest_SaveRegistryTest.xml");
+            }
         }
 
         [TestMethod]
         public void LoadRegistryTest()
         {
-            var filename = "RegistrySerializerTest_LoadRegistryTest.xml";
-            SaveRegistry(filename);
-            CleanUpTestRegistry();
-            LoadTestRegistry(filename, DuplicateMergeMethod.Ignore);
+            using (RegistryTester.Instance.GetExclusiveToken())
+            {
+                var filename = "RegistrySerializerTest_LoadRegistryTest.xml";
+                SaveRegistry(filename);
+                CleanUpTestRegistry();
+                LoadTestRegistry(filename, DuplicateMergeMethod.Ignore);
+            }
         }
 
         [TestMethod]
         public void IgnoreDuplicateTest()
         {
-            var filename = "EntityFactoryTest_IgnoreDuplicateTest.xml";
-            SaveRegistry(filename);
-            CleanUpTestRegistry();
-            LoadTestRegistry(filename, DuplicateMergeMethod.Ignore);
-            LoadTestRegistry(filename, DuplicateMergeMethod.Ignore);
+            using (RegistryTester.Instance.GetExclusiveToken())
+            {
+                var filename = "EntityFactoryTest_IgnoreDuplicateTest.xml";
+                SaveRegistry(filename);
+                CleanUpTestRegistry();
+                LoadTestRegistry(filename, DuplicateMergeMethod.Ignore);
+                LoadTestRegistry(filename, DuplicateMergeMethod.Ignore);
+            }
         }
 
         [TestMethod]
         public void UpdateDuplicateTest()
         {
-            var filename = "EntityFactoryTest_UpdateDuplicateTest.xml";
-            SaveRegistry(filename);
-            CleanUpTestRegistry();
-            LoadTestRegistry(filename, DuplicateMergeMethod.Ignore);
-            LoadTestRegistry(filename, DuplicateMergeMethod.Update);
+            using (RegistryTester.Instance.GetExclusiveToken())
+            {
+                var filename = "EntityFactoryTest_UpdateDuplicateTest.xml";
+                SaveRegistry(filename);
+                CleanUpTestRegistry();
+                LoadTestRegistry(filename, DuplicateMergeMethod.Ignore);
+                LoadTestRegistry(filename, DuplicateMergeMethod.Update);
+            }
         }
 
         [TestMethod]
         [ExpectedException(typeof(DuplicateNameException))]
         public void FailOnDuplicateTest()
         {
-            var filename = "EntityFactoryTest_FailOnDuplicateTest.xml";
-            SaveRegistry(filename);
-            CleanUpTestRegistry();
-            LoadTestRegistry(filename, DuplicateMergeMethod.Ignore);
-            LoadTestRegistry(filename, DuplicateMergeMethod.Fail);
+            using (RegistryTester.Instance.GetExclusiveToken())
+            {
+                var filename = "EntityFactoryTest_FailOnDuplicateTest.xml";
+                SaveRegistry(filename);
+                CleanUpTestRegistry();
+                LoadTestRegistry(filename, DuplicateMergeMethod.Ignore);
+                LoadTestRegistry(filename, DuplicateMergeMethod.Fail);
+            }
         }
     }
 }
