@@ -89,19 +89,29 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         private void InitializeMembers()
         {
-            this.connectionString = Configuration.ConnectionString;
-            this.smtpString = string.Empty;
+            var config = Configuration;
 
-            this.userGuid = Guid.Empty;
-            this.userName = null;
+            if (config != null)
+            {
+                this.connectionString = config.ConnectionString;
+                this.smtpString = string.Empty;
 
-            this.clusterName = Configuration.ClusterName;
-            this.domainName = Configuration.DomainName;
-            this.federationName = Configuration.FederationName;
+                this.userGuid = Guid.Empty;
+                this.userName = null;
+
+                this.clusterName = config.ClusterName;
+                this.domainName = config.DomainName;
+                this.federationName = config.FederationName;
+            }
         }
 
         #endregion
         #region Context Creation Functions
+
+        public Context CreateContext()
+        {
+            return CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit);
+        }
 
         public Context CreateContext(ConnectionMode connectionMode, TransactionMode transactionMode)
         {
