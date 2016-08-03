@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data.SqlClient;
 using Jhu.Graywulf.CommandLineParser;
 using Jhu.Graywulf.Install;
 
@@ -18,7 +19,10 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
             {
                 Console.Write("Creating database... ");
 
-                var i = new DBInstaller();
+                var i = new DBInstaller()
+                {
+                    ConnectionString = Jhu.Graywulf.Registry.ContextManager.Instance.ConnectionString
+                };
                 i.CreateDatabase();
                 i.CreateSchema();
 
