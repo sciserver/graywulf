@@ -7,9 +7,9 @@ using System.Data.SqlClient;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.CommandLineParser;
 
-namespace Jhu.Graywulf.Registry.CmdLineUtil
+namespace Jhu.Graywulf.Install
 {
-    abstract class Verb
+    public abstract class Verb
     {
         [Parameter(Name = "Server", Description = "Name of server", Required = false)]
         public string Server { get; set; }

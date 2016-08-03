@@ -70,6 +70,7 @@
     <Compile Include="Install\DatabaseInstanceInstaller.cs" />
     <Compile Include="Install\InstallerBase.cs" />
     <Compile Include="Install\UserDatabaseInstanceInstaller.cs" />
+    <Compile Include="Install\Verb.cs" />
     <Compile Include="Registry\Check\EntityCheck.cs" />
     <Compile Include="Registry\Registry.cs" />
     <Compile Include="Registry\RegistrySerializer.cs" />

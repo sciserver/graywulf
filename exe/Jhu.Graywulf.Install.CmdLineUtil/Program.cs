@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Jhu.Graywulf.CommandLineParser;
+using Jhu.Graywulf.Install;
 
 namespace Jhu.Graywulf.Registry.CmdLineUtil
 {
