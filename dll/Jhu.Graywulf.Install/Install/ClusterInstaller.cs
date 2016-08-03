@@ -42,9 +42,10 @@ namespace Jhu.Graywulf.Install
             cluster.Save();
 
             // Create machine roles and machines
+            MachineRole controllerMachineRole;
             Machine controllerMachine;
             ServerInstance controllerServerInstance;
-            GenerateController(system, out controllerMachine, out controllerServerInstance);
+            GenerateController(system, out controllerMachineRole, out controllerMachine, out controllerServerInstance);
 
             ServerVersion nodeServerVersion;
             GenerateNode(system, out nodeServerVersion);
@@ -101,7 +102,7 @@ namespace Jhu.Graywulf.Install
             };
             qd.Save();
 
-            QueueInstance qi = new QueueInstance(controllerMachine)
+            QueueInstance qi = new QueueInstance(controllerMachineRole)
             {
                 Name = Constants.MaintenanceQueueName,
                 System = true,
@@ -118,7 +119,7 @@ namespace Jhu.Graywulf.Install
             };
             qd.Save();
 
-            qi = new QueueInstance(controllerMachine)
+            qi = new QueueInstance(controllerMachineRole)
             {
                 Name = Constants.LongQueueName,
                 RunningState = Registry.RunningState.Running,
@@ -133,7 +134,7 @@ namespace Jhu.Graywulf.Install
             };
             qd.Save();
 
-            qi = new QueueInstance(controllerMachine)
+            qi = new QueueInstance(controllerMachineRole)
             {
                 Name = Constants.QuickQueueName,
                 RunningState = Registry.RunningState.Running,
@@ -164,24 +165,24 @@ namespace Jhu.Graywulf.Install
             return cluster;
         }
 
-        private void GenerateController(bool system, out Machine controllerMachine, out ServerInstance controllerServerInstance)
+        private void GenerateController(bool system, out MachineRole controllerMachineRole, out Machine controllerMachine, out ServerInstance controllerServerInstance)
         {
-            var mrcont = new MachineRole(cluster)
+            controllerMachineRole = new MachineRole(cluster)
             {
                 Name = Constants.ControllerMachineRoleName,
                 System = system,
                 MachineRoleType = MachineRoleType.StandAlone,
             };
-            mrcont.Save();
+            controllerMachineRole.Save();
 
-            var sv = new ServerVersion(mrcont)
+            var sv = new ServerVersion(controllerMachineRole)
             {
                 Name = Constants.ServerVersionName,
                 System = system,
             };
             sv.Save();
 
-            controllerMachine = new Machine(mrcont)
+            controllerMachine = new Machine(controllerMachineRole)
             {
                 Name = Constants.ControllerMachineName,
             };

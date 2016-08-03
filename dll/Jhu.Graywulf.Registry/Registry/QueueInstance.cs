@@ -79,6 +79,18 @@ namespace Jhu.Graywulf.Registry
         }
 
         /// <summary>
+        /// Gets the <b>Machine Role</b> object to which the <b>Queue Instance</b> belongs to.
+        /// </summary>
+        /// <remarks>
+        /// This property does do lazy loading, no calling of a loader function is necessary, but
+        /// a valid object context with an open database connection must be set.
+        /// </remarks>
+        public MachineRole MachineRole
+        {
+            get { return (MachineRole)ParentReference.Value; }
+        }
+
+        /// <summary>
         /// Gets the reference object to the queue definition associated with this queue instance.
         /// </summary>
         [XmlIgnore]
@@ -147,6 +159,17 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity in the entity hierarchy.</param>
         public QueueInstance(Machine parent)
+            : base(parent.Context, parent)
+        {
+            InitializeMembers();
+        }
+
+        /// <summary>
+        /// Constructor for creating a new entity with object context and parent entity set.
+        /// </summary>
+        /// <param name="context">An object context class containing session information.</param>
+        /// <param name="parent">The parent entity in the entity hierarchy.</param>
+        public QueueInstance(MachineRole parent)
             : base(parent.Context, parent)
         {
             InitializeMembers();

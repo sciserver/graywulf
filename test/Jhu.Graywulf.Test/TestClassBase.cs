@@ -124,7 +124,7 @@ namespace Jhu.Graywulf.Test
 
         protected string GetQueueName(QueueType queueType)
         {
-            return String.Format(@"QueueInstance:Graywulf\Controller\Controller\{0}", queueType.ToString());
+            return String.Format(@"QueueInstance:Graywulf\Controller\{0}", queueType.ToString());
         }
 
         protected Guid ScheduleTestJob(JobType jobType, QueueType queueType)

@@ -72,6 +72,13 @@ namespace Jhu.Graywulf.Registry
             set { SetChildren<ServerVersion>(value); }
         }
 
+        [XmlIgnore]
+        public Dictionary<string, QueueInstance> QueueInstances
+        {
+            get { return GetChildren<QueueInstance>(); }
+            set { SetChildren<QueueInstance>(value); }
+        }
+
         #endregion
         #region Validation Properties
 
@@ -169,6 +176,7 @@ namespace Jhu.Graywulf.Registry
             {
                 EntityType.Machine,
                 EntityType.ServerVersion,
+                EntityType.QueueInstance,
             };
         }
 

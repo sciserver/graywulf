@@ -21,12 +21,7 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
             base.InitLists();
 
             MachineList.ParentEntity = Item;
+            QueueInstanceList.ParentEntity = Item;
         }
-
-        /*
-        protected void MachineList_ItemCommand(object sender, CommandEventArgs e)
-        {
-            Response.Redirect("~/jobs/MachineDetails.aspx?Guid=" + e.CommandArgument);
-        }*/
     }
 }

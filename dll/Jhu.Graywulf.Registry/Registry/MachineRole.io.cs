@@ -21,6 +21,11 @@ namespace Jhu.Graywulf.Registry
             LoadChildren<ServerVersion>(forceReload);
         }
 
+        public void LoadQueueInstances(bool forceReload)
+        {
+            LoadChildren<QueueInstance>(forceReload);
+        }
+
         #endregion
     }
 }

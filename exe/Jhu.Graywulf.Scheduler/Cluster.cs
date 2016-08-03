@@ -8,6 +8,8 @@ namespace Jhu.Graywulf.Scheduler
 {
     public class Cluster
     {
+        private Dictionary<Guid, MachineRole> machineRoles;
+
         /// <summary>
         /// Machines available in the cluster
         /// </summary>
@@ -16,17 +18,17 @@ namespace Jhu.Graywulf.Scheduler
         /// <summary>
         /// Server instances available to the cluster
         /// </summary>
-        Dictionary<Guid, ServerInstance> serverInstances;
+        private Dictionary<Guid, ServerInstance> serverInstances;
 
         /// <summary>
         /// Database instances on the cluster
         /// </summary>
-        Dictionary<Guid, DatabaseInstance> databaseInstances;
+        private Dictionary<Guid, DatabaseInstance> databaseInstances;
 
         /// <summary>
         /// Database definitions configured under the cluster
         /// </summary>
-        Dictionary<Guid, DatabaseDefinition> databaseDefinitions;
+        private Dictionary<Guid, DatabaseDefinition> databaseDefinitions;
 
         /// <summary>
         /// Queues listed by their registry IDs
@@ -35,6 +37,11 @@ namespace Jhu.Graywulf.Scheduler
         /// QueueInstance.Guid, Queue
         /// </remarks>
         private Dictionary<Guid, Queue> queues;
+
+        public Dictionary<Guid, MachineRole> MachineRoles
+        {
+            get { return machineRoles; }
+        }
 
         public Dictionary<Guid, Machine> Machines
         {
@@ -77,6 +84,7 @@ namespace Jhu.Graywulf.Scheduler
                 var ef = new EntityFactory(context);
                 var cluster = ef.LoadEntity<Jhu.Graywulf.Registry.Cluster>(clusterName);
 
+                machineRoles = new Dictionary<Guid, MachineRole>();
                 machines = new Dictionary<Guid, Machine>();
                 serverInstances = new Dictionary<Guid, ServerInstance>();
                 databaseInstances = new Dictionary<Guid, DatabaseInstance>();
@@ -86,8 +94,21 @@ namespace Jhu.Graywulf.Scheduler
                 cluster.LoadMachineRoles(true);
 
                 // *** TODO: handle machines that are down
+                // *** TODO: define root object which limits queues handled by scheduler instance
                 foreach (var mr in cluster.MachineRoles.Values)
                 {
+                    var mri = new MachineRole(mr);
+                    machineRoles.Add(mr.Guid, mri);
+
+                    mr.LoadQueueInstances(true);
+
+                    foreach (var qi in mr.QueueInstances.Values)
+                    {
+                        var q = new Queue();
+                        q.Update(qi);
+                        queues.Add(qi.Guid, q);
+                    }
+
                     mr.LoadMachines(true);
 
                     foreach (var mm in mr.Machines.Values)

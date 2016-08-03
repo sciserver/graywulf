@@ -3,8 +3,13 @@
 
 <asp:Content runat="server" ContentPlaceHolderID="FormDetails">
 </asp:Content>
+<asp:Content runat="server" ContentPlaceHolderID="FormButtons">
+    <jgwac:EntityButtons runat="server" ID="EntityButtons" />
+</asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="FormTabs">
     <jgwac:EntityChildren runat="server">
+        <jgwac:EntityList runat="server" ID="QueueInstanceList" ChildrenType="QueueInstance"
+            EntityGroup="Jobs" />
         <jgwac:EntityList runat="server" ID="MachineList" ChildrenType="Machine" EntityGroup="Jobs">
         <columns>
                         <jgwc:ExpressionPropertyField DataField="HostName" HeaderText="UNC name" />
@@ -12,6 +17,4 @@
         </jgwac:EntityList>
     </jgwac:EntityChildren>
 </asp:Content>
-<asp:Content runat="server" ContentPlaceHolderID="FormButtons">
-    <jgwac:EntityButtons runat="server" ID="EntityButtons" />
-</asp:Content>
+

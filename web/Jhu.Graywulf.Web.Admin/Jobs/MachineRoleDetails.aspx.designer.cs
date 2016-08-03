@@ -13,15 +13,6 @@ namespace Jhu.Graywulf.Web.Admin.Jobs {
     public partial class MachineRoleDetails {
         
         /// <summary>
-        /// MachineList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList MachineList;
-        
-        /// <summary>
         /// EntityButtons control.
         /// </summary>
         /// <remarks>
@@ -29,5 +20,23 @@ namespace Jhu.Graywulf.Web.Admin.Jobs {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::Jhu.Graywulf.Web.Admin.Controls.EntityButtons EntityButtons;
+        
+        /// <summary>
+        /// QueueInstanceList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList QueueInstanceList;
+        
+        /// <summary>
+        /// MachineList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityList MachineList;
     }
 }
