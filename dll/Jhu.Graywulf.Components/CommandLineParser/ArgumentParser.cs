@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.CommandLineParser
 
         public void PrintUsageInternal(List<Type> verbTypes, TextWriter output)
         {
-                output.WriteLine("Syntax:");
+            output.WriteLine("Syntax:");
             output.WriteLine();
             output.WriteLine("  {0} <verb> [-parameter <value>] [-option]", Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location));
             output.WriteLine();
@@ -75,13 +75,36 @@ namespace Jhu.Graywulf.CommandLineParser
                             atts[key].Name,
                             atts[key].Description);
                     }
+                    else if (pars[key].PropertyType.IsEnum)
+                    {
+                        output.WriteLine(
+                            "      -{0,-25}{1}{2}",
+                            String.Format("{0} <enum>",
+                                atts[key].Name,
+                                pars[key].PropertyType.Name),
+                                atts[key].Description,
+                                atts[key].Required ? " Required." : "");
+
+                        var names = Enum.GetNames(pars[key].PropertyType);
+                        var values = Enum.GetValues(pars[key].PropertyType);
+
+                        for (int i = 0; i < names.Length; i++)
+                        {
+                            output.WriteLine(
+                                "          {0} {1}",
+                                Convert.ToInt64(values.GetValue(i)),
+                                names[i]);
+                        }
+                    }
                     else
                     {
                         output.WriteLine(
                             "      -{0,-25}{1}{2}",
-                            String.Format("{0} <{1}>", atts[key].Name,  pars[key].PropertyType.Name),
-                            atts[key].Description,
-                            atts[key].Required ? " Required." : "");
+                            String.Format("{0} <{1}>", 
+                                atts[key].Name,  
+                                pars[key].PropertyType.Name),
+                                atts[key].Description,
+                                atts[key].Required ? " Required." : "");
                     }
                 }
 

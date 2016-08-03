@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
         [Parameter(Name = "Input", Description = "Name of input file", Required = true)]
         public string Input { get; set; }
 
-        [Option(Name = "Duplicates", Description = "Duplicate merge method")]
+        [Parameter(Name = "Duplicates", Description = "Duplicate merge method")]
         public DuplicateMergeMethod DuplicateMergeMethod { get; set; }
 
         public override void Run()
