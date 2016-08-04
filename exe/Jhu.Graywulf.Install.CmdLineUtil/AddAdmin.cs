@@ -7,12 +7,17 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Install.CmdLineUtil
 {
-    [Verb(Name = "CreateAdmin", Description = "Creates the admin usergroup and the admin user account for an existing cluster.")]
+    [Verb(Name = "AddAdmin", Description = "Creates the admin usergroup and the admin user account for an existing cluster.")]
     class AddAdmin : AddCluster
     {
+        protected override string OnGetConnectionString()
+        {
+            return Jhu.Graywulf.Registry.ContextManager.Configuration.ConnectionString;
+        }
+
         public override void Run()
         {
-            base.Run();
+            ContextManager.Instance.ConnectionString = GetConnectionString();
 
             Console.Write("Creating admin user... ");
 

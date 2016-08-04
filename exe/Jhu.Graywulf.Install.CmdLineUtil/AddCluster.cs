@@ -7,7 +7,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Install.CmdLineUtil
 {
-    [Verb(Name = "CreateCluster", Description = "Creates a new cluster entry and an administrator account in the cluster schema. Admin user credentials must be provided.")]
+    [Verb(Name = "AddCluster", Description = "Creates a new cluster entry and an administrator account in the cluster schema. Admin user credentials must be provided.")]
     class AddCluster : Verb
     {
         protected string clusterName;
@@ -56,10 +56,20 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
             this.adminPassword = Constants.ClusterAdminUserPassword;
         }
 
+        protected override string OnGetConnectionString()
+        {
+            return Jhu.Graywulf.Registry.ContextManager.Configuration.ConnectionString;
+        }
+
         public override void Run()
         {
-            Console.Write("Creating cluster... ");
+            ContextManager.Instance.ConnectionString = GetConnectionString();
 
+            if (!Quiet)
+            {
+                Console.Write("Creating cluster... ");
+            }
+            
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
             {
                 var i = new ClusterInstaller(context);
@@ -67,7 +77,10 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
                 context.CommitTransaction();
             }
 
-            Console.WriteLine("done.");
+            if (!Quiet)
+            {
+                Console.WriteLine("done.");
+            }
         }
 
     }

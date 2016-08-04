@@ -8,22 +8,23 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Install.CmdLineUtil
 {
-    class AddUser : Verb
+    [Verb(Name = "AddUser", Description = "Adds a windows user to the database")]
+    class AddUser : CreateDb
     {
-        [Parameter(Name = "Username", Description = "Name of the service account", Required = true)]
-        public string Username { get; set; }
-
-        [Parameter(Name = "Role", Description = "Role to add user to", Required = true)]
-        public string Role { get; set; }
-
         public override void Run()
         {
-            Console.Write("Creating database user... ");
+            if (!Quiet)
+            {
+                Console.Write("Creating database user... ");
+            }
 
             var di = new DBInstaller(GetConnectionString());
             di.AddUser(Username, Role);
 
-            Console.WriteLine("done.");
+            if (!Quiet)
+            {
+                Console.WriteLine("done.");
+            }
         }
     }
 }

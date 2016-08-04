@@ -17,8 +17,15 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
         [Parameter(Name = "Duplicates", Description = "Duplicate merge method")]
         public DuplicateMergeMethod DuplicateMergeMethod { get; set; }
 
+        protected override string OnGetConnectionString()
+        {
+            return Jhu.Graywulf.Registry.ContextManager.Configuration.ConnectionString;
+        }
+
         public override void Run()
         {
+            ContextManager.Instance.ConnectionString = GetConnectionString();
+
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
             {
                 var s = new RegistryDeserializer(context)

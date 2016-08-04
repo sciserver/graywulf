@@ -208,12 +208,21 @@ namespace Jhu.Graywulf.Install
 
         public void AddUser(string username, string role)
         {
+            var s = GetSmoServer();
+
+            if (s.Logins[username] == null)
+            {
+                var l = new smo::Login(s, username);
+                l.LoginType = smo.LoginType.WindowsGroup;
+                l.Create();
+            }
+
             var db = GetSmoDatabase();
             var u = new smo::User(db, username)
             {
                 Login = username,
             };
-            db.Users.Add(u);
+            u.Create();
             u.AddToRole(role);
         }
 

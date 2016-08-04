@@ -38,8 +38,15 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
         [Option(Name = "ExcludeUserCreated", Description = "Exclude user-created items", Required = false)]
         public bool ExcludeUserCreated { get; set; }
 
+        protected override string OnGetConnectionString()
+        {
+            return Jhu.Graywulf.Registry.ContextManager.Configuration.ConnectionString;
+        }
+
         public override void Run()
         {
+            ContextManager.Instance.ConnectionString = GetConnectionString();
+
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var f = new EntityFactory(context);

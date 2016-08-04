@@ -14,5 +14,39 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
 
         [Option(Name = "SchemaOnly", Description = "Schema only, use existing database")]
         public bool SchemaOnly { get; set; }
+
+        [Parameter(Name = "Username", Description = "Name of the service account", Required = false)]
+        public string Username { get; set; }
+
+        [Parameter(Name = "Role", Description = "Role to add user to", Required = false)]
+        public string Role { get; set; }
+
+        protected void RunInstaller(DBInstaller i)
+        {
+            if (!Quiet)
+            {
+                Console.Write("Creating database... ");
+            }
+
+            if (!SchemaOnly)
+            {
+                i.CreateDatabase();
+            }
+
+            if (!DbOnly)
+            {
+                i.CreateSchema();
+            }
+
+            if (!String.IsNullOrWhiteSpace(Username) && !String.IsNullOrWhiteSpace(Role))
+            {
+                i.AddUser(Username, Role);
+            }
+
+            if (!Quiet)
+            {
+                Console.WriteLine("done.");
+            }
+        }
     }
 }

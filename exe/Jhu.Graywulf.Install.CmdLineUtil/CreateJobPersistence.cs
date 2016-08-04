@@ -10,17 +10,17 @@ using Jhu.Graywulf.Registry;
 namespace Jhu.Graywulf.Install.CmdLineUtil
 {
     [Verb(Name = "CreateJobPersistence", Description = "Creates the database schema required for logging.")]
-    public class CreateJobPersistence : Verb
+    public class CreateJobPersistence : CreateDb
     {
+        protected override string OnGetConnectionString()
+        {
+            return Jhu.Graywulf.Scheduler.Scheduler.Configuration.PersistenceConnectionString;
+        }
+
         public override void Run()
         {
-            Console.Write("Creating database schema... ");
-
             var i = new JobPersistenceInstaller(GetConnectionString());
-            i.CreateDatabase();
-            i.CreateSchema();
-
-            Console.WriteLine("done.");
+            RunInstaller(i);
         }
     }
 }

@@ -9,37 +9,18 @@ using Jhu.Graywulf.Registry;
 namespace Jhu.Graywulf.Install.CmdLineUtil
 {
     [Verb(Name = "CreateRegistry", Description = "Creates the database schema required for storing the cluster registry.")]
-    public class CreateRegistry : Verb
+    public class CreateRegistry : CreateDb
     {
-        protected void UpdateConnectionString()
+        protected override string OnGetConnectionString()
         {
-            var csb = new SqlConnectionStringBuilder();
-
-            // TODO: add more connection properties (u/n, pass)
-            // create variables for properties.
-
-            if (Server != null || Database != null)
-            {
-                csb.DataSource = Server;
-                csb.InitialCatalog = Database;
-                csb.IntegratedSecurity = true;
-                csb.MultipleActiveResultSets = true;
-
-                ContextManager.Instance.ConnectionString = csb.ConnectionString;
-            }
+            var csb = new SqlConnectionStringBuilder(ContextManager.Instance.ConnectionString);
+            return csb.ConnectionString;
         }
 
         public override void Run()
         {
-            UpdateConnectionString();
-
-            Console.Write("Creating database... ");
-
-            var i = new RegistryInstaller(ContextManager.Instance.ConnectionString);
-            i.CreateDatabase();
-            i.CreateSchema();
-
-            Console.WriteLine("done.");
+            var i = new RegistryInstaller(GetConnectionString());
+            RunInstaller(i);
         }
     }
 }

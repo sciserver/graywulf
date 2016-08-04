@@ -7,7 +7,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Install.CmdLineUtil
 {
-    [Verb(Name = "CreateDomain", Description = "Creates a new domain.")]
+    [Verb(Name = "AddDomain", Description = "Creates a new domain.")]
     class AddDomain : Verb
     {
         protected string clusterName;
@@ -31,9 +31,19 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
         {
         }
 
+        protected override string OnGetConnectionString()
+        {
+            return Jhu.Graywulf.Registry.ContextManager.Configuration.ConnectionString;
+        }
+
         public override void Run()
         {
-            Console.Write("Creating domain... ");
+            ContextManager.Instance.ConnectionString = GetConnectionString();
+
+            if (!Quiet)
+            {
+                Console.Write("Creating domain... ");
+            }
 
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
             {
@@ -47,7 +57,10 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
                 context.CommitTransaction();
             }
 
-            Console.WriteLine("done.");
+            if (!Quiet)
+            {
+                Console.WriteLine("done.");
+            }
         }
 
     }

@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
@@ -34,15 +34,21 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
 
             try
             {
-                PrintHeader();
                 v = (Verb)ArgumentParser.Parse(args, verbs);
+
+                if (!v.Quiet)
+                {
+                    PrintHeader();
+                }
             }
             catch (ArgumentParserException ex)
             {
-                Console.WriteLine("Error: {0}", ex.Message);
-                Console.WriteLine();
+                Console.Error.WriteLine("Error: {0}", ex.Message);
 
+                Console.WriteLine();
                 ArgumentParser.PrintUsage(verbs, Console.Out);
+
+                return 1;
             }
 
             if (v != null)
@@ -53,10 +59,19 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("failed.");
-                    Console.WriteLine(ex.Message);
+                    if (!v.Quiet)
+                    {
+                        Console.WriteLine("failed.");
+                    }
+
+                    Console.Error.WriteLine("Error: {0}", ex.Message);
+                    Console.Error.WriteLine(ex.StackTrace);
+
+                    return 1;
                 }
             }
+
+            return 0;
         }
 
         private static void PrintHeader()

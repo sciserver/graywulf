@@ -55,7 +55,7 @@ namespace Jhu.Graywulf.CommandLineParser
 
             foreach (Type t in verbTypes)
             {
-                VerbAttribute a = (VerbAttribute)t.GetCustomAttributes(typeof(VerbAttribute), true)[0];
+                VerbAttribute a = (VerbAttribute)t.GetCustomAttributes(typeof(VerbAttribute), false)[0];
 
                 output.WriteLine("  {0}: {1}", a.Name, a.Description);
                 output.WriteLine();
@@ -130,7 +130,7 @@ namespace Jhu.Graywulf.CommandLineParser
 
             foreach (Type t in verbTypes)
             {
-                object[] attrs = t.GetCustomAttributes(typeof(VerbAttribute), true);
+                object[] attrs = t.GetCustomAttributes(typeof(VerbAttribute), false);
                 if (attrs.Length != 1)
                 {
                     throw new ArgumentParserException(

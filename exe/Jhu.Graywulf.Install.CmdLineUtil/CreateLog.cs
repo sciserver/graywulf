@@ -10,17 +10,17 @@ using Jhu.Graywulf.Registry;
 namespace Jhu.Graywulf.Install.CmdLineUtil
 {
     [Verb(Name = "CreateLog", Description = "Creates the database schema required for logging.")]
-    public class CreateLog : Verb
+    public class CreateLog : CreateDb
     {
+        protected override string OnGetConnectionString()
+        {
+            return Jhu.Graywulf.Logging.AppSettings.ConnectionString;
+        }
+
         public override void Run()
         {
-            Console.Write("Creating database schema... ");
-
             var i = new LogInstaller(GetConnectionString());
-            i.CreateDatabase();
-            i.CreateSchema();
-
-            Console.WriteLine("done.");
+            RunInstaller(i);
         }
     }
 }
