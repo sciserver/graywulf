@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Install
         [Parameter(Name = "Server", Description = "Name of server", Required = false)]
         public string Server { get; set; }
 
-        [Parameter(Name = "Database", Description = "Registry database", Required = false)]
+        [Parameter(Name = "Database", Description = "Name of database", Required = false)]
         public string Database { get; set; }
 
         private void UpdateConnectionString()

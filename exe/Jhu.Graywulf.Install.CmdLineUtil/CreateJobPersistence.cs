@@ -9,9 +9,11 @@ using Jhu.Graywulf.Install;
 
 namespace Jhu.Graywulf.Registry.CmdLineUtil
 {
-    [Verb(Name = "CreateLog", Description = "Creates the database schema required for logging.")]
-    public class CreateLog : Verb
+    [Verb(Name = "CreateJobPersistence", Description = "Creates the database schema required for logging.")]
+    public class CreateJobPersistence : Verb
     {
+
+
         public override void Run()
         {
             var csb = new SqlConnectionStringBuilder()
@@ -22,7 +24,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
             Console.Write("Creating database schema... ");
 
-            var i = new LogInstaller(csb.ConnectionString);
+            var i = new JobPersistenceInstaller(csb.ConnectionString);
             i.CreateDatabase();
             i.CreateSchema();
 

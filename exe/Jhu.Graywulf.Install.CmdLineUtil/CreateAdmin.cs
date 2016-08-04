@@ -16,23 +16,15 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
             Console.Write("Creating admin user... ");
 
-            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
             {
-                try
-                {
-                    var f = new EntityFactory(context);
-                    var c = f.LoadEntity<Cluster>(clusterName);
+                var f = new EntityFactory(context);
+                var c = f.LoadEntity<Cluster>(clusterName);
 
-                    var ci = new ClusterInstaller(c);
-                    ci.GenerateAdmin(false, adminUsername, adminEmail, adminPassword);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("failed.");
-                    Console.WriteLine(ex.Message);
+                var ci = new ClusterInstaller(c);
+                ci.GenerateAdmin(false, adminUsername, adminEmail, adminPassword);
 
-                    context.RollbackTransaction();
-                }
+                context.CommitTransaction();
             }
 
             Console.WriteLine("done.");

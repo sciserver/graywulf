@@ -64,21 +64,9 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
             {
-                try
-                {
-                    var i = new ClusterInstaller(context);
-
-                    i.Install(true, clusterName, adminUsername, adminEmail, adminPassword);
-
-                    context.CommitTransaction();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Creating the cluster failed.");  // TODO ***
-                    Console.WriteLine(ex.Message);
-
-                    context.RollbackTransaction();
-                }
+                var i = new ClusterInstaller(context);
+                i.Install(true, clusterName, adminUsername, adminEmail, adminPassword);
+                context.CommitTransaction();
             }
 
             Console.WriteLine("done.");

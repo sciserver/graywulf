@@ -14,21 +14,12 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
         {
             base.Run();
 
-            try
-            {
-                Console.Write("Creating database schema... ");
+            Console.Write("Creating database schema... ");
 
-                var i = new RegistryInstaller();
-                i.CreateSchema();
+            var i = new RegistryInstaller();
+            i.CreateSchema();
 
-                Console.WriteLine("done.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("failed.");
-
-                Console.WriteLine(ex.Message);
-            }
+            Console.WriteLine("done.");
         }
     }
 }

@@ -23,27 +23,17 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
             {
-                try
+                var s = new RegistryDeserializer(context)
                 {
-                    var s = new RegistryDeserializer(context)
-                    {
-                        DuplicateMergeMethod = DuplicateMergeMethod
-                    };
+                    DuplicateMergeMethod = DuplicateMergeMethod
+                };
 
-                    using (var infile = new StreamReader(Input))
-                    {
-                        s.Deserialize(infile);
-                    }
-
-                    context.CommitTransaction();
-                }
-                catch (Exception ex)
+                using (var infile = new StreamReader(Input))
                 {
-                    Console.WriteLine("Importing xml file failed.");
-                    Console.WriteLine(ex.Message);
-
-                    context.RollbackTransaction();
+                    s.Deserialize(infile);
                 }
+
+                context.CommitTransaction();
             }
         }
     }

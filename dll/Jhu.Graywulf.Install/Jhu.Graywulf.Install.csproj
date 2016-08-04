@@ -75,6 +75,7 @@
       <DependentUpon>Scripts.resx</DependentUpon>
     </Compile>
     <Compile Include="Install\SqlQueryJobInstaller.cs" />
+    <Compile Include="Install\Verb.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Install\ClusterInstaller.cs" />
     <Compile Include="Install\DomainInstaller.cs" />

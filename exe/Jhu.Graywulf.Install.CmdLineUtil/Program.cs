@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
             List<Type> verbs = new List<Type>()
             {
-                typeof(CreateDb),
+                typeof(CreateRegistry),
                 typeof(CreateSchema),
                 typeof(CreateCluster),
                 typeof(CreateDomain),
@@ -45,7 +45,15 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
             if (v != null)
             {
-                v.Run();
+                try
+                {
+                    v.Run();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("failed.");
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
 

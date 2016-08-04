@@ -37,24 +37,16 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
             Console.Write("Creating domain... ");
 
-            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
             {
-                try
-                {
-                    var f = new EntityFactory(context);
-                    var c = f.LoadEntity<Cluster>(clusterName);
+                var f = new EntityFactory(context);
+                var c = f.LoadEntity<Cluster>(clusterName);
 
-                    var d = new Domain(c);
-                    d.Name = domainName;
-                    d.Save();                    
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("failed.");
-                    Console.WriteLine(ex.Message);
+                var d = new Domain(c);
+                d.Name = domainName;
+                d.Save();
 
-                    context.RollbackTransaction();
-                }
+                context.CommitTransaction();
             }
 
             Console.WriteLine("done.");
