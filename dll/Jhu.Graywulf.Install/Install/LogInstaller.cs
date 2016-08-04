@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Install
 {
-    class LogInstaller
+    public class LogInstaller : DBInstaller
     {
+        public override void CreateSchema()
+        {
+            ExecuteSqlScript(Scripts.Jhu_Graywulf_Logging);
+        }
     }
 }

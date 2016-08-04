@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Xml.Serialization;
 using Jhu.Graywulf.Install;
 
 namespace Jhu.Graywulf.Registry
 {
     [TestClass]
-    public class InstallerTest
+    public class RegistryInstallerTest
     {
         [TestMethod]
         public void FullInstallTest()
