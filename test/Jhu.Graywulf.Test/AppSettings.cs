@@ -35,6 +35,15 @@ namespace Jhu.Graywulf.Test
             }
         }
 
+        public static string JobPersistenceTestConnectionString
+        {
+            get
+            {
+                var cs = ConfigurationManager.ConnectionStrings["Jhu.Graywulf.Activities.Persistence.Test"];
+                return cs != null ? cs.ConnectionString : null;
+            }
+        }
+
         public static string SqlServerSchemaTestConnectionString
         {
             get

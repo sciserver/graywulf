@@ -50,6 +50,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Install\JobPersistenceInstallerTest.cs" />
     <Compile Include="Install\LogInstallerTest.cs" />
     <Compile Include="Install\RegistryInstallerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

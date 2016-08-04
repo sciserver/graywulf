@@ -215,6 +215,12 @@ namespace Jhu.Graywulf.Install
             u.AddToRole("db_owner");
         }
 
+        protected void ExecuteSqlFile(string filename)
+        {
+            var sql = File.ReadAllText(filename);
+            ExecuteSqlScript(sql);
+        }
+
         protected void ExecuteSqlScript(string sql)
         {
             using (var cn = new SqlConnection(connectionString.ConnectionString))
@@ -260,7 +266,7 @@ namespace Jhu.Graywulf.Install
         protected string[] SplitSqlScript(string script)
         {
             // Look for rows starting with GO
-            return script.Split(new string[] { "\r\nGO", "\nGO" }, StringSplitOptions.RemoveEmptyEntries);
+            return script.Split(new string[] { "\r\nGO", "\nGO", "\r\ngo", "\ngo" }, StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }
