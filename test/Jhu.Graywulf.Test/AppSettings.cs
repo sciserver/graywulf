@@ -26,6 +26,15 @@ namespace Jhu.Graywulf.Test
             }
         }
 
+        public static string LoggingTestConnectionString
+        {
+            get
+            {
+                var cs = ConfigurationManager.ConnectionStrings["Jhu.Graywulf.Logging.Test"];
+                return cs != null ? cs.ConnectionString : null;
+            }
+        }
+
         public static string SqlServerSchemaTestConnectionString
         {
             get
