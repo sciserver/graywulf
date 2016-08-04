@@ -4,39 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Jhu.Graywulf.CommandLineParser;
-using Jhu.Graywulf.Install;
+using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Registry.CmdLineUtil
+namespace Jhu.Graywulf.Install.CmdLineUtil
 {
     class AddUser : Verb
     {
-        private string username;
+        [Parameter(Name = "Username", Description = "Name of the service account", Required = true)]
+        public string Username { get; set; }
 
-        [Parameter(Name = "Username", Description = "Name of the service account", Required = false)]
-        public string Username
-        {
-            get { return username; }
-            set { username = value; }
-        }
+        [Parameter(Name = "Role", Description = "Role to add user to", Required = true)]
+        public string Role { get; set; }
 
         public override void Run()
         {
-            base.Run();
+            Console.Write("Creating database user... ");
 
-            try
-            {
-                Console.Write("Creating database... ");
+            var di = new DBInstaller(GetConnectionString());
+            di.AddUser(Username, Role);
 
-                var i = new RegistryInstaller(ContextManager.Instance.ConnectionString);
-                i.AddUser(Username);
-                Console.WriteLine("done.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("failed.");
-
-                Console.WriteLine(ex.Message);
-            }
+            Console.WriteLine("done.");
         }
     }
 }

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jhu.Graywulf.CommandLineParser;
-using Jhu.Graywulf.Install;
+using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Registry.CmdLineUtil
+namespace Jhu.Graywulf.Install.CmdLineUtil
 {
     [Verb(Name = "CreateAdmin", Description = "Creates the admin usergroup and the admin user account for an existing cluster.")]
-    class CreateAdmin : CreateCluster
+    class AddAdmin : AddCluster
     {
         public override void Run()
         {

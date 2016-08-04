@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Jhu.Graywulf.CommandLineParser;
-using Jhu.Graywulf.Install;
+using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Registry.CmdLineUtil
+namespace Jhu.Graywulf.Install.CmdLineUtil
 {
     [Verb(Name = "Export", Description = "Exports a branch of the registry into an XML file")]
     class Export : Verb
@@ -40,8 +40,6 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
         public override void Run()
         {
-            base.Run();
-
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var f = new EntityFactory(context);

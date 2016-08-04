@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jhu.Graywulf.CommandLineParser;
-using Jhu.Graywulf.Install;
+using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Registry.CmdLineUtil
+namespace Jhu.Graywulf.Install.CmdLineUtil
 {
     [Verb(Name = "CreateDomain", Description = "Creates a new domain.")]
-    class CreateDomain : Verb
+    class AddDomain : Verb
     {
         protected string clusterName;
         protected string domainName;
@@ -27,14 +27,12 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
             set { domainName = value; }
         }
 
-        public CreateDomain()
+        public AddDomain()
         {
         }
 
         public override void Run()
         {
-            base.Run();
-
             Console.Write("Creating domain... ");
 
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))

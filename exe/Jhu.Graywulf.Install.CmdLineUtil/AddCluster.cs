@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jhu.Graywulf.CommandLineParser;
-using Jhu.Graywulf.Install;
+using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Registry.CmdLineUtil
+namespace Jhu.Graywulf.Install.CmdLineUtil
 {
     [Verb(Name = "CreateCluster", Description = "Creates a new cluster entry and an administrator account in the cluster schema. Admin user credentials must be provided.")]
-    class CreateCluster : Verb
+    class AddCluster : Verb
     {
         protected string clusterName;
         protected string adminUsername;
@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
             set { adminPassword = value; }
         }
 
-        public CreateCluster()
+        public AddCluster()
         {
             InitializeMembers();
         }
@@ -58,8 +58,6 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
         public override void Run()
         {
-            base.Run();
-
             Console.Write("Creating cluster... ");
 
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))

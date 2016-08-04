@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Jhu.Graywulf.CommandLineParser;
-using Jhu.Graywulf.Install;
+using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Registry.CmdLineUtil
+namespace Jhu.Graywulf.Install.CmdLineUtil
 {
     class Program
     {
@@ -20,10 +20,12 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
             List<Type> verbs = new List<Type>()
             {
                 typeof(CreateRegistry),
-                typeof(CreateSchema),
-                typeof(CreateCluster),
-                typeof(CreateDomain),
-                typeof(CreateAdmin),
+                typeof(CreateLog),
+                typeof(CreateJobPersistence),
+                typeof(AddUser),
+                typeof(AddCluster),
+                typeof(AddDomain),
+                typeof(AddAdmin),
                 typeof(Export),
                 typeof(Import)
             };

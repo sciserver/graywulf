@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Jhu.Graywulf.CommandLineParser;
-using Jhu.Graywulf.Install;
+using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Registry.CmdLineUtil
+namespace Jhu.Graywulf.Install.CmdLineUtil
 {
     [Verb(Name = "Import", Description = "Imports an XML file into the registry")]
     class Import : Verb
@@ -19,8 +19,6 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
 
         public override void Run()
         {
-            base.Run();
-
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
             {
                 var s = new RegistryDeserializer(context)

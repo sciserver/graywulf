@@ -4,27 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Data.SqlClient;
 using Jhu.Graywulf.CommandLineParser;
-using Jhu.Graywulf.Install;
+using Jhu.Graywulf.Registry;
 
 
-namespace Jhu.Graywulf.Registry.CmdLineUtil
+namespace Jhu.Graywulf.Install.CmdLineUtil
 {
     [Verb(Name = "CreateJobPersistence", Description = "Creates the database schema required for logging.")]
     public class CreateJobPersistence : Verb
     {
-
-
         public override void Run()
         {
-            var csb = new SqlConnectionStringBuilder()
-            {
-                DataSource = Server,
-                InitialCatalog = Database
-            };
-
             Console.Write("Creating database schema... ");
 
-            var i = new JobPersistenceInstaller(csb.ConnectionString);
+            var i = new JobPersistenceInstaller(GetConnectionString());
             i.CreateDatabase();
             i.CreateSchema();
 

@@ -4,25 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Data.SqlClient;
 using Jhu.Graywulf.CommandLineParser;
-using Jhu.Graywulf.Install;
+using Jhu.Graywulf.Registry;
 
 
-namespace Jhu.Graywulf.Registry.CmdLineUtil
+namespace Jhu.Graywulf.Install.CmdLineUtil
 {
     [Verb(Name = "CreateLog", Description = "Creates the database schema required for logging.")]
     public class CreateLog : Verb
     {
         public override void Run()
         {
-            var csb = new SqlConnectionStringBuilder()
-            {
-                DataSource = Server,
-                InitialCatalog = Database
-            };
-
             Console.Write("Creating database schema... ");
 
-            var i = new LogInstaller(csb.ConnectionString);
+            var i = new LogInstaller(GetConnectionString());
             i.CreateDatabase();
             i.CreateSchema();
 

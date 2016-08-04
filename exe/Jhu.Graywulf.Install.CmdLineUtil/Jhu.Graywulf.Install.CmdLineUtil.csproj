@@ -8,7 +8,7 @@
     <ProjectGuid>{19966DF7-6E7D-454C-B4D7-54EC77E220D2}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Jhu.Graywulf.Registry.CmdLineUtil</RootNamespace>
+    <RootNamespace>Jhu.Graywulf.Install.CmdLineUtil</RootNamespace>
     <AssemblyName>gwregutil</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -72,17 +72,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddAdmin.cs" />
+    <Compile Include="AddCluster.cs" />
+    <Compile Include="AddDomain.cs" />
     <Compile Include="AddUser.cs" />
-    <Compile Include="CreateDomain.cs" />
-    <Compile Include="CreateLog.cs" />
-    <Compile Include="CreateSchema.cs" />
-    <Compile Include="CreateAdmin.cs" />
-    <Compile Include="CreateCluster.cs" />
     <Compile Include="CreateDb.cs" />
+    <Compile Include="CreateJobPersistence.cs" />
+    <Compile Include="CreateLog.cs" />
+    <Compile Include="CreateRegistry.cs" />
     <Compile Include="Export.cs" />
     <Compile Include="Import.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Verb.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

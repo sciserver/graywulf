@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Install
     /// The class is used by the command-line utility schemautil and the test projects.
     /// It takes the database scripts from Scripts.resx.
     /// </remarks>
-    public abstract class DBInstaller
+    public class DBInstaller
     {
         private SqlConnectionStringBuilder connectionString;
         private string path;
@@ -202,9 +202,11 @@ namespace Jhu.Graywulf.Install
         /// SQL Management Studio does. Also removes lines starting with USE to avoid executing
         /// script against the wrong database.
         /// </remarks>
-        public abstract void CreateSchema();
+        public virtual void CreateSchema()
+        {
+        }
 
-        public void AddUser(string username)
+        public void AddUser(string username, string role)
         {
             var db = GetSmoDatabase();
             var u = new smo::User(db, username)
@@ -212,7 +214,7 @@ namespace Jhu.Graywulf.Install
                 Login = username,
             };
             db.Users.Add(u);
-            u.AddToRole("db_owner");
+            u.AddToRole(role);
         }
 
         protected void ExecuteSqlFile(string filename)
