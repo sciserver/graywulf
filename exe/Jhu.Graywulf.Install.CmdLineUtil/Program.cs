@@ -17,7 +17,16 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
             // Initialize logger
             Jhu.Graywulf.Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.SqlLogWriter());
 
-            List<Type> verbs = new List<Type>() { typeof(CreateDb), typeof(CreateSchema), typeof(CreateCluster), typeof(CreateAdmin), typeof(Export), typeof(Import) };
+            List<Type> verbs = new List<Type>()
+            {
+                typeof(CreateDb),
+                typeof(CreateSchema),
+                typeof(CreateCluster),
+                typeof(CreateDomain),
+                typeof(CreateAdmin),
+                typeof(Export),
+                typeof(Import)
+            };
 
             Verb v = null;
 

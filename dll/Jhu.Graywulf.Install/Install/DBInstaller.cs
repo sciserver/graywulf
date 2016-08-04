@@ -109,44 +109,6 @@ namespace Jhu.Graywulf.Install
             var csb = new SqlConnectionStringBuilder(this.connectionString);
             var s = new smo::Server(csb.DataSource);
             s.KillDatabase(catalog != null ? catalog : csb.InitialCatalog);
-
-            /*
-
-            SqlConnection.ClearAllPools();
-
-            string dropcatalog;
-
-            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(this.connectionString);
-            if (catalog == null)
-            {
-                dropcatalog = csb.InitialCatalog;
-            }
-            else
-            {
-                dropcatalog = catalog;
-            }
-            csb.InitialCatalog = string.Empty;
-
-            string sql;
-
-            if (checkExistance)
-            {
-                sql = string.Format(@"IF EXISTS (SELECT * FROM master..sysdatabases WHERE name = '{0}') DROP DATABASE {0}", dropcatalog);
-            }
-            else
-            {
-                sql = string.Format(@"ALTER DATABASE {0} SET RESTRICTED_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE {0}", dropcatalog);
-            }
-
-            using (SqlConnection cn = new SqlConnection(csb.ConnectionString))
-            {
-                cn.Open();
-
-                using (SqlCommand cmd = new SqlCommand(sql, cn))
-                {
-                    cmd.ExecuteNonQuery();
-                }
-            }*/
         }
         
         /// <summary>
@@ -163,6 +125,19 @@ namespace Jhu.Graywulf.Install
             ExecuteSqlScript(GetCreateAssemblyScript());
             ExecuteSqlScript(Scripts.Jhu_Graywulf_Registry_Tables);
             ExecuteSqlScript(Scripts.Jhu_Graywulf_Registry_Logic);
+        }
+
+        public void AddUser(string username)
+        {
+            var csb = new SqlConnectionStringBuilder(this.connectionString);
+            var s = new smo::Server(csb.DataSource);
+            var db = s.Databases[csb.InitialCatalog];
+            var u = new smo::User(db, username)
+            {
+                Login = username,
+            };
+            db.Users.Add(u);
+            u.AddToRole("db_owner");
         }
 
         private void ExecuteSqlScript(string sql)

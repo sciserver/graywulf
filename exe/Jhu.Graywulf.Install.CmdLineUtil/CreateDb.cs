@@ -9,7 +9,7 @@ using Jhu.Graywulf.Install;
 namespace Jhu.Graywulf.Registry.CmdLineUtil
 {
     [Verb(Name = "CreateDB", Description = "Creates the database schema required for storing the cluster registry.")]
-    class CreateDb : Verb
+    class CreateDb : AddUser
     {
         public override void Run()
         {
@@ -25,6 +25,10 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
                 };
                 i.CreateDatabase();
                 i.CreateSchema();
+                i.AddUser(Username);
+
+                //sqlcmd - S $skyquery_registrysql - d $skyquery_registrydb - Q "CREATE USER [$user] FOR LOGIN [$user]"
+                //sqlcmd - S $skyquery_registrysql - d $skyquery_registrydb - Q "ALTER ROLE [db_owner] ADD MEMBER [$user]"
 
                 Console.WriteLine("done.");
             }
