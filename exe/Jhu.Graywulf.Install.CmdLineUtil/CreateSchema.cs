@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
             {
                 Console.Write("Creating database schema... ");
 
-                var i = new DBInstaller();
+                var i = new RegistryInstaller();
                 i.CreateSchema();
 
                 Console.WriteLine("done.");

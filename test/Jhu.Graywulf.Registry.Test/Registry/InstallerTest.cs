@@ -15,11 +15,8 @@ namespace Jhu.Graywulf.Registry
         [TestMethod]
         public void FullInstallTest()
         {
-            var dbi = new DBInstaller()
-            {
-                ConnectionString = Jhu.Graywulf.Test.AppSettings.RegistryTestConnectionString
-            };
-            dbi.DropDatabase(true);
+            var dbi = new RegistryInstaller(Jhu.Graywulf.Test.AppSettings.RegistryTestConnectionString);
+            dbi.DropDatabase(false);
             dbi.CreateDatabase();
             dbi.CreateSchema();
 
@@ -39,8 +36,6 @@ namespace Jhu.Graywulf.Registry
                 var fi = new FederationInstaller(domain);
                 var federation = fi.Install("Test federation");
             }
-
-            //dbi.DropDatabase(true);
         }
     }
 }

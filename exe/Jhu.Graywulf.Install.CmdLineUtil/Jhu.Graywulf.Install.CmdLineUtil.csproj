@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="AddUser.cs" />
     <Compile Include="CreateDomain.cs" />
+    <Compile Include="CreateLog.cs" />
     <Compile Include="CreateSchema.cs" />
     <Compile Include="CreateAdmin.cs" />
     <Compile Include="CreateCluster.cs" />

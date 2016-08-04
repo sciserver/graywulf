@@ -19,14 +19,41 @@ namespace Jhu.Graywulf.Install
     /// The class is used by the command-line utility schemautil and the test projects.
     /// It takes the database scripts from Scripts.resx.
     /// </remarks>
-    public class DBInstaller
+    public abstract class DBInstaller
     {
-        private string connectionString;
+        private SqlConnectionStringBuilder connectionString;
+        private string path;
+        private uint dataSize;       // MB
+        private uint logSize;        // MB
+        private bool simpleRecovery;
 
-        public string ConnectionString
+        public SqlConnectionStringBuilder ConnectionString
         {
             get { return connectionString; }
-            set { connectionString = value; }
+        }
+
+        public string Path
+        {
+            get { return path; }
+            set { path = value; }
+        }
+
+        public uint DataSize
+        {
+            get { return dataSize; }
+            set { dataSize = value; }
+        }
+
+        public uint LogSize
+        {
+            get { return logSize; }
+            set { logSize = value; }
+        }
+
+        public bool SimpleRecovery
+        {
+            get { return simpleRecovery; }
+            set { simpleRecovery = value; }
         }
 
         public DBInstaller()
@@ -34,9 +61,94 @@ namespace Jhu.Graywulf.Install
             InitializeMembers();
         }
 
+        public DBInstaller(string connectionString)
+        {
+            InitializeMembers();
+            this.connectionString.ConnectionString = connectionString;
+        }
+
         private void InitializeMembers()
         {
-            this.connectionString = null;
+            this.connectionString = new SqlConnectionStringBuilder();
+            this.path = null;
+            this.dataSize = 0;
+            this.logSize = 0;
+            this.simpleRecovery = false;
+        }
+
+        private smo::Server GetSmoServer()
+        {
+            var s = new smo::Server(connectionString.DataSource);
+            return s;
+        }
+
+        private smo::Database GetSmoDatabase()
+        {
+            var s = GetSmoServer();
+            var db = s.Databases[connectionString.InitialCatalog];
+            return db;
+        }
+
+        private smo::FileGroup AddFileGroup(smo::Database db, string name)
+        {
+            var fg = new smo::FileGroup(db, name);
+            db.FileGroups.Add(fg);
+            return fg;
+        }
+
+        private smo::DataFile AddDataFile(smo::FileGroup fg)
+        {
+            var name = String.Format(
+                "{0}_{1}_{2}",
+                fg.Parent.Name,
+                fg.Name,
+                fg.Files.Count + 1);
+            var dir = String.IsNullOrWhiteSpace(path) ? fg.Parent.Parent.DefaultFile : path;
+            var datafile = new smo::DataFile(fg, name);
+            datafile.FileName = System.IO.Path.Combine(dir, name + ".mdf");
+            
+            if (dataSize > 0)
+            {
+                datafile.Size = Math.Max(dataSize, 16) * 1024;
+                datafile.Growth = 0;
+                datafile.GrowthType = smo::FileGrowthType.None;
+            }
+            else
+            {
+                datafile.Size = 16 * 1024;
+                datafile.Growth = 10;
+                datafile.GrowthType = smo.FileGrowthType.Percent;
+            }
+
+            fg.Files.Add(datafile);
+            return datafile;
+        }
+
+        private smo::LogFile AddLogFile(smo::Database db)
+        {
+            var name = String.Format(
+                "{0}_log_{1}",
+                db.Name,
+                db.LogFiles.Count + 1);
+            var dir = String.IsNullOrWhiteSpace(path) ? db.Parent.DefaultLog : path;
+            var logfile = new smo::LogFile(db, name);
+            logfile.FileName = System.IO.Path.Combine(dir, name + ".ldf");
+
+            if (logSize > 0)
+            {
+                logfile.Size = Math.Max(logSize, 16) * 1024;
+                logfile.Growth = 0;
+                logfile.GrowthType = smo::FileGrowthType.None;
+            }
+            else
+            {
+                logfile.Size = 16 * 1024;
+                logfile.Growth = 10;
+                logfile.GrowthType = smo.FileGrowthType.Percent;
+            }
+
+            db.LogFiles.Add(logfile);
+            return logfile;
         }
 
         /// <summary>
@@ -44,73 +156,43 @@ namespace Jhu.Graywulf.Install
         /// </summary>
         public void CreateDatabase()
         {
-            string catalog;
+            var dbname = connectionString.InitialCatalog;
+            var s = GetSmoServer();
+            var db = new smo::Database(s, dbname);
 
-            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(this.connectionString);
-            catalog = csb.InitialCatalog;
-            csb.InitialCatalog = string.Empty;
+            db.RecoveryModel = simpleRecovery ? smo::RecoveryModel.Simple : smo::RecoveryModel.Full;
+            db.Collation = "SQL_Latin1_General_CP1_CI_AS";
 
-            string sql = string.Format(@"CREATE DATABASE {0}", catalog);
+            var fg = AddFileGroup(db, "PRIMARY");
+            var datafile = AddDataFile(fg);
+            var logfile = AddLogFile(db);
+            
+            db.Create();
+        }
 
-            using (SqlConnection cn = new SqlConnection(csb.ConnectionString))
+        /// <summary>
+        /// Drops the database on the server specified in the app.config file with the name passed as a parameter.
+        /// </summary>
+        /// <remarks>
+        /// This function is used for deleting test databases too, not just the cluster schema database.
+        /// </remarks>
+        public void DropDatabase(bool checkExistence)
+        {
+            var s = GetSmoServer();
+            var exists = s.Databases[connectionString.InitialCatalog] != null;
+
+            if (checkExistence && !exists)
             {
-                cn.Open();
+                // *** TODO
+                throw new Exception("Database does not exist.");
+            }
 
-                using (SqlCommand cmd = new SqlCommand(sql, cn))
-                {
-                    cmd.ExecuteNonQuery();
-                }
+            if (exists)
+            {
+                s.KillDatabase(connectionString.InitialCatalog);
             }
         }
 
-        /// <summary>
-        /// Drops the database specified in the app.config file.
-        /// </summary>
-        public void DropDatabase()
-        {
-            DropDatabase(null);
-        }
-
-        /// <summary>
-        /// Drops the database specified in the app.config file.
-        /// </summary>
-        /// <param name="checkExistance">If true: If the database does not exist, the drop is not attempted. False: Fails when database is absent.</param>
-        public void DropDatabase(bool checkExistance)
-        {
-            DropDatabase(null, checkExistance);
-        }
-
-
-        /// <summary>
-        /// Drops the database on the server specified in the app.config file with the name passed as a parameter.
-        /// Throws an exception if the database is absent.
-        /// </summary>
-        /// <param name="catalog">Name of the database to drop. If null, the database
-        /// specified in the app.config file is dropped.</param>
-        /// <remarks>
-        /// This function is used for deleting test databases too, not just the cluster schema database.
-        /// </remarks>
-        public void DropDatabase(string catalog)
-        {
-            DropDatabase(catalog, false);
-        }
-
-        /// <summary>
-        /// Drops the database on the server specified in the app.config file with the name passed as a parameter.
-        /// </summary>
-        /// <param name="catalog">Name of the database to drop. If null, the database
-        /// specified in the app.config file is dropped.</param>
-        /// <param name="checkExistance">If true: If the database does not exist, the drop is not attempted. False: Fails when database is absent.</param>
-        /// <remarks>
-        /// This function is used for deleting test databases too, not just the cluster schema database.
-        /// </remarks>
-        public void DropDatabase(string catalog, bool checkExistance)
-        {
-            var csb = new SqlConnectionStringBuilder(this.connectionString);
-            var s = new smo::Server(csb.DataSource);
-            s.KillDatabase(catalog != null ? catalog : csb.InitialCatalog);
-        }
-        
         /// <summary>
         /// Creates the schema required by this library to store its state in a database.
         /// </summary>
@@ -120,18 +202,11 @@ namespace Jhu.Graywulf.Install
         /// SQL Management Studio does. Also removes lines starting with USE to avoid executing
         /// script against the wrong database.
         /// </remarks>
-        public void CreateSchema()
-        {
-            ExecuteSqlScript(GetCreateAssemblyScript());
-            ExecuteSqlScript(Scripts.Jhu_Graywulf_Registry_Tables);
-            ExecuteSqlScript(Scripts.Jhu_Graywulf_Registry_Logic);
-        }
+        public abstract void CreateSchema();
 
         public void AddUser(string username)
         {
-            var csb = new SqlConnectionStringBuilder(this.connectionString);
-            var s = new smo::Server(csb.DataSource);
-            var db = s.Databases[csb.InitialCatalog];
+            var db = GetSmoDatabase();
             var u = new smo::User(db, username)
             {
                 Login = username,
@@ -140,20 +215,19 @@ namespace Jhu.Graywulf.Install
             u.AddToRole("db_owner");
         }
 
-        private void ExecuteSqlScript(string sql)
+        protected void ExecuteSqlScript(string sql)
         {
-            using (Context context = ContextManager.Instance.CreateContext(
-                this.connectionString,
-                ConnectionMode.AutoOpen,
-                TransactionMode.AutoCommit))
+            using (var cn = new SqlConnection(connectionString.ConnectionString))
             {
+                cn.Open();
+
                 string[] scripts = SplitSqlScript(sql);
 
                 foreach (string q in scripts)
                 {
                     if (!String.IsNullOrWhiteSpace(q))
                     {
-                        using (SqlCommand cmd = context.CreateTextCommand(q))
+                        using (SqlCommand cmd = new SqlCommand(q, cn))
                         {
                             cmd.ExecuteNonQuery();
                         }
@@ -162,20 +236,7 @@ namespace Jhu.Graywulf.Install
             }
         }
 
-        private string GetCreateAssemblyScript()
-        {
-            var sb = new StringBuilder(Scripts.Jhu_Graywulf_Registry_Assembly);
-
-            // Find location of the assembly
-            var filename = typeof(Jhu.Graywulf.Registry.EntityType).Assembly.Location;
-            var hex = GetFileAsHex(filename);
-
-            sb.Replace("[$Hex]", hex);
-
-            return sb.ToString();
-        }
-
-        private string GetFileAsHex(string filename)
+        protected string GetFileAsHex(string filename)
         {
             // Load enum assembly as a binary and convert to hex
             var buffer = File.ReadAllBytes(filename);
@@ -196,7 +257,7 @@ namespace Jhu.Graywulf.Install
         /// </summary>
         /// <param name="script">The script to chunk up.</param>
         /// <returns>The script chunks.</returns>
-        private string[] SplitSqlScript(string script)
+        protected string[] SplitSqlScript(string script)
         {
             // Look for rows starting with GO
             return script.Split(new string[] { "\r\nGO", "\nGO" }, StringSplitOptions.RemoveEmptyEntries);

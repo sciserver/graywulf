@@ -27,10 +27,7 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
             {
                 Console.Write("Creating database... ");
 
-                var i = new DBInstaller()
-                {
-                    ConnectionString = Jhu.Graywulf.Registry.ContextManager.Instance.ConnectionString
-                };
+                var i = new RegistryInstaller(ContextManager.Instance.ConnectionString);
                 i.AddUser(Username);
                 Console.WriteLine("done.");
             }

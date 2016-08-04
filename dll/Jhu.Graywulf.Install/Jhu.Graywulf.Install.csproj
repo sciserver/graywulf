@@ -66,6 +66,9 @@
     <Compile Include="Install\DatabaseDefinitionInstaller.cs" />
     <Compile Include="Install\DBInstaller.cs" />
     <Compile Include="Install\ExportTablesJobInstaller.cs" />
+    <Compile Include="Install\JobPersistenceInstaller.cs" />
+    <Compile Include="Install\LogInstaller.cs" />
+    <Compile Include="Install\RegistryInstaller.cs" />
     <Compile Include="Install\Scripts.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -19,16 +19,10 @@ namespace Jhu.Graywulf.Registry.CmdLineUtil
             {
                 Console.Write("Creating database... ");
 
-                var i = new DBInstaller()
-                {
-                    ConnectionString = Jhu.Graywulf.Registry.ContextManager.Instance.ConnectionString
-                };
+                var i = new RegistryInstaller(ContextManager.Instance.ConnectionString);
                 i.CreateDatabase();
                 i.CreateSchema();
                 i.AddUser(Username);
-
-                //sqlcmd - S $skyquery_registrysql - d $skyquery_registrydb - Q "CREATE USER [$user] FOR LOGIN [$user]"
-                //sqlcmd - S $skyquery_registrysql - d $skyquery_registrydb - Q "ALTER ROLE [db_owner] ADD MEMBER [$user]"
 
                 Console.WriteLine("done.");
             }

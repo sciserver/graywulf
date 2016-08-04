@@ -130,4 +130,7 @@
   <data name="web.config" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\web.config;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="Jhu_Graywulf_Logging" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\sql\Jhu.Graywulf.Logging.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
 </root>

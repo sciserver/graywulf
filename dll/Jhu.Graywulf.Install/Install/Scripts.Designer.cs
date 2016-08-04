@@ -61,6 +61,33 @@ namespace Jhu.Graywulf.Install {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to --USE [Graywulf_Log]
+        ///GO
+        ////****** Object:  Schema [dev]    Script Date: 09/25/2013 17:23:22 ******/
+        ///CREATE SCHEMA [dev] AUTHORIZATION [dbo]
+        ///GO
+        ////****** Object:  Table [dbo].[EventData]    Script Date: 09/25/2013 17:23:24 ******/
+        ///SET ANSI_NULLS ON
+        ///GO
+        ///SET QUOTED_IDENTIFIER ON
+        ///GO
+        ///CREATE TABLE [dbo].[EventData](
+        ///	[EventId] [bigint] NOT NULL,
+        ///	[Key] [nvarchar](50) NOT NULL,
+        ///	[Data] [sql_variant] NOT NULL,
+        /// CONSTRAINT [PK_EventLogData] PRIMARY KEY CLUSTERED 
+        ///(
+        ///	[EventId] ASC,
+        ///	[Key] ASC
+        ///)WITH (PAD_ [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Jhu_Graywulf_Logging {
+            get {
+                return ResourceManager.GetString("Jhu_Graywulf_Logging", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CREATE ASSEMBLY [Jhu.Graywulf.Registry.Enum]
         ///AUTHORIZATION [dbo]
         ///FROM [$Hex]
@@ -130,7 +157,7 @@ namespace Jhu.Graywulf.Install {
         ///	[ReadOnly] [bit] NOT NULL,
         ///	[Primary] [bit] NOT NULL,
         ///	[Deleted] [bit] NOT NULL,
-        ///	[LockOwner] [uniqueid [rest of string was truncated]&quot;;.
+        ///	[L [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Jhu_Graywulf_Registry_Tables {
             get {
