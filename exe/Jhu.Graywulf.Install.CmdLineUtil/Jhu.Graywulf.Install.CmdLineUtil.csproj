@@ -76,6 +76,10 @@
     <Compile Include="AddCluster.cs" />
     <Compile Include="AddDomain.cs" />
     <Compile Include="AddUser.cs" />
+    <Compile Include="DropLog.cs" />
+    <Compile Include="DropJobPersistence.cs" />
+    <Compile Include="DropRegistry.cs" />
+    <Compile Include="DropDb.cs" />
     <Compile Include="CreateDb.cs" />
     <Compile Include="CreateJobPersistence.cs" />
     <Compile Include="CreateLog.cs" />

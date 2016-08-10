@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Registry
 
         private void DeserializeEntity(Entity entity)
         {
-            Console.Error.Write("Deserializing {0}... ", entity.Name);
+            // Console.Error.Write("Deserializing {0}... ", entity.Name);
 
             entity.IsDeserializing = true;
             entity.Context = this.Context;
@@ -87,7 +87,7 @@ namespace Jhu.Graywulf.Registry
 
         private void ResolveReferences(Entity entity)
         {
-            Console.Error.Write("Resolving references of {0}... ", entity.Name);
+            // Console.Error.Write("Resolving references of {0}... ", entity.Name);
 
             entity.IsDeserializing = false;     // Allows saving entity references
             ResolveNameReferences(entity);
@@ -109,7 +109,6 @@ namespace Jhu.Graywulf.Registry
                         Console.Error.WriteLine("ignored duplicate.");
                         break;
                     case DuplicateMergeMethod.Update:
-                        // TODO: load existing, update and save
                         UpdateEntity(entity);
                         Console.Error.WriteLine("updated duplicate.");
                         break;

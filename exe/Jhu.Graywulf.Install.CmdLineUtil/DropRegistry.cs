@@ -6,20 +6,20 @@ using System.Data.SqlClient;
 using Jhu.Graywulf.CommandLineParser;
 using Jhu.Graywulf.Registry;
 
-
 namespace Jhu.Graywulf.Install.CmdLineUtil
 {
-    [Verb(Name = "CreateJobPersistence", Description = "Creates the database schema required for job persistence.")]
-    public class CreateJobPersistence : CreateDb
+    [Verb(Name = "DropRegistry", Description = "Drops the database schema required for storing the cluster registry.")]
+    public class DropRegistry : DropDb
     {
         protected override string OnGetConnectionString()
         {
-            return Jhu.Graywulf.Scheduler.Scheduler.Configuration.PersistenceConnectionString;
+            var csb = new SqlConnectionStringBuilder(ContextManager.Instance.ConnectionString);
+            return csb.ConnectionString;
         }
 
         public override void Run()
         {
-            var i = new JobPersistenceInstaller(GetConnectionString());
+            var i = new RegistryInstaller(GetConnectionString());
             RunInstaller(i);
         }
     }

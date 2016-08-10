@@ -9,8 +9,8 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Install.CmdLineUtil
 {
-    [Verb(Name = "CreateJobPersistence", Description = "Creates the database schema required for job persistence.")]
-    public class CreateJobPersistence : CreateDb
+    [Verb(Name = "DropJobPersistence", Description = "Drops the database schema required for job persistence.")]
+    public class DropJobPersistence : DropDb
     {
         protected override string OnGetConnectionString()
         {

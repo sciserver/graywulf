@@ -9,17 +9,17 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Install.CmdLineUtil
 {
-    [Verb(Name = "CreateJobPersistence", Description = "Creates the database schema required for job persistence.")]
-    public class CreateJobPersistence : CreateDb
+    [Verb(Name = "DropLog", Description = "Drops the database schema required for logging.")]
+    public class DropLog : DropDb
     {
         protected override string OnGetConnectionString()
         {
-            return Jhu.Graywulf.Scheduler.Scheduler.Configuration.PersistenceConnectionString;
+            return Jhu.Graywulf.Logging.AppSettings.ConnectionString;
         }
 
         public override void Run()
         {
-            var i = new JobPersistenceInstaller(GetConnectionString());
+            var i = new LogInstaller(GetConnectionString());
             RunInstaller(i);
         }
     }
