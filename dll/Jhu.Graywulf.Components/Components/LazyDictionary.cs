@@ -487,7 +487,6 @@ namespace Jhu.Graywulf.Components
                 if (e.Items != null)
                 {
                     items = e.Items;
-                    isAllLoaded = true;
                     return true;
                 }
             }

@@ -109,28 +109,37 @@ namespace Jhu.Graywulf.Web.UI.Schema
             DatabaseObjectType type;
             if (Enum.TryParse<DatabaseObjectType>(ObjectTypeList.SelectedValue, out type))
             {
-                var li = new ListItem("(select item)", "");
-                ObjectList.Items.Add(li);
-
-                switch (type)
+                try
                 {
-                    case DatabaseObjectType.Table:
-                        LoadTables(dataset);
-                        break;
-                    case DatabaseObjectType.View:
-                        LoadViews(dataset);
-                        break;
-                    case DatabaseObjectType.TableValuedFunction:
-                        LoadTableValuedFunctions(dataset);
-                        break;
-                    case DatabaseObjectType.ScalarFunction:
-                        LoadScalarFunctions(dataset);
-                        break;
-                    case DatabaseObjectType.StoredProcedure:
-                        LoadStoredProcedures(dataset);
-                        break;
-                    default:
-                        throw new NotImplementedException();
+                    var li = new ListItem("(select item)", "");
+                    ObjectList.Items.Add(li);
+
+                    switch (type)
+                    {
+                        case DatabaseObjectType.Table:
+                            LoadTables(dataset);
+                            break;
+                        case DatabaseObjectType.View:
+                            LoadViews(dataset);
+                            break;
+                        case DatabaseObjectType.TableValuedFunction:
+                            LoadTableValuedFunctions(dataset);
+                            break;
+                        case DatabaseObjectType.ScalarFunction:
+                            LoadScalarFunctions(dataset);
+                            break;
+                        case DatabaseObjectType.StoredProcedure:
+                            LoadStoredProcedures(dataset);
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+                catch
+                {
+                    ObjectList.Items.Clear();
+                    var li = new ListItem("(not available)", "");
+                    ObjectList.Items.Add(li);
                 }
             }
             else
