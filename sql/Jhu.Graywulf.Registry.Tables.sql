@@ -385,7 +385,6 @@ CREATE TABLE [dbo].[JobInstance]
 	[DateFinished] [datetime] NULL,
 	[JobExecutionStatus] [int] NOT NULL,
 	[JobTimeout] [bigint] NULL,
-	[SqlTimeout] [bigint] NULL,
 	[SuspendTimeout] [datetime] NULL,
 	[ScheduleType] [int] NOT NULL,
 	[ScheduleTime] [datetime] NULL,
