@@ -130,9 +130,9 @@ namespace Jhu.Graywulf.Web.Api.V1
             queueInstancesByGuid = new ConcurrentDictionary<Guid, QueueInstance>();
             queueInstancesByName = new ConcurrentDictionary<string, QueueInstance>(Entity.StringComparer);
 
-            Context.Federation.ControllerMachine.LoadQueueInstances(true);
+            Context.Federation.ControllerMachineRole.LoadQueueInstances(true);
 
-            foreach (var q in Context.Federation.ControllerMachine.QueueInstances.Values)
+            foreach (var q in Context.Federation.ControllerMachineRole.QueueInstances.Values)
             {
                 if (!q.System && !q.Hidden)
                 {

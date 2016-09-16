@@ -106,12 +106,12 @@ namespace Jhu.Graywulf.Web.Admin.Layout
         {
             QueueInstance.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
 
-            var m = ((DatabaseDefinition)Item).Federation.ControllerMachine;
-            m.LoadQueueInstances(false);
+            var mr = ((DatabaseDefinition)Item).Federation.ControllerMachineRole;
+            mr.LoadQueueInstances(false);
 
-            foreach (var q in m.QueueInstances.Values)
+            foreach (var q in mr.QueueInstances.Values)
             {
-                QueueInstance.Items.Add(new ListItem(m.Name + "\\" + q.Name, q.Guid.ToString()));
+                QueueInstance.Items.Add(new ListItem(mr.Name + "\\" + q.Name, q.Guid.ToString()));
             }
         }
     }

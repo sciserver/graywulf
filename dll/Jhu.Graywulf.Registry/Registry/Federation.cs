@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Registry
     {
         enum ReferenceType : int
         {
-            ControllerMachine = 1,
+            ControllerMachineRole = 1,
             SchemaSourceServerInstance = 2,
             UserDatabaseVersion = 3,
             TempDatabaseVersion = 4,
@@ -165,10 +165,10 @@ namespace Jhu.Graywulf.Registry
         /// Gets the controller machine of this federation.
         /// </summary>
         [XmlIgnore]
-        public Machine ControllerMachine
+        public MachineRole ControllerMachineRole
         {
-            get { return ControllerMachineReference.Value; }
-            set { ControllerMachineReference.Value = value; }
+            get { return ControllerMachineRoleReference.Value; }
+            set { ControllerMachineRoleReference.Value = value; }
         }
 
         /// <summary>
@@ -243,19 +243,19 @@ namespace Jhu.Graywulf.Registry
         /// Gets the reference object to the controller machine of this federation.
         /// </summary>
         [XmlIgnore]
-        public EntityReference<Machine> ControllerMachineReference
+        public EntityReference<MachineRole> ControllerMachineRoleReference
         {
-            get { return (EntityReference<Machine>)EntityReferences[(int)ReferenceType.ControllerMachine]; }
+            get { return (EntityReference<MachineRole>)EntityReferences[(int)ReferenceType.ControllerMachineRole]; }
         }
 
         /// <summary>
         /// For internal use only.
         /// </summary>
-        [XmlElement("ControllerMachine")]
-        public string ControllerMachine_ForXml
+        [XmlElement("ControllerMachineRole")]
+        public string ControllerMachineRole_ForXml
         {
-            get { return ControllerMachineReference.Name; }
-            set { ControllerMachineReference.Name = value; }
+            get { return ControllerMachineRoleReference.Name; }
+            set { ControllerMachineRoleReference.Name = value; }
         }
 
         /// <summary>
@@ -427,7 +427,7 @@ namespace Jhu.Graywulf.Registry
                 new EntityReference<DatabaseVersion>((int)ReferenceType.UserDatabaseVersion),
                 new EntityReference<DatabaseVersion>((int)ReferenceType.TempDatabaseVersion),
                 new EntityReference<DatabaseVersion>((int)ReferenceType.CodeDatabaseVersion),
-                new EntityReference<Machine>((int)ReferenceType.ControllerMachine),
+                new EntityReference<MachineRole>((int)ReferenceType.ControllerMachineRole),
                 new EntityReference<ServerInstance>((int)ReferenceType.SchemaSourceServerInstance),
             };
         }

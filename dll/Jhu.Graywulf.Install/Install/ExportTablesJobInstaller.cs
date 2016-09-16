@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Install
                 Settings = new ExportTablesJobSettings()
                 {
                     // TODO: use installer parameter instead
-                    OutputDirectory = String.Format(@"\\{0}\ExportOutput\", federation.ControllerMachine.HostName)
+                    OutputDirectory = ""   // String.Format(@"\\{0}\ExportOutput\", federation.ControllerMachine.HostName)
                 }
             };
 

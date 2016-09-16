@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.Jobs
 
         public string GetDefaultMaintenanceQueue()
         {
-            return EntityFactory.CombineName(EntityType.QueueInstance, Context.Federation.ControllerMachine.GetFullyQualifiedName(), Registry.Constants.MaintenanceQueueName);
+            return EntityFactory.CombineName(EntityType.QueueInstance, Context.Federation.ControllerMachineRole.GetFullyQualifiedName(), Registry.Constants.MaintenanceQueueName);
         }
     }
 }

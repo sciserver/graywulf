@@ -107,7 +107,7 @@ namespace Jhu.Graywulf.Install
 
             GenerateFederation(
                 name,
-                controller,
+                controllerRole,
                 tempdbdd.DatabaseVersions[Constants.TempDbName],
                 controller.ServerInstances[Constants.ServerInstanceName]);
 
@@ -121,13 +121,13 @@ namespace Jhu.Graywulf.Install
 
         public Federation Install(
             string name,
-            Machine controllerMachine,
+            MachineRole controllerRole,
             DatabaseVersion tempDatabaseVersion,
             ServerInstance schemaSourceServerInstance,
             ServerVersion userDatabaseServerVersion,
             ServerVersion nodeServerVersion)
         {
-            GenerateFederation(name, controllerMachine, tempDatabaseVersion, schemaSourceServerInstance);
+            GenerateFederation(name, controllerRole, tempDatabaseVersion, schemaSourceServerInstance);
             GenerateDefaultSettings();
             GenerateDefaultChildren(userDatabaseServerVersion, nodeServerVersion);
 
@@ -136,14 +136,14 @@ namespace Jhu.Graywulf.Install
 
         protected virtual void GenerateFederation(
             string name,
-            Machine controllerMachine,
+            MachineRole controllerMachineRole,
             DatabaseVersion tempDatabaseVersion,
             ServerInstance schemaSourceServerInstance)
         {
             federation = new Federation(domain)
             {
                 Name = name,
-                ControllerMachine = controllerMachine,
+                ControllerMachineRole = controllerMachineRole,
                 TempDatabaseVersion = tempDatabaseVersion,
                 SchemaSourceServerInstance = schemaSourceServerInstance,
             };

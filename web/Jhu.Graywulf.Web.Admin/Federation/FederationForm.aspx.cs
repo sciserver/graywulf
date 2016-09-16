@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             Copyright.Text = Item.Copyright;
             Disclaimer.Text = Item.Disclaimer;
 
-            ControllerMachine.SelectedValue = Item.ControllerMachine;
+            ControllerMachineRole.SelectedValue = Item.ControllerMachineRole;
             SchemaSourceServerInstance.SelectedValue = Item.SchemaSourceServerInstance;
             MyDbDatabaseVersion.SelectedValue = Item.UserDatabaseVersion;
             TempDatabaseVersion.SelectedValue = Item.TempDatabaseVersion;
@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             Item.Copyright = Copyright.Text;
             Item.Disclaimer = Disclaimer.Text;
 
-            Item.ControllerMachine = (Machine) ControllerMachine.SelectedValue;
+            Item.ControllerMachineRole = (MachineRole)ControllerMachineRole.SelectedValue;
             Item.UserDatabaseVersion = (DatabaseVersion)MyDbDatabaseVersion.SelectedValue;
             Item.TempDatabaseVersion = (DatabaseVersion)TempDatabaseVersion.SelectedValue;
             Item.CodeDatabaseVersion = (DatabaseVersion) CodeDatabaseVersion.SelectedValue;
@@ -118,10 +118,10 @@ namespace Jhu.Graywulf.Web.Admin.Federation
                 CodeDatabaseVersionRow.Visible = true;
             }
 
-            if (ControllerMachine.Visible)
+            if (ControllerMachineRole.Visible)
             {
-                ControllerMachine.ChildEntityTypes = new[] { EntityType.MachineRole, EntityType.Machine };
-                ControllerMachine.ParentEntity = Item.Domain.Cluster;
+                ControllerMachineRole.ChildEntityTypes = new[] { EntityType.MachineRole };
+                ControllerMachineRole.ParentEntity = Item.Domain.Cluster;
             }
 
             if (SchemaSourceServerInstance.Visible)

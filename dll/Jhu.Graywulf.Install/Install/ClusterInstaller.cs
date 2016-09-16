@@ -70,7 +70,7 @@ namespace Jhu.Graywulf.Install
                 Name = Constants.SystemFederationName,
                 Email = email,
                 System = system,
-                ControllerMachine = controllerMachine,
+                ControllerMachineRole = controllerMachineRole,
                 SchemaSourceServerInstance = controllerServerInstance,
             };
             federation.Save();

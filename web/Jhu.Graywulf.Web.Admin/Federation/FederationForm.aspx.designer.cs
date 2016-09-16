@@ -229,22 +229,22 @@ namespace Jhu.Graywulf.Web.Admin.Federation {
         protected global::System.Web.UI.WebControls.TextBox FileFormatFactory;
         
         /// <summary>
-        /// ControllerMachineLabel control.
+        /// ControllerMachineRoleLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label ControllerMachineLabel;
+        protected global::System.Web.UI.WebControls.Label ControllerMachineRoleLabel;
         
         /// <summary>
-        /// ControllerMachine control.
+        /// ControllerMachineRole control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntitySelect ControllerMachine;
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntitySelect ControllerMachineRole;
         
         /// <summary>
         /// SchemaSourceServerInstanceLabel control.

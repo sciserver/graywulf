@@ -101,10 +101,10 @@
         </tr>
         <tr runat="server">
             <td class="FormLabel">
-                <asp:Label ID="ControllerMachineLabel" runat="server" Text="Controller Machine:"></asp:Label>
+                <asp:Label ID="ControllerMachineRoleLabel" runat="server" Text="Controller Machine Role:"></asp:Label>
             </td>
             <td class="FormField">
-                <jgwac:EntitySelect runat="server" id="ControllerMachine" CssClass="FormField" />
+                <jgwac:EntitySelect runat="server" id="ControllerMachineRole" CssClass="FormField" />
             </td>
         </tr>
         <tr runat="server">

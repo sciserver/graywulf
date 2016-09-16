@@ -54,10 +54,10 @@
         </tr>
         <tr>
             <td class="FormLabel">
-                <asp:Label ID="ControllerMachineLabel" runat="server" Text="Controller Machine:"></asp:Label>
+                <asp:Label ID="ControllerMachineRoleLabel" runat="server" Text="Controller Machine Role:"></asp:Label>
             </td>
             <td class="FormField">
-                <jgwac:EntityLink ID="ControllerMachine" runat="server" />
+                <jgwac:EntityLink ID="ControllerMachineRole" runat="server" />
             </td>
         </tr>
         <tr>

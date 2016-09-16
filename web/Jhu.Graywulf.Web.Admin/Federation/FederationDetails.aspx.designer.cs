@@ -121,22 +121,22 @@ namespace Jhu.Graywulf.Web.Admin.Federation {
         protected global::Jhu.Graywulf.Web.Admin.Controls.EntityLink CodeDatabaseVersion;
         
         /// <summary>
-        /// ControllerMachineLabel control.
+        /// ControllerMachineRoleLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label ControllerMachineLabel;
+        protected global::System.Web.UI.WebControls.Label ControllerMachineRoleLabel;
         
         /// <summary>
-        /// ControllerMachine control.
+        /// ControllerMachineRole control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityLink ControllerMachine;
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityLink ControllerMachineRole;
         
         /// <summary>
         /// SchemaSourceServerInstanceLabel control.

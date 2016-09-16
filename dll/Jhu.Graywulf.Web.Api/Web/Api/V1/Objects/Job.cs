@@ -362,7 +362,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             queuename = EntityFactory.CombineName(
                 EntityType.QueueInstance,
-                context.Federation.ControllerMachine.GetFullyQualifiedName(),
+                context.Federation.ControllerMachineRole.GetFullyQualifiedName(),
                 queuename);
 
             return queuename;

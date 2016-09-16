@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             MyDbDatabaseVersion.EntityReference.Value = Item.UserDatabaseVersion;
             TempDatabaseVersion.EntityReference.Value = Item.TempDatabaseVersion;
             CodeDatabaseVersion.EntityReference.Value = Item.CodeDatabaseVersion;
-            ControllerMachine.EntityReference.Value = Item.ControllerMachine;
+            ControllerMachineRole.EntityReference.Value = Item.ControllerMachineRole;
             SchemaSourceServerInstance.EntityReference.Value = Item.SchemaSourceServerInstance;
         }
 
