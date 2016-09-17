@@ -99,7 +99,7 @@ namespace Jhu.Graywulf.Registry
             try
             {
                 entity.Save();
-                Console.Error.WriteLine("done.");
+                //Console.Error.WriteLine("done.");
             }
             catch (DuplicateNameException)
             {
