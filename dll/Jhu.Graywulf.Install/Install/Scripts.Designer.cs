@@ -61,9 +61,7 @@ namespace Jhu.Graywulf.Install {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to --USE [Graywulf_Log]
-        ///GO
-        ////****** Object:  Schema [dev]    Script Date: 09/25/2013 17:23:22 ******/
+        ///   Looks up a localized string similar to /****** Object:  Schema [dev]    Script Date: 09/25/2013 17:23:22 ******/
         ///CREATE SCHEMA [dev] AUTHORIZATION [dbo]
         ///GO
         ////****** Object:  Table [dbo].[EventData]    Script Date: 09/25/2013 17:23:24 ******/
@@ -79,7 +77,7 @@ namespace Jhu.Graywulf.Install {
         ///(
         ///	[EventId] ASC,
         ///	[Key] ASC
-        ///)WITH (PAD_ [rest of string was truncated]&quot;;.
+        ///)WITH (PAD_INDEX  = OFF, STATISTICS_N [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Jhu_Graywulf_Logging {
             get {
