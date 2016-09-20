@@ -107,14 +107,6 @@
                 <jgwac:EntitySelect runat="server" id="ControllerMachineRole" CssClass="FormField" />
             </td>
         </tr>
-        <tr runat="server">
-            <td class="FormLabel">
-                <asp:Label ID="SchemaSourceServerInstanceLabel" runat="server" Text="Schema Source Server:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <jgwac:EntitySelect id="SchemaSourceServerInstance" runat="server" CssClass="FormField" />
-            </td>
-        </tr>
         <tr runat="server" id="MyDbServerVersionRow" visible="false">
             <td class="FormLabel">
                 <asp:Label ID="MyDbServerVersionLabel" runat="server" Text="MYDB Server Version:"></asp:Label>

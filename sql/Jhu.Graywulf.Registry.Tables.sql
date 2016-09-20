@@ -99,7 +99,6 @@ GO
 CREATE TABLE [dbo].[DatabaseDefinition]
 (
 	[EntityGuid] [uniqueidentifier] NOT NULL,
-	[SchemaSourceDatabaseName] [nvarchar](128) NOT NULL,
 	[LayoutType] [int] NOT NULL,
 	[DatabaseInstanceNamePattern] [nvarchar](256) NOT NULL,
 	[DatabaseNamePattern] [nvarchar](256) NOT NULL,

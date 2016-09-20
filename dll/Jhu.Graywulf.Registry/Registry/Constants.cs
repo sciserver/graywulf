@@ -55,6 +55,7 @@ namespace Jhu.Graywulf.Registry
 
         public const string ProdDatabaseVersionName = "PROD";
         public const string StatDatabaseVersionName = "STAT";
+        public const string SchemaDatabaseVersionName = "SCHEMA";
 
         public const string SystemDomainName = "System";
         public const string SystemFederationName = "System";

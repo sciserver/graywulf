@@ -16,13 +16,11 @@ namespace Jhu.Graywulf.Registry
     {
         enum ReferenceType : int
         {
-            SchemaSourceServerInstance = 1,
         }
 
         #region Member Variables
 
         // --- Background storage for properties ---
-        private string schemaSourceDatabaseName;
         private DatabaseLayoutType layoutType;
         private string databaseInstanceNamePattern;
         private string databaseNamePattern;
@@ -44,26 +42,6 @@ namespace Jhu.Graywulf.Registry
         public override EntityGroup EntityGroup
         {
             get { return EntityGroup.Federation; }
-        }
-
-        /// <summary>
-        /// Gets the server instance containing the template databases.
-        /// </summary>
-        [XmlIgnore]
-        public ServerInstance SchemaSourceServerInstance
-        {
-            get { return SchemaSourceServerInstanceReference.Value; }
-            set { SchemaSourceServerInstanceReference.Value = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the name of the database containing the <b>Schema Template</b>.
-        /// </summary>
-        [DBColumn(Size = 128)]
-        public string SchemaSourceDatabaseName
-        {
-            get { return schemaSourceDatabaseName; }
-            set { schemaSourceDatabaseName = value; }
         }
 
         /// <summary>
@@ -133,26 +111,6 @@ namespace Jhu.Graywulf.Registry
 
         #endregion
         #region Navigation Properties
-
-        /// <summary>
-        /// Gets the reference object to the schema source server instance (containing the
-        /// database templates).
-        /// </summary>
-        [XmlIgnore]
-        public EntityReference<ServerInstance> SchemaSourceServerInstanceReference
-        {
-            get { return (EntityReference<ServerInstance>)EntityReferences[(int)ReferenceType.SchemaSourceServerInstance]; }
-        }
-
-        /// <summary>
-        /// For internal use only.
-        /// </summary>
-        [XmlElement("SchemaSourceServerInstance")]
-        public string SchemaSourceServerInstance_ForXml
-        {
-            get { return SchemaSourceServerInstanceReference.Name; }
-            set { SchemaSourceServerInstanceReference.Name = value; }
-        }
 
         /// <summary>
         /// Gets the <b>Federation</b> object to which this <b>Database Definition</b> belongs.
@@ -258,7 +216,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         private void InitializeMembers()
         {
-            this.schemaSourceDatabaseName = string.Empty;
             this.layoutType = DatabaseLayoutType.Monolithic;
             this.databaseInstanceNamePattern = Constants.MonolithicDatabaseInstanceNamePattern;
             this.databaseNamePattern = Constants.MonolithicDatabaseNamePattern;
@@ -274,7 +231,6 @@ namespace Jhu.Graywulf.Registry
         /// <param name="old">A <b>Database Definition</b> object to create the deep copy from.</param>
         private void CopyMembers(DatabaseDefinition old)
         {
-            this.schemaSourceDatabaseName = old.schemaSourceDatabaseName;
             this.layoutType = old.layoutType;
             this.databaseInstanceNamePattern = old.databaseInstanceNamePattern;
             this.databaseNamePattern = old.databaseNamePattern;
@@ -288,8 +244,7 @@ namespace Jhu.Graywulf.Registry
         {
             bool eq = base.CompareMembers(other);
             var o = other as DatabaseDefinition;
-            
-            eq &= this.schemaSourceDatabaseName == o.schemaSourceDatabaseName;
+
             eq &= this.layoutType == o.layoutType;
             eq &= this.databaseInstanceNamePattern == o.databaseInstanceNamePattern;
             eq &= this.databaseNamePattern == o.databaseNamePattern;
@@ -313,14 +268,6 @@ namespace Jhu.Graywulf.Registry
             return new DatabaseDefinition(this);
         }
 
-        protected override IEntityReference[] CreateEntityReferences()
-        {
-            return new IEntityReference[]
-            {
-                new EntityReference<ServerInstance>((int)ReferenceType.SchemaSourceServerInstance),
-            };
-        }
-
         protected override EntityType[] CreateChildTypes()
         {
             return new EntityType[] {
@@ -334,17 +281,44 @@ namespace Jhu.Graywulf.Registry
 
         #endregion
 
-        //
-
-        public DatabaseInstance GetDatabaseInstance(DatabaseVersion databaseVersion, long partitionKeyValue)
+        private DatabaseInstance GetSchemaDatabaseInstance()
         {
-            // *** TODO: partitioning key interval limits (inclusive, exclusive!)
-            LoadSlices(false);
-            Slice slice = this.Slices.Values.First(x => x.From <= partitionKeyValue && x.To >= partitionKeyValue);
+            // TODO: make it a stored procedure
+            DatabaseVersion dv = null;
 
-            this.LoadDatabaseInstances(false);
+            LoadDatabaseVersions(false);
+            LoadDatabaseInstances(false);
 
-            return this.DatabaseInstances.Values.First(x => x.DatabaseVersionReference.Guid == databaseVersion.Guid && x.Slice.Guid == slice.Guid);
+            if (DatabaseVersions.ContainsKey(Constants.SchemaDatabaseVersionName))
+            {
+                dv = DatabaseVersions[Constants.SchemaDatabaseVersionName];
+            }
+            else if (DatabaseVersions.ContainsKey(Constants.ProdDatabaseVersionName))
+            {
+                dv = DatabaseVersions[Constants.ProdDatabaseVersionName];
+            }
+            else
+            {
+                dv = DatabaseVersions.Values.FirstOrDefault();
+            }
+
+            if (dv != null)
+            {
+
+                var di = DatabaseInstances.Values.Where(i =>
+                    i.ServerInstance.Machine.DeploymentState == DeploymentState.Deployed &&
+                    i.ServerInstance.Machine.RunningState == RunningState.Running &&
+                    i.DeploymentState == DeploymentState.Deployed &&
+                    i.RunningState == RunningState.Attached &&
+                    i.DatabaseVersionReference.Guid == dv.Guid).ToArray();
+
+                if (di.Length > 0)
+                {
+                    return di[0];
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -352,27 +326,10 @@ namespace Jhu.Graywulf.Registry
         /// the database template of this database definition.
         /// </summary>
         /// <returns>The connection string builder object.</returns>
-        public SqlConnectionStringBuilder GetConnectionString()
+        public SqlConnectionStringBuilder GetSchemaConnectionString()
         {
-            // Only database definitions attached to a federation have schema source servers.
-            SqlConnectionStringBuilder csb;
-
-            if (!SchemaSourceServerInstanceReference.IsEmpty)
-            {
-                csb = this.SchemaSourceServerInstance.GetConnectionString();
-            }
-            else if (Parent is Federation)
-            {
-                csb = this.Federation.SchemaSourceServerInstance.GetConnectionString();
-            }
-            else
-            {
-                // Cluster level databases are schema-less, like TEMP
-                csb = new SqlConnectionStringBuilder();
-            }
-
-            csb.InitialCatalog = this.schemaSourceDatabaseName;
-            return csb;
+            var di = GetSchemaDatabaseInstance();
+            return di.GetConnectionString();
         }
     }
 }

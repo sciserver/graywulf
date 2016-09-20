@@ -144,11 +144,11 @@ namespace Jhu.Graywulf.Schema
             }
             else if (!databaseVersionReference.IsEmpty)
             {
-                base.ConnectionString = databaseVersionReference.Value.DatabaseDefinition.GetConnectionString().ConnectionString;
+                base.ConnectionString = databaseVersionReference.Value.DatabaseDefinition.GetSchemaConnectionString().ConnectionString;
             }
             else
             {
-                base.ConnectionString = databaseDefinitionReference.Value.GetConnectionString().ConnectionString;
+                base.ConnectionString = databaseDefinitionReference.Value.GetSchemaConnectionString().ConnectionString;
             }
         }
     }

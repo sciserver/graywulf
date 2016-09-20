@@ -44,8 +44,8 @@ namespace Jhu.Graywulf.Install
             // Create machine roles and machines
             MachineRole controllerMachineRole;
             Machine controllerMachine;
-            ServerInstance controllerServerInstance;
-            GenerateController(system, out controllerMachineRole, out controllerMachine, out controllerServerInstance);
+            ServerVersion controllerServerVersion;
+            GenerateController(system, out controllerMachineRole, out controllerMachine, out controllerServerVersion);
 
             ServerVersion nodeServerVersion;
             GenerateNode(system, out nodeServerVersion);
@@ -71,7 +71,6 @@ namespace Jhu.Graywulf.Install
                 Email = email,
                 System = system,
                 ControllerMachineRole = controllerMachineRole,
-                SchemaSourceServerInstance = controllerServerInstance,
             };
             federation.Save();
 
@@ -165,7 +164,7 @@ namespace Jhu.Graywulf.Install
             return cluster;
         }
 
-        private void GenerateController(bool system, out MachineRole controllerMachineRole, out Machine controllerMachine, out ServerInstance controllerServerInstance)
+        private void GenerateController(bool system, out MachineRole controllerMachineRole, out Machine controllerMachine, out ServerVersion controllerServerVersion)
         {
             controllerMachineRole = new MachineRole(cluster)
             {
@@ -175,12 +174,12 @@ namespace Jhu.Graywulf.Install
             };
             controllerMachineRole.Save();
 
-            var sv = new ServerVersion(controllerMachineRole)
+            controllerServerVersion = new ServerVersion(controllerMachineRole)
             {
                 Name = Constants.ServerVersionName,
                 System = system,
             };
-            sv.Save();
+            controllerServerVersion.Save();
 
             controllerMachine = new Machine(controllerMachineRole)
             {
@@ -188,10 +187,10 @@ namespace Jhu.Graywulf.Install
             };
             controllerMachine.Save();
 
-            controllerServerInstance = new ServerInstance(controllerMachine)
+            var controllerServerInstance = new ServerInstance(controllerMachine)
             {
                 Name = Constants.ServerInstanceName,
-                ServerVersion = sv,
+                ServerVersion = controllerServerVersion,
             };
             controllerServerInstance.Save();
         }

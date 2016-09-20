@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Registry
             LoadFileGroups(true);
 
             // Query database definition for filegroups
-            var smodb = GetSmoDatabase();
+            var smodb = GetSchemaSmoDatabase();
 
             // --- add standard file groups
             foreach (var smofg in smodb.FileGroups.Cast<smo::FileGroup>())

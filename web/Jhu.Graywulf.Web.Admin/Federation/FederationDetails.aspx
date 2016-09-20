@@ -60,15 +60,6 @@
                 <jgwac:EntityLink ID="ControllerMachineRole" runat="server" />
             </td>
         </tr>
-        <tr>
-            <td class="FormLabel">
-                <asp:Label ID="SchemaSourceServerInstanceLabel" runat="server" Text="Schema Source Server:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <jgwac:EntityLink ID="SchemaSourceServerInstance" Expression="[$Machine.Name]\[$Name]"
-                    runat="server" />
-            </td>
-        </tr>
     </table>
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="FormButtons">

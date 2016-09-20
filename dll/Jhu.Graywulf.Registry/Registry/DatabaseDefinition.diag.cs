@@ -28,11 +28,11 @@ namespace Jhu.Graywulf.Registry
             DiagnosticMessage msg = new DiagnosticMessage()
             {
                 EntityName = GetFullyQualifiedName(),
-                NetworkName = Federation.SchemaSourceServerInstance.GetCompositeName(),
+                NetworkName = GetSchemaDatabaseInstance().ServerInstance.GetCompositeName(),
                 ServiceName = "SQL Connection to Schema Source Server"
             };
 
-            ServerInstance.RunDiagnostics(GetConnectionString().ConnectionString, msg);
+            ServerInstance.RunDiagnostics(GetSchemaConnectionString().ConnectionString, msg);
 
             return msg;
         }

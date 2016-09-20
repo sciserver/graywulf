@@ -149,10 +149,7 @@ namespace Jhu.Graywulf.Install
                     dg.DiskGroup.LoadDiskVolumes(false);
                     diskVolumes.AddRange(dg.DiskGroup.DiskVolumes.Values.OrderBy(i => i.Number));
                 }
-                
-                // TODO: delete
-                //fg.DatabaseInstance.ServerInstance.Machine.LoadDiskVolumes(false);
-                //diskVolumes.AddRange(fg.DatabaseInstance.ServerInstance.Machine.DiskVolumes.Values.Where<DiskVolume>(d => (d.DiskVolumeType & fg.FileGroup.DiskGroupType) > 0).OrderBy(i => i.Number));
+               
             }
             else
             {

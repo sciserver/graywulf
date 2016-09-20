@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
                 var dbobjid = (string)Request.QueryString["objid"] ?? SelectedSchemaObject;
                 if (dbobjid != null)
                 {
-                    
+
                     try
                     {
                         dbobj = FederationContext.SchemaManager.GetDatabaseObjectByKey(dbobjid);
@@ -86,7 +86,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
             // Add other registered catalogs            
             // TODO: this needs to be modified here, use flags instead of filtering on name!
             FederationContext.SchemaManager.Datasets.LoadAll();
-            foreach (var dsd in FederationContext.SchemaManager.Datasets.Values.Where(k => 
+            foreach (var dsd in FederationContext.SchemaManager.Datasets.Values.Where(k =>
                 k.Name != Graywulf.Registry.Constants.UserDbName &&
                 k.Name != Graywulf.Registry.Constants.CodeDbName &&
                 k.Name != Graywulf.Registry.Constants.TempDbName).OrderBy(k => k.Name))
@@ -102,15 +102,16 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
         private void RefreshObjectList()
         {
-            ObjectList.Items.Clear();
-
-            var dataset = FederationContext.SchemaManager.Datasets[DatasetList.SelectedValue];
-
-            DatabaseObjectType type;
-            if (Enum.TryParse<DatabaseObjectType>(ObjectTypeList.SelectedValue, out type))
+            try
             {
-                try
+                ObjectList.Items.Clear();
+
+                var dataset = FederationContext.SchemaManager.Datasets[DatasetList.SelectedValue];
+
+                DatabaseObjectType type;
+                if (Enum.TryParse<DatabaseObjectType>(ObjectTypeList.SelectedValue, out type))
                 {
+
                     var li = new ListItem("(select item)", "");
                     ObjectList.Items.Add(li);
 
@@ -135,16 +136,16 @@ namespace Jhu.Graywulf.Web.UI.Schema
                             throw new NotImplementedException();
                     }
                 }
-                catch
+                else
                 {
-                    ObjectList.Items.Clear();
-                    var li = new ListItem("(not available)", "");
+                    var li = new ListItem("(no items)", "");
                     ObjectList.Items.Add(li);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                var li = new ListItem("(no items)", "");
+                ObjectList.Items.Clear();
+                var li = new ListItem("(not available)", "");
                 ObjectList.Items.Add(li);
             }
         }

@@ -17,48 +17,10 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         /// <param name="databaseDefinition"></param>
         /// <returns></returns>
-        public Database GetSmoDatabase()
+        public Database GetSchemaSmoDatabase()
         {
-            Server s;
-
-            if (!this.SchemaSourceServerInstanceReference.IsEmpty)
-            {
-                s = this.SchemaSourceServerInstance.GetSmoServer();
-            }
-            else
-            {
-                s = this.Federation.SchemaSourceServerInstance.GetSmoServer();
-            }
-
-            return s.Databases[this.SchemaSourceDatabaseName];
-        }
-
-        public Index GetSmoIndex(string tableName, string indexName)
-        {
-            return this.GetSmoDatabase().Tables[tableName].Indexes[indexName];
-        }
-
-        // TODO review this and it's references in activities
-        public string[] GetSmoIndexes(string tableName)
-        {
-            Table t = this.GetSmoDatabase().Tables[tableName];
-
-            List<string> indexlist = new List<string>();
-            foreach (Index i in t.Indexes)
-            {
-                indexlist.Add(i.Name);
-            }
-            
-            return indexlist.ToArray();
-
-            /*
-            List<string> foreignkeylist = new List<string>();
-            foreach (ForeignKey fk in t.ForeignKeys)
-            {
-                foreignkeylist.Add(fk.Name);
-            }
-            foreignKeys = foreignkeylist.ToArray();
-             * */
+            var di = GetSchemaDatabaseInstance();
+            return di.GetSmoDatabase();          
         }
     }
 }

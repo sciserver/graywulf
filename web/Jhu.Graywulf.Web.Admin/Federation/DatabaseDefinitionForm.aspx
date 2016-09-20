@@ -3,23 +3,6 @@
 
 <asp:Content runat="server" ContentPlaceHolderID="FormDetails">
     <table class="DetailsForm" runat="server">
-        <tr runat="server">
-            <td class="FormLabel">
-                <asp:Label ID="SchemaSourceServerInstanceLabel" runat="server" Text="Schema Source Server:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <asp:DropDownList ID="SchemaSourceServerInstance" runat="server" CssClass="FormField">
-                </asp:DropDownList>
-            </td>
-        </tr>
-        <tr runat="server" id="SchemaSourceDatabaseNameRow">
-            <td class="FormLabel">
-                <asp:Label ID="SchemaSourceDatabaseNameLabel" runat="server" Text="Schema Source DB:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <asp:TextBox ID="SchemaSourceDatabaseName" runat="server" CssClass="FormField"></asp:TextBox>
-            </td>
-        </tr>
         <tr runat="server" id="LayoutTypeRow">
             <td class="FormLabel">
                 <asp:Label ID="LayoutTypeLabel" runat="server" Text="Layout Type:"></asp:Label>

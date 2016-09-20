@@ -13,22 +13,22 @@ namespace Jhu.Graywulf.Web.Admin.Federation {
     public partial class DatabaseDefinitionDetails {
         
         /// <summary>
-        /// SchemaSourceServerInstanceLabel control.
+        /// SchemaSourceServerVersionLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label SchemaSourceServerInstanceLabel;
+        protected global::System.Web.UI.WebControls.Label SchemaSourceServerVersionLabel;
         
         /// <summary>
-        /// SchemaSourceServerInstance control.
+        /// SchemaSourceServerVersion control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityLink SchemaSourceServerInstance;
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityLink SchemaSourceServerVersion;
         
         /// <summary>
         /// SchemaSourceDatabaseNameLabel control.

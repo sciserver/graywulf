@@ -19,7 +19,6 @@ namespace Jhu.Graywulf.Registry
         enum ReferenceType : int
         {
             ControllerMachineRole = 1,
-            SchemaSourceServerInstance = 2,
             UserDatabaseVersion = 3,
             TempDatabaseVersion = 4,
             CodeDatabaseVersion = 5,
@@ -170,17 +169,7 @@ namespace Jhu.Graywulf.Registry
             get { return ControllerMachineRoleReference.Value; }
             set { ControllerMachineRoleReference.Value = value; }
         }
-
-        /// <summary>
-        /// Gets the server instance containing the template databases.
-        /// </summary>
-        [XmlIgnore]
-        public ServerInstance SchemaSourceServerInstance
-        {
-            get { return SchemaSourceServerInstanceReference.Value; }
-            set { SchemaSourceServerInstanceReference.Value = value; }
-        }
-
+        
         #endregion
         #region Navigation Properties
 
@@ -256,26 +245,6 @@ namespace Jhu.Graywulf.Registry
         {
             get { return ControllerMachineRoleReference.Name; }
             set { ControllerMachineRoleReference.Name = value; }
-        }
-
-        /// <summary>
-        /// Gets the reference object to the schema source server instance (containing the
-        /// database templates).
-        /// </summary>
-        [XmlIgnore]
-        public EntityReference<ServerInstance> SchemaSourceServerInstanceReference
-        {
-            get { return (EntityReference<ServerInstance>)EntityReferences[(int)ReferenceType.SchemaSourceServerInstance]; }
-        }
-
-        /// <summary>
-        /// For internal use only.
-        /// </summary>
-        [XmlElement("SchemaSourceServerInstance")]
-        public string SchemaSourceServerInstance_ForXml
-        {
-            get { return SchemaSourceServerInstanceReference.Name; }
-            set { SchemaSourceServerInstanceReference.Name = value; }
         }
 
         [XmlIgnore]
@@ -428,7 +397,6 @@ namespace Jhu.Graywulf.Registry
                 new EntityReference<DatabaseVersion>((int)ReferenceType.TempDatabaseVersion),
                 new EntityReference<DatabaseVersion>((int)ReferenceType.CodeDatabaseVersion),
                 new EntityReference<MachineRole>((int)ReferenceType.ControllerMachineRole),
-                new EntityReference<ServerInstance>((int)ReferenceType.SchemaSourceServerInstance),
             };
         }
 
@@ -443,6 +411,5 @@ namespace Jhu.Graywulf.Registry
         }
 
         #endregion
-
     }
 }

@@ -5,23 +5,6 @@
     <table class="DetailsForm">
         <tr>
             <td class="FormLabel">
-                <asp:Label ID="SchemaSourceServerInstanceLabel" runat="server" Text="Schema Source Server:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <jgwac:EntityLink ID="SchemaSourceServerInstance" Expression="[$Machine.Name]\[$Name]"
-                    runat="server" />
-            </td>
-        </tr>
-        <tr>
-            <td class="FormLabel">
-                <asp:Label ID="SchemaSourceDatabaseNameLabel" runat="server" Text="Schema Source DB:"></asp:Label>
-            </td>
-            <td class="FormField">
-                <asp:Label ID="SchemaSourceDatabaseName" runat="server"></asp:Label>
-            </td>
-        </tr>
-        <tr>
-            <td class="FormLabel">
                 <asp:Label ID="LayoutTypeLabel" runat="server" Text="Layout Type:"></asp:Label>
             </td>
             <td class="FormField">

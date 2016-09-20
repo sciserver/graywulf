@@ -48,7 +48,6 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             Disclaimer.Text = Item.Disclaimer;
 
             ControllerMachineRole.SelectedValue = Item.ControllerMachineRole;
-            SchemaSourceServerInstance.SelectedValue = Item.SchemaSourceServerInstance;
             MyDbDatabaseVersion.SelectedValue = Item.UserDatabaseVersion;
             TempDatabaseVersion.SelectedValue = Item.TempDatabaseVersion;
             CodeDatabaseVersion.SelectedValue = Item.CodeDatabaseVersion;
@@ -76,7 +75,6 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             Item.UserDatabaseVersion = (DatabaseVersion)MyDbDatabaseVersion.SelectedValue;
             Item.TempDatabaseVersion = (DatabaseVersion)TempDatabaseVersion.SelectedValue;
             Item.CodeDatabaseVersion = (DatabaseVersion) CodeDatabaseVersion.SelectedValue;
-            Item.SchemaSourceServerInstance = (ServerInstance)SchemaSourceServerInstance.SelectedValue;
         }
 
         protected override void OnSaveFormCompleted(bool newentity)
@@ -122,12 +120,6 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             {
                 ControllerMachineRole.ChildEntityTypes = new[] { EntityType.MachineRole };
                 ControllerMachineRole.ParentEntity = Item.Domain.Cluster;
-            }
-
-            if (SchemaSourceServerInstance.Visible)
-            {
-                SchemaSourceServerInstance.ChildEntityTypes = new[] { EntityType.MachineRole, EntityType.Machine, EntityType.ServerInstance };
-                SchemaSourceServerInstance.ParentEntity = Item.Domain.Cluster;
             }
 
             if (MyDbServerVersion.Visible)

@@ -27,7 +27,6 @@ namespace Jhu.Graywulf.Web.Admin.Federation
             TempDatabaseVersion.EntityReference.Value = Item.TempDatabaseVersion;
             CodeDatabaseVersion.EntityReference.Value = Item.CodeDatabaseVersion;
             ControllerMachineRole.EntityReference.Value = Item.ControllerMachineRole;
-            SchemaSourceServerInstance.EntityReference.Value = Item.SchemaSourceServerInstance;
         }
 
         protected override void InitLists()

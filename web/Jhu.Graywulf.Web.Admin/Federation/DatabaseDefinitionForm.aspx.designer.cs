@@ -13,51 +13,6 @@ namespace Jhu.Graywulf.Web.Admin.Federation {
     public partial class DatabaseDefinitionForm {
         
         /// <summary>
-        /// SchemaSourceServerInstanceLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label SchemaSourceServerInstanceLabel;
-        
-        /// <summary>
-        /// SchemaSourceServerInstance control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList SchemaSourceServerInstance;
-        
-        /// <summary>
-        /// SchemaSourceDatabaseNameRow control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow SchemaSourceDatabaseNameRow;
-        
-        /// <summary>
-        /// SchemaSourceDatabaseNameLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label SchemaSourceDatabaseNameLabel;
-        
-        /// <summary>
-        /// SchemaSourceDatabaseName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox SchemaSourceDatabaseName;
-        
-        /// <summary>
         /// LayoutTypeRow control.
         /// </summary>
         /// <remarks>

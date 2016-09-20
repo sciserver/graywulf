@@ -29,10 +29,6 @@ namespace Jhu.Graywulf.Web.Admin.Federation
                 ServerVersionRow.Visible = true;
             }
 
-            RefreshServerInstanceList();
-            SchemaSourceServerInstance.SelectedValue = Item.SchemaSourceServerInstanceReference.Guid.ToString();
-
-            SchemaSourceDatabaseName.Text = Item.SchemaSourceDatabaseName;
             LayoutType.SelectedValue = Item.LayoutType.ToString();
             DatabaseInstanceNamePattern.Text = Item.DatabaseInstanceNamePattern;
             DatabaseNamePattern.Text = Item.DatabaseNamePattern;
@@ -46,8 +42,6 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.OnSaveForm();
 
-            Item.SchemaSourceServerInstanceReference.Guid = new Guid(SchemaSourceServerInstance.SelectedValue);
-            Item.SchemaSourceDatabaseName = SchemaSourceDatabaseName.Text;
             Item.LayoutType = (DatabaseLayoutType)Enum.Parse(typeof(DatabaseLayoutType), LayoutType.SelectedValue);
             Item.DatabaseInstanceNamePattern = DatabaseInstanceNamePattern.Text;
             Item.DatabaseNamePattern = DatabaseNamePattern.Text;
@@ -67,26 +61,6 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
                 var ddi = new DatabaseDefinitionInstaller(Item);
                 ddi.GenerateDefaultChildren(sv, Registry.Constants.ProdDatabaseVersionName);
-            }
-        }
-
-        protected void RefreshServerInstanceList()
-        {
-            SchemaSourceServerInstance.Items.Add(new ListItem("(not set)", Guid.Empty.ToString()));
-
-            Item.Federation.Domain.Cluster.LoadMachineRoles(false);
-
-            foreach (MachineRole mr in Item.Federation.Domain.Cluster.MachineRoles.Values)
-            {
-                mr.LoadMachines(false);
-                foreach (Machine m in mr.Machines.Values)
-                {
-                    m.LoadServerInstances(false);
-                    foreach (ServerInstance si in m.ServerInstances.Values)
-                    {
-                        SchemaSourceServerInstance.Items.Add(new ListItem(m.Name + "\\" + si.Name, si.Guid.ToString()));
-                    }
-                }
             }
         }
 

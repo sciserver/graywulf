@@ -20,8 +20,6 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             base.UpdateForm();
 
-            SchemaSourceServerInstance.EntityReference.Value = Item.SchemaSourceServerInstance;
-            SchemaSourceDatabaseName.Text = Item.SchemaSourceDatabaseName;
             LayoutType.Text = Item.LayoutType.ToString();
             DatabaseInstanceNamePattern.Text = Item.DatabaseInstanceNamePattern;
             DatabaseNamePattern.Text = Item.DatabaseNamePattern;
