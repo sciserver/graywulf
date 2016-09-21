@@ -126,7 +126,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql.Test
             var t1 = ds.Tables[ds.DatabaseName, "", "Author"];
 
             Assert.IsTrue(t1.Columns.Count == 2);
-            Assert.IsTrue(t1.Columns["ID"].DataType.Name == "bigint");
+            Assert.IsTrue(t1.Columns["ID"].DataType.TypeName == "bigint");
 
             // Test cache
             Assert.AreEqual(t1.Columns, ds.Tables[ds.DatabaseName, "", "Author"].Columns);
@@ -191,7 +191,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql.Test
             Assert.AreEqual(1, ds.Views.Count);
 
             Assert.AreEqual(4, v.Columns.Count);
-            Assert.AreEqual("int", v.Columns["ID"].DataType.Name);
+            Assert.AreEqual("int", v.Columns["ID"].DataType.TypeName);
         }
 
         [TestMethod]

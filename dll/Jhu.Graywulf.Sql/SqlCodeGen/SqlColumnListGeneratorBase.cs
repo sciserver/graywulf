@@ -282,7 +282,7 @@ namespace Jhu.Graywulf.SqlCodeGen
                     alias,
                     GetQuotedIdentifier(EscapePropagatedColumnName(table, column.Name)),
                     GetQuotedIdentifier(column.Name),
-                    column.DataType.NameWithLength,
+                    column.DataType.TypeNameWithLength,
                     nullspec);
             }
 

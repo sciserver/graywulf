@@ -101,7 +101,7 @@ namespace Jhu.Graywulf.Format
             // Write columns
             for (int i = 0; i < Columns.Count; i++)
             {
-                File.XmlWriter.WriteElementString(Constants.HtmlKeywordTH, Columns[i].DataType.NameWithLength);
+                File.XmlWriter.WriteElementString(Constants.HtmlKeywordTH, Columns[i].DataType.TypeNameWithLength);
             }
 
             File.XmlWriter.WriteEndElement();   // tr

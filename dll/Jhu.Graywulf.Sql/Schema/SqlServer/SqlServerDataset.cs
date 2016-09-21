@@ -241,82 +241,6 @@ namespace Jhu.Graywulf.Schema.SqlServer
         }
 
         #endregion
-        #region Type conversion function
-
-        // TODO: delete
-
-        /*
-        protected override DataType GetTypeFromProviderSpecificName(string name)
-        {
-            switch (name.ToLowerInvariant().Trim())
-            {
-                case Constants.TypeNameTinyInt:
-                    return DataTypes.SqlTinyInt;
-                case Constants.TypeNameSmallInt:
-                    return DataTypes.SqlSmallInt;
-                case Constants.TypeNameInt:
-                    return DataTypes.SqlInt;
-                case Constants.TypeNameBigInt:
-                    return DataTypes.SqlBigInt;
-                case Constants.TypeNameBit:
-                    return DataTypes.SqlBit;
-                case Constants.TypeNameDecimal:
-                    return DataTypes.SqlDecimal;
-                case Constants.TypeNameSmallMoney:
-                    return DataTypes.SqlSmallMoney;
-                case Constants.TypeNameMoney:
-                    return DataTypes.SqlMoney;
-                case Constants.TypeNameNumeric:
-                    return DataTypes.SqlNumeric;
-                case Constants.TypeNameReal:
-                    return DataTypes.SqlReal;
-                case Constants.TypeNameFloat:
-                    return DataTypes.SqlFloat;
-                case Constants.TypeNameDate:
-                    return DataTypes.SqlDate;
-                case Constants.TypeNameTime:
-                    return DataTypes.SqlTime;
-                case Constants.TypeNameSmallDateTime:
-                    return DataTypes.SqlSmallDateTime;
-                case Constants.TypeNameDateTime:
-                    return DataTypes.SqlDateTime;
-                case Constants.TypeNameDateTime2:
-                    return DataTypes.SqlDateTime2;
-                case Constants.TypeNameDateTimeOffset:
-                    return DataTypes.SqlDateTimeOffset;
-                case Constants.TypeNameChar:
-                    return DataTypes.SqlChar;
-                case Constants.TypeNameVarChar:
-                    return DataTypes.SqlVarChar;
-                case Constants.TypeNameText:
-                    return DataTypes.SqlText;
-                case Constants.TypeNameNChar:
-                    return DataTypes.SqlNChar;
-                case Constants.TypeNameNVarChar:
-                    return DataTypes.SqlNVarChar;
-                case Constants.TypeNameNText:
-                    return DataTypes.SqlNText;
-                case Constants.TypeNameXml:
-                    return DataTypes.SqlXml;
-                case Constants.TypeNameBinary:
-                    return DataTypes.SqlBinary;
-                case Constants.TypeNameVarBinary:
-                    return DataTypes.SqlVarBinary;
-                case Constants.TypeNameImage:
-                    return DataTypes.SqlImage;
-                case Constants.TypeNameSqlVariant:
-                    return DataTypes.SqlVariant;
-                case Constants.TypeNameTimestamp:
-                    return DataTypes.SqlTimestamp;
-                case Constants.TypeNameUniqueIdentifier:
-                    return DataTypes.SqlUniqueIdentifier;
-                default:
-                    throw new ArgumentOutOfRangeException("name");
-            }
-        }
-        */
-
-        #endregion
         #region Schema objects
 
         /// <summary>
@@ -325,6 +249,121 @@ namespace Jhu.Graywulf.Schema.SqlServer
         /// <typeparam name="T"></typeparam>
         /// <param name="databaseObject"></param>
         protected override void LoadDatabaseObject<T>(T databaseObject)
+        {
+            if (databaseObject is DataType)
+            {
+                LoadDataType((DataType)(DatabaseObject)databaseObject);
+            }
+            else
+            {
+                LoadDatabaseObjectImpl<T>(databaseObject);
+            }
+        }
+
+        private void LoadDataType(DataType dataType)
+        {
+            var sql = @"
+SELECT s.name, t.name, st.name,
+	t.max_length, t.precision, t.scale, 
+    t.is_nullable, t.is_table_type, t.is_assembly_type,
+    at.is_binary_ordered, at.is_fixed_length, at.assembly_qualified_name
+FROM sys.types t
+INNER JOIN sys.schemas s
+	ON s.schema_id = t.schema_id
+LEFT OUTER JOIN sys.types st
+	ON st.system_type_id = t.system_type_id AND st.user_type_id = t.system_type_id AND st.is_user_defined = 0
+LEFT OUTER JOIN sys.assembly_types at
+    ON at.system_type_id = t.system_type_id AND at.user_type_id = t.user_type_id
+WHERE 
+	t.is_user_defined = 1 AND
+    (s.name = @schemaName OR @schemaName IS NULL) AND t.name = @typeName
+";
+
+            using (var cn = OpenConnectionInternal())
+            {
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = String.IsNullOrWhiteSpace(dataType.SchemaName) ? (object)DBNull.Value : (object)dataType.SchemaName;
+                    cmd.Parameters.Add("@typeName", SqlDbType.NVarChar, 128).Value = dataType.TypeName;
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        int q = 0;
+                        while (dr.Read())
+                        {
+                            dataType.Dataset = this;
+                            dataType.DatabaseName = DatabaseName;
+                            dataType.SchemaName = dr.GetString(0);
+                            dataType.ObjectName = dr.GetString(1);
+                            dataType.ObjectType = DatabaseObjectType.DataType;
+
+                            dataType.IsUserDefined = true;
+                            dataType.IsNullable = dr.GetBoolean(6);
+                            dataType.IsTableType = dr.GetBoolean(7);
+                            dataType.IsAssemblyType = dr.GetBoolean(8);
+
+                            if (dataType.IsAlias)
+                            {
+                                // This is a type alias, so fill in base type info
+                                var dt = CreateDataType(dr.GetString(2), dr.GetInt16(3), dr.GetByte(4), dr.GetByte(5), dr.GetBoolean(6));
+
+                                dataType.Type = dt.Type;
+                                dataType.SqlDbType = dt.SqlDbType;
+                                dataType.ByteSize = dt.ByteSize;
+                                dataType.Precision = dt.Precision;
+                                dataType.Scale = dt.Scale;
+                                dataType.Length = dt.Length / dt.ByteSize;
+                                dataType.MaxLength = dt.MaxLength;
+                                dataType.ArrayLength = dt.ArrayLength;
+                            }
+                            else if (dataType.IsTableType)
+                            {
+                                dataType.Type = null;
+                                dataType.SqlDbType = SqlDbType.Structured;
+                                dataType.ByteSize = 1;
+                                dataType.Scale = 0;
+                                dataType.Precision = 0;
+                                dataType.Length = 1;
+                                dataType.MaxLength = dr.GetInt16(3);
+                                dataType.IsFixedLength = false;
+                                dataType.ArrayLength = 0;
+                            }
+                            else if (dataType.IsAssemblyType)
+                            {
+                                dataType.Type = null;   // TODO: could use udt type if available
+                                dataType.SqlDbType = SqlDbType.Udt;
+                                dataType.ByteSize = 1;
+                                dataType.Scale = 0;
+                                dataType.Precision = 0;
+                                dataType.Length = 1;
+                                dataType.MaxLength = dr.GetInt16(3);
+                                dataType.IsFixedLength = dr.GetBoolean(10);
+                                dataType.ArrayLength = 0;
+                            }
+                            else
+                            {
+                                throw new NotImplementedException();
+                            }
+
+                            q++;
+                        }
+
+                        // No records
+                        if (q == 0)
+                        {
+                            ThrowInvalidDataTypeNameException(dataType);
+                        }
+                        else if (q > 1)
+                        {
+                            throw new SchemaException("ambigous name"); // TODO
+                        }
+                    }
+                }
+            }
+        }
+
+        protected void LoadDatabaseObjectImpl<T>(T databaseObject)
+            where T : DatabaseObject, new()
         {
             var sql = @"
 SELECT s.name, o.name, o.type
@@ -371,7 +410,7 @@ WHERE o.type IN ({0}) AND
                 }
             }
         }
-
+        
         internal override bool IsObjectExisting(DatabaseObject databaseObject)
         {
             var sql = String.Format(

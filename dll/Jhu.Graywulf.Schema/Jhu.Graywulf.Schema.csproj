@@ -62,7 +62,11 @@
     <Compile Include="Schema\DatabaseObject.cs" />
     <Compile Include="Schema\DatabaseObjectCollection.cs" />
     <Compile Include="Schema\DatabaseObjectMetadata.cs" />
-    <Compile Include="Schema\DatabaseObjectNames.Designer.cs" />
+    <Compile Include="Schema\DatabaseObjectNames.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DatabaseObjectNames.resx</DependentUpon>
+    </Compile>
     <Compile Include="Schema\DatasetBase.cs" />
     <Compile Include="Schema\DatasetMetadata.cs" />
     <Compile Include="Schema\DatasetStatistics.cs" />
@@ -70,7 +74,11 @@
     <Compile Include="Schema\DataTypes.cs" />
     <Compile Include="Schema\DoubleComplex.cs" />
     <Compile Include="Schema\Enum.cs" />
-    <Compile Include="Schema\ExceptionMessages.Designer.cs" />
+    <Compile Include="Schema\ExceptionMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+    </Compile>
     <Compile Include="Schema\IColumns.cs" />
     <Compile Include="Schema\IIndexes.cs" />
     <Compile Include="Schema\Index.cs" />
@@ -99,8 +107,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Schema\DatabaseObjectNames.resx" />
-    <EmbeddedResource Include="Schema\ExceptionMessages.resx" />
+    <EmbeddedResource Include="Schema\DatabaseObjectNames.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DatabaseObjectNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Schema\ExceptionMessages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

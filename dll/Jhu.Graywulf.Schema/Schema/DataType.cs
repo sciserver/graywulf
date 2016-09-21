@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.Common;
 using System.Runtime.Serialization;
+using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Schema
 {
     [Serializable]
     [DataContract(Namespace = "")]
-    public class DataType : ICloneable
+    public class DataType : DatabaseObject, IColumns, IIndexes, ICloneable
     {
         #region Static functions to create types
 
@@ -125,15 +127,9 @@ namespace Jhu.Graywulf.Schema
 
             return dt;
         }
-        
+
         #endregion
         #region Private variables for property storage
-
-        /// <summary>
-        /// Type name
-        /// </summary>
-        [NonSerialized]
-        private string name;
 
         /// <summary>
         /// Corresponding .Net type
@@ -178,10 +174,10 @@ namespace Jhu.Graywulf.Schema
         private int maxLength;
 
         /// <summary>
-        /// Is length variable (char, binary vs varchar, varbinary)
+        /// Fixed lengths, used with CLR types only
         /// </summary>
         [NonSerialized]
-        private bool isVarLength;
+        private bool isFixedLength;
 
         /// <summary>
         /// Is an array, currently no SQL Server support
@@ -207,6 +203,21 @@ namespace Jhu.Graywulf.Schema
         [NonSerialized]
         private bool isNullable;
 
+        [NonSerialized]
+        private bool isUserDefined;
+
+        [NonSerialized]
+        private bool isTableType;
+
+        [NonSerialized]
+        private LazyProperty<ConcurrentDictionary<string, Column>> columns;
+
+        [NonSerialized]
+        private LazyProperty<ConcurrentDictionary<string, Index>> indexes;
+
+        [NonSerialized]
+        private bool isAssemblyType;
+
         #endregion
         #region Properties
 
@@ -214,10 +225,10 @@ namespace Jhu.Graywulf.Schema
         /// Gets or sets the name of the data type.
         /// </summary>
         [DataMember]
-        public string Name
+        public string TypeName
         {
-            get { return name; }
-            internal set { name = value; }
+            get { return ObjectName; }
+            internal set { ObjectName = value; }
         }
 
         /// <summary>
@@ -227,21 +238,21 @@ namespace Jhu.Graywulf.Schema
         /// Type name is returned in SQL Server format, e.g. nvarchar(50)
         /// </remarks>
         [IgnoreDataMember]
-        public string NameWithLength
+        public string TypeNameWithLength
         {
             get
             {
                 if (!HasLength)
                 {
-                    return name;
+                    return ObjectName;
                 }
                 else if (IsMaxLength)
                 {
-                    return System.String.Format("{0}(max)", name);
+                    return System.String.Format("{0}(max)", ObjectName);
                 }
                 else
                 {
-                    return System.String.Format("{0}({1})", name, length);
+                    return System.String.Format("{0}({1})", ObjectName, length);
                 }
             }
         }
@@ -336,10 +347,37 @@ namespace Jhu.Graywulf.Schema
         /// Gets if the length is variable (varchar, varbinary, etc.)
         /// </summary>
         [DataMember]
-        public bool IsVarLength
+        public bool IsFixedLength
         {
-            get { return isVarLength; }
-            internal set { isVarLength = value; }
+            get
+            {
+                if (isAssemblyType)
+                {
+                    return isFixedLength;
+                }
+                else if (isTableType)
+                {
+                    return false;
+                }
+                else
+                {
+                    switch (sqlDbType)
+                    {
+                        case System.Data.SqlDbType.VarBinary:
+                        case System.Data.SqlDbType.VarChar:
+                        case System.Data.SqlDbType.NVarChar:
+                        case System.Data.SqlDbType.NText:
+                        case System.Data.SqlDbType.Image:
+                            return false;
+                        default:
+                            return true;
+                    }
+                }
+            }
+            set
+            {
+                isFixedLength = value;
+            }
         }
 
         /// <summary>
@@ -382,6 +420,54 @@ namespace Jhu.Graywulf.Schema
             set { isNullable = value; }
         }
 
+        [DataMember]
+        public bool IsUserDefined
+        {
+            get { return isUserDefined; }
+            set { isUserDefined = value; }
+        }
+
+        [DataMember]
+        public bool IsTableType
+        {
+            get { return isTableType; }
+            set { isTableType = value; }
+        }
+
+        /// <summary>
+        /// Gets the collection of columns
+        /// </summary>
+        [IgnoreDataMember]
+        public ConcurrentDictionary<string, Column> Columns
+        {
+            get { return columns.Value; }
+            protected set { columns.Value = value; }
+        }
+
+        /// <summary>
+        /// Gets the collection of indexes
+        /// </summary>
+        [IgnoreDataMember]
+        public ConcurrentDictionary<string, Index> Indexes
+        {
+            get { return indexes.Value; }
+        }
+
+        [DataMember]
+        public bool IsAssemblyType
+        {
+            get { return isAssemblyType; }
+            set { isAssemblyType = value; }
+        }
+
+        public bool IsAlias
+        {
+            get
+            {
+                return isUserDefined && !isTableType && !isAssemblyType;
+            }
+        }
+
         /// <summary>
         /// Gets if type is compatible with SQL Server
         /// </summary>
@@ -399,43 +485,50 @@ namespace Jhu.Graywulf.Schema
         {
             get
             {
-                switch (sqlDbType)
+                if (isUserDefined)
                 {
-                    case System.Data.SqlDbType.BigInt:
-                    case System.Data.SqlDbType.Decimal:
-                    case System.Data.SqlDbType.Float:
-                    case System.Data.SqlDbType.Int:
-                    case System.Data.SqlDbType.Money:
-                    case System.Data.SqlDbType.Real:
-                    case System.Data.SqlDbType.SmallInt:
-                    case System.Data.SqlDbType.SmallMoney:
-                    case System.Data.SqlDbType.Bit:
-                    case System.Data.SqlDbType.Date:
-                    case System.Data.SqlDbType.DateTime:
-                    case System.Data.SqlDbType.DateTime2:
-                    case System.Data.SqlDbType.DateTimeOffset:
-                    case System.Data.SqlDbType.Image:
-                    case System.Data.SqlDbType.NText:
-                    case System.Data.SqlDbType.SmallDateTime:
-                    case System.Data.SqlDbType.Structured:
-                    case System.Data.SqlDbType.Text:
-                    case System.Data.SqlDbType.Time:
-                    case System.Data.SqlDbType.Timestamp:
-                    case System.Data.SqlDbType.TinyInt:
-                    case System.Data.SqlDbType.Udt:
-                    case System.Data.SqlDbType.UniqueIdentifier:
-                    case System.Data.SqlDbType.Variant:
-                    case System.Data.SqlDbType.Xml:
-                        return false;
-                    case System.Data.SqlDbType.Char:
-                    case System.Data.SqlDbType.VarChar:
-                    case System.Data.SqlDbType.NChar:
-                    case System.Data.SqlDbType.NVarChar:
-                    case System.Data.SqlDbType.Binary:
-                    case System.Data.SqlDbType.VarBinary:
-                        return true;
-                    default:
-                        throw new NotImplementedException();
+                    return false;
+                }
+                else
+                {
+                    switch (sqlDbType)
+                    {
+                        case System.Data.SqlDbType.BigInt:
+                        case System.Data.SqlDbType.Decimal:
+                        case System.Data.SqlDbType.Float:
+                        case System.Data.SqlDbType.Int:
+                        case System.Data.SqlDbType.Money:
+                        case System.Data.SqlDbType.Real:
+                        case System.Data.SqlDbType.SmallInt:
+                        case System.Data.SqlDbType.SmallMoney:
+                        case System.Data.SqlDbType.Bit:
+                        case System.Data.SqlDbType.Date:
+                        case System.Data.SqlDbType.DateTime:
+                        case System.Data.SqlDbType.DateTime2:
+                        case System.Data.SqlDbType.DateTimeOffset:
+                        case System.Data.SqlDbType.Image:
+                        case System.Data.SqlDbType.NText:
+                        case System.Data.SqlDbType.SmallDateTime:
+                        case System.Data.SqlDbType.Structured:
+                        case System.Data.SqlDbType.Text:
+                        case System.Data.SqlDbType.Time:
+                        case System.Data.SqlDbType.Timestamp:
+                        case System.Data.SqlDbType.TinyInt:
+                        case System.Data.SqlDbType.Udt:
+                        case System.Data.SqlDbType.UniqueIdentifier:
+                        case System.Data.SqlDbType.Variant:
+                        case System.Data.SqlDbType.Xml:
+                            return false;
+                        case System.Data.SqlDbType.Char:
+                        case System.Data.SqlDbType.VarChar:
+                        case System.Data.SqlDbType.NChar:
+                        case System.Data.SqlDbType.NVarChar:
+                        case System.Data.SqlDbType.Binary:
+                        case System.Data.SqlDbType.VarBinary:
+                            return true;
+                        default:
+                            throw new NotImplementedException();
+                    }
                 }
             }
         }
@@ -448,12 +541,19 @@ namespace Jhu.Graywulf.Schema
         {
             get
             {
-                switch (sqlDbType)
+                if (IsUserDefined)
                 {
-                    case System.Data.SqlDbType.Decimal:
-                        return true;
-                    default:
-                        return false;
+                    return false;
+                }
+                else
+                {
+                    switch (sqlDbType)
+                    {
+                        case System.Data.SqlDbType.Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
                 }
             }
         }
@@ -466,12 +566,19 @@ namespace Jhu.Graywulf.Schema
         {
             get
             {
-                switch (sqlDbType)
+                if (IsUserDefined)
                 {
-                    case System.Data.SqlDbType.Decimal:
-                        return true;
-                    default:
-                        return false;
+                    return false;
+                }
+                else
+                {
+                    switch (sqlDbType)
+                    {
+                        case System.Data.SqlDbType.Decimal:
+                            return true;
+                        default:
+                            return false;
+                    }
                 }
             }
         }
@@ -579,7 +686,7 @@ namespace Jhu.Graywulf.Schema
         #endregion
         #region Constructors and initializers
 
-        internal DataType()
+        public DataType()
         {
             InitializeMembers();
         }
@@ -591,7 +698,8 @@ namespace Jhu.Graywulf.Schema
 
         private void InitializeMembers()
         {
-            this.name = null;
+            this.ObjectType = DatabaseObjectType.DataType;
+
             this.type = null;
             this.sqlDbType = System.Data.SqlDbType.Int;
             this.byteSize = 0;
@@ -599,16 +707,21 @@ namespace Jhu.Graywulf.Schema
             this.precision = 0;
             this.length = 0;
             this.maxLength = 0;
-            this.isVarLength = false;
+            this.isFixedLength = false;
             this.isSqlArray = false;
             this.arrayLength = 0;
             this.isVarArrayLength = false;
             this.isNullable = false;
+            this.isUserDefined = false;
+            this.isTableType = false;
+            this.columns = new LazyProperty<ConcurrentDictionary<string, Column>>(LoadColumns);
+            this.indexes = new LazyProperty<ConcurrentDictionary<string, Index>>(LoadIndexes);
+            this.isAssemblyType = false;
         }
 
         private void CopyMembers(DataType old)
         {
-            this.name = old.name;
+            this.ObjectType = old.ObjectType;
             this.type = old.type;
             this.sqlDbType = old.sqlDbType;
             this.byteSize = old.byteSize;
@@ -616,14 +729,19 @@ namespace Jhu.Graywulf.Schema
             this.precision = old.precision;
             this.length = old.length;
             this.maxLength = old.maxLength;
-            this.isVarLength = old.isVarLength;
+            this.isFixedLength = old.isFixedLength;
             this.isSqlArray = old.isSqlArray;
             this.arrayLength = old.arrayLength;
             this.isVarArrayLength = old.isVarArrayLength;
             this.isNullable = old.isNullable;
+            this.isUserDefined = old.isUserDefined;
+            this.isTableType = old.IsTableType;
+            this.columns = new LazyProperty<ConcurrentDictionary<string, Column>>(LoadColumns);
+            this.indexes = new LazyProperty<ConcurrentDictionary<string, Index>>(LoadIndexes);
+            this.isAssemblyType = old.isAssemblyType;
         }
 
-        public object Clone()
+        public override object Clone()
         {
             return new DataType(this);
         }
@@ -634,12 +752,16 @@ namespace Jhu.Graywulf.Schema
         {
             var res = true;
 
-            res &= SchemaManager.Comparer.Compare(this.Name, other.name) == 0;
+            // TODO: compare on database and schema name?
+            res &= SchemaManager.Comparer.Compare(this.ObjectName, other.ObjectName) == 0;
             res &= this.type == other.type;
             res &= this.scale == other.scale;
             res &= this.precision == other.precision;
             res &= !this.HasLength || (this.IsMaxLength && other.IsMaxLength) || (this.length == other.length);
             res &= this.isNullable == other.isNullable;
+            res &= this.isUserDefined == other.isUserDefined;
+            res &= this.isTableType == other.isTableType;
+            res &= this.isAssemblyType = other.isAssemblyType;
 
             return res;
         }
@@ -657,9 +779,9 @@ namespace Jhu.Graywulf.Schema
             dr[SchemaTableColumn.NumericPrecision] = this.precision;
             dr[SchemaTableColumn.NumericScale] = this.scale;
             dr[SchemaTableColumn.DataType] = this.type;
-            dr[SchemaTableColumn.ProviderType] = this.name;
+            dr[SchemaTableColumn.ProviderType] = this.ObjectName;
             dr[SchemaTableColumn.IsLong] = this.IsMaxLength;
-            dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = this.name;
+            dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = this.ObjectName;
             dr[SchemaTableColumn.AllowDBNull] = this.isNullable;
         }
     }

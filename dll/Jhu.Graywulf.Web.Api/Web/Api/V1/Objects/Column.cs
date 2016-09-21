@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         public Column(Jhu.Graywulf.Schema.Column column)
         {
             this.Name = column.Name;
-            this.DataType = column.DataType.NameWithLength;
+            this.DataType = column.DataType.TypeNameWithLength;
             this.Size = column.DataType.ByteSize;
             this.Class = column.Metadata.Class;
             this.Quantity = column.Metadata.Quantity;

@@ -123,6 +123,9 @@
   <data name="InvalidDatasetName" xml:space="preserve">
     <value>Invalid dataset name: '{0}'.</value>
   </data>
+  <data name="InvalidDataTypeName" xml:space="preserve">
+    <value>Invalid data type name: '{0}'.</value>
+  </data>
   <data name="InvalidObject" xml:space="preserve">
     <value>Invalid object: '{0}'.</value>
   </data>

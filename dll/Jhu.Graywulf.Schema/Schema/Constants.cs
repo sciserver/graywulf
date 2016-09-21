@@ -10,6 +10,7 @@ namespace Jhu.Graywulf.Schema
     {
         public static readonly Map<Type, DatabaseObjectType> DatabaseObjectTypes = new Map<Type, DatabaseObjectType>()
         {
+            { typeof(DataType), DatabaseObjectType.DataType },
             { typeof(Table), DatabaseObjectType.Table },
             { typeof(View), DatabaseObjectType.View },
             { typeof(TableValuedFunction), DatabaseObjectType.TableValuedFunction },
@@ -19,6 +20,7 @@ namespace Jhu.Graywulf.Schema
 
         public static readonly Dictionary<DatabaseObjectType, DatabaseObjectType> SimpleDatabaseObjectTypes = new Dictionary<DatabaseObjectType, DatabaseObjectType>()
         {
+            { DatabaseObjectType.DataType, DatabaseObjectType.DataType },
             { DatabaseObjectType.Table, DatabaseObjectType.Table },
             { DatabaseObjectType.View, DatabaseObjectType.View },
             { DatabaseObjectType.TableValuedFunction, DatabaseObjectType.TableValuedFunction },
@@ -54,6 +56,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         public static readonly Dictionary<DatabaseObjectType, string> DatabaseObjectsName_Singular = new Dictionary<DatabaseObjectType, string>()
         {
+            { DatabaseObjectType.DataType, DatabaseObjectNames.DataType_Singular },
             { DatabaseObjectType.Table, DatabaseObjectNames.Table_Singular },
             { DatabaseObjectType.View, DatabaseObjectNames.View_Singular },
             { DatabaseObjectType.TableValuedFunction, DatabaseObjectNames.TableValuedFunction_Singular },
@@ -72,6 +75,7 @@ namespace Jhu.Graywulf.Schema
         /// </summary>
         public static readonly Dictionary<DatabaseObjectType, string> DatabaseObjectsName_Plural = new Dictionary<DatabaseObjectType, string>()
         {
+            { DatabaseObjectType.DataType, DatabaseObjectNames.DataType_Plural },
             { DatabaseObjectType.Table, DatabaseObjectNames.Table_Plural },
             { DatabaseObjectType.View, DatabaseObjectNames.View_Plural },
             { DatabaseObjectType.TableValuedFunction, DatabaseObjectNames.TableValuedFunction_Plural },

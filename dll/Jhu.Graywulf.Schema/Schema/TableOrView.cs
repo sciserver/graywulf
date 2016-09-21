@@ -24,6 +24,7 @@ namespace Jhu.Graywulf.Schema
         [NonSerialized]
         private LazyProperty<ConcurrentDictionary<string, Index>> indexes;
 
+        // TODO: consider moving this from here
         [NonSerialized]
         private LazyProperty<TableStatistics> statistics;
 

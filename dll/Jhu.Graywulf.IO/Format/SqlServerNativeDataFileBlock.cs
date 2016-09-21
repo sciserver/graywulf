@@ -176,7 +176,7 @@ namespace Jhu.Graywulf.Format
 
                 sql.AppendFormat("\t[{0}] {1} {2}NULL",
                     Columns[i].Name,
-                    Columns[i].DataType.NameWithLength,
+                    Columns[i].DataType.TypeNameWithLength,
                     Columns[i].DataType.IsNullable ? "" : "NOT ");
             }
 

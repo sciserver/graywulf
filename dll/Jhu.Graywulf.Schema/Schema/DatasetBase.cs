@@ -45,6 +45,9 @@ namespace Jhu.Graywulf.Schema
         private string connectionString;
 
         [NonSerialized]
+        private DatabaseObjectCollection<DataType> userDefinedTypes;
+
+        [NonSerialized]
         private DatabaseObjectCollection<Table> tables;
 
         [NonSerialized]
@@ -139,6 +142,12 @@ namespace Jhu.Graywulf.Schema
             set { connectionString = value; }
         }
 
+        [IgnoreDataMember]
+        public DatabaseObjectCollection<DataType> UserDefinedTypes
+        {
+            get { return userDefinedTypes; }
+        }
+
         /// <summary>
         /// Gets the collection of tables
         /// </summary>
@@ -231,6 +240,7 @@ namespace Jhu.Graywulf.Schema
 
             this.connectionString = null;
 
+            this.userDefinedTypes = new DatabaseObjectCollection<DataType>(this);
             this.tables = new DatabaseObjectCollection<Table>(this);
             this.views = new DatabaseObjectCollection<View>(this);
             this.tableValuedFunctions = new DatabaseObjectCollection<TableValuedFunction>(this);
@@ -257,6 +267,7 @@ namespace Jhu.Graywulf.Schema
             this.connectionString = old.connectionString;
 
             // No deep copy here
+            this.userDefinedTypes = new DatabaseObjectCollection<DataType>(this);
             this.tables = new DatabaseObjectCollection<Table>(this);
             this.views = new DatabaseObjectCollection<View>(this);
             this.tableValuedFunctions = new DatabaseObjectCollection<TableValuedFunction>(this);
@@ -271,6 +282,9 @@ namespace Jhu.Graywulf.Schema
 
         private void InitializeEventHandlers()
         {
+            userDefinedTypes.ItemLoading += OnObjectLoading<DataType>;
+            userDefinedTypes.AllItemsLoading += OnAllObjectLoading<DataType>;
+
             tables.ItemLoading += OnObjectLoading<Table>;
             tables.AllItemsLoading += OnAllObjectLoading<Table>;
 
@@ -387,7 +401,11 @@ namespace Jhu.Graywulf.Schema
 
         public DatabaseObject GetObject(string databaseName, string schemaName, string objectName)
         {
-            if (tables.ContainsKey(databaseName, schemaName, objectName))
+            if (userDefinedTypes.ContainsKey(databaseName, schemaName, objectName))
+            {
+                return userDefinedTypes[databaseName, schemaName, objectName];
+            }
+            else if (tables.ContainsKey(databaseName, schemaName, objectName))
             {
                 return tables[databaseName, schemaName, objectName];
             }
@@ -577,6 +595,13 @@ namespace Jhu.Graywulf.Schema
 
         #endregion
 
+        protected void ThrowInvalidDataTypeNameException(DataType dataType)
+        {
+            string message;
+            message = ExceptionMessages.InvalidDataTypeName;
+            throw new SchemaException(String.Format(message, dataType.ToString()));
+        }
+
         protected void ThrowInvalidObjectNameException(DatabaseObject databaseObject)
         {
             string message;
@@ -628,6 +653,8 @@ namespace Jhu.Graywulf.Schema
             precision = Convert.ToByte(dr[SchemaTableColumn.NumericPrecision]);
             scale = Convert.ToByte(dr[SchemaTableColumn.NumericScale]);
             isNullable = Convert.ToBoolean(dr[SchemaTableColumn.AllowDBNull]);
+
+            // TODO: support UDTs?
         }
 
         /// <summary>
@@ -650,6 +677,8 @@ namespace Jhu.Graywulf.Schema
             GetDataTypeDetails(dr, out type, out name, out length, out precision, out scale, out isNullable);
 
             return DataType.Create(type, length, precision, scale, isNullable);
+
+            // TODO: support UDTs?
         }
 
         /// <summary>
@@ -697,7 +726,7 @@ namespace Jhu.Graywulf.Schema
         public List<Column> DetectColumns(IDataReader reader)
         {
             // TODO: modify to accept command instead of data reader?
-            // commond then could be executed in schema-only mode without
+            // command then could be executed in schema-only mode without
             // actual query execution...
             // or just create an overload that takes a command...
 
@@ -747,6 +776,7 @@ namespace Jhu.Graywulf.Schema
 
         public void FlushCache()
         {
+            this.userDefinedTypes.Clear();
             this.tables.Clear();
             this.views.Clear();
             this.tableValuedFunctions.Clear();

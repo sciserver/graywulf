@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.Web.UI.Schema
                 writer.WriteLine(
                     "<td class=\"header\" nowrap>{0}<br />{1}</td>",
                     columns[i].Name,
-                    columns[i].DataType.NameWithLength);
+                    columns[i].DataType.TypeNameWithLength);
             }
 
             writer.WriteLine("</tr>");

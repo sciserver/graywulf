@@ -229,9 +229,9 @@ namespace Jhu.Graywulf.Format
             dr[SchemaTableColumn.IsUnique] = col.IsIdentity;
             dr[SchemaTableColumn.IsKey] = col.IsIdentity;
             dr[SchemaTableColumn.DataType] = col.DataType.Type;
-            dr["DataTypeName"] = col.DataType.Name;
+            dr["DataTypeName"] = col.DataType.TypeName;
             dr[SchemaTableColumn.AllowDBNull] = col.DataType.IsNullable;
-            dr[SchemaTableColumn.ProviderType] = col.DataType.Name;
+            dr[SchemaTableColumn.ProviderType] = col.DataType.TypeName;
             dr[SchemaTableColumn.IsAliased] = false;
             dr[SchemaTableColumn.IsExpression] = false;
             //dr[SchemaTableOptionalColumn.IsIdentity] = col.IsIdentity;
@@ -240,7 +240,7 @@ namespace Jhu.Graywulf.Format
             dr[SchemaTableOptionalColumn.IsHidden] = false;
             dr[SchemaTableColumn.IsLong] = col.DataType.IsMaxLength;
             dr[SchemaTableOptionalColumn.IsReadOnly] = true;
-            dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = col.DataType.Name;
+            dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = col.DataType.TypeName;
 
             dt.Rows.Add(dr);
         }
@@ -250,7 +250,7 @@ namespace Jhu.Graywulf.Format
 
         public override string GetDataTypeName(int i)
         {
-            return file.CurrentBlock.Columns[i].DataType.Name;
+            return file.CurrentBlock.Columns[i].DataType.TypeName;
         }
 
         public override Type GetFieldType(int i)

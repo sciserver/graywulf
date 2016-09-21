@@ -149,7 +149,7 @@ namespace Jhu.Graywulf.Schema
             dr[SchemaTableColumn.IsKey] = this.isKey;
             dr[SchemaTableColumn.DataType] = this.DataType.Type;
             dr[SchemaTableColumn.AllowDBNull] = this.DataType.IsNullable;
-            dr[SchemaTableColumn.ProviderType] = this.DataType.Name;
+            dr[SchemaTableColumn.ProviderType] = this.DataType.TypeName;
             dr[SchemaTableColumn.IsAliased] = false; //
             dr[SchemaTableColumn.IsExpression] = false; //
             //dr[SchemaTableOptionalColumn.IsIdentity] = this.IsIdentity;
@@ -158,7 +158,7 @@ namespace Jhu.Graywulf.Schema
             dr[SchemaTableOptionalColumn.IsHidden] = this.IsHidden;
             dr[SchemaTableColumn.IsLong] = this.DataType.IsMaxLength;
             dr[SchemaTableOptionalColumn.IsReadOnly] = true;
-            dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = this.DataType.Name;
+            dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = this.DataType.TypeName;
         }
 
         /* TODO: delete
