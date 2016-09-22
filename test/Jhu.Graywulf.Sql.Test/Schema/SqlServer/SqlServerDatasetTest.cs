@@ -162,6 +162,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             Assert.AreEqual(null, t.Columns["Data"].DataType.SchemaName);
             Assert.AreEqual("nvarchar", t.Columns["Data"].DataType.TypeName);
             Assert.AreEqual(1, t.Indexes.Count);
+            Assert.AreEqual(1, t.Indexes.Values.FirstOrDefault().Columns.Count);
         }
 
         [TestMethod]

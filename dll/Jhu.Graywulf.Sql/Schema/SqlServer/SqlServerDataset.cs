@@ -732,9 +732,31 @@ WHERE   i.type IN (1, 2)";
         /// <returns></returns>
         internal override IEnumerable<KeyValuePair<string, IndexColumn>> LoadIndexColumns(Index index)
         {
+            // TODO: maybe add UDT support to index column types...
+
             string sql;
 
-            if (index.DatabaseObject is Table)
+            if (index.DatabaseObject is DataType)
+            {
+                sql = @"
+SELECT ic.column_id, ic.is_included_column, ic.key_ordinal, c.name, ic.is_descending_key, ty.name, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
+FROM sys.indexes AS i
+INNER JOIN sys.table_types AS t
+    ON i.object_id = t.type_table_object_id
+INNER JOIN sys.schemas AS s
+    ON s.schema_id = t.schema_id
+INNER JOIN sys.index_columns AS ic 
+    ON i.object_id = ic.object_id AND i.index_id = ic.index_id
+INNER JOIN sys.columns AS c 
+    ON ic.object_id = c.object_id AND c.column_id = ic.column_id
+INNER JOIN sys.types ty 
+    ON ty.user_type_id = c.user_type_id
+WHERE s.name = @schemaName AND
+    t.name = @objectName AND
+    i.name = @indexName
+ORDER BY ic.key_ordinal";
+            }
+            else if (index.DatabaseObject is Table)
             {
                 sql = @"
 SELECT ic.column_id, ic.is_included_column, ic.key_ordinal, c.name, ic.is_descending_key, ty.name, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
