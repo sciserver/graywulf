@@ -425,9 +425,9 @@ WHERE constraint_catalog ILIKE @databaseName AND constraint_schema ILIKE @schema
             {
                 using (var cmd = new NpgsqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@databaseName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = index.TableOrView.DatabaseName;
-                    cmd.Parameters.Add("@schemaName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = index.TableOrView.SchemaName;
-                    cmd.Parameters.Add("@objectName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = index.TableOrView.ObjectName;
+                    cmd.Parameters.Add("@databaseName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = index.DatabaseObject.DatabaseName;
+                    cmd.Parameters.Add("@schemaName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = index.DatabaseObject.SchemaName;
+                    cmd.Parameters.Add("@objectName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = index.DatabaseObject.ObjectName;
                     cmd.Parameters.Add("@indexName", NpgsqlTypes.NpgsqlDbType.Varchar, 128).Value = index.IndexName;
 
                     using (var dr = cmd.ExecuteReader())

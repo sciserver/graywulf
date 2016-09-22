@@ -243,6 +243,89 @@ namespace Jhu.Graywulf.Schema.SqlServer
         #endregion
         #region Schema objects
 
+        private string GetDataTypeQuery(bool appendNameFilter)
+        {
+            var sql = @"
+SELECT s.name, t.name, st.name,
+	t.max_length, t.precision, t.scale, 
+    t.is_nullable, t.is_table_type, t.is_assembly_type,
+    at.is_binary_ordered, at.is_fixed_length, at.assembly_qualified_name
+FROM sys.types t
+INNER JOIN sys.schemas s
+	ON s.schema_id = t.schema_id
+LEFT OUTER JOIN sys.types st
+	ON st.system_type_id = t.system_type_id AND st.user_type_id = t.system_type_id AND st.is_user_defined = 0
+LEFT OUTER JOIN sys.assembly_types at
+    ON at.system_type_id = t.system_type_id AND at.user_type_id = t.user_type_id
+WHERE 
+	t.is_user_defined = 1 
+";
+
+            if (appendNameFilter)
+            {
+                sql += "    AND (s.name = @schemaName OR @schemaName IS NULL) AND t.name = @typeName";
+            }
+
+            return sql;
+        }
+
+        private void LoadDataType(SqlDataReader dr, DataType dataType)
+        {
+            dataType.Dataset = this;
+            dataType.DatabaseName = DatabaseName;
+            dataType.SchemaName = dr.GetString(0);
+            dataType.ObjectName = dr.GetString(1);
+            dataType.ObjectType = DatabaseObjectType.DataType;
+
+            dataType.IsUserDefined = true;
+            dataType.IsNullable = dr.GetBoolean(6);
+            dataType.IsTableType = dr.GetBoolean(7);
+            dataType.IsAssemblyType = dr.GetBoolean(8);
+
+            if (dataType.IsAlias)
+            {
+                // This is a type alias, so fill in base type info
+                var dt = CreateDataType(dr.GetString(2), dr.GetInt16(3), dr.GetByte(4), dr.GetByte(5), dr.GetBoolean(6));
+
+                dataType.Type = dt.Type;
+                dataType.SqlDbType = dt.SqlDbType;
+                dataType.ByteSize = dt.ByteSize;
+                dataType.Precision = dt.Precision;
+                dataType.Scale = dt.Scale;
+                dataType.Length = dt.Length / dt.ByteSize;
+                dataType.MaxLength = dt.MaxLength;
+                dataType.ArrayLength = dt.ArrayLength;
+            }
+            else if (dataType.IsTableType)
+            {
+                dataType.Type = null;
+                dataType.SqlDbType = SqlDbType.Structured;
+                dataType.ByteSize = 1;
+                dataType.Scale = 0;
+                dataType.Precision = 0;
+                dataType.Length = 1;
+                dataType.MaxLength = dr.GetInt16(3);
+                dataType.IsFixedLength = false;
+                dataType.ArrayLength = 0;
+            }
+            else if (dataType.IsAssemblyType)
+            {
+                dataType.Type = null;   // TODO: could use udt type if available
+                dataType.SqlDbType = SqlDbType.Udt;
+                dataType.ByteSize = 1;
+                dataType.Scale = 0;
+                dataType.Precision = 0;
+                dataType.Length = 1;
+                dataType.MaxLength = dr.GetInt16(3);
+                dataType.IsFixedLength = dr.GetBoolean(10);
+                dataType.ArrayLength = 0;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         /// <summary>
         /// Loads the schema of a database object belonging to the dataset.
         /// </summary>
@@ -262,22 +345,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
 
         private void LoadDataType(DataType dataType)
         {
-            var sql = @"
-SELECT s.name, t.name, st.name,
-	t.max_length, t.precision, t.scale, 
-    t.is_nullable, t.is_table_type, t.is_assembly_type,
-    at.is_binary_ordered, at.is_fixed_length, at.assembly_qualified_name
-FROM sys.types t
-INNER JOIN sys.schemas s
-	ON s.schema_id = t.schema_id
-LEFT OUTER JOIN sys.types st
-	ON st.system_type_id = t.system_type_id AND st.user_type_id = t.system_type_id AND st.is_user_defined = 0
-LEFT OUTER JOIN sys.assembly_types at
-    ON at.system_type_id = t.system_type_id AND at.user_type_id = t.user_type_id
-WHERE 
-	t.is_user_defined = 1 AND
-    (s.name = @schemaName OR @schemaName IS NULL) AND t.name = @typeName
-";
+            var sql = GetDataTypeQuery(true);
 
             using (var cn = OpenConnectionInternal())
             {
@@ -291,60 +359,7 @@ WHERE
                         int q = 0;
                         while (dr.Read())
                         {
-                            dataType.Dataset = this;
-                            dataType.DatabaseName = DatabaseName;
-                            dataType.SchemaName = dr.GetString(0);
-                            dataType.ObjectName = dr.GetString(1);
-                            dataType.ObjectType = DatabaseObjectType.DataType;
-
-                            dataType.IsUserDefined = true;
-                            dataType.IsNullable = dr.GetBoolean(6);
-                            dataType.IsTableType = dr.GetBoolean(7);
-                            dataType.IsAssemblyType = dr.GetBoolean(8);
-
-                            if (dataType.IsAlias)
-                            {
-                                // This is a type alias, so fill in base type info
-                                var dt = CreateDataType(dr.GetString(2), dr.GetInt16(3), dr.GetByte(4), dr.GetByte(5), dr.GetBoolean(6));
-
-                                dataType.Type = dt.Type;
-                                dataType.SqlDbType = dt.SqlDbType;
-                                dataType.ByteSize = dt.ByteSize;
-                                dataType.Precision = dt.Precision;
-                                dataType.Scale = dt.Scale;
-                                dataType.Length = dt.Length / dt.ByteSize;
-                                dataType.MaxLength = dt.MaxLength;
-                                dataType.ArrayLength = dt.ArrayLength;
-                            }
-                            else if (dataType.IsTableType)
-                            {
-                                dataType.Type = null;
-                                dataType.SqlDbType = SqlDbType.Structured;
-                                dataType.ByteSize = 1;
-                                dataType.Scale = 0;
-                                dataType.Precision = 0;
-                                dataType.Length = 1;
-                                dataType.MaxLength = dr.GetInt16(3);
-                                dataType.IsFixedLength = false;
-                                dataType.ArrayLength = 0;
-                            }
-                            else if (dataType.IsAssemblyType)
-                            {
-                                dataType.Type = null;   // TODO: could use udt type if available
-                                dataType.SqlDbType = SqlDbType.Udt;
-                                dataType.ByteSize = 1;
-                                dataType.Scale = 0;
-                                dataType.Precision = 0;
-                                dataType.Length = 1;
-                                dataType.MaxLength = dr.GetInt16(3);
-                                dataType.IsFixedLength = dr.GetBoolean(10);
-                                dataType.ArrayLength = 0;
-                            }
-                            else
-                            {
-                                throw new NotImplementedException();
-                            }
-
+                            LoadDataType(dr, dataType);
                             q++;
                         }
 
@@ -361,8 +376,8 @@ WHERE
                 }
             }
         }
-
-        protected void LoadDatabaseObjectImpl<T>(T databaseObject)
+        
+        private void LoadDatabaseObjectImpl<T>(T databaseObject)
             where T : DatabaseObject, new()
         {
             var sql = @"
@@ -410,7 +425,7 @@ WHERE o.type IN ({0}) AND
                 }
             }
         }
-        
+
         internal override bool IsObjectExisting(DatabaseObject databaseObject)
         {
             var sql = String.Format(
@@ -433,6 +448,40 @@ WHERE o.type IN ({0}) AND
         /// <param name="databaseName"></param>
         /// <returns></returns>
         protected override IEnumerable<KeyValuePair<string, T>> LoadAllObjects<T>()
+        {
+            if (typeof(T) == typeof(DataType))
+            {
+                return (IEnumerable<KeyValuePair<string, T>>)LoadAllDataTypes();
+            }
+            else
+            {
+                return LoadAllObjectsImpl<T>();
+            }
+        }
+
+        private IEnumerable<KeyValuePair<string, DataType>> LoadAllDataTypes()
+        {
+            var sql = GetDataTypeQuery(false);
+
+            using (var cn = OpenConnectionInternal())
+            {
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            var dataType = new DataType();
+                            LoadDataType(dr, dataType);
+                            yield return new KeyValuePair<string, DataType>(GetObjectUniqueKey(dataType), dataType);
+                        }
+                    }
+                }
+            }
+        }
+
+        private IEnumerable<KeyValuePair<string, T>> LoadAllObjectsImpl<T>()
+            where T : DatabaseObject, new()
         {
             var sql = @"
 SELECT s.name, o.name, o.type
@@ -475,12 +524,59 @@ WHERE o.type IN ({0})
         /// <returns></returns>
         internal override IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject obj)
         {
+            if (obj is DataType)
+            {
+                return LoadColumns((DataType)obj);
+            }
+            else
+            {
+                return LoadDatabaseObjectColumns(obj);
+            }
+        }
+
+        private IEnumerable<KeyValuePair<string, Column>> LoadColumns(DataType dataType)
+        {
             var sql = @"
-SELECT c.column_id, c.name, t.name, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
+SELECT c.column_id, c.name, 
+	cts.name, ct.name, ct.is_user_defined,
+	c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
+FROM sys.table_types t
+INNER JOIN sys.schemas s ON s.schema_id = t.schema_id
+INNER JOIN sys.columns c ON c.object_id = t.type_table_object_id
+LEFT OUTER JOIN sys.types ct ON ct.user_type_id = c.user_type_id AND ct.system_type_id = c.system_type_id
+LEFT OUTER JOIN sys.schemas cts ON cts.schema_id = ct.schema_id
+WHERE s.name = @schemaName AND t.name = @typeName
+ORDER BY c.column_id
+";
+            using (var cn = OpenConnectionInternal())
+            {
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = String.IsNullOrWhiteSpace(dataType.SchemaName) ? (object)DBNull.Value : (object)dataType.SchemaName;
+                    cmd.Parameters.Add("@typeName", SqlDbType.NVarChar, 128).Value = dataType.ObjectName;
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        foreach (var c in LoadColumns(dr, dataType))
+                        {
+                            yield return c;
+                        }
+                    }
+                }
+            }
+        }
+
+        private IEnumerable<KeyValuePair<string, Column>> LoadDatabaseObjectColumns(DatabaseObject obj)
+        {
+            var sql = @"
+SELECT c.column_id, c.name,
+    cts.name, ct.name, ct.is_user_defined,
+    c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
 FROM sys.columns c
-INNER JOIN sys.types t ON t.user_type_id = c.user_type_id
 INNER JOIN sys.objects o ON o.object_id = c.object_id
 INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
+LEFT OUTER JOIN sys.types ct ON ct.user_type_id = c.user_type_id AND ct.system_type_id = c.system_type_id
+LEFT OUTER JOIN sys.schemas cts ON cts.schema_id = ct.schema_id
 WHERE s.name = @schemaName AND o.name = @objectName
 ORDER BY c.column_id";
 
@@ -493,36 +589,55 @@ ORDER BY c.column_id";
 
                     using (var dr = cmd.ExecuteReader())
                     {
-                        while (dr.Read())
+                        foreach (var c in LoadColumns(dr, obj))
                         {
-                            var cd = new Column(obj)
-                            {
-                                ID = dr.GetInt32(0),
-                                Name = dr.GetString(1),
-                                IsIdentity = dr.GetBoolean(7)
-                            };
-
-                            cd.DataType = CreateDataType(
-                                dr.GetString(2),
-                                Convert.ToInt32(dr.GetValue(3)),
-                                Convert.ToByte(dr.GetValue(4)),
-                                Convert.ToByte(dr.GetValue(5)),
-                                dr.GetBoolean(6));
-
-                            // SQL Server reports column sizes in bytes for unicode columns whereas
-                            // SchemaTable, when accessed via ADO.NET returns the number of characters.
-                            // To account for this, column sizes need to be divided by the number of
-                            // bytes per character here, and only here.
-
-                            if (cd.DataType.HasLength && cd.DataType.ByteSize > 1)
-                            {
-                                cd.DataType.Length /= cd.DataType.ByteSize;
-                            }
-
-                            yield return new KeyValuePair<string, Column>(cd.Name, cd);
+                            yield return c;
                         }
                     }
                 }
+            }
+        }
+
+        private IEnumerable<KeyValuePair<string, Column>> LoadColumns(SqlDataReader dr, DatabaseObject obj)
+        {
+            while (dr.Read())
+            {
+                var cd = new Column(obj)
+                {
+                    ID = dr.GetInt32(0),
+                    Name = dr.GetString(1),
+                    IsIdentity = dr.GetBoolean(9)
+                };
+
+                var udt = dr.GetBoolean(4);
+
+                if (udt)
+                {
+                    var schema = dr.GetString(2);
+                    var type = dr.GetString(3);
+                    cd.DataType = obj.Dataset.UserDefinedTypes[obj.Dataset.DatabaseName, schema, type];
+                }
+                else
+                {
+                    cd.DataType = CreateDataType(
+                        dr.GetString(3),
+                        Convert.ToInt32(dr.GetValue(5)),
+                        Convert.ToByte(dr.GetValue(6)),
+                        Convert.ToByte(dr.GetValue(7)),
+                        dr.GetBoolean(8));
+
+                    // SQL Server reports column sizes in bytes for unicode columns whereas
+                    // SchemaTable, when accessed via ADO.NET returns the number of characters.
+                    // To account for this, column sizes need to be divided by the number of
+                    // bytes per character here, and only here.
+
+                    if (cd.DataType.HasLength && cd.DataType.ByteSize > 1)
+                    {
+                        cd.DataType.Length /= cd.DataType.ByteSize;
+                    }
+                }
+
+                yield return new KeyValuePair<string, Column>(cd.Name, cd);
             }
         }
 
@@ -535,7 +650,16 @@ ORDER BY c.column_id";
         {
             string sql;
 
-            if (databaseObject is Table)
+            if (databaseObject is DataType)
+            {
+                sql = @"
+SELECT i.index_id, i.name, i.type, i.is_unique, i.is_primary_key
+FROM sys.indexes i
+INNER JOIN sys.table_types t ON t.type_table_object_id = i.object_id
+INNER JOIN sys.schemas s ON s.schema_id = t.schema_id
+WHERE s.name = @schemaName AND t.name = @objectName";
+            }
+            else if (databaseObject is Table)
             {
                 sql = @"
 SELECT i.index_id, i.name, i.type, i.is_unique, i.is_primary_key
@@ -585,7 +709,7 @@ WHERE   i.type IN (1, 2)";
                     {
                         while (dr.Read())
                         {
-                            var idx = new Index((TableOrView)databaseObject)
+                            var idx = new Index((IIndexes)databaseObject)
                             {
                                 IndexId = dr.GetInt32(0),
                                 IndexName = dr.GetString(1),
@@ -610,7 +734,7 @@ WHERE   i.type IN (1, 2)";
         {
             string sql;
 
-            if (index.TableOrView is Table)
+            if (index.DatabaseObject is Table)
             {
                 sql = @"
 SELECT ic.column_id, ic.is_included_column, ic.key_ordinal, c.name, ic.is_descending_key, ty.name, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
@@ -668,8 +792,8 @@ ORDER BY ic.key_ordinal";
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = index.TableOrView.SchemaName;
-                    cmd.Parameters.Add("@objectName", SqlDbType.NVarChar, 128).Value = index.TableOrView.ObjectName;
+                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = index.DatabaseObject.SchemaName;
+                    cmd.Parameters.Add("@objectName", SqlDbType.NVarChar, 128).Value = index.DatabaseObject.ObjectName;
                     cmd.Parameters.Add("@indexName", SqlDbType.NVarChar, 128).Value = index.IndexName;
 
                     using (var dr = cmd.ExecuteReader())
@@ -719,11 +843,14 @@ ORDER BY ic.key_ordinal";
         internal override IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject obj)
         {
             var sql = @"
-SELECT p.parameter_id, p.name, p.is_output, t.name, p.max_length, p.scale, p.precision , p.has_default_value, p.default_value
+SELECT p.parameter_id, p.name, p.is_output, 
+    ts.name, t.name, t.is_user_defined,
+    p.max_length, p.scale, p.precision, p.has_default_value, p.default_value
 FROM sys.parameters p
 INNER JOIN sys.objects o ON o.object_id = p.object_id
 INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
 INNER JOIN sys.types t ON t.user_type_id = p.user_type_id
+LEFT OUTER JOIN sys.schemas ts ON ts.schema_id = t.schema_id
 WHERE s.name = @schemaName AND o.name = @objectName
 ORDER BY p.parameter_id";
 
@@ -746,16 +873,27 @@ ORDER BY p.parameter_id";
                                 ID = dr.GetInt32(0),
                                 Name = dr.GetString(1),
                                 Direction = dir,
-                                HasDefaultValue = dr.GetBoolean(7),
-                                DefaultValue = dr.IsDBNull(8) ? null : dr.GetValue(8),
+                                HasDefaultValue = dr.GetBoolean(9),
+                                DefaultValue = dr.IsDBNull(10) ? null : dr.GetValue(10),
                             };
 
-                            par.DataType = CreateDataType(
-                                dr.GetString(3),
-                                Convert.ToInt32(dr.GetValue(4)),
-                                Convert.ToByte(dr.GetValue(5)),
-                                Convert.ToByte(dr.GetValue(6)),
-                                false);
+                            var isudt = dr.GetBoolean(5);
+
+                            if (isudt)
+                            {
+                                var schema = dr.GetString(3);
+                                var type = dr.GetString(4);
+                                par.DataType = obj.Dataset.UserDefinedTypes[obj.Dataset.DatabaseName, schema, type];
+                            }
+                            else
+                            {
+                                par.DataType = CreateDataType(
+                                    dr.GetString(4),
+                                    Convert.ToInt32(dr.GetValue(6)),
+                                    Convert.ToByte(dr.GetValue(7)),
+                                    Convert.ToByte(dr.GetValue(8)),
+                                    false);
+                            }
 
                             yield return new KeyValuePair<string, Parameter>(par.Name, par);
                         }

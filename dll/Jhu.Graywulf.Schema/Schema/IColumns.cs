@@ -8,7 +8,7 @@ namespace Jhu.Graywulf.Schema
     /// <summary>
     /// Supports accessing the columns of a database objects
     /// </summary>
-    public interface IColumns
+    public interface IColumns : IDatabaseObject
     {
         /// <summary>
         /// Gets the collection of columns

@@ -4,7 +4,7 @@
     AutoGenerateColumns="false">
     <Columns>
         <jgwc:BoundField DataField="Name" HeaderText="Name" ItemStyle-Width="180px"/>
-        <jgwc:BoundField DataField="DataType.NameWithLength" HeaderText="Type" ItemStyle-Width="100px" />
+        <jgwc:BoundField DataField="DataType.TypeNameWithLength" HeaderText="Type" ItemStyle-Width="100px" />
         <jgwc:BoundField DataField="DataType.ByteSize" HeaderText="Bytes" ItemStyle-Width="30px" ItemStyle-HorizontalAlign="Right" />
         <jgwc:BoundField DataField="Metadata.Class" HeaderText="Class" ItemStyle-Width="150px" />
         <jgwc:BoundField DataField="Metadata.Quantity" HeaderText="Quantity" ItemStyle-Width="150px" />

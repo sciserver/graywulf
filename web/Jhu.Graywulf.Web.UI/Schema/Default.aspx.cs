@@ -97,7 +97,18 @@ namespace Jhu.Graywulf.Web.UI.Schema
 
         private void RefreshObjectTypeList()
         {
-            // Nothing to do here at the moment, only tables and views are listed
+            ObjectTypeList.Items.Clear();
+
+            ObjectTypeList.Items.Add(new ListItem("Tables", "Table"));
+            ObjectTypeList.Items.Add(new ListItem("Views", "View"));
+
+            if (SchemaManager.Comparer.Compare(DatasetList.SelectedValue, Registry.Constants.CodeDbName) == 0)
+            {
+                ObjectTypeList.Items.Add(new ListItem("User-defined Types", "DataType"));
+                ObjectTypeList.Items.Add(new ListItem("Stored Procedures", "StoredProcedure"));
+                ObjectTypeList.Items.Add(new ListItem("Scalar Functions", "ScalarFunction"));
+                ObjectTypeList.Items.Add(new ListItem("Table-valued Functions", "TableValuedFunction"));
+            }
         }
 
         private void RefreshObjectList()
@@ -111,12 +122,14 @@ namespace Jhu.Graywulf.Web.UI.Schema
                 DatabaseObjectType type;
                 if (Enum.TryParse<DatabaseObjectType>(ObjectTypeList.SelectedValue, out type))
                 {
-
                     var li = new ListItem("(select item)", "");
                     ObjectList.Items.Add(li);
 
                     switch (type)
                     {
+                        case DatabaseObjectType.DataType:
+                            LoadDataTypes(dataset);
+                            break;
                         case DatabaseObjectType.Table:
                             LoadTables(dataset);
                             break;
@@ -148,6 +161,12 @@ namespace Jhu.Graywulf.Web.UI.Schema
                 var li = new ListItem("(not available)", "");
                 ObjectList.Items.Add(li);
             }
+        }
+
+        protected void LoadDataTypes(DatasetBase dataset)
+        {
+            dataset.UserDefinedTypes.LoadAll();
+            LoadDatabaseObjects(dataset.UserDefinedTypes.Values);
         }
 
         protected void LoadTables(DatasetBase dataset)
@@ -186,6 +205,13 @@ namespace Jhu.Graywulf.Web.UI.Schema
             foreach (var d in objects.OrderBy(f => f.DisplayName))
             {
                 var li = new ListItem(d.DisplayName, d.UniqueKey);
+                ObjectList.Items.Add(li);
+            }
+
+            if (ObjectList.Items.Count == 1)
+            {
+                ObjectList.Items.Clear();
+                var li = new ListItem("(no items)", "");
                 ObjectList.Items.Add(li);
             }
         }

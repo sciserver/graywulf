@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Schema
     public class Index : DatabaseObject, ICloneable
     {
         [NonSerialized]
-        private TableOrView tableOrView;
+        private IIndexes databaseObject;
 
         [NonSerialized]
         private int indexId;
@@ -44,9 +44,9 @@ namespace Jhu.Graywulf.Schema
         }
 
         [IgnoreDataMember]
-        public TableOrView TableOrView
+        public IIndexes DatabaseObject
         {
-            get { return tableOrView; }
+            get { return databaseObject; }
         }
 
         /// <summary>
@@ -162,16 +162,15 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Creates a new index object and initializes its parent object.
         /// </summary>
-        /// <param name="tableOrView"></param>
-        public Index(TableOrView tableOrView)
-            : base(tableOrView.Dataset)
+        public Index(IIndexes databaseObject)
+            : base(databaseObject.Dataset)
         {
             InitializeMembers(new StreamingContext());
 
-            this.tableOrView = tableOrView;
+            this.databaseObject = databaseObject;
 
-            this.SchemaName = tableOrView.SchemaName;
-            this.DatabaseName = tableOrView.DatabaseName;
+            this.SchemaName = databaseObject.SchemaName;
+            this.DatabaseName = databaseObject.DatabaseName;
         }
 
         public Index(Index old)
@@ -188,7 +187,7 @@ namespace Jhu.Graywulf.Schema
         {
             this.ObjectType = DatabaseObjectType.Index;
 
-            this.tableOrView = null;
+            this.databaseObject = null;
             this.indexId = -1;
             this.isPrimaryKey = false;
             this.isClustered = false;
@@ -201,7 +200,7 @@ namespace Jhu.Graywulf.Schema
         {
             this.ObjectType = old.ObjectType;
 
-            this.tableOrView = old.tableOrView;
+            this.databaseObject = old.databaseObject;
             this.indexId = old.indexId;
             this.isPrimaryKey = old.isPrimaryKey;
             this.isClustered = old.isClustered;

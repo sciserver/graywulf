@@ -393,7 +393,7 @@ WHERE t.table_schema LIKE @databaseName AND kcu.table_name LIKE @tableName AND k
                 using (var cmd = new MySqlCommand(sql, cn))
                 {
                     cmd.Parameters.Add("@databaseName", MySqlDbType.VarChar, 128).Value = index.DatabaseName;
-                    cmd.Parameters.Add("@tableName", MySqlDbType.VarChar, 128).Value = index.TableOrView.ObjectName;
+                    cmd.Parameters.Add("@tableName", MySqlDbType.VarChar, 128).Value = index.DatabaseObject.ObjectName;
                     cmd.Parameters.Add("@indexName", MySqlDbType.VarChar, 128).Value = index.ObjectName;
 
                     using (var dr = cmd.ExecuteReader())

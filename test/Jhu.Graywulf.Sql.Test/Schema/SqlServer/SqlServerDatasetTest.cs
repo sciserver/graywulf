@@ -65,7 +65,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             Assert.AreEqual(50, t.Length);
             Assert.IsFalse(t.IsMaxLength);
             Assert.AreEqual(4000, t.MaxLength);
-            Assert.IsTrue(t.IsFixedLength);
+            Assert.IsFalse(t.IsFixedLength);
             Assert.IsFalse(t.IsSqlArray);
             Assert.AreEqual(0, t.ArrayLength);
             Assert.IsTrue(t.IsNullable);
@@ -129,6 +129,57 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             Assert.IsFalse(t.IsSqlArray);
             Assert.AreEqual(0, t.ArrayLength);
             Assert.IsFalse(t.IsNullable);
+
+            Assert.AreEqual(2, t.Columns.Count);
+        }
+
+        [TestMethod]
+        public void GetTableUDTWithUDTTest()
+        {
+            var ds = CreateTestDataset();
+            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableUDTWithUDT"];
+
+            Assert.AreEqual("dbo", t.Columns["Data"].DataType.SchemaName);
+            Assert.AreEqual("SimpleUDT", t.Columns["Data"].DataType.TypeName);
+        }
+
+        [TestMethod]
+        public void GetTableUDTWithCLRUDTTest()
+        {
+            var ds = CreateTestDataset();
+            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableUDTWithCLRUDT"];
+
+            Assert.AreEqual("dbo", t.Columns["Data"].DataType.SchemaName);
+            Assert.AreEqual("ClrUDT", t.Columns["Data"].DataType.TypeName);
+        }
+
+        [TestMethod]
+        public void GetTableUDTWithIndexTest()
+        {
+            var ds = CreateTestDataset();
+            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableUDTWithIndex"];
+
+            Assert.AreEqual(null, t.Columns["Data"].DataType.SchemaName);
+            Assert.AreEqual("nvarchar", t.Columns["Data"].DataType.TypeName);
+            Assert.AreEqual(1, t.Indexes.Count);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(KeyNotFoundException))]
+        public void GetNonexistentTypeTest()
+        {
+            var ds = CreateTestDataset();
+            var t = ds.UserDefinedTypes[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentType"];
+        }
+
+        [TestMethod]
+        public void LoadAllTypesTest()
+        {
+            var ds = CreateTestDataset();
+            ds.UserDefinedTypes.LoadAll();
+
+            Assert.AreEqual(6, ds.UserDefinedTypes.Count);    // Update this if test database schema changes
+            Assert.IsTrue(ds.UserDefinedTypes.IsAllLoaded);
         }
 
         #endregion
@@ -177,18 +228,11 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         }
 
         [TestMethod]
+        [ExpectedException(typeof(KeyNotFoundException))]
         public void GetNonexistentTableTest()
         {
             var ds = CreateTestDataset();
-
-            try
-            {
-                var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentTable"];
-                Assert.Fail();
-            }
-            catch (KeyNotFoundException)
-            {
-            }
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "NonExistentTable"];
         }
 
         [TestMethod]
@@ -381,7 +425,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
             ds.Views.LoadAll();
 
-            Assert.AreEqual(6, ds.Views.Count);    // Update this if test database schema changes
+            Assert.AreEqual(13, ds.Views.Count);    // Update this if test database schema changes
             Assert.IsTrue(ds.Views.IsAllLoaded);
         }
 
