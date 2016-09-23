@@ -144,4 +144,7 @@
   <data name="InvalidViewName" xml:space="preserve">
     <value>Invalid view name: '{0}'.</value>
   </data>
+  <data name="InvalidObjectType" xml:space="preserve">
+    <value>Invalid object type or unsupported by server.</value>
+  </data>
 </root>

@@ -198,7 +198,7 @@ namespace Jhu.Graywulf.Schema.MySql.Test
             var ds = CreateTestDataset();
             ds.Views.LoadAll();
 
-            Assert.AreEqual(5, ds.Views.Count);    // Update this if test database schema changes
+            Assert.AreEqual(10, ds.Views.Count);    // Update this if test database schema changes
             Assert.IsTrue(ds.Views.IsAllLoaded);
         }
 
@@ -267,14 +267,7 @@ namespace Jhu.Graywulf.Schema.MySql.Test
             Assert.IsTrue(sp.Parameters.Count == 2);
             Assert.IsTrue(sp.Parameters["param1"].DataType.TypeName == "int");
         }
-
-        [TestMethod]
-        public void GetClrStoredProcedureTest()
-        {
-            // TODO: implement test
-            Assert.Inconclusive();
-        }
-
+        
         [TestMethod]
         public void LoadAllStoredProceduresTest()
         {

@@ -192,8 +192,7 @@ WHERE routine_type IN ({0}) AND
                 case DatabaseObjectType.TableValuedFunction:
                     throw new SchemaException("PostgreSQL supports stored procedures only.");
                 default:
-                    // TODO: add scalar and table-valued functions
-                    throw new NotImplementedException();
+                    throw new SchemaException(ExceptionMessages.InvalidObjectType);
             }
 
             sql = String.Format(sql, GetObjectTypeIdListString(Schema.Constants.DatabaseObjectTypes[typeof(T)]));

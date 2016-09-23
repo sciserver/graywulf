@@ -179,7 +179,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
             ds.UserDefinedTypes.LoadAll();
 
-            Assert.AreEqual(6, ds.UserDefinedTypes.Count);    // Update this if test database schema changes
+            Assert.AreEqual(7, ds.UserDefinedTypes.Count);    // Update this if test database schema changes
             Assert.IsTrue(ds.UserDefinedTypes.IsAllLoaded);
         }
 
@@ -512,8 +512,11 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         [TestMethod]
         public void GetClrTableValuedFunctionTest()
         {
-            // TODO: implement test
-            Assert.Inconclusive();
+            var ds = CreateTestDataset();
+            var tvf = ds.TableValuedFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ClrTableValuedFunction"];
+
+            Assert.AreEqual(1, tvf.Parameters.Count);
+            Assert.AreEqual(1, tvf.Columns.Count);
         }
 
         [TestMethod]
@@ -522,7 +525,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
 
             ds.TableValuedFunctions.LoadAll();
-            Assert.AreEqual(3, ds.TableValuedFunctions.Count);    // Update this if test database schema changes
+            Assert.AreEqual(4, ds.TableValuedFunctions.Count);    // Update this if test database schema changes
         }
 
         [TestMethod]
@@ -562,7 +565,6 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void GetScalarFunctionTest()
         {
             var ds = CreateTestDataset();
-
             var f = ds.ScalarFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ScalarFunction"];
 
             Assert.AreEqual(3, f.Parameters.Count);
@@ -571,8 +573,10 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         [TestMethod]
         public void GetClrScalarFunctionTest()
         {
-            // TODO: implement test
-            Assert.Inconclusive();
+            var ds = CreateTestDataset();
+            var f = ds.ScalarFunctions[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ClrFunction"];
+
+            Assert.AreEqual(2, f.Parameters.Count);
         }
 
         [TestMethod]
@@ -581,7 +585,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
 
             ds.ScalarFunctions.LoadAll();
-            Assert.AreEqual(2, ds.ScalarFunctions.Count);    // Update this if test database schema changes
+            Assert.AreEqual(3, ds.ScalarFunctions.Count);    // Update this if test database schema changes
         }
 
         [TestMethod]
@@ -631,8 +635,12 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         [TestMethod]
         public void GetClrStoredProcedureTest()
         {
-            // TODO: implement test
-            Assert.Inconclusive();
+            var ds = CreateTestDataset();
+
+            var sp = ds.StoredProcedures[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ClrStoredProc"];
+
+            Assert.IsTrue(sp.Parameters.Count == 1);
+            Assert.IsTrue(sp.Parameters["@parameter"].DataType.TypeName == "int");
         }
 
         [TestMethod]
@@ -641,7 +649,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
 
             ds.StoredProcedures.LoadAll();
-            Assert.AreEqual(1, ds.StoredProcedures.Count);
+            Assert.AreEqual(2, ds.StoredProcedures.Count);
         }
 
         [TestMethod]

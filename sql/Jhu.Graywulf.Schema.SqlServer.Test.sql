@@ -301,3 +301,104 @@ CREATE TABLE [dbo].[TableWithAllTypes_Nullable](
 )
 
 GO
+
+----
+
+-- User-Defined Data Type
+
+CREATE TYPE SimpleUDT
+FROM nvarchar(50);
+
+GO
+
+-- User-Defined CLR Type
+
+CREATE TYPE ClrUDT
+EXTERNAL NAME [Jhu.Graywulf.Schema.Clr.Test].[Jhu.Graywulf.Schema.Clr.ClrUDT]
+
+GO
+
+-- User-Defined Table Type
+
+CREATE TYPE TableUDT
+AS TABLE
+(
+	ID int,
+	Data nvarchar(50)
+)
+
+GO
+
+-- User-defined Table Type with UDT column
+
+CREATE TYPE TableUDTWithUDT
+AS TABLE
+(
+	ID int,
+	Data SimpleUDT
+)
+
+GO
+
+-- User-defined Table Type with CLR column
+
+CREATE TYPE TableUDTWithCLRUDT
+AS TABLE
+(
+	ID int,
+	Data ClrUDT
+)
+
+GO
+
+-- User-defined Table Type with index
+
+CREATE TYPE TableUDTWithIndex
+AS TABLE
+(
+	ID int PRIMARY KEY,
+	Data nvarchar(50)
+)
+
+GO
+
+CREATE TYPE TableUDTWithUDTIndex
+AS TABLE
+(
+	ID SimpleUDT PRIMARY KEY,
+	Data nvarchar(50)
+)
+
+GO
+
+-- CLR function and stored proc
+
+CREATE FUNCTION dbo.ClrFunction
+(
+	@parameter int
+)
+RETURNS int
+AS EXTERNAL NAME [Jhu.Graywulf.Schema.Clr.Test].[Jhu.Graywulf.Schema.Clr.ClrObjects].[ClrFunction];
+
+GO
+
+CREATE FUNCTION dbo.ClrTableValuedFunction
+(
+	@parameter int
+)
+RETURNS TABLE
+(
+	ID int
+)
+ORDER (ID)
+AS EXTERNAL NAME [Jhu.Graywulf.Schema.Clr.Test].[Jhu.Graywulf.Schema.Clr.ClrObjects].[ClrTableValuedFunction];
+
+GO
+
+CREATE PROC ClrStoredProc
+(
+	@parameter int
+)
+AS EXTERNAL NAME [Jhu.Graywulf.Schema.Clr.Test].[Jhu.Graywulf.Schema.Clr.ClrObjects].[ClrStoredProc];
+
+GO

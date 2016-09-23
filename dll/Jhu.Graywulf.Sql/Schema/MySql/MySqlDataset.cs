@@ -171,7 +171,7 @@ WHERE routine_schema LIKE @databaseName AND routine_name LIKE @objectName AND ro
                     break;
                 // TODO: add table-valued function
                 default:
-                    throw new NotImplementedException();
+                    throw new SchemaException(ExceptionMessages.InvalidObjectType);
             }
 
             sql = String.Format(sql, GetObjectTypeIdListString(Schema.Constants.DatabaseObjectTypes[typeof(T)]));

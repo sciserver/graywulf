@@ -97,6 +97,15 @@ namespace Jhu.Graywulf.Schema {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid object type or unsupported by server..
+        /// </summary>
+        public static string InvalidObjectType {
+            get {
+                return ResourceManager.GetString("InvalidObjectType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid scalar function name: &apos;{0}&apos;.
         /// </summary>
         public static string InvalidScalarFunctionName {

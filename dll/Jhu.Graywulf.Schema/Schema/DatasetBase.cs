@@ -629,7 +629,7 @@ namespace Jhu.Graywulf.Schema
 
             throw new SchemaException(String.Format(message, databaseObject.ToString()));
         }
-
+        
         public abstract string GetSpecializedConnectionString(string connectionString, bool integratedSecurity, string username, string password, bool enlist);
 
         #region Column and data type mapping functions

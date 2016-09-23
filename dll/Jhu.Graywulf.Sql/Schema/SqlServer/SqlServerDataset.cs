@@ -739,7 +739,9 @@ WHERE   i.type IN (1, 2)";
             if (index.DatabaseObject is DataType)
             {
                 sql = @"
-SELECT ic.column_id, ic.is_included_column, ic.key_ordinal, c.name, ic.is_descending_key, ty.name, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
+SELECT ic.column_id, ic.is_included_column, ic.key_ordinal,
+    c.name, ic.is_descending_key, 
+    cts.name, ct.name, ct.is_user_defined, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
 FROM sys.indexes AS i
 INNER JOIN sys.table_types AS t
     ON i.object_id = t.type_table_object_id
@@ -749,8 +751,10 @@ INNER JOIN sys.index_columns AS ic
     ON i.object_id = ic.object_id AND i.index_id = ic.index_id
 INNER JOIN sys.columns AS c 
     ON ic.object_id = c.object_id AND c.column_id = ic.column_id
-INNER JOIN sys.types ty 
-    ON ty.user_type_id = c.user_type_id
+INNER JOIN sys.types ct
+    ON ct.user_type_id = c.user_type_id
+LEFT OUTER JOIN sys.schemas cts
+    ON cts.schema_id = ct.schema_id
 WHERE s.name = @schemaName AND
     t.name = @objectName AND
     i.name = @indexName
@@ -759,7 +763,9 @@ ORDER BY ic.key_ordinal";
             else if (index.DatabaseObject is Table)
             {
                 sql = @"
-SELECT ic.column_id, ic.is_included_column, ic.key_ordinal, c.name, ic.is_descending_key, ty.name, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
+SELECT ic.column_id, ic.is_included_column, ic.key_ordinal, 
+    c.name, ic.is_descending_key, 
+    cts.name, ct.name, ct.is_user_defined, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
 FROM sys.indexes AS i
 INNER JOIN sys.objects AS o
     ON i.object_id = o.object_id
@@ -769,8 +775,10 @@ INNER JOIN sys.index_columns AS ic
     ON i.object_id = ic.object_id AND i.index_id = ic.index_id
 INNER JOIN sys.columns AS c 
     ON ic.object_id = c.object_id AND c.column_id = ic.column_id
-INNER JOIN sys.types ty 
-    ON ty.user_type_id = c.user_type_id
+INNER JOIN sys.types ct
+    ON ct.user_type_id = c.user_type_id
+LEFT OUTER JOIN sys.schemas cts
+    ON cts.schema_id = ct.schema_id
 WHERE s.name = @schemaName AND
     o.name = @objectName AND
     i.name = @indexName
@@ -796,15 +804,19 @@ WITH refs AS
 	WHERE d.referenced_class = 1 AND d.referenced_minor_id = 0
 )
 
-SELECT ic.column_id, ic.is_included_column, ic.key_ordinal, c.name, ic.is_descending_key, ty.name, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
+SELECT ic.column_id, ic.is_included_column, ic.key_ordinal, 
+    c.name, ic.is_descending_key, 
+    cts.name, ct.name, ct.is_user_defined, c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
 FROM sys.indexes AS i
 INNER JOIN refs ON refs.referenced_id = i.object_id
 INNER JOIN sys.index_columns AS ic 
     ON i.object_id = ic.object_id AND i.index_id = ic.index_id
 INNER JOIN sys.columns AS c 
     ON ic.object_id = c.object_id AND c.column_id = ic.column_id
-INNER JOIN sys.types ty 
-    ON ty.user_type_id = c.user_type_id
+INNER JOIN sys.types ct
+    ON ct.user_type_id = c.user_type_id
+LEFT OUTER JOIN sys.schemas cts
+    ON cts.schema_id = ct.schema_id
 WHERE 
     i.name = @indexName
 ORDER BY ic.key_ordinal";
@@ -823,14 +835,17 @@ ORDER BY ic.key_ordinal";
                         while (dr.Read())
                         {
                             IndexColumnOrdering ordering;
+                            var isincluded = dr.GetBoolean(1);
+                            var isdescending = dr.GetBoolean(4);
+                            var isuserdefinedtype = dr.GetBoolean(7);
 
-                            if (dr.GetBoolean(1))
+                            if (isincluded)
                             {
                                 ordering = IndexColumnOrdering.Unknown;
                             }
                             else
                             {
-                                ordering = dr.GetBoolean(4) ? IndexColumnOrdering.Descending : IndexColumnOrdering.Ascending;
+                                ordering = isdescending ? IndexColumnOrdering.Descending : IndexColumnOrdering.Ascending;
                             }
 
                             var ic = new IndexColumn()
@@ -840,15 +855,22 @@ ORDER BY ic.key_ordinal";
                                 KeyOrdinal = dr.GetByte(2),
                                 Name = dr.GetString(3),
                                 Ordering = ordering,
-                                IsIdentity = dr.GetBoolean(9),
+                                IsIdentity = dr.GetBoolean(12),
                             };
 
-                            ic.DataType = CreateDataType(
-                                dr.GetString(5),
-                                Convert.ToInt32(dr.GetValue(6)),
-                                Convert.ToByte(dr.GetValue(7)),
-                                Convert.ToByte(dr.GetValue(8)),
-                                dr.GetBoolean(10));
+                            if (isuserdefinedtype)
+                            {
+                                ic.DataType = index.Dataset.UserDefinedTypes[index.Dataset.DatabaseName, dr.GetString(5), dr.GetString(6)];
+                            }
+                            else
+                            {
+                                ic.DataType = CreateDataType(
+                                    dr.GetString(6),
+                                    Convert.ToInt32(dr.GetValue(8)),
+                                    Convert.ToByte(dr.GetValue(9)),
+                                    Convert.ToByte(dr.GetValue(10)),
+                                    dr.GetBoolean(11));
+                            }
 
                             yield return new KeyValuePair<string, IndexColumn>(ic.Name, ic);
                         }
