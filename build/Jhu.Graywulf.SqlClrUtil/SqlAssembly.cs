@@ -47,9 +47,10 @@ namespace Jhu.Graywulf.SqlClrUtil
             CopyMembers(old);
         }
 
-        public SqlAssembly(Assembly assembly)
+        public SqlAssembly(Assembly assembly, AssemblySecurityLevel sec = AssemblySecurityLevel.Safe)
         {
             InitializeMembers();
+            this.assemblySecurityLevel = sec;
             ReflectAssembly(assembly);
         }
 
@@ -130,10 +131,11 @@ GO
 
             for (int i = 0; i < refs.Length; i++)
             {
-                if (!refs[i].Name.StartsWith("System") && !refs[i].Name.StartsWith("ms"))
+                //if (!refs[i].Name.StartsWith("System") && !refs[i].Name.StartsWith("ms"))
+                if (!Constants.SQLSupportedLibraries.Contains(refs[i].Name))
                 {
-                    var a = LoadAssembly(this.path, refs[i]);
-                    assemblies.Add(new SqlAssembly(a));
+                    var a = LoadAssembly(System.IO.Path.GetDirectoryName(this.path), refs[i]);
+                    assemblies.Add(new SqlAssembly(a,this.AssemblySecurityLevel));
                 }
             }
 
@@ -146,10 +148,19 @@ GO
             {
                 a.CollectReferences();
 
+                foreach (var aSub in a.References.Values)
+                {
+                    if (!references.ContainsKey(aSub.Name))
+                    {
+                        references.Add(aSub.Name, aSub);
+                    }
+                }
+
                 if (!references.ContainsKey(a.Name))
                 {
                     references.Add(a.Name, a);
                 }
+
             }
         }
 

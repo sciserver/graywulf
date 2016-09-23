@@ -42,8 +42,7 @@ namespace Jhu.Graywulf.SqlClrUtil
 
         private void ReflectAssembly(Assembly a, AssemblySecurityLevel sec)
         {
-            assembly = new SqlAssembly(a);
-            assembly.AssemblySecurityLevel = sec;
+            assembly = new SqlAssembly(a, sec);
 
             foreach (var type in a.GetTypes())
             {
@@ -99,12 +98,12 @@ namespace Jhu.Graywulf.SqlClrUtil
                 obj.ScriptDrop(this, writer);
             }
 
+            assembly.ScriptDrop(writer);
+
             foreach (var a in assembly.References.Values.Reverse())
             {
                 a.ScriptDrop(writer);
-            }
-
-            assembly.ScriptDrop(writer);
+            }   
 
             foreach (var schema in CollectSchemaNames())
             {

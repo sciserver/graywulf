@@ -148,6 +148,9 @@ namespace Jhu.Graywulf.SqlClrUtil
             className = method.DeclaringType.FullName;
             methodName = method.Name;
             name = method.Name;
+            //If the Name property is not set in SqlFunctionAttribute, the ReflectObjectName function will not set this.schema
+            //(while this.name is set here), resulting in an erroneous script. Therefore, also giving a default value for the schema here. 
+            schema = "dbo";
 
             ReflectAttributes(method);
         }

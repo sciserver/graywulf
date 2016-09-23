@@ -58,5 +58,29 @@ namespace Jhu.Graywulf.SqlClrUtil
             { AssemblySecurityLevel.External, "EXTERNAL_ACCESS" },
             { AssemblySecurityLevel.Unrestricted, "UNSAFE" },
         };
+
+        //.Net libraries supported by SQL were taken from https://msdn.microsoft.com/en-us/library/ms403279.aspx
+        public static readonly HashSet<string> SQLSupportedLibraries = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "CustomMarshalers",
+            "Microsoft.VisualBasic",
+            "Microsoft.VisualC",
+            "System.Configuration",
+            "System.Data",
+            "System.Data.OracleClient",
+            "System.Data.SqlXml",
+            "System.Deployment",
+            "System.Security",
+            "System.Transactions",
+            "System.Web.Services",
+            "System.Core",
+            "System.Xml",
+            "System.Xml.Linq",
+            "System",
+            "System.Numerics",
+            "mscorlib"
+        };
+
+
     }
 }
