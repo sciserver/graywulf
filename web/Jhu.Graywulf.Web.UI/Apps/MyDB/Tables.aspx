@@ -1,7 +1,8 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/UI.master" AutoEventWireup="true"
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true"
     Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.Tables" CodeBehind="Tables.aspx.cs" %>
 
-<%@ Register Src="~/MyDb/Tabs.ascx" TagPrefix="jgwc" TagName="MyDbTabs" %>
+<%@ Register Src="Tabs.ascx" TagPrefix="jgwc" TagName="MyDbTabs" %>
+
 <asp:Content ID="Content2" ContentPlaceHolderID="middle" runat="Server">
     <div class="dock-top">
         <jgwc:MyDbTabs ID="MyDbTabs1" runat="server" SelectedTab="Tables" />

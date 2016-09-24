@@ -10,7 +10,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.UI
 {
-    public abstract class DomainApplicationBase : ApplicationBase
+    public abstract class DomainApplicationBase : UIApplicationBase
     {
         public DomainApplicationBase()
         {

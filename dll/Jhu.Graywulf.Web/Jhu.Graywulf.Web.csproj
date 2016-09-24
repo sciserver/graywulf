@@ -111,6 +111,7 @@
     <Compile Include="Web\Services\RestCorsMessageInspector.cs" />
     <Compile Include="Web\Services\RestServiceBase.cs" />
     <Compile Include="Web\Services\RestServiceBehavior.cs" />
+    <Compile Include="Web\Services\ServiceNameAttribute.cs" />
     <Compile Include="Web\Services\StreamingRawBodyWriter.cs" />
     <Compile Include="Web\Services\StreamingRawFormatAttribute.cs" />
     <Compile Include="Web\Services\StreamingListFormatAttribute.cs" />

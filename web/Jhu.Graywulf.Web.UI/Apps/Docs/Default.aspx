@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Help main" Language="C#" MasterPageFile="~/Docs/Docs.master" AutoEventWireup="true"
+﻿<%@ Page Title="Help main" Language="C#" MasterPageFile="Docs.master" AutoEventWireup="true"
     CodeBehind="Default.aspx.cs" Inherits="Jhu.Graywulf.Web.UI.Apps.Docs.Default" %>
 
 <asp:Content ContentPlaceHolderID="Text" runat="server">

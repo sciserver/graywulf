@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Web;
+using Jhu.Graywulf.Web.Controls;
 
 namespace Jhu.Graywulf.Web.UI.Controls
 {
@@ -6,14 +9,20 @@ namespace Jhu.Graywulf.Web.UI.Controls
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            /*
-            Home.NavigateUrl = Jhu.Graywulf.Web.UI.Default.GetUrl();
-            Schema.NavigateUrl = Jhu.Graywulf.Web.UI.Schema.Default.GetUrl();
-            Query.NavigateUrl = Jhu.Graywulf.Web.UI.Query.Default.GetUrl();
-            Jobs.NavigateUrl = Jhu.Graywulf.Web.UI.Jobs.Default.GetUrl();
-            MyDB.NavigateUrl = Jhu.Graywulf.Web.UI.MyDB.Default.GetUrl();
-            Api.NavigateUrl = Jhu.Graywulf.Web.UI.Api.Default.GetUrl();
-            Docs.NavigateUrl = Jhu.Graywulf.Web.UI.Docs.Default.GetUrl();*/
+            var application = (UIApplicationBase)HttpContext.Current.ApplicationInstance;
+
+            foreach (var button in application.MenuButtons)
+            {
+                var b = new ToolbarButton()
+                {
+                    Text = button.Text.ToLower(),
+                    NavigateUrl = button.NavigateUrl,
+                    SkinID = "Menu"
+                };
+
+                var i = buttonsPlaceholder.Parent.Controls.IndexOf(buttonsPlaceholder);
+                buttonsPlaceholder.Parent.Controls.AddAt(i, b);
+            }
         }
     }
 }

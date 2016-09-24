@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/UI.master" AutoEventWireup="true"
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true"
     Inherits="Jhu.Graywulf.Web.UI.Apps.Schema.Default" CodeBehind="Default.aspx.cs" %>
 
 <%@ Register Src="DbObjectDetails.ascx" TagName="DbObjectDetails" TagPrefix="jgwc" %>
@@ -55,7 +55,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="middle" runat="Server">
     <asp:UpdatePanel runat="server" class="dock-fill dock-container">
         <ContentTemplate>
-            <jgwc:Form runat="server" ID="IntroForm" SkinID="Schema" Text="Getting started with the schema browser">
+            <jgwuc:Form runat="server" ID="IntroForm" SkinID="Schema" Text="Getting started with the schema browser">
                 <FormTemplate>
                     <ul>
                         <li>Select catalog from the first list. Catalogs are equivalent to databases. MyDB
@@ -66,7 +66,7 @@
                 </FormTemplate>
                 <ButtonsTemplate>
                 </ButtonsTemplate>
-            </jgwc:Form>
+            </jgwuc:Form>
             <jgwc:DbObjectDetails runat="server" ID="DetailsPanel" Visible="false" />
         </ContentTemplate>
     </asp:UpdatePanel>

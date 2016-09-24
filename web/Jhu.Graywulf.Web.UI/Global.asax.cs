@@ -1,67 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Security;
-using System.Web.SessionState;
-using System.Web.Routing;
-using System.ServiceModel;
-using System.ServiceModel.Activation;
-using Jhu.Graywulf.AccessControl;
-using Jhu.Graywulf.Web;
 using Jhu.Graywulf.Web.Api.V1;
-using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.Install;
 
 namespace Jhu.Graywulf.Web.UI
 {
     public class Global : FederationApplicationBase
     {
-        protected override void Application_Start(object sender, EventArgs e)
+        protected override void RegisterApps()
         {
-            base.Application_Start(sender, e);
+            base.RegisterApps();
 
-            // Register custom pages from DLLs
-
-            using (var context = CreateRegistryContext())
-            {
-                var itf = Jhu.Graywulf.Jobs.ImportTables.ImportTablesJobFactory.Create(context.Federation);
-
-                foreach (var m in itf.EnumerateMethods())
-                {
-                    m.RegisterVirtualPaths(this.VirtualPathProvider);
-                }
-
-                var etf = Jhu.Graywulf.Jobs.ExportTables.ExportTablesJobFactory.Create(context.Federation);
-
-                foreach (var m in etf.EnumerateMethods())
-                {
-                    m.RegisterVirtualPaths(this.VirtualPathProvider);
-                }
-            }
+            RegisterApp(typeof(Apps.Schema.App));
+            RegisterApp(typeof(Apps.Query.App));
+            RegisterApp(typeof(Apps.Jobs.App));
+            RegisterApp(typeof(Apps.MyDB.App));
+            RegisterApp(typeof(Apps.Api.App));
+            RegisterApp(typeof(Apps.Docs.App));
         }
 
-        protected override void OnUserArrived(GraywulfPrincipal principal)
+        protected override void RegisterServices()
         {
-            using (var context = CreateRegistryContext())
-            {
-                // Check if user database (MYDB) exists, and create it if necessary
-                var uf = UserDatabaseFactory.Create(context.Federation);
-                uf.EnsureUserDatabaseExists(principal.Identity.User);
+            base.RegisterServices();
 
-                // Load all datasets at start to be able to display from schema browser
-                // Datasets will be cached internally
-                var schemaManager = Jhu.Graywulf.Schema.GraywulfSchemaManager.Create(context.Federation);
-                schemaManager.Datasets.LoadAll();
-
-                context.CommitTransaction();
-            }
-        }
-
-        protected override void OnUserLeft(GraywulfPrincipal principal)
-        {
-
+            RegisterService(typeof(IAuthService));
+            RegisterService(typeof(ISchemaService));
+            RegisterService(typeof(IJobsService));
+            RegisterService(typeof(IDataService));
+            RegisterService(typeof(ITestService));
         }
     }
 }

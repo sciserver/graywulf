@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UserControl MyDbTabs1;
+        protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.Tabs MyDbTabs1;
         
         /// <summary>
         /// TableSelectedValidator control.

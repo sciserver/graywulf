@@ -14,6 +14,7 @@ using Jhu.Graywulf.Web.Services;
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [ServiceContract]
+    [ServiceName(Name = "Schema", Version = "V1")]
     [Description("Gives access to the datasets and database schema.")]
     public interface ISchemaService
     {

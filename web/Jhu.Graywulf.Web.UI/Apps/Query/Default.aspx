@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/UI.master" AutoEventWireup="true"
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true"
     Inherits="Jhu.Graywulf.Web.UI.Apps.Query.Default" CodeBehind="Default.aspx.cs" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="head">

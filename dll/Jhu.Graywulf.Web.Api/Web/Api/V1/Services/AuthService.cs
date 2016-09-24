@@ -13,6 +13,7 @@ using Jhu.Graywulf.Web.Services;
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [ServiceContract]
+    [ServiceName(Name = "Auth", Version = "V1")]
     [Description("Manages user authentication.")]
     public interface IAuthService
     {

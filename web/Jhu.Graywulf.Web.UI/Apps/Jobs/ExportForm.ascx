@@ -1,5 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="ExportForm.ascx.cs" Inherits="Jhu.Graywulf.Web.UI.Apps.Jobs.ExportForm" %>
-<jgwc:Form runat="server" Text="Export details" SkinID="ExportJobDetails">
+<jgwuc:Form runat="server" Text="Export details" SkinID="ExportJobDetails">
     <FormTemplate>
         <table class="FormTable">
             <tr>
@@ -30,4 +30,4 @@
     </FormTemplate>
     <ButtonsTemplate>
     </ButtonsTemplate>
-</jgwc:Form>
+</jgwuc:Form>

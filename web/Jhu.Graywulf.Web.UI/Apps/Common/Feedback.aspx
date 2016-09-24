@@ -1,9 +1,9 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic.master" AutoEventWireup="true"
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/Basic.master" AutoEventWireup="true"
     Inherits="Jhu.Graywulf.Web.UI.Apps.Common.Feedback" CodeBehind="Feedback.aspx.cs" %>
 
 <%@ Register TagPrefix="jgwc" Namespace="Jhu.Graywulf.Web.Controls" Assembly="Jhu.Graywulf.Web.Controls" %>
 <asp:Content ContentPlaceHolderID="middle" runat="Server">
-    <jgwc:Form ID="FeedbackForm" runat="server" Text="We appreciate your feedback!" SkinID="Feedback">
+    <jgwuc:Form ID="FeedbackForm" runat="server" Text="We appreciate your feedback!" SkinID="Feedback">
         <formtemplate>
             <p>
                 Please use this form to send email to the site operators.</p>
@@ -69,8 +69,8 @@
             <asp:Button ID="Cancel" runat="server" OnClick="Cancel_Click" CausesValidation="False"
                 Text="Cancel" CssClass="FormButton" />
         </buttonstemplate>
-    </jgwc:Form>
-    <jgwc:Form runat="server" ID="SuccessForm" Visible="false" SkinID="FeedbackSent">
+    </jgwuc:Form>
+    <jgwuc:Form runat="server" ID="SuccessForm" Visible="false" SkinID="FeedbackSent">
         <formtemplate>
             <p>
                 You feedback has been successfully sent.</p>
@@ -79,5 +79,5 @@
             <asp:Button ID="Back" runat="server" Text="Back" OnCommand="Back_Click" CssClass="FormButton"
                 CausesValidation="false" />
         </buttonstemplate>
-    </jgwc:Form>
+    </jgwuc:Form>
 </asp:Content>

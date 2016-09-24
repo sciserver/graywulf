@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/UI.master" AutoEventWireup="true"
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true"
     Inherits="Jhu.Graywulf.Web.UI.Apps.Jobs.JobDetails" CodeBehind="JobDetails.aspx.cs" %>
 
 <%@ Register Src="ErrorForm.ascx" TagPrefix="jgwc" TagName="ErrorForm" %>
@@ -20,7 +20,7 @@
             <div class="TabFrame dock-fill dock-container">
                 <asp:MultiView runat="server" ID="multiView" ActiveViewIndex="0">
                     <jgwc:TabView runat="server" ID="summaryTab" Text="Summary">
-                        <jgwc:Form runat="Server" Text="Job details" SkinID="JobDetails">
+                        <jgwuc:Form runat="Server" Text="Job details" SkinID="JobDetails">
                             <FormTemplate>
                                 <table class="FormTable">
                                     <tr>
@@ -78,7 +78,7 @@
                                     OnClick="Cancel_Click" />
                                 <asp:Button runat="Server" ID="Back" Text="Back" CssClass="FormButton" />
                             </ButtonsTemplate>
-                        </jgwc:Form>
+                        </jgwuc:Form>
                     </jgwc:TabView>
                     <jgwc:TabView ID="queryTab" runat="server" Text="Query">
                         <jgwc:QueryForm runat="server" ID="queryForm" />

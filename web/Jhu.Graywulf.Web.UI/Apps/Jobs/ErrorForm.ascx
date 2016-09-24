@@ -1,5 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="ErrorForm.ascx.cs" Inherits="Jhu.Graywulf.Web.UI.Apps.Jobs.ErrorForm" %>
-<jgwc:Form runat="server" Text="Error details" SkinID="ErrorJob">
+<jgwuc:Form runat="server" Text="Error details" SkinID="ErrorJob">
     <FormTemplate>
         <p>
             The following message might contain useful information on why the job failed.
@@ -23,4 +23,4 @@
         <asp:Button runat="Server" ID="Inquiry" Text="Send inquiry" CssClass="FormButton"
             OnClick="Inquiry_Click" />
     </ButtonsTemplate>
-</jgwc:Form>
+</jgwuc:Form>

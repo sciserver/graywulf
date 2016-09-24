@@ -1,8 +1,8 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/UI.master" AutoEventWireup="true"
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true"
     CodeBehind="Default.aspx.cs" Inherits="Jhu.Graywulf.Web.UI.Default" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="middle" runat="server">
-    <jgwc:Form runat="server" ID="WelcomeForm" SkinID="Welcome">
+    <jgwuc:Form runat="server" ID="WelcomeForm" SkinID="Welcome">
         <FormTemplate>
             <p>
                 You need to register and sign in before using this web site.
@@ -12,5 +12,5 @@
         </FormTemplate>
         <ButtonsTemplate>
         </ButtonsTemplate>
-    </jgwc:Form>
+    </jgwuc:Form>
 </asp:Content>

@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Web.UI
             {
                 if (registryContext == null)
                 {
-                    var application = (ApplicationBase)HttpContext.Current.ApplicationInstance;
+                    var application = (UIApplicationBase)HttpContext.Current.ApplicationInstance;
                     registryContext = application.CreateRegistryContext();
                 }
 

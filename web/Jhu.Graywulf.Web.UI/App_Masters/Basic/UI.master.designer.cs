@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Jhu.Graywulf.Web.UI {
+namespace Jhu.Graywulf.Web.UI.Masters {
     
     
     public partial class UI {

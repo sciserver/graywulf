@@ -1,8 +1,8 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="PageError.aspx.cs" Inherits="Jhu.Graywulf.Web.UI.Apps.Common.Error"
-    MasterPageFile="~/App_Masters/Basic.master" %>
+    MasterPageFile="~/App_Masters/Basic/Basic.master" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="middle">
-    <jgwc:Form ID="ErrorForm" runat="server" Text="Oooooops!" SkinID="Error">
+    <jgwuc:Form ID="ErrorForm" runat="server" Text="Oooooops!" SkinID="Error">
         <FormTemplate>
             <p>
                 Unexpected error happened:</p>
@@ -18,5 +18,5 @@
         <ButtonsTemplate>
             <asp:Button runat="server" ID="Ok" Text="Ok" CssClass="FormButton" OnClick="Ok_Click" />
         </ButtonsTemplate>
-    </jgwc:Form>
+    </jgwuc:Form>
 </asp:Content>

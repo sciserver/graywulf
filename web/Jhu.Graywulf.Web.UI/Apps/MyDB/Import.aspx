@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/UI.master" AutoEventWireup="true"
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true"
     Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.Import" CodeBehind="Import.aspx.cs" %>
 
 <%@ Register Src="Tabs.ascx" TagPrefix="jgwc" TagName="MyDbTabs" %>
@@ -12,7 +12,7 @@
         <jgwc:MyDbTabs ID="MyDbTabs" runat="server" SelectedTab="Import" />
     </div>
     <div class="TabFrame dock-fill dock-container">
-        <jgwc:Form runat="server" ID="importForm" Text="Import data files" SkinID="ImportTable">
+        <jgwuc:Form runat="server" ID="importForm" Text="Import data files" SkinID="ImportTable">
             <FormTemplate>
                 <p>
                     Import single files or archives from any location.
@@ -41,8 +41,8 @@
                 <asp:Button ID="Cancel" runat="server" Text="Cancel" OnClick="Cancel_Click" CausesValidation="false"
                     CssClass="FormButton" />
             </ButtonsTemplate>
-        </jgwc:Form>
-        <jgwc:Form ID="uploadResultsForm" runat="server" Text="File upload results" SkinID="ImportTable"
+        </jgwuc:Form>
+        <jgwuc:Form ID="uploadResultsForm" runat="server" Text="File upload results" SkinID="ImportTable"
             Visible="false">
             <FormTemplate>
                 <p>
@@ -52,8 +52,8 @@
             <ButtonsTemplate>
                 <asp:Button ID="Button1" runat="server" Text="OK" OnClick="Back_Click" CssClass="FormButton" />&nbsp;
             </ButtonsTemplate>
-        </jgwc:Form>
-        <jgwc:Form ID="jobResultsForm" runat="server" Text="File import results" SkinID="ImportTable"
+        </jgwuc:Form>
+        <jgwuc:Form ID="jobResultsForm" runat="server" Text="File import results" SkinID="ImportTable"
             Visible="false">
             <FormTemplate>
                 <p>
@@ -63,6 +63,6 @@
             <ButtonsTemplate>
                 <asp:Button ID="Back" runat="server" Text="OK" OnClick="Back_Click" CssClass="FormButton" />&nbsp;
             </ButtonsTemplate>
-        </jgwc:Form>
+        </jgwuc:Form>
     </div>
 </asp:Content>

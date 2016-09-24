@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.ComponentModel;
 using System.ServiceModel;
 using System.ServiceModel.Activation;
 using System.ServiceModel.Web;
@@ -14,6 +15,8 @@ using Jhu.Graywulf.Web.Services;
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [ServiceContract]
+    [ServiceName(Name = "Test", Version = "V1")]
+    [Description("This is for testing purposes only.")]
     public interface ITestService
     {
         [OperationContract]

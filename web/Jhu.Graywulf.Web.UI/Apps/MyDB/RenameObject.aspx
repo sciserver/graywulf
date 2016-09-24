@@ -1,9 +1,10 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/UI.master" AutoEventWireup="true"
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true"
     Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.RenameObject" CodeBehind="RenameObject.aspx.cs" %>
 
-<%@ Register Src="~/MyDb/Tabs.ascx" TagPrefix="jgwc" TagName="MyDbTabs" %>
+<%@ Register Src="Tabs.ascx" TagPrefix="jgwc" TagName="MyDbTabs" %>
+
 <asp:Content ID="Content2" ContentPlaceHolderID="middle" runat="Server">
-    <jgwc:Form runat="server" Text="Rename MyDB object" SkinID="RenameObject">
+    <jgwuc:Form runat="server" Text="Rename MyDB object" SkinID="RenameObject">
         <FormTemplate>
             <table class="FormTable">
                 <tr>
@@ -29,5 +30,5 @@
             &nbsp;<asp:Button ID="Cancel" runat="server" CausesValidation="False" Text="Cancel"
                 OnClick="Cancel_Click" CssClass="FormButton" />
         </ButtonsTemplate>
-    </jgwc:Form>
+    </jgwuc:Form>
 </asp:Content>

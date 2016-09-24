@@ -1,13 +1,13 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/UI.master" AutoEventWireup="True"
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="True"
     Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.Default" CodeBehind="Default.aspx.cs" %>
 
-<%@ Register Src="~/MyDb/Tabs.ascx" TagPrefix="jgwc" TagName="MyDbTabs" %>
+<%@ Register Src="Tabs.ascx" TagPrefix="jgwc" TagName="MyDbTabs" %>
 <asp:Content runat="server" ContentPlaceHolderID="middle">
     <div class="dock-top">
         <jgwc:MyDbTabs ID="MyDbTabs1" runat="server" SelectedTab="Summary" />
     </div>
     <div class="dock-fill dock-container TabFrame">
-        <jgwc:Form runat="server" Text="MyDB Summary" SkinID="MyDB">
+        <jgwuc:Form runat="server" Text="MyDB Summary" SkinID="MyDB">
             <FormTemplate>
                 <p>
                     The following is a summary of your MyDB usage.
@@ -70,6 +70,6 @@
             </FormTemplate>
             <ButtonsTemplate>
             </ButtonsTemplate>
-        </jgwc:Form>
+        </jgwuc:Form>
     </div>
 </asp:Content>

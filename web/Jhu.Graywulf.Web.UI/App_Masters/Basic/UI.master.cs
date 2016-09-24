@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace Jhu.Graywulf.Web.UI
+namespace Jhu.Graywulf.Web.UI.Masters
 {
     public partial class UI : System.Web.UI.MasterPage
     {

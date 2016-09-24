@@ -23,6 +23,7 @@ using Jhu.Graywulf.Web.Services;
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [ServiceContract]
+    [ServiceName(Name = "Data", Version = "V1")]
     [Description("Manages table downloads and uploads.")]
     public interface IDataService
     {

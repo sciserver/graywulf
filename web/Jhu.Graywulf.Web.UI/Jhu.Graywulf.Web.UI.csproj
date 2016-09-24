@@ -72,11 +72,13 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\Default.aspx.cs">
+    <Compile Include="AppBase.cs" />
+    <Compile Include="Apps\Api\App.cs" />
+    <Compile Include="Apps\Api\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Api\Default.aspx.designer.cs">
+    <Compile Include="Apps\Api\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="Apps\Common\Captcha.aspx.cs">
@@ -97,6 +99,7 @@
     <Compile Include="Apps\Common\Feedback.aspx.designer.cs">
       <DependentUpon>Feedback.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Docs\App.cs" />
     <Compile Include="Apps\Docs\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -111,6 +114,7 @@
     <Compile Include="Apps\Docs\Docs.master.designer.cs">
       <DependentUpon>Docs.master</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Jobs\App.cs" />
     <Compile Include="Apps\Jobs\CancelJob.aspx.cs">
       <DependentUpon>CancelJob.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -160,6 +164,7 @@
     <Compile Include="Apps\Jobs\QueryForm.ascx.designer.cs">
       <DependentUpon>QueryForm.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\MyDB\App.cs" />
     <Compile Include="Apps\MyDB\CommentsForm.ascx.cs">
       <DependentUpon>CommentsForm.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -254,6 +259,7 @@
     <Compile Include="Apps\MyDB\UploadForm.ascx.designer.cs">
       <DependentUpon>UploadForm.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Query\App.cs" />
     <Compile Include="Apps\Query\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -268,6 +274,7 @@
     <Compile Include="Apps\Query\Results.aspx.designer.cs">
       <DependentUpon>Results.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Schema\App.cs" />
     <Compile Include="Apps\Schema\ColumnList.ascx.cs">
       <DependentUpon>ColumnList.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -317,6 +324,13 @@
     <Compile Include="App_Masters\Basic\Basic.master.designer.cs">
       <DependentUpon>Basic.master</DependentUpon>
     </Compile>
+    <Compile Include="App_Masters\Basic\UI.master.cs">
+      <DependentUpon>UI.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="App_Masters\Basic\UI.master.designer.cs">
+      <DependentUpon>UI.master</DependentUpon>
+    </Compile>
     <Compile Include="Check.aspx.cs">
       <DependentUpon>Check.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -337,6 +351,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Labels.resx</DependentUpon>
     </Compile>
+    <Compile Include="Controls\MenuButton.cs" />
     <Compile Include="Controls\Query.cs" />
     <Compile Include="Controls\UserStatus.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -354,13 +369,6 @@
     </Compile>
     <Compile Include="PageBase.cs">
       <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="UI.master.cs">
-      <DependentUpon>UI.master</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="UI.master.designer.cs">
-      <DependentUpon>UI.master</DependentUpon>
     </Compile>
     <Compile Include="Controls\Footer.ascx.cs">
       <DependentUpon>Footer.ascx</DependentUpon>
@@ -387,6 +395,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UIApplicationBase.cs" />
     <Compile Include="UserControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -394,11 +403,11 @@
     <Compile Include="WebConfigHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Api\Default.aspx" />
     <Content Include="Api\V1\Data.svc" />
     <Content Include="Api\V1\Jobs.svc" />
     <Content Include="Api\V1\Schema.svc" />
     <Content Include="Api\V1\Test.svc" />
+    <Content Include="Apps\Api\Default.aspx" />
     <Content Include="Apps\Common\Captcha.aspx" />
     <Content Include="Apps\Common\Error.aspx" />
     <Content Include="Apps\Common\Feedback.aspx" />
@@ -859,7 +868,6 @@
     <Content Include="Templates\Basic\ErrorFeedbackEmail.xml" />
     <Content Include="Templates\Basic\FeedbackEmail.xml" />
     <Content Include="Templates\Basic\RequestResetEmail.xml" />
-    <Content Include="UI.master" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.config" />
@@ -915,6 +923,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Apps\Schema\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Masters\Basic\UI.master" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Apps\Api\Web.config" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

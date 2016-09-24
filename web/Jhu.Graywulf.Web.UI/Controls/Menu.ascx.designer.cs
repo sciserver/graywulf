@@ -13,66 +13,12 @@ namespace Jhu.Graywulf.Web.UI.Controls {
     public partial class Menu {
         
         /// <summary>
-        /// Home control.
+        /// buttonsPlaceholder control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarButton Home;
-        
-        /// <summary>
-        /// Schema control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarButton Schema;
-        
-        /// <summary>
-        /// Query control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarButton Query;
-        
-        /// <summary>
-        /// Jobs control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarButton Jobs;
-        
-        /// <summary>
-        /// MyDB control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarButton MyDB;
-        
-        /// <summary>
-        /// Api control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarButton Api;
-        
-        /// <summary>
-        /// Docs control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarButton Docs;
+        protected global::System.Web.UI.WebControls.PlaceHolder buttonsPlaceholder;
     }
 }

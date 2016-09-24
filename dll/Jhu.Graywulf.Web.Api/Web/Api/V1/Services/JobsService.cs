@@ -15,6 +15,7 @@ using Jhu.Graywulf.Web.Services;
 namespace Jhu.Graywulf.Web.Api.V1
 {
     [ServiceContract]
+    [ServiceName(Name = "Jobs", Version = "V1")]
     [Description("Manages queues and jobs.")]
     public interface IJobsService
     {
