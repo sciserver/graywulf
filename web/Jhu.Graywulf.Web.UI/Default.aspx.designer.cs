@@ -19,6 +19,6 @@ namespace Jhu.Graywulf.Web.UI {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.Form WelcomeForm;
+        protected global::Jhu.Graywulf.Web.UI.Controls.Form WelcomeForm;
     }
 }

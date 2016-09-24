@@ -79,11 +79,242 @@
     <Compile Include="Api\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="App_Masters\Basic.master.cs">
+    <Compile Include="Apps\Common\Captcha.aspx.cs">
+      <DependentUpon>Captcha.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Common\Error.aspx.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Common\Error.aspx.designer.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Common\Feedback.aspx.cs">
+      <DependentUpon>Feedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Common\Feedback.aspx.designer.cs">
+      <DependentUpon>Feedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Docs\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Docs\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Docs\Docs.master.cs">
+      <DependentUpon>Docs.master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Docs\Docs.master.designer.cs">
+      <DependentUpon>Docs.master</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Jobs\CancelJob.aspx.cs">
+      <DependentUpon>CancelJob.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\CancelJob.aspx.designer.cs">
+      <DependentUpon>CancelJob.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Jobs\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Jobs\ErrorForm.ascx.cs">
+      <DependentUpon>ErrorForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\ErrorForm.ascx.designer.cs">
+      <DependentUpon>ErrorForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Jobs\ExportForm.ascx.cs">
+      <DependentUpon>ExportForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\ExportForm.ascx.designer.cs">
+      <DependentUpon>ExportForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Jobs\ImportForm.ascx.cs">
+      <DependentUpon>ImportForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\ImportForm.ascx.designer.cs">
+      <DependentUpon>ImportForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Jobs\JobDetails.aspx.cs">
+      <DependentUpon>JobDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\JobDetails.aspx.designer.cs">
+      <DependentUpon>JobDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Jobs\QueryForm.ascx.cs">
+      <DependentUpon>QueryForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\QueryForm.ascx.designer.cs">
+      <DependentUpon>QueryForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\CommentsForm.ascx.cs">
+      <DependentUpon>CommentsForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\CommentsForm.ascx.designer.cs">
+      <DependentUpon>CommentsForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\CompressionForm.ascx.cs">
+      <DependentUpon>CompressionForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\CompressionForm.ascx.designer.cs">
+      <DependentUpon>CompressionForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\CopyTablePage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\DestinationTableForm.ascx.cs">
+      <DependentUpon>DestinationTableForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\DestinationTableForm.ascx.designer.cs">
+      <DependentUpon>DestinationTableForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\DropObject.aspx.cs">
+      <DependentUpon>DropObject.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\DropObject.aspx.designer.cs">
+      <DependentUpon>DropObject.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\Export.aspx.cs">
+      <DependentUpon>Export.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\Export.aspx.designer.cs">
+      <DependentUpon>Export.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\FileFormatForm.ascx.cs">
+      <DependentUpon>FileFormatForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\FileFormatForm.ascx.designer.cs">
+      <DependentUpon>FileFormatForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\Import.aspx.cs">
+      <DependentUpon>Import.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\Import.aspx.designer.cs">
+      <DependentUpon>Import.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\RenameObject.aspx.cs">
+      <DependentUpon>RenameObject.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\RenameObject.aspx.designer.cs">
+      <DependentUpon>RenameObject.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\SourceTableForm.ascx.cs">
+      <DependentUpon>SourceTableForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\SourceTableForm.ascx.designer.cs">
+      <DependentUpon>SourceTableForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\Tables.aspx.cs">
+      <DependentUpon>Tables.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\Tables.aspx.designer.cs">
+      <DependentUpon>Tables.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\Tabs.ascx.cs">
+      <DependentUpon>Tabs.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\Tabs.ascx.designer.cs">
+      <DependentUpon>Tabs.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\UploadForm.ascx.cs">
+      <DependentUpon>UploadForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\UploadForm.ascx.designer.cs">
+      <DependentUpon>UploadForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Query\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Query\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Query\Results.aspx.cs">
+      <DependentUpon>Results.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Query\Results.aspx.designer.cs">
+      <DependentUpon>Results.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Schema\ColumnList.ascx.cs">
+      <DependentUpon>ColumnList.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Schema\ColumnList.ascx.designer.cs">
+      <DependentUpon>ColumnList.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Schema\DbObjectDetails.ascx.cs">
+      <DependentUpon>DbObjectDetails.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Schema\DbObjectDetails.ascx.designer.cs">
+      <DependentUpon>DbObjectDetails.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Schema\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Schema\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Schema\IndexList.ascx.cs">
+      <DependentUpon>IndexList.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Schema\IndexList.ascx.designer.cs">
+      <DependentUpon>IndexList.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Schema\ParameterList.ascx.cs">
+      <DependentUpon>ParameterList.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Schema\ParameterList.ascx.designer.cs">
+      <DependentUpon>ParameterList.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Schema\Peek.aspx.cs">
+      <DependentUpon>Peek.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Schema\Peek.aspx.designer.cs">
+      <DependentUpon>Peek.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="App_Masters\Basic\Basic.master.cs">
       <DependentUpon>Basic.master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="App_Masters\Basic.master.designer.cs">
+    <Compile Include="App_Masters\Basic\Basic.master.designer.cs">
       <DependentUpon>Basic.master</DependentUpon>
     </Compile>
     <Compile Include="Check.aspx.cs">
@@ -93,107 +324,36 @@
     <Compile Include="Check.aspx.designer.cs">
       <DependentUpon>Check.aspx</DependentUpon>
     </Compile>
+    <Compile Include="CheckPageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\CaptchaImage.cs" />
+    <Compile Include="Controls\CaptchaValidator.cs" />
+    <Compile Include="Controls\ExpressionPropertyField.cs" />
+    <Compile Include="Controls\Form.cs" />
     <Compile Include="Controls\JobStatus.cs" />
+    <Compile Include="Controls\Labels.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Labels.resx</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Query.cs" />
+    <Compile Include="Controls\UserStatus.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="CustomPageBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="CustomUserControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Jobs\ErrorForm.ascx.cs">
-      <DependentUpon>ErrorForm.ascx</DependentUpon>
+    <Compile Include="DomainApplicationBase.cs" />
+    <Compile Include="FederationApplicationBase.cs" />
+    <Compile Include="MasterPageBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Jobs\ErrorForm.ascx.designer.cs">
-      <DependentUpon>ErrorForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Jobs\ImportForm.ascx.cs">
-      <DependentUpon>ImportForm.ascx</DependentUpon>
+    <Compile Include="PageBase.cs">
       <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Jobs\ImportForm.ascx.designer.cs">
-      <DependentUpon>ImportForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Jobs\JobDetails.aspx.cs">
-      <DependentUpon>JobDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Jobs\JobDetails.aspx.designer.cs">
-      <DependentUpon>JobDetails.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Jobs\ExportForm.ascx.cs">
-      <DependentUpon>ExportForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Jobs\ExportForm.ascx.designer.cs">
-      <DependentUpon>ExportForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Jobs\QueryForm.ascx.cs">
-      <DependentUpon>QueryForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Jobs\QueryForm.ascx.designer.cs">
-      <DependentUpon>QueryForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\CommentsForm.ascx.cs">
-      <DependentUpon>CommentsForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\CommentsForm.ascx.designer.cs">
-      <DependentUpon>CommentsForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\CompressionForm.ascx.cs">
-      <DependentUpon>CompressionForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\CompressionForm.ascx.designer.cs">
-      <DependentUpon>CompressionForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\CopyTablePage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\DestinationTableForm.ascx.cs">
-      <DependentUpon>DestinationTableForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\DestinationTableForm.ascx.designer.cs">
-      <DependentUpon>DestinationTableForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\Export.aspx.cs">
-      <DependentUpon>Export.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\Export.aspx.designer.cs">
-      <DependentUpon>Export.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\FileFormatForm.ascx.cs">
-      <DependentUpon>FileFormatForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\FileFormatForm.ascx.designer.cs">
-      <DependentUpon>FileFormatForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\Import.aspx.cs">
-      <DependentUpon>Import.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\Import.aspx.designer.cs">
-      <DependentUpon>Import.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\SourceTableForm.ascx.cs">
-      <DependentUpon>SourceTableForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\SourceTableForm.ascx.designer.cs">
-      <DependentUpon>SourceTableForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\UploadForm.ascx.cs">
-      <DependentUpon>UploadForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\UploadForm.ascx.designer.cs">
-      <DependentUpon>UploadForm.ascx</DependentUpon>
     </Compile>
     <Compile Include="UI.master.cs">
       <DependentUpon>UI.master</DependentUpon>
@@ -208,34 +368,6 @@
     </Compile>
     <Compile Include="Controls\Footer.ascx.designer.cs">
       <DependentUpon>Footer.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Docs\Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Docs\Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Docs\Docs.master.cs">
-      <DependentUpon>Docs.master</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Docs\Docs.master.designer.cs">
-      <DependentUpon>Docs.master</DependentUpon>
-    </Compile>
-    <Compile Include="Jobs\CancelJob.aspx.cs">
-      <DependentUpon>CancelJob.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Jobs\CancelJob.aspx.designer.cs">
-      <DependentUpon>CancelJob.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Jobs\Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Jobs\Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="Controls\Menu.ascx.cs">
       <DependentUpon>Menu.ascx</DependentUpon>
@@ -254,99 +386,12 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="MyDB\Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\DropObject.aspx.cs">
-      <DependentUpon>DropObject.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\DropObject.aspx.designer.cs">
-      <DependentUpon>DropObject.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\RenameObject.aspx.cs">
-      <DependentUpon>RenameObject.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\RenameObject.aspx.designer.cs">
-      <DependentUpon>RenameObject.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\Tables.aspx.cs">
-      <DependentUpon>Tables.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\Tables.aspx.designer.cs">
-      <DependentUpon>Tables.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="MyDB\Tabs.ascx.cs">
-      <DependentUpon>Tabs.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MyDB\Tabs.ascx.designer.cs">
-      <DependentUpon>Tabs.ascx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Query\Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
+    <Compile Include="UserControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Query\Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Query\Results.aspx.cs">
-      <DependentUpon>Results.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Query\Results.aspx.designer.cs">
-      <DependentUpon>Results.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Schema\ColumnList.ascx.cs">
-      <DependentUpon>ColumnList.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Schema\ColumnList.ascx.designer.cs">
-      <DependentUpon>ColumnList.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Schema\DbObjectDetails.ascx.cs">
-      <DependentUpon>DbObjectDetails.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Schema\DbObjectDetails.ascx.designer.cs">
-      <DependentUpon>DbObjectDetails.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Schema\Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Schema\Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Schema\IndexList.ascx.cs">
-      <DependentUpon>IndexList.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Schema\IndexList.ascx.designer.cs">
-      <DependentUpon>IndexList.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Schema\ParameterList.ascx.cs">
-      <DependentUpon>ParameterList.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Schema\ParameterList.ascx.designer.cs">
-      <DependentUpon>ParameterList.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Schema\Peek.aspx.cs">
-      <DependentUpon>Peek.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Schema\Peek.aspx.designer.cs">
-      <DependentUpon>Peek.aspx</DependentUpon>
     </Compile>
     <Compile Include="Util\QueryEditorUtil.cs" />
+    <Compile Include="WebConfigHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Api\Default.aspx" />
@@ -354,6 +399,43 @@
     <Content Include="Api\V1\Jobs.svc" />
     <Content Include="Api\V1\Schema.svc" />
     <Content Include="Api\V1\Test.svc" />
+    <Content Include="Apps\Common\Captcha.aspx" />
+    <Content Include="Apps\Common\Error.aspx" />
+    <Content Include="Apps\Common\Feedback.aspx" />
+    <Content Include="Apps\Docs\Default.aspx" />
+    <Content Include="Apps\Docs\Docs.master" />
+    <Content Include="Apps\Docs\Web.config" />
+    <Content Include="Apps\Jobs\CancelJob.aspx" />
+    <Content Include="Apps\Jobs\Default.aspx" />
+    <Content Include="Apps\Jobs\ErrorForm.ascx" />
+    <Content Include="Apps\Jobs\ExportForm.ascx" />
+    <Content Include="Apps\Jobs\ImportForm.ascx" />
+    <Content Include="Apps\Jobs\JobDetails.aspx" />
+    <Content Include="Apps\Jobs\QueryForm.ascx" />
+    <Content Include="Apps\Jobs\Web.config" />
+    <Content Include="Apps\MyDB\CommentsForm.ascx" />
+    <Content Include="Apps\MyDB\CompressionForm.ascx" />
+    <Content Include="Apps\MyDB\Default.aspx" />
+    <Content Include="Apps\MyDB\DestinationTableForm.ascx" />
+    <Content Include="Apps\MyDB\DropObject.aspx" />
+    <Content Include="Apps\MyDB\Export.aspx" />
+    <Content Include="Apps\MyDB\FileFormatForm.ascx" />
+    <Content Include="Apps\MyDB\Import.aspx" />
+    <Content Include="Apps\MyDB\RenameObject.aspx" />
+    <Content Include="Apps\MyDB\SourceTableForm.ascx" />
+    <Content Include="Apps\MyDB\Tables.aspx" />
+    <Content Include="Apps\MyDB\Tabs.ascx" />
+    <Content Include="Apps\MyDB\UploadForm.ascx" />
+    <Content Include="Apps\MyDB\Web.config" />
+    <Content Include="Apps\Query\Default.aspx" />
+    <Content Include="Apps\Query\Results.aspx" />
+    <Content Include="Apps\Query\Web.config" />
+    <Content Include="Apps\Schema\ColumnList.ascx" />
+    <Content Include="Apps\Schema\DbObjectDetails.ascx" />
+    <Content Include="Apps\Schema\Default.aspx" />
+    <Content Include="Apps\Schema\IndexList.ascx" />
+    <Content Include="Apps\Schema\ParameterList.ascx" />
+    <Content Include="Apps\Schema\Peek.aspx" />
     <Content Include="App_Themes\Basic\Css\codemirror.css" />
     <Content Include="App_Themes\Basic\Css\docs.css" />
     <Content Include="App_Themes\Basic\Css\fonts.css" />
@@ -367,6 +449,7 @@
     <Content Include="App_Themes\Basic\Css\toolbar.css" />
     <Content Include="App_Themes\Basic\Icons\activatesuccess.png" />
     <Content Include="App_Themes\Basic\Icons\activateuser.png" />
+    <Content Include="App_Themes\Basic\Icons\api.png" />
     <Content Include="App_Themes\Basic\Icons\canceljob.png" />
     <Content Include="App_Themes\Basic\Icons\droptable.png" />
     <Content Include="App_Themes\Basic\Icons\email.png" />
@@ -386,38 +469,75 @@
     <Content Include="App_Themes\Basic\Icons\welcome.png" />
     <Content Include="Check.aspx" />
     <Content Include="Controls\Footer.ascx" />
-    <Content Include="Docs\Default.aspx" />
-    <Content Include="Jobs\CancelJob.aspx" />
-    <Content Include="Jobs\Default.aspx" />
-    <Content Include="Jobs\ErrorForm.ascx" />
-    <Content Include="Jobs\ImportForm.ascx" />
-    <Content Include="Jobs\JobDetails.aspx" />
     <Content Include="Controls\Menu.ascx" />
     <Content Include="Default.aspx" />
     <Content Include="Global.asax" />
-    <Content Include="Jobs\ExportForm.ascx" />
-    <Content Include="Jobs\QueryForm.ascx" />
-    <Content Include="MyDB\CommentsForm.ascx" />
-    <Content Include="MyDB\CompressionForm.ascx" />
-    <Content Include="MyDB\DestinationTableForm.ascx" />
-    <Content Include="MyDB\Export.aspx" />
-    <Content Include="MyDB\FileFormatForm.ascx" />
-    <Content Include="MyDB\Import.aspx" />
-    <Content Include="MyDB\Default.aspx" />
-    <Content Include="MyDB\DropObject.aspx" />
-    <Content Include="MyDB\RenameObject.aspx" />
-    <Content Include="MyDB\SourceTableForm.ascx" />
-    <Content Include="MyDB\Tables.aspx" />
-    <Content Include="MyDB\Tabs.ascx" />
-    <Content Include="MyDB\UploadForm.ascx" />
-    <Content Include="Query\Default.aspx" />
-    <Content Include="Query\Results.aspx" />
-    <Content Include="Schema\ColumnList.ascx" />
-    <Content Include="Schema\DbObjectDetails.ascx" />
-    <Content Include="Schema\Default.aspx" />
-    <Content Include="Schema\IndexList.ascx" />
-    <Content Include="Schema\ParameterList.ascx" />
-    <Content Include="Schema\Peek.aspx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.AccessControl\Jhu.Graywulf.AccessControl.csproj">
+      <Project>{da689d40-edcd-433d-8d9b-4e96829f8c6a}</Project>
+      <Name>Jhu.Graywulf.AccessControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
+      <Project>{57392DA3-E280-48EE-80C8-64E09FD8AFB5}</Project>
+      <Name>Jhu.Graywulf.Activities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
+      <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
+      <Name>Jhu.Graywulf.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Install\Jhu.Graywulf.Install.csproj">
+      <Project>{AC357A2C-5388-4D7F-B1AF-C78D9BF8326C}</Project>
+      <Name>Jhu.Graywulf.Install</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.IO\Jhu.Graywulf.IO.csproj">
+      <Project>{6797ED88-1D8C-491B-A036-4C42C4BF2EAF}</Project>
+      <Name>Jhu.Graywulf.IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Jobs\Jhu.Graywulf.Jobs.csproj">
+      <Project>{2BD2D467-D003-468D-9B97-83DDC6F2ED78}</Project>
+      <Name>Jhu.Graywulf.Jobs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Logging\Jhu.Graywulf.Logging.csproj">
+      <Project>{FD98FB58-A3E5-4D32-B6D6-3E20609C4D09}</Project>
+      <Name>Jhu.Graywulf.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.ParserLib\Jhu.Graywulf.ParserLib.csproj">
+      <Project>{4039B7D0-F8E5-49D8-A770-133DBED2EA75}</Project>
+      <Name>Jhu.Graywulf.ParserLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry.Enum\Jhu.Graywulf.Registry.Enum.csproj">
+      <Project>{f163a859-0fe2-4099-bd85-f61c9c05426a}</Project>
+      <Name>Jhu.Graywulf.Registry.Enum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry\Jhu.Graywulf.Registry.csproj">
+      <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
+      <Name>Jhu.Graywulf.Registry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
+      <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
+      <Name>Jhu.Graywulf.RemoteService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
+      <Project>{5868B518-CBFC-43FB-B9C8-C617A65121C4}</Project>
+      <Name>Jhu.Graywulf.Schema</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Sql\Jhu.Graywulf.Sql.csproj">
+      <Project>{AADA04EE-F578-4628-8AE0-D423BB94C738}</Project>
+      <Name>Jhu.Graywulf.Sql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web.Api\Jhu.Graywulf.Web.Api.csproj">
+      <Project>{975EE996-A41B-4C73-8562-E2B2035E8899}</Project>
+      <Name>Jhu.Graywulf.Web.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web.Controls\Jhu.Graywulf.Web.Controls.csproj">
+      <Project>{3ADB72A9-4417-4454-AA10-1AF3B2750A94}</Project>
+      <Name>Jhu.Graywulf.Web.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
+      <Project>{E9D182CF-746E-4E40-B01C-74A32FB70749}</Project>
+      <Name>Jhu.Graywulf.Web</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\Bootstrap\css\bootstrap-theme.css" />
@@ -735,124 +855,66 @@
     <Content Include="Scripts\SyntaxHighlighter\styles\shThemeMDUltra.css" />
     <Content Include="Scripts\SyntaxHighlighter\styles\shThemeMidnight.css" />
     <Content Include="Scripts\SyntaxHighlighter\styles\shThemeRDark.css" />
-    <Content Include="Templates\ActivationEmail.xml" />
-    <Content Include="Templates\ErrorFeedbackEmail.xml" />
-    <Content Include="Templates\FeedbackEmail.xml" />
-    <Content Include="Templates\RequestResetEmail.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.AccessControl\Jhu.Graywulf.AccessControl.csproj">
-      <Project>{da689d40-edcd-433d-8d9b-4e96829f8c6a}</Project>
-      <Name>Jhu.Graywulf.AccessControl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
-      <Project>{57392DA3-E280-48EE-80C8-64E09FD8AFB5}</Project>
-      <Name>Jhu.Graywulf.Activities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
-      <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
-      <Name>Jhu.Graywulf.Components</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Install\Jhu.Graywulf.Install.csproj">
-      <Project>{AC357A2C-5388-4D7F-B1AF-C78D9BF8326C}</Project>
-      <Name>Jhu.Graywulf.Install</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.IO\Jhu.Graywulf.IO.csproj">
-      <Project>{6797ED88-1D8C-491B-A036-4C42C4BF2EAF}</Project>
-      <Name>Jhu.Graywulf.IO</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Jobs\Jhu.Graywulf.Jobs.csproj">
-      <Project>{2BD2D467-D003-468D-9B97-83DDC6F2ED78}</Project>
-      <Name>Jhu.Graywulf.Jobs</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Logging\Jhu.Graywulf.Logging.csproj">
-      <Project>{FD98FB58-A3E5-4D32-B6D6-3E20609C4D09}</Project>
-      <Name>Jhu.Graywulf.Logging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.ParserLib\Jhu.Graywulf.ParserLib.csproj">
-      <Project>{4039B7D0-F8E5-49D8-A770-133DBED2EA75}</Project>
-      <Name>Jhu.Graywulf.ParserLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry.Enum\Jhu.Graywulf.Registry.Enum.csproj">
-      <Project>{f163a859-0fe2-4099-bd85-f61c9c05426a}</Project>
-      <Name>Jhu.Graywulf.Registry.Enum</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry\Jhu.Graywulf.Registry.csproj">
-      <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
-      <Name>Jhu.Graywulf.Registry</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
-      <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
-      <Name>Jhu.Graywulf.RemoteService</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
-      <Project>{5868B518-CBFC-43FB-B9C8-C617A65121C4}</Project>
-      <Name>Jhu.Graywulf.Schema</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Sql\Jhu.Graywulf.Sql.csproj">
-      <Project>{AADA04EE-F578-4628-8AE0-D423BB94C738}</Project>
-      <Name>Jhu.Graywulf.Sql</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web.Api\Jhu.Graywulf.Web.Api.csproj">
-      <Project>{975EE996-A41B-4C73-8562-E2B2035E8899}</Project>
-      <Name>Jhu.Graywulf.Web.Api</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web.Controls\Jhu.Graywulf.Web.Controls.csproj">
-      <Project>{3ADB72A9-4417-4454-AA10-1AF3B2750A94}</Project>
-      <Name>Jhu.Graywulf.Web.Controls</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
-      <Project>{E9D182CF-746E-4E40-B01C-74A32FB70749}</Project>
-      <Name>Jhu.Graywulf.Web</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Jobs\Web.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Docs\Web.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Docs\Docs.master" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="MyDB\Web.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Query\Web.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Schema\Web.config" />
-  </ItemGroup>
-  <ItemGroup>
+    <Content Include="Templates\Basic\ActivationEmail.xml" />
+    <Content Include="Templates\Basic\ErrorFeedbackEmail.xml" />
+    <Content Include="Templates\Basic\FeedbackEmail.xml" />
+    <Content Include="Templates\Basic\RequestResetEmail.xml" />
     <Content Include="UI.master" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Masters\Basic.master" />
-    <Content Include="App_Themes\Basic\Basic.skin" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Api\Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Scripts\Bootstrap\css\bootstrap.min.css.map" />
-    <Content Include="Scripts\Bootstrap\css\bootstrap.css.map" />
-    <Content Include="Scripts\Bootstrap\css\bootstrap-theme.min.css.map" />
-    <Content Include="Scripts\Bootstrap\css\bootstrap-theme.css.map" />
-    <None Include="Scripts\CodeMirror\mode\livescript\livescript.ls" />
     <Content Include="Web.original.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\Labels.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Labels.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Masters\Basic\Basic.master" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Themes\Basic\Basic.skin" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.woff2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.woff" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\Bootstrap\fonts\glyphicons-halflings-regular.eot" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\Bootstrap\css\bootstrap.min.css.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\Bootstrap\css\bootstrap.css.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\Bootstrap\css\bootstrap-theme.min.css.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\Bootstrap\css\bootstrap-theme.css.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\CodeMirror\mode\livescript\livescript.ls" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Scripts\jQuery\jquery-2.2.4.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Scripts\CodeMirror\keymap\lib\" />
+    <Content Include="Apps\Schema\Web.config" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -880,35 +942,7 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Web.UI
-
-REM Create symlinks to directories under shared
-
-IF EXIST $(ProjectDir)App_Masters rmdir $(ProjectDir)App_Masters /s /q
-mklink /D $(ProjectDir)App_Masters $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Masters
-
-IF EXIST $(ProjectDir)App_Themes rmdir $(ProjectDir)App_Themes /s /q
-mklink /D $(ProjectDir)App_Themes $(ProjectDir)..\Jhu.Graywulf.Web.Shared\App_Themes
-
-IF EXIST $(ProjectDir)Templates rmdir $(ProjectDir)Templates /s /q
-mklink /D $(ProjectDir)Templates $(ProjectDir)..\Jhu.Graywulf.Web.Shared\Templates
-
-REM IF EXIST $(ProjectDir)Docs\pages rmdir $(ProjectDir)Docs\pages /s /q
-REM mklink /D $(ProjectDir)Docs\pages $(SolutionDir)docs\pages
-
-REM Create symlinks to directories under packages
-
-IF EXIST $(ProjectDir)Scripts\jQuery rmdir $(ProjectDir)Scripts\jQuery /s /q
-mklink /D $(ProjectDir)Scripts\jQuery $(SolutionDir)packages\jQuery.NuGet.2.2.4\content\Scripts\jQuery
-
-IF EXIST $(ProjectDir)Scripts\Bootstrap rmdir $(ProjectDir)Scripts\Bootstrap /s /q
-mklink /D $(ProjectDir)Scripts\Bootstrap $(SolutionDir)packages\Bootstrap.NuGet.3.3.6\content\Scripts\Bootstrap
-
-IF EXIST $(ProjectDir)Scripts\CodeMirror rmdir $(ProjectDir)Scripts\CodeMirror /s /q
-mklink /D $(ProjectDir)Scripts\CodeMirror $(SolutionDir)packages\CodeMirror.NuGet.3.20.01\content\Scripts\CodeMirror
-
-IF EXIST $(ProjectDir)Scripts\SyntaxHighlighter rmdir $(ProjectDir)Scripts\SyntaxHighlighter /s /q
-mklink /D $(ProjectDir)Scripts\SyntaxHighlighter $(SolutionDir)packages\SyntaxHighlighter.NuGet.3.0.83.01\content\Scripts\SyntaxHighlighter</PreBuildEvent>
+    <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Web.UI</PreBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

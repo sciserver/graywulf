@@ -76,10 +76,7 @@ namespace Jhu.Graywulf.Web.UI
             // Initialize virtual paths
             virtualPathProvider = new EmbeddedVirtualPathProvider();
 
-            // Register controls
-            virtualPathProvider.RegisterVirtualPath("~/Captcha.aspx", typeof(Jhu.Graywulf.Web.UI.Captcha), ".aspx");
-            virtualPathProvider.RegisterVirtualPath("~/Feedback.aspx", typeof(Jhu.Graywulf.Web.UI.Feedback), ".aspx");
-            virtualPathProvider.RegisterVirtualPath("~/Error.aspx", typeof(Jhu.Graywulf.Web.UI.Error), ".aspx");
+            // Register controls here
 
             HostingEnvironment.RegisterVirtualPathProvider(virtualPathProvider);
 

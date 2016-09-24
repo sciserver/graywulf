@@ -1,0 +1,1 @@
+﻿<%@ Page Language="C#" Inherits="Jhu.Graywulf.Web.UI.Apps.Common.Captcha" Theme="" %>

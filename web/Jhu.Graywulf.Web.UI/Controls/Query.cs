@@ -83,7 +83,7 @@ namespace Jhu.Graywulf.Web.UI.Controls
         void edit_Click(object sender, EventArgs e)
         {
             Util.QueryEditorUtil.SetQueryInSession(this.Page, Text, null, true);
-            Page.Response.Redirect(Jhu.Graywulf.Web.UI.Query.Default.GetUrl(), false);
+            Page.Response.Redirect(Jhu.Graywulf.Web.UI.Apps.Query.Default.GetUrl(), false);
         }
 
         public override void RenderControl(HtmlTextWriter writer)
