@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            FederationContext.MyDBDataset.Tables.LoadAll();
+            FederationContext.MyDBDataset.Tables.LoadAll(true);
 
             // TODO: change this to support arbitrary sorting
             var tables = FederationContext.MyDBDataset.Tables.Values.OrderBy(t => t.UniqueKey).ToArray();

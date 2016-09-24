@@ -109,7 +109,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         public DatasetListResponse ListDatasets()
         {
             // Load all datasets and refresh cache by getting all items in list
-            FederationContext.SchemaManager.Datasets.LoadAll();
+            FederationContext.SchemaManager.Datasets.LoadAll(false);
 
             return new DatasetListResponse(FederationContext.SchemaManager.Datasets.Values);
         }
@@ -134,7 +134,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         public TableListResponse ListTables(string datasetName)
         {
             var dataset = GetDatasetInternal(datasetName);
-            dataset.Tables.LoadAll();
+            dataset.Tables.LoadAll(false);
 
             return new TableListResponse(dataset.Tables.Values);
         }
@@ -166,7 +166,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         public ViewListResponse ListViews(string datasetName)
         {
             var dataset = GetDatasetInternal(datasetName);
-            dataset.Views.LoadAll();
+            dataset.Views.LoadAll(false);
 
             return new ViewListResponse(dataset.Views.Values);
         }

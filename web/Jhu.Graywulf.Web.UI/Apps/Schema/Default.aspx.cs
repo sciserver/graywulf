@@ -23,9 +23,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         {
             if (!IsPostBack)
             {
-                // Load all datasets and refresh cache by getting all items in list
-                FederationContext.SchemaManager.Datasets.LoadAll();
-
                 DatabaseObject dbobj = null;
 
                 var dbobjid = (string)Request.QueryString["objid"] ?? SelectedSchemaObject;
@@ -83,9 +80,10 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             codedbli.Attributes.Add("class", "ToolbarControlHighlight");
             DatasetList.Items.Add(codedbli);
 
-            // Add other registered catalogs            
+            // Add other registered catalogs     
+            FederationContext.SchemaManager.Datasets.LoadAll(false);
+
             // TODO: this needs to be modified here, use flags instead of filtering on name!
-            FederationContext.SchemaManager.Datasets.LoadAll();
             foreach (var dsd in FederationContext.SchemaManager.Datasets.Values.Where(k =>
                 k.Name != Graywulf.Registry.Constants.UserDbName &&
                 k.Name != Graywulf.Registry.Constants.CodeDbName &&
@@ -165,38 +163,37 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         protected void LoadDataTypes(DatasetBase dataset)
         {
-            dataset.UserDefinedTypes.LoadAll();
+            dataset.UserDefinedTypes.LoadAll(dataset.IsMutable);
             LoadDatabaseObjects(dataset.UserDefinedTypes.Values);
         }
 
         protected void LoadTables(DatasetBase dataset)
         {
-            dataset.Tables.LoadAll();
+            dataset.Tables.LoadAll(dataset.IsMutable);
             LoadDatabaseObjects(dataset.Tables.Values);
         }
 
         protected void LoadViews(DatasetBase dataset)
         {
-            dataset.Views.LoadAll();
+            dataset.Views.LoadAll(dataset.IsMutable);
             LoadDatabaseObjects(dataset.Views.Values);
         }
 
         protected void LoadTableValuedFunctions(DatasetBase dataset)
         {
-
-            dataset.TableValuedFunctions.LoadAll();
+            dataset.TableValuedFunctions.LoadAll(dataset.IsMutable);
             LoadDatabaseObjects(dataset.TableValuedFunctions.Values);
         }
 
         protected void LoadScalarFunctions(DatasetBase dataset)
         {
-            dataset.ScalarFunctions.LoadAll();
+            dataset.ScalarFunctions.LoadAll(dataset.IsMutable);
             LoadDatabaseObjects(dataset.ScalarFunctions.Values);
         }
 
         protected void LoadStoredProcedures(DatasetBase dataset)
         {
-            dataset.StoredProcedures.LoadAll();
+            dataset.StoredProcedures.LoadAll(dataset.IsMutable);
             LoadDatabaseObjects(dataset.StoredProcedures.Values);
         }
 

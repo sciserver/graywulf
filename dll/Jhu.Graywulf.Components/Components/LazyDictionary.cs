@@ -294,9 +294,16 @@ namespace Jhu.Graywulf.Components
             return TryRemoveInternal(key, out value);
         }
 
-        public bool LoadAll()
+        public bool LoadAll(bool forceReload)
         {
-            return TryLoadAllInternal();
+            if (forceReload || !isAllLoaded)
+            {
+                return TryLoadAllInternal();
+            }
+            else
+            {
+                return true;
+            }
         }
 
         #region Internal logic

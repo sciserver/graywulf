@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
                 var ds = federationContext.MyDBDataset;
 
-                ds.Tables.LoadAll();
+                ds.Tables.LoadAll(true);
                 foreach (var t in ds.Tables.Values)
                 {
                     if (t.ObjectName.StartsWith(name))

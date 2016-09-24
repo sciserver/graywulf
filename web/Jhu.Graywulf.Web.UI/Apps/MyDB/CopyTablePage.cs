@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
         protected void RefreshTableList()
         {
-            FederationContext.MyDBDataset.Tables.LoadAll();
+            FederationContext.MyDBDataset.Tables.LoadAll(true);
 
             foreach (var table in FederationContext.MyDBDataset.Tables.Values.OrderBy(t => t.UniqueKey))
             {

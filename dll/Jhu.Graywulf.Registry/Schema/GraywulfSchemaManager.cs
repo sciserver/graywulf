@@ -99,8 +99,8 @@ namespace Jhu.Graywulf.Schema
                 // Make sure it's not a reserved database definition
                 if (!ReservedDatabaseDefinitions.Contains(dd.Name))
                 {
-                    var ds = CreateDataset(dd);
-
+                    // This will retrieve the dataset from the cache or force loading it
+                    var ds = Datasets[dd.Name];
                     yield return new KeyValuePair<string, DatasetBase>(ds.Name, ds);
                 }
             }

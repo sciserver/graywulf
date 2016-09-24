@@ -111,7 +111,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql.Test
         public void LoadAllTablesTest()
         {
             var ds = CreateTestDataset();
-            ds.Tables.LoadAll();
+            ds.Tables.LoadAll(true);
 
             Assert.AreEqual(5, ds.Tables.Count);    // Update this if test database schema changes
             Assert.IsTrue(ds.Tables.IsAllLoaded);
@@ -198,7 +198,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql.Test
         public void LoadAllViewsTest()
         {
             var ds = CreateTestDataset();
-            ds.Views.LoadAll();
+            ds.Views.LoadAll(true);
 
             Assert.AreEqual(10, ds.Views.Count);    // Update this if test database schema changes
             Assert.IsTrue(ds.Views.IsAllLoaded);
@@ -237,7 +237,7 @@ namespace Jhu.Graywulf.Schema.PostgreSql.Test
         {
             var ds = CreateTestDataset();
 
-            ds.StoredProcedures.LoadAll();
+            ds.StoredProcedures.LoadAll(true);
             Assert.AreEqual(2, ds.StoredProcedures.Count);    // Update this if test database schema changes
         }
 

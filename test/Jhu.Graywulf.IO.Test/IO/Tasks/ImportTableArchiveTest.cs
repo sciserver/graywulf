@@ -49,7 +49,7 @@ namespace Jhu.Graywulf.IO.Tasks
             var ds = IOTestDataset;
             ds.IsMutable = true;
 
-            ds.Tables.LoadAll();
+            ds.Tables.LoadAll(true);
             foreach (var t in ds.Tables.Values)
             {
                 if (t.ObjectName.StartsWith(name))

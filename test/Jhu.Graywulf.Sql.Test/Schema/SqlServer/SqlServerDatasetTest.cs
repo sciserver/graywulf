@@ -177,7 +177,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void LoadAllTypesTest()
         {
             var ds = CreateTestDataset();
-            ds.UserDefinedTypes.LoadAll();
+            ds.UserDefinedTypes.LoadAll(true);
 
             Assert.AreEqual(7, ds.UserDefinedTypes.Count);    // Update this if test database schema changes
             Assert.IsTrue(ds.UserDefinedTypes.IsAllLoaded);
@@ -240,7 +240,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void LoadAllTablesTest()
         {
             var ds = CreateTestDataset();
-            ds.Tables.LoadAll();
+            ds.Tables.LoadAll(true);
 
             Assert.AreEqual(7, ds.Tables.Count);    // Update this if test database schema changes
             Assert.IsTrue(ds.Tables.IsAllLoaded);
@@ -424,7 +424,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         public void LoadAllViewsTest()
         {
             var ds = CreateTestDataset();
-            ds.Views.LoadAll();
+            ds.Views.LoadAll(true);
 
             Assert.AreEqual(13, ds.Views.Count);    // Update this if test database schema changes
             Assert.IsTrue(ds.Views.IsAllLoaded);
@@ -524,7 +524,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            ds.TableValuedFunctions.LoadAll();
+            ds.TableValuedFunctions.LoadAll(true);
             Assert.AreEqual(4, ds.TableValuedFunctions.Count);    // Update this if test database schema changes
         }
 
@@ -584,7 +584,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            ds.ScalarFunctions.LoadAll();
+            ds.ScalarFunctions.LoadAll(true);
             Assert.AreEqual(3, ds.ScalarFunctions.Count);    // Update this if test database schema changes
         }
 
@@ -648,7 +648,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
 
-            ds.StoredProcedures.LoadAll();
+            ds.StoredProcedures.LoadAll(true);
             Assert.AreEqual(2, ds.StoredProcedures.Count);
         }
 
