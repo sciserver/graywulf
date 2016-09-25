@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Jhu.Graywulf.AccessControl;
+using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
@@ -29,6 +30,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                     m.RegisterVirtualPaths(vpp);
                 }
             }
+        }
+
+        public override void RegisterChecks(List<CheckRoutineBase> checks)
+        {
+            base.RegisterChecks(checks);
+
+            checks.Add(new UserDatabaseCheck(RegistryContext));
+            checks.Add(new TypeCheck(RegistryContext.Federation.FileFormatFactory));
+            checks.Add(new TypeCheck(RegistryContext.Federation.StreamFactory));
         }
 
         public override void OnUserArrived(UIApplicationBase application, GraywulfPrincipal principal)

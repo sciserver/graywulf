@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Web;
 using Jhu.Graywulf.Web.UI;
 using Jhu.Graywulf.Check;
 
@@ -10,11 +9,6 @@ namespace Jhu.Graywulf.Web.Check
     public class CheckPageBase : PageBase
     {
         private CheckRoutineExecutor checks;
-
-        protected CheckRoutineExecutor Checks
-        {
-            get { return checks; }
-        }
 
         protected override void OnError(EventArgs e)
         {
@@ -31,6 +25,18 @@ namespace Jhu.Graywulf.Web.Check
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
+            RegisterChecks(checks.Routines);
+
+            var application = (UIApplicationBase)HttpContext.Current.ApplicationInstance;
+
+            foreach (var apptype in application.Apps)
+            {
+                var app = (AppBase)Activator.CreateInstance(apptype);
+                app.RegistryContext = RegistryContext;
+                app.Initialize(application);
+                app.RegisterChecks(checks.Routines);
+            }
 
             // Generate a text exception
             if (Request.QueryString["break"] == null ? false : bool.Parse(Request.QueryString["break"]))
@@ -49,6 +55,10 @@ namespace Jhu.Graywulf.Web.Check
             checks.Execute(Response.Output);
 
             Response.End();
+        }
+
+        protected virtual void RegisterChecks(List<CheckRoutineBase> checks)
+        {
         }
     }
 }

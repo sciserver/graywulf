@@ -15,18 +15,20 @@ namespace Jhu.Graywulf.Web.Auth
 {
     public partial class Check : CheckPageBase
     {
-        protected void Page_Load()
+        protected override void RegisterChecks(List<CheckRoutineBase> checks)
         {
-            Checks.Routines.Add(new IisCheck());
-            Checks.Routines.Add(new IdentityCheck());
+            base.RegisterChecks(checks);
 
-            Checks.Routines.Add(new DatabaseCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.ConnectionString));
-            Checks.Routines.Add(new DatabaseCheck(Jhu.Graywulf.Logging.AppSettings.ConnectionString));
+            checks.Add(new IisCheck());
+            checks.Add(new IdentityCheck());
 
-            Checks.Routines.Add(new EntityCheck(RegistryContext, Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName));
-            Checks.Routines.Add(new EntityCheck(RegistryContext, Jhu.Graywulf.Registry.ContextManager.Configuration.DomainName));
+            checks.Add(new DatabaseCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.ConnectionString));
+            checks.Add(new DatabaseCheck(Jhu.Graywulf.Logging.AppSettings.ConnectionString));
 
-            Checks.Routines.Add(new EmailCheck(RegistryContext.Domain.ShortTitle, RegistryContext.Domain.Email, RegistryContext.Domain.Email));
+            checks.Add(new EntityCheck(RegistryContext, Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName));
+            checks.Add(new EntityCheck(RegistryContext, Jhu.Graywulf.Registry.ContextManager.Configuration.DomainName));
+
+            checks.Add(new EmailCheck(RegistryContext.Domain.ShortTitle, RegistryContext.Domain.Email, RegistryContext.Domain.Email));
 
             // TODO: Checks.Routines.Add(new IdentityProviderCheck());
         }
