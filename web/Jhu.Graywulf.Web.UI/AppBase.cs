@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Web.UI
         {
         }
 
-        public virtual void RegisterMenuButtons(UIApplicationBase application)
+        public virtual void RegisterButtons(UIApplicationBase application)
         {
             var button = new MenuButton();
             button.Text = Name;

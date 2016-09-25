@@ -1,9 +1,6 @@
 ﻿<%@ Master Language="C#" MasterPageFile="Basic.master" AutoEventWireup="true"
     CodeBehind="UI.master.cs" Inherits="Jhu.Graywulf.Web.UI.Masters.UI" %>
 
-<%@ Register Src="~/Controls/Menu.ascx" TagPrefix="jgwuc" TagName="Menu" %>
-<%@ Register Src="~/Controls/Footer.ascx" TagPrefix="jgwuc" TagName="Footer" %>
-
 <asp:Content runat="server" ContentPlaceHolderID="head">
     <asp:ContentPlaceHolder runat="server" ID="head" />
 </asp:Content>

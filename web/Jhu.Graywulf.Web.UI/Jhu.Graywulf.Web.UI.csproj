@@ -81,6 +81,7 @@
     <Compile Include="Apps\Api\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Common\App.cs" />
     <Compile Include="Apps\Common\Captcha.aspx.cs">
       <DependentUpon>Captcha.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -344,12 +345,18 @@
     <Compile Include="Controls\CaptchaImage.cs" />
     <Compile Include="Controls\CaptchaValidator.cs" />
     <Compile Include="Controls\ExpressionPropertyField.cs" />
+    <Compile Include="Controls\Footer.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Controls\Form.cs" />
     <Compile Include="Controls\JobStatus.cs" />
     <Compile Include="Controls\Labels.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Labels.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Menu.cs">
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\MenuButton.cs" />
     <Compile Include="Controls\Query.cs" />
@@ -369,20 +376,6 @@
     </Compile>
     <Compile Include="PageBase.cs">
       <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\Footer.ascx.cs">
-      <DependentUpon>Footer.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\Footer.ascx.designer.cs">
-      <DependentUpon>Footer.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Menu.ascx.cs">
-      <DependentUpon>Menu.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\Menu.ascx.designer.cs">
-      <DependentUpon>Menu.ascx</DependentUpon>
     </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -477,8 +470,6 @@
     <Content Include="App_Themes\Basic\Icons\userstatus.png" />
     <Content Include="App_Themes\Basic\Icons\welcome.png" />
     <Content Include="Check.aspx" />
-    <Content Include="Controls\Footer.ascx" />
-    <Content Include="Controls\Menu.ascx" />
     <Content Include="Default.aspx" />
     <Content Include="Global.asax" />
   </ItemGroup>

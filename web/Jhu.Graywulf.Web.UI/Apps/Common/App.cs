@@ -4,18 +4,16 @@ using System.Linq;
 using System.Web;
 using Jhu.Graywulf.Web.UI.Controls;
 
-namespace Jhu.Graywulf.Web.UI.Apps.Docs
+namespace Jhu.Graywulf.Web.UI.Apps.Common
 {
     public class App : AppBase
     {
         public override void RegisterButtons(UIApplicationBase application)
         {
-            base.RegisterButtons(application);
-
             application.RegisterFooterButton(new MenuButton()
             {
-                Text = "help",
-                NavigateUrl = "~/Apps/Docs"
+                Text = "feedback",
+                NavigateUrl = "~/Apps/Common/Feedback.aspx"
             });
         }
     }

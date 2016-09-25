@@ -10,6 +10,14 @@ namespace Jhu.Graywulf.Web.UI.Controls
         protected void Page_Load(object sender, EventArgs e)
         {
             var application = (UIApplicationBase)HttpContext.Current.ApplicationInstance;
+            var toolbar = new Toolbar()
+            {
+                SkinID = "Menu"
+            };
+            var span = new ToolbarSpan()
+            {
+                SkinID = "Menu"
+            };
 
             foreach (var button in application.MenuButtons)
             {
@@ -20,9 +28,11 @@ namespace Jhu.Graywulf.Web.UI.Controls
                     SkinID = "Menu"
                 };
 
-                var i = buttonsPlaceholder.Parent.Controls.IndexOf(buttonsPlaceholder);
-                buttonsPlaceholder.Parent.Controls.AddAt(i, b);
+                toolbar.Controls.Add(b);
             }
+
+            toolbar.Controls.Add(span);
+            this.Controls.Add(toolbar);
         }
     }
 }

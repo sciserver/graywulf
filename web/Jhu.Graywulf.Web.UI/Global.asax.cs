@@ -9,6 +9,7 @@ namespace Jhu.Graywulf.Web.UI
         {
             base.RegisterApps();
 
+            RegisterApp(typeof(Apps.Common.App));
             RegisterApp(typeof(Apps.Schema.App));
             RegisterApp(typeof(Apps.Query.App));
             RegisterApp(typeof(Apps.Jobs.App));

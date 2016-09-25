@@ -16,6 +16,7 @@ namespace Jhu.Graywulf.Web.UI
         private static List<Type> apps;
         private static List<Type> services;
         private static List<MenuButton> menuButtons;
+        private static List<MenuButton> footerButtons;
         private EmbeddedVirtualPathProvider virtualPathProvider;
         
         public List<Type> Apps
@@ -33,6 +34,11 @@ namespace Jhu.Graywulf.Web.UI
             get { return menuButtons; }
         }
 
+        public List<MenuButton> FooterButtons
+        {
+            get { return footerButtons; }
+        }
+
         protected EmbeddedVirtualPathProvider VirtualPathProvider
         {
             get { return virtualPathProvider; }
@@ -43,6 +49,7 @@ namespace Jhu.Graywulf.Web.UI
             apps = new List<Type>();
             services = new List<Type>();
             menuButtons = new List<MenuButton>();
+            footerButtons = new List<MenuButton>();
         }
 
         public UIApplicationBase()
@@ -108,7 +115,7 @@ namespace Jhu.Graywulf.Web.UI
             HostingEnvironment.RegisterVirtualPathProvider(virtualPathProvider);
             RegisterScripts();
             RegisterControls();
-            RegisterMenuButtons();
+            RegisterButtons();
             RegisterServices();
             RegisterApps();
         }
@@ -159,7 +166,7 @@ namespace Jhu.Graywulf.Web.UI
         {
         }
 
-        protected virtual void RegisterMenuButtons()
+        protected virtual void RegisterButtons()
         {
             var button = new MenuButton()
             {
@@ -180,12 +187,17 @@ namespace Jhu.Graywulf.Web.UI
 
             var app = (AppBase)Activator.CreateInstance(type);
             app.RegisterVirtualPaths(this, this.virtualPathProvider);
-            app.RegisterMenuButtons(this);
+            app.RegisterButtons(this);
         }
 
         public void RegisterMenuButton(MenuButton button)
         {
             menuButtons.Add(button);
+        }
+
+        public void RegisterFooterButton(MenuButton button)
+        {
+            footerButtons.Add(button);
         }
     }
 }
