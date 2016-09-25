@@ -2,7 +2,6 @@
     Inherits="Jhu.Graywulf.Web.UI.Apps.Query.Default" CodeBehind="Default.aspx.cs" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="head">
-    <link rel="stylesheet" href="../Scripts/CodeMirror/lib/codemirror.css">
     <script language="javascript">
         function refreshResults() {
             setTimeout(loadResults, 1000);

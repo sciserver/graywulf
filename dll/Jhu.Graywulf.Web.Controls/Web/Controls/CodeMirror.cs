@@ -5,6 +5,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Web.UI.HtmlControls;
 using System.ComponentModel;
 
 [assembly: WebResource("Jhu.Graywulf.Web.Controls.CodeMirror.js", "text/javascript", PerformSubstitution = true)]
@@ -100,6 +101,19 @@ namespace Jhu.Graywulf.Web.Controls
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            if (!Page.IsPostBack)
+            {
+                var link = new HtmlLink();
+                link.Href = "~/Scripts/CodeMirror/lib/codemirror.css";
+                link.Attributes["rel"] = "stylesheet";
+                Page.Header.Controls.AddAt(0, link);
+            }
         }
 
         protected override void OnPreRender(EventArgs e)
