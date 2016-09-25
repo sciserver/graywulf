@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Docs
     {
         public static string GetUrl()
         {
-            return "~/Apps.Docs/Default.aspx";
+            return "~/Apps/Docs/Default.aspx";
         }
 
         protected void Page_Load(object sender, EventArgs e)

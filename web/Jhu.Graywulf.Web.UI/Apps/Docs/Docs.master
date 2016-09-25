@@ -4,8 +4,8 @@
 <asp:Content ID="Content3" ContentPlaceHolderID="middle" runat="server">
     <div class="dock-left" style="width: 150px; margin-right: 8px">
         <h3 class="DocsItem">
-            <a id="A1" runat="server" href="~/Docs/Default.aspx">Documentation</a></h3>
-        <jgwc:SiteMap runat="server" RootPath="~/Docs/pages" />
+            <a id="A1" runat="server" href="<%= Default.GetUrl() %>">Documentation</a></h3>
+        <jgwc:SiteMap runat="server" RootPath="~/Docs" />
     </div>
     <div class="dock-fill" style="overflow: auto;">
         <asp:ContentPlaceHolder runat="server" ID="Text" />
