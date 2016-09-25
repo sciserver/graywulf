@@ -908,12 +908,12 @@
     <Content Include="Scripts\SyntaxHighlighter\styles\shThemeMDUltra.css" />
     <Content Include="Scripts\SyntaxHighlighter\styles\shThemeMidnight.css" />
     <Content Include="Scripts\SyntaxHighlighter\styles\shThemeRDark.css" />
-    <Content Include="Templates\Basic\ActivationEmail.xml" />
-    <Content Include="Templates\Basic\ErrorFeedbackEmail.xml" />
-    <Content Include="Templates\Basic\FeedbackEmail.xml" />
-    <Content Include="Templates\Basic\RequestResetEmail.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Templates\ActivationEmail.xml" />
+    <Content Include="Templates\ErrorFeedbackEmail.xml" />
+    <Content Include="Templates\FeedbackEmail.xml" />
+    <Content Include="Templates\RequestResetEmail.xml" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
