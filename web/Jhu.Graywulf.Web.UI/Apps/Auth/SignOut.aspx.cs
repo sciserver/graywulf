@@ -7,13 +7,13 @@ using System.Web.UI.WebControls;
 using System.Web.Security;
 using Jhu.Graywulf.Web.Security;
 
-namespace Jhu.Graywulf.Web.Auth
+namespace Jhu.Graywulf.Web.UI.Apps.Auth
 {
     public partial class SignOut : PageBase
     {
         public static string GetUrl(string returnUrl)
         {
-            return String.Format("~/SignOut.aspx?ReturnUrl={0}", returnUrl);
+            return String.Format("~/Apps/Auth/SignOut.aspx?ReturnUrl={0}", returnUrl);
         }
 
         protected void Page_Load(object sender, EventArgs e)

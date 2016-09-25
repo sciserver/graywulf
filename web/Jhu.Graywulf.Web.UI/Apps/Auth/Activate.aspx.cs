@@ -3,18 +3,18 @@ using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Web.Security;
 
-namespace Jhu.Graywulf.Web.Auth
+namespace Jhu.Graywulf.Web.UI.Apps.Auth
 {
     public partial class Activate : PageBase
     {
         public static string GetUrl()
         {
-            return "~/Activate.aspx";
+            return "~/Apps/Auth/Activate.aspx";
         }
 
         public static string GetUrl(string returnUrl)
         {
-            return String.Format("~/Activate.aspx?ReturnUrl={0}", returnUrl);
+            return String.Format("{0}?ReturnUrl={1}", GetUrl(), returnUrl);
         }
 
         protected Jhu.Graywulf.Registry.User user;
@@ -49,9 +49,9 @@ namespace Jhu.Graywulf.Web.Auth
                 }
             }
 
-            UserLink.NavigateUrl = Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl);
-            SignInLink.NavigateUrl = Jhu.Graywulf.Web.Auth.SignIn.GetUrl(ReturnUrl);
-            SignInLink2.NavigateUrl = Jhu.Graywulf.Web.Auth.SignIn.GetUrl(ReturnUrl);
+            UserLink.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.Auth.User.GetUrl(ReturnUrl);
+            SignInLink.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.Auth.SignIn.GetUrl(ReturnUrl);
+            SignInLink2.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.Auth.SignIn.GetUrl(ReturnUrl);
         }
 
         protected void Activate_Click(object sender, EventArgs e)
@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.Web.Auth
 
         protected void SignIn_Click(object sender, EventArgs e)
         {
-            Response.Redirect(Jhu.Graywulf.Web.Auth.SignIn.GetUrl(ReturnUrl), false);
+            Response.Redirect(Jhu.Graywulf.Web.UI.Apps.Auth.SignIn.GetUrl(ReturnUrl), false);
         }
     }
 }

@@ -5,13 +5,13 @@ using System.Security;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Web.Security;
 
-namespace Jhu.Graywulf.Web.Auth
+namespace Jhu.Graywulf.Web.UI.Apps.Auth
 {
     public partial class ChangePassword : PageBase
     {
         public static string GetUrl(string returnUrl)
         {
-            return String.Format("~/ChangePassword.aspx?ReturnUrl={0}", returnUrl);
+            return String.Format("~/Apps/Auth/ChangePassword.aspx?ReturnUrl={0}", returnUrl);
         }
 
         protected Jhu.Graywulf.Registry.User user;

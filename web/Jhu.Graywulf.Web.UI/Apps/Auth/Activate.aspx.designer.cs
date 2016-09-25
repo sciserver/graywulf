@@ -7,82 +7,82 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Jhu.Graywulf.Web.Auth {
+namespace Jhu.Graywulf.Web.UI.Apps.Auth {
     
     
-    public partial class RequestReset {
+    public partial class Activate {
         
         /// <summary>
-        /// RequestResetForm control.
+        /// ActivateUserForm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.Form RequestResetForm;
+        protected global::Jhu.Graywulf.Web.UI.Controls.Form ActivateUserForm;
         
         /// <summary>
-        /// EmailLabel control.
+        /// UserLink control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label EmailLabel;
+        protected global::System.Web.UI.WebControls.HyperLink UserLink;
         
         /// <summary>
-        /// Email control.
+        /// SignInLink control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox Email;
+        protected global::System.Web.UI.WebControls.HyperLink SignInLink;
         
         /// <summary>
-        /// EmailRequiredValidator control.
+        /// ActivationCodeLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator EmailRequiredValidator;
+        protected global::System.Web.UI.WebControls.Label ActivationCodeLabel;
         
         /// <summary>
-        /// EmailFormatValidator control.
+        /// ActivationCode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RegularExpressionValidator EmailFormatValidator;
+        protected global::System.Web.UI.WebControls.TextBox ActivationCode;
         
         /// <summary>
-        /// EmailValidator control.
+        /// ActivationCodeRequiredValidator control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator EmailValidator;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator ActivationCodeRequiredValidator;
         
         /// <summary>
-        /// Ok control.
+        /// ActivationCodeValidator control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Ok;
+        protected global::System.Web.UI.WebControls.CustomValidator ActivationCodeValidator;
         
         /// <summary>
-        /// Cancel control.
+        /// ActivateButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Cancel;
+        protected global::System.Web.UI.WebControls.Button ActivateButton;
         
         /// <summary>
         /// SuccessForm control.
@@ -91,15 +91,15 @@ namespace Jhu.Graywulf.Web.Auth {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.Form SuccessForm;
+        protected global::Jhu.Graywulf.Web.UI.Controls.Form SuccessForm;
         
         /// <summary>
-        /// SingInLink control.
+        /// SignInLink2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink SingInLink;
+        protected global::System.Web.UI.WebControls.HyperLink SignInLink2;
     }
 }

@@ -4,13 +4,13 @@ using System.IO;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Web.Security;
 
-namespace Jhu.Graywulf.Web.Auth
+namespace Jhu.Graywulf.Web.UI.Apps.Auth
 {
     public partial class RequestReset : PageBase
     {
         public static string GetUrl(string returnUrl)
         {
-            return String.Format("~/RequestReset.aspx?ReturnUrl={0}", returnUrl);
+            return String.Format("~/Apps/Auth/RequestReset.aspx?ReturnUrl={0}", returnUrl);
         }
 
         protected void Page_Load(object sender, EventArgs e)

@@ -1,8 +1,8 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="User.aspx.cs" Inherits="Jhu.Graywulf.Web.Auth.User"
-    MasterPageFile="~/Auth.master" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="User.aspx.cs" Inherits="Jhu.Graywulf.Web.UI.Apps.Auth.User"
+    MasterPageFile="~/App_Masters/Basic/Basic.master" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="middle">
-    <jgwc:Form runat="server" ID="UserForm" SkinID="User">
+    <jgwuc:Form runat="server" ID="UserForm" SkinID="User">
         <FormTemplate>
             <table runat="server" id="UsernameTable" class="FormTable">
                 <tr>
@@ -125,7 +125,7 @@
                         *
                     </td>
                     <td class="FormField">
-                        <jgwc:CaptchaImage runat="server" Height="64px" Width="200px" CssClass="Captcha"
+                        <jgwuc:CaptchaImage runat="server" Height="64px" Width="200px" CssClass="Captcha"
                             Digits="8" />
                     </td>
                 </tr>
@@ -137,7 +137,7 @@
                         <asp:TextBox ID="Captcha" runat="server" CssClass="FormField"></asp:TextBox>
                         <asp:RequiredFieldValidator ID="CaptchaRequiredValidator" runat="server" ControlToValidate="Captcha"
                             Display="Dynamic" ErrorMessage="&lt;br /&gt;Enter captcha" />
-                        <jgwc:CaptchaValidator ID="CaptchaValidator" runat="server" ControlToValidate="Captcha"
+                        <jgwuc:CaptchaValidator ID="CaptchaValidator" runat="server" ControlToValidate="Captcha"
                             Display="Dynamic" ErrorMessage="&lt;br /&gt;Reenter captcha" />
                     </td>
                 </tr>
@@ -151,8 +151,8 @@
                 <asp:Button ID="ChangePassword" runat="server" CausesValidation="false" Text="Change password"
                     OnClick="ChangePassword_Click" CssClass="FormButton" /></span>
         </ButtonsTemplate>
-    </jgwc:Form>
-    <jgwc:Form runat="server" ID="SuccessForm" SkinID="UserForm" Text="User data changed"
+    </jgwuc:Form>
+    <jgwuc:Form runat="server" ID="SuccessForm" SkinID="UserForm" Text="User data changed"
         Visible="false">
         <FormTemplate>
             <p>
@@ -161,5 +161,5 @@
         <ButtonsTemplate>
             <input type="button" runat="server" id="SuccessOK" value="OK" class="FormButton" />
         </ButtonsTemplate>
-    </jgwc:Form>
+    </jgwuc:Form>
 </asp:Content>

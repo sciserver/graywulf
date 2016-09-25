@@ -11,13 +11,13 @@ using Jhu.Graywulf.Web;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Web.Auth
+namespace Jhu.Graywulf.Web.UI.Apps.Auth
 {
     public partial class User : PageBase
     {
         public static string GetUrl(string returnUrl)
         {
-            return String.Format("~/User.aspx?ReturnUrl={0}", returnUrl);
+            return String.Format("~/Apps/Auth/User.aspx?ReturnUrl={0}", returnUrl);
         }
 
         protected Jhu.Graywulf.Registry.User user;
@@ -165,7 +165,7 @@ namespace Jhu.Graywulf.Web.Auth
 
         protected void ChangePassword_Click(object sender, EventArgs e)
         {
-            Response.Redirect(Jhu.Graywulf.Web.Auth.ChangePassword.GetUrl(ReturnUrl), false);
+            Response.Redirect(Jhu.Graywulf.Web.UI.Apps.Auth.ChangePassword.GetUrl(ReturnUrl), false);
         }
 
         protected void Cancel_Click(object sender, EventArgs e)

@@ -81,6 +81,52 @@
     <Compile Include="Apps\Api\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Auth\Activate.aspx.cs">
+      <DependentUpon>Activate.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Auth\Activate.aspx.designer.cs">
+      <DependentUpon>Activate.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Auth\App.cs" />
+    <Compile Include="Apps\Auth\ChangePassword.aspx.cs">
+      <DependentUpon>ChangePassword.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Auth\ChangePassword.aspx.designer.cs">
+      <DependentUpon>ChangePassword.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Auth\PageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Auth\RequestReset.aspx.cs">
+      <DependentUpon>RequestReset.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Auth\RequestReset.aspx.designer.cs">
+      <DependentUpon>RequestReset.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Auth\SignIn.aspx.cs">
+      <DependentUpon>SignIn.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Auth\SignIn.aspx.designer.cs">
+      <DependentUpon>SignIn.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Auth\SignOut.aspx.cs">
+      <DependentUpon>SignOut.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Auth\SignOut.aspx.designer.cs">
+      <DependentUpon>SignOut.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Auth\User.aspx.cs">
+      <DependentUpon>User.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Auth\User.aspx.designer.cs">
+      <DependentUpon>User.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Apps\Common\App.cs" />
     <Compile Include="Apps\Common\Captcha.aspx.cs">
       <DependentUpon>Captcha.aspx</DependentUpon>
@@ -396,11 +442,18 @@
     <Compile Include="WebConfigHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Api\V1\Auth.svc" />
     <Content Include="Api\V1\Data.svc" />
     <Content Include="Api\V1\Jobs.svc" />
     <Content Include="Api\V1\Schema.svc" />
     <Content Include="Api\V1\Test.svc" />
     <Content Include="Apps\Api\Default.aspx" />
+    <Content Include="Apps\Auth\Activate.aspx" />
+    <Content Include="Apps\Auth\ChangePassword.aspx" />
+    <Content Include="Apps\Auth\RequestReset.aspx" />
+    <Content Include="Apps\Auth\SignIn.aspx" />
+    <Content Include="Apps\Auth\SignOut.aspx" />
+    <Content Include="Apps\Auth\User.aspx" />
     <Content Include="Apps\Common\Captcha.aspx" />
     <Content Include="Apps\Common\Error.aspx" />
     <Content Include="Apps\Common\Feedback.aspx" />

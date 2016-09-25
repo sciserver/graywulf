@@ -1,8 +1,8 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Auth.master" AutoEventWireup="true"
-    Inherits="Jhu.Graywulf.Web.Auth.RequestReset" CodeBehind="RequestReset.aspx.cs" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/Basic.master" AutoEventWireup="true"
+    Inherits="Jhu.Graywulf.Web.UI.Apps.Auth.RequestReset" CodeBehind="RequestReset.aspx.cs" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="middle" runat="Server">
-    <jgwc:Form runat="server" ID="RequestResetForm" SkinID="RequestReset" Text="Password reset">
+    <jgwuc:Form runat="server" ID="RequestResetForm" SkinID="RequestReset" Text="Password reset">
         <FormTemplate>
             <p>
                 To request a password reset, please enter your e-mail address.</p>
@@ -31,8 +31,8 @@
             <asp:Button ID="Cancel" runat="server" CausesValidation="False" OnClick="Cancel_Click"
                 Text="Cancel" CssClass="FormButton" />
         </ButtonsTemplate>
-    </jgwc:Form>
-    <jgwc:Form runat="server" ID="SuccessForm" SkinID="RequestReset" Text="Password reset" Visible="false">
+    </jgwuc:Form>
+    <jgwuc:Form runat="server" ID="SuccessForm" SkinID="RequestReset" Text="Password reset" Visible="false">
         <FormTemplate>
             <p>
                 An e-mail to the address has been sent. Please follow the instructions
@@ -42,5 +42,5 @@
         </FormTemplate>
         <ButtonsTemplate>
         </ButtonsTemplate>
-    </jgwc:Form>
+    </jgwuc:Form>
 </asp:Content>

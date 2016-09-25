@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Jhu.Graywulf.Web.Auth {
+namespace Jhu.Graywulf.Web.UI.Apps.Auth {
     
     
     public partial class ChangePassword {
@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Web.Auth {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.Form ChangePasswordForm;
+        protected global::Jhu.Graywulf.Web.UI.Controls.Form ChangePasswordForm;
         
         /// <summary>
         /// OldPasswordRow control.
@@ -145,6 +145,6 @@ namespace Jhu.Graywulf.Web.Auth {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.Form SuccessForm;
+        protected global::Jhu.Graywulf.Web.UI.Controls.Form SuccessForm;
     }
 }

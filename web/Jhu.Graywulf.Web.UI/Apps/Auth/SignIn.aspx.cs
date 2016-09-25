@@ -10,13 +10,13 @@ using Jhu.Graywulf.Web;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Registry;
 
-namespace Jhu.Graywulf.Web.Auth
+namespace Jhu.Graywulf.Web.UI.Apps.Auth
 {
-    public partial class SignIn : Jhu.Graywulf.Web.Auth.PageBase
+    public partial class SignIn : PageBase
     {
         public static string GetUrl(string returnUrl)
         {
-            return String.Format("~/SignIn.aspx?ReturnUrl={0}", returnUrl);
+            return String.Format("~/Apps/Auth/SignIn.aspx?ReturnUrl={0}", returnUrl);
         }
 
         private AuthenticationResponse authResponse;
@@ -94,7 +94,7 @@ namespace Jhu.Graywulf.Web.Auth
         /// <param name="e"></param>
         protected void Register_Click(object sender, EventArgs e)
         {
-            Response.Redirect(Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl), false);
+            Response.Redirect(Jhu.Graywulf.Web.UI.Apps.Auth.User.GetUrl(ReturnUrl), false);
         }
 
         /// <summary>
@@ -150,14 +150,14 @@ namespace Jhu.Graywulf.Web.Auth
                 AuthorityName.Text = auth.DisplayName;
                 Identifier.Text = identity.Identifier;
 
-                RegisterLink2.NavigateUrl = Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl);
+                RegisterLink2.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.Auth.User.GetUrl(ReturnUrl);
             }
 
             SignInForm.Text = String.Format("Welcome to {0}", Application[Jhu.Graywulf.Web.UI.Constants.ApplicationShortTitle]);
 
-            RegisterLink.NavigateUrl = Jhu.Graywulf.Web.Auth.User.GetUrl(ReturnUrl);
-            ActivateLink.NavigateUrl = Jhu.Graywulf.Web.Auth.Activate.GetUrl(ReturnUrl);
-            ResetLink.NavigateUrl = Jhu.Graywulf.Web.Auth.RequestReset.GetUrl(ReturnUrl);
+            RegisterLink.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.Auth.User.GetUrl(ReturnUrl);
+            ActivateLink.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.Auth.Activate.GetUrl(ReturnUrl);
+            ResetLink.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.Auth.RequestReset.GetUrl(ReturnUrl);
         }
 
         #endregion

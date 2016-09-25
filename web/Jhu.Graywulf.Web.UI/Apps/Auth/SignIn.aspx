@@ -1,8 +1,8 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="SignIn.aspx.cs" Inherits="Jhu.Graywulf.Web.Auth.SignIn"
-    MasterPageFile="~/Auth.master" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="SignIn.aspx.cs" Inherits="Jhu.Graywulf.Web.UI.Apps.Auth.SignIn"
+    MasterPageFile="~/App_Masters/Basic/Basic.master" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="middle">
-    <jgwc:Form runat="server" ID="SignInForm" SkinID="SignIn" Text="Welcome">
+    <jgwuc:Form runat="server" ID="SignInForm" SkinID="SignIn" Text="Welcome">
         <FormTemplate>
             <asp:Panel runat="server" ID="SignInIntroPanel">
                 <p>
@@ -85,5 +85,5 @@
             <asp:Button runat="Server" ID="Register" Text="Register" CssClass="FormButton" OnClick="Register_Click"
                 CausesValidation="false" />
         </ButtonsTemplate>
-    </jgwc:Form>
+    </jgwuc:Form>
 </asp:Content>

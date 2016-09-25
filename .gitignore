@@ -23,6 +23,10 @@ web/Jhu.Graywulf.Web.Auth/Web.config
 web/Jhu.Graywulf.Web.Shared/web.config
 web/Jhu.Graywulf.Web.UI/Web.config
 
+## Linked from other projects
+
+
+
 
 ## Parser class is generated on build
 dll/Jhu.Graywulf.Sql/SqlParser/SqlParser.cs
@@ -31,9 +35,10 @@ dll/Jhu.Graywulf.Sql/SqlParser/SqlParser.cs
 ## installed by nuget
 web/Jhu.Graywulf.Web.Admin/App_Masters
 web/Jhu.Graywulf.Web.Admin/App_Themes
-web/Jhu.Graywulf.Web.Auth/App_Masters
-web/Jhu.Graywulf.Web.Auth/App_Themes
-web/Jhu.Graywulf.Web.Auth/Templates
+web/Jhu.Graywulf.Web.Auth/App_Masters/Basic
+web/Jhu.Graywulf.Web.Auth/App_Themes/Basic
+web/Jhu.Graywulf.Web.Auth/Apps/Common
+web/Jhu.Graywulf.Web.Auth/Apps/Auth
 web/Jhu.Graywulf.Web.UI/App_Masters
 web/Jhu.Graywulf.Web.UI/App_Themes
 web/Jhu.Graywulf.Web.UI/Templates

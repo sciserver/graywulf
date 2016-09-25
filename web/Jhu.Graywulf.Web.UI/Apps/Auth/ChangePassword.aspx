@@ -1,8 +1,8 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Auth.master" AutoEventWireup="true"
-    Inherits="Jhu.Graywulf.Web.Auth.ChangePassword" CodeBehind="ChangePassword.aspx.cs" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/Basic.master" AutoEventWireup="true"
+    Inherits="Jhu.Graywulf.Web.UI.Apps.Auth.ChangePassword" CodeBehind="ChangePassword.aspx.cs" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="middle" runat="Server">
-    <jgwc:Form runat="server" ID="ChangePasswordForm" SkinID="ChangePassword" Text="Change password">
+    <jgwuc:Form runat="server" ID="ChangePasswordForm" SkinID="ChangePassword" Text="Change password">
         <FormTemplate>
             <p>
                 You have requested password reset. Please enter a new password below.</p>
@@ -51,8 +51,8 @@
         <ButtonsTemplate>
             <asp:Button ID="Ok" runat="server" OnClick="Ok_Click" Text="OK" CssClass="FormButton" />
         </ButtonsTemplate>
-    </jgwc:Form>
-    <jgwc:Form runat="server" ID="SuccessForm" SkinID="ChangePassword" Text="Password changed" Visible="false">
+    </jgwuc:Form>
+    <jgwuc:Form runat="server" ID="SuccessForm" SkinID="ChangePassword" Text="Password changed" Visible="false">
         <FormTemplate>
             <p>
                 Your password has been reset successfuly.</p>
@@ -61,5 +61,5 @@
         </FormTemplate>
         <ButtonsTemplate>
         </ButtonsTemplate>
-    </jgwc:Form>
+    </jgwuc:Form>
 </asp:Content>

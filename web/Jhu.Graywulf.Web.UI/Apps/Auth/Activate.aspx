@@ -1,8 +1,8 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" Inherits="Jhu.Graywulf.Web.Auth.Activate"
-    MasterPageFile="~/Auth.master" CodeBehind="Activate.aspx.cs" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" Inherits="Jhu.Graywulf.Web.UI.Apps.Auth.Activate"
+    MasterPageFile="~/App_Masters/Basic/Basic.master" CodeBehind="Activate.aspx.cs" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="middle">
-    <jgwc:Form runat="server" ID="ActivateUserForm" Text="Activate user account" SkinID="Activate">
+    <jgwuc:Form runat="server" ID="ActivateUserForm" Text="Activate user account" SkinID="Activate">
         <FormTemplate>
             <p>
                 When you registered to
@@ -37,8 +37,8 @@
             <asp:Button ID="ActivateButton" runat="server" Text="Activate" OnClick="Activate_Click"
                 CssClass="FormButton" />
         </ButtonsTemplate>
-    </jgwc:Form>
-    <jgwc:Form runat="server" ID="SuccessForm" Text="Activate user account" SkinID="ActivateSuccess"
+    </jgwuc:Form>
+    <jgwuc:Form runat="server" ID="SuccessForm" Text="Activate user account" SkinID="ActivateSuccess"
         Visible="false">
         <FormTemplate>
             <p>
@@ -48,5 +48,5 @@
         <ButtonsTemplate>
             <asp:Button runat="server" CssClass="FormButton" Text="Sign in" OnClick="SignIn_Click" />
         </ButtonsTemplate>
-    </jgwc:Form>
+    </jgwuc:Form>
 </asp:Content>

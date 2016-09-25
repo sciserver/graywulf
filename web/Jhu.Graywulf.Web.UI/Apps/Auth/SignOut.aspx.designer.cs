@@ -7,27 +7,27 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Jhu.Graywulf.Web.Auth.Controls {
+namespace Jhu.Graywulf.Web.UI.Apps.Auth {
     
     
-    public partial class Menu {
+    public partial class SignOut {
         
         /// <summary>
-        /// Home control.
+        /// ShortTitle control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarButton Home;
+        protected global::System.Web.UI.WebControls.Label ShortTitle;
         
         /// <summary>
-        /// Back control.
+        /// Ok control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarButton Back;
+        protected global::System.Web.UI.HtmlControls.HtmlInputButton Ok;
     }
 }
