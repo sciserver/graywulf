@@ -280,45 +280,22 @@ namespace Jhu.Graywulf.Registry
         }
 
         #endregion
-
+        
         private DatabaseInstance GetSchemaDatabaseInstance()
         {
-            // TODO: make it a stored procedure
-            DatabaseVersion dv = null;
+            var dis = FindDatabaseInstances(Constants.SchemaDatabaseVersionName).FirstOrDefault();
 
-            LoadDatabaseVersions(false);
-            LoadDatabaseInstances(false);
-
-            if (DatabaseVersions.ContainsKey(Constants.SchemaDatabaseVersionName))
+            if (dis == null)
             {
-                dv = DatabaseVersions[Constants.SchemaDatabaseVersionName];
-            }
-            else if (DatabaseVersions.ContainsKey(Constants.ProdDatabaseVersionName))
-            {
-                dv = DatabaseVersions[Constants.ProdDatabaseVersionName];
-            }
-            else
-            {
-                dv = DatabaseVersions.Values.FirstOrDefault();
+                dis = FindDatabaseInstances(Constants.ProdDatabaseVersionName).FirstOrDefault();
             }
 
-            if (dv != null)
+            if (dis == null)
             {
-
-                var di = DatabaseInstances.Values.Where(i =>
-                    i.ServerInstance.Machine.DeploymentState == DeploymentState.Deployed &&
-                    i.ServerInstance.Machine.RunningState == RunningState.Running &&
-                    i.DeploymentState == DeploymentState.Deployed &&
-                    i.RunningState == RunningState.Attached &&
-                    i.DatabaseVersionReference.Guid == dv.Guid).ToArray();
-
-                if (di.Length > 0)
-                {
-                    return di[0];
-                }
+                dis = FindDatabaseInstances(null).FirstOrDefault();
             }
 
-            return null;
+            return dis;
         }
 
         /// <summary>
