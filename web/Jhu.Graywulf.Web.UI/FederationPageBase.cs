@@ -14,7 +14,7 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI
 {
-    public class CustomPageBase : Jhu.Graywulf.Web.UI.PageBase
+    public class FederationPageBase : Jhu.Graywulf.Web.UI.PageBase
     {
         private const string SessionSelectedSchemaObject = "Jhu.Graywulf.Web.UI.SelectedSchemaObject";
         private const string SessionLastQueryJobGuid = "Jhu.Graywulf.Web.UI.LastQueryJobGuid";
@@ -61,15 +61,6 @@ namespace Jhu.Graywulf.Web.UI
         {
             get { return (string)Session[SessionSelectedSchemaObject]; }
             set { Session[SessionSelectedSchemaObject] = value; }
-        }
-
-        // ---
-
-        protected string GetExportUrl(ExportJob job)
-        {
-            return String.Format(
-                "~/Download/{0}",
-                System.IO.Path.GetFileName(Jhu.Graywulf.Util.UriConverter.ToPath(job.Uri)));
         }
 
         protected override void OnPreRender(EventArgs e)

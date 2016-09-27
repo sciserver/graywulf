@@ -4,7 +4,7 @@ using schema = Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Schema
 {
-    public partial class ColumnList : CustomUserControlBase
+    public partial class ColumnList : FederationUserControlBase
     {
         protected schema::IColumns databaseObject;
 

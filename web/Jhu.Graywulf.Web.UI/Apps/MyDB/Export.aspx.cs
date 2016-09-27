@@ -14,7 +14,7 @@ using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public partial class Export : CustomPageBase
+    public partial class Export : FederationPageBase
     {
         public static string GetUrl()
         {

@@ -10,7 +10,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public class CopyTablePage : CustomPageBase
+    public class CopyTablePage : FederationPageBase
     {
         protected LinkButton toggleAdvanced;
         protected Panel detailsPanel;

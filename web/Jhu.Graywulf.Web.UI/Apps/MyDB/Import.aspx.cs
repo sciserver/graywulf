@@ -14,7 +14,7 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public partial class Import : CustomPageBase
+    public partial class Import : FederationPageBase
     {
         public static string GetUrl()
         {

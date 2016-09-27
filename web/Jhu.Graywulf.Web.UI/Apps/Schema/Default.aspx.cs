@@ -7,7 +7,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Schema
 {
-    public partial class Default : CustomPageBase
+    public partial class Default : FederationPageBase
     {
         public static string GetUrl()
         {
@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         public static string GetUrl(string objid)
         {
-            return String.Format("~/Apps/Schema/Default.aspx?objid={0}", objid);
+            return String.Format("{0}?objid={1}", GetUrl(), objid);
         }
 
         protected void Page_Load(object sender, EventArgs e)

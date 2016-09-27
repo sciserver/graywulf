@@ -409,14 +409,14 @@
     <Compile Include="Controls\UserStatus.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="CustomPageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="CustomUserControlBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="DomainApplicationBase.cs" />
     <Compile Include="FederationApplicationBase.cs" />
+    <Compile Include="FederationPageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="FederationUserControlBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="MasterPageBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

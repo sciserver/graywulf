@@ -8,7 +8,7 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Jobs
 {
-    public partial class QueryForm : CustomUserControlBase
+    public partial class QueryForm : FederationUserControlBase
     {
         private QueryJob job;
 
@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
 
         protected void Edit_Click(object sender, EventArgs e)
         {
-            ((CustomPageBase)Page).SetQueryInSession(job.Query, null, true);
+            ((FederationPageBase)Page).SetQueryInSession(job.Query, null, true);
             Response.Redirect(Jhu.Graywulf.Web.UI.Apps.Query.Default.GetUrl(), false);
         }
     }

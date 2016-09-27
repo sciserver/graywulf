@@ -8,7 +8,7 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Jobs
 {
-    public partial class ImportForm : CustomUserControlBase
+    public partial class ImportForm : FederationUserControlBase
     {
         private ImportJob job;
 

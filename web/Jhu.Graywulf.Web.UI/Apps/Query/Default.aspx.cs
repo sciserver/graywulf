@@ -11,7 +11,7 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Query
 {
-    public partial class Default : CustomPageBase
+    public partial class Default : FederationPageBase
     {
         public static string GetUrl()
         {

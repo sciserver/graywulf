@@ -11,7 +11,7 @@ using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public partial class UploadForm : CustomUserControlBase
+    public partial class UploadForm : FederationUserControlBase
     {
         public Uri Uri
         {

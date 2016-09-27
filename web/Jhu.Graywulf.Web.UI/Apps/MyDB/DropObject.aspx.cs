@@ -4,7 +4,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public partial class DropObject : CustomPageBase
+    public partial class DropObject : FederationPageBase
     {
         public static string GetUrl(string objid)
         {

@@ -11,7 +11,7 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public partial class DestinationTableForm : CustomUserControlBase
+    public partial class DestinationTableForm : FederationUserControlBase
     {
         public string TableName
         {

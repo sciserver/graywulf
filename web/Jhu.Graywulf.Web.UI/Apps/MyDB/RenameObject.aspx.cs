@@ -3,7 +3,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public partial class RenameObject : CustomPageBase
+    public partial class RenameObject : FederationPageBase
     {
         public static string GetUrl(string objid)
         {

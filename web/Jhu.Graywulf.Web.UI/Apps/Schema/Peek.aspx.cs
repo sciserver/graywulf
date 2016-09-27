@@ -13,7 +13,7 @@ using Jhu.Graywulf.Data;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Schema
 {
-    public partial class Peek : CustomPageBase
+    public partial class Peek : FederationPageBase
     {
         public static string GetUrl(string objid)
         {

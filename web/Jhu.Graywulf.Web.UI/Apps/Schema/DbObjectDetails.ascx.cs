@@ -6,7 +6,7 @@ using Jhu.Graywulf.Web.Controls;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Schema
 {
-    public partial class DbObjectDetails : CustomUserControlBase
+    public partial class DbObjectDetails : FederationUserControlBase
     {
         private string databaseObjectID;
 

@@ -10,7 +10,7 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public partial class FileFormatForm : CustomUserControlBase
+    public partial class FileFormatForm : FederationUserControlBase
     {
         public DataFileMode FileMode
         {

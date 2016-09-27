@@ -5,7 +5,7 @@ using Jhu.Graywulf.Web;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public partial class Default : CustomPageBase
+    public partial class Default : FederationPageBase
     {
         public static string GetUrl()
         {
