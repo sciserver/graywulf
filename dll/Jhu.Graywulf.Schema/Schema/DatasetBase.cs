@@ -364,6 +364,17 @@ namespace Jhu.Graywulf.Schema
                 objectName);
         }
 
+        protected virtual void SplitObjectUniqueKey(string objectKey, out DatabaseObjectType objectType, out string datasetName, out string databaseName, out string schemaName, out string objectName)
+        {
+            string[] parts = objectKey.Split('|');
+
+            objectType = (DatabaseObjectType)Enum.Parse(typeof(DatabaseObjectType), parts[0]);
+            datasetName = parts[1];
+            databaseName = parts[2];
+            schemaName = parts[3];
+            objectName = parts[4];
+        }
+
         /// <summary>
         /// Returns a unique key for a database object that can be used
         /// in web urls, etc.
@@ -398,6 +409,31 @@ namespace Jhu.Graywulf.Schema
 
         #endregion
         #region Object loading functions
+
+        public DatabaseObject GetObject(string objectKey)
+        {
+            DatabaseObjectType objectType;
+            string datasetName, databaseName, schemaName, objectName;
+            SplitObjectUniqueKey(objectKey, out objectType, out datasetName, out databaseName, out schemaName, out objectName);
+
+            switch (Constants.SimpleDatabaseObjectTypes[objectType])
+            {
+                case DatabaseObjectType.DataType:
+                    return userDefinedTypes[objectKey];
+                case DatabaseObjectType.Table:
+                    return tables[objectKey];
+                case DatabaseObjectType.View:
+                    return views[objectKey];
+                case DatabaseObjectType.TableValuedFunction:
+                    return tableValuedFunctions[objectKey];
+                case DatabaseObjectType.ScalarFunction:
+                    return scalarFunctions[objectKey];
+                case DatabaseObjectType.StoredProcedure:
+                    return storedProcedures[objectKey];
+                default:
+                    throw new NotImplementedException();
+            }
+        }
 
         public DatabaseObject GetObject(string databaseName, string schemaName, string objectName)
         {
