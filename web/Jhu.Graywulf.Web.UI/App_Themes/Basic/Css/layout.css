@@ -14,7 +14,9 @@ body
 }
 .dock-scroll
 {
-    overflow: auto;
+    overflow-y: auto;
+    padding-right: 8px;
+    margin-right: 0px;
 }
 table.Layout
 {

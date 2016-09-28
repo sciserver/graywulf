@@ -1,35 +1,34 @@
-﻿h3.DetailsTitle
-{
+﻿h3.DetailsTitle {
     margin: 8px;
 }
-h3.DetailsTitle img
-{
-    vertical-align: middle;
-    margin-right: 8px;
-}
-div.DetailsFormFrame
-{
+
+    h3.DetailsTitle img {
+        vertical-align: middle;
+        margin-right: 8px;
+    }
+
+div.DetailsFormFrame {
     border: 1px solid #C0C0C0;
     padding: 8px;
 }
-table.DetailsForm
-{
+
+table.DetailsForm {
     width: 100%;
     border-collapse: collapse;
     border: 0px;
     font-family: Calibri, Arial, Helvetica, sans-serif;
     font-size: 14px;
 }
-div.FormFrame
-{    
-    padding:8px;
+
+div.FormFrame {
+    padding: 8px;
 }
-table.FormTable
-{
+
+table.FormTable {
     width: 100%;
 }
-table.Form
-{
+
+table.Form {
     border-collapse: collapse;
     border: 0px;
     width: 640px;
@@ -38,14 +37,14 @@ table.Form
     margin-top: 48px;
     background-color: #FFFFFF;
 }
-td.FormIcon
-{
+
+td.FormIcon {
     width: 140px;
     padding-right: 10px;
     vertical-align: top;
 }
-td.FormHeadline
-{
+
+td.FormHeadline {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 16px;
     font-weight: bold;
@@ -53,35 +52,59 @@ td.FormHeadline
     margin-bottom: 8px;
     padding-bottom: 4px;
 }
-td.FormLabel
-{
+
+td.FormLabel {
     width: 180px;
     vertical-align: top;
     padding-top: 8px;
 }
-td.FormField
-{
+
+td.FormField {
     width: auto;
     vertical-align: top;
     padding-top: 8px;
 }
-td.FormLabel img, td.FormField img
-{
-    vertical-align: bottom;
-}
-input.FormField, select.FormField, textarea.FormField
-{
+
+    td.FormLabel img, td.FormField img {
+        vertical-align: bottom;
+    }
+
+input.FormField, select.FormField, textarea.FormField, div.FormField {
     border: 1px solid #000000;
     font-family: Calibri, Arial, Helvetica, sans-serif;
     font-size: 14px;
     width: 200px;
 }
-span.FormValidator
-{
+
+ul.FormField {
+    padding-left: 4px;
+    height: 114px;
+    overflow-y: scroll;
+    margin-bottom: 0px;
+}
+
+    ul.FormField li {
+        width: 140px;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+        ul.FormField li input {
+            margin-left: 2px;
+            margin-right: 6px;
+            margin-top: 6px;
+            margin-bottom: 6px;
+        }
+
+        ul.FormField li label {
+            font-weight: normal;
+        }
+
+span.FormValidator {
     color: #FF0000;
 }
-td.FormButton
-{
+
+td.FormButton {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 16px;
     font-weight: bold;
@@ -91,8 +114,8 @@ td.FormButton
     padding-bottom: 8px;
     text-align: center;
 }
-.CodeMirror-scroll
-{
+
+.CodeMirror-scroll {
     height: 100%;
     position: absolute;
     top: 0;
@@ -100,44 +123,44 @@ td.FormButton
     left: 0;
     right: 0;
 }
-p.FormButtons
-{
+
+p.FormButtons {
     text-align: center;
     margin: 8px 4px 4px 4px;
 }
-input.FormButton, input.FormButtonNarrow, input.FormButtonIcon
-{
+
+input.FormButton, input.FormButtonNarrow, input.FormButtonIcon {
     border: 2px solid #C0C0C0;
     height: 26px;
     font-family: Calibri, Arial, Helvetica, Sans-Serif;
     font-weight: bold;
     font-size: 14px;
 }
-input.FormButton
-{
+
+input.FormButton {
     width: 120px;
 }
-input.FormButtonNarrow
-{
+
+input.FormButtonNarrow {
     width: 80px;
 }
-input.FormButtonIcon
-{
+
+input.FormButtonIcon {
     width: 40px;
 }
-p.FormMessage
-{
+
+p.FormMessage {
     text-align: center;
     font-weight: bold;
     color: #FF0000;
     margin: 8px 4px 4px 4px;
 }
-img.Captcha
-{
+
+img.Captcha {
     border: 1px solid #000000;
 }
-td.FormList
-{
+
+td.FormList {
     width: 100%;
     border: 1px solid #C0C0C0;
     overflow: auto;

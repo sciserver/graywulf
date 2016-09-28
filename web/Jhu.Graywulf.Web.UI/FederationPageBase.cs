@@ -62,12 +62,5 @@ namespace Jhu.Graywulf.Web.UI
             get { return (string)Session[SessionSelectedSchemaObject]; }
             set { Session[SessionSelectedSchemaObject] = value; }
         }
-
-        protected override void OnPreRender(EventArgs e)
-        {
-            Page.DataBind();
-
-            base.OnPreRender(e);
-        }
     }
 }
