@@ -1,4 +1,4 @@
-﻿Sys.Application.add_load(function () {
+﻿function resizePanels() {
     (function ($) {
 
         $.fn.padding = function () {
@@ -52,13 +52,7 @@
     })(jQuery);
 
     $(".dock-container").each(dockContents);
-});
-
-$(document).ready(function () {
-    $(window).resize(function () {
-        $(".dock-container").each(dockContents);
-    });
-});
+}
 
 function dockContents(idx, element) {
 
@@ -137,3 +131,12 @@ function dockContents(idx, element) {
         }
     }
 }
+
+Sys.WebForms.PageRequestManager.getInstance().add_pageLoaded(resizePanels);
+
+$(document).ready(function () {
+    $(window).resize(function () {
+        $(".dock-container").each(dockContents);
+    });
+});
+
