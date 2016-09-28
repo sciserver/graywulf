@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Schema
         Unknown = 0,
         DataType = 1,
         Table = 2,
-        View = 3,
+        View = 4,
         Function = 8,
         SqlTableValuedFunction = 16,
         SqlInlineTableValuedFunction = 32,
