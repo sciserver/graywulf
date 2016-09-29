@@ -7,29 +7,20 @@ using System.Web.UI;
 
 namespace Jhu.Graywulf.Web.Scripts
 {
-    public class DockingPanel : Script
+    public class DockingPanel : ScriptLibrary
     {
-        public override string Name
+        public override Script[] Scripts
         {
             get
             {
-                return "dockingPanel";
-            }
-        }
-
-        public override ScriptResourceDefinition Mapping
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public override ScriptReference Reference
-        {
-            get
-            {
-                return new ScriptReference("Jhu.Graywulf.Web.Controls.DockingPanel.js", "Jhu.Graywulf.Web.Controls");
+                return new[] {
+                    new Script()
+                    {
+                        Name = "dockingPanel",
+                        Mapping = null,
+                        Reference = new ScriptReference("Jhu.Graywulf.Web.Controls.DockingPanel.js", "Jhu.Graywulf.Web.Controls")
+                    }
+                };
             }
         }
     }

@@ -150,8 +150,10 @@ namespace Jhu.Graywulf.Web.UI
 
         protected virtual void RegisterScripts()
         {
-            Scripts.Script.RegisterMapping(new Scripts.JQuery());
-            Scripts.Script.RegisterMapping(new Scripts.Bootstrap());
+            Scripts.ScriptLibrary.RegisterMappings(new Scripts.JQuery());
+            Scripts.ScriptLibrary.RegisterMappings(new Scripts.JQueryValidation());
+            Scripts.ScriptLibrary.RegisterMappings(new Scripts.Bootstrap());
+            Scripts.ScriptLibrary.RegisterMappings(new Scripts.DockingPanel());
         }
 
         protected virtual void RegisterControls()

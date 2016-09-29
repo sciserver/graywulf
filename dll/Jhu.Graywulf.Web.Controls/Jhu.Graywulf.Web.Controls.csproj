@@ -74,8 +74,10 @@
     <Compile Include="Web\Controls\UsageBar.cs" />
     <Compile Include="Web\Scripts\Bootstrap.cs" />
     <Compile Include="Web\Scripts\DockingPanel.cs" />
+    <Compile Include="Web\Scripts\JQueryValidation.cs" />
     <Compile Include="Web\Scripts\JQuery.cs" />
     <Compile Include="Web\Scripts\Script.cs" />
+    <Compile Include="Web\Scripts\ScriptLibrary.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">

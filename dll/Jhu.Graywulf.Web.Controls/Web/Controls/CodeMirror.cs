@@ -130,7 +130,7 @@ $find('{0}${1}').onBeforeSubmit.call($find('{0}${1}'));
                 var scriptManager = ScriptManager.GetCurrent(this.Page);
                 if (scriptManager != null)
                 {
-                    Scripts.Script.Register(scriptManager, new Scripts.JQuery());
+                    Scripts.ScriptLibrary.RegisterReferences(scriptManager, new Scripts.JQuery());
                     scriptManager.RegisterScriptControl(this);
                 }
                 else

@@ -862,6 +862,12 @@
     <Content Include="Scripts\CodeMirror\theme\vibrant-ink.css" />
     <Content Include="Scripts\CodeMirror\theme\xq-dark.css" />
     <Content Include="Scripts\CodeMirror\theme\xq-light.css" />
+    <Content Include="Scripts\jQuery-Validation-Unobtrusive\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jQuery-Validation-Unobtrusive\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\jQuery-Validation\additional-methods.js" />
+    <Content Include="Scripts\jQuery-Validation\additional-methods.min.js" />
+    <Content Include="Scripts\jQuery-Validation\jquery.validate.js" />
+    <Content Include="Scripts\jQuery-Validation\jquery.validate.min.js" />
     <Content Include="Scripts\jQuery\jquery-2.2.4.js" />
     <Content Include="Scripts\jQuery\jquery-2.2.4.min.js" />
     <Content Include="Scripts\SyntaxHighlighter\scripts\shAutoloader.js" />
