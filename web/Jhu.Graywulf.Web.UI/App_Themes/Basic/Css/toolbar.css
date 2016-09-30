@@ -1,20 +1,17 @@
-﻿table.Toolbar
-{
+﻿table.Toolbar {
     width: 100%;
     border: 0px;
     border-collapse: collapse;
 }
 
-td.ToolbarControl, td.ToolbarButton, td.ToolbarButtonHover, td.ToolbarButtonDisabled
-{
+td.ToolbarControl, td.ToolbarButton, td.ToolbarButtonHover, td.ToolbarButtonDisabled {
     border-left: 8px solid #FFFFFF;
     border-right: 8px solid #FFFFFF;
     border-bottom: 8px solid #FFFFFF;
     border-top: 0px;
 }
 
-td.ToolbarControl
-{
+td.ToolbarControl {
     text-align: left;
     vertical-align: middle;
     font-family: Calibri, Arial, Helvetica, Sans-Serif;
@@ -22,53 +19,101 @@ td.ToolbarControl
     background-color: #D0D0D0;
 }
 
-option.ToolbarControlHighlight
-{
+option.ToolbarControlHighlight {
     background-color: #D0D0FF;
 }
 
-td.ToolbarButton, td.ToolbarButtonHover, td.ToolbarButtonDisabled
-{
+td.ToolbarButton, td.ToolbarButtonHover, td.ToolbarButtonDisabled {
     width: 96px;
     vertical-align: middle;
     text-align: right;
     padding-left: 8px;
     padding-right: 8px;
     font-family: Calibri, Arial, Helvetica, Sans-Serif;
-    font-weight:bold;
+    font-weight: bold;
     font-size: 14px;
     cursor: hand;
 }
 
-input.ToolbarControl, select.ToolbarControl, span.ToolbarControl
-{
+input.ToolbarControl, select.ToolbarControl, span.ToolbarControl {
     border: 1px solid #000000;
     font-family: Calibri, Arial, Helvetica, sans-serif;
     font-size: 14px;
 }
-span.ToolbarControl
-{
+
+span.ToolbarControl {
     padding: 1px;
 }
 
-td.ToolbarButton
-{
+td.ToolbarButton {
     background-color: #808080;
     color: #FFFFFF;
 }
 
-td.ToolbarButtonHover
-{
+td.ToolbarButtonHover {
     background-color: #000080;
     color: #FFFFFF;
 }
 
-td.ToolbarButtonDisabled
-{
+td.ToolbarButtonDisabled {
     background-color: #E0E0E0;
     color: #FFFFFF;
 }
-.Path
-{
+
+.Path {
     margin-left: 12px;
 }
+
+/* new toolbar */
+
+div.ToolbarFrame {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+div.Toolbar {
+    display:table-row;
+    width: 100%;
+}
+
+div.ToolbarElement, a.ToolbarButton {
+    display: table-cell;
+    border-left: solid 8px #FFFFFF;
+    border-right: solid 8px #FFFFFF;
+    border-bottom: solid 8px #FFFFFF;
+    width: 120px;
+    height: 38px;
+}
+
+div.ToolbarElement {
+    text-align: left;
+    vertical-align: middle;
+    font-family: Calibri, Arial, Helvetica, Sans-Serif;
+    font-size: 12px;
+    background-color: #D0D0D0;
+}
+
+a.ToolbarButton {
+    background-color: #808080;
+    color: #FFFFFF;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-bottom: 4px;
+    vertical-align: bottom;
+    text-align: right;
+    font-family: Calibri, Arial, Helvetica, Sans-Serif;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+    a.ToolbarButton:hover {
+        background-color: #000080;
+        color: #FFFFFF;
+    }
+
+    a.ToolbarButton:disabled {
+        background-color: #E0E0E0;
+        color: #FFFFFF;
+    }
