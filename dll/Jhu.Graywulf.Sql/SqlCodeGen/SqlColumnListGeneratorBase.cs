@@ -12,18 +12,16 @@ namespace Jhu.Graywulf.SqlCodeGen
         private const string columnNull = " NULL";
         private const string columnNotNull = " NOT NULL";
 
-        private TableReference table;
+        private List<ColumnReference> columns;
         private string tableAlias;
         private string joinedTableAlias;
-        private ColumnContext columnContext;
         private ColumnListType listType;
         private ColumnListNullType nullType;
-        private bool leadingComma;
+        private bool leadingSeparator;
 
-        public TableReference Table
+        public List<ColumnReference> Columns
         {
-            get { return table; }
-            set { table = value; }
+            get { return columns; }
         }
 
         public string TableAlias
@@ -38,12 +36,6 @@ namespace Jhu.Graywulf.SqlCodeGen
             set { joinedTableAlias = value; }
         }
 
-        public ColumnContext ColumnContext
-        {
-            get { return columnContext; }
-            set { columnContext = value; }
-        }
-
         public ColumnListType ListType
         {
             get { return listType; }
@@ -56,10 +48,10 @@ namespace Jhu.Graywulf.SqlCodeGen
             set { nullType = value; }
         }
 
-        public bool LeadingComma
+        public bool LeadingSeparator
         {
-            get { return leadingComma; }
-            set { leadingComma = value; }
+            get { return leadingSeparator; }
+            set { leadingSeparator = value; }
         }
 
         protected SqlColumnListGeneratorBase()
@@ -67,32 +59,21 @@ namespace Jhu.Graywulf.SqlCodeGen
             InitializeMembers();
         }
 
-        protected SqlColumnListGeneratorBase(TableReference table, ColumnContext context)
+        protected SqlColumnListGeneratorBase(IEnumerable<ColumnReference> columns)
         {
             InitializeMembers();
 
-            this.table = table;
-            this.columnContext = context;
-        }
-
-        protected SqlColumnListGeneratorBase(TableReference table, ColumnContext context, ColumnListType listType)
-        {
-            InitializeMembers();
-
-            this.table = table;
-            this.columnContext = context;
-            this.listType = listType;
+            this.columns = new List<ColumnReference>(columns);
         }
 
         private void InitializeMembers()
         {
-            this.table = null;
-            this.tableAlias = "";
-            this.joinedTableAlias = "";
-            this.columnContext = ColumnContext.Default;
-            this.listType = ColumnListType.ForSelectWithOriginalNameNoAlias;
+            this.columns = new List<ColumnReference>();
+            this.tableAlias = null;
+            this.joinedTableAlias = null;
+            this.listType = ColumnListType.SelectWithOriginalNameNoAlias;
             this.nullType = ColumnListNullType.Defined;
-            this.leadingComma = false;
+            this.leadingSeparator = false;
         }
 
         #region Column name escaping
@@ -125,7 +106,9 @@ namespace Jhu.Graywulf.SqlCodeGen
 
         #endregion
 
-        protected virtual string GetNullString(ColumnListNullType nullType)
+        protected abstract string QuoteIdentifier(string identifier);
+
+        protected virtual string GetNullString()
         {
             string nullstring;
 
@@ -148,40 +131,44 @@ namespace Jhu.Graywulf.SqlCodeGen
             return nullstring;
         }
 
-        protected virtual string GetFormatString(ColumnListType listType)
+        protected virtual string GetFormatString()
         {
             // 0: table alias
             // 1: escaped column name
             // 2: original column name
             // 3: column type
             // 4: null string
+            // 5: joined table alias
 
             string format = null;
 
             switch (listType)
             {
-                case ColumnListType.ForCreateTableWithOriginalName:
+                case ColumnListType.CreateTableWithOriginalName:
                     format = "{2} {3}{4}";
                     break;
-                case ColumnListType.ForCreateTableWithEscapedName:
+                case ColumnListType.CreateTableWithEscapedName:
                     format = "{1} {3}{4}";
                     break;
-                case ColumnListType.ForCreateView:
-                case ColumnListType.ForCreateIndex:
-                case ColumnListType.ForInsert:
+                case ColumnListType.CreateView:
+                case ColumnListType.CreateIndex:
+                case ColumnListType.Insert:
                     format = "{2}";
                     break;
-                case ColumnListType.ForSelectWithOriginalName:
+                case ColumnListType.SelectWithOriginalName:
                     format = "{0}{2} AS {1}";
                     break;
-                case ColumnListType.ForSelectWithEscapedName:
+                case ColumnListType.SelectWithEscapedName:
                     format = "{0}{1}";
                     break;
-                case ColumnListType.ForSelectWithOriginalNameNoAlias:
+                case ColumnListType.SelectWithOriginalNameNoAlias:
                     format = "{0}{2}";
                     break;
-                case ColumnListType.ForSelectWithEscapedNameNoAlias:
+                case ColumnListType.SelectWithEscapedNameNoAlias:
                     format = "{0}{1}";
+                    break;
+                case ColumnListType.JoinCondition:
+                    format = "{0}.{2} = {5}.{2}";
                     break;
                 default:
                     throw new NotImplementedException();
@@ -190,9 +177,24 @@ namespace Jhu.Graywulf.SqlCodeGen
             return format;
         }
 
-        protected abstract string GetQuotedIdentifier(string identifier);
+        protected virtual string GetSeparator()
+        {
+            string separator = null;
 
-        private string GetTableAlias()
+            switch (listType)
+            {
+                case ColumnListType.JoinCondition:
+                    separator = " AND ";
+                    break;
+                default:
+                    separator = ", ";
+                    break;
+            }
+
+            return separator;
+        }
+
+        private string GetTableAlias(TableReference table)
         {
             string alias;
 
@@ -202,7 +204,7 @@ namespace Jhu.Graywulf.SqlCodeGen
             }
             else if (tableAlias != null)
             {
-                alias = GetQuotedIdentifier(tableAlias) + ".";
+                alias = QuoteIdentifier(tableAlias) + ".";
             }
             else if (String.IsNullOrWhiteSpace(table.Alias))
             {
@@ -210,13 +212,13 @@ namespace Jhu.Graywulf.SqlCodeGen
             }
             else
             {
-                alias = GetQuotedIdentifier(table.Alias) + ".";
+                alias = QuoteIdentifier(table.Alias) + ".";
             }
 
             return alias;
         }
 
-        private string GetNullSpec(Column column, string nullstring)
+        private string GetNullSpec(ColumnReference column, string nullstring)
         {
             string nullspec;
 
@@ -237,82 +239,36 @@ namespace Jhu.Graywulf.SqlCodeGen
         /// and propagated columns belonging to the table.
         /// </summary>
         /// <returns>A SQL snippet with the list of columns.</returns>
-        public string GetColumnListString()
+        public string Execute()
         {
-            // Alias
-            var alias = GetTableAlias();
-
-            // Shortcuts to nothing and SELECT *
-
-            if (columnContext == ColumnContext.None)
-            {
-                return String.Empty;
-            }
-            else if (columnContext == ColumnContext.All && listType == ColumnListType.ForSelectWithOriginalNameNoAlias)
-            {
-                if (leadingComma)
-                {
-                    return String.Format(", {0}*", alias);
-                }
-                else
-                {
-                    return String.Format("{0}*", alias);
-                }
-            }
-
-            // Process column by column
-
-            var nullstring = GetNullString(nullType);
-            var format = GetFormatString(listType);
+            var nullstring = GetNullString();
+            var format = GetFormatString();
+            var separator = GetSeparator();
 
             var columnlist = new StringBuilder();
-            var columns = table.GetColumnList(columnContext);
 
             foreach (var column in columns)
             {
-                if (leadingComma || columnlist.Length != 0)
+                if (leadingSeparator || columnlist.Length != 0)
                 {
-                    columnlist.Append(", ");
+                    columnlist.Append(separator);
                 }
 
+                var alias = GetTableAlias(column.TableReference);
                 string nullspec = GetNullSpec(column, nullstring);
 
                 columnlist.AppendFormat(
                     format,
                     alias,
-                    GetQuotedIdentifier(EscapePropagatedColumnName(table, column.Name)),
-                    GetQuotedIdentifier(column.Name),
+                    QuoteIdentifier(EscapePropagatedColumnName(column.TableReference, column.ColumnName)),
+                    QuoteIdentifier(column.ColumnName),
                     column.DataType.TypeNameWithLength,
-                    nullspec);
+                    nullspec,
+                    joinedTableAlias);
             }
 
             return columnlist.ToString();
         }
 
-        public string GetJoinString()
-        {
-            var columnlist = new StringBuilder();
-            var columns = table.GetColumnList(columnContext);
-
-            foreach (var column in columns)
-            {
-                if (columnlist.Length != 0)
-                {
-                    columnlist.Append(" AND ");
-                }
-
-                string alias1 = GetQuotedIdentifier(tableAlias);
-                string alias2 = GetQuotedIdentifier(joinedTableAlias);
-                string columnname = GetQuotedIdentifier(EscapePropagatedColumnName(table, column.Name));
-
-                columnlist.AppendFormat(
-                    "{0}.{2} = {1}.{2}",
-                    alias1,
-                    alias2,
-                    columnname);
-            }
-
-            return columnlist.ToString();
-        }
     }
 }

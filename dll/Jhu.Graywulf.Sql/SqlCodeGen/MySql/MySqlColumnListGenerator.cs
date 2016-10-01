@@ -9,8 +9,8 @@ namespace Jhu.Graywulf.SqlCodeGen.MySql
 {
     public class MySqlColumnListGenerator : SqlColumnListGeneratorBase
     {
-        public MySqlColumnListGenerator(TableReference table, ColumnContext context, ColumnListType listType)
-            : base(table, context, listType)
+        public MySqlColumnListGenerator(IEnumerable<ColumnReference> columns)
+            : base(columns)
         {
             InitializeMembers();
         }
@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.SqlCodeGen.MySql
         {
         }
 
-        protected override string GetQuotedIdentifier(string identifier)
+        protected override string QuoteIdentifier(string identifier)
         {
             return MySqlCodeGenerator.QuoteIdentifier(identifier);
         }

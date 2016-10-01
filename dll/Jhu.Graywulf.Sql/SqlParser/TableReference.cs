@@ -490,9 +490,9 @@ namespace Jhu.Graywulf.SqlParser
             return res;
         }
 
-        public List<Column> GetColumnList(ColumnContext columnContext)
+        public List<ColumnReference> FilterColumnReferences(ColumnContext columnContext)
         {
-            var res = new Dictionary<string, Column>();
+            var res = new Dictionary<string, ColumnReference>();
             var t = (TableOrView)DatabaseObject;            // TODO: what if function?
 
             // Primary key columns
@@ -502,7 +502,7 @@ namespace Jhu.Graywulf.SqlParser
                 {
                     if (!res.ContainsKey(cd.ColumnName))
                     {
-                        res.Add(cd.ColumnName, cd);
+                        res.Add(cd.ColumnName, new ColumnReference(this, cd));
                     }
                 }
             }
@@ -514,7 +514,7 @@ namespace Jhu.Graywulf.SqlParser
                 {
                     if (cd.IsKey && !res.ContainsKey(cd.ColumnName))
                     {
-                        res.Add(cd.ColumnName, cd);
+                        res.Add(cd.ColumnName, new ColumnReference(this, cd));
                     }
                 }
             }
@@ -526,11 +526,12 @@ namespace Jhu.Graywulf.SqlParser
                 if (((columnContext & cr.ColumnContext) != 0 || (columnContext & ColumnContext.NonReferenced) != 0)
                     && !res.ContainsKey(cr.ColumnName))
                 {
-                    res.Add(cr.ColumnName, t.Columns[cr.ColumnName]);
+                    res.Add(cr.ColumnName, cr);
                 }
             }
 
-            return new List<Column>(res.Values.OrderBy(c => c.ID));
+            return new List<ColumnReference>(res.Values.OrderBy(c => t.Columns[c.ColumnName].ID));
         }
+
     }
 }

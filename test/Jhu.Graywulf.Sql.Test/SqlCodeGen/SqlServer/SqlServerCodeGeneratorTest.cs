@@ -12,35 +12,11 @@ using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.SqlCodeGen.SqlServer;
 
-namespace Jhu.Graywulf.SqlCodeGen.Test
+namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 {
     [TestClass]
-    public class SqlServerCodeGeneratorTest
+    public class SqlServerCodeGeneratorTest : SqlServerCodeGeneratorTestBase
     {
-        private SchemaManager CreateSchemaManager()
-        {
-            var sm = new SqlServerSchemaManager();
-            var ds = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerSchemaTestConnectionString);
-
-            sm.Datasets[ds.Name] = ds;
-
-            return sm;
-        }
-
-        private SelectStatement CreateSelect(string query)
-        {
-            var p = new SqlParser.SqlParser();
-            var select = (SelectStatement)p.Execute(new SelectStatement(), query);
-
-            SqlNameResolver nr = new SqlNameResolver();
-            nr.DefaultTableDatasetName = Jhu.Graywulf.Test.Constants.TestDatasetName;
-            nr.DefaultFunctionDatasetName = Jhu.Graywulf.Test.Constants.CodeDatasetName;
-            nr.SchemaManager = CreateSchemaManager();
-            nr.Execute(select);
-
-            return select;
-        }
-
         private string GenerateCode(string query, bool resolveAliases, bool resolveNames, bool substituteStars)
         {
             var ss = CreateSelect(query);

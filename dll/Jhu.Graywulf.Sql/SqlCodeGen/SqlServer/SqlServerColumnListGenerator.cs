@@ -14,23 +14,25 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             InitializeMembers();
         }
 
-        public SqlServerColumnListGenerator(TableReference table, ColumnContext context)
-            : base(table, context)
+        public SqlServerColumnListGenerator(IEnumerable<ColumnReference> columns)
+            : base(columns)
         {
             InitializeMembers();
         }
 
-        public SqlServerColumnListGenerator(TableReference table, ColumnContext context, ColumnListType listType)
-            : base(table, context, listType)
+        public SqlServerColumnListGenerator(TableReference tr, ColumnContext context, ColumnListType listType)
+            : base(tr.FilterColumnReferences(context))
         {
             InitializeMembers();
+
+            ListType = listType;
         }
 
         private void InitializeMembers()
         {
         }
 
-        protected override string GetQuotedIdentifier(string identifier)
+        protected override string QuoteIdentifier(string identifier)
         {
             return SqlServerCodeGenerator.QuoteIdentifier(identifier);
         }

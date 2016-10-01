@@ -17,7 +17,12 @@ namespace Jhu.Graywulf.SqlCodeGen.PostgreSql
 
         public override SqlColumnListGeneratorBase CreateColumnListGenerator(TableReference table, ColumnContext columnContext, ColumnListType listType)
         {
-            return new PostgreSqlColumnListGenerator(table, columnContext, listType);
+            var cl = new PostgreSqlColumnListGenerator(table.FilterColumnReferences(columnContext))
+            {
+                ListType = listType
+            };
+
+            return cl;
         }
 
         #region Identifier formatting functions
@@ -114,13 +119,13 @@ namespace Jhu.Graywulf.SqlCodeGen.PostgreSql
             cn.CollectConditions(querySpecification);
             var where = cn.GenerateWhereClauseSpecificToTable(table);
 
-            var columnlist = CreateColumnListGenerator(table, columnContext, ColumnListType.ForSelectWithOriginalNameNoAlias);
+            var columnlist = CreateColumnListGenerator(table, columnContext, ColumnListType.SelectWithOriginalNameNoAlias);
 
             // Build table specific query
             var sql = new StringBuilder();
 
             sql.AppendLine("SELECT ");
-            sql.AppendLine(columnlist.GetColumnListString());
+            sql.AppendLine(columnlist.Execute());
             sql.AppendFormat(" FROM {0}", GetQuotedIdentifier(table.DatabaseObjectName));
             
             if (!String.IsNullOrWhiteSpace(table.Alias))

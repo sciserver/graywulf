@@ -9,8 +9,8 @@ namespace Jhu.Graywulf.SqlCodeGen.PostgreSql
 {
     public class PostgreSqlColumnListGenerator : SqlColumnListGeneratorBase
     {
-        public PostgreSqlColumnListGenerator(TableReference table, ColumnContext context, ColumnListType listType)
-            : base(table, context, listType)
+        public PostgreSqlColumnListGenerator(IEnumerable<ColumnReference> columns)
+            : base(columns)
         {
             InitializeMembers();
         }
@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.SqlCodeGen.PostgreSql
         {
         }
 
-        protected override string GetQuotedIdentifier(string identifier)
+        protected override string QuoteIdentifier(string identifier)
         {
             return PostgreSqlCodeGenerator.QuoteIdentifier(identifier);
         }

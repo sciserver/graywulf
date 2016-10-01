@@ -32,7 +32,12 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 
         public override SqlColumnListGeneratorBase CreateColumnListGenerator(TableReference table, ColumnContext columnContext, ColumnListType listType)
         {
-            return new SqlServerColumnListGenerator(table, columnContext, listType);
+            var cl = new SqlServerColumnListGenerator(table.FilterColumnReferences(columnContext))
+            {
+                ListType = listType,
+            };
+
+            return cl;
         }
 
         #region Identifier formatting functions
@@ -133,7 +138,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             cnr.CollectConditions(querySpecification);
             var where = cnr.GenerateWhereClauseSpecificToTable(table);
 
-            var columnlist = CreateColumnListGenerator(table, columnContext, ColumnListType.ForSelectWithOriginalNameNoAlias);
+            var columnlist = CreateColumnListGenerator(table, columnContext, ColumnListType.SelectWithOriginalNameNoAlias);
             columnlist.TableAlias = null;
 
             // Build table specific query
@@ -147,7 +152,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             }
 
             sql.AppendLine();
-            sql.AppendLine(columnlist.GetColumnListString());
+            sql.AppendLine(columnlist.Execute());
             sql.AppendFormat("FROM {0} ", GetResolvedTableName(table));
 
             if (!String.IsNullOrWhiteSpace(table.Alias))
@@ -175,7 +180,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
                 throw new InvalidOperationException("The table doesn't have any columns.");     // TODO ***
             }
 
-            var columns = CreateColumnListGenerator(table, ColumnContext.All, ColumnListType.ForCreateTableWithOriginalName);
+            var columns = CreateColumnListGenerator(table, ColumnContext.All, ColumnListType.CreateTableWithOriginalName);
 
             var sql = new StringBuilder();
 
@@ -183,7 +188,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             sql.Append(GetResolvedTableName(table));
             sql.AppendLine(" (");
 
-            sql.Append(columns.GetColumnListString());
+            sql.Append(columns.Execute());
 
             if (primaryKey && table.TableOrView.PrimaryKey != null)
             {
@@ -210,7 +215,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 
         private string GeneratePrimaryKeyConstraint(TableReference table, ColumnContext columnContext)
         {
-            var columnlist = CreateColumnListGenerator(table, columnContext, ColumnListType.ForCreateIndex);
+            var columnlist = CreateColumnListGenerator(table, columnContext, ColumnListType.CreateIndex);
 
             var sql = new StringBuilder();
 
@@ -218,7 +223,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             sql.Append(GetQuotedIdentifier(String.Format("PK_{0}_{1}", table.SchemaName, table.DatabaseObjectName)));
             sql.AppendLine(" PRIMARY KEY (");
 
-            sql.Append(columnlist.GetColumnListString());
+            sql.Append(columnlist.Execute());
 
             sql.AppendLine();
             sql.AppendLine(" )");

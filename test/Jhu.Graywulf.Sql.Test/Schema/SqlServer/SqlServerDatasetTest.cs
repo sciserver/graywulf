@@ -426,7 +426,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             var ds = CreateTestDataset();
             ds.Views.LoadAll(true);
 
-            Assert.AreEqual(13, ds.Views.Count);    // Update this if test database schema changes
+            Assert.AreEqual(6, ds.Views.Count);    // Update this if test database schema changes
             Assert.IsTrue(ds.Views.IsAllLoaded);
         }
 

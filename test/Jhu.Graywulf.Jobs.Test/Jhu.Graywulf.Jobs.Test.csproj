@@ -58,7 +58,6 @@
     <Compile Include="Jobs\Query\SqlQueryTest.cs" />
     <Compile Include="Jobs\Query\SqlQueryTestBase.cs" />
     <Compile Include="Jobs\Query\SqlQueryTestException.cs" />
-    <Compile Include="Jobs\Query\SqlServerColumnListGeneratorTest.cs" />
     <Compile Include="Jobs\Query\TableReferenceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

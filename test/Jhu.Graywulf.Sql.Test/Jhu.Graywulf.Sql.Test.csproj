@@ -75,7 +75,9 @@
     <Compile Include="Schema\SqlServer\SqlServerMetadataTest.cs" />
     <Compile Include="Schema\SqlServer\SqlServerTestBase.cs" />
     <Compile Include="SqlCodeGen\MySqlCodeGeneratorTest.cs" />
-    <Compile Include="SqlCodeGen\SqlServerCodeGeneratorTest.cs" />
+    <Compile Include="SqlCodeGen\SqlServer\SqlServerCodeGeneratorTest.cs" />
+    <Compile Include="SqlCodeGen\SqlServer\SqlServerCodeGeneratorTestBase.cs" />
+    <Compile Include="SqlCodeGen\SqlServer\SqlServerColumnListGeneratorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">

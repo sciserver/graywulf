@@ -198,7 +198,7 @@ namespace Jhu.Graywulf.Schema.MySql.Test
             var ds = CreateTestDataset();
             ds.Views.LoadAll(true);
 
-            Assert.AreEqual(10, ds.Views.Count);    // Update this if test database schema changes
+            Assert.AreEqual(5, ds.Views.Count);    // Update this if test database schema changes
             Assert.IsTrue(ds.Views.IsAllLoaded);
         }
 
