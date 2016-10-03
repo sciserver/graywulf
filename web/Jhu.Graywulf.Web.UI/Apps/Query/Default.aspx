@@ -2,7 +2,7 @@
     Inherits="Jhu.Graywulf.Web.UI.Apps.Query.Default" CodeBehind="Default.aspx.cs" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="head">
-    <script language="javascript">
+    <script lang="javascript">
         function refreshResults() {
             setTimeout(loadResults, 1000);
         }
@@ -13,19 +13,29 @@
     </script>
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="toolbar">
-    <div id="ToolbarDiv">
-        <jgwc:Toolbar ID="Toolbar1" runat="server">
-            <jgwc:ToolbarButton ID="Check" runat="server" Text="syntax check" OnClick="Check_Click" />
-            <jgwc:ToolbarButton ID="ExecuteQuick" runat="server" OnClick="ExecuteQuick_Click"
-                Text="quick execute" />
-            <jgwc:ToolbarButton ID="ExecuteLong" runat="server" Text="execute" OnClick="ExecuteLong_Click" />
-            <jgwc:ToolbarElement runat="server">
-                <asp:Label ID="CommentsLabel" runat="server" Text="Comments:" /><br />
-                <asp:TextBox ID="Comments" runat="server" CssClass="ToolbarControl" Style="width: 100%;
-                    box-sizing: border-box;"></asp:TextBox>
-            </jgwc:ToolbarElement>
-        </jgwc:Toolbar>
-    </div>
+    <asp:UpdatePanel runat="server">
+        <ContentTemplate>
+            <asp:Panel runat="server" ID="toolbarPanel" class="ToolbarFrame">
+                <div class="Toolbar">
+                    <div class="ToolbarElement" style="width: auto">
+                        <asp:Label ID="commentsLabel" runat="server" Text="Query job comments:" /><br />
+                        <asp:TextBox ID="comments" runat="server" CssClass="ToolbarControl" Style="width: 100%;"></asp:TextBox>
+                    </div>
+                    <div class="ToolbarElement" style="width: 72px; text-align: center">
+                        <asp:Label runat="server" ID="selectedOnlyLabel" Text="Selection&lt;br /&gt; only" />&nbsp;
+                <asp:CheckBox runat="server" ID="selectedOnly" />
+                    </div>
+                    <asp:LinkButton ID="check" runat="server" Text="syntax check" CssClass="ToolbarButton" OnClick="Check_Click" />
+                    <asp:LinkButton ID="executeQuick" runat="server" CssClass="ToolbarButton" OnClick="ExecuteQuick_Click"
+                        Text="quick execute" />
+                    <asp:LinkButton ID="executeLong" runat="server" Text="execute" CssClass="ToolbarButton" OnClick="ExecuteLong_Click" />
+                </div>
+            </asp:Panel>
+            <asp:Panel runat="server" ID="messagePanel" CssClass="ToolbarMessage" Visible="false">
+                <asp:Label runat="server" ID="message" />
+            </asp:Panel>
+        </ContentTemplate>
+    </asp:UpdatePanel>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="middle" runat="Server">
     <asp:UpdatePanel runat="server" class="dock-fill dock-container">
@@ -34,23 +44,19 @@
                 id="ResultsDiv">
                 <div style="height: 150px; overflow: auto" id="results">
                 </div>
-                <script language="javascript">
+                <script lang="javascript">
                     loadResults();
                 </script>
             </div>
             <div class="dock-bottom">
                 <table class="Toolbar">
                     <tr class="Toolbar">
-                        <td style="width: 40%">
-                            Status:
-                            <asp:Label ID="Message" runat="server" Text="Label"></asp:Label>
+                        <td style="width: 40%">Status:
                         </td>
                         <td style="width: 20%; text-align: center">
                             <asp:LinkButton ID="CloseResults" Visible="false" runat="server" OnClick="CloseResults_Click">close results pane</asp:LinkButton>&nbsp;&nbsp;&nbsp;
                         </td>
-                        <td style="width: 80%; text-align: right; vertical-align: middle">
-                            <asp:CheckBox runat="server" ID="SelectedOnly" Text="Execute selected only" />
-                        </td>
+                        <td style="width: 80%; text-align: right; vertical-align: middle"></td>
                     </tr>
                 </table>
             </div>

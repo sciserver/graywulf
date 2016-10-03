@@ -32,15 +32,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
 
                 Query.Text = query;
                 Query.SelectionCoords = selection;
-                SelectedOnly.Checked = selectedonly;
+                selectedOnly.Checked = selectedonly;
             }
             else
             {
-                SetQueryInSession(Query.Text, Query.SelectionCoords, SelectedOnly.Checked);
+                SetQueryInSession(Query.Text, Query.SelectionCoords, selectedOnly.Checked);
             }
 
-            Message.Text = String.Empty;
-            Message.ForeColor = Color.White;
+            HideMessage();
         }
 
         /// <summary>
@@ -95,7 +94,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
         private string GetQueryString()
         {
             string query;
-            if (SelectedOnly.Checked)
+            if (selectedOnly.Checked)
             {
                 query = Query.SelectedText;
             }
@@ -121,30 +120,25 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
 
                 query.Verify();
 
-                Message.Text = "Query OK.";
-                Message.BackColor = Color.Green;
+                ShowMessage("Query OK.", Color.Black);
+
                 return queryJob;
             }
-            catch (ValidatorException ex)
+            /*catch (ValidatorException ex)
             {
-                Message.Text = String.Format("Query error: {0}", ex.Message);
             }
             catch (NameResolverException ex)
             {
-                Message.Text = String.Format("Query error: {0}", ex.Message);
             }
             catch (ParserException ex)
             {
-                Message.Text = String.Format("Query error: {0}", ex.Message);
-            }
+            }*/
             catch (Exception ex)
             {
                 // TODO: remove this case once all exceptions are handled correctly
-                Message.Text = String.Format("Query error: {0}", ex.Message);
+                ShowMessage(String.Format("Query error: {0}", ex.Message), Color.Red);
             }
-
-            Message.BackColor = Color.Red;
-
+            
             return null;
         }
 
@@ -158,6 +152,18 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
         {
             queryJob.Schedule(FederationContext);
             return queryJob.JobInstance;
+        }
+
+        protected void HideMessage()
+        {
+            messagePanel.Visible = false;
+        }
+
+        protected void ShowMessage(string msg, Color color)
+        {
+            message.Text = msg;
+            message.ForeColor = color;
+            messagePanel.Visible = true;
         }
     }
 }

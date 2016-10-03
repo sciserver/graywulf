@@ -73,7 +73,7 @@ div.ToolbarFrame {
 }
 
 div.Toolbar {
-    display:table-row;
+    display: table-row;
     width: 100%;
 }
 
@@ -88,11 +88,15 @@ div.ToolbarElement, a.ToolbarButton {
 
 div.ToolbarElement {
     text-align: left;
-    vertical-align: middle;
-    font-family: Calibri, Arial, Helvetica, Sans-Serif;
-    font-size: 12px;
+    vertical-align: bottom;
     background-color: #D0D0D0;
 }
+
+    div.ToolbarElement, div.ToolbarElement label {
+        font-family: Calibri, Arial, Helvetica, Sans-Serif;
+        font-size: 12px;
+        font-weight: normal;
+    }
 
 a.ToolbarButton {
     background-color: #808080;
@@ -117,3 +121,19 @@ a.ToolbarButton {
         background-color: #E0E0E0;
         color: #FFFFFF;
     }
+
+div.ToolbarMessage {
+    width: auto;
+    height: 36px;
+    vertical-align: middle;
+    padding: 8px;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    background-color: #F0F0C0;
+    color: #000000;
+}
+
+div.ToolbarMessageError {
+    color: #FF0000;
+}

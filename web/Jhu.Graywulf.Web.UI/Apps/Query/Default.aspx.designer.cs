@@ -13,58 +13,94 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query {
     public partial class Default {
         
         /// <summary>
-        /// Toolbar1 control.
+        /// toolbarPanel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.Toolbar Toolbar1;
+        protected global::System.Web.UI.WebControls.Panel toolbarPanel;
         
         /// <summary>
-        /// Check control.
+        /// commentsLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarButton Check;
+        protected global::System.Web.UI.WebControls.Label commentsLabel;
         
         /// <summary>
-        /// ExecuteQuick control.
+        /// comments control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarButton ExecuteQuick;
+        protected global::System.Web.UI.WebControls.TextBox comments;
         
         /// <summary>
-        /// ExecuteLong control.
+        /// selectedOnlyLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarButton ExecuteLong;
+        protected global::System.Web.UI.WebControls.Label selectedOnlyLabel;
         
         /// <summary>
-        /// CommentsLabel control.
+        /// selectedOnly control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label CommentsLabel;
+        protected global::System.Web.UI.WebControls.CheckBox selectedOnly;
         
         /// <summary>
-        /// Comments control.
+        /// check control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox Comments;
+        protected global::System.Web.UI.WebControls.LinkButton check;
+        
+        /// <summary>
+        /// executeQuick control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton executeQuick;
+        
+        /// <summary>
+        /// executeLong control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton executeLong;
+        
+        /// <summary>
+        /// messagePanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel messagePanel;
+        
+        /// <summary>
+        /// message control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label message;
         
         /// <summary>
         /// ResultsDiv control.
@@ -76,15 +112,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl ResultsDiv;
         
         /// <summary>
-        /// Message control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Message;
-        
-        /// <summary>
         /// CloseResults control.
         /// </summary>
         /// <remarks>
@@ -92,15 +119,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.LinkButton CloseResults;
-        
-        /// <summary>
-        /// SelectedOnly control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox SelectedOnly;
         
         /// <summary>
         /// Query control.
