@@ -72,8 +72,8 @@
             <columns>
                 <asp:BoundField DataField="Type" HeaderText="Type" />
                 <asp:BoundField DataField="FullSpace" HeaderText="Full Space" />
-                <jgwc:ExpressionPropertyField DataField="LocalPath" HeaderText="Local Path" />
-                <jgwc:ExpressionPropertyField DataField="UncPath" HeaderText="UNC Path" />
+                <jgwuc:ExpressionPropertyField DataField="LocalPath" HeaderText="Local Path" />
+                <jgwuc:ExpressionPropertyField DataField="UncPath" HeaderText="UNC Path" />
             </columns>
         </jgwac:EntityList>
     </jgwac:EntityChildren>

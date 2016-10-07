@@ -1,4 +1,4 @@
-﻿<%@ Master Language="C#" MasterPageFile="~/App_Masters/Basic.master" AutoEventWireup="true"
+﻿<%@ Master Language="C#" MasterPageFile="~/App_Masters/Basic/Basic.master" AutoEventWireup="true"
     CodeBehind="Admin.master.cs" Inherits="Jhu.Graywulf.Web.Admin.Admin" %>
 
 <%@ Register Src="~/Controls/Menu.ascx" TagPrefix="jgwac" TagName="Menu" %>

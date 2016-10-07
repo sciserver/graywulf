@@ -20,7 +20,7 @@
     <jgwac:EntityChildren runat="server">
         <jgwac:EntityList runat="server" ID="MachineList" ChildrenType="Machine" EntityGroup="Cluster">
             <Columns>
-                <jgwc:ExpressionPropertyField DataField="HostName" HeaderText="UNC name" />
+                <jgwuc:ExpressionPropertyField DataField="HostName" HeaderText="UNC name" />
                 <asp:BoundField DataField="RunningState" HeaderText="Running state" />
             </Columns>
         </jgwac:EntityList>

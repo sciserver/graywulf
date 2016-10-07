@@ -12,7 +12,7 @@
             EntityGroup="Jobs" />
         <jgwac:EntityList runat="server" ID="MachineList" ChildrenType="Machine" EntityGroup="Jobs">
         <columns>
-                        <jgwc:ExpressionPropertyField DataField="HostName" HeaderText="UNC name" />
+                        <jgwuc:ExpressionPropertyField DataField="HostName" HeaderText="UNC name" />
                     </columns>
         </jgwac:EntityList>
     </jgwac:EntityChildren>

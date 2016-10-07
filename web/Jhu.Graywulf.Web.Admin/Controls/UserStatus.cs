@@ -7,8 +7,8 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Web;
-using Jhu.Graywulf.Web.Controls;
 using Jhu.Graywulf.Web.UI;
+using Jhu.Graywulf.Web.UI.Controls;
 
 namespace Jhu.Graywulf.Web.Admin.Controls
 {

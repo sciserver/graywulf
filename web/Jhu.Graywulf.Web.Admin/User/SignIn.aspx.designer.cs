@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Web.Admin.User {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.Form SignInForm;
+        protected global::Jhu.Graywulf.Web.UI.Controls.Form SignInForm;
         
         /// <summary>
         /// ClusterListLabel control.

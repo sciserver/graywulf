@@ -10,7 +10,7 @@ using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Admin
 {
-    public class Global : ApplicationBase
+    public class Global : UIApplicationBase
     {
         protected override void Application_Start(object sender, EventArgs e)
         {

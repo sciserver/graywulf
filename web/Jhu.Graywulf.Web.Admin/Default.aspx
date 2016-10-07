@@ -2,7 +2,7 @@
     CodeBehind="Default.aspx.cs" Inherits="Jhu.Graywulf.Web.Admin.Default" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="middle" runat="server">
-    <jgwc:Form runat="server" ID="WelcomeForm" SkinID="Welcome">
+    <jgwuc:Form runat="server" ID="WelcomeForm" SkinID="Welcome">
         <FormTemplate>
             <p>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim bibendum
@@ -14,5 +14,5 @@
         </FormTemplate>
         <ButtonsTemplate>
         </ButtonsTemplate>
-    </jgwc:Form>
+    </jgwuc:Form>
 </asp:Content>

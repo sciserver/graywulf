@@ -2,7 +2,7 @@
     MasterPageFile="~/Admin.master" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="middle">
-    <jgwc:Form runat="server" ID="SignInForm" SkinID="SignIn" Text="Welcome">
+    <jgwuc:Form runat="server" ID="SignInForm" SkinID="SignIn" Text="Welcome">
         <FormTemplate>
             <p>
                 To start using the services, please sign in with your existing credentials.
@@ -51,5 +51,5 @@
         <ButtonsTemplate>
             <asp:Button runat="Server" ID="Ok" Text="Sign in" CssClass="FormButton" OnClick="Ok_Click" />
         </ButtonsTemplate>
-    </jgwc:Form>
+    </jgwuc:Form>
 </asp:Content>
