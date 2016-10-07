@@ -23,6 +23,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             TableList.DataSource = tables;
         }
 
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            Page.DataBind();
+        }
+
         protected void TableSelected_ServerValidate(object source, ServerValidateEventArgs args)
         {
             args.IsValid = TableList.SelectedDataKeys.Count > 0;

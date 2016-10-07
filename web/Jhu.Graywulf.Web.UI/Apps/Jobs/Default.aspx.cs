@@ -34,6 +34,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
             list.DataSource = JobDataSource;
         }
 
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            Page.DataBind();
+        }
+
         private MultiSelectGridView GetVisibleListView()
         {
             switch ((Views)multiView.ActiveViewIndex)
