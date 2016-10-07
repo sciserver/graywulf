@@ -8,24 +8,9 @@
             <asp:Panel runat="server" ID="statusPanel" CssClass="dock-fill">
                 <jgwuc:Form runat="Server" Text="Executing query" SkinID="JobDetails">
                     <FormTemplate>
-                        <table class="FormTable">
-                            <tr>
-                                <td class="FormLabel">
-                                    <asp:Label runat="server" ID="statusLabel" Text="Query status:" />
-                                </td>
-                                <td>
-                                    <jgwuc:JobStatus runat="server" ID="status" />
-                                </td>
-                            </tr>
-                            <tr runat="server" id="exceptionRow" visible="false">
-                                <td class="FormLabel">
-                                    <asp:Label ID="exceptionLabel" runat="server" Text="Error:"></asp:Label>
-                                </td>
-                                <td>
-                                    <asp:Label ID="exception" runat="server" Text="Label"></asp:Label>
-                                </td>
-                            </tr>
-                        </table>
+                        <p><asp:Label runat="server" ID="statusLabel" Text="Query status:" /> <jgwuc:JobStatus runat="server" ID="status" /></p>
+                        <p><asp:Label ID="exceptionLabel" runat="server" Text="Error:" Visible="false"></asp:Label></p>
+                        <p><asp:Label ID="exception" runat="server" Text="Label" Visible="false"></asp:Label></p>
                     </FormTemplate>
                     <ButtonsTemplate>
                     </ButtonsTemplate>

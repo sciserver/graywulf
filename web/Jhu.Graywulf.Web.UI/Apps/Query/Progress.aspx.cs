@@ -44,7 +44,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
                     case JobExecutionState.Failed:
                         statusPanel.Visible = true;
                         status.Status = job.Status;
-                        exceptionRow.Visible = true;
+                        exceptionLabel.Visible = true;
+                        exception.Visible = false;
                         exception.Text = jobInstance.ExceptionMessage;
                         break;
                     default:

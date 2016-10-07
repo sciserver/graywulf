@@ -40,15 +40,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query {
         protected global::Jhu.Graywulf.Web.UI.Controls.JobStatus status;
         
         /// <summary>
-        /// exceptionRow control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableRow exceptionRow;
-        
-        /// <summary>
         /// exceptionLabel control.
         /// </summary>
         /// <remarks>
