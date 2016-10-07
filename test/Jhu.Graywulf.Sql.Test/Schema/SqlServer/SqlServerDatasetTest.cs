@@ -257,6 +257,9 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             Assert.IsTrue(t1.Columns.Count == 2);
             Assert.IsTrue(t1.Columns["ID"].DataType.TypeName == "bigint");
 
+            Assert.IsTrue(t1.Columns["ID"].IsKey);
+            Assert.IsFalse(t1.Columns["Name"].IsKey);
+
             // Test cache
             Assert.AreEqual(t1.Columns, ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Columns);
             Assert.AreEqual(t1.Columns["ID"], ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Columns["ID"]);
@@ -450,14 +453,18 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         {
             var ds = CreateTestDataset();
             var v = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar"];
-
+            
             Assert.AreEqual(1, v.Indexes.Count);
             Assert.IsTrue(v.Indexes.FirstOrDefault().Value.IsUnique);
+            Assert.IsTrue(v.Columns["ID"].IsKey);
+            Assert.IsFalse(v.Columns["Data1"].IsKey);
 
             v = ds.Views[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "ViewWithStar2"];
 
             Assert.AreEqual(1, v.Indexes.Count);
             Assert.IsTrue(v.Indexes.FirstOrDefault().Value.IsUnique);
+            Assert.IsTrue(v.Columns["ID"].IsKey);
+            Assert.IsFalse(v.Columns["Data1"].IsKey);
         }
 
         [TestMethod]

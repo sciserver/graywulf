@@ -524,61 +524,78 @@ WHERE o.type IN ({0})
         /// <returns></returns>
         internal override IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject obj)
         {
+            string sql;
+
             if (obj is DataType)
             {
-                return LoadColumns((DataType)obj);
-            }
-            else
-            {
-                return LoadDatabaseObjectColumns(obj);
-            }
-        }
-
-        private IEnumerable<KeyValuePair<string, Column>> LoadColumns(DataType dataType)
-        {
-            var sql = @"
+                sql = @"
 SELECT c.column_id, c.name, 
 	cts.name, ct.name, ct.is_user_defined,
-	c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
+	c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity, CAST(0 AS bit) AS is_key
 FROM sys.table_types t
 INNER JOIN sys.schemas s ON s.schema_id = t.schema_id
 INNER JOIN sys.columns c ON c.object_id = t.type_table_object_id
 LEFT OUTER JOIN sys.types ct ON ct.user_type_id = c.user_type_id AND ct.system_type_id = c.system_type_id
 LEFT OUTER JOIN sys.schemas cts ON cts.schema_id = ct.schema_id
-WHERE s.name = @schemaName AND t.name = @typeName
+WHERE s.name = @schemaName AND t.name = @objectName
 ORDER BY c.column_id
 ";
-            using (var cn = OpenConnectionInternal())
-            {
-                using (var cmd = new SqlCommand(sql, cn))
-                {
-                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = String.IsNullOrWhiteSpace(dataType.SchemaName) ? (object)DBNull.Value : (object)dataType.SchemaName;
-                    cmd.Parameters.Add("@typeName", SqlDbType.NVarChar, 128).Value = dataType.ObjectName;
-
-                    using (var dr = cmd.ExecuteReader())
-                    {
-                        foreach (var c in LoadColumns(dr, dataType))
-                        {
-                            yield return c;
-                        }
-                    }
-                }
             }
-        }
+            else if (obj is View)
+            {
+                sql = @"
+WITH refs AS
+(
+	SELECT d.referenced_id, 1 AS depth
+	FROM sys.objects o
+	INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
+	INNER JOIN sys.sql_expression_dependencies d ON d.referencing_id = o.object_id
+	WHERE d.referenced_class = 1 AND d.referenced_minor_id = 0
+		AND s.name = @schemaName AND o.name = @objectName
 
-        private IEnumerable<KeyValuePair<string, Column>> LoadDatabaseObjectColumns(DatabaseObject obj)
-        {
-            var sql = @"
+	UNION ALL
+
+	SELECT d.referenced_id, r.depth + 1 AS depth
+	FROM refs r
+	INNER JOIN sys.sql_expression_dependencies d ON d.referencing_id = r.referenced_id
+	WHERE d.referenced_class = 1 AND d.referenced_minor_id = 0
+)
 SELECT c.column_id, c.name,
     cts.name, ct.name, ct.is_user_defined,
-    c.max_length, c.scale, c.precision, c.is_nullable, c.is_identity
+    c.max_length, c.scale, c.precision, c.is_nullable, 
+	c.is_identity, CASE WHEN ic.index_column_id IS NULL THEN CAST(0 AS bit) ELSE CAST(1 AS bit) END AS is_key
+FROM (SELECT TOP 1 * FROM refs ORDER BY depth DESC) refs
+INNER JOIN sys.objects o ON o.object_id = refs.referenced_id
+INNER JOIN sys.columns c ON c.object_id = o.object_id
+INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
+LEFT OUTER JOIN sys.types ct ON ct.user_type_id = c.user_type_id AND ct.system_type_id = c.system_type_id
+LEFT OUTER JOIN sys.schemas cts ON cts.schema_id = ct.schema_id
+LEFT OUTER JOIN sys.indexes i ON i.object_id = o.object_id AND i.type = 1 AND i.is_unique = 1	-- primary key
+LEFT OUTER JOIN sys.index_columns ic ON ic.object_id = o.object_id AND ic.index_id = i.index_id AND ic.column_id = c.column_id
+ORDER BY c.column_id";
+            }
+            else if (obj is Table || obj is TableValuedFunction)
+            {
+                sql = @"
+SELECT c.column_id, c.name,
+    cts.name, ct.name, ct.is_user_defined,
+    c.max_length, c.scale, c.precision, c.is_nullable, 
+	c.is_identity, CASE WHEN ic.index_column_id IS NULL THEN CAST(0 AS bit) ELSE CAST(1 AS bit) END AS is_key
 FROM sys.columns c
 INNER JOIN sys.objects o ON o.object_id = c.object_id
 INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
 LEFT OUTER JOIN sys.types ct ON ct.user_type_id = c.user_type_id AND ct.system_type_id = c.system_type_id
 LEFT OUTER JOIN sys.schemas cts ON cts.schema_id = ct.schema_id
+LEFT OUTER JOIN sys.indexes i ON i.object_id = o.object_id AND i.type = 1 AND i.is_unique = 1	-- primary key
+LEFT OUTER JOIN sys.index_columns ic ON ic.object_id = o.object_id AND ic.index_id = i.index_id AND ic.column_id = c.column_id
 WHERE s.name = @schemaName AND o.name = @objectName
-ORDER BY c.column_id";
+ORDER BY c.column_id
+";
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
 
             using (var cn = OpenConnectionInternal())
             {
@@ -589,58 +606,51 @@ ORDER BY c.column_id";
 
                     using (var dr = cmd.ExecuteReader())
                     {
-                        foreach (var c in LoadColumns(dr, obj))
+                        while (dr.Read())
                         {
-                            yield return c;
+                            var cd = new Column(obj)
+                            {
+                                ID = dr.GetInt32(0),
+                                Name = dr.GetString(1),
+                                IsIdentity = dr.GetBoolean(9),
+                                IsKey = dr.GetBoolean(10)
+                            };
+
+                            var udt = dr.GetBoolean(4);
+
+                            if (udt)
+                            {
+                                var schema = dr.GetString(2);
+                                var type = dr.GetString(3);
+                                cd.DataType = obj.Dataset.UserDefinedTypes[obj.Dataset.DatabaseName, schema, type];
+                            }
+                            else
+                            {
+                                cd.DataType = CreateDataType(
+                                    dr.GetString(3),
+                                    Convert.ToInt32(dr.GetValue(5)),
+                                    Convert.ToByte(dr.GetValue(6)),
+                                    Convert.ToByte(dr.GetValue(7)),
+                                    dr.GetBoolean(8));
+
+                                // SQL Server reports column sizes in bytes for unicode columns whereas
+                                // SchemaTable, when accessed via ADO.NET returns the number of characters.
+                                // To account for this, column sizes need to be divided by the number of
+                                // bytes per character here, and only here.
+
+                                if (cd.DataType.HasLength && cd.DataType.ByteSize > 1)
+                                {
+                                    cd.DataType.Length /= cd.DataType.ByteSize;
+                                }
+                            }
+
+                            yield return new KeyValuePair<string, Column>(cd.Name, cd);
                         }
                     }
                 }
             }
         }
-
-        private IEnumerable<KeyValuePair<string, Column>> LoadColumns(SqlDataReader dr, DatabaseObject obj)
-        {
-            while (dr.Read())
-            {
-                var cd = new Column(obj)
-                {
-                    ID = dr.GetInt32(0),
-                    Name = dr.GetString(1),
-                    IsIdentity = dr.GetBoolean(9)
-                };
-
-                var udt = dr.GetBoolean(4);
-
-                if (udt)
-                {
-                    var schema = dr.GetString(2);
-                    var type = dr.GetString(3);
-                    cd.DataType = obj.Dataset.UserDefinedTypes[obj.Dataset.DatabaseName, schema, type];
-                }
-                else
-                {
-                    cd.DataType = CreateDataType(
-                        dr.GetString(3),
-                        Convert.ToInt32(dr.GetValue(5)),
-                        Convert.ToByte(dr.GetValue(6)),
-                        Convert.ToByte(dr.GetValue(7)),
-                        dr.GetBoolean(8));
-
-                    // SQL Server reports column sizes in bytes for unicode columns whereas
-                    // SchemaTable, when accessed via ADO.NET returns the number of characters.
-                    // To account for this, column sizes need to be divided by the number of
-                    // bytes per character here, and only here.
-
-                    if (cd.DataType.HasLength && cd.DataType.ByteSize > 1)
-                    {
-                        cd.DataType.Length /= cd.DataType.ByteSize;
-                    }
-                }
-
-                yield return new KeyValuePair<string, Column>(cd.Name, cd);
-            }
-        }
-
+        
         /// <summary>
         /// Loads indexes of a database object.
         /// </summary>
