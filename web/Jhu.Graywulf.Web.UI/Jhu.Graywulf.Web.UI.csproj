@@ -314,6 +314,13 @@
     <Compile Include="Apps\Query\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Query\Progress.aspx.cs">
+      <DependentUpon>Progress.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Query\Progress.aspx.designer.cs">
+      <DependentUpon>Progress.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Apps\Query\Results.aspx.cs">
       <DependentUpon>Results.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -483,6 +490,7 @@
     <Content Include="Apps\MyDB\UploadForm.ascx" />
     <Content Include="Apps\MyDB\Web.config" />
     <Content Include="Apps\Query\Default.aspx" />
+    <Content Include="Apps\Query\Progress.aspx" />
     <Content Include="Apps\Query\Results.aspx" />
     <Content Include="Apps\Query\Web.config" />
     <Content Include="Apps\Schema\ColumnList.ascx" />

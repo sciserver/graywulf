@@ -5,68 +5,114 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.SqlCodeGen.SqlServer;
-using Jhu.Graywulf.ParserLib;
+using Jhu.Graywulf.IO;
+using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Jobs.Query;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Query
 {
     public partial class Results : FederationPageBase
     {
-        public static string GetUrl()
+        public static string GetUrl(Guid jobGuid)
         {
-            return "~/Apps/Query/Results.aspx";
+            return String.Format("~/Apps/Query/Results.aspx?guid={0}", jobGuid);
         }
 
-        protected void RenderOutput()
+        private JobInstance jobInstance;
+
+        protected Guid JobGuid
+        {
+            get { return Guid.Parse(Request["guid"]); }
+        }
+
+        protected void Page_Load(object sender, EventArgs e)
         {
             Response.Expires = -1;
 
-            try
+            if (!IsPostBack)
             {
-                // Use lower isolation level for polling
-                using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.DirtyRead))
-                {
-                    var ji = new JobInstance(context);
-                    ji.Guid = LastQueryJobGuid;
-                    ji.Load();
-
-                    switch (ji.JobExecutionStatus)
-                    {
-                        case JobExecutionState.Completed:
-                            RenderResults(ji);
-                            break;
-                        case JobExecutionState.Scheduled:
-                        case JobExecutionState.Starting:
-                        case JobExecutionState.Executing:
-                            RenderExecuting();
-                            break;
-                        default:
-                            RenderFailed(ji);
-                            break;
-                    }
-                }
+                RefreshFormatList();
             }
-            catch (Exception ex)
+
+            // Use lower isolation level for polling
+            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.DirtyRead))
             {
-                RenderException(ex);
+                jobInstance = new JobInstance(context);
+                jobInstance.Guid = JobGuid;
+                jobInstance.Load();
             }
         }
 
-        private void RenderExecuting()
+
+        protected void Download_Click(object sender, EventArgs e)
         {
-            Response.Output.WriteLine("Executing query...");
-            Response.Output.WriteLine("<script language=\"javascript\">refreshResults();</script>");
+            var compression = DataFileCompression.None;
+            var file =FederationContext.FileFormatFactory.CreateFileFromMimeType(fileFormat.SelectedValue);
+            var query = (SqlQuery)jobInstance.Parameters["Query"].Value;
+            var table = query.Output;
+
+            var uri = new Uri(table.ObjectName + file.Description.Extension, UriKind.RelativeOrAbsolute);
+            uri = FederationContext.StreamFactory.AppendCompressionExtension(uri, compression);
+            file.Uri = uri;
+            file.Compression = compression;
+
+            var task = new ExportTable()
+            {
+                BatchName = table.ObjectName,
+                Source = SourceTableQuery.Create(table),
+                Destination = file,
+                StreamFactoryType = RegistryContext.Federation.StreamFactory,
+                FileFormatFactoryType = RegistryContext.Federation.FileFormatFactory,
+            };
+
+            // Set response headers
+            Response.BufferOutput = false;
+
+            if (compression != DataFileCompression.None)
+            {
+                Response.ContentType = Jhu.Graywulf.IO.Constants.CompressionMimeTypes[compression];
+            }
+            else
+            {
+                Response.ContentType = file.Description.MimeType;
+            }
+
+            Response.AppendHeader("Content-Disposition", "attachment; filename=" + uri.ToString());
+
+            // Run export
+            var sf = FederationContext.StreamFactory;
+            using (var stream = sf.Open(Response.OutputStream, DataFileMode.Write, compression, DataFileArchival.None))
+            {
+                file.Open(stream, DataFileMode.Write);
+                task.Execute();
+                stream.Flush();
+            }
+
+            Response.End();
         }
 
-        private void RenderResults(JobInstance ji)
+        protected void RefreshFormatList()
         {
-            var q = (SqlQuery)ji.Parameters["Query"].Value;
+            fileFormat.Items.Clear();
 
+            fileFormat.Items.Add(new ListItem("(select file format)", ""));
+
+            var dfs = FederationContext.FileFormatFactory.EnumerateFileFormatDescriptions();
+
+            foreach (var df in dfs)
+            {
+                var li = new ListItem(df.DisplayName, df.MimeType);
+                fileFormat.Items.Add(li);
+            }
+        }
+
+        protected void RenderResults()
+        {
+            var q = (SqlQuery)jobInstance.Parameters["Query"].Value;
             var codegen = new SqlServerCodeGenerator();
-
             string sql = codegen.GenerateSelectStarQuery(q.Output, 100);
 
             using (var cn = FederationContext.MyDBDataset.OpenConnection())
@@ -115,27 +161,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
 
 
             output.WriteLine("</table>");
-        }
-
-        private void RenderFailed(JobInstance ji)
-        {
-            Response.Output.WriteLine("<p>An exception occured: {0}</p>", ji.ExceptionMessage);
-        }
-
-        private void RenderException(Exception ex)
-        {
-            var error = LogError(ex);
-
-            // Save exception to session for future use
-            Session[Constants.SessionException] = ex;
-            Session[Constants.SessionExceptionEventID] = error.EventId;
-
-            Server.ClearError();
-
-            Response.Output.WriteLine("<p>An exception occured: {0}</p>", ex.Message);
-            Response.Output.WriteLine(
-                "<p><a href=\"{0}\">Click here to report error.</a></p>",
-                VirtualPathUtility.MakeRelative(Page.AppRelativeVirtualPath, Jhu.Graywulf.Web.UI.Apps.Common.Feedback.GetErrorReportUrl()));
         }
     }
 }

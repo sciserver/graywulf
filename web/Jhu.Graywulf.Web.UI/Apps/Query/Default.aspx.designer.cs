@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel toolbarPanel;
+        protected global::System.Web.UI.UpdatePanel toolbarPanel;
         
         /// <summary>
         /// commentsLabel control.
@@ -101,24 +101,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label message;
-        
-        /// <summary>
-        /// ResultsDiv control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl ResultsDiv;
-        
-        /// <summary>
-        /// CloseResults control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton CloseResults;
         
         /// <summary>
         /// Query control.

@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Drawing;
-using Jhu.Graywulf.Jobs.Query;
-using Jhu.Graywulf.ParserLib;
+using System.Web;
+using System.Web.UI;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.SqlParser;
-using Jhu.Graywulf.IO;
-using Jhu.Graywulf.IO.Tasks;
-using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Query
@@ -59,13 +55,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
             if (q != null)
             {
                 var ji = ScheduleQuery(q);
-                var url = ResolveUrl(Results.GetUrl(ji.Guid));
-
-                Page.ClientScript.RegisterStartupScript(
-                    this.GetType(),
-                    "OpenWindow",
-                    "window.open('" + url + "','_newtab');",
-                    true);
+                Response.Redirect(Progress.GetUrl(ji.Guid));
             }
         }
 
@@ -79,14 +69,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
                 Response.Redirect(Jobs.Default.GetUrl(), false);
             }
         }
-
-        // TODO: use pop-up windows instead for results
-        protected void CloseResults_Click(object sender, EventArgs e)
-        {
-            ResultsDiv.Visible = false;
-            CloseResults.Visible = false;
-        }
-
+        
         #endregion
 
         /// <summary>
