@@ -49,6 +49,15 @@ namespace Jhu.Graywulf.Test.Jobs.Query
 
         [TestMethod]
         [TestCategory("Query")]
+        public void ConstantQueryTest()
+        {
+            var sql = "SELECT 1 INTO [$into]";
+
+            RunQuery(sql);
+        }
+
+        [TestMethod]
+        [TestCategory("Query")]
         public void SimpleQueryTest()
         {
             var sql = "SELECT TOP 10 * INTO [$into] FROM TEST:SampleData";

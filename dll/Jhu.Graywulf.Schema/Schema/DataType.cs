@@ -761,7 +761,7 @@ namespace Jhu.Graywulf.Schema
             res &= this.isNullable == other.isNullable;
             res &= this.isUserDefined == other.isUserDefined;
             res &= this.isTableType == other.isTableType;
-            res &= this.isAssemblyType = other.isAssemblyType;
+            res &= this.isAssemblyType == other.isAssemblyType;
 
             return res;
         }
