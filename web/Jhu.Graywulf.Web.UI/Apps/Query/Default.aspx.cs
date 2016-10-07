@@ -59,11 +59,13 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
             if (q != null)
             {
                 var ji = ScheduleQuery(q);
+                var url = ResolveUrl(Results.GetUrl(ji.Guid));
 
-                LastQueryJobGuid = ji.Guid;
-
-                ResultsDiv.Visible = true;
-                CloseResults.Visible = true;
+                Page.ClientScript.RegisterStartupScript(
+                    this.GetType(),
+                    "OpenWindow",
+                    "window.open('" + url + "','_newtab');",
+                    true);
             }
         }
 

@@ -107,20 +107,17 @@ namespace Jhu.Graywulf.Web.Controls
         {
             base.OnLoad(e);
 
-            if (!Page.IsPostBack)
-            {
-                var link = new HtmlLink();
-                link.Href = "~/Scripts/CodeMirror/lib/codemirror.css";
-                link.Attributes["rel"] = "stylesheet";
-                Page.Header.Controls.AddAt(0, link);
-            }
+            var link = new HtmlLink();
+            link.Href = "~/Scripts/CodeMirror/lib/codemirror.css";
+            link.Attributes["rel"] = "stylesheet";
+            Page.Header.Controls.AddAt(0, link);
         }
 
         protected override void OnPreRender(EventArgs e)
         {
             if (!this.DesignMode)
             {
-                Page.ClientScript.RegisterOnSubmitStatement(this.GetType(), "", 
+                Page.ClientScript.RegisterOnSubmitStatement(this.GetType(), "",
                     String.Format(
 @"
 $find('{0}${1}').onBeforeSubmit.call($find('{0}${1}'));

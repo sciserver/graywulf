@@ -38,31 +38,27 @@
     </asp:UpdatePanel>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="middle" runat="Server">
-    <asp:UpdatePanel runat="server" class="dock-fill dock-container">
-        <ContentTemplate>
-            <div runat="server" class="dock-bottom" visible="false" style="border: 1px solid #000000;"
-                id="ResultsDiv">
-                <div style="height: 150px; overflow: auto" id="results">
-                </div>
-                <script lang="javascript">
-                    loadResults();
-                </script>
-            </div>
-            <div class="dock-bottom">
-                <table class="Toolbar">
-                    <tr class="Toolbar">
-                        <td style="width: 40%">Status:
-                        </td>
-                        <td style="width: 20%; text-align: center">
-                            <asp:LinkButton ID="CloseResults" Visible="false" runat="server" OnClick="CloseResults_Click">close results pane</asp:LinkButton>&nbsp;&nbsp;&nbsp;
-                        </td>
-                        <td style="width: 80%; text-align: right; vertical-align: middle"></td>
-                    </tr>
-                </table>
-            </div>
-            <div class="dock-fill dock-container" style="border: 1px solid #000000" id="EditorDiv">
-                <jgwc:CodeMirror runat="server" ID="Query" Mode="text/x-sql" Theme="default" CssClass="dock-fill" Width="100%" Height="100%" />
-            </div>
-        </ContentTemplate>
-    </asp:UpdatePanel>
+    <div runat="server" class="dock-bottom" visible="false" style="border: 1px solid #000000;"
+        id="ResultsDiv">
+        <div style="height: 150px; overflow: auto" id="results">
+        </div>
+        <script lang="javascript">
+            loadResults();
+        </script>
+    </div>
+    <div class="dock-bottom">
+        <table class="Toolbar">
+            <tr class="Toolbar">
+                <td style="width: 40%">Status:
+                </td>
+                <td style="width: 20%; text-align: center">
+                    <asp:LinkButton ID="CloseResults" Visible="false" runat="server" OnClick="CloseResults_Click">close results pane</asp:LinkButton>&nbsp;&nbsp;&nbsp;
+                </td>
+                <td style="width: 80%; text-align: right; vertical-align: middle"></td>
+            </tr>
+        </table>
+    </div>
+    <div class="dock-fill dock-container" style="border: 1px solid #000000" id="EditorDiv">
+        <jgwc:CodeMirror runat="server" ID="Query" Mode="text/x-sql" Theme="default" CssClass="dock-fill" Width="100%" Height="100%" />
+    </div>
 </asp:Content>

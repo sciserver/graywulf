@@ -34,7 +34,8 @@ Graywulf.CodeMirror.prototype = {
                     theme: this.get_Theme()
                 }));
 
-        Sys.WebForms.PageRequestManager.getInstance().add_pageLoaded(Function.createDelegate(this, this.init));
+        var prm = Sys.WebForms.PageRequestManager.getInstance();
+        prm.add_pageLoaded(Function.createDelegate(this, this.init));
     },
 
     dispose: function () {
@@ -134,18 +135,9 @@ Graywulf.CodeMirror.prototype = {
     },
 
     init: function () {
-        try {
-            this._codeMirror.setSize(this._width, this._height);
-        } catch (ex) { }
-
-        try {
-            this._codeMirror.refresh();
-        } catch (ex) { }
-
-        try {
-            this.loadSelection();
-        } catch (ex) { }
-
+        this._codeMirror.setSize(this._width, this._height);
+        this._codeMirror.refresh();
+        this.loadSelection();
     },
 
     saveSelection: function () {
