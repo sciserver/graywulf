@@ -49,58 +49,59 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
 
         protected void Download_Click(object sender, EventArgs e)
         {
-            var compression = DataFileCompression.None;
-            var file =FederationContext.FileFormatFactory.CreateFileFromMimeType(fileFormat.SelectedValue);
-            var query = (SqlQuery)jobInstance.Parameters["Query"].Value;
-            var table = query.Output;
-
-            var uri = new Uri(table.ObjectName + file.Description.Extension, UriKind.RelativeOrAbsolute);
-            uri = FederationContext.StreamFactory.AppendCompressionExtension(uri, compression);
-            file.Uri = uri;
-            file.Compression = compression;
-
-            var task = new ExportTable()
+            if (!String.IsNullOrWhiteSpace(fileFormat.SelectedValue))
             {
-                BatchName = table.ObjectName,
-                Source = SourceTableQuery.Create(table),
-                Destination = file,
-                StreamFactoryType = RegistryContext.Federation.StreamFactory,
-                FileFormatFactoryType = RegistryContext.Federation.FileFormatFactory,
-            };
+                var compression = DataFileCompression.None;
+                var file = FederationContext.FileFormatFactory.CreateFileFromMimeType(fileFormat.SelectedValue);
+                var query = (SqlQuery)jobInstance.Parameters["Query"].Value;
+                var table = query.Output;
 
-            // Set response headers
-            Response.BufferOutput = false;
+                var uri = new Uri(table.ObjectName + file.Description.Extension, UriKind.RelativeOrAbsolute);
+                uri = FederationContext.StreamFactory.AppendCompressionExtension(uri, compression);
+                file.Uri = uri;
+                file.Compression = compression;
 
-            if (compression != DataFileCompression.None)
-            {
-                Response.ContentType = Jhu.Graywulf.IO.Constants.CompressionMimeTypes[compression];
+                var task = new ExportTable()
+                {
+                    BatchName = table.ObjectName,
+                    Source = SourceTableQuery.Create(table),
+                    Destination = file,
+                    StreamFactoryType = RegistryContext.Federation.StreamFactory,
+                    FileFormatFactoryType = RegistryContext.Federation.FileFormatFactory,
+                };
+
+                // Set response headers
+                Response.BufferOutput = false;
+
+                if (compression != DataFileCompression.None)
+                {
+                    Response.ContentType = Jhu.Graywulf.IO.Constants.CompressionMimeTypes[compression];
+                }
+                else
+                {
+                    Response.ContentType = file.Description.MimeType;
+                }
+
+                Response.AppendHeader("Content-Disposition", "attachment; filename=" + uri.ToString());
+
+                // Run export
+                var sf = FederationContext.StreamFactory;
+                using (var stream = sf.Open(Response.OutputStream, DataFileMode.Write, compression, DataFileArchival.None))
+                {
+                    file.Open(stream, DataFileMode.Write);
+                    task.Execute();
+                    stream.Flush();
+                }
+
+                Response.End();
             }
-            else
-            {
-                Response.ContentType = file.Description.MimeType;
-            }
-
-            Response.AppendHeader("Content-Disposition", "attachment; filename=" + uri.ToString());
-
-            // Run export
-            var sf = FederationContext.StreamFactory;
-            using (var stream = sf.Open(Response.OutputStream, DataFileMode.Write, compression, DataFileArchival.None))
-            {
-                file.Open(stream, DataFileMode.Write);
-                task.Execute();
-                stream.Flush();
-            }
-
-            Response.End();
         }
 
         protected void RefreshFormatList()
         {
-            fileFormat.Items.Clear();
-
-            fileFormat.Items.Add(new ListItem("(select file format)", ""));
-
             var dfs = FederationContext.FileFormatFactory.EnumerateFileFormatDescriptions();
+
+            fileFormat.Items.Clear();
 
             foreach (var df in dfs)
             {
