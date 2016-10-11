@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Web.Security
         private static ConfigurationPropertyCollection properties;
 
         private static readonly ConfigurationProperty propBaseUri = new ConfigurationProperty(
-            "baseUri", typeof(Uri), new Uri("/auth/", UriKind.Relative), ConfigurationPropertyOptions.None);
+            "baseUri", typeof(Uri), new Uri("/auth/apps/auth/", UriKind.Relative), ConfigurationPropertyOptions.None);
 
         private static readonly ConfigurationProperty propSignInUri = new ConfigurationProperty(
             "signInUri", typeof(Uri), new Uri("signIn.aspx?ReturnUrl=[$ReturnUrl]", UriKind.Relative), ConfigurationPropertyOptions.None);
