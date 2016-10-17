@@ -64,7 +64,8 @@ dis AS
 	WHERE 
 		dd.EntityGuid = @databaseDefinitionGuid AND
 		sie.DeploymentState = DeploymentState::Deployed AND sie.RunningState = RunningState::Running AND
-		mae.DeploymentState = DeploymentState::Deployed AND mae.RunningState = RunningState::Running 
+		mae.DeploymentState = DeploymentState::Deployed AND mae.RunningState = RunningState::Running AND
+        die.DeploymentState = DeploymentState::Deployed AND die.RunningState = RunningState::Attached
 )
 SELECT * 
 FROM dis
