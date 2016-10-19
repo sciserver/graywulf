@@ -12,32 +12,44 @@
 </head>
 <body class="Layout dock-container">
     <form id="theForm" runat="server" class="Layout dock-fill dock-container">
-    <asp:ScriptManager ID="scriptManager" runat="server" />
-    <table class="Layout Headline dock-top">
-        <tr>
-            <td class="HeadlineLeft">
-                <div style="width: 8px; height: 22px;"></div>
-            </td>
-            <td class="HeadlineLogo">
-                <asp:Label ID="Caption" runat="server" Text="WebUI"></asp:Label>
-            </td>
-            <td class="HeadlineUser">
-                <asp:ContentPlaceHolder runat="server" ID="userStatus" />
-            </td>
-        </tr>
-    </table>
-    <div class="LayoutMenu dock-top"><asp:ContentPlaceHolder runat="server" ID="menu" /></div>
-    <div class="LayoutToolbar dock-top"><asp:ContentPlaceHolder ID="toolbar" runat="server" /></div>
-    <table class="Layout Footline dock-bottom">
-        <tr>
-            <td class="Footline">
-                <asp:ContentPlaceHolder runat="server" ID="footer" />
-            </td>
-        </tr>
-    </table>
-    <div class="LayoutContent dock-fill dock-container">
-        <asp:ContentPlaceHolder ID="middle" runat="server" />
-    </div>
+        <asp:ScriptManager ID="scriptManager" runat="server" OnAsyncPostBackError="ScriptManager_AsyncPostBackError" />
+        <script type="text/javascript">
+            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(EndRequestHandler);
+            function EndRequestHandler(sender, args) {
+                if (args.get_error() != undefined) {
+                    window.location.href = "<%= Page.ResolveClientUrl(Jhu.Graywulf.Web.UI.Apps.Common.Error.GetUrl()) %>";
+                }
+            }
+        </script>
+        <table class="Layout Headline dock-top">
+            <tr>
+                <td class="HeadlineLeft">
+                    <div style="width: 8px; height: 22px;"></div>
+                </td>
+                <td class="HeadlineLogo">
+                    <asp:Label ID="Caption" runat="server" Text="WebUI"></asp:Label>
+                </td>
+                <td class="HeadlineUser">
+                    <asp:ContentPlaceHolder runat="server" ID="userStatus" />
+                </td>
+            </tr>
+        </table>
+        <div class="LayoutMenu dock-top">
+            <asp:ContentPlaceHolder runat="server" ID="menu" />
+        </div>
+        <div class="LayoutToolbar dock-top">
+            <asp:ContentPlaceHolder ID="toolbar" runat="server" />
+        </div>
+        <table class="Layout Footline dock-bottom">
+            <tr>
+                <td class="Footline">
+                    <asp:ContentPlaceHolder runat="server" ID="footer" />
+                </td>
+            </tr>
+        </table>
+        <div class="LayoutContent dock-fill dock-container">
+            <asp:ContentPlaceHolder ID="middle" runat="server" />
+        </div>
     </form>
 </body>
 </html>

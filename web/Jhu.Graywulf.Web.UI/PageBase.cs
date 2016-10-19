@@ -143,10 +143,10 @@ namespace Jhu.Graywulf.Web.UI
                 registryContext.Dispose();
                 registryContext = null;
             }
+            
+            base.OnError(e);
 
             Server.ClearError();
-
-            base.OnError(e);
 
             Response.Redirect(Jhu.Graywulf.Web.UI.Apps.Common.Error.GetUrl(), false);
         }
