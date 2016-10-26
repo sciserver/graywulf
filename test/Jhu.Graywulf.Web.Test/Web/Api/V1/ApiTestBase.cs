@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 Credentials = new Credentials()
                 {
                     Username = user,
-                    Password = "alma"
+                    Password = "almafa"
                 }
             };
 

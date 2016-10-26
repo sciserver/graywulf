@@ -12,7 +12,7 @@ using Jhu.Graywulf.RemoteService;
 namespace Jhu.Graywulf.Tasks
 {
     [TestClass]
-    public class CancelableProcessTest
+    public class CancelableProcessTest : Jhu.Graywulf.Test.TestClassBase
     {
         [TestMethod]
         public void CancelProcessTest()
@@ -43,7 +43,7 @@ namespace Jhu.Graywulf.Tasks
         {
             var pinfo = new ProcessStartInfo()
             {
-                FileName = @"..\..\..\graywulf\util\eseutil.exe",
+                FileName = GetTestFilePath(@"graywulf\util\eseutil.exe"),
                 Arguments = "/y",
                 UseShellExecute = false,
                 CreateNoWindow = true,

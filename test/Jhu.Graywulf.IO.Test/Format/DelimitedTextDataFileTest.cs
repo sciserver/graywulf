@@ -384,9 +384,11 @@ testline
                 }
             }
 
+            // TODO: make sure timestamps column doesn't change
+
             Assert.AreEqual(
 @"#BigIntColumn,NumericColumn,BitColumn,SmallIntColumn,DecimalColumn,SmallMoneyColumn,IntColumn,TinyIntColumn,MoneyColumn,FloatColumn,RealColumn,DateColumn,DateTimeOffsetColumn,DateTime2Column,SmallDateTimeColumn,DateTimeColumn,TimeColumn,CharColumn,VarCharColumn,VarCharMaxColumn,TextColumn,NCharColumn,NVarCharColumn,NVarCharMaxColumn,NTextColumn,BinaryColumn,VarBinaryColumn,VarBinaryMaxColumn,ImageColumn,TimeStampColumn,UniqueIdentifierColumn
-1234567890,123,True,12345,1235,123456.8900,123456789,123,1234567.8900,123.456789,1.234568,01/01/2014 00:00:00,01/01/2014 11:59:59 +01:00,01/01/2014 11:59:59,01/01/2014 12:00:00,01/01/2014 11:59:59,11:59:59.1230000,""0123456789"",""012345"",""1234567890"",""1234567890"",""áíűőüöúóé "",""áíűőüöúóé"",""áíűőüöúóé"",""áíűőüöúóé"",0x1234567890,0x12345,0x1234567890,0x1234567890,0x0000007D1,a4466a24-5140-4efb-bb7d-0e4b4f34a75e
+1234567890,123,True,12345,1235,123456.8900,123456789,123,1234567.8900,123.456789,1.234568,01/01/2014 00:00:00,01/01/2014 11:59:59 +01:00,01/01/2014 11:59:59,01/01/2014 12:00:00,01/01/2014 11:59:59,11:59:59.1230000,""0123456789"",""012345"",""1234567890"",""1234567890"",""áíűőüöúóé "",""áíűőüöúóé"",""áíűőüöúóé"",""áíűőüöúóé"",0x1234567890,0x12345,0x1234567890,0x1234567890,0x0000002711,a4466a24-5140-4efb-bb7d-0e4b4f34a75e
 ",
                 w.ToString());
 
