@@ -41,21 +41,21 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
         public void SelectNoAliasTest()
         {
             var res = CreateList(ColumnListType.SelectWithEscapedNameNoAlias);
-            Assert.AreEqual("[_TEST_dbo_Book_b_Title], [_TEST_dbo_Book_b_Year]", res);
+            Assert.AreEqual("[b].[_TEST_dbo_Book_b_Title], [b].[_TEST_dbo_Book_b_Year]", res);
         }
 
         [TestMethod]
         public void SelectWithOriginalNameTest()
         {
             var res = CreateList(ColumnListType.SelectWithOriginalName);
-            Assert.AreEqual("[Title] AS [_TEST_dbo_Book_b_Title], [Year] AS [_TEST_dbo_Book_b_Year]", res);
+            Assert.AreEqual("[b].[Title] AS [_TEST_dbo_Book_b_Title], [b].[Year] AS [_TEST_dbo_Book_b_Year]", res);
         }
 
         [TestMethod]
         public void SelectWithEscapedNameTest()
         {
             var res = CreateList(ColumnListType.SelectWithEscapedName);
-            Assert.AreEqual("[_TEST_dbo_Book_b_Title], [_TEST_dbo_Book_b_Year]", res);
+            Assert.AreEqual("[b].[_TEST_dbo_Book_b_Title], [b].[_TEST_dbo_Book_b_Year]", res);
         }
 
         [TestMethod]

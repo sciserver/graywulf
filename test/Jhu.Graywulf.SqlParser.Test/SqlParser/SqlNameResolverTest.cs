@@ -90,7 +90,7 @@ namespace Jhu.Graywulf.SqlParser.Test
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            Assert.AreEqual(ColumnContext.From, ts[0].ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.From | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
             Assert.AreEqual(ColumnContext.SelectList, ts[0].ColumnReferences[1].ColumnContext);
 
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
@@ -118,7 +118,7 @@ namespace Jhu.Graywulf.SqlParser.Test
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            Assert.AreEqual(ColumnContext.Where, ts[0].ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.Where | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
             Assert.AreEqual(ColumnContext.SelectList, ts[0].ColumnReferences[1].ColumnContext);
 
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
@@ -140,7 +140,7 @@ namespace Jhu.Graywulf.SqlParser.Test
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            Assert.AreEqual(ColumnContext.SelectList | ColumnContext.GroupBy, ts[0].ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.SelectList | ColumnContext.GroupBy | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
             Assert.AreEqual(ColumnContext.SelectList, ts[0].ColumnReferences[1].ColumnContext);
 
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();
@@ -165,7 +165,7 @@ namespace Jhu.Graywulf.SqlParser.Test
             Assert.AreEqual("Author", ts[0].DatabaseObjectName);
             Assert.AreEqual(null, ts[0].Alias);
 
-            Assert.AreEqual(ColumnContext.SelectList | ColumnContext.GroupBy, ts[0].ColumnReferences[0].ColumnContext);
+            Assert.AreEqual(ColumnContext.SelectList | ColumnContext.GroupBy | ColumnContext.PrimaryKey, ts[0].ColumnReferences[0].ColumnContext);
             Assert.AreEqual(ColumnContext.SelectList | ColumnContext.Having, ts[0].ColumnReferences[1].ColumnContext);
 
             var cs = qs.ResultsTableReference.ColumnReferences.ToArray();

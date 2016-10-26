@@ -117,6 +117,11 @@ namespace Jhu.Graywulf.SqlCodeGen
         /// <summary>
         /// To use in join condition with the same column names
         /// </summary>
-        JoinCondition
+        JoinConditionWithOriginalName,
+
+        /// <summary>
+        /// Join condition with escaped column name
+        /// </summary>
+        JoinConditionWithEscapedName
     }
 }

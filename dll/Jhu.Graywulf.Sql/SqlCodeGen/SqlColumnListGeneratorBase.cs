@@ -167,8 +167,11 @@ namespace Jhu.Graywulf.SqlCodeGen
                 case ColumnListType.SelectWithEscapedNameNoAlias:
                     format = "{0}{1}";
                     break;
-                case ColumnListType.JoinCondition:
-                    format = "{0}.{2} = {5}.{2}";
+                case ColumnListType.JoinConditionWithOriginalName:
+                    format = "{0}{2} = {5}{2}";
+                    break;
+                case ColumnListType.JoinConditionWithEscapedName:
+                    format = "{0}{1} = {5}{1}";
                     break;
                 default:
                     throw new NotImplementedException();
@@ -183,7 +186,7 @@ namespace Jhu.Graywulf.SqlCodeGen
 
             switch (listType)
             {
-                case ColumnListType.JoinCondition:
+                case ColumnListType.JoinConditionWithOriginalName:
                     separator = " AND ";
                     break;
                 default:
@@ -216,6 +219,11 @@ namespace Jhu.Graywulf.SqlCodeGen
             }
 
             return alias;
+        }
+
+        private string GetJoinedTableAlias()
+        {
+            return QuoteIdentifier(joinedTableAlias) + ".";
         }
 
         private string GetNullSpec(ColumnReference column, string nullstring)
@@ -255,6 +263,7 @@ namespace Jhu.Graywulf.SqlCodeGen
                 }
 
                 var alias = GetTableAlias(column.TableReference);
+                var jalias = GetJoinedTableAlias();
                 string nullspec = GetNullSpec(column, nullstring);
 
                 columnlist.AppendFormat(
@@ -264,7 +273,7 @@ namespace Jhu.Graywulf.SqlCodeGen
                     QuoteIdentifier(column.ColumnName),
                     column.DataType.TypeNameWithLength,
                     nullspec,
-                    joinedTableAlias);
+                    jalias);
             }
 
             return columnlist.ToString();

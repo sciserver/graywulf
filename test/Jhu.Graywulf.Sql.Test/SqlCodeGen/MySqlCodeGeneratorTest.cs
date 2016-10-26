@@ -140,7 +140,7 @@ WHERE b.ID = 1";
 
             var gt =
 @"SELECT 
-`ID`, `Title`
+`b`.`ID`, `b`.`Title`
  FROM `Book`AS `b` 
 WHERE `b`.`ID` = 1
 ";
@@ -161,14 +161,14 @@ WHERE b.ID = 1 AND a.ID IN (3, 4)";
 
             var gta =
 @"SELECT 
-`ID`, `Title`
+`a`.`ID`, `a`.`Title`
  FROM `Book`AS `a` 
 WHERE `a`.`ID` IN (3, 4)
 ";
 
             var gtb =
 @"SELECT 
-`ID`
+`b`.`ID`
  FROM `Book`AS `b` 
 WHERE `b`.`ID` = 1
 ";
