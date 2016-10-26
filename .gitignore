@@ -10,6 +10,7 @@ exe/Jhu.Graywulf.Metadata.CmdLineUtil/App.config
 exe/Jhu.Graywulf.RemoteService.Server/App.config
 exe/Jhu.Graywulf.Scheduler/App.config
 exe/Jhu.Graywulf.SqlParser.UI/App.config
+test/Jhu.Graywulf.Install.Test/App.config
 test/Jhu.Graywulf.IO.Test/App.config
 test/Jhu.Graywulf.Jobs.Test/App.config
 test/Jhu.Graywulf.Registry.Test/App.config
@@ -22,6 +23,11 @@ web/Jhu.Graywulf.Web.Admin/Web.config
 web/Jhu.Graywulf.Web.Auth/Web.config
 web/Jhu.Graywulf.Web.Shared/web.config
 web/Jhu.Graywulf.Web.UI/Web.config
+/web/Jhu.Graywulf.Web.Admin/Scripts/jQuery-Validation-Unobtrusive
+/web/Jhu.Graywulf.Web.Admin/Scripts/jQuery-Validation
+/web/Jhu.Graywulf.Web.UI/Scripts/jQuery-Validation-Unobtrusive
+/web/Jhu.Graywulf.Web.UI/Scripts/jQuery-Validation
+/web/Jhu.Graywulf.Web.Admin/Apps
 
 ## Linked from other projects
 
