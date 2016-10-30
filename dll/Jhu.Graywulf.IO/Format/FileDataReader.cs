@@ -122,10 +122,12 @@ namespace Jhu.Graywulf.Format
             this.rowCounter = -1;
         }
 
-        public void Dispose()
+        public new void Dispose()
         {
             this.file = null;
             this.columnIndex = null;
+
+            base.Dispose();
         }
 
         #endregion

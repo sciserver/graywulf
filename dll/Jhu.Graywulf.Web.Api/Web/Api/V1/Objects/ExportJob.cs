@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             InitializeMembers();
         }
 
-        public static ExportJob FromJobInstance(JobInstance jobInstance)
+        public static new ExportJob FromJobInstance(JobInstance jobInstance)
         {
             var job = new ExportJob();
             job.LoadFromRegistryObject(jobInstance);

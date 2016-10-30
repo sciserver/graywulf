@@ -153,7 +153,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                     ObjectList.Items.Add(li);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 ObjectList.Items.Clear();
                 var li = new ListItem("(not available)", "");

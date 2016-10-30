@@ -369,8 +369,6 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
                         Assert.IsTrue(columns.Count == 31);
 
-                        var o = 0;
-
                         Assert.IsTrue(columns[0].DataType.TypeNameWithLength == "bigint");
                         Assert.IsTrue(columns[1].DataType.TypeNameWithLength == "decimal");                   // precision?
                         Assert.IsTrue(columns[2].DataType.TypeNameWithLength == "bit");

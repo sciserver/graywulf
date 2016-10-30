@@ -159,7 +159,7 @@ namespace Jhu.Graywulf.SqlCodeGen
             }
             else
             {
-                string name, alias;
+                string name;
 
                 if (table.DatabaseObject != null)
                 {

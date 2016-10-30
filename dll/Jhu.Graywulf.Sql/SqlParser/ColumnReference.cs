@@ -292,7 +292,7 @@ namespace Jhu.Graywulf.SqlParser
         /// <remarks>
         /// Never use this in query generation!
         /// </remarks>
-        public string ToString()
+        public override string ToString()
         {
             var res = String.Empty;
 

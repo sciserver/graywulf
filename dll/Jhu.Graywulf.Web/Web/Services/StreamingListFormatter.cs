@@ -60,7 +60,7 @@ namespace Jhu.Graywulf.Web.Services
             var accept = WebOperationContext.Current.IncomingRequest.GetAcceptHeaderElements();
 
             StreamBodyWriter writer = null;
-            string mimetype;
+            string mimetype = Constants.MimeTypeXml;
 
             foreach (var a in accept)
             {
@@ -85,7 +85,7 @@ namespace Jhu.Graywulf.Web.Services
                 mimetype = Constants.MimeTypeXml;
             }
 
-            var message = WebOperationContext.Current.CreateStreamResponse(writer, Constants.MimeTypeXml);
+            var message = WebOperationContext.Current.CreateStreamResponse(writer, mimetype);
             return message;
         }
 

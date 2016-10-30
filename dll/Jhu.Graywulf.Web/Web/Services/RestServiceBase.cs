@@ -134,7 +134,7 @@ namespace Jhu.Graywulf.Web.Services
 
         internal Logging.Event OnError(string operationName, Exception ex)
         {
-            return LogError(operationName, ex);
+            var e = LogError(operationName, ex);
 
             if (registryContext != null)
             {
@@ -142,6 +142,8 @@ namespace Jhu.Graywulf.Web.Services
                 registryContext.Dispose();
                 registryContext = null;
             }
+
+            return e;
         }
 
         private Logging.Event LogError(string operationName, Exception ex)

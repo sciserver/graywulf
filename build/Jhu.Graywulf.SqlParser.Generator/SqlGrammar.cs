@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Symbol> BitwiseOr = () => @"|";
         public static Expression<Symbol> BitwiseXor = () => @"^";
 
-        public static Expression<Symbol> Equals = () => @"=";
+        public static Expression<Symbol> Equals1 = () => @"=";
         public static Expression<Symbol> Equals2 = () => @"==";
         public static Expression<Symbol> LessOrGreaterThan = () => @"<>";
         public static Expression<Symbol> NotEquals = () => @"!=";
@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Rule> BitwiseOperator = () =>
             Must(BitwiseAnd, BitwiseOr, BitwiseXor);
         public static Expression<Rule> ComparisonOperator = () =>
-            Must(Equals2, Equals, LessOrGreaterThan, NotEquals,
+            Must(Equals2, Equals1, LessOrGreaterThan, NotEquals,
             NotLessThan, NotGreaterThan, LessThanOrEqual, GreaterThanOrEqual,
             LessThan, GreaterThan);
 
@@ -376,7 +376,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
         public static Expression<Rule> ColumnExpression = () =>
             Must
             (
-                Sequence(ColumnAlias, May(CommentOrWhitespace), Equals, May(CommentOrWhitespace), Expression),
+                Sequence(ColumnAlias, May(CommentOrWhitespace), Equals1, May(CommentOrWhitespace), Expression),
                 Sequence(Expression, May(Sequence(May(Sequence(CommentOrWhitespace, Keyword("AS"))), CommentOrWhitespace, ColumnAlias)))
             );
 

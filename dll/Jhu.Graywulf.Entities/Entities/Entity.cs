@@ -447,7 +447,7 @@ SELECT @@ROWCOUNT;
         protected bool CheckExists(EntityEventArgs e)
         {
             OnCheckingExists(e);
-
+            
             if (e.Cancel)
             {
                 return false;
@@ -456,10 +456,9 @@ SELECT @@ROWCOUNT;
             using (var cmd = GetCheckExistsCommand())
             {
                 var res = (int)Context.ExecuteCommandScalar(cmd);
+                OnCheckedExists(e);
                 return res == 1;
             }
-
-            OnCheckedExists(e);
         }
 
         protected virtual void OnCheckingExists(EntityEventArgs e)

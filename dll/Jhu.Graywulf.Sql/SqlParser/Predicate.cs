@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.SqlParser
 
         public static Predicate CreateEquals(Expression a, Expression b)
         {
-            return Create(a, b, new Equals());
+            return Create(a, b, new Equals1());
         }
 
         public static Predicate CreateLessThan(Expression a, Expression b)

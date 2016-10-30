@@ -56,6 +56,7 @@ namespace Jhu.Graywulf.Registry
         {
             throw new NotImplementedException();
 
+            /*
             LoadUserGroupMemberships(true);
 
             foreach (var ugm in UserGroupMemberships.Values)
@@ -67,6 +68,7 @@ namespace Jhu.Graywulf.Registry
             }
 
             LoadUserGroupMemberships(true);
+            */
         }
 
         public bool IsMemberOfGroup(Guid userGroupGuid, Guid userRoleGuid)

@@ -44,7 +44,7 @@ namespace Jhu.Graywulf.Scheduler
             OnStart(args);
         }
 
-        internal void Stop()
+        internal new void Stop()
         {
             OnStop();
         }
