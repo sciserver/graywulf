@@ -154,6 +154,7 @@
     <Content Include="Federation\SliceForm.aspx" />
     <Content Include="Federation\SlicingWizard.aspx" />
     <Content Include="Global.asax" />
+    <Content Include="gwconfig.xml" />
     <Content Include="Icons\Large\Cluster.gif" />
     <Content Include="Icons\Large\DatabaseDefinition.gif" />
     <Content Include="Icons\Large\DatabaseInstance.gif" />
@@ -1602,9 +1603,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Web.original.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Docs\Docs.master" />
     <Content Include="User\Web.config" />
   </ItemGroup>
@@ -1630,6 +1628,9 @@
     <Content Include="packages.config" />
     <Content Include="App_Masters\Basic\Basic.master" />
     <Content Include="App_Masters\Basic\UI.master" />
+    <Content Include="Base.config" />
+    <Content Include="pre-build.ps1" />
+    <Content Include="post-build.ps1" />
     <None Include="Scripts\CodeMirror\mode\livescript\livescript.ls" />
   </ItemGroup>
   <ItemGroup>
@@ -1661,14 +1662,8 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Web.Admin
-
-
-if not exist $(ProjectDir)App_Masters\Basic mklink /D $(ProjectDir)App_Masters\Basic $(SolutionDir)graywulf\web\Jhu.Graywulf.Web.UI\App_Masters\Basic
-if not exist $(ProjectDir)App_Themes\Basic mklink /D $(ProjectDir)App_Themes\Basic $(SolutionDir)graywulf\web\Jhu.Graywulf.Web.UI\App_Themes\Basic
-
-if not exist $(ProjectDir)Apps\Common mklink /D $(ProjectDir)Apps\Common $(SolutionDir)graywulf\web\Jhu.Graywulf.Web.UI\Apps\Common
-if not exist $(ProjectDir)Apps\Docs mklink /D $(ProjectDir)Apps\Docs $(SolutionDir)graywulf\web\Jhu.Graywulf.Web.UI\Apps\Docs
+    <PreBuildEvent>cd "$(ProjectDir)"
+powershell -file pre-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(ConfigurationName) $(TargetName)
 </PreBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
@@ -1678,6 +1673,10 @@ if not exist $(ProjectDir)Apps\Docs mklink /D $(ProjectDir)Apps\Docs $(SolutionD
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>cd "$(ProjectDir)"
+powershell -file post-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(ConfigurationName) $(TargetName)</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -8,11 +8,11 @@
 	[string]$TargetName
 )
 
-. ../web-build.ps1
+. ../lib-build.ps1
 
 & "${SolutionDir}${OutDir}${ConfigurationName}\gwconfig.exe" merge $SolutionDir$SolutionName.sln $ProjectName
 
 Add-Master Basic
 Add-Theme Basic
 Add-App Common
-Add-App Auth
+Add-App Docs

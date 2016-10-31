@@ -140,9 +140,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Web.original.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Apps\" />
     <Folder Include="App_Masters\" />
     <Folder Include="App_Themes\" />
@@ -152,6 +149,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="post-build.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Base.config" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

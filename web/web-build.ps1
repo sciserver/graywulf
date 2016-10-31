@@ -16,3 +16,15 @@ function New-Link($path, $target) {
 	# create link
 	cmd /c mklink /D "$path" "$target"
 }
+
+function Add-Master($name) {
+	New-Link "${ProjectDir}App_Masters\$name" "${SolutionDir}graywulf\web\Jhu.Graywulf.Web.UI\App_Masters\$name"
+}
+
+function Add-Theme($name) {
+	New-Link "${ProjectDir}App_Themes\$name" "${SolutionDir}graywulf\web\Jhu.Graywulf.Web.UI\App_Themes\$name"
+}
+
+function Add-App($name) {
+	New-Link "${ProjectDir}Apps\$name" "${SolutionDir}graywulf\web\Jhu.Graywulf.Web.UI\Apps\$name"
+}
