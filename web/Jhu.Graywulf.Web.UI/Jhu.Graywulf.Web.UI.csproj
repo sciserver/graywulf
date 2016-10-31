@@ -602,6 +602,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="gwconfig.xml" />
     <Content Include="Scripts\Bootstrap\css\bootstrap-theme.css" />
     <Content Include="Scripts\Bootstrap\css\bootstrap-theme.min.css" />
     <Content Include="Scripts\Bootstrap\css\bootstrap.css" />
@@ -1072,7 +1073,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <Content Include="Web.original.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Controls\Labels.resx">
@@ -1119,9 +1119,15 @@
   <ItemGroup>
     <Content Include="App_Masters\Basic\UI.master" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Base.config" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Apps\Api\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="post-build.ps1" />
+    <Content Include="pre-build.ps1" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -1138,7 +1144,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>39577</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost/gwui</IISUrl>
+          <IISUrl>http://localhost/dobos/gwui</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
@@ -1149,7 +1155,8 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Web.UI</PreBuildEvent>
+    <PreBuildEvent>cd "$(ProjectDir)"
+powershell -file pre-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(ConfigurationName) $(TargetName)</PreBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -1158,6 +1165,10 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>cd "$(ProjectDir)"
+powershell -file post-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(ConfigurationName) $(TargetName)</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
