@@ -86,33 +86,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RemoteServiceControl.cs" />
-    <Compile Include="RemoteService.cs">
+    <Compile Include="RemoteService\Server\Program.cs" />
+    <Compile Include="RemoteService\Server\RemoteService.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="RemoteService.Designer.cs">
+    <Compile Include="RemoteService\Server\RemoteService.Designer.cs">
       <DependentUpon>RemoteService.cs</DependentUpon>
     </Compile>
-    <Compile Include="RemoteServiceInstaller.cs">
+    <Compile Include="RemoteService\Server\RemoteServiceControl.cs" />
+    <Compile Include="RemoteService\Server\RemoteServiceInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="RemoteServiceInstaller.Designer.cs">
+    <Compile Include="RemoteService\Server\RemoteServiceInstaller.Designer.cs">
       <DependentUpon>RemoteServiceInstaller.cs</DependentUpon>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="RemoteService.resx">
-      <DependentUpon>RemoteService.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="RemoteServiceInstaller.resx">
-      <DependentUpon>RemoteServiceInstaller.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="App.original.config" />
+    <None Include="Base.config" />
+    <None Include="post-build.ps1" />
+    <None Include="pre-build.ps1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
@@ -128,18 +122,25 @@
       <Name>Jhu.Graywulf.RemoteService</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="RemoteService\Server\RemoteService.resx">
+      <DependentUpon>RemoteService.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RemoteService\Server\RemoteServiceInstaller.resx">
+      <DependentUpon>RemoteServiceInstaller.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="gwconfig.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.RemoteService.Server</PreBuildEvent>
+    <PreBuildEvent>cd "$(ProjectDir)"
+powershell -file pre-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(TargetName)</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy $(ProjectDir)..\..\util\eseutil.exe $(TargetDir)
-copy $(ProjectDir)..\..\util\ese.dll $(TargetDir)
-copy $(ProjectDir)..\..\util\eseutil.exe $(SolutionDir)$(OutDir)
-copy $(ProjectDir)..\..\util\ese.dll $(SolutionDir)$(OutDir)
-copy $(TargetPath) $(SolutionDir)$(OutDir)
-copy $(TargetPath).config $(SolutionDir)$(OutDir)
-copy $(TargetDir)$(TargetName).pdb $(SolutionDir)$(OutDir)</PostBuildEvent>
+    <PostBuildEvent>cd "$(ProjectDir)"
+powershell -file post-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(TargetName)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
