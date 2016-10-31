@@ -42,16 +42,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DatabaseVerbBase.cs" />
-    <Compile Include="Export.cs" />
-    <Compile Include="Import.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="IO\CmdLineUtil\DatabaseVerbBase.cs" />
+    <Compile Include="IO\CmdLineUtil\Export.cs" />
+    <Compile Include="IO\CmdLineUtil\Import.cs" />
+    <Compile Include="IO\CmdLineUtil\Program.cs" />
+    <Compile Include="IO\CmdLineUtil\Verb.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Verb.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.original.config" />
     <None Include="App.config" />
+    <None Include="Base.config" />
+    <None Include="post-build.ps1" />
+    <None Include="pre-build.ps1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
@@ -75,14 +77,19 @@
       <Name>Jhu.Graywulf.Sql</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="gwconfig.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)
-copy $(TargetPath).config $(SolutionDir)$(OutDir)
-copy $(TargetDir)$(TargetName).pdb $(SolutionDir)$(OutDir)</PostBuildEvent>
+    <PostBuildEvent>cd "$(ProjectDir)"
+powershell -file post-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(TargetName)
+</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj $(ProjectName)</PreBuildEvent>
+    <PreBuildEvent>cd "$(ProjectDir)"
+powershell -file pre-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(TargetName)</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
