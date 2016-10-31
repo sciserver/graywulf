@@ -69,6 +69,7 @@
     <Content Include="Api\V1\Auth.svc" />
     <Content Include="Check.aspx" />
     <Content Include="Global.asax" />
+    <Content Include="gwconfig.xml" />
     <Content Include="packages.config" />
     <Content Include="Scripts\Bootstrap\css\bootstrap-theme.css" />
     <Content Include="Scripts\Bootstrap\css\bootstrap-theme.min.css" />
@@ -146,6 +147,12 @@
     <Folder Include="App_Masters\" />
     <Folder Include="App_Themes\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="pre-build.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="post-build.ps1" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -161,7 +168,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>37815</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost/auth</IISUrl>
+          <IISUrl>http://localhost/dobos/auth</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
@@ -172,14 +179,13 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Web.Auth
-
-if not exist $(ProjectDir)App_Masters\Basic mklink /D $(ProjectDir)App_Masters\Basic $(SolutionDir)graywulf\web\Jhu.Graywulf.Web.UI\App_Masters\Basic
-if not exist $(ProjectDir)App_Themes\Basic mklink /D $(ProjectDir)App_Themes\Basic $(SolutionDir)graywulf\web\Jhu.Graywulf.Web.UI\App_Themes\Basic
-
-if not exist $(ProjectDir)Apps\Common mklink /D $(ProjectDir)Apps\Common $(SolutionDir)graywulf\web\Jhu.Graywulf.Web.UI\Apps\Common
-if not exist $(ProjectDir)Apps\Auth mklink /D $(ProjectDir)Apps\Auth $(SolutionDir)graywulf\web\Jhu.Graywulf.Web.UI\Apps\Auth
+    <PreBuildEvent>cd "$(ProjectDir)"
+powershell -file pre-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(ConfigurationName) $(TargetName)
 </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>cd "$(ProjectDir)"
+powershell -file post-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(ConfigurationName) $(TargetName)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
