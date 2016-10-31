@@ -1,6 +1,4 @@
 function New-Link($path, $target) {
-	Write-Host "Creating link to $target"
-
 	# if dir doesn't not exists, create it to create ascendants
 	if (!(Test-Path "$path")) {
 		mkdir "$path" 
@@ -10,7 +8,7 @@ function New-Link($path, $target) {
 	# directiories are created by VS automatically and mklink cannot overwrite it
 	# need to use cmd here, powershell doesn't support symbolic links
 	if (Test-Path "$path") { 
-		cmd /c rmdir "$path"
+		cmd /c rmdir /s /q "$path"
 	}
 
 	# create link
@@ -27,4 +25,8 @@ function Add-Theme($name) {
 
 function Add-App($name) {
 	New-Link "${ProjectDir}Apps\$name" "${SolutionDir}graywulf\web\Jhu.Graywulf.Web.UI\Apps\$name"
+}
+
+function Add-Script($package, $name) {
+	New-Link "${ProjectDir}Scripts\$name" "${SolutionDir}packages\$package\content\Scripts\$name"
 }

@@ -28,6 +28,8 @@ web/Jhu.Graywulf.Web.UI/Web.config
 /web/Jhu.Graywulf.Web.UI/Scripts/jQuery-Validation-Unobtrusive
 /web/Jhu.Graywulf.Web.UI/Scripts/jQuery-Validation
 /web/Jhu.Graywulf.Web.Admin/Apps
+/web/Jhu.Graywulf.Web.Auth/Scripts/jQuery-Validation
+/web/Jhu.Graywulf.Web.Auth/Scripts/jQuery-Validation-Unobtrusive
 
 ## Linked from other projects
 
@@ -269,3 +271,4 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+
