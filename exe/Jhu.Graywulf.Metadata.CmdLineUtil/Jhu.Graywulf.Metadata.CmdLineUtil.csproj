@@ -69,16 +69,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DatabaseVerbBase.cs" />
-    <Compile Include="Import.cs" />
-    <Compile Include="Delete.cs" />
-    <Compile Include="Export.cs" />
-    <Compile Include="Parse.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Metadata\CmdLineUtil\DatabaseVerbBase.cs" />
+    <Compile Include="Metadata\CmdLineUtil\Delete.cs" />
+    <Compile Include="Metadata\CmdLineUtil\Export.cs" />
+    <Compile Include="Metadata\CmdLineUtil\Import.cs" />
+    <Compile Include="Metadata\CmdLineUtil\Parse.cs" />
+    <Compile Include="Metadata\CmdLineUtil\Program.cs" />
+    <Compile Include="Metadata\CmdLineUtil\Validate.cs" />
+    <Compile Include="Metadata\CmdLineUtil\Verb.cs" />
+    <Compile Include="Metadata\CmdLineUtil\Verify.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Validate.cs" />
-    <Compile Include="Verb.cs" />
-    <Compile Include="Verify.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
@@ -109,16 +109,23 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="App.original.config" />
+    <None Include="Base.config" />
+    <None Include="post-build.ps1" />
+    <None Include="pre-build.ps1" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="gwconfig.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)..\..\build\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Metadata.CmdLineUtil</PreBuildEvent>
+    <PreBuildEvent>cd "$(ProjectDir)"
+powershell -file pre-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(TargetName)</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)
-copy $(TargetPath).config $(SolutionDir)$(OutDir)
-copy $(TargetDir)$(TargetName).pdb $(SolutionDir)$(OutDir)</PostBuildEvent>
+    <PostBuildEvent>cd "$(ProjectDir)"
+powershell -file post-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(TargetName)
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
