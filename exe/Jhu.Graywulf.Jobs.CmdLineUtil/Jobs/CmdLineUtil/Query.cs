@@ -18,8 +18,6 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
         protected string outputTable;
         protected string taskName;
 
-        protected QueryBase query;
-
         [Parameter(Name = "InputFile", Description = "File containing query.", Required = true)]
         public string InputFile
         {
@@ -56,26 +54,16 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
         private void InitializeMembers()
         {
             this.inputFile = null;
-            this.query = null;
             this.outputTable = null;
             this.taskName = null;
         }
 
         public override void Run()
         {
-            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
-            {
-                EntityFactory ef = new EntityFactory(context);
-                Federation f = (Federation)ef.LoadStronglyTypedEntity(Federation.AppSettings.FederationName);
+            throw new NotImplementedException();
 
-                QueryFactory qf = new SqlQueryFactory();
-                QueryBase query = qf.CreateQuery(File.ReadAllText(inputFile), ExecutionMode.Graywulf, outputTable, taskName);
-
-                
-                string queuename = String.Format("{0}.{1}", f.ControllerMachine.GetFullyQualifiedName(), queueName);
-                JobInstance job = qf.ScheduleAsJob(query, queueName);
-                job.Save();
-            }
+            // TODO: implement query submission logic
+            // might require user authentication!
         }
     }
 }

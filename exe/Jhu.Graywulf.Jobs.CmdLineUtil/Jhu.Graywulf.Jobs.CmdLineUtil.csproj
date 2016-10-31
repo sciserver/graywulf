@@ -8,7 +8,7 @@
     <ProjectGuid>{1844E778-F94F-4F73-A2DA-7694CE00ADC0}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Jhu.Graywulf.Jobs.CmdLineUtil</RootNamespace>
+    <RootNamespace>Jhu.Graywulf</RootNamespace>
     <AssemblyName>gwjobs</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
@@ -82,13 +82,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Mirror.cs" />
-    <Compile Include="Parameters.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Program.cs" />
+    <Compile Include="Jobs\CmdLineUtil\Mirror.cs" />
+    <Compile Include="Jobs\CmdLineUtil\Parameters.cs" />
+    <Compile Include="Jobs\CmdLineUtil\Program.cs" />
+    <Compile Include="Jobs\CmdLineUtil\Query.cs" />
+    <Compile Include="Jobs\CmdLineUtil\Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Test.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
@@ -122,16 +121,22 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="App.original.config" />
+    <None Include="Base.config" />
+    <None Include="post-build.ps1" />
+    <None Include="pre-build.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="gwconfig.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)..\..\build\\Jhu.Graywulf.ConfigUtil\bin\$(ConfigurationName)\gwconfig.exe configure -root $(SolutionDir) -config Config\Configurations.xml -proj Jhu.Graywulf.Jobs.CmdLineUtil</PreBuildEvent>
+    <PreBuildEvent>cd "$(ProjectDir)"
+powershell -file pre-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(TargetName)</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)
-copy $(TargetPath).config $(SolutionDir)$(OutDir)
-copy $(TargetDir)$(TargetName).pdb $(SolutionDir)$(OutDir)</PostBuildEvent>
+    <PostBuildEvent>cd "$(ProjectDir)"
+powershell -file post-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(TargetName)
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
