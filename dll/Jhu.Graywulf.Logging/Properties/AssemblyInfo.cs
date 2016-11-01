@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark(Jhu.Graywulf.Copyright.InfoTrademark)]
 [assembly: AssemblyCulture(Jhu.Graywulf.Copyright.InfoCulture)]
 
-[assembly: AssemblyVersion(Jhu.Graywulf.Copyright.AssemblyVersion)]
+[assembly: AssemblyVersion("1.2.6148.3")]
 
 [assembly: ComVisible(false)]
 [assembly: Guid("8fa2bb06-f041-4609-b97c-c079ef5ad010")]

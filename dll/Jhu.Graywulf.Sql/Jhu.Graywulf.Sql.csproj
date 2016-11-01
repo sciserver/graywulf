@@ -203,17 +203,17 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="post-build.ps1" />
+    <None Include="pre-build.ps1" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)$(OutDir)
-copy $(TargetDir)$(TargetName).pdb $(SolutionDir)$(OutDir)
-copy $(TargetDir)MySql.Data.dll $(SolutionDir)$(OutDir)
-copy $(TargetDir)Npgsql.dll $(SolutionDir)$(OutDir)</PostBuildEvent>
+    <PostBuildEvent>cd "$(ProjectDir)"
+powershell -file post-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(TargetName)</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>cd $(ProjectDir)\..\..\build\Jhu.Graywulf.SqlParser.Generator\$(OutDir)
-gwsqlpgen.exe generate -o ..\..\..\..\dll\Jhu.Graywulf.Sql\SqlParser\SqlParser.cs</PreBuildEvent>
+    <PreBuildEvent>cd "$(ProjectDir)"
+powershell -file pre-build.ps1 $(SolutionDir) $(SolutionName) $(ProjectDir) $(ProjectName) $(OutDir) $(TargetName)</PreBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
