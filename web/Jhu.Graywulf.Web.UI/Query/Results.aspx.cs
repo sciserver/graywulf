@@ -38,13 +38,11 @@ namespace Jhu.Graywulf.Web.UI.Query
                         case JobExecutionState.Completed:
                             RenderResults(ji);
                             break;
-                        case JobExecutionState.Scheduled:
-                        case JobExecutionState.Starting:
-                        case JobExecutionState.Executing:
-                            RenderExecuting();
+                        case JobExecutionState.Failed:
+                            RenderFailed(ji);
                             break;
                         default:
-                            RenderFailed(ji);
+                            RenderExecuting(ji.JobExecutionStatus);
                             break;
                     }
                 }
@@ -55,9 +53,9 @@ namespace Jhu.Graywulf.Web.UI.Query
             }
         }
 
-        private void RenderExecuting()
+        private void RenderExecuting(JobExecutionState state)
         {
-            Response.Output.WriteLine("Executing query...");
+            Response.Output.WriteLine("Query status: {0}", state);
             Response.Output.WriteLine("<script language=\"javascript\">refreshResults();</script>");
         }
 
