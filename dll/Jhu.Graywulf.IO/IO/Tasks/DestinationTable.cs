@@ -184,8 +184,13 @@ namespace Jhu.Graywulf.IO.Tasks
             if ((options & TableInitializationOptions.GenerateUniqueName) != 0)
             {
                 name = GetUniqueTableName(name);
-            }
 
+                // If table name is generated automatically, make sure to use the same name
+                // for every call of GetTableName so turn off automatic name creation here
+                tableNamePattern = name;
+                options &= ~TableInitializationOptions.GenerateUniqueName;
+            }
+            
             return name;
         }
 
@@ -233,7 +238,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 SchemaName = this.schemaName,
                 TableName = GetTableName(batchName, queryName, resultsetName),
             };
-
+            
             // TODO: attach metadata to table
         }
 
