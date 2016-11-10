@@ -103,7 +103,6 @@
     <EmbeddedResource Include="SqlParser\UI\Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="App.config" />
     <None Include="Base.config" />
     <None Include="post-build.ps1" />
     <None Include="pre-build.ps1" />
