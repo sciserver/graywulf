@@ -107,6 +107,11 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected void RunQuery(string sql, int maxPartitions, TimeSpan timeout, bool dumpsql)
         {
+            RunQuery(sql, QueueType.Long, JobExecutionState.Completed, maxPartitions, timeout, dumpsql);
+        }
+
+        protected void RunQuery(string sql, QueueType queue, JobExecutionState expectedOutcome, int maxPartitions, TimeSpan timeout, bool dumpsql)
+        {
             var testName = GetTestUniqueName();
 
             using (SchedulerTester.Instance.GetToken())
@@ -120,7 +125,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                     sql = sql.Replace("[$into]", testName);
 
-                    var guid = ScheduleQueryJob(sql, QueueType.Long, maxPartitions, dumpsql);
+                    var guid = ScheduleQueryJob(sql, queue, maxPartitions, dumpsql);
 
                     WaitJobComplete(guid, TimeSpan.FromSeconds(10), timeout);
 
@@ -159,7 +164,7 @@ ORDER BY EventID DESC";
                         }
                     }
 
-                    Assert.AreEqual(JobExecutionState.Completed, ji.JobExecutionStatus);
+                    Assert.AreEqual(expectedOutcome, ji.JobExecutionStatus);
                 }
             }
         }

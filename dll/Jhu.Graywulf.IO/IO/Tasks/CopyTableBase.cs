@@ -375,7 +375,7 @@ namespace Jhu.Graywulf.IO.Tasks
             {
                 DestinationTableName = cg.GetResolvedTableName(destination),
                 BulkCopyTimeout = timeout,
-                NotifyAfter = batchSize,
+                NotifyAfter = Math.Max(batchSize, 1000),
                 BatchSize = batchSize,       // Must be set to 0, otherwise SQL Server will write log
                 // EnableStreaming = true    // TODO: add, new in .net 4.5
             };
@@ -390,6 +390,11 @@ namespace Jhu.Graywulf.IO.Tasks
             try
             {
                 sbc.WriteToServer(dr);
+            }
+            catch (OperationAbortedException)
+            {
+                // This is normal behavior, happens when bulk-copy is
+                // forcibly canceled.
             }
             finally
             {
