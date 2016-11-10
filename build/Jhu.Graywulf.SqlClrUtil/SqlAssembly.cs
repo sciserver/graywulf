@@ -76,7 +76,7 @@ namespace Jhu.Graywulf.SqlClrUtil
             this.assembly = assembly;
             this.name = assembly.GetName().Name;
             this.path = assembly.Location;
-            
+
             CollectReferences();
         }
 
@@ -132,7 +132,7 @@ GO
             {
                 if (!refs[i].Name.StartsWith("System") && !refs[i].Name.StartsWith("ms"))
                 {
-                    var a = LoadAssembly(this.path, refs[i]);
+                    var a = LoadAssembly(System.IO.Path.GetDirectoryName(this.path), refs[i]);
                     assemblies.Add(new SqlAssembly(a));
                 }
             }
