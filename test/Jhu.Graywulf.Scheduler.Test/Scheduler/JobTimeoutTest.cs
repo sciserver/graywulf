@@ -83,7 +83,7 @@ namespace Jhu.Graywulf.Scheduler
                 SchedulerTester.Instance.EnsureRunning();
 
                 // Time must be longer than the time-out of quick queue!
-                var guid = ScheduleTestJob(new TimeSpan(0, 1, 0), JobType.QueryDelay, QueueType.Quick, new TimeSpan(0, 0, 15));
+                var guid = ScheduleTestJob(new TimeSpan(0, 2, 0), JobType.QueryDelay, QueueType.Quick, new TimeSpan(0, 0, 15));
 
                 WaitJobStarted(guid, TimeSpan.FromSeconds(10));
 

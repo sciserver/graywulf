@@ -165,6 +165,10 @@ namespace Jhu.Graywulf.Tasks
                     return new OperationCanceledException(ex.Message, ex);
                 }
             }
+            else if (exception is OperationAbortedException)
+            {
+
+            }
 
             return exception;
 
