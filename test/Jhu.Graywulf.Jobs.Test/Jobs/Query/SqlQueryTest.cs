@@ -60,7 +60,7 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         [TestCategory("Query")]
         public void SimpleQueryWithoutIntoTest()
         {
-            var sql = "SELECT TOP 10 objid, ra, dec FROM SDSSDR7:PhotoObj";
+            var sql = "SELECT TOP 10 * FROM Test:SampleData";
 
             RunQuery(sql);
         }

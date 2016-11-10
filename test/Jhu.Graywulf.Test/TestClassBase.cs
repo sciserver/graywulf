@@ -57,7 +57,7 @@ namespace Jhu.Graywulf.Test
         protected User SignInTestUser(Context context)
         {
             var ip = IdentityProvider.Create(context.Domain);
-            ip.VerifyPassword(new AuthenticationRequest("test", "alma"));
+            ip.VerifyPassword(new AuthenticationRequest("test", "almafa"));
 
             var user = ip.GetUserByUserName("test");
 
