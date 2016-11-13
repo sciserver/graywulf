@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Jhu.Graywulf.Schema;
@@ -27,24 +28,47 @@ namespace Jhu.Graywulf.Web.UI.Schema
         protected void RenderTable()
         {
             var tableOrView = (schema::TableOrView)FederationContext.SchemaManager.GetDatabaseObjectByKey(Request.QueryString["objid"]);
-
             var codegen = SqlCodeGeneratorFactory.CreateCodeGenerator(tableOrView.Dataset);
-
             var sql = codegen.GenerateSelectStarQuery(tableOrView, 100);
+            IDbConnection cn = null;
 
-            using (var cn = tableOrView.Dataset.OpenConnection())
+            // To peek into data, pick a server
+            if (tableOrView.Dataset is GraywulfDataset)
             {
-                using (var cmd = new SmartCommand(tableOrView.Dataset, cn.CreateCommand()))
-                {
-                    cmd.CommandText = sql;
-                    cmd.CommandType = CommandType.Text;
+                var ds = (GraywulfDataset)tableOrView.Dataset;
 
-                    using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
-                    {
-                        RenderTable(Response.Output, dr);
-                    }
+                if (!ds.DatabaseDefinitionReference.IsEmpty)
+                {
+                    // TODO: modify this once pulled down to newest version
+
+                    var dd = ds.DatabaseDefinitionReference.Value;
+                    dd.Context = RegistryContext;
+
+                    var di = dd.GetRandomDatabaseInstance(Registry.Constants.ProdDatabaseVersionName);
+                    var cstr = di.GetConnectionString();
+
+                    cn = new SqlConnection(cstr.ConnectionString);
+                    cn.Open();
                 }
             }
+
+            if (cn == null)
+            {
+                cn = tableOrView.Dataset.OpenConnection();
+            }
+
+            using (var cmd = new SmartCommand(tableOrView.Dataset, cn.CreateCommand()))
+            {
+                cmd.CommandText = sql;
+                cmd.CommandType = CommandType.Text;
+
+                using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
+                {
+                    RenderTable(Response.Output, dr);
+                }
+            }
+
+            cn.Dispose();
         }
 
         private void RenderTable(TextWriter writer, ISmartDataReader dr)

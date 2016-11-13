@@ -48,6 +48,9 @@ namespace Jhu.Graywulf.Web.UI.Schema
             RefreshForm();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         protected void RefreshForm()
         {
             if (databaseObjectID != null)

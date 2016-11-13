@@ -336,6 +336,7 @@ namespace Jhu.Graywulf.Registry
 
         //
 
+        // TODO: delete
         public DatabaseInstance GetDatabaseInstance(DatabaseVersion databaseVersion, long partitionKeyValue)
         {
             // *** TODO: partitioning key interval limits (inclusive, exclusive!)
@@ -373,6 +374,41 @@ namespace Jhu.Graywulf.Registry
 
             csb.InitialCatalog = this.schemaSourceDatabaseName;
             return csb;
+        }
+
+        private DatabaseInstance GetSchemaDatabaseInstance()
+        {
+            var dis = FindDatabaseInstances(Constants.SchemaDatabaseVersionName).FirstOrDefault();
+
+            if (dis == null)
+            {
+                dis = FindDatabaseInstances(Constants.ProdDatabaseVersionName).FirstOrDefault();
+            }
+
+            if (dis == null)
+            {
+                dis = FindDatabaseInstances(null).FirstOrDefault();
+            }
+
+            return dis;
+        }
+
+        public DatabaseInstance GetRandomDatabaseInstance(string versionName)
+        {
+            var rnd = new Random();
+            var dis = FindDatabaseInstances(versionName).ToArray();
+            return dis[rnd.Next(dis.Length)];
+        }
+
+        /// <summary>
+        /// Returns a SqlConnectionStringBuilder initialized to point to
+        /// the database template of this database definition.
+        /// </summary>
+        /// <returns>The connection string builder object.</returns>
+        public SqlConnectionStringBuilder GetSchemaConnectionString()
+        {
+            var di = GetSchemaDatabaseInstance();
+            return di.GetConnectionString();
         }
     }
 }
