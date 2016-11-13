@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.ParserLib {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not understandable token found at ({0},{1})..
+        ///   Looks up a localized string similar to Syntax Error: no understandable token found at ({0},{1})..
         /// </summary>
         internal static string NotUnderstandableToken {
             get {
