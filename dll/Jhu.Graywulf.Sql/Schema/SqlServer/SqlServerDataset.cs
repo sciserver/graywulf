@@ -1511,6 +1511,10 @@ END",
             {
                 return CreateDataType(SqlDbType.Decimal);
             }
+            else if (StringComparer.InvariantCultureIgnoreCase.Compare("sysname", name) == 0)
+            {
+                return CreateDataType(SqlDbType.NVarChar, 128, 0, 0, false);
+            }
             else
             {
                 throw new NotImplementedException();
