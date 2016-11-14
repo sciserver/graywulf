@@ -68,20 +68,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             }
 
             cn.Dispose();
-
-            using (var cn = tableOrView.Dataset.OpenConnection())
-            {
-                using (var cmd = new SmartCommand(tableOrView.Dataset, cn.CreateCommand()))
-                {
-                    cmd.CommandText = sql;
-                    cmd.CommandType = CommandType.Text;
-
-                    using (var dr = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
-                    {
-                        RenderTable(Response.Output, dr);
-                    }
-                }
-            }
         }
 
         private void RenderTable(TextWriter writer, ISmartDataReader dr)

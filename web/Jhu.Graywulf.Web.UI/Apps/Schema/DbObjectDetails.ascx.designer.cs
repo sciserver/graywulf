@@ -13,6 +13,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
     public partial class DbObjectDetails {
         
         /// <summary>
+        /// tabs control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Controls.MultiViewTabHeader tabs;
+        
+        /// <summary>
         /// Peek control.
         /// </summary>
         /// <remarks>
@@ -94,6 +103,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::System.Web.UI.WebControls.MultiView multiView;
         
         /// <summary>
+        /// detailsTab control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Controls.TabView detailsTab;
+        
+        /// <summary>
         /// SummaryLabel control.
         /// </summary>
         /// <remarks>
@@ -139,6 +157,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::System.Web.UI.WebControls.Label ExampleLabel;
         
         /// <summary>
+        /// columnsTab control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Controls.TabView columnsTab;
+        
+        /// <summary>
         /// columnsList control.
         /// </summary>
         /// <remarks>
@@ -148,6 +175,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::Jhu.Graywulf.Web.UI.Apps.Schema.ColumnList columnsList;
         
         /// <summary>
+        /// parametersTab control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Controls.TabView parametersTab;
+        
+        /// <summary>
         /// parametersList control.
         /// </summary>
         /// <remarks>
@@ -155,6 +191,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::Jhu.Graywulf.Web.UI.Apps.Schema.ParameterList parametersList;
+        
+        /// <summary>
+        /// indexesTab control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Controls.TabView indexesTab;
         
         /// <summary>
         /// indexesList control.
