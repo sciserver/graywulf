@@ -308,5 +308,12 @@ namespace Jhu.Graywulf.Registry
             var di = GetSchemaDatabaseInstance();
             return di.GetConnectionString();
         }
+
+        public DatabaseInstance GetRandomDatabaseInstance(string versionName)
+        {
+            var rnd = new Random();
+            var dis = FindDatabaseInstances(versionName).ToArray();
+            return dis[rnd.Next(dis.Length)];
+        }
     }
 }
