@@ -250,9 +250,9 @@ FROM TEST:SDSSDR7PhotoObjAll
 WHERE ra > 2";
 
             var gt = @"SELECT ROW_NUMBER() OVER (ORDER BY [dec]) AS [rn], [dec] AS [key]
-INTO [Graywulf_Temp].[dbo].[test__stat_TEST_dbo_SDSSDR7PhotoObjAll]
-FROM [SkyNode_Test].[dbo].[SDSSDR7PhotoObjAll]
-WHERE [SkyNode_Test].[dbo].[SDSSDR7PhotoObjAll].[ra] > 2;";
+INTO [dbo].[test__stat_TEST_dbo_SDSSDR7PhotoObjAll]
+FROM [SkyNode_TEST].[dbo].[SDSSDR7PhotoObjAll]
+WHERE [SkyNode_TEST].[dbo].[SDSSDR7PhotoObjAll].[ra] > 2;";
 
             var res = GetStatisticsQuery(sql);
             Assert.IsTrue(res.Contains(gt));
@@ -268,8 +268,8 @@ INNER JOIN TEST:SDSSDR7PhotoObjAll b ON p.objID = b.objID
 WHERE p.ra > 2";
 
             var gt = @"SELECT ROW_NUMBER() OVER (ORDER BY [dec]) AS [rn], [dec] AS [key]
-INTO [Graywulf_Temp].[dbo].[test__stat_TEST_dbo_SDSSDR7PhotoObjAll_p]
-FROM [SkyNode_Test].[dbo].[SDSSDR7PhotoObjAll] AS [p]
+INTO [dbo].[test__stat_TEST_dbo_SDSSDR7PhotoObjAll_p]
+FROM [SkyNode_TEST].[dbo].[SDSSDR7PhotoObjAll] AS [p]
 WHERE [p].[ra] > 2;";
 
             var res = GetStatisticsQuery(sql);
