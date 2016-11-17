@@ -12,6 +12,7 @@ namespace Jhu.Graywulf.Check
     public class CheckRoutineExecutor
     {
         private List<CheckRoutineBase> routines;
+        private CheckCategory filter;
         private bool handleExceptions;
         private int succeeded;
         private int failed;
@@ -19,6 +20,12 @@ namespace Jhu.Graywulf.Check
         public List<CheckRoutineBase> Routines
         {
             get { return routines; }
+        }
+
+        public CheckCategory Filter
+        {
+            get { return filter; }
+            set { filter = value; }
         }
 
         public bool HandleExceptions
@@ -45,6 +52,7 @@ namespace Jhu.Graywulf.Check
         private void InitializeMembers()
         {
             this.routines = new List<CheckRoutineBase>();
+            this.filter = CheckCategory.All;
             this.handleExceptions = true;
         }
 
@@ -57,44 +65,47 @@ namespace Jhu.Graywulf.Check
             {
                 var r = routines[i];
 
-                try
+                if ((r.Category & filter) != 0)
                 {
-                    output.WriteLine();
-                    output.WriteLine("Test {0}:", succeeded + failed + 1);
-
-                    r.Execute(output);
-
-                    output.WriteLine("<font color=\"green\">Success</font>");
-
-                    // Schedule additional tests
-                    int k = i + 1;
-                    foreach (var rr in r.GetCheckRoutines())
+                    try
                     {
-                        routines.Insert(k, rr);
-                        k++;
-                    }
+                        output.WriteLine();
+                        output.WriteLine("Test {0}:", succeeded + failed + 1);
 
-                    succeeded++;
-                }
-                catch (Exception ex)
-                {
+                        r.Execute(output);
+
+                        output.WriteLine("<font color=\"green\">Success</font>");
+
+                        // Schedule additional tests
+                        int k = i + 1;
+                        foreach (var rr in r.GetCheckRoutines())
+                        {
+                            routines.Insert(k, rr);
+                            k++;
+                        }
+
+                        succeeded++;
+                    }
+                    catch (Exception ex)
+                    {
 #if BREAKDEBUG
                     System.Diagnostics.Debugger.Break();
 #endif
 
-                    output.Write("<font color=\"red\">Error:</font> ");
-                    while (ex != null)
-                    {
-                        output.WriteLine(ex.Message);
-                        ex = ex.InnerException;
-                    }
-                    output.WriteLine("---");
+                        output.Write("<font color=\"red\">Error:</font> ");
+                        while (ex != null)
+                        {
+                            output.WriteLine(ex.Message);
+                            ex = ex.InnerException;
+                        }
+                        output.WriteLine("---");
 
-                    failed++;
+                        failed++;
 
-                    if (!handleExceptions)
-                    {
-                        throw;
+                        if (!handleExceptions)
+                        {
+                            throw;
+                        }
                     }
                 }
 
@@ -103,7 +114,7 @@ namespace Jhu.Graywulf.Check
 
             output.WriteLine();
             output.WriteLine("Execution of {0} tests completed. {1} succeeded, {2} failed.",
-                routines.Count,
+                succeeded + failed,
                 succeeded,
                 failed);
 

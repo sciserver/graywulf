@@ -9,11 +9,35 @@ namespace Jhu.Graywulf.Web.Check
     public class CheckPageBase : PageBase
     {
         private CheckRoutineExecutor checks;
-        private bool reportStatus;
+
+        protected bool ReportStatus
+        {
+            get
+            {
+                return Request.QueryString["status"] == null ?
+                    false :
+                    bool.Parse(Request.QueryString["status"]);
+            }
+        }
+
+        protected CheckCategory Filter
+        {
+            get
+            {
+                CheckCategory filter;
+
+                if (!Enum.TryParse(Request.QueryString["mode"], true, out filter))
+                {
+                    filter = CheckCategory.All;
+                }
+
+                return filter;
+            }
+        }
 
         protected override void OnError(EventArgs e)
         {
-
+            // Required to override default behavior
         }
 
         protected override void OnInit(EventArgs e)
@@ -45,19 +69,19 @@ namespace Jhu.Graywulf.Web.Check
                 throw new Exception("Test exception thrown.");
             }
 
-            // Set HTTP status (will buffer output)
-            reportStatus = Request.QueryString["status"] == null ? false : bool.Parse(Request.QueryString["status"]);
-
             // Handle exceptions, only display them
             checks.HandleExceptions = Request.QueryString["throw"] == null ? true : !bool.Parse(Request.QueryString["throw"]);
         }
 
         protected override void OnLoadComplete(EventArgs e)
         {
+            var reportStatus = this.ReportStatus;
+
             Response.Buffer = reportStatus;
             Response.BufferOutput = reportStatus;
             Response.Expires = -1;
 
+            checks.Filter = this.Filter;
             checks.Execute(Response.Output);
 
             if (reportStatus)

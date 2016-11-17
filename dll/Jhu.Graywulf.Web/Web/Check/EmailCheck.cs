@@ -12,6 +12,11 @@ namespace Jhu.Graywulf.Web.Check
 {
     public class EmailCheck : CheckRoutineBase
     {
+        public override CheckCategory Category
+        {
+            get { return CheckCategory.Email; }
+        }
+
         public string FromName { get; set; }
         public string FromEmail { get; set; }
         public string ToEmail { get; set; }

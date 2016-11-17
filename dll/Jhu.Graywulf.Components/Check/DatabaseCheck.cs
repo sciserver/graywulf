@@ -10,6 +10,14 @@ namespace Jhu.Graywulf.Check
 {
     public class DatabaseCheck : CheckRoutineBase
     {
+        public override CheckCategory Category
+        {
+            get
+            {
+                return CheckCategory.Database;
+            }
+        }
+
         public string ConnectionString { get; set; }
 
         public DatabaseCheck(string connectionString)

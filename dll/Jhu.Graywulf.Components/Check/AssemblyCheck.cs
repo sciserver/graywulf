@@ -9,6 +9,14 @@ namespace Jhu.Graywulf.Check
 {
     public class AssemblyCheck : CheckRoutineBase
     {
+        public override CheckCategory Category
+        {
+            get
+            {
+                return CheckCategory.Assembly;
+            }
+        }
+
         public string Path { get; set; }
 
         public AssemblyCheck(string path)

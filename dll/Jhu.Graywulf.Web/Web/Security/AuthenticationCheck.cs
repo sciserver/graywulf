@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Security
 {
     public class AuthenticationCheck : Jhu.Graywulf.Check.CheckRoutineBase
     {
+        public override CheckCategory Category
+        {
+            get { return CheckCategory.Plugin; }
+        }
+
         public Context Context { get; set; }
 
         public AuthenticationCheck(Context context)

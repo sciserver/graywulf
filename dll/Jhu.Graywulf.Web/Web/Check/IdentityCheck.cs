@@ -11,6 +11,11 @@ namespace Jhu.Graywulf.Web.Check
 {
     public class IdentityCheck : CheckRoutineBase
     {
+        public override CheckCategory Category
+        {
+            get { return CheckCategory.Iis; }
+        }
+
         public override void Execute(TextWriter output)
         {
             output.WriteLine("Testing user identity");

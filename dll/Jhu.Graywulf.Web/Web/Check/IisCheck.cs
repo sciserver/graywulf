@@ -8,6 +8,11 @@ namespace Jhu.Graywulf.Web.Check
 {
     public class IisCheck : CheckRoutineBase
     {
+        public override CheckCategory Category
+        {
+            get { return CheckCategory.Iis; }
+        }
+
         public override void Execute(System.IO.TextWriter output)
         {
             output.WriteLine("Web server version is IIS{0}", Util.IIS.MajorVersion);

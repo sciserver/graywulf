@@ -10,6 +10,13 @@ namespace Jhu.Graywulf.Registry.Check
 {
     public class EntityCheck : CheckRoutineBase
     {
+        public override CheckCategory Category
+        {
+            get
+            {
+                return CheckCategory.Registry;
+            }
+        }
         public Context Context { get; set; }
         public string Name { get; set; }
 

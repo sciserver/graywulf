@@ -9,6 +9,14 @@ namespace Jhu.Graywulf.Check
     {
         private string typename;
 
+        public override CheckCategory Category
+        {
+            get
+            {
+                return CheckCategory.Assembly;
+            }
+        }
+
         public TypeCheck(string typename)
         {
             this.typename = typename;

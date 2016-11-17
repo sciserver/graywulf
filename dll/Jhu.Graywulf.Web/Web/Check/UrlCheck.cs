@@ -10,6 +10,11 @@ namespace Jhu.Graywulf.Web.Check
 {
     public class UrlCheck : CheckRoutineBase
     {
+        public override CheckCategory Category
+        {
+            get { return CheckCategory.Url; }
+        }
+
         public Uri Uri { get; set; }
         private HttpStatusCode ExpectedStatus;
 

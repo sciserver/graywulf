@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Check\AssemblyCheck.cs" />
+    <Compile Include="Check\CheckCategory.cs" />
     <Compile Include="Check\CheckRoutineBase.cs" />
     <Compile Include="Check\CheckRoutineExecutor.cs" />
     <Compile Include="Check\DatabaseCheck.cs" />
