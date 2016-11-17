@@ -13,6 +13,8 @@ namespace Jhu.Graywulf.Check
     {
         private List<CheckRoutineBase> routines;
         private bool handleExceptions;
+        private int succeeded;
+        private int failed;
 
         public List<CheckRoutineBase> Routines
         {
@@ -23,6 +25,16 @@ namespace Jhu.Graywulf.Check
         {
             get { return handleExceptions; }
             set { handleExceptions = value; }
+        }
+
+        public int Succeeded
+        {
+            get { return succeeded; }
+        }
+
+        public int Failed
+        {
+            get { return failed; }
         }
 
         public CheckRoutineExecutor()
@@ -40,9 +52,6 @@ namespace Jhu.Graywulf.Check
         {
             output.WriteLine("<pre>");
 
-            int success = 0;
-            int failed = 0;
-
             int i = 0;
             while (i < routines.Count)
             {
@@ -51,7 +60,7 @@ namespace Jhu.Graywulf.Check
                 try
                 {
                     output.WriteLine();
-                    output.WriteLine("Test {0}:", success + failed + 1);
+                    output.WriteLine("Test {0}:", succeeded + failed + 1);
 
                     r.Execute(output);
 
@@ -65,7 +74,7 @@ namespace Jhu.Graywulf.Check
                         k++;
                     }
 
-                    success++;
+                    succeeded++;
                 }
                 catch (Exception ex)
                 {
@@ -95,7 +104,7 @@ namespace Jhu.Graywulf.Check
             output.WriteLine();
             output.WriteLine("Execution of {0} tests completed. {1} succeeded, {2} failed.",
                 routines.Count,
-                success,
+                succeeded,
                 failed);
 
             output.WriteLine("</pre>");

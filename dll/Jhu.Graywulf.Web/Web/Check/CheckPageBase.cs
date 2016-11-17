@@ -10,6 +10,7 @@ namespace Jhu.Graywulf.Web.Check
     public class CheckPageBase : PageBase
     {
         private CheckRoutineExecutor checks;
+        private bool reportStatus;
 
         protected CheckRoutineExecutor Checks
         {
@@ -38,16 +39,34 @@ namespace Jhu.Graywulf.Web.Check
                 throw new Exception("Test exception thrown.");
             }
 
+            // Set HTTP status (will buffer output)
+            reportStatus = Request.QueryString["status"] == null ? false : bool.Parse(Request.QueryString["status"]);
+
             // Handle exceptions, only display them
             checks.HandleExceptions = Request.QueryString["throw"] == null ? true : !bool.Parse(Request.QueryString["throw"]);
         }
 
         protected override void OnLoadComplete(EventArgs e)
         {
+            Response.Buffer = reportStatus;
+            Response.BufferOutput = reportStatus;
             Response.Expires = -1;
 
             checks.Execute(Response.Output);
 
+            if (reportStatus)
+            {
+                if (checks.Failed == 0)
+                {
+                    Response.StatusCode = 200;
+                }
+                else
+                {
+                    Response.StatusCode = 500;
+                }
+            }
+
+            Response.Flush();
             Response.End();
         }
     }
