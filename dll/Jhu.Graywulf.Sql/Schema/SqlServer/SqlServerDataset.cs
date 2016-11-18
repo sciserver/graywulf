@@ -381,7 +381,7 @@ WHERE
             where T : DatabaseObject, new()
         {
             var sql = @"
-SELECT s.name, o.name, o.type
+SELECT s.name, o.name, o.type, o.create_date, o.modify_date
 FROM sys.objects o
 INNER JOIN sys.schemas s
 	ON s.schema_id = o.schema_id
@@ -408,6 +408,8 @@ WHERE o.type IN ({0}) AND
                             databaseObject.SchemaName = dr.GetString(0);
                             databaseObject.ObjectName = dr.GetString(1);
                             databaseObject.ObjectType = Constants.SqlServerObjectTypeIds[dr.GetString(2).Trim()];
+                            databaseObject.Metadata.DateCreated = dr.GetDateTime(3);
+                            databaseObject.Metadata.DateModified = dr.GetDateTime(3);
 
                             q++;
                         }
@@ -484,7 +486,7 @@ WHERE o.type IN ({0}) AND
             where T : DatabaseObject, new()
         {
             var sql = @"
-SELECT s.name, o.name, o.type
+SELECT s.name, o.name, o.type, o.create_date, o.modify_date
 FROM sys.objects o
 INNER JOIN sys.schemas s
 	ON s.schema_id = o.schema_id
@@ -509,6 +511,9 @@ WHERE o.type IN ({0})
                                 ObjectName = dr.GetString(1),
                                 ObjectType = Constants.SqlServerObjectTypeIds[dr.GetString(2).Trim()],
                             };
+
+                            obj.Metadata.DateCreated = dr.GetDateTime(3);
+                            obj.Metadata.DateModified = dr.GetDateTime(4);
 
                             yield return new KeyValuePair<string, T>(GetObjectUniqueKey(obj), obj);
                         }

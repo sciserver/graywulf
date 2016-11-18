@@ -41,7 +41,8 @@
                 </asp:TemplateField>
                 <jgwc:BoundField DataField="Statistics.RowCount" HeaderText="Rows" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Right" />
                 <jgwc:BoundByteSizeField DataField="Statistics.DataSpace" HeaderText="Data Size" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Right" />
-                <jgwc:BoundByteSizeField DataField="Statistics.IndexSpace" HeaderText="Index Size" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Right" />
+                <asp:BoundField DataField="Metadata.DateCreated" HeaderText="Created" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center" />
+                <asp:BoundField DataField="Metadata.DateModified" HeaderText="Modified" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center"/>
                 <asp:BoundField DataField="" HeaderText="Comments" ItemStyle-CssClass="GridViewSpan"
                     HeaderStyle-CssClass="GridViewSpan" />
             </Columns>
