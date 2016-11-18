@@ -39,11 +39,56 @@ td.MenuButtonHover
     background-color: #800000;
     color: #FFFFFF;
 }
-a.MenuButton
-{
-    text-decoration: none;
-    color: #808080;
-}
 
 /* new menu */
 
+div.MenuFrame {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+div.Menu {
+    display: table-row;
+    width: 100%;
+}
+
+a.MenuButton, div.MenuSpan {
+    display: table-cell;
+    border-left: solid 8px #FFFFFF;
+    border-right: solid 8px #FFFFFF;
+    border-bottom: solid 8px #FFFFFF;
+    border-top: solid 8px #FFFFFF;
+    height: 64px;
+    text-decoration: none;
+    background-color: #D0D0D0;
+    color: #000000;
+}
+
+a.MenuButton {
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-bottom: 4px;
+    vertical-align: bottom;
+    width: 120px;
+    text-align: right;
+    font-family: Calibri, Arial, Helvetica, Sans-Serif;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+    a.MenuButton:hover, a.MenuButtonSelected {
+        background-color: #800000;
+        color: #FFFFFF;
+    }
+
+    a.MenuButton:disabled {
+        background-color: #E0E0E0;
+        color: #FFFFFF;
+    }
+    
+div.MenuSpan
+{   
+    width: auto;
+}

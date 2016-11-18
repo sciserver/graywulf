@@ -38,9 +38,12 @@ namespace Jhu.Graywulf.Web.UI
 
         public virtual void RegisterButtons(UIApplicationBase application)
         {
-            var button = new MenuButton();
-            button.Text = Name;
-            button.NavigateUrl = "~/Apps/" + Name + "/Default.aspx";
+            var button = new MenuButton()
+            {
+                Key = Name,
+                Text = Name,
+                NavigateUrl = "~/Apps/" + Name + "/Default.aspx"
+            };
 
             application.RegisterMenuButton(button);
         }
