@@ -13,8 +13,8 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using System.ComponentModel;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.SqlCodeGen;
-using Jhu.Graywulf.SqlParser;
+using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
@@ -90,6 +90,24 @@ namespace Jhu.Graywulf.Web.Api.V1
             // -- Build a query to export everything
             var source = SourceTableQuery.Create(table, toplimit);
 
+            // Pick a random server, if necessary
+            if (table.Dataset is GraywulfDataset)
+            {
+                var ds = (GraywulfDataset)table.Dataset;
+
+                if (!ds.DatabaseDefinitionReference.IsEmpty)
+                {
+                    var dd = ds.DatabaseDefinitionReference.Value;
+                    var di = dd.GetRandomDatabaseInstance(Registry.Constants.ProdDatabaseVersionName);
+
+                    source.Dataset = new SqlServerDataset()
+                    {
+                        Name = ds.Name,
+                        ConnectionString = di.GetConnectionString().ConnectionString
+                    };
+                }
+            }
+
             // Create destination
 
             // -- Figure out output type from request header
@@ -98,7 +116,6 @@ namespace Jhu.Graywulf.Web.Api.V1
             var destination = ff.CreateFileFromAcceptHeader(accept);
 
             // Create export task
-
             var export = new ExportTable()
             {
                 Source = source,

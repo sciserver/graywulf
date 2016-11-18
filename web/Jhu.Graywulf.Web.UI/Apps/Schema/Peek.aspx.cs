@@ -38,8 +38,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
                 if (!ds.DatabaseDefinitionReference.IsEmpty)
                 {
-                    // TODO: modify this once pulled down to newest version
-
                     var dd = ds.DatabaseDefinitionReference.Value;
                     dd.Context = RegistryContext;
 
