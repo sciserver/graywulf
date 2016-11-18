@@ -242,5 +242,12 @@ namespace Jhu.Graywulf.Schema
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Clears the schema cache
+        /// </summary>
+        public void Flush()
+        {
+            datasetCache.Clear();
+        }
     }
 }

@@ -85,11 +85,8 @@ namespace Jhu.Graywulf.Components
         #region Constructors and initializers
 
         public Cache()
+            : this(EqualityComparer<TKey>.Default)
         {
-            InitializeMembers();
-            InitializeCache(EqualityComparer<TKey>.Default);
-
-            StartTimer();
         }
 
         public Cache(IEqualityComparer<TKey> comparer)
@@ -172,7 +169,14 @@ namespace Jhu.Graywulf.Components
             }
 
             // Collect expired items from the cache
-            foreach (var key in delete)
+            Remove(delete);
+
+            StartTimer();
+        }
+
+        private void Remove(IEnumerable<TKey> keys)
+        {
+            foreach (var key in keys)
             {
                 CacheItem<TValue> item;
 
@@ -191,8 +195,6 @@ namespace Jhu.Graywulf.Components
                     }
                 }
             }
-
-            StartTimer();
         }
 
         /// <summary>
