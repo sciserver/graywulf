@@ -109,6 +109,7 @@
     <Compile Include="Web\Api\V1\Services\AuthService.cs" />
     <Compile Include="Web\Api\V1\Services\DataService.cs" />
     <Compile Include="Web\Api\V1\Services\JobsService.cs" />
+    <Compile Include="Web\Api\V1\Services\ManageService.cs" />
     <Compile Include="Web\Api\V1\Services\SchemaService.cs" />
     <Compile Include="Web\Api\V1\Services\TestService.cs" />
   </ItemGroup>

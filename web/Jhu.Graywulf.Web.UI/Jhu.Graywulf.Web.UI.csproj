@@ -350,13 +350,6 @@
     <Compile Include="Apps\Schema\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Apps\Schema\Flush.aspx.cs">
-      <DependentUpon>Flush.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Apps\Schema\Flush.aspx.designer.cs">
-      <DependentUpon>Flush.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Apps\Schema\IndexList.ascx.cs">
       <DependentUpon>IndexList.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -456,6 +449,7 @@
     <Compile Include="WebConfigHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Api\V1\Manage.svc" />
     <Content Include="Api\V1\Auth.svc" />
     <Content Include="Api\V1\Data.svc" />
     <Content Include="Api\V1\Jobs.svc" />
@@ -503,7 +497,6 @@
     <Content Include="Apps\Schema\ColumnList.ascx" />
     <Content Include="Apps\Schema\DbObjectDetails.ascx" />
     <Content Include="Apps\Schema\Default.aspx" />
-    <Content Include="Apps\Schema\Flush.aspx" />
     <Content Include="Apps\Schema\IndexList.ascx" />
     <Content Include="Apps\Schema\ParameterList.ascx" />
     <Content Include="Apps\Schema\Peek.aspx" />

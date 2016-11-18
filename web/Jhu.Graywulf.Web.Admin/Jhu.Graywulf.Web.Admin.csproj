@@ -1651,7 +1651,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>8036</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost/gwadmin</IISUrl>
+          <IISUrl>http://localhost/dobos/gwadmin</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

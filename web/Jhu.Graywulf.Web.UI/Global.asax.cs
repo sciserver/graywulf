@@ -23,6 +23,7 @@ namespace Jhu.Graywulf.Web.UI
             base.RegisterServices();
 
             RegisterService(typeof(IAuthService));
+            RegisterService(typeof(IManageService));
             RegisterService(typeof(ISchemaService));
             RegisterService(typeof(IJobsService));
             RegisterService(typeof(IDataService));
