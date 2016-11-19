@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Format\Constants.cs" />
     <Compile Include="Format\FormatConfiguration.cs" />
+    <Compile Include="Format\NullStyles.cs" />
     <Compile Include="Format\XHtmlDataFile.cs">
       <SubType>Code</SubType>
     </Compile>

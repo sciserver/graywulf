@@ -26,6 +26,9 @@ namespace Jhu.Graywulf.Format
         [NonSerialized]
         private DateTimeStyles dateTimeStyle;
 
+        [NonSerialized]
+        private NullStyles nullStyle;
+
         [IgnoreDataMember]
         public Encoding Encoding
         {
@@ -70,6 +73,13 @@ namespace Jhu.Graywulf.Format
             set { dateTimeStyle = value; }
         }
 
+        [DataMember]
+        public NullStyles NullStyle
+        {
+            get { return nullStyle; }
+            set { nullStyle = value; }
+        }
+
         protected FormattedDataFileBase()
         {
             InitializeMembers(new StreamingContext());
@@ -106,6 +116,7 @@ namespace Jhu.Graywulf.Format
             this.culture = null;
             this.numberStyle = NumberStyles.Float;
             this.dateTimeStyle = DateTimeStyles.None;
+            this.nullStyle = NullStyles.NullText;
         }
 
         private void CopyMembers(FormattedDataFileBase old)
@@ -114,6 +125,7 @@ namespace Jhu.Graywulf.Format
             this.culture = Util.DeepCloner.CloneObject(old.culture);
             this.numberStyle = old.numberStyle;
             this.dateTimeStyle = old.dateTimeStyle;
+            this.nullStyle = old.nullStyle;
         }
     }
 }

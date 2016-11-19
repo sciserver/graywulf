@@ -228,7 +228,23 @@ namespace Jhu.Graywulf.Format
                     line.Append(File.ColumnSeparators[0]);
                 }
 
-                line.Append(ColumnFormatters[i](values[i], Columns[i].Metadata.Format));
+                if (values[i] == DBNull.Value)
+                {
+                    switch (File.NullStyle)
+                    {
+                        case NullStyles.Empty:
+                            break;
+                        case NullStyles.NullText:
+                            line.Append("NULL");
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+                else
+                {
+                    line.Append(ColumnFormatters[i](values[i], Columns[i].Metadata.Format));
+                }
             }
 
             File.TextWriter.WriteLine(line.ToString());

@@ -124,7 +124,7 @@ namespace Jhu.Graywulf.Format
                 if (values[i] == DBNull.Value)
                 {
                     // Leave field blank
-                    File.XmlWriter.WriteStartElement(Constants.HtmlKeywordTR);
+                    File.XmlWriter.WriteStartElement(Constants.HtmlKeywordTD);
                     File.XmlWriter.WriteEndElement();
                 }
                 else
