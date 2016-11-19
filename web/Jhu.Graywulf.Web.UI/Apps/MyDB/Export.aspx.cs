@@ -54,12 +54,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             if (!IsPostBack)
             {
                 RefreshExportMethodList();
-
-                string objid = Request.QueryString["objid"];
-                if (objid != null)
-                {
-                    sourceTableForm.Table = FederationContext.MyDBDataset.Tables[objid];
-                }
             }
         }
 

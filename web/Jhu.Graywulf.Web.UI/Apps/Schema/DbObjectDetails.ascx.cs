@@ -121,17 +121,17 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         protected void Export_Click(object sender, EventArgs e)
         {
-            Response.Redirect(String.Format("~/mydb/ExportTable.aspx?objid={0}", databaseObjectID), false);
+            Response.Redirect(Apps.MyDB.Export.GetUrl(databaseObjectID), false);
         }
 
         protected void Rename_Click(object sender, EventArgs e)
         {
-            Response.Redirect(String.Format("~/mydb/RenameObject.aspx?objid={0}", databaseObjectID), false);
+            Response.Redirect(Apps.MyDB.RenameObject.GetUrl(databaseObjectID), false);
         }
 
         protected void Drop_Click(object sender, EventArgs e)
         {
-            Response.Redirect(String.Format("~/mydb/DropObject.aspx?objid={0}", databaseObjectID), false);
+            Response.Redirect(Apps.MyDB.DropObject.GetUrl(databaseObjectID), false);
         }
     }
 }

@@ -27,6 +27,12 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             if (!IsPostBack)
             {
                 RefreshTableList();
+
+                string objid = Request.QueryString["objid"];
+                if (objid != null)
+                {
+                    Table = FederationContext.MyDBDataset.Tables[objid];
+                }
             }
         }
 
