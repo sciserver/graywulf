@@ -1196,7 +1196,7 @@ ORDER BY c.name, p.name";
         {
             var sql = @"
 -- Raw data space in 8K pages
-SELECT SUM(f.size)
+SELECT SUM(CASE f.growth WHEN 0 THEN f.size ELSE f.max_size END)
 FROM sys.database_files f
 WHERE f.type = 0
 
@@ -1205,7 +1205,7 @@ SELECT SUM(a.total_pages), SUM(a.used_pages), SUM(a.data_pages)
 FROM sys.allocation_units a
 
 -- Log space
-SELECT SUM(size)
+SELECT SUM(CASE f.growth WHEN 0 THEN f.size ELSE f.max_size END)
 FROM sys.database_files f
 WHERE f.type = 1
 ";
