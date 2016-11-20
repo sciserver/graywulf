@@ -23,6 +23,19 @@ namespace Jhu.Graywulf.Tasks
         private IDbCommand command;
 
         #endregion
+        #region Properties
+
+        public IDbConnection Connection
+        {
+            get { return command.Connection; }
+        }
+
+        public IDbTransaction Transaction
+        {
+            get { return command.Transaction; }
+        }
+
+        #endregion
         #region Constructors and initializers
 
         public CancelableDbCommand(IDbCommand command)
