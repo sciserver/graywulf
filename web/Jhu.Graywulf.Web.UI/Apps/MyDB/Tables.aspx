@@ -14,15 +14,17 @@
             <asp:CustomValidator ID="SingleTableSelectedValidator" runat="server" ErrorMessage="No table was selected."
                 OnServerValidate="SingleTableSelectedValidator_ServerValidate" ValidationGroup="SingleTable" /></p>
         <p class="FormButtons">
-            <asp:Button ID="View" runat="server" Text="View Schema" CssClass="FormButton" CommandName="View"
+            <asp:Button ID="view" runat="server" Text="View Schema" CssClass="FormButton" CommandName="View"
                 OnCommand="Button_Command" ValidationGroup="SingleTable" />
             <asp:Button ID="Edit" runat="server" Text="Edit Schema" CssClass="FormButton" CommandName="Edit" Visible="false" ValidationGroup="SingleTable" />
             |
-            <asp:Button ID="Peek" runat="server" Text="Peek" CssClass="FormButton" CommandName="Peek"
+            <asp:Button ID="peek" runat="server" Text="Peek" CssClass="FormButton" CommandName="Peek"
                 OnCommand="Button_Command" ValidationGroup="SingleTable" />
-            <asp:Button ID="Export" runat="server" Text="Export" CssClass="FormButton" CommandName="Export"
+            <asp:Button ID="export" runat="server" Text="Export" CssClass="FormButton" CommandName="Export"
                 OnCommand="Button_Command" ValidationGroup="SingleTable" />
-            <asp:Button ID="Rename" runat="server" Text="Rename" CssClass="FormButton" CommandName="Rename"
+            <asp:Button ID="rename" runat="server" Text="Rename" CssClass="FormButton" CommandName="Rename"
+                OnCommand="Button_Command" ValidationGroup="SingleTable" />
+            <asp:Button ID="primaryKey" runat="server" Text="Primary Key" CssClass="FormButton" CommandName="PrimaryKey"
                 OnCommand="Button_Command" ValidationGroup="SingleTable" />
             |
             <asp:Button ID="Drop" runat="server" Text="Drop" CssClass="FormButton" CommandName="Drop"

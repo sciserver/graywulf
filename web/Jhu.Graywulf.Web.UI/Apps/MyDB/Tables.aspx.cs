@@ -67,6 +67,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                     case "Rename":
                         Response.Redirect(MyDB.RenameObject.GetUrl(objid), false);
                         break;
+                    case "PrimaryKey":
+                        Response.Redirect(MyDB.PrimaryKey.GetUrl(objid), false);
+                        break;
                     case "Drop":
                         Response.Redirect(MyDB.DropObject.GetUrl(objids), false);
                         break;

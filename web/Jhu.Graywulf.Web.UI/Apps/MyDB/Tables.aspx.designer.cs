@@ -40,13 +40,13 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         protected global::System.Web.UI.WebControls.CustomValidator SingleTableSelectedValidator;
         
         /// <summary>
-        /// View control.
+        /// view control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button View;
+        protected global::System.Web.UI.WebControls.Button view;
         
         /// <summary>
         /// Edit control.
@@ -58,31 +58,40 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         protected global::System.Web.UI.WebControls.Button Edit;
         
         /// <summary>
-        /// Peek control.
+        /// peek control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Peek;
+        protected global::System.Web.UI.WebControls.Button peek;
         
         /// <summary>
-        /// Export control.
+        /// export control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Export;
+        protected global::System.Web.UI.WebControls.Button export;
         
         /// <summary>
-        /// Rename control.
+        /// rename control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Rename;
+        protected global::System.Web.UI.WebControls.Button rename;
+        
+        /// <summary>
+        /// primaryKey control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button primaryKey;
         
         /// <summary>
         /// Drop control.

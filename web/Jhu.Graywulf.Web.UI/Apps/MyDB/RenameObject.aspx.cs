@@ -17,9 +17,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             string objid = Request.QueryString["objid"];
             obj = FederationContext.SchemaManager.GetDatabaseObjectByKey(objid);
 
-            // Make sure it's in MYDB
-            // *** TODO: implement security logic and replace this
-            if (StringComparer.InvariantCultureIgnoreCase.Compare(obj.DatasetName, FederationContext.MyDBDataset.Name) != 0)
+            if (!obj.Dataset.IsMutable)
             {
                 throw new InvalidOperationException();  // *** TODO
             }
@@ -34,7 +32,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         protected void Ok_Click(object sender, EventArgs e)
         {
             obj.Rename(ObjectName.Text);
-            Response.Redirect("Default.aspx", false);      // *** TODO: where to redurect after rename?
+            Response.Redirect(Tables.GetUrl(), false);
         }
 
         protected void Cancel_Click(object sender, EventArgs e)
