@@ -178,20 +178,22 @@ namespace Jhu.Graywulf.Install
 
         protected virtual void GenerateDefaultJobs()
         {
-            // Job definitions
-            var eji = new ExportTablesJobInstaller(federation);
+            var sji = new Jobs.SqlScript.SqlScriptJobInstaller(federation);
+            sji.Install();
+
+            var eji = new Jobs.ExportTables.ExportTablesJobInstaller(federation);
             eji.Install();
 
-            var emji = new ExportMaintenanceJobInstaller(federation);
+            var emji = new Jobs.ExportTables.ExportMaintenanceJobInstaller(federation);
             emji.Install();
 
-            var iji = new ImportTablesJobInstaller(federation);
+            var iji = new Jobs.ImportTables.ImportTablesJobInstaller(federation);
             iji.Install();
         }
 
         protected virtual void GenerateQueryJobs()
         {
-            var jdi = new SqlQueryJobInstaller(federation);
+            var jdi = new Jobs.Query.SqlQueryJobInstaller(federation);
             jdi.Install();
         }
 

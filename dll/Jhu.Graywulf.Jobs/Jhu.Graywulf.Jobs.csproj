@@ -44,6 +44,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activities" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -61,8 +62,10 @@
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Jobs\ExportTables\ExportMaintenanceJob.cs" />
+    <Compile Include="Jobs\ExportTables\ExportMaintenanceJobInstaller.cs" />
     <Compile Include="Jobs\ExportTables\ExportTablesJob.cs" />
     <Compile Include="Jobs\ExportTables\ExportTablesJobFactory.cs" />
+    <Compile Include="Jobs\ExportTables\ExportTablesJobInstaller.cs" />
     <Compile Include="Jobs\ExportTables\ExportTablesJobSettings.cs" />
     <Compile Include="Jobs\ExportTables\ExportTablesParameters.cs" />
     <Compile Include="Jobs\ExportTables\IExportTablesJob.cs" />
@@ -80,6 +83,7 @@
     <Compile Include="Jobs\ImportTables\ImportTablesFromUriMethod.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesJob.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesJobFactory.cs" />
+    <Compile Include="Jobs\ImportTables\ImportTablesJobInstaller.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesJobSettings.cs" />
     <Compile Include="Jobs\ImportTables\IImportTablesForm.cs" />
     <Compile Include="Jobs\ImportTables\ImportTablesMethod.cs" />
@@ -161,6 +165,7 @@
     <Compile Include="Jobs\Query\SqlQueryJob.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Jobs\Query\SqlQueryJobInstaller.cs" />
     <Compile Include="Jobs\Query\SqlQueryJobSettings.cs" />
     <Compile Include="Jobs\Query\SqlQueryPartition.cs">
       <SubType>Code</SubType>
@@ -170,6 +175,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SqlQueryScripts.resx</DependentUpon>
     </Compile>
+    <Compile Include="Jobs\SqlScript\ExecuteScript.cs" />
+    <Compile Include="Jobs\SqlScript\ISqlScriptJob.cs" />
+    <Compile Include="Jobs\SqlScript\SqlScriptJob.cs" />
+    <Compile Include="Jobs\SqlScript\SqlScriptJobInstaller.cs" />
+    <Compile Include="Jobs\SqlScript\SqlScriptParameters.cs" />
     <Compile Include="Jobs\Test\TestAsyncException.cs" />
     <Compile Include="Jobs\Test\TestQueryDelay.cs" />
     <Compile Include="Jobs\Test\TestJob.cs" />
@@ -266,6 +276,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Jobs\Query\SqlQueryResources\TableStatistics.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <XamlAppdef Include="Jobs\SqlScript\SqlScriptJob.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </XamlAppdef>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

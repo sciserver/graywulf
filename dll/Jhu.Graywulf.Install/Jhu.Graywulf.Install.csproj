@@ -61,11 +61,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Install\ImportTablesJobInstaller.cs" />
-    <Compile Include="Install\ExportMaintenanceJobInstaller.cs" />
     <Compile Include="Install\DatabaseDefinitionInstaller.cs" />
     <Compile Include="Install\DBInstaller.cs" />
-    <Compile Include="Install\ExportTablesJobInstaller.cs" />
     <Compile Include="Install\JobPersistenceInstaller.cs" />
     <Compile Include="Install\LogInstaller.cs" />
     <Compile Include="Install\RegistryInstaller.cs" />
@@ -74,7 +71,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Scripts.resx</DependentUpon>
     </Compile>
-    <Compile Include="Install\SqlQueryJobInstaller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Install\ClusterInstaller.cs" />
     <Compile Include="Install\DomainInstaller.cs" />
