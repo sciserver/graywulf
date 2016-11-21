@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Jobs.SqlScript
         #region Private member variables
 
         private DatasetBase[] datasets;
-        private string query;
+        private string script;
         private int timeout;
         private IsolationLevel isolationLevel;
 
@@ -50,10 +50,10 @@ namespace Jhu.Graywulf.Jobs.SqlScript
         /// Gets or sets the SQL script
         /// </summary>
         [DataMember]
-        public string Query
+        public string Script
         {
-            get { return query; }
-            set { query = value; }
+            get { return script; }
+            set { script = value; }
         }
 
         /// <summary>
@@ -88,29 +88,17 @@ namespace Jhu.Graywulf.Jobs.SqlScript
         private void InitializeMembers(StreamingContext context)
         {
             this.datasets = null;
-            this.query = null;
+            this.script = null;
             this.timeout = 1200;      // *** TODO: get from settings  
             this.isolationLevel = IsolationLevel.RepeatableRead;
         }
 
         #endregion
 
-        /// <summary>
-        /// Returns and initialized database command that can
-        /// directly be executed on the target database.
-        /// </summary>
-        /// <returns></returns>
-        public CancelableDbCommand GetInitializedDbCommand(DatasetBase dataset)
+        public string[] GetScriptParts()
         {
-            var cn = dataset.OpenConnection();
-            var cmd = cn.CreateCommand();
-
-            cmd.CommandType = CommandType.Text;
-            cmd.CommandText = query;
-            cmd.CommandTimeout = timeout;
-            cmd.Transaction = cn.BeginTransaction(isolationLevel);
-
-            return new CancelableDbCommand(cmd);
+            var parts = Util.SqlScriptSplitter.SplitByGo(script);
+            return parts;
         }
     }
 }

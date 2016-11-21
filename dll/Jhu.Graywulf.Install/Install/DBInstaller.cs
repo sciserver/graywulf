@@ -238,7 +238,7 @@ namespace Jhu.Graywulf.Install
             {
                 cn.Open();
 
-                string[] scripts = SplitSqlScript(sql);
+                string[] scripts = Util.SqlScriptSplitter.SplitByGo(sql);
 
                 foreach (string q in scripts)
                 {
@@ -267,17 +267,6 @@ namespace Jhu.Graywulf.Install
             }
 
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// Splits SQL script into chunks base on the GO statements.
-        /// </summary>
-        /// <param name="script">The script to chunk up.</param>
-        /// <returns>The script chunks.</returns>
-        protected string[] SplitSqlScript(string script)
-        {
-            // Look for rows starting with GO
-            return script.Split(new string[] { "\r\nGO", "\nGO", "\r\ngo", "\ngo" }, StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }

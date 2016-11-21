@@ -93,6 +93,7 @@
     <Compile Include="Util\DeepCloner.cs" />
     <Compile Include="Util\EmailFormatter.cs" />
     <Compile Include="Util\MediaTypeComparer.cs" />
+    <Compile Include="Util\SqlScriptSplitter.cs" />
     <Compile Include="Util\TypeNameFormatter.cs" />
     <Compile Include="Util\UriConverter.cs" />
     <Compile Include="Util\ConfigXmlMerger.cs" />

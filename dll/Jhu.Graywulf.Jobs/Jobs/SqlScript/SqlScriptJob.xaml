@@ -1,5 +1,6 @@
 ﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="Jhu.Graywulf.Jobs.SqlScript.SqlScriptJob"
  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:jga="clr-namespace:Jhu.Graywulf.Activities;assembly=Jhu.Graywulf.Activities"
  xmlns:jgs="clr-namespace:Jhu.Graywulf.Schema;assembly=Jhu.Graywulf.Schema"
  xmlns:local="clr-namespace:Jhu.Graywulf.Jobs.SqlScript"
  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -73,37 +74,67 @@
       <ActivityAction.Argument>
         <DelegateInArgument x:TypeArguments="jgs:DatasetBase" Name="item" />
       </ActivityAction.Argument>
-      <local:ExecuteScript>
-        <local:ExecuteScript.Dataset>
-          <InArgument x:TypeArguments="jgs:DatasetBase">
-            <mca:CSharpValue x:TypeArguments="jgs:DatasetBase">item</mca:CSharpValue>
+      <ForEach x:TypeArguments="x:String" DisplayName="ForEach&lt;String&gt;" sap2010:WorkflowViewState.IdRef="ForEach`1_1">
+        <ForEach.Values>
+          <InArgument x:TypeArguments="scg:IEnumerable(x:String)">
+            <mca:CSharpValue x:TypeArguments="scg:IEnumerable(x:String)">Parameters.GetScriptParts()</mca:CSharpValue>
           </InArgument>
-        </local:ExecuteScript.Dataset>
-        <local:ExecuteScript.JobGuid>
-          <InArgument x:TypeArguments="s:Guid">
-            <mca:CSharpValue x:TypeArguments="s:Guid">JobGuid</mca:CSharpValue>
-          </InArgument>
-        </local:ExecuteScript.JobGuid>
-        <local:ExecuteScript.Parameters>
-          <InArgument x:TypeArguments="local:SqlScriptParameters">
-            <mca:CSharpValue x:TypeArguments="local:SqlScriptParameters">Parameters</mca:CSharpValue>
-          </InArgument>
-        </local:ExecuteScript.Parameters>
-        <local:ExecuteScript.UserGuid>
-          <InArgument x:TypeArguments="s:Guid">
-            <mca:CSharpValue x:TypeArguments="s:Guid">UserGuid</mca:CSharpValue>
-          </InArgument>
-        </local:ExecuteScript.UserGuid>
-        <sap2010:WorkflowViewState.IdRef>ExecuteScript_1</sap2010:WorkflowViewState.IdRef>
-      </local:ExecuteScript>
+        </ForEach.Values>
+        <ActivityAction x:TypeArguments="x:String">
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="x:String" Name="scriptPart" />
+          </ActivityAction.Argument>
+          <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_1" MaxRetries="3">
+            <jga:Retry.JobGuid>
+              <InArgument x:TypeArguments="s:Guid">
+                <mca:CSharpValue x:TypeArguments="s:Guid">JobGuid</mca:CSharpValue>
+              </InArgument>
+            </jga:Retry.JobGuid>
+            <jga:Retry.UserGuid>
+              <InArgument x:TypeArguments="s:Guid">
+                <mca:CSharpValue x:TypeArguments="s:Guid">UserGuid</mca:CSharpValue>
+              </InArgument>
+            </jga:Retry.UserGuid>
+            <local:ExecuteScript sap2010:WorkflowViewState.IdRef="ExecuteScript_3">
+              <local:ExecuteScript.Dataset>
+                <InArgument x:TypeArguments="jgs:DatasetBase">
+                  <mca:CSharpValue x:TypeArguments="jgs:DatasetBase">item</mca:CSharpValue>
+                </InArgument>
+              </local:ExecuteScript.Dataset>
+              <local:ExecuteScript.JobGuid>
+                <InArgument x:TypeArguments="s:Guid">
+                  <mca:CSharpValue x:TypeArguments="s:Guid">JobGuid</mca:CSharpValue>
+                </InArgument>
+              </local:ExecuteScript.JobGuid>
+              <local:ExecuteScript.Parameters>
+                <InArgument x:TypeArguments="local:SqlScriptParameters">
+                  <mca:CSharpValue x:TypeArguments="local:SqlScriptParameters">Parameters</mca:CSharpValue>
+                </InArgument>
+              </local:ExecuteScript.Parameters>
+              <local:ExecuteScript.Script>
+                <InArgument x:TypeArguments="x:String">
+                  <mca:CSharpValue x:TypeArguments="x:String">scriptPart</mca:CSharpValue>
+                </InArgument>
+              </local:ExecuteScript.Script>
+              <local:ExecuteScript.UserGuid>
+                <InArgument x:TypeArguments="s:Guid">
+                  <mca:CSharpValue x:TypeArguments="s:Guid">UserGuid</mca:CSharpValue>
+                </InArgument>
+              </local:ExecuteScript.UserGuid>
+            </local:ExecuteScript>
+          </jga:Retry>
+        </ActivityAction>
+      </ForEach>
     </ActivityAction>
-    <sads:DebugSymbol.Symbol>d2dDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjJcZ3JheXd1bGZcZGxsXEpodS5HcmF5d3VsZi5Kb2JzXEpvYnNcU3FsU2NyaXB0XFNxbFNjcmlwdEpvYi54YW1sB0IDZRUCAQFFCUVyAgEXTAdiHQIBAlkNWWYCARJPDU9WAgENXg1eUQIBCFQNVFACAQM=</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d2dDOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjJcZ3JheXd1bGZcZGxsXEpodS5HcmF5d3VsZi5Kb2JzXEpvYnNcU3FsU2NyaXB0XFNxbFNjcmlwdEpvYi54YW1sDkMDggEVAgEBRglGcgIBNU0HfxECAQJQDVB3AgEwVwt9FwIBA1deV2ECARBfEV9VAgEKWhFaVAIBBGINfCMCARFvE29sAgEqdBN0WwIBJGUTZVwCAR55E3lXAgEYahNqVgIBEg==</sads:DebugSymbol.Symbol>
   </ParallelForEach>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="ExecuteScript_1" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="ParallelForEach`1_1" sap:VirtualizedContainerService.HintSize="287,210" />
-      <sap2010:ViewStateData Id="Jhu.Graywulf.Jobs.SqlScript.SqlScriptJob_1" sap:VirtualizedContainerService.HintSize="327,290" />
+      <sap2010:ViewStateData Id="ExecuteScript_3" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Retry_1" sap:VirtualizedContainerService.HintSize="214,128" />
+      <sap2010:ViewStateData Id="ForEach`1_1" sap:VirtualizedContainerService.HintSize="287,278" />
+      <sap2010:ViewStateData Id="ParallelForEach`1_1" sap:VirtualizedContainerService.HintSize="317,428" />
+      <sap2010:ViewStateData Id="Jhu.Graywulf.Jobs.SqlScript.SqlScriptJob_1" sap:VirtualizedContainerService.HintSize="357,508" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

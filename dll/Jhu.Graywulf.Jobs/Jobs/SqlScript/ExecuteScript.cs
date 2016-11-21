@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Activities;
-using System.Threading.Tasks;
+using System.Data;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.IO.Tasks;
+using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.SqlScript
 {
@@ -25,29 +25,44 @@ namespace Jhu.Graywulf.Jobs.SqlScript
         [RequiredArgument]
         public InArgument<DatasetBase> Dataset { get; set; }
 
+        [RequiredArgument]
+        public InArgument<string> Script { get; set; }
+
         protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
         {
             var parameters = Parameters.Get(activityContext);
             var dataset = Dataset.Get(activityContext);
+            var script = Script.Get(activityContext);
             
             Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
             string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, parameters, dataset), callback, state);
+            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, parameters, dataset, script), callback, state);
         }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlScriptParameters parameters, DatasetBase dataset)
+        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlScriptParameters parameters, DatasetBase dataset, string script)
         {
-            var cmd = parameters.GetInitializedDbCommand(dataset);
+            var cn = dataset.OpenConnection();
+            var cmd = cn.CreateCommand();
 
-            RegisterCancelable(workflowInstanceGuid, activityInstanceId, cmd);
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = script;
+            cmd.CommandTimeout = parameters.Timeout;
+            cmd.Transaction = cn.BeginTransaction(parameters.IsolationLevel);
 
-            cmd.ExecuteNonQuery();
-            cmd.Transaction.Commit();
-            cmd.Transaction.Dispose();
-            cmd.Connection.Close();
-            cmd.Connection.Dispose();
+            var ccmd = new CancelableDbCommand(cmd);
 
-            UnregisterCancelable(workflowInstanceGuid, activityInstanceId, cmd);
+            RegisterCancelable(workflowInstanceGuid, activityInstanceId, ccmd);
+
+            ccmd.ExecuteNonQuery();
+
+            if (ccmd.Transaction != null)
+            {
+                ccmd.Transaction.Commit();
+            }
+
+            UnregisterCancelable(workflowInstanceGuid, activityInstanceId, ccmd);
+
+            ccmd.Dispose();
         }
     }
 }

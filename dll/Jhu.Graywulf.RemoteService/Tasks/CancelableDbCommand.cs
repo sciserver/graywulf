@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Tasks
     /// Implements a wrapper around a DbCommand to support
     /// cancelling of long-running queries.
     /// </summary>
-    public class CancelableDbCommand : CancelableTask
+    public class CancelableDbCommand : CancelableTask, IDisposable
     {
         #region Private members
 
@@ -48,6 +48,24 @@ namespace Jhu.Graywulf.Tasks
         private void InitializeMembers()
         {
             this.command = null;
+        }
+
+        public void Dispose()
+        {
+            if (command != null)
+            {
+                if (command.Transaction != null)
+                {
+                    command.Transaction.Dispose();
+                }
+
+                if (command.Connection != null)
+                {
+                    command.Connection.Dispose();
+                }
+
+                command.Dispose();
+            }
         }
 
         #endregion
