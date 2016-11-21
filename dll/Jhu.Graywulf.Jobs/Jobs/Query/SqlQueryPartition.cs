@@ -400,7 +400,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        public void PrepareCreateDestinationTablePrimaryKey(Context context, IScheduler scheduler, out Table table, out IList<Column> columns)
+        public void PrepareCreateDestinationTablePrimaryKey(Context context, IScheduler scheduler, out Table table)
         {
             switch (ExecutionMode)
             {
@@ -412,9 +412,19 @@ namespace Jhu.Graywulf.Jobs.Query
 
                         lock (syncRoot)
                         {
-                            var source = GetExecuteSourceQuery();
-                            columns = source.GetColumns();
                             table = query.Destination.GetTable(BatchName, QueryName, null, null);
+
+                            var source = GetExecuteSourceQuery();
+                            var pk = new Index(table, source.GetColumns())
+                            {
+                                IndexName = String.Format("PK_{0}_{1}", table.SchemaName, table.TableName),
+                                IsPrimaryKey = true,
+                                IsUnique =true,
+                                IsClustered = true,
+                                IsCompressed=true
+                            };
+
+                            table.Indexes.TryAdd(pk.IndexName, pk);
                         }
                     }
                     break;

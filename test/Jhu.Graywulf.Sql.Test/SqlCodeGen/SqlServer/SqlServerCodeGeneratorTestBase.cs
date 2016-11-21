@@ -9,7 +9,7 @@ using Jhu.Graywulf.Schema.SqlServer;
 
 namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 {
-    public abstract class SqlServerCodeGeneratorTestBase
+    public abstract class SqlServerCodeGeneratorTestBase : Jhu.Graywulf.Schema.SqlServer.SqlServerTestBase
     {
         protected SchemaManager CreateSchemaManager()
         {

@@ -24,23 +24,22 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             var query = Query.Get(activityContext);
             var queryPartition = query.Partitions[0];
-            Table destination;
-            IList<Column> columns;
+            Table destinationTable;
 
             using (Context context = query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 queryPartition.InitializeQueryObject(context, null, true);
-                queryPartition.PrepareCreateDestinationTablePrimaryKey(context, activityContext.GetExtension<IScheduler>(), out destination, out columns);
+                queryPartition.PrepareCreateDestinationTablePrimaryKey(context, activityContext.GetExtension<IScheduler>(), out destinationTable);
             }
 
             Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
             string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, destination, columns), callback, state);
+            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, destinationTable), callback, state);
         }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, Table destination, IList<Column> columns)
+        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, Table destinationTable)
         {
-            destination.CreatePrimaryKey(columns);
+            destinationTable.PrimaryKey.Create();
         }
     }
 }

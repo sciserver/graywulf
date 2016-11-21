@@ -20,6 +20,18 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
             InitializeMembers();
         }
 
+        public SqlServerColumnListGenerator(TableOrView table)
+            : base(table)
+        {
+            InitializeMembers();
+        }
+
+        public SqlServerColumnListGenerator(Index index)
+            : base(index)
+        {
+            InitializeMembers();
+        }
+
         public SqlServerColumnListGenerator(TableReference tr, ColumnContext context, ColumnListType listType)
             : base(tr.FilterColumnReferences(context))
         {

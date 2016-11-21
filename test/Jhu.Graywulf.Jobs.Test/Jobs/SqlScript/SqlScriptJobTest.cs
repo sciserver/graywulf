@@ -94,7 +94,6 @@ namespace Jhu.Graywulf.Jobs.SqlScript
         }
 
         [TestMethod]
-        [TestCategory("Query")]
         public void MyDbSqlScriptTest()
         {
             var sql = "SELECT COUNT(*) FROM sys.tables";
@@ -103,7 +102,6 @@ namespace Jhu.Graywulf.Jobs.SqlScript
         }
 
         [TestMethod]
-        [TestCategory("Query")]
         public void MultistepScriptTest()
         {
             var sql = @"
@@ -113,6 +111,17 @@ SELECT COUNT(*) FROM sys.tables
                 ";
 
             RunScript(sql);
+        }
+
+        [TestMethod]
+        public void CreatePrimaryKeyTest()
+        {
+
+        }
+
+        [TestMethod]
+        public void DropPrimaryKeyTest()
+        {
         }
     }
 }

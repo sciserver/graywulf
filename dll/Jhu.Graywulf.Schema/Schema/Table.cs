@@ -90,6 +90,10 @@ namespace Jhu.Graywulf.Schema
                 var nc = (Column)columns[i].Clone();
                 this.Columns.TryAdd(nc.Name, nc);
             }
+
+            if (PrimaryKey != null)
+            {
+            }
         }
 
         public void Initialize(IList<Column> columns, TableInitializationOptions options)
@@ -143,20 +147,17 @@ namespace Jhu.Graywulf.Schema
         /// <summary>
         /// Creates the table
         /// </summary>
+        public override void Create()
+        {
+            Create(true, true);
+        }
+
+        /// <summary>
+        /// Creates the table
+        /// </summary>
         public void Create(bool createPrimaryKey, bool createIndexes)
         {
             Dataset.CreateTable(this, createPrimaryKey, createIndexes);
-        }
-
-        public void CreatePrimaryKey(IList<Column> columns)
-        {
-            CopyColumnsFrom(columns);
-            Dataset.CreatePrimaryKey(this);
-        }
-
-        public void CreateIndexes()
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>

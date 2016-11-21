@@ -613,10 +613,6 @@ namespace Jhu.Graywulf.Schema
 
         internal abstract void CreateTable(Table table, bool createPrimaryKey, bool createIndexes);
 
-        internal abstract void CreatePrimaryKey(Table table);
-
-        internal abstract void CreateIndex(Table table, Index index);
-
         /// <summary>
         /// When overloaded in derived classes, drops an object.
         /// </summary>
@@ -626,6 +622,10 @@ namespace Jhu.Graywulf.Schema
         /// Only works with mutable datasets, ie. myDBs
         /// </remarks>
         internal abstract void DropObject(DatabaseObject obj);
+
+        internal abstract void CreateIndex(Index index);
+
+        internal abstract void DropIndex(Index index);
 
         internal abstract void TruncateTable(Table table);
 

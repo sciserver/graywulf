@@ -674,12 +674,12 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
             throw new NotImplementedException();
         }
 
-        internal override void CreatePrimaryKey(Table table)
+        internal override void CreateIndex(Index index)
         {
             throw new NotImplementedException();
         }
 
-        internal override void CreateIndex(Table table, Index index)
+        internal override void DropIndex(Index index)
         {
             throw new NotImplementedException();
         }

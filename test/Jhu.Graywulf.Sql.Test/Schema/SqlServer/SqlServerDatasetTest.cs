@@ -304,6 +304,140 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         }
 
         #endregion
+        #region Create table and index tests
+
+        private Table CreateTestTable(bool createPrimaryKey, bool createIndex)
+        {
+            var ds = CreateTestDataset();
+            ds.IsMutable = true;
+
+            if (ds.Tables.ContainsKey(null, "dbo", "testtable"))
+            {
+                ds.Tables[null, "dbo", "testtable"].Drop();
+            }
+
+            var table = new Table(ds)
+            {
+                SchemaName = "dbo",
+                TableName = "testtable",
+            };
+
+            var id = new Column(table)
+            {
+                ID = 0,
+                ColumnName = "ID",
+                DataType = DataTypes.SqlBigInt
+            };
+
+            var data = new Column(table)
+            {
+                ID = 1,
+                ColumnName = "Data",
+                DataType = DataTypes.SqlNVarChar
+            };
+
+            table.Columns.TryAdd(id.ColumnName, id);
+            table.Columns.TryAdd(data.ColumnName, data);
+
+            if (createPrimaryKey)
+            {
+                CreatePrimaryKey(table);
+            }
+
+            if (createIndex)
+            {
+                CreateIndex(table);
+            }
+
+            return table;
+        }
+
+        private Index CreatePrimaryKey(Table table)
+        {
+            var pk = new Index(table)
+            {
+                IndexName = "PK_testtable",
+                IsPrimaryKey = true,
+                IsClustered = true,
+                IsUnique = true,
+                IsCompressed = true,
+            };
+
+            var pkc = new IndexColumn(table.Columns["ID"])
+            {
+                KeyOrdinal = 0,
+            };
+            pk.Columns.TryAdd(pkc.Name, pkc);
+            table.Indexes.TryAdd(pk.IndexName, pk);
+
+            return pk;
+        }
+
+        private Index CreateIndex(Table table)
+        {
+            var ix = new Index(table)
+            {
+                IndexName = "IX_testtable_Data",
+                IsPrimaryKey = false,
+                IsClustered = false,
+                IsUnique = false,
+                IsCompressed = true
+            };
+
+            var ixc = new IndexColumn(table.Columns["Data"])
+            {
+                KeyOrdinal = 0,
+            };
+            ix.Columns.TryAdd(ixc.Name, ixc);
+            table.Indexes.TryAdd(ix.IndexName, ix);
+
+            return ix;
+        }
+
+        [TestMethod]
+        public void CreateTableTest()
+        {
+            var table = CreateTestTable(false, false);
+            table.Create();
+            table.Drop();
+        }
+
+        [TestMethod]
+        public void CreateTableWithIndexesTest()
+        {
+            var table = CreateTestTable(true, true);
+            table.Create();
+            table.Drop();
+        }
+
+        [TestMethod]
+        public void AddIndexesTest()
+        {
+            var table = CreateTestTable(false, false);
+            table.Create();
+
+            var pk = CreatePrimaryKey(table);
+            pk.Create();
+
+            var ix = CreateIndex(table);
+            ix.Create();
+
+            table.Drop();
+        }
+
+        [TestMethod]
+        public void DropIndexesTest()
+        {
+            var table = CreateTestTable(true, true);
+            table.Create();
+
+            table.Indexes["PK_testtable"].Drop();
+            table.Indexes["IX_testtable_Data"].Drop();
+
+            table.Drop();
+        }
+
+        #endregion
         #region Columns test
 
         [TestMethod]

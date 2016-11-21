@@ -225,5 +225,40 @@ WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 1
 [datetime] datetime  NULL,
 [guid] uniqueidentifier  NULL)", res);
         }*/
+
+        [TestMethod]
+        public void GenerateCreatePrimaryKeyScriptTest()
+        {
+            var ds = CreateTestDataset();
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithPrimaryKey"];
+            var cg = new SqlServerCodeGenerator();
+
+            var sql = cg.GenerateCreatePrimaryKeyScript(t);
+
+            var gt = 
+@"ALTER TABLE [Graywulf_Schema_Test].[dbo].[TableWithPrimaryKey]
+ADD CONSTRAINT [PK_dbo_TableWithPrimaryKey] PRIMARY KEY (
+[ID]
+ )
+";
+
+            Assert.AreEqual(gt, sql);
+        }
+
+        [TestMethod]
+        public void GenerateDropPrimaryKeyScriptTest()
+        {
+            var ds = CreateTestDataset();
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "TableWithPrimaryKey"];
+            var cg = new SqlServerCodeGenerator();
+
+            var sql = cg.GenerateDropPrimaryKeyScript(t);
+
+            var gt = 
+@"ALTER TABLE [Graywulf_Schema_Test].[dbo].[TableWithPrimaryKey]
+DROP CONSTRAINT [PK_TableWithPrimaryKey]";
+
+            Assert.AreEqual(gt, sql);
+        }
     }
 }

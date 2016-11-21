@@ -249,7 +249,11 @@ namespace Jhu.Graywulf.Schema
             this.objectName = objectName;
         }
 
-        public void Drop()
+        public virtual void Create()
+        {
+        }
+
+        public virtual void Drop()
         {
             dataset.DropObject(this);
         }

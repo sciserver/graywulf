@@ -66,6 +66,36 @@ namespace Jhu.Graywulf.SqlCodeGen
             this.columns = new List<ColumnReference>(columns);
         }
 
+        protected SqlColumnListGeneratorBase(TableOrView table)
+        {
+            InitializeMembers();
+
+            this.columns = new List<ColumnReference>();
+
+            var tr = new TableReference(table, null, true);
+
+            foreach (var c in table.Columns.Values.OrderBy(ci => ci.ID))
+            {
+                var cr = new ColumnReference(tr, c);
+                this.columns.Add(cr);
+            }
+        }
+
+        protected SqlColumnListGeneratorBase(Index index)
+        {
+            InitializeMembers();
+
+            this.columns = new List<ColumnReference>();
+
+            var tr = new TableReference((TableOrView)index.DatabaseObject, null, true);
+
+            foreach (var c in index.Columns.Values)
+            {
+                var cr = new ColumnReference(tr, c);
+                this.columns.Add(cr);
+            }
+        }
+
         private void InitializeMembers()
         {
             this.columns = new List<ColumnReference>();
@@ -249,15 +279,25 @@ namespace Jhu.Graywulf.SqlCodeGen
         /// <returns>A SQL snippet with the list of columns.</returns>
         public string Execute()
         {
+            var columnlist = new StringBuilder();
+            Execute(columnlist);
+            return columnlist.ToString();
+        }
+
+        /// <summary>
+        /// Returns a SQL snippet with the list of primary keys
+        /// and propagated columns belonging to the table.
+        /// </summary>
+        public void Execute(StringBuilder columnlist)
+        {
             var nullstring = GetNullString();
             var format = GetFormatString();
             var separator = GetSeparator();
 
-            var columnlist = new StringBuilder();
-
+            int q = 0;
             foreach (var column in columns)
             {
-                if (leadingSeparator || columnlist.Length != 0)
+                if (leadingSeparator || q != 0)
                 {
                     columnlist.Append(separator);
                 }
@@ -274,9 +314,9 @@ namespace Jhu.Graywulf.SqlCodeGen
                     column.DataType.TypeNameWithLength,
                     nullspec,
                     jalias);
-            }
 
-            return columnlist.ToString();
+                q++;
+            }
         }
 
     }

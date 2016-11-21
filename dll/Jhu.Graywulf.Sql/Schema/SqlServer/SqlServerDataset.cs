@@ -376,7 +376,7 @@ WHERE
                 }
             }
         }
-        
+
         private void LoadDatabaseObjectImpl<T>(T databaseObject)
             where T : DatabaseObject, new()
         {
@@ -655,7 +655,7 @@ ORDER BY c.column_id
                 }
             }
         }
-        
+
         /// <summary>
         /// Loads indexes of a database object.
         /// </summary>
@@ -1374,11 +1374,8 @@ END",
         {
             EnsureMutable();
 
-            // TODO: instead of creating a table reference here, implement direct
-            // code generation from schema objects
-            var tr = new SqlParser.TableReference(table, null, true);
             var codegen = new Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator();
-            var sql = codegen.GenerateCreateTableQuery(tr, createPrimaryKey, createIndexes);
+            var sql = codegen.GenerateCreateTableScript(table, createPrimaryKey, createIndexes);
 
             using (var cn = OpenConnectionInternal())
             {
@@ -1389,48 +1386,69 @@ END",
             }
         }
 
-        internal override void CreatePrimaryKey(Table table)
+        internal override void CreateIndex(Index index)
         {
             EnsureMutable();
 
-            // TODO: instead of creating a table reference here, implement direct
-            // code generation from schema objects
-            var tr = new SqlParser.TableReference(table, null, true);
+            string sql;
+            var codegen = new Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator();
 
-            if (tr.ColumnReferences.Where(c => (c.ColumnContext & SqlParser.ColumnContext.PrimaryKey) != 0).Count() > 0)
+            if (index.IsPrimaryKey)
             {
-                var codegen = new Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator();
-                var sql = codegen.GenerateCreatePrimaryKeyQuery(tr);
+                sql = codegen.GenerateCreatePrimaryKeyScript((TableOrView)index.DatabaseObject);
+            }
+            else
+            {
+                sql = codegen.GenerateCreateIndexScript(index);
+            }
 
-                using (var cn = OpenConnectionInternal())
+            using (var cn = OpenConnectionInternal())
+            {
+                using (var cmd = new SqlCommand(sql, cn))
                 {
-                    using (var cmd = new SqlCommand(sql, cn))
+                    try
                     {
-                        try
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (SqlException ex)
+                    {
+                        if (ex.Number == 1505)
                         {
-                            cmd.ExecuteNonQuery();
+                            // TODO
+                            // Duplicate key, eat exception
                         }
-                        catch (SqlException ex)
+                        else
                         {
-                            if (ex.Number == 1505)
-                            {
-                                // Duplicate key, eat exception
-                            }
-                            else
-                            {
-                                throw;
-                            }
+                            throw;
                         }
                     }
                 }
             }
-
-            // TODO: figure out how to make it into a cancelable command
         }
 
-        internal override void CreateIndex(Table table, Index index)
+        internal override void DropIndex(Index index)
         {
-            throw new NotImplementedException();
+            EnsureMutable();
+
+            string sql;
+            var codegen = new Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator();
+
+            if (index.IsPrimaryKey)
+            {
+                sql = codegen.GenerateDropPrimaryKeyScript((TableOrView)index.DatabaseObject);
+            }
+            else
+            {
+                sql = codegen.GenerateDropIndexScript(index);
+            }
+
+            using (var cn = OpenConnectionInternal())
+            {
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
 
         internal override void TruncateTable(Table table)

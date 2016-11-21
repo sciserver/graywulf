@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
@@ -29,6 +30,9 @@ namespace Jhu.Graywulf.Schema
 
         [NonSerialized]
         private bool isUnique;
+
+        [NonSerialized]
+        private bool isCompressed;
 
         [NonSerialized]
         private Lazy<ConcurrentDictionary<string, IndexColumn>> columns;
@@ -87,6 +91,13 @@ namespace Jhu.Graywulf.Schema
         {
             get { return isUnique; }
             set { isUnique = value; }
+        }
+
+        [DataMember]
+        public bool IsCompressed
+        {
+            get { return isCompressed; }
+            set { isCompressed = value; }
         }
 
         /// <summary>
@@ -173,6 +184,18 @@ namespace Jhu.Graywulf.Schema
             this.DatabaseName = databaseObject.DatabaseName;
         }
 
+        public Index(IIndexes databaseObject, IList<Column> columns)
+            : this(databaseObject)
+        {
+            int q = 0;
+            foreach (var column in columns)
+            {
+                var ic = new IndexColumn(column);
+                ic.ID = q;
+                q++;
+            }
+        }
+
         public Index(Index old)
             : base(old)
         {
@@ -192,6 +215,7 @@ namespace Jhu.Graywulf.Schema
             this.isPrimaryKey = false;
             this.isClustered = false;
             this.isUnique = false;
+            this.isCompressed = false;
 
             this.columns = new Lazy<ConcurrentDictionary<string, IndexColumn>>(this.LoadIndexColumns, true);
         }
@@ -205,6 +229,7 @@ namespace Jhu.Graywulf.Schema
             this.isPrimaryKey = old.isPrimaryKey;
             this.isClustered = old.isClustered;
             this.isUnique = old.isUnique;
+            this.isCompressed = old.isCompressed;
 
             this.columns = new Lazy<ConcurrentDictionary<string, IndexColumn>>(this.LoadIndexColumns, true);
         }
@@ -234,6 +259,16 @@ namespace Jhu.Graywulf.Schema
             {
                 return new ConcurrentDictionary<string, IndexColumn>(SchemaManager.Comparer);
             }
+        }
+
+        public override void Create()
+        {
+            Dataset.CreateIndex(this);
+        }
+
+        public override void Drop()
+        {
+            Dataset.DropIndex(this);
         }
     }
 }

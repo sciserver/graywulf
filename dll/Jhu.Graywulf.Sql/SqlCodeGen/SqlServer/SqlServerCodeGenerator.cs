@@ -25,21 +25,6 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
         {
         }
 
-        public SqlColumnListGeneratorBase CreateColumnListGenerator()
-        {
-            return new SqlServerColumnListGenerator();
-        }
-
-        public override SqlColumnListGeneratorBase CreateColumnListGenerator(TableReference table, ColumnContext columnContext, ColumnListType listType)
-        {
-            var cl = new SqlServerColumnListGenerator(table.FilterColumnReferences(columnContext))
-            {
-                ListType = listType,
-            };
-
-            return cl;
-        }
-
         #region Identifier formatting functions
 
         public static string QuoteIdentifier(string identifier)
@@ -97,7 +82,7 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 
             return res;
         }
-        
+
         #endregion
         #region Complete query generators
 
@@ -168,90 +153,199 @@ namespace Jhu.Graywulf.SqlCodeGen.SqlServer
 
         #endregion
 
-        public string GenerateCreateTableQuery(TableReference table, bool primaryKey, bool indexes)
+        public override SqlColumnListGeneratorBase CreateColumnListGenerator(TableReference table, ColumnContext columnContext, ColumnListType listType)
         {
-            if (table.DatabaseObject == null)
+            var cl = new SqlServerColumnListGenerator(table.FilterColumnReferences(columnContext))
             {
-                throw new ArgumentNullException("The table reference is not resolved");         // TODO ***
-            }
+                ListType = listType,
+            };
 
-            if (table.TableOrView.Columns.Count == 0)
+            return cl;
+        }
+
+        private void GenerateIndexColumns(StringBuilder sql, Index index)
+        {
+            var columnList = new SqlServerColumnListGenerator(index)
+            {
+                ListType = ColumnListType.CreateIndex
+            };
+
+            sql.AppendLine(" (");
+            columnList.Execute(sql);
+            sql.AppendLine();
+            sql.AppendLine(" )");
+        }
+
+        private void GenerateIndexOptions(StringBuilder sql, Index index, bool sortInTempDb)
+        {
+            sql.AppendLine("WITH (");
+            sql.Append("DATA_COMPRESSION = " + (index.IsCompressed ? "PAGE" : "NONE"));
+            if (!index.IsPrimaryKey)
+            {
+                sql.AppendLine(",");
+                sql.Append("SORT_IN_TEMPDB = " + (sortInTempDb ? "ON" : "OFF"));
+            }
+            sql.AppendLine(")");
+        }
+
+        private void GenerateCreateIndexScript(StringBuilder sql, Index index, bool sortInTempDb)
+        {
+            sql.Append("CREATE");
+            sql.Append(index.IsUnique ? " UNIQUE" : "");
+            sql.Append(index.IsClustered ? " CLUSTERED" : " NONCLUSTERED");
+            sql.Append(" INDEX ");
+            sql.AppendLine(QuoteIdentifier(index.IndexName));
+            sql.Append("ON ");
+            sql.AppendLine(GetResolvedTableName((TableOrView)index.DatabaseObject));
+
+            GenerateIndexColumns(sql, index);
+            GenerateIndexOptions(sql, index, sortInTempDb);
+        }
+
+        private void GeneratePrimaryKeyConstraint(StringBuilder sql, TableOrView table, bool sortInTempDb)
+        {
+            var index = table.PrimaryKey;
+
+            sql.Append("CONSTRAINT ");
+            sql.Append(QuoteIdentifier(index.IndexName));
+            sql.Append(" PRIMARY KEY ");
+            sql.Append(index.IsClustered ? "CLUSTERED" : "NONCLUSTERED");
+
+            GenerateIndexColumns(sql, index);
+        }
+
+        public string GenerateCreateTableScript(Table table, bool generatePrimaryKey, bool generateIndexes)
+        {
+            return GenerateCreateTableScript(table, generatePrimaryKey, generateIndexes, true);
+        }
+
+        public string GenerateCreateTableScript(Table table, bool generatePrimaryKey, bool generateIndexes, bool sortInTempDb)
+        {
+            if (table.Columns.Count == 0)
             {
                 throw new InvalidOperationException("The table doesn't have any columns.");     // TODO ***
             }
 
-            var columns = CreateColumnListGenerator(table, ColumnContext.All, ColumnListType.CreateTableWithOriginalName);
-
             var sql = new StringBuilder();
+            var columns = new SqlServerColumnListGenerator(table)
+            {
+                 ListType = ColumnListType.CreateTableWithOriginalName,
+                 LeadingSeparator = false
+            };
 
             sql.Append("CREATE TABLE ");
             sql.Append(GetResolvedTableName(table));
             sql.AppendLine(" (");
+            columns.Execute(sql);
 
-            sql.Append(columns.Execute());
-
-            if (primaryKey && table.TableOrView.PrimaryKey != null)
+            if (generatePrimaryKey && table.PrimaryKey != null)
             {
-                // If primary is specified directly
-                var constraint = GeneratePrimaryKeyConstraint(table, ColumnContext.PrimaryKey);
                 sql.AppendLine(",");
-                sql.Append(constraint);
-            }
-            else if (primaryKey && table.TableOrView.Columns.Values.Count(i => i.IsKey) > 0)
-            {
-                // If key columns are to be taken as primary key
-                var constraint = GeneratePrimaryKeyConstraint(table, ColumnContext.Key);
-                sql.AppendLine(",");
-                sql.Append(constraint);
+                GeneratePrimaryKeyConstraint(sql, table, sortInTempDb);
             }
 
-            sql.AppendLine();
             sql.AppendLine(" )");
 
-            // TODO: add index generation
+            if (generatePrimaryKey && table.PrimaryKey != null)
+            {
+                GenerateIndexOptions(sql, table.PrimaryKey, sortInTempDb);
+            }
 
+            if (generateIndexes)
+            {
+                foreach (var index in table.Indexes.Values)
+                {
+                    if (!index.IsPrimaryKey)
+                    {
+                        GenerateCreateIndexScript(sql, index, sortInTempDb);
+                    }
+                }
+            }
+            
             return sql.ToString();
         }
 
-        private string GeneratePrimaryKeyConstraint(TableReference table, ColumnContext columnContext)
+        public string GenerateCreatePrimaryKeyScript(TableOrView table)
         {
-            var columnlist = CreateColumnListGenerator(table, columnContext, ColumnListType.CreateIndex);
+            return GenerateCreatePrimaryKeyScript(table, true);
+        }
+
+        public string GenerateCreatePrimaryKeyScript(TableOrView table, bool sortInTempDb)
+        {
+            if (table.Columns.Count == 0)
+            {
+                throw new InvalidOperationException("The table doesn't have any columns.");     // TODO ***
+            }
+
+            if (table.PrimaryKey == null)
+            {
+                throw new InvalidOperationException("The table doesn't have a primary key defined.");     // TODO ***
+            }
+
+            if (table.PrimaryKey.Columns.Count == 0)
+            {
+                throw new InvalidOperationException("There are no columns defined for primary key.");     // TODO ***
+            }
 
             var sql = new StringBuilder();
 
-            sql.Append("CONSTRAINT ");
-            sql.Append(GetQuotedIdentifier(String.Format("PK_{0}_{1}", table.SchemaName, table.DatabaseObjectName)));
-            sql.AppendLine(" PRIMARY KEY (");
-
-            sql.Append(columnlist.Execute());
-
+            sql.AppendFormat("ALTER TABLE {0}", GetResolvedTableName(table));
             sql.AppendLine();
-            sql.AppendLine(" )");
+            sql.Append("ADD ");
+            GeneratePrimaryKeyConstraint(sql, table, sortInTempDb);
 
             return sql.ToString();
         }
 
-        public string GenerateCreatePrimaryKeyQuery(TableReference table)
+        public string GenerateCreateIndexScript(Index index)
         {
-            if (table.DatabaseObject == null)
+            return GenerateCreateIndexScript(index, true);
+        }
+
+        public string GenerateCreateIndexScript(Index index, bool sortInTempDb)
+        {
+            var table = (TableOrView)index.DatabaseObject;
+
+            if (table == null)
             {
-                throw new ArgumentNullException("The table reference is not resolved");         // TODO ***
+                throw new InvalidOperationException("The table is null.");     // TODO ***
             }
 
-            if (table.TableOrView.Columns.Count == 0)
+            if (table.Columns.Count == 0)
             {
                 throw new InvalidOperationException("The table doesn't have any columns.");     // TODO ***
             }
 
             var sql = new StringBuilder();
-            var pk = GetQuotedIdentifier(String.Format("PK_{0}_{1}", table.SchemaName, table.DatabaseObjectName));
 
-            sql.AppendFormat("ALTER TABLE {0}", GetResolvedTableName(table));
-            sql.AppendLine();
-            sql.Append("ADD ");
-            sql.Append(GeneratePrimaryKeyConstraint(table, ColumnContext.PrimaryKey));
+            GenerateCreateIndexScript(sql, index, sortInTempDb);
 
             return sql.ToString();
+        }
+        
+        public string GenerateDropPrimaryKeyScript(TableOrView table)
+        {
+            var sql = 
+@"ALTER TABLE {0}
+DROP CONSTRAINT {1}";
+
+            sql = String.Format(sql,
+                GetResolvedTableName(table),
+                GetQuotedIdentifier(table.PrimaryKey.ObjectName));
+
+            return sql;
+        }
+
+        public string GenerateDropIndexScript(Index index)
+        {
+            var sql =
+@"DROP INDEX {0} ON {1}";
+
+            sql = String.Format(sql,
+                QuoteIdentifier(index.IndexName),
+                GetResolvedTableName((TableOrView)index.DatabaseObject));
+
+            return sql;
         }
     }
 }
