@@ -415,7 +415,8 @@ namespace Jhu.Graywulf.Jobs.Query
                             table = query.Destination.GetTable(BatchName, QueryName, null, null);
 
                             var source = GetExecuteSourceQuery();
-                            var pk = new Index(table, source.GetColumns())
+                            var columns = source.GetColumns().Where(ci => ci.IsKey).ToArray();
+                            var pk = new Index(table, columns)
                             {
                                 IndexName = String.Format("PK_{0}_{1}", table.SchemaName, table.TableName),
                                 IsPrimaryKey = true,

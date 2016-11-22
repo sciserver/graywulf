@@ -179,7 +179,6 @@ namespace Jhu.Graywulf.Schema
             InitializeMembers(new StreamingContext());
 
             this.databaseObject = databaseObject;
-
             this.SchemaName = databaseObject.SchemaName;
             this.DatabaseName = databaseObject.DatabaseName;
         }
@@ -187,11 +186,18 @@ namespace Jhu.Graywulf.Schema
         public Index(IIndexes databaseObject, IList<Column> columns)
             : this(databaseObject)
         {
+            this.columns = new Lazy<ConcurrentDictionary<string, IndexColumn>>();
+
             int q = 0;
             foreach (var column in columns)
             {
-                var ic = new IndexColumn(column);
-                ic.ID = q;
+                var ic = new IndexColumn(column)
+                {
+                    ID = q
+                };
+
+                this.Columns.TryAdd(ic.Name, ic);
+
                 q++;
             }
         }
