@@ -347,5 +347,34 @@ DROP CONSTRAINT {1}";
 
             return sql;
         }
+
+        private string GenerateAddColumnEntry(Column column)
+        {
+            return String.Format("ADD {0} {1} {2} {3}",
+                QuoteIdentifier(column.Name),
+                column.DataType.TypeNameWithLength,
+                column.DataType.IsNullable ? "NULL" : "NOT NULL",
+                column.IsIdentity ? "IDENTITY (1, 1)" : "");
+        }
+
+        public string GenerateAddColumnScript(Table table, IList<Column> columns)
+        {
+            var sql = new StringBuilder();
+
+            sql.AppendFormat("ALTER TABLE {0}", GetResolvedTableName(table));
+            sql.AppendLine();
+
+            foreach (var column in columns)
+            {
+                sql.AppendLine(GenerateAddColumnEntry(column));
+            }
+
+            return sql.ToString();
+        }
+
+        public string GenerateDropColumnScript(Table table, IList<Column> columns)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

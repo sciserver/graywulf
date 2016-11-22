@@ -22,40 +22,49 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::Jhu.Graywulf.Web.Controls.MultiViewTabHeader tabs;
         
         /// <summary>
-        /// Peek control.
+        /// peek control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Peek;
+        protected global::System.Web.UI.WebControls.Button peek;
         
         /// <summary>
-        /// Export control.
+        /// export control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Export;
+        protected global::System.Web.UI.WebControls.Button export;
         
         /// <summary>
-        /// Rename control.
+        /// rename control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Rename;
+        protected global::System.Web.UI.WebControls.Button rename;
         
         /// <summary>
-        /// Drop control.
+        /// primaryKey control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Drop;
+        protected global::System.Web.UI.WebControls.Button primaryKey;
+        
+        /// <summary>
+        /// drop control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button drop;
         
         /// <summary>
         /// FullyQualifiedNameLabel control.

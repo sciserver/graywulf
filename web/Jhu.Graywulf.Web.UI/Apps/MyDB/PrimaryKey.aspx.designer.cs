@@ -13,6 +13,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
     public partial class PrimaryKey {
         
         /// <summary>
+        /// primaryKeyForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Controls.Form primaryKeyForm;
+        
+        /// <summary>
         /// schemaNameLabel control.
         /// </summary>
         /// <remarks>
@@ -103,6 +112,24 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         protected global::System.Web.UI.WebControls.Panel createKeyPanel;
         
         /// <summary>
+        /// primaryKeyType control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButtonList primaryKeyType;
+        
+        /// <summary>
+        /// columnListTable control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTable columnListTable;
+        
+        /// <summary>
         /// columnListLabel control.
         /// </summary>
         /// <remarks>
@@ -146,5 +173,23 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button cancel;
+        
+        /// <summary>
+        /// jobResultsForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Controls.Form jobResultsForm;
+        
+        /// <summary>
+        /// Back control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button Back;
     }
 }

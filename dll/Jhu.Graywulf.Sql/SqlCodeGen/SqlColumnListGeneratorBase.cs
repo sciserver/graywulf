@@ -9,6 +9,8 @@ namespace Jhu.Graywulf.SqlCodeGen
 {
     public abstract class SqlColumnListGeneratorBase
     {
+        // TODO: add IDENTITY and ASC/DESC for index columns
+
         private const string columnNull = " NULL";
         private const string columnNotNull = " NOT NULL";
 

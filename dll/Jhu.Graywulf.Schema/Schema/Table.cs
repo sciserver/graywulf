@@ -96,54 +96,6 @@ namespace Jhu.Graywulf.Schema
             }
         }
 
-        public void Initialize(IList<Column> columns, TableInitializationOptions options)
-        {
-            // If the table needs to be dropped do it now
-            if ((options & TableInitializationOptions.Drop) != 0)
-            {
-                Drop();
-            }
-
-            // If the destination table is supposed to be existing take columns
-            // from there, otherwise take from input data reader
-            if ((options & TableInitializationOptions.Append) == 0 &&
-                (options & TableInitializationOptions.Create) == 0)
-            {
-                // Destination table columns are already loaded
-            }
-            else
-            {
-                CopyColumnsFrom(columns);
-
-                if ((options & TableInitializationOptions.Append) != 0)
-                {
-                    if (!VerifyColumns(true))
-                    {
-                        throw new SchemaException(
-                            String.Format(
-                                "Table is to be appended but schemas do not match: {0}:{1}.{2}.{3}",
-                                Dataset.Name, DatabaseName, SchemaName, TableName));  // *** TODO
-                    }
-                }
-                else if ((options & TableInitializationOptions.Create) != 0)
-                {
-                    Create(
-                        (options & TableInitializationOptions.CreatePrimaryKey) != 0,
-                        (options & TableInitializationOptions.CreateIndexes) != 0);
-                }
-                else
-                {
-                    // *** TODO: implement other options
-                    throw new NotImplementedException();
-                }
-            }
-
-            if ((options & TableInitializationOptions.Clear) != 0)
-            {
-                Truncate();
-            }
-        }
-
         /// <summary>
         /// Creates the table
         /// </summary>
@@ -192,5 +144,57 @@ namespace Jhu.Graywulf.Schema
 
             return true;
         }
+
+        #region Specialized operations
+
+        public void Initialize(IList<Column> columns, TableInitializationOptions options)
+        {
+            // If the table needs to be dropped do it now
+            if ((options & TableInitializationOptions.Drop) != 0)
+            {
+                Drop();
+            }
+
+            // If the destination table is supposed to be existing take columns
+            // from there, otherwise take from input data reader
+            if ((options & TableInitializationOptions.Append) == 0 &&
+                (options & TableInitializationOptions.Create) == 0)
+            {
+                // Destination table columns are already loaded
+            }
+            else
+            {
+                CopyColumnsFrom(columns);
+
+                if ((options & TableInitializationOptions.Append) != 0)
+                {
+                    if (!VerifyColumns(true))
+                    {
+                        throw new SchemaException(
+                            String.Format(
+                                "Table is to be appended but schemas do not match: {0}:{1}.{2}.{3}",
+                                Dataset.Name, DatabaseName, SchemaName, TableName));  // *** TODO
+                    }
+                }
+                else if ((options & TableInitializationOptions.Create) != 0)
+                {
+                    Create(
+                        (options & TableInitializationOptions.CreatePrimaryKey) != 0,
+                        (options & TableInitializationOptions.CreateIndexes) != 0);
+                }
+                else
+                {
+                    // *** TODO: implement other options
+                    throw new NotImplementedException();
+                }
+            }
+
+            if ((options & TableInitializationOptions.Clear) != 0)
+            {
+                Truncate();
+            }
+        }
+
+        #endregion
     }
 }

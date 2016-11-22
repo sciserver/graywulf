@@ -437,6 +437,13 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
             table.Drop();
         }
 
+        [TestMethod]
+        public void AddColumnTest()
+        {
+            var table = CreateTestTable(false, false);
+            table.Create();
+        }
+
         #endregion
         #region Columns test
 

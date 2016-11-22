@@ -104,17 +104,17 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 // Show or hide buttons that are applicable to mydb objects only
 
                 var mydbbuttonsvisble = GraywulfSchemaManager.Comparer.Compare(dbobj.DatasetName, Page.RegistryContext.Federation.UserDatabaseVersion.Name) == 0;
-                Export.Visible = Rename.Visible = Drop.Visible = mydbbuttonsvisble;
+                export.Visible = rename.Visible = primaryKey.Visible = drop.Visible = mydbbuttonsvisble;
                 // TODO: funtions etc cannot be exported or peeked into!
 
                 if (dbobj.ObjectType == DatabaseObjectType.Table || dbobj.ObjectType == DatabaseObjectType.View)
                 {
-                    Peek.OnClientClick = Util.UrlFormatter.GetClientPopUp(Jhu.Graywulf.Web.UI.Apps.Schema.Peek.GetUrl(dbobj.UniqueKey));
-                    Peek.Visible = true;
+                    peek.OnClientClick = Util.UrlFormatter.GetClientPopUp(Jhu.Graywulf.Web.UI.Apps.Schema.Peek.GetUrl(dbobj.UniqueKey));
+                    peek.Visible = true;
                 }
                 else
                 {
-                    Peek.Visible = false;
+                    peek.Visible = false;
                 }
             }
         }
@@ -127,6 +127,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         protected void Rename_Click(object sender, EventArgs e)
         {
             Response.Redirect(Apps.MyDB.RenameObject.GetUrl(databaseObjectID), false);
+        }
+
+        protected void PrimaryKey_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(Apps.MyDB.PrimaryKey.GetUrl(databaseObjectID), false);
         }
 
         protected void Drop_Click(object sender, EventArgs e)

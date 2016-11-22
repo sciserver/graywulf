@@ -2,7 +2,7 @@
     Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.PrimaryKey" CodeBehind="PrimaryKey.aspx.cs" %>
 
 <asp:Content ContentPlaceHolderID="middle" runat="Server">
-    <jgwuc:Form runat="server" Text="Manage primary key" SkinID="PrimaryKey">
+    <jgwuc:Form runat="server" ID="primaryKeyForm" Text="Manage primary key" SkinID="PrimaryKey">
         <FormTemplate>
             <table class="FormTable">
                 <tr>
@@ -27,7 +27,7 @@
                 <table class="FormTable">
                     <tr>
                         <td class="FormLabel">
-                            <asp:Label runat="server" ID="primaryKeyNameLabel">Primary Key Name:</asp:Label>
+                            <asp:Label runat="server" ID="primaryKeyNameLabel">Primary key name:</asp:Label>
                         </td>
                         <td class="FormField">
                             <asp:Label runat="server" ID="primaryKeyName" />
@@ -44,15 +44,16 @@
                 </table>
             </asp:Panel>
             <asp:Panel runat="server" ID="createKeyPanel" Visible="false">
-                <p>The table doesn't have a Primary Key, so you can create one.</p>
-                <p>
-                    <asp:RadioButton runat="server" Text="Generate a new key column automatically" /><br />
-                    <asp:RadioButton runat="server" Text="Select existing column as key" />
-                </p>
-                <table class="FormTable">
+                <p>The table doesn't have a primary key so you can create one.</p>
+                <asp:RadioButtonList runat="server" ID="primaryKeyType" RepeatLayout="Flow" RepeatDirection="Vertical"
+                    AutoPostBack="true" OnSelectedIndexChanged="PrimaryKeyType_SelectedIndexChanged">
+                    <asp:ListItem Value="autogen" Text="Generate a new key column automatically" Selected="True" />
+                    <asp:ListItem Value="column" Text="Select existing column as key" />
+                </asp:RadioButtonList>
+                <table runat="server" id="columnListTable" class="FormTable" visible="false">
                     <tr>
                         <td class="FormLabel">
-                            <asp:Label runat="server" ID="columnListLabel">Primary Key Column:</asp:Label>
+                            <asp:Label runat="server" ID="columnListLabel">Primary key column:</asp:Label>
                         </td>
                         <td class="FormField">
                             <asp:DropDownList runat="server" ID="columnList" CssClass="FormField" />
@@ -66,6 +67,17 @@
             <asp:Button ID="dropKey" runat="server" Text="Drop Key" OnClick="DropKey_Click" CssClass="FormButton" Visible="false" />
             &nbsp;<asp:Button ID="cancel" runat="server" CausesValidation="False" Text="Cancel"
                 OnClick="Cancel_Click" CssClass="FormButton" />
+        </ButtonsTemplate>
+    </jgwuc:Form>
+    <jgwuc:Form ID="jobResultsForm" runat="server" Text="Manage primary key" SkinID="PrimaryKey"
+        Visible="false">
+        <FormTemplate>
+            <p>
+                The primary key modification job has been scheduled and will be executed shortly.
+            </p>
+        </FormTemplate>
+        <ButtonsTemplate>
+            <asp:Button ID="Back" runat="server" Text="OK" OnClick="Cancel_Click" CssClass="FormButton" />&nbsp;
         </ButtonsTemplate>
     </jgwuc:Form>
 </asp:Content>

@@ -11,12 +11,14 @@
         <p class="FormMessage">
         </p>
         <p class="FormButtons">
-            <asp:Button ID="Peek" runat="server" Text="Peek" Visible="false" CssClass="FormButton" />
-            <asp:Button ID="Export" runat="server" Text="Export" Visible="false" OnClick="Export_Click"
+            <asp:Button ID="peek" runat="server" Text="Peek" Visible="false" CssClass="FormButton" />
+            <asp:Button ID="export" runat="server" Text="Export" Visible="false" OnClick="Export_Click"
                 CssClass="FormButton" />
-            <asp:Button ID="Rename" runat="server" Text="Rename" Visible="false" OnClick="Rename_Click"
+            <asp:Button ID="rename" runat="server" Text="Rename" Visible="false" OnClick="Rename_Click"
                 CssClass="FormButton" />
-            <asp:Button ID="Drop" runat="server" Text="Drop" Visible="false" OnClick="Drop_Click"
+            <asp:Button ID="primaryKey" runat="server" Text="Primary Key" OnClick="PrimaryKey_Click"
+                CssClass="FormButton" />
+            <asp:Button ID="drop" runat="server" Text="Drop" Visible="false" OnClick="Drop_Click"
                 CssClass="FormButton" />
         </p>
     </div>
