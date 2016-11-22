@@ -28,6 +28,9 @@ namespace Jhu.Graywulf.Schema.SqlServer
         [NonSerialized]
         protected bool isRemoteDataset;
 
+        [NonSerialized]
+        protected bool isRestrictedSchema;
+
         #endregion
         #region Properties
 
@@ -40,6 +43,13 @@ namespace Jhu.Graywulf.Schema.SqlServer
         {
             get { return isOnLinkedServer; }
             set { isOnLinkedServer = value; }
+        }
+
+        [DataMember]
+        public bool IsRestrictedSchema
+        {
+            get { return isRestrictedSchema; }
+            set { isRestrictedSchema = value; }
         }
 
         [IgnoreDataMember]
@@ -164,6 +174,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
 
             this.isOnLinkedServer = false;
             this.isRemoteDataset = false;
+            this.isRestrictedSchema = false;
         }
 
         /// <summary>
@@ -176,6 +187,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
 
             this.isOnLinkedServer = old.isOnLinkedServer;
             this.isRemoteDataset = old.isRemoteDataset;
+            this.isRestrictedSchema = old.isRestrictedSchema;
         }
 
         public override object Clone()
@@ -242,6 +254,53 @@ namespace Jhu.Graywulf.Schema.SqlServer
 
         #endregion
         #region Schema objects
+
+        protected internal override void EnsureMutable(DatabaseObject databaseObject)
+        {
+            base.EnsureMutable(databaseObject);
+
+            EnsureSchemaValid(databaseObject.SchemaName);
+        }
+
+        protected virtual void EnsureSchemaValid(string schemaName)
+        {
+            if (isRestrictedSchema && !String.IsNullOrWhiteSpace(schemaName) && SchemaManager.Comparer.Compare(schemaName, DefaultSchemaName) != 0)
+            {
+                throw new InvalidOperationException("Operation valid on mutable schemas only.");    // *** TODO
+            }
+        }
+
+        private object FilterSchemaName(object schemaName)
+        {
+            if (isRestrictedSchema && SchemaManager.Comparer.Compare(schemaName, DefaultSchemaName) != 0)
+            {
+                return DefaultSchemaName;
+            }
+            else
+            {
+                return schemaName;
+            }
+        }
+
+        private void SetSchemaNameParameter(SqlCommand cmd, string schemaName)
+        {
+            cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = FilterSchemaName(String.IsNullOrWhiteSpace(schemaName) ? (object)DBNull.Value : (object)schemaName);
+        }
+
+        private void SetObjectNameParameter(SqlCommand cmd, string objectName)
+        {
+            cmd.Parameters.Add("@objectName", SqlDbType.NVarChar, 128).Value = objectName;
+        }
+
+        private void SetTypeNameParameter(SqlCommand cmd, string typeName)
+        {
+            cmd.Parameters.Add("@typeName", SqlDbType.NVarChar, 128).Value = typeName;
+        }
+
+        private void SetIndexNameParameter(SqlCommand cmd, string indexName)
+        {
+            cmd.Parameters.Add("@indexName", SqlDbType.NVarChar, 128).Value = indexName;
+        }
 
         private string GetDataTypeQuery(bool appendNameFilter)
         {
@@ -351,8 +410,8 @@ WHERE
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = String.IsNullOrWhiteSpace(dataType.SchemaName) ? (object)DBNull.Value : (object)dataType.SchemaName;
-                    cmd.Parameters.Add("@typeName", SqlDbType.NVarChar, 128).Value = dataType.TypeName;
+                    SetSchemaNameParameter(cmd, dataType.SchemaName);
+                    SetTypeNameParameter(cmd, dataType.TypeName);
 
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -395,8 +454,8 @@ WHERE o.type IN ({0}) AND
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = String.IsNullOrWhiteSpace(databaseObject.SchemaName) ? (object)DBNull.Value : (object)databaseObject.SchemaName;
-                    cmd.Parameters.Add("@objectName", SqlDbType.NVarChar, 128).Value = databaseObject.ObjectName;
+                    SetSchemaNameParameter(cmd, databaseObject.SchemaName);
+                    SetObjectNameParameter(cmd, databaseObject.ObjectName);
 
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -430,6 +489,8 @@ WHERE o.type IN ({0}) AND
 
         internal override bool IsObjectExisting(DatabaseObject databaseObject)
         {
+            EnsureSchemaValid(databaseObject.SchemaName);
+
             var sql = String.Format(
                 @"SELECT OBJECT_ID('{0}')",
                 GetObjectFullyResolvedName(databaseObject));
@@ -490,7 +551,8 @@ SELECT s.name, o.name, o.type, o.create_date, o.modify_date
 FROM sys.objects o
 INNER JOIN sys.schemas s
 	ON s.schema_id = o.schema_id
-WHERE o.type IN ({0})
+WHERE o.type IN ({0}) 
+    AND (s.name = @schemaName OR @schemaName IS NULL)
 ";
 
             sql = String.Format(sql, GetObjectTypeIdListString(Schema.Constants.DatabaseObjectTypes[typeof(T)]));
@@ -499,6 +561,8 @@ WHERE o.type IN ({0})
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
+                    SetSchemaNameParameter(cmd, null);
+
                     using (var dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
@@ -525,13 +589,13 @@ WHERE o.type IN ({0})
         /// <summary>
         /// Loads columns of a database object.
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject obj)
+        internal override IEnumerable<KeyValuePair<string, Column>> LoadColumns(DatabaseObject databaseObject)
         {
             string sql;
 
-            if (obj is DataType)
+            if (databaseObject is DataType)
             {
                 sql = @"
 SELECT c.column_id, c.name, 
@@ -546,7 +610,7 @@ WHERE s.name = @schemaName AND t.name = @objectName
 ORDER BY c.column_id
 ";
             }
-            else if (obj is View)
+            else if (databaseObject is View)
             {
                 sql = @"
 WITH refs AS
@@ -579,7 +643,7 @@ LEFT OUTER JOIN sys.indexes i ON i.object_id = o.object_id AND i.type = 1 AND i.
 LEFT OUTER JOIN sys.index_columns ic ON ic.object_id = o.object_id AND ic.index_id = i.index_id AND ic.column_id = c.column_id
 ORDER BY c.column_id";
             }
-            else if (obj is Table || obj is TableValuedFunction)
+            else if (databaseObject is Table || databaseObject is TableValuedFunction)
             {
                 sql = @"
 SELECT c.column_id, c.name,
@@ -606,14 +670,14 @@ ORDER BY c.column_id
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = String.IsNullOrWhiteSpace(obj.SchemaName) ? (object)DBNull.Value : (object)obj.SchemaName;
-                    cmd.Parameters.Add("@objectName", SqlDbType.NVarChar, 128).Value = obj.ObjectName;
+                    SetSchemaNameParameter(cmd, databaseObject.SchemaName);
+                    SetObjectNameParameter(cmd, databaseObject.ObjectName);
 
                     using (var dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
-                            var cd = new Column(obj)
+                            var cd = new Column(databaseObject)
                             {
                                 ID = dr.GetInt32(0),
                                 Name = dr.GetString(1),
@@ -627,7 +691,7 @@ ORDER BY c.column_id
                             {
                                 var schema = dr.GetString(2);
                                 var type = dr.GetString(3);
-                                cd.DataType = obj.Dataset.UserDefinedTypes[obj.Dataset.DatabaseName, schema, type];
+                                cd.DataType = databaseObject.Dataset.UserDefinedTypes[databaseObject.Dataset.DatabaseName, schema, type];
                             }
                             else
                             {
@@ -717,8 +781,8 @@ WHERE   i.type IN (1, 2)";
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = String.IsNullOrWhiteSpace(databaseObject.SchemaName) ? (object)DBNull.Value : (object)databaseObject.SchemaName;
-                    cmd.Parameters.Add("@objectName", SqlDbType.NVarChar, 128).Value = databaseObject.ObjectName;
+                    SetSchemaNameParameter(cmd, databaseObject.SchemaName);
+                    SetObjectNameParameter(cmd, databaseObject.ObjectName);
 
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -841,9 +905,9 @@ ORDER BY ic.key_ordinal";
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = index.DatabaseObject.SchemaName;
-                    cmd.Parameters.Add("@objectName", SqlDbType.NVarChar, 128).Value = index.DatabaseObject.ObjectName;
-                    cmd.Parameters.Add("@indexName", SqlDbType.NVarChar, 128).Value = index.IndexName;
+                    SetSchemaNameParameter(cmd, index.DatabaseObject.SchemaName);
+                    SetObjectNameParameter(cmd, index.DatabaseObject.ObjectName);
+                    SetIndexNameParameter(cmd, index.IndexName);
 
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -897,9 +961,9 @@ ORDER BY ic.key_ordinal";
         /// <summary>
         /// Loads parameters of a database object.
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject obj)
+        internal override IEnumerable<KeyValuePair<string, Parameter>> LoadParameters(DatabaseObject databaseObject)
         {
             var sql = @"
 SELECT p.parameter_id, p.name, p.is_output, 
@@ -917,8 +981,8 @@ ORDER BY p.parameter_id";
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = String.IsNullOrWhiteSpace(obj.SchemaName) ? (object)DBNull.Value : (object)obj.SchemaName;
-                    cmd.Parameters.Add("@objectName", SqlDbType.NVarChar, 128).Value = obj.ObjectName;
+                    SetSchemaNameParameter(cmd, databaseObject.SchemaName);
+                    SetObjectNameParameter(cmd, databaseObject.ObjectName);
 
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -942,7 +1006,7 @@ ORDER BY p.parameter_id";
                             {
                                 var schema = dr.GetString(3);
                                 var type = dr.GetString(4);
-                                par.DataType = obj.Dataset.UserDefinedTypes[obj.Dataset.DatabaseName, schema, type];
+                                par.DataType = databaseObject.Dataset.UserDefinedTypes[databaseObject.Dataset.DatabaseName, schema, type];
                             }
                             else
                             {
@@ -993,8 +1057,8 @@ WHERE o.type IN ({0}) AND
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar).Value = databaseObject.SchemaName;
-                    cmd.Parameters.Add("@objectName", SqlDbType.NVarChar).Value = databaseObject.ObjectName;
+                    SetSchemaNameParameter(cmd, databaseObject.SchemaName);
+                    SetObjectNameParameter(cmd, databaseObject.ObjectName);
 
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -1030,8 +1094,8 @@ ORDER BY 1";
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar).Value = databaseObject.SchemaName;
-                    cmd.Parameters.Add("@objectName", SqlDbType.NVarChar).Value = databaseObject.ObjectName;
+                    SetSchemaNameParameter(cmd, databaseObject.SchemaName);
+                    SetObjectNameParameter(cmd, databaseObject.ObjectName);
 
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -1125,8 +1189,8 @@ ORDER BY c.name, p.name";
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar).Value = databaseObject.SchemaName;
-                    cmd.Parameters.Add("@objectName", SqlDbType.NVarChar).Value = databaseObject.ObjectName;
+                    SetSchemaNameParameter(cmd, databaseObject.SchemaName);
+                    SetObjectNameParameter(cmd, databaseObject.ObjectName);
 
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -1246,9 +1310,9 @@ WHERE f.type = 1
         /// <summary>
         /// Loads statistics of a table.
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="databaseObject"></param>
         /// <returns></returns>
-        internal override TableStatistics LoadTableStatistics(TableOrView obj)
+        internal override TableStatistics LoadTableStatistics(TableOrView databaseObject)
         {
             var sql = @"
 -- Data space
@@ -1282,8 +1346,8 @@ WHERE s.name = @schemaName AND o.name = @objectName
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = String.IsNullOrWhiteSpace(obj.SchemaName) ? (object)DBNull.Value : (object)obj.SchemaName;
-                    cmd.Parameters.Add("@objectName", SqlDbType.NVarChar, 128).Value = obj.ObjectName;
+                    SetSchemaNameParameter(cmd, databaseObject.SchemaName);
+                    SetObjectNameParameter(cmd, databaseObject.ObjectName);
 
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -1311,9 +1375,10 @@ WHERE s.name = @schemaName AND o.name = @objectName
 
         #endregion
 
-        internal override void RenameObject(DatabaseObject obj, string objectName)
+        internal override void RenameObject(DatabaseObject databaseObject, string schemaName, string objectName)
         {
-            EnsureMutable();
+            EnsureMutable(databaseObject);
+            EnsureSchemaValid(schemaName);
 
             // The stored procedure sp_name expects the old name
             // the the schema.objectname or objectname format.
@@ -1323,16 +1388,31 @@ WHERE s.name = @schemaName AND o.name = @objectName
 
             // FullyQualifiedName cannot be used here because that contains DB name.
             string oldname;
-            if (String.IsNullOrEmpty(obj.SchemaName))
+
+            if (String.IsNullOrEmpty(databaseObject.SchemaName))
             {
-                oldname = QuoteIdentifier(obj.ObjectName);
+                oldname = QuoteIdentifier(databaseObject.ObjectName);
             }
             else
             {
                 oldname = String.Format(
                     "{0}.{1}",
-                    QuoteIdentifier(obj.SchemaName),
-                    QuoteIdentifier(obj.ObjectName));
+                    QuoteIdentifier(databaseObject.SchemaName),
+                    QuoteIdentifier(databaseObject.ObjectName));
+            }
+
+            string newname;
+
+            if (String.IsNullOrEmpty(schemaName))
+            {
+                newname = QuoteIdentifier(objectName);
+            }
+            else
+            {
+                newname = String.Format(
+                    "{0}.{1}",
+                    QuoteIdentifier(schemaName),
+                    QuoteIdentifier(objectName));
             }
 
             using (var cn = OpenConnectionInternal())
@@ -1342,24 +1422,24 @@ WHERE s.name = @schemaName AND o.name = @objectName
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     cmd.Parameters.Add("@objname", SqlDbType.NVarChar, 776).Value = oldname;
-                    cmd.Parameters.Add("@newname", SqlDbType.NVarChar, 776).Value = objectName;
+                    cmd.Parameters.Add("@newname", SqlDbType.NVarChar, 776).Value = newname;
 
                     cmd.ExecuteNonQuery();
                 }
             }
         }
 
-        internal override void DropObject(DatabaseObject obj)
+        internal override void DropObject(DatabaseObject databaseObject)
         {
-            EnsureMutable();
+            EnsureMutable(databaseObject);
 
             var sql = String.Format(@"
 IF (OBJECT_ID('{1}') IS NOT NULL)
 BEGIN
 DROP {0} {1}
 END",
-                Constants.SqlServerObjectTypeNames[obj.ObjectType],
-                GetObjectFullyResolvedName(obj));
+                Constants.SqlServerObjectTypeNames[databaseObject.ObjectType],
+                GetObjectFullyResolvedName(databaseObject));
 
             using (var cn = OpenConnectionInternal())
             {
@@ -1372,7 +1452,7 @@ END",
 
         internal override void CreateTable(Table table, bool createPrimaryKey, bool createIndexes)
         {
-            EnsureMutable();
+            EnsureMutable(table);
 
             var codegen = new Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator();
             var sql = codegen.GenerateCreateTableScript(table, createPrimaryKey, createIndexes);
@@ -1388,7 +1468,7 @@ END",
 
         internal override void CreateIndex(Index index)
         {
-            EnsureMutable();
+            EnsureMutable(index);
 
             string sql;
             var codegen = new Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator();
@@ -1428,7 +1508,7 @@ END",
 
         internal override void DropIndex(Index index)
         {
-            EnsureMutable();
+            EnsureMutable(index);
 
             string sql;
             var codegen = new Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator();
@@ -1453,10 +1533,7 @@ END",
 
         internal override void TruncateTable(Table table)
         {
-            if (!IsMutable)
-            {
-                throw new InvalidOperationException();
-            }
+            EnsureMutable(table);
 
             var sql = String.Format(
                 "TRUNCATE TABLE {0}",

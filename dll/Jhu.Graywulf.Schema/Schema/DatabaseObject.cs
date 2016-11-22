@@ -242,10 +242,11 @@ namespace Jhu.Graywulf.Schema
 
         #endregion
 
-        public void Rename(string objectName)
+        public void Rename(string schemaName, string objectName)
         {
-            dataset.RenameObject(this, objectName);
+            dataset.RenameObject(this, schemaName, objectName);
 
+            this.schemaName = schemaName;
             this.objectName = objectName;
         }
 

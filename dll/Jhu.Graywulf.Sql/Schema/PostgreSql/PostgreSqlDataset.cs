@@ -695,7 +695,7 @@ WHERE nspname = @schemaName and proname= @objectName;";
 
         #endregion
 
-        internal override void RenameObject(DatabaseObject obj, string objectName)
+        internal override void RenameObject(DatabaseObject obj, string schemaName, string objectName)
         {
             throw new NotImplementedException();
 

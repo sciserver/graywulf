@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
         protected void Ok_Click(object sender, EventArgs e)
         {
-            obj.Rename(ObjectName.Text);
+            obj.Rename(SchemaName.Text, ObjectName.Text);
             Response.Redirect(Tables.GetUrl(), false);
         }
 

@@ -615,7 +615,7 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
             throw new NotImplementedException();
         }
 
-        internal override void RenameObject(DatabaseObject obj, string objectName)
+        internal override void RenameObject(DatabaseObject obj, string schemaName, string objectName)
         {
             throw new NotImplementedException();
 

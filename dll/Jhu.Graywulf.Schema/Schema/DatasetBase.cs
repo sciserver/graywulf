@@ -592,7 +592,7 @@ namespace Jhu.Graywulf.Schema
         #endregion
         #region Object modification functions
 
-        internal protected void EnsureMutable()
+        internal virtual protected void EnsureMutable(DatabaseObject databaseObject)
         {
             if (!IsMutable)
             {
@@ -609,7 +609,7 @@ namespace Jhu.Graywulf.Schema
         /// <remarks>
         /// Only works with mutable datasets, ie. myDBs
         /// </remarks>
-        internal abstract void RenameObject(DatabaseObject obj, string name);
+        internal abstract void RenameObject(DatabaseObject obj, string schemaName, string objectName);
 
         internal abstract void CreateTable(Table table, bool createPrimaryKey, bool createIndexes);
 
