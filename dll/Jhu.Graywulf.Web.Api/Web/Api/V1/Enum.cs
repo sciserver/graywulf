@@ -13,7 +13,8 @@ namespace Jhu.Graywulf.Web.Api.V1
         Query = 1,
         Export = 2,
         Import = 4,
-        All = Query | Export | Import,
+        SqlScript = 8,
+        All = 0xFFFF,
     }
 
     public enum JobStatus

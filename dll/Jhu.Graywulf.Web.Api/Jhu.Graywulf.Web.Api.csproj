@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Web\Api\Util\SqlParser.cs" />
+    <Compile Include="Web\Api\V1\Constants.cs" />
     <Compile Include="Web\Api\V1\Enum.cs" />
     <Compile Include="Web\Api\V1\JobFactory.cs" />
     <Compile Include="Web\Api\V1\Objects\Column.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Web\Api\V1\Objects\JobDependency.cs" />
     <Compile Include="Web\Api\V1\Objects\QueryJob.cs" />
     <Compile Include="Web\Api\V1\Objects\Queue.cs" />
+    <Compile Include="Web\Api\V1\Objects\SqlScriptJob.cs" />
     <Compile Include="Web\Api\V1\Objects\User.cs" />
     <Compile Include="Web\Api\V1\Objects\UserGroup.cs" />
     <Compile Include="Web\Api\V1\Objects\View.cs" />

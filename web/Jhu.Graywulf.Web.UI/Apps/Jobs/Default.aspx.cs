@@ -21,6 +21,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
             Query = 1,
             Import = 2,
             Export = 3,
+            Script = 4,
         }
 
         protected void Page_Load(object sender, EventArgs e)
