@@ -1170,7 +1170,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// The function adds custom datasets (usually MYDBs or remote dataset) defined
         /// for the query job.
         /// </remarks>
-        protected SchemaManager CreateSchemaManager()
+        private SchemaManager CreateSchemaManager()
         {
             switch (ExecutionMode)
             {

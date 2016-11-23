@@ -236,9 +236,12 @@ namespace Jhu.Graywulf.Schema
         public void AddUserDatabases(Federation federation, User user)
         {
             var uf = UserDatabaseFactory.Create(federation);
-            var mydbds = uf.GetUserDatabase(user);
+            var mydbds = uf.GetUserDatabases(user);
 
-            this.Datasets[mydbds.Name] = mydbds;
+            foreach (var key in mydbds.Keys)
+            {
+                this.Datasets[key] = mydbds[key];
+            }
         }
     }
 }

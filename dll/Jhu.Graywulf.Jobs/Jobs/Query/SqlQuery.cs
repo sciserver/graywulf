@@ -197,22 +197,23 @@ namespace Jhu.Graywulf.Jobs.Query
             IntoClause into = SelectStatement.FindDescendantRecursive<IntoClause>();
             if (into != null)
             {
-
-                // **** TODO: test this with dataset name
-                //if (into.TableReference.DatasetName != null) this.destinationTable.Table.Dataset.Name = into.TableReference.DatasetName;
-
-                if (into.TableReference.SchemaName != null)
-                {
-                    this.destination.SchemaName = into.TableReference.SchemaName;
-                }
+                var sm = GetSchemaManager();
 
                 if (into.TableReference.DatabaseObjectName != null)
                 {
-                    this.destination.TableNamePattern = into.TableReference.DatabaseObjectName;
-                }
+                    if (into.TableReference.DatasetName != null)
+                    {
+                        var ds = (SqlServerDataset)sm.Datasets[into.TableReference.DatasetName];
+                        destination.Dataset = ds;
+                        destination.DatabaseName = ds.DatabaseName;
+                    }
 
+                    destination.SchemaName = into.TableReference.SchemaName ?? destination.Dataset.DefaultSchemaName;
+                    destination.TableNamePattern = into.TableReference.DatabaseObjectName;
+                }
+                
                 // Turn off unique name generation in case an into clause is used
-                this.destination.Options &= ~TableInitializationOptions.GenerateUniqueName;
+                destination.Options &= ~TableInitializationOptions.GenerateUniqueName;
             }
         }
 

@@ -416,16 +416,20 @@ namespace Jhu.Graywulf.Jobs.Query
 
                             var source = GetExecuteSourceQuery();
                             var columns = source.GetColumns().Where(ci => ci.IsKey).ToArray();
-                            var pk = new Index(table, columns)
-                            {
-                                IndexName = String.Format("PK_{0}_{1}", table.SchemaName, table.TableName),
-                                IsPrimaryKey = true,
-                                IsUnique =true,
-                                IsClustered = true,
-                                IsCompressed=true
-                            };
 
-                            table.Indexes.TryAdd(pk.IndexName, pk);
+                            if (columns.Length > 0)
+                            {
+                                var pk = new Index(table, columns)
+                                {
+                                    IndexName = String.Format("PK_{0}_{1}", table.SchemaName, table.TableName),
+                                    IsPrimaryKey = true,
+                                    IsUnique = true,
+                                    IsClustered = true,
+                                    IsCompressed = true
+                                };
+
+                                table.Indexes.TryAdd(pk.IndexName, pk);
+                            }
                         }
                     }
                     break;

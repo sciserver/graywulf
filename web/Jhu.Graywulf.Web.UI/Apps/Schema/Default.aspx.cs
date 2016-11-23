@@ -65,17 +65,21 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         {
             DatasetList.Items.Clear();
 
-            // Add MyDB as the first item
-            // TODO: extend this in case of multiple user databases
+            // Add MyDB etc. to the beginning of the list
             if (FederationContext.RegistryUser != null)
             {
-                var mydbli = new ListItem(FederationContext.MyDBDataset.Name, FederationContext.MyDBDataset.Name);
-                mydbli.Attributes.Add("class", "ToolbarControlHighlight");
-                DatasetList.Items.Add(mydbli);
+                var uf = UserDatabaseFactory.Create(RegistryContext.Federation);
+                var mydbds = uf.GetUserDatabases(RegistryUser);
+
+                foreach (var key in mydbds.Keys)
+                {
+                    var mydbli = new ListItem(key, key);
+                    mydbli.Attributes.Add("class", "ToolbarControlHighlight");
+                    DatasetList.Items.Add(mydbli);
+                }
             }
 
-            // Code is the second
-
+            // Code is the next
             var codedbli = new ListItem(Registry.Constants.CodeDbName, Registry.Constants.CodeDbName);
             codedbli.Attributes.Add("class", "ToolbarControlHighlight");
             DatasetList.Items.Add(codedbli);
@@ -153,7 +157,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                     ObjectList.Items.Add(li);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 ObjectList.Items.Clear();
                 var li = new ListItem("(not available)", "");

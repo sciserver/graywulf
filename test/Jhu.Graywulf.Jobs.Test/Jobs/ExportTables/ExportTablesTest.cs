@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 var federation = ef.LoadEntity<Federation>(Registry.ContextManager.Configuration.FederationName);
 
                 var udf = UserDatabaseFactory.Create(federation);
-                var mydbds = udf.GetUserDatabase(user);
+                var mydbds = udf.GetUserDatabases(user)[Registry.Constants.UserDbName];
 
                 var table = new Jhu.Graywulf.Schema.Table()
                 {

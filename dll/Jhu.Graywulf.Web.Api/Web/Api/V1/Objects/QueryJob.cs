@@ -136,20 +136,27 @@ namespace Jhu.Graywulf.Web.Api.V1
         /// <returns></returns>
         public SqlQuery CreateQuery(FederationContext context)
         {
+            // TODO: pass default target dataset and table name
+
             var qf = QueryFactory.Create(context.Federation);
             var q = qf.CreateQuery(query);
 
             var udf = UserDatabaseFactory.Create(context.Federation);
-            var udb = udf.GetUserDatabase(context.RegistryUser);
-            var usi = udf.GetUserDatabaseServerInstance(context.RegistryUser);
+            var udbs = udf.GetUserDatabases(context.RegistryUser);
+            var usis = udf.GetUserDatabaseServerInstances(context.RegistryUser);
 
-            qf.AppendUserDatabase(q, udb, usi);
+            foreach (var key in udbs.Keys)
+            {
+                qf.AppendUserDatabase(q, udbs[key], usis[key]);
+            }
 
             // TODO: Target table settings will need to be modified
             // once multi-select queries are implemented
             q.BatchName = null;
             q.QueryName = this.Name;
 
+            // Set up default destination which might be overriden
+            // by an INTO clause
             q.Destination = new IO.Tasks.DestinationTable()
             {
                 Dataset = context.MyDBDataset,

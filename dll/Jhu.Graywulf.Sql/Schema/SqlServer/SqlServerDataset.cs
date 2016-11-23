@@ -259,32 +259,27 @@ namespace Jhu.Graywulf.Schema.SqlServer
         {
             base.EnsureMutable(databaseObject);
 
-            EnsureSchemaValid(databaseObject.SchemaName);
+            EnsureSchemaValid(databaseObject.SchemaName ?? databaseObject.Dataset.DefaultSchemaName);
         }
 
         protected virtual void EnsureSchemaValid(string schemaName)
         {
-            if (isRestrictedSchema && !String.IsNullOrWhiteSpace(schemaName) && SchemaManager.Comparer.Compare(schemaName, DefaultSchemaName) != 0)
+            if (isRestrictedSchema && SchemaManager.Comparer.Compare(schemaName, DefaultSchemaName) != 0)
             {
                 throw new InvalidOperationException("Operation valid on mutable schemas only.");    // *** TODO
             }
         }
-
-        private object FilterSchemaName(object schemaName)
-        {
-            if (isRestrictedSchema && SchemaManager.Comparer.Compare(schemaName, DefaultSchemaName) != 0)
-            {
-                return DefaultSchemaName;
-            }
-            else
-            {
-                return schemaName;
-            }
-        }
-
+        
         private void SetSchemaNameParameter(SqlCommand cmd, string schemaName)
         {
-            cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = FilterSchemaName(String.IsNullOrWhiteSpace(schemaName) ? (object)DBNull.Value : (object)schemaName);
+            if (isRestrictedSchema && String.IsNullOrWhiteSpace(schemaName))
+            {
+                schemaName = DefaultSchemaName;
+            }
+
+            EnsureSchemaValid(schemaName);
+
+            cmd.Parameters.Add("@schemaName", SqlDbType.NVarChar, 128).Value = String.IsNullOrWhiteSpace(schemaName) ? (object)DBNull.Value : (object)schemaName;
         }
 
         private void SetObjectNameParameter(SqlCommand cmd, string objectName)

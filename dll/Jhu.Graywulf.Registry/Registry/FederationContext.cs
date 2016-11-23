@@ -86,7 +86,10 @@ namespace Jhu.Graywulf.Registry
                 if (myDBDataset == null)
                 {
                     var uf = UserDatabaseFactory.Create(registryContext.Federation);
-                    myDBDataset = uf.GetUserDatabase(registryUser);
+                    var mydbds = uf.GetUserDatabases(registryUser);
+
+                    // TODO: this is temporary fall-back logic, implement multi-mydb forms
+                    myDBDataset = mydbds[Constants.UserDbName];
                 }
 
                 return (Jhu.Graywulf.Schema.SqlServer.SqlServerDataset)myDBDataset;

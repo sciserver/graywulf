@@ -39,7 +39,10 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, Table destinationTable)
         {
-            destinationTable.PrimaryKey.Create();
+            if (destinationTable.PrimaryKey != null)
+            {
+                destinationTable.PrimaryKey.Create();
+            }
         }
     }
 }

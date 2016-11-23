@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Jobs.SqlScript
             {
                 var user = SignInTestUser(context);
                 var udf = UserDatabaseFactory.Create(context.Federation);
-                mydb = udf.GetUserDatabase(user);
+                mydb = udf.GetUserDatabases(user)[Registry.Constants.UserDbName];
             }
 
             RunScript(new [] { mydb }, sql, QueueType.Long, JobExecutionState.Completed, new TimeSpan(0, 1, 0));
@@ -78,7 +78,6 @@ namespace Jhu.Graywulf.Jobs.SqlScript
         [TestMethod]
         public void DiscoverParametersTest()
         {
-
             var jd = new JobDefinition();
             jd.WorkflowTypeName = Util.TypeNameFormatter.ToUnversionedAssemblyQualifiedName(typeof(Jhu.Graywulf.Jobs.SqlScript.SqlScriptJob));
             jd.DiscoverWorkflowParameters();

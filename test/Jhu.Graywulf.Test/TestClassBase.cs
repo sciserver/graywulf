@@ -265,7 +265,7 @@ namespace Jhu.Graywulf.Test
                 var user = SignInTestUser(context);
 
                 var udf = UserDatabaseFactory.Create(context.Federation);
-                var userdb = udf.GetUserDatabase(user);
+                var userdb = udf.GetUserDatabases(user)[Registry.Constants.UserDbName];
 
                 DropTable(userdb.ConnectionString, userdb.DefaultSchemaName, tableName);
             }

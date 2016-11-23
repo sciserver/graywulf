@@ -48,9 +48,12 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             using (var context = application.CreateRegistryContext())
             {
                 // Check if user database (MYDB) exists, and create it if necessary
+                var user = principal.Identity.User;
                 var uf = UserDatabaseFactory.Create(context.Federation);
-                uf.EnsureUserDatabaseExists(principal.Identity.User);
 
+                // This call will make sure all user databases are in place
+                uf.GetUserDatabases(user);
+                
                 context.CommitTransaction();
             }
         }

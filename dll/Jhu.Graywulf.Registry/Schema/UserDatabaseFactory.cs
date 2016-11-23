@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Schema.SqlServer;
 
 namespace Jhu.Graywulf.Schema
 {
@@ -13,11 +14,11 @@ namespace Jhu.Graywulf.Schema
     {
         #region Static cache implementation
 
-        private static Cache<string, DatasetBase> userDatabaseCache;
+        private static Cache<string, Dictionary<string, SqlServerDataset>> userDatabaseCache;
 
         static UserDatabaseFactory()
         {
-            userDatabaseCache = new Cache<string, DatasetBase>();
+            userDatabaseCache = new Cache<string, Dictionary<string, SqlServerDataset>>(SchemaManager.Comparer);
         }
 
         #endregion
@@ -79,35 +80,47 @@ namespace Jhu.Graywulf.Schema
 
         #endregion
 
-        public abstract void EnsureUserDatabaseExists(User user);
+        protected abstract void EnsureUserDatabaseExists(User user, SqlServerDataset dataset);
 
-        public SqlServer.SqlServerDataset GetUserDatabase(User user)
+        protected abstract void EnsureUserDatabaseConfigured(User user, SqlServerDataset dataset);
+
+        public Dictionary<string, SqlServerDataset> GetUserDatabases(User user)
         {
-            DatasetBase ds;
+            Dictionary<string, SqlServerDataset> dbs;
 
             // Check in cache first, otherwise load and store in cache
-            if (!userDatabaseCache.TryGetValue(user.Name, out ds))
+            if (!userDatabaseCache.TryGetValue(user.Name, out dbs))
             {
-                ds = OnGetUserDatabase(user);
-                userDatabaseCache.TryAdd(user.Name, ds, DateTime.Now.AddMinutes(10));
+                dbs = OnGetUserDatabases(user);
+
+                foreach (var ds in dbs.Values)
+                {
+                    EnsureUserDatabaseExists(user, ds);
+                    EnsureUserDatabaseConfigured(user, ds);
+                }
+
+                userDatabaseCache.TryAdd(user.Name, dbs, DateTime.Now.AddMinutes(10));
             }
 
-            if (!ds.IsCacheable)
+            foreach (var db in dbs.Values)
             {
-                ds.FlushCache();
+                if (!db.IsCacheable)
+                {
+                    db.FlushCache();
+                }
             }
 
-            return (SqlServer.SqlServerDataset)ds;
+            return dbs;
         }
 
-        public ServerInstance GetUserDatabaseServerInstance(User user)
+        public Dictionary<string, ServerInstance> GetUserDatabaseServerInstances(User user)
         {
-            return OnGetUserDatabaseServerInstance(user);
+            return OnGetUserDatabaseServerInstances(user);
         }
 
-        protected abstract SqlServer.SqlServerDataset OnGetUserDatabase(User user);
+        protected abstract Dictionary<string, SqlServerDataset> OnGetUserDatabases(User user);
 
-        protected abstract ServerInstance OnGetUserDatabaseServerInstance(User user);
+        protected abstract Dictionary<string, ServerInstance> OnGetUserDatabaseServerInstances(User user);
 
         #region Check routines
 

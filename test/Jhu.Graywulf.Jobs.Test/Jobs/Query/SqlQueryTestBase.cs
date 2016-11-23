@@ -46,8 +46,8 @@ namespace Jhu.Graywulf.Jobs.Query
             var user = SignInTestUser(qf.Context);
 
             var udf = CreateUserDatabaseFactory(qf.Context);
-            var mydb = udf.GetUserDatabase(user);
-            var mysi = udf.GetUserDatabaseServerInstance(user);
+            var mydb = udf.GetUserDatabases(user)[Registry.Constants.UserDbName];
+            var mysi = udf.GetUserDatabaseServerInstances(user)[Registry.Constants.UserDbName];
 
             var q = qf.CreateQuery(query);
             qf.AppendUserDatabase(q, mydb, mysi);
