@@ -226,9 +226,6 @@
     <Compile Include="Apps\MyDB\CompressionForm.ascx.designer.cs">
       <DependentUpon>CompressionForm.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Apps\MyDB\CopyTablePage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Apps\MyDB\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

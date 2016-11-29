@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Api.Util
                     var tn = (Jhu.Graywulf.SqlParser.TableOrViewName)parser.Execute(new Jhu.Graywulf.SqlParser.TableOrViewName(), token);
 
                     tr = tn.TableReference;
-                    tr.SubstituteDefaults(context.SchemaManager, context.MyDBDataset.Name);
+                    tr.SubstituteDefaults(context.SchemaManager, Registry.Constants.UserDbName);
 
                     return true;
                 }

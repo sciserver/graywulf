@@ -116,7 +116,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
             var codegen = new SqlServerCodeGenerator();
             string sql = codegen.GenerateSelectStarQuery(q.Output, 100);
 
-            using (var cn = FederationContext.MyDBDataset.OpenConnection())
+            using (var cn = q.Destination.Dataset.OpenConnection())
             {
                 using (var cmd = cn.CreateCommand())
                 {

@@ -79,6 +79,7 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
+        /*
         public Jhu.Graywulf.Schema.SqlServer.SqlServerDataset MyDBDataset
         {
             get
@@ -95,6 +96,7 @@ namespace Jhu.Graywulf.Registry
                 return (Jhu.Graywulf.Schema.SqlServer.SqlServerDataset)myDBDataset;
             }
         }
+        */
 
         #endregion
         #region Constructors and initializers

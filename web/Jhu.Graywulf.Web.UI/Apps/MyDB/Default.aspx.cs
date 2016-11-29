@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         private void UpdateUsage(DatasetBase userdb)
         {
             
-            var used = (double)FederationContext.MyDBDataset.Statistics.UsedSpace / FederationContext.MyDBDataset.Statistics.DataSpace;
+            var used = (double)userdb.Statistics.UsedSpace / userdb.Statistics.DataSpace;
             var free = 1 - used;
 
             DataSpace.Text = Util.ByteSizeFormatter.Format(userdb.Statistics.DataSpace);

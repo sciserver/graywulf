@@ -118,7 +118,7 @@ namespace Jhu.Graywulf.Test
                 var user = SignInTestUser(context);
                 var fc = new FederationContext(context, user);
 
-                return fc.MyDBDataset;
+                return (SqlServerDataset)fc.SchemaManager.Datasets[Registry.Constants.UserDbName];
             }
         }
 

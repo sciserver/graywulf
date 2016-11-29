@@ -9,6 +9,7 @@ using System.ComponentModel;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Api.V1
@@ -157,11 +158,13 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             // Set up default destination which might be overriden
             // by an INTO clause
+            var userdb = (SqlServerDataset)context.SchemaManager.Datasets[Registry.Constants.UserDbName];
+
             q.Destination = new IO.Tasks.DestinationTable()
             {
-                Dataset = context.MyDBDataset,
-                DatabaseName = context.MyDBDataset.DatabaseName,
-                SchemaName = context.MyDBDataset.DefaultSchemaName
+                Dataset = userdb,
+                DatabaseName = userdb.DatabaseName,
+                SchemaName = userdb.DefaultSchemaName
             };
 
             switch (Queue)

@@ -6,6 +6,7 @@ using System.Threading;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Scheduler;
+using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Jobs.ImportTables;
@@ -41,7 +42,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 var user = SignInTestUser(context);
                 var federationContext = new FederationContext(context, user);
 
-                var ds = federationContext.MyDBDataset;
+                var ds = (SqlServerDataset)federationContext.SchemaManager.Datasets[Registry.Constants.UserDbName];
 
                 var destination = new DestinationTable()
                 {
@@ -76,7 +77,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 var user = SignInTestUser(context);
                 var federationContext = new FederationContext(context, user);
 
-                var ds = federationContext.MyDBDataset;
+                var ds = (SqlServerDataset)federationContext.SchemaManager.Datasets[Registry.Constants.UserDbName];
 
                 ds.Tables.LoadAll(true);
                 foreach (var t in ds.Tables.Values)
