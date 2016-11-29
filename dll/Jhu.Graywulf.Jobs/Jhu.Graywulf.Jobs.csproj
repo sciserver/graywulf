@@ -56,6 +56,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Jobs\Constants.cs" />
+    <Compile Include="Jobs\CopyTables\CopyTable.cs" />
+    <Compile Include="Jobs\CopyTables\CopyTablesItem.cs" />
+    <Compile Include="Jobs\CopyTables\CopyTablesJob.cs" />
+    <Compile Include="Jobs\CopyTables\CopyTablesJobFactory.cs" />
+    <Compile Include="Jobs\CopyTables\CopyTablesJobInstaller.cs" />
+    <Compile Include="Jobs\CopyTables\CopyTablesParameters.cs" />
+    <Compile Include="Jobs\CopyTables\DropTable.cs" />
+    <Compile Include="Jobs\CopyTables\ICopyTablesJob.cs" />
     <Compile Include="Jobs\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -280,6 +288,12 @@
   </ItemGroup>
   <ItemGroup>
     <XamlAppdef Include="Jobs\SqlScript\SqlScriptJob.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </XamlAppdef>
+  </ItemGroup>
+  <ItemGroup>
+    <XamlAppdef Include="Jobs\CopyTables\CopyTablesJob.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </XamlAppdef>

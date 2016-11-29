@@ -189,6 +189,9 @@ namespace Jhu.Graywulf.Install
 
             var iji = new Jobs.ImportTables.ImportTablesJobInstaller(federation);
             iji.Install();
+
+            var cji = new Jobs.CopyTables.CopyTablesJobInstaller(federation);
+            cji.Install();
         }
 
         protected virtual void GenerateQueryJobs()

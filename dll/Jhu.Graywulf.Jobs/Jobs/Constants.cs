@@ -13,6 +13,7 @@ namespace Jhu.Graywulf.Jobs
         public const string JobParameterQuery = "Query";
         public const string JobParameterExport = "Parameters";
         public const string JobParameterImport = "Parameters";
+        public const string JobParameterCopyTables = "Parameters";
         public const string JobParameterMirrorDatabase = "Parameters";
         public const string JobParameterSqlScript = "Parameters";
 

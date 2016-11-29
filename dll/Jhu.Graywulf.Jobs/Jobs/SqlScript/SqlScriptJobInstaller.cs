@@ -4,33 +4,16 @@ using Jhu.Graywulf.Install;
 
 namespace Jhu.Graywulf.Jobs.SqlScript
 {
-    public class SqlScriptJobInstaller : InstallerBase
+    public class SqlScriptJobInstaller : JobInstallerBase
     {
-        private Federation federation;
-
         public SqlScriptJobInstaller(Federation federation)
-            : base(federation.Context)
+            : base(federation)
         {
-            this.federation = federation;
         }
 
-        public virtual JobDefinition Install()
+        protected override Type GetJobType()
         {
-            return GenerateJobDefinition(typeof(Jobs.SqlScript.SqlScriptJob));
-        }
-
-        protected virtual JobDefinition GenerateJobDefinition(Type jobType)
-        {
-            var jd = new JobDefinition(federation)
-            {
-                Name = jobType.Name,
-                System = federation.System,
-                WorkflowTypeName = GetUnversionedTypeName(jobType),
-            };
-            jd.DiscoverWorkflowParameters();
-            jd.Save();
-
-            return jd;
+            return typeof(Jobs.SqlScript.SqlScriptJob);
         }
     }
 }

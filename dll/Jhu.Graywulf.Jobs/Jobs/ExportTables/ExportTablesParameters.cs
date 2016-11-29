@@ -207,9 +207,6 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
                 return task;
             }
-
-            
-            
         }
     }
 }

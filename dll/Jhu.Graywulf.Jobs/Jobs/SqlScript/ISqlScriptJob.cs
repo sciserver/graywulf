@@ -7,7 +7,7 @@ using System.Activities;
 
 namespace Jhu.Graywulf.Jobs.SqlScript
 {
-    public interface ISqlScriptJob
+    public interface ISqlScriptJob : IJob
     {
         InArgument<SqlScriptParameters> Parameters { get; set; }
     }

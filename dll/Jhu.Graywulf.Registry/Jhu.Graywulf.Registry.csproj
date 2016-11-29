@@ -68,6 +68,7 @@
     <Compile Include="AccessControl\GraywulfIdentity.cs" />
     <Compile Include="AccessControl\GraywulfPrincipal.cs" />
     <Compile Include="Install\DatabaseInstanceInstaller.cs" />
+    <Compile Include="Install\JobInstallerBase.cs" />
     <Compile Include="Install\InstallerBase.cs" />
     <Compile Include="Install\UserDatabaseInstanceInstaller.cs" />
     <Compile Include="Registry\Check\EntityCheck.cs" />
