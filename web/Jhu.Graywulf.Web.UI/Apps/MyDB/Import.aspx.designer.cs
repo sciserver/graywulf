@@ -58,6 +58,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         protected global::System.Web.UI.WebControls.PlaceHolder importFormPlaceholder;
         
         /// <summary>
+        /// destinationTableForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.DestinationTableForm destinationTableForm;
+        
+        /// <summary>
         /// toggleAdvanced control.
         /// </summary>
         /// <remarks>
@@ -74,15 +83,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel detailsPanel;
-        
-        /// <summary>
-        /// destinationTableForm control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.DestinationTableForm destinationTableForm;
         
         /// <summary>
         /// fileFormatForm control.

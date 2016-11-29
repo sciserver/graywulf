@@ -13,6 +13,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
     public partial class Tables {
         
         /// <summary>
+        /// toolbar control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.Toolbar toolbar;
+        
+        /// <summary>
         /// MyDbTabs1 control.
         /// </summary>
         /// <remarks>

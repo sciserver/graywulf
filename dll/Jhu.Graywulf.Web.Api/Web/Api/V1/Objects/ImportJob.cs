@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Xml;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
@@ -22,6 +23,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         private Uri uri;
         private Credentials credentials;
         private FileFormat fileFormat;
+        private string dataset;
         private string table;
 
         #endregion
@@ -51,6 +53,14 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             get { return fileFormat; }
             set { fileFormat = value; }
+        }
+
+        [DataMember(Name = "dataset")]
+        [Description("Destination dataset.")]
+        public string Dataset
+        {
+            get { return dataset; }
+            set { Dataset = value; }
         }
 
         [DataMember(Name = "table")]
@@ -84,6 +94,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.uri = null;
             this.fileFormat = null;
             this.credentials = null;
+            this.dataset = null;
             this.table = null;
         }
 
@@ -110,9 +121,11 @@ namespace Jhu.Graywulf.Web.Api.V1
                 this.uri = new Uri(uristring, UriKind.RelativeOrAbsolute);
 
                 // Take target table name from the first destination object
+                var datasetname = xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/DatasetName");
                 var schemaname = xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/SchemaName");
                 var tablename = xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/TableNamePattern");
 
+                // TODO: use generic function
                 this.table = schemaname +
                     (!String.IsNullOrWhiteSpace(schemaname) ? "." : "") +
                     tablename;
@@ -134,25 +147,26 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        public static DestinationTable GetDestinationTable(FederationContext context, string token)
+        public static DestinationTable GetDestinationTable(FederationContext context, string datasetName, string token)
         {
             string schemaName, tableName;
             if (Util.SqlParser.TryParseTableName(context, token, out schemaName, out tableName))
             {
-                return GetDestinationTable(context, schemaName, tableName);
+                return GetDestinationTable(context, datasetName, schemaName, tableName);
             }
             else
             {
-                return GetDestinationTable(context, null, null);
+                return GetDestinationTable(context, datasetName, null, null);
             }
         }
 
-        public static DestinationTable GetDestinationTable(FederationContext context, string schemaName, string tableName)
+        public static DestinationTable GetDestinationTable(FederationContext context, string datasetName, string schemaName, string tableName)
         {
+            var userdb = (SqlServerDataset)context.SchemaManager.Datasets[datasetName];
             var destination = new DestinationTable(
-                    context.MyDBDataset,
-                    context.MyDBDataset.DatabaseName,
-                    context.MyDBDataset.DefaultSchemaName,
+                    userdb,
+                    userdb.DatabaseName,
+                    userdb.DefaultSchemaName,
                     IO.Constants.ResultsetNameToken,        // generate table names automatically
                     TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName);
 
@@ -176,11 +190,11 @@ namespace Jhu.Graywulf.Web.Api.V1
                 string schemaName, tableName;
                 if (Util.SqlParser.TryParseTableName(context, table, out schemaName, out tableName))
                 {
-                    return GetDestinationTable(context, schemaName, tableName);
+                    return GetDestinationTable(context, dataset, schemaName, tableName);
                 }
             }
 
-            return GetDestinationTable(context, null, null);
+            return GetDestinationTable(context, dataset, null, null);
         }
 
 

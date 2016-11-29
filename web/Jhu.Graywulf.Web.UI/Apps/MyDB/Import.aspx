@@ -26,12 +26,13 @@
                 <jgwc:UploadForm runat="server" ID="uploadForm" />
                 <asp:PlaceHolder runat="server" ID="importFormPlaceholder" />
 
+                <jgwc:DestinationTableForm runat="server" ID="destinationTableForm" />
+
                 <p style="text-align: center">
                     <asp:LinkButton runat="server" ID="toggleAdvanced" OnClick="ToggleAdvanced_Click" CausesValidation="false">advanced mode</asp:LinkButton>
                 </p>
 
                 <asp:Panel runat="server" ID="detailsPanel" Visible="false">
-                    <jgwc:DestinationTableForm runat="server" ID="destinationTableForm" />
                     <jgwc:FileFormatForm runat="server" ID="fileFormatForm" FileMode="Read" />
                     <jgwc:CommentsForm runat="server" ID="commentsForm" />
                 </asp:Panel>
@@ -46,7 +47,8 @@
             Visible="false">
             <FormTemplate>
                 <p>
-                    The following tables have been created:</p>
+                    The following tables have been created:
+                </p>
                 <asp:BulletedList runat="server" ID="resultTableList" />
             </FormTemplate>
             <ButtonsTemplate>

@@ -13,6 +13,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
     public partial class Default {
         
         /// <summary>
+        /// toolbar control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.Toolbar toolbar;
+        
+        /// <summary>
         /// MyDbTabs1 control.
         /// </summary>
         /// <remarks>
@@ -22,22 +31,40 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.Tabs MyDbTabs1;
         
         /// <summary>
-        /// ProgressUsed control.
+        /// datasetName control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableCell ProgressUsed;
+        protected global::System.Web.UI.WebControls.Label datasetName;
         
         /// <summary>
-        /// ProgressFree control.
+        /// datasetUsageLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTableCell ProgressFree;
+        protected global::System.Web.UI.WebControls.Label datasetUsageLabel;
+        
+        /// <summary>
+        /// usageUsed control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableCell usageUsed;
+        
+        /// <summary>
+        /// usageFree control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableCell usageFree;
         
         /// <summary>
         /// ProgressUsedLabel control.

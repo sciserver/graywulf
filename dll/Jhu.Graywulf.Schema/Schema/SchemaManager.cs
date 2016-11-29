@@ -183,6 +183,17 @@ namespace Jhu.Graywulf.Schema
             yield break;
         }
 
+        public void GetNamePartsFromKey(string key, out DatabaseObjectType type, out string datasetName, out string databaseName, out string schemaName, out string objectName)
+        {
+            string[] parts = key.Split('|');
+
+            type = GetDatabaseObjectTypeFromKey(key);
+            datasetName = parts[1];
+            databaseName = parts[2];
+            schemaName = parts[3];
+            objectName = parts[4];
+        }
+
         /// <summary>
         /// Returns a database object identified by its composite string id.
         /// </summary>

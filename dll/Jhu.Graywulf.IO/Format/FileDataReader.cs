@@ -178,7 +178,10 @@ namespace Jhu.Graywulf.Format
 
         public override void Close()
         {
-            file.Close();
+            if (file != null)
+            {
+                file.Close();
+            }
         }
 
         #endregion

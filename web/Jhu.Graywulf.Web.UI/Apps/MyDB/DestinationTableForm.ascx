@@ -4,6 +4,14 @@
 <table runat="server" class="FormTable">
     <tr>
         <td class="FormLabel">
+            <asp:Label runat="server" ID="datasetListLabel">Dataset:</asp:Label>
+        </td>
+        <td class="FormField">
+            <asp:DropDownList runat="server" ID="datasetList" CssClass="FormField" />
+        </td>
+    </tr>
+    <tr>
+        <td class="FormLabel">
             <asp:Label runat="server" ID="tableNameLabel">Table name:</asp:Label>
         </td>
         <td class="FormField">

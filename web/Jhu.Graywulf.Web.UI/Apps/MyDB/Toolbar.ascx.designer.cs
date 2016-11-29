@@ -10,7 +10,7 @@
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
     
     
-    public partial class DestinationTableForm {
+    public partial class Toolbar {
         
         /// <summary>
         /// datasetListLabel control.
@@ -29,32 +29,5 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList datasetList;
-        
-        /// <summary>
-        /// tableNameLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label tableNameLabel;
-        
-        /// <summary>
-        /// tableName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox tableName;
-        
-        /// <summary>
-        /// tableNameValidator control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator tableNameValidator;
     }
 }

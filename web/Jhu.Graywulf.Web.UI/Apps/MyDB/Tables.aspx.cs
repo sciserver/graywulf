@@ -7,25 +7,49 @@ using System.Web.UI.WebControls;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public partial class Tables : FederationPageBase
+    public partial class Tables : MyDbPageBase
     {
         public static string GetUrl()
         {
-            return "~/Apps/MyDb/Tables.aspx";
+            return GetUrl(null);
+        }
+
+        public static string GetUrl(string datasetName)
+        {
+            var url = "~/Apps/MyDb/Tables.aspx";
+
+            if (datasetName != null)
+            {
+                url += "?dataset=" + HttpContext.Current.Server.UrlEncode(datasetName);
+            }
+
+            return url;
         }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            FederationContext.MyDBDataset.Tables.LoadAll(true);
+            if (!IsPostBack)
+            {
+                RefreshDatasetList(toolbar.DatasetList);
+            }
+
+            var userdb = FederationContext.SchemaManager.Datasets[toolbar.DatasetList.SelectedValue];
+            userdb.Tables.LoadAll(true);
 
             // TODO: change this to support arbitrary sorting
-            var tables = FederationContext.MyDBDataset.Tables.Values.OrderBy(t => t.UniqueKey).ToArray();
+            var tables = userdb.Tables.Values.OrderBy(t => t.UniqueKey).ToArray();
+            
             TableList.DataSource = tables;
         }
 
         protected void Page_PreRender(object sender, EventArgs e)
         {
             Page.DataBind();
+        }
+
+        protected void Toolbar_SelectedDatasetChanged(object sender, EventArgs e)
+        {
+            TableList.SelectedDataKeys.Clear();
         }
 
         protected void TableSelected_ServerValidate(object source, ServerValidateEventArgs args)

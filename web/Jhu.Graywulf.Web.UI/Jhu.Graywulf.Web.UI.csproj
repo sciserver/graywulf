@@ -271,6 +271,9 @@
     <Compile Include="Apps\MyDB\Import.aspx.designer.cs">
       <DependentUpon>Import.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\MyDB\MyDbPageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Apps\MyDB\PrimaryKey.aspx.cs">
       <DependentUpon>PrimaryKey.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -305,6 +308,13 @@
     </Compile>
     <Compile Include="Apps\MyDB\Tabs.ascx.designer.cs">
       <DependentUpon>Tabs.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\Toolbar.ascx.cs">
+      <DependentUpon>Toolbar.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\Toolbar.ascx.designer.cs">
+      <DependentUpon>Toolbar.ascx</DependentUpon>
     </Compile>
     <Compile Include="Apps\MyDB\UploadForm.ascx.cs">
       <DependentUpon>UploadForm.ascx</DependentUpon>
@@ -496,6 +506,7 @@
     <Content Include="Apps\MyDB\SourceTableForm.ascx" />
     <Content Include="Apps\MyDB\Tables.aspx" />
     <Content Include="Apps\MyDB\Tabs.ascx" />
+    <Content Include="Apps\MyDB\Toolbar.ascx" />
     <Content Include="Apps\MyDB\UploadForm.ascx" />
     <Content Include="Apps\MyDB\Web.config" />
     <Content Include="Apps\Query\Default.aspx" />

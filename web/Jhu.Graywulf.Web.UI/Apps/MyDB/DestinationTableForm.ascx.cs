@@ -13,6 +13,19 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
     public partial class DestinationTableForm : FederationUserControlBase
     {
+        public ListControl DatasetList
+        {
+            get { return datasetList; }
+        }
+
+        public DatasetBase Dataset
+        {
+            get
+            {
+                return FederationContext.SchemaManager.Datasets[datasetList.SelectedValue];
+            }
+        }
+
         public string TableName
         {
             get

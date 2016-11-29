@@ -17,7 +17,7 @@
         <jgwuc:Form runat="server" ID="exportForm" Text="Export tables" SkinID="ExportTable">
             <formtemplate>
                 <p>
-                    Export tables from MyDB into various data file formats for download.
+                    Export tables into various data file formats for download.
                 </p>
 
                 <jgwc:SourceTableForm runat="server" id="sourceTableForm" />

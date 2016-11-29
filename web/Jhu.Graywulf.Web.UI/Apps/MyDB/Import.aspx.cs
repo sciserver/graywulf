@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Collections.Generic;
@@ -13,11 +14,23 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public partial class Import : FederationPageBase
+    public partial class Import : MyDbPageBase
     {
         public static string GetUrl()
         {
-            return "~/Apps/MyDb/Import.aspx";
+            return GetUrl(null);
+        }
+
+        public static string GetUrl(string datasetName)
+        {
+            var url = "~/Apps/MyDb/Import.aspx";
+
+            if (datasetName != null)
+            {
+                url += "?dataset=" + HttpContext.Current.Server.UrlEncode(datasetName);
+            }
+
+            return url;
         }
 
         #region Private member variables
@@ -47,6 +60,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         {
             if (!IsPostBack)
             {
+                RefreshDatasetList(destinationTableForm.DatasetList);
                 RefreshImportMethodList();
             }
         }
@@ -147,7 +161,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         {
             var uri = uploadForm.Uri;
             var file = fileFormatForm.GetDataFile(uri);
-            var table = ImportJob.GetDestinationTable(FederationContext, destinationTableForm.TableName);
+            var table = ImportJob.GetDestinationTable(FederationContext, destinationTableForm.DatasetList.SelectedValue, destinationTableForm.TableName);
             var importer = uploadForm.GetTableImporter(file, table);
 
             importer.Execute();
