@@ -183,23 +183,15 @@ namespace Jhu.Graywulf.Schema
             this.DatabaseName = databaseObject.DatabaseName;
         }
 
-        public Index(IIndexes databaseObject, IList<Column> columns)
+        public Index(IIndexes databaseObject, IList<Column> columns, string indexName, bool isPrimaryKey)
             : this(databaseObject)
         {
-            this.columns = new Lazy<ConcurrentDictionary<string, IndexColumn>>();
+            this.isPrimaryKey = isPrimaryKey;
+            this.IsUnique = isPrimaryKey;
+            this.isClustered = isPrimaryKey;
 
-            int q = 0;
-            foreach (var column in columns)
-            {
-                var ic = new IndexColumn(column)
-                {
-                    ID = q
-                };
-
-                this.Columns.TryAdd(ic.Name, ic);
-
-                q++;
-            }
+            CopyColumns(columns);
+            GenerateIndexName(indexName);
         }
 
         public Index(Index old)
@@ -221,7 +213,7 @@ namespace Jhu.Graywulf.Schema
             this.isPrimaryKey = false;
             this.isClustered = false;
             this.isUnique = false;
-            this.isCompressed = false;
+            this.isCompressed = true;
 
             this.columns = new Lazy<ConcurrentDictionary<string, IndexColumn>>(this.LoadIndexColumns, true);
         }
@@ -250,6 +242,38 @@ namespace Jhu.Graywulf.Schema
         }
 
         #endregion
+
+        private void CopyColumns(IList<Column> columns)
+        {
+            this.columns = new Lazy<ConcurrentDictionary<string, IndexColumn>>();
+
+            int q = 0;
+            foreach (var column in columns)
+            {
+                var ic = new IndexColumn(column)
+                {
+                    ID = q
+                };
+
+                this.Columns.TryAdd(ic.Name, ic);
+
+                q++;
+            }
+        }
+
+        public string GenerateIndexName(string indexName)
+        {
+            if (isPrimaryKey)
+            {
+                this.IndexName = String.Format("PK_{0}_{1}", databaseObject.SchemaName, databaseObject.ObjectName);
+            }
+            else
+            {
+                this.IndexName = String.Format("IX_{0}_{1}_{2}", databaseObject.SchemaName, databaseObject.ObjectName, indexName);
+            }
+
+            return this.IndexName;
+        }
 
         /// <summary>
         /// Loads all columns of the index

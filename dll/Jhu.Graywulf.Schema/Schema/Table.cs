@@ -93,6 +93,29 @@ namespace Jhu.Graywulf.Schema
 
             if (PrimaryKey != null)
             {
+
+            }
+        }
+
+        private void CreatePrimaryKeyFrom(IList<Column> columns)
+        {
+            Index pk;
+
+            if (this.PrimaryKey != null)
+            {
+                this.Indexes.TryRemove(this.PrimaryKey.IndexName, out pk);
+            }
+
+            var pkcolumns = columns.Where(c => c.IsKey).ToArray();
+
+            if (pkcolumns.Length > 0)
+            {
+                pk = new Index(this, pkcolumns, null, true)
+                {
+                    
+                };
+
+                this.Indexes.TryAdd(pk.IndexName, pk);
             }
         }
 
@@ -165,6 +188,7 @@ namespace Jhu.Graywulf.Schema
             else
             {
                 CopyColumnsFrom(columns);
+                CreatePrimaryKeyFrom(columns);
 
                 if ((options & TableInitializationOptions.Append) != 0)
                 {
@@ -178,8 +202,8 @@ namespace Jhu.Graywulf.Schema
                 }
                 else if ((options & TableInitializationOptions.Create) != 0)
                 {
-                    Create(
-                        (options & TableInitializationOptions.CreatePrimaryKey) != 0,
+                    Create
+                        (options.HasFlag(TableInitializationOptions.CreatePrimaryKey),
                         (options & TableInitializationOptions.CreateIndexes) != 0);
                 }
                 else

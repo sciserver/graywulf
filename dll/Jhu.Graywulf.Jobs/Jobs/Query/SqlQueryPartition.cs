@@ -419,15 +419,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                             if (columns.Length > 0)
                             {
-                                var pk = new Index(table, columns)
-                                {
-                                    IndexName = String.Format("PK_{0}_{1}", table.SchemaName, table.TableName),
-                                    IsPrimaryKey = true,
-                                    IsUnique = true,
-                                    IsClustered = true,
-                                    IsCompressed = true
-                                };
-
+                                var pk = new Index(table, columns, null, true);
                                 table.Indexes.TryAdd(pk.IndexName, pk);
                             }
                         }
