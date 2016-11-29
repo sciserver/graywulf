@@ -107,12 +107,13 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
             var pk = new Index(table)
             {
-                IndexName = String.Format("PK_{0}_{1}", table.SchemaName, table.TableName),
                 IsPrimaryKey = true,
                 IsClustered = true,
                 IsUnique = true,
                 IsCompressed = true,
             };
+
+            pk.GenerateIndexName(null);
 
             var pkc = new IndexColumn(table.Columns[columnname])
             {
