@@ -165,11 +165,18 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         public static DestinationTable GetDestinationTable(FederationContext context, string datasetName, string schemaName, string tableName)
         {
-            var userdb = (SqlServerDataset)context.SchemaManager.Datasets[datasetName];
+            var dataset = (SqlServerDataset)context.SchemaManager.Datasets[datasetName];
+
+            // Make sure dataset is a user dataset
+            if (!dataset.IsMutable)
+            {
+                throw new ArgumentException("Cannot import data into the specified dataset.");  // TODO ***
+            }
+
             var destination = new DestinationTable(
-                    userdb,
-                    userdb.DatabaseName,
-                    userdb.DefaultSchemaName,
+                    dataset,
+                    dataset.DatabaseName,
+                    dataset.DefaultSchemaName,
                     IO.Constants.ResultsetNameToken,        // generate table names automatically
                     TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName);
 

@@ -102,5 +102,14 @@ namespace Jhu.Graywulf.Web.Api.V1
             var path = GetAbsoluteTestUniqueFileUri("output", ".zip");
             ExportFileHelper(Registry.Constants.UserDbName, "SampleData", path.ToString(), "text/csv", "ExportToSciDriveCsvTest");
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.ServiceModel.CommunicationException))]
+        public void InvalidDatasetTest()
+        {
+            // Export from TEST dataset is restricted
+            var path = GetAbsoluteTestUniqueFileUri("output", ".zip");
+            ExportFileHelper("TEST", "SampleData", path.ToString(), "text/csv", "ExportToSciDriveCsvTest");
+        }
     }
 }

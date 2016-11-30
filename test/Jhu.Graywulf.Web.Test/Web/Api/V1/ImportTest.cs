@@ -50,10 +50,10 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         protected virtual void ImportFileHelper(string uri, string comments)
         {
-            ImportFileHelper(uri, null, comments);
+            ImportFileHelper(uri, Registry.Constants.UserDbName, null, comments);
         }
 
-        protected virtual void ImportFileHelper(string uri, string table, string comments)
+        protected virtual void ImportFileHelper(string uri, string dataset, string table, string comments)
         {
             using (SchedulerTester.Instance.GetToken())
             {
@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                         {
                             Uri = new Uri(uri),
                             Comments = comments,
-                            Dataset = Registry.Constants.UserDbName,
+                            Dataset = dataset,
                             Table = table,
                         };
 
@@ -108,7 +108,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         [TestMethod]
         public void ImportFileWithTableNameTest()
         {
-            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.csv", "csv_numbers", "ImportFileWithTableNameTest");
+            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.csv", Registry.Constants.UserDbName, "csv_numbers", "ImportFileWithTableNameTest");
         }
 
         [TestMethod]
@@ -121,6 +121,14 @@ namespace Jhu.Graywulf.Web.Api.V1
         public void ImportArchiveTest()
         {
             ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.zip", "ImportArchiveTest");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.ServiceModel.CommunicationException))]
+        public void InvalidDatasetTest()
+        {
+            // Import into the TEST dataset is restricted
+            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.zip", "Test", "InvalidDatasetTest", "");
         }
     }
 }

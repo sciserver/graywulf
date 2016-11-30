@@ -178,7 +178,16 @@ namespace Jhu.Graywulf.Web.Api.V1
             {
                 throw new ArgumentException("Invalid table name");    // TODO ***
             }
-            tab.Dataset = context.SchemaManager.Datasets[this.dataset];
+
+            var dataset = context.SchemaManager.Datasets[this.dataset];
+
+            // Make sure dataset is a user dataset, do not allow export from big catalogs
+            if (!dataset.IsMutable)
+            {
+                throw new ArgumentException("Cannot export data from the specified dataset.");  // TODO ***
+            }
+
+            tab.Dataset = dataset;
 
             var source = SourceTableQuery.Create(tab);
 
