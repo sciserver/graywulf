@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 }
             };
 
-            var authuri = String.Format("http://{0}/auth/api/v1/auth.svc", Environment.MachineName);
+            var authuri = String.Format("http://{0}{1}/api/v1/auth.svc", Environment.MachineName, Jhu.Graywulf.Test.AppSettings.WebAuthPath);
             var client = session.CreateClient<IAuthService>(new Uri(authuri));
 
             client.Authenticate(auth);

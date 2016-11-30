@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         protected IJobsService CreateClient(RestClientSession session)
         {
             AuthenticateTestUser(session);
-            var uri = String.Format("http://{0}/gwui/api/v1/jobs.svc", Environment.MachineName);
+            var uri = String.Format("http://{0}{1}/api/v1/jobs.svc", Environment.MachineName, Jhu.Graywulf.Test.AppSettings.WebUIPath);
             var client = session.CreateClient<IJobsService>(new Uri(uri));
             return client;
         }

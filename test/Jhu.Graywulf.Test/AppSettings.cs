@@ -8,6 +8,22 @@ namespace Jhu.Graywulf.Test
 {
     public static class AppSettings
     {
+        public static string WebAuthPath
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["Jhu.Graywulf.Web.Auth.Path"] ?? "/auth";
+            }
+        }
+
+        public static string WebUIPath
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["Jhu.Graywulf.Web.UI.Path"] ?? "/gwui";
+            }
+        }
+
         public static string IOTestConnectionString
         {
             get

@@ -303,6 +303,15 @@ namespace Jhu.Graywulf.Test
             return Path.Combine(sln, Path.Combine(filename));
         }
 
+        protected Uri GetAbsoluteTestUniqueFileUri(string prefix, string extension)
+        {
+            var name = GetTestUniqueName();
+            var path = GetTestFilePath(prefix, name + extension);
+            var uri = Util.UriConverter.FromFilePath(path);
+
+            return uri;
+        }
+
         protected Uri GetTestUniqueFileUri(string extension)
         {
             var fn = GetTestUniqueName() + extension;
