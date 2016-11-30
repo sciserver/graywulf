@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true"
-    Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.RenameObject" CodeBehind="RenameObject.aspx.cs" %>
+    Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.Rename" CodeBehind="RenameObject.aspx.cs" %>
 
 <%@ Register Src="Tabs.ascx" TagPrefix="jgwc" TagName="MyDbTabs" %>
 

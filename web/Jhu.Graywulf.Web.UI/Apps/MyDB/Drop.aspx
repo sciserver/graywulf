@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true"
-    Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.DropObject" CodeBehind="DropTable.aspx.cs" %>
+    Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.Drop" CodeBehind="DropTable.aspx.cs" %>
 
 <%@ Register Src="Tabs.ascx" TagPrefix="jgwc" TagName="MyDbTabs" %>
 <asp:Content ContentPlaceHolderID="middle" runat="Server">

@@ -10,43 +10,16 @@
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
     
     
-    public partial class RenameObject {
+    public partial class Drop {
         
         /// <summary>
-        /// SchemaNameLabel control.
+        /// ObjectList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label SchemaNameLabel;
-        
-        /// <summary>
-        /// SchemaName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label SchemaName;
-        
-        /// <summary>
-        /// TableNameLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label TableNameLabel;
-        
-        /// <summary>
-        /// ObjectName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox ObjectName;
+        protected global::System.Web.UI.WebControls.BulletedList ObjectList;
         
         /// <summary>
         /// Ok control.

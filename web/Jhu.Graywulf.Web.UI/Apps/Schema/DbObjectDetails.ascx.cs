@@ -126,7 +126,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         protected void Rename_Click(object sender, EventArgs e)
         {
-            Response.Redirect(Apps.MyDB.RenameObject.GetUrl(databaseObjectID), false);
+            Response.Redirect(Apps.MyDB.Rename.GetUrl(databaseObjectID), false);
         }
 
         protected void PrimaryKey_Click(object sender, EventArgs e)
@@ -136,7 +136,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         protected void Drop_Click(object sender, EventArgs e)
         {
-            Response.Redirect(Apps.MyDB.DropObject.GetUrl(databaseObjectID), false);
+            Response.Redirect(Apps.MyDB.Drop.GetUrl(databaseObjectID), false);
         }
     }
 }

@@ -240,12 +240,12 @@
     <Compile Include="Apps\MyDB\DestinationTableForm.ascx.designer.cs">
       <DependentUpon>DestinationTableForm.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Apps\MyDB\DropObject.aspx.cs">
-      <DependentUpon>DropObject.aspx</DependentUpon>
+    <Compile Include="Apps\MyDB\Drop.aspx.cs">
+      <DependentUpon>Drop.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Apps\MyDB\DropObject.aspx.designer.cs">
-      <DependentUpon>DropObject.aspx</DependentUpon>
+    <Compile Include="Apps\MyDB\Drop.aspx.designer.cs">
+      <DependentUpon>Drop.aspx</DependentUpon>
     </Compile>
     <Compile Include="Apps\MyDB\Export.aspx.cs">
       <DependentUpon>Export.aspx</DependentUpon>
@@ -278,12 +278,12 @@
     <Compile Include="Apps\MyDB\PrimaryKey.aspx.designer.cs">
       <DependentUpon>PrimaryKey.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Apps\MyDB\RenameObject.aspx.cs">
-      <DependentUpon>RenameObject.aspx</DependentUpon>
+    <Compile Include="Apps\MyDB\Rename.aspx.cs">
+      <DependentUpon>Rename.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Apps\MyDB\RenameObject.aspx.designer.cs">
-      <DependentUpon>RenameObject.aspx</DependentUpon>
+    <Compile Include="Apps\MyDB\Rename.aspx.designer.cs">
+      <DependentUpon>Rename.aspx</DependentUpon>
     </Compile>
     <Compile Include="Apps\MyDB\SourceTableForm.ascx.cs">
       <DependentUpon>SourceTableForm.ascx</DependentUpon>
@@ -494,12 +494,12 @@
     <Content Include="Apps\MyDB\CompressionForm.ascx" />
     <Content Include="Apps\MyDB\Default.aspx" />
     <Content Include="Apps\MyDB\DestinationTableForm.ascx" />
-    <Content Include="Apps\MyDB\DropObject.aspx" />
+    <Content Include="Apps\MyDB\Drop.aspx" />
     <Content Include="Apps\MyDB\Export.aspx" />
     <Content Include="Apps\MyDB\FileFormatForm.ascx" />
     <Content Include="Apps\MyDB\Import.aspx" />
     <Content Include="Apps\MyDB\PrimaryKey.aspx" />
-    <Content Include="Apps\MyDB\RenameObject.aspx" />
+    <Content Include="Apps\MyDB\Rename.aspx" />
     <Content Include="Apps\MyDB\SourceTableForm.ascx" />
     <Content Include="Apps\MyDB\Tables.aspx" />
     <Content Include="Apps\MyDB\Tabs.ascx" />

@@ -3,11 +3,11 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public partial class RenameObject : FederationPageBase
+    public partial class Rename : FederationPageBase
     {
         public static string GetUrl(string objid)
         {
-            return String.Format("~/Apps/MyDb/RenameObject.aspx?objid={0}", objid);
+            return String.Format("~/Apps/MyDb/Rename.aspx?objid={0}", objid);
         }
 
         protected DatabaseObject obj;

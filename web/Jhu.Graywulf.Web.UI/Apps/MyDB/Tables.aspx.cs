@@ -89,13 +89,13 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                         Response.Redirect(MyDB.Export.GetUrl(objid), false);
                         break;
                     case "Rename":
-                        Response.Redirect(MyDB.RenameObject.GetUrl(objid), false);
+                        Response.Redirect(MyDB.Rename.GetUrl(objid), false);
                         break;
                     case "PrimaryKey":
                         Response.Redirect(MyDB.PrimaryKey.GetUrl(objid), false);
                         break;
                     case "Drop":
-                        Response.Redirect(MyDB.DropObject.GetUrl(objids), false);
+                        Response.Redirect(MyDB.Drop.GetUrl(objids), false);
                         break;
                     default:
                         throw new NotImplementedException();
