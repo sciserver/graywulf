@@ -21,6 +21,12 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             set { tableList.AutoPostBack = value; }
         }
 
+        public string Style
+        {
+            get { return tableList.Style.Value; }
+            set { tableList.Style.Value = value; }
+        }
+
         public string DefaultRequestField
         {
             get { return (string)ViewState["DefaultRequestField"]; }

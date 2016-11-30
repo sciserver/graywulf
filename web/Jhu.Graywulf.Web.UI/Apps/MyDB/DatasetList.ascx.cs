@@ -22,11 +22,10 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             set { datasetList.AutoPostBack = value; }
         }
 
-        [Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public CssStyleCollection Style
+        public string Style
         {
-            get { return datasetList.Style; }
+            get { return datasetList.Style.Value; }
+            set { datasetList.Style.Value = value; }
         }
 
         public string DefaultRequestField
