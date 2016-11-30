@@ -26,6 +26,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         private Uri uri;
         private Credentials credentials;
         private FileFormat fileFormat;
+        private string dataset;
         private string table;
 
         #endregion
@@ -57,8 +58,16 @@ namespace Jhu.Graywulf.Web.Api.V1
             set { fileFormat = value; }
         }
 
+        [DataMember(Name = "dataset")]
+        [Description("Source dataset.")]
+        public string Dataset
+        {
+            get { return dataset; }
+            set { dataset = value; }
+        }
+
         [DataMember(Name = "table")]
-        [Description("Fully qualified name of a table to be exported.")]
+        [Description("Name of source table.")]
         public string Table
         {
             get { return table; }
@@ -88,6 +97,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.uri = null;
             this.fileFormat = null;
             this.credentials = null;
+            this.dataset = null;
             this.table = null;
         }
 
@@ -120,9 +130,11 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                 // Table
                 // Take exported table name from the first srouce object
+                var datasetname = xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/Dataset/Name");
                 var schemaname = xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/SourceSchemaName");
                 var tablename = xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/SourceObjectName");
 
+                this.dataset = datasetname;
                 this.table = schemaname +
                     (!String.IsNullOrWhiteSpace(schemaname) ? "." : "") +
                     tablename;
@@ -166,6 +178,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             {
                 throw new ArgumentException("Invalid table name");    // TODO ***
             }
+            tab.Dataset = context.SchemaManager.Datasets[this.dataset];
 
             var source = SourceTableQuery.Create(tab);
 

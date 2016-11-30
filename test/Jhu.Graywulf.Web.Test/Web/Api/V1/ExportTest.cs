@@ -48,7 +48,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        protected virtual void ExportFileHelper(string table, string uri, string mimeType, string comments)
+        protected virtual void ExportFileHelper(string dataset, string table, string uri, string mimeType, string comments)
         {
             using (SchedulerTester.Instance.GetToken())
             {
@@ -66,6 +66,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                         var job = new ExportJob()
                         {
+                            Dataset = dataset,
                             Table = table,
                             Uri = new Uri(uri),
                             Comments = comments,
@@ -81,7 +82,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                         };
 
                         var response = client.SubmitJob("quick", request);
-                        
+
                         // Try to get newly scheduled job
                         var nj = client.GetJob(response.ExportJob.Guid.ToString());
                         var guid = nj.ExportJob.Guid;
@@ -95,6 +96,11 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        
+        [TestMethod]
+        public void SimpleExportTest()
+        {
+            var path = GetAbsoluteTestUniqueFileUri("output", ".zip");
+            ExportFileHelper(Registry.Constants.UserDbName, "SampleData", path.ToString(), "text/csv", "ExportToSciDriveCsvTest");
+        }
     }
 }
