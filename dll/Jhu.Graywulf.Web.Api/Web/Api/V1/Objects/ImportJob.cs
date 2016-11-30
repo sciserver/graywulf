@@ -60,7 +60,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         public string Dataset
         {
             get { return dataset; }
-            set { Dataset = value; }
+            set { dataset = value; }
         }
 
         [DataMember(Name = "table")]
@@ -125,6 +125,8 @@ namespace Jhu.Graywulf.Web.Api.V1
                 var schemaname = xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/SchemaName");
                 var tablename = xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/TableNamePattern");
 
+                this.dataset = datasetname;
+
                 // TODO: use generic function
                 this.table = schemaname +
                     (!String.IsNullOrWhiteSpace(schemaname) ? "." : "") +
@@ -150,6 +152,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         public static DestinationTable GetDestinationTable(FederationContext context, string datasetName, string token)
         {
             string schemaName, tableName;
+
             if (Util.SqlParser.TryParseTableName(context, token, out schemaName, out tableName))
             {
                 return GetDestinationTable(context, datasetName, schemaName, tableName);

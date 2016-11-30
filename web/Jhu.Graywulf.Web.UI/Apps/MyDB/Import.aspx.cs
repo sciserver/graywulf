@@ -184,6 +184,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             var uri = form.Uri;
             var credentials = form.Credentials;
             var file = fileFormatForm.GetFormat();
+            var dataset = destinationTableForm.DatasetName;
             var table = destinationTableForm.TableName;
 
             var job = new ImportJob()
@@ -191,6 +192,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 Uri = uri,
                 Credentials = credentials == null ? null : new Web.Api.V1.Credentials(credentials),
                 FileFormat = file,
+                Dataset = dataset,
                 Table = table,
 
                 Comments = commentsForm.Comments,
