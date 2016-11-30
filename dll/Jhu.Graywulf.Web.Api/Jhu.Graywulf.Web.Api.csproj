@@ -86,6 +86,8 @@
     <Compile Include="Web\Api\V1\Objects\JobDependency.cs" />
     <Compile Include="Web\Api\V1\Objects\QueryJob.cs" />
     <Compile Include="Web\Api\V1\Objects\Queue.cs" />
+    <Compile Include="Web\Api\V1\Objects\DestinationTable.cs" />
+    <Compile Include="Web\Api\V1\Objects\SourceTable.cs" />
     <Compile Include="Web\Api\V1\Objects\SqlScriptJob.cs" />
     <Compile Include="Web\Api\V1\Objects\User.cs" />
     <Compile Include="Web\Api\V1\Objects\UserGroup.cs" />

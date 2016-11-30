@@ -66,8 +66,11 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                         var job = new ExportJob()
                         {
-                            Dataset = dataset,
-                            Table = table,
+                            Source = new SourceTable()
+                            {
+                                Dataset = dataset,
+                                Table = table,
+                            },
                             Uri = new Uri(uri),
                             Comments = comments,
                             FileFormat = new FileFormat()

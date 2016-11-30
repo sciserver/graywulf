@@ -23,8 +23,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         private Uri uri;
         private Credentials credentials;
         private FileFormat fileFormat;
-        private string dataset;
-        private string table;
+        private DestinationTable destination;
 
         #endregion
         #region Properties
@@ -55,20 +54,13 @@ namespace Jhu.Graywulf.Web.Api.V1
             set { fileFormat = value; }
         }
 
-        [DataMember(Name = "dataset")]
-        [Description("Destination dataset.")]
-        public string Dataset
+        [DataMember(Name = "destination", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        [Description("Destination table")]
+        public DestinationTable Destination
         {
-            get { return dataset; }
-            set { dataset = value; }
-        }
-
-        [DataMember(Name = "table")]
-        [Description("Destination table of the import.")]
-        public string Table
-        {
-            get { return table; }
-            set { table = value; }
+            get { return destination; }
+            set { destination = value; }
         }
 
         #endregion
@@ -94,8 +86,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.uri = null;
             this.fileFormat = null;
             this.credentials = null;
-            this.dataset = null;
-            this.table = null;
+            this.destination = null;
         }
 
         #endregion
@@ -125,12 +116,13 @@ namespace Jhu.Graywulf.Web.Api.V1
                 var schemaname = xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/SchemaName");
                 var tablename = xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/TableNamePattern");
 
-                this.dataset = datasetname;
-
-                // TODO: use generic function
-                this.table = schemaname +
-                    (!String.IsNullOrWhiteSpace(schemaname) ? "." : "") +
-                    tablename;
+                this.destination = new DestinationTable()
+                {
+                    Dataset = datasetname,
+                    Table = schemaname +
+                        (!String.IsNullOrWhiteSpace(schemaname) ? "." : "") +
+                        tablename
+                };
 
                 // Format
                 var ff = FileFormatFactory.Create(jobInstance.Context.Federation.FileFormatFactory);
@@ -149,7 +141,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        public static DestinationTable GetDestinationTable(FederationContext context, string datasetName, string token)
+        public static IO.Tasks.DestinationTable GetDestinationTable(FederationContext context, string datasetName, string token)
         {
             string schemaName, tableName;
 
@@ -163,7 +155,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        public static DestinationTable GetDestinationTable(FederationContext context, string datasetName, string schemaName, string tableName)
+        public static IO.Tasks.DestinationTable GetDestinationTable(FederationContext context, string datasetName, string schemaName, string tableName)
         {
             var dataset = (SqlServerDataset)context.SchemaManager.Datasets[datasetName];
 
@@ -173,7 +165,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 throw new ArgumentException("Cannot import data into the specified dataset.");  // TODO ***
             }
 
-            var destination = new DestinationTable(
+            var destination = new IO.Tasks.DestinationTable(
                     dataset,
                     dataset.DatabaseName,
                     dataset.DefaultSchemaName,
@@ -193,18 +185,19 @@ namespace Jhu.Graywulf.Web.Api.V1
             return destination;
         }
 
-        public DestinationTable GetDestinationTable(FederationContext context)
+        public IO.Tasks.DestinationTable GetDestinationTable(FederationContext context)
         {
-            if (table != null)
+            if (destination != null && 
+                !String.IsNullOrWhiteSpace(destination.Table))
             {
                 string schemaName, tableName;
-                if (Util.SqlParser.TryParseTableName(context, table, out schemaName, out tableName))
+                if (Util.SqlParser.TryParseTableName(context, destination.Table, out schemaName, out tableName))
                 {
-                    return GetDestinationTable(context, dataset, schemaName, tableName);
+                    return GetDestinationTable(context, destination.Dataset, schemaName, tableName);
                 }
             }
 
-            return GetDestinationTable(context, dataset, null, null);
+            return GetDestinationTable(context, destination.Dataset, null, null);
         }
 
 
@@ -212,7 +205,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         public ImportTablesParameters CreateParameters(FederationContext context)
         {
             DataFileBase source = null;
-            DestinationTable destination = null;
+            IO.Tasks.DestinationTable destination = null;
             IO.Credentials credentials = null;
 
             if (FileFormat != null)

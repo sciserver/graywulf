@@ -102,6 +102,16 @@ namespace Jhu.Graywulf.Schema
             set { objectName = value; }
         }
 
+        [IgnoreDataMember]
+        public string ObjectNameWithSchema
+        {
+            get
+            {
+                return (String.IsNullOrWhiteSpace(schemaName) ? "" : (schemaName + ".")) +
+                    objectName;
+            }
+        }
+
         // TODO: how to serialize metadata?
         [IgnoreDataMember]
         public DatabaseObjectMetadata Metadata

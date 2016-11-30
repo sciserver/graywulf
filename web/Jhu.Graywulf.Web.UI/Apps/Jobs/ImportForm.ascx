@@ -20,6 +20,14 @@
             </tr>
             <tr>
                 <td class="FormLabel">
+                    <asp:Label runat="server" Text="Dataset:"></asp:Label>
+                </td>
+                <td class="FormField">
+                    <asp:Label runat="server" ID="dataset"></asp:Label>
+                </td>
+            </tr>
+            <tr>
+                <td class="FormLabel">
                     <asp:Label runat="server" Text="Table:"></asp:Label>
                 </td>
                 <td class="FormField">

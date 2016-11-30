@@ -135,7 +135,11 @@ namespace Jhu.Graywulf.Web.Api.V1
                     {
                         MimeType = "text/csv",
                     },
-                    Table = "SampleData",
+                    Source = new SourceTable()
+                    {
+                        Dataset = Registry.Constants.UserDbName,
+                        Table = "SampleData",
+                    },
                     Comments = "test comments",
                 };
 
@@ -161,7 +165,11 @@ namespace Jhu.Graywulf.Web.Api.V1
                 var job = new ImportJob()
                 {
                     Uri = new Uri("http://test/test.zip"),
-                    Table = "importtable",
+                    Destination = new DestinationTable()
+                    {
+                        Dataset = Registry.Constants.UserDbName,
+                        Table = "importtable",
+                    },
                     Comments = "test comments",
                 };
 

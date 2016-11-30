@@ -192,9 +192,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 Uri = uri,
                 Credentials = credentials == null ? null : new Web.Api.V1.Credentials(credentials),
                 FileFormat = file,
-                Dataset = dataset,
-                Table = table,
-
+                Destination = new Web.Api.V1.DestinationTable()
+                {
+                    Dataset = dataset,
+                    Table = table,
+                },
                 Comments = commentsForm.Comments,
                 Queue = JobQueue.Long,
             };

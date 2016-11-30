@@ -26,8 +26,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         private Uri uri;
         private Credentials credentials;
         private FileFormat fileFormat;
-        private string dataset;
-        private string table;
+        private SourceTable source;
 
         #endregion
         #region Properties
@@ -58,20 +57,13 @@ namespace Jhu.Graywulf.Web.Api.V1
             set { fileFormat = value; }
         }
 
-        [DataMember(Name = "dataset")]
-        [Description("Source dataset.")]
-        public string Dataset
+        [DataMember(Name = "source", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        [Description("Source table")]
+        public SourceTable Source
         {
-            get { return dataset; }
-            set { dataset = value; }
-        }
-
-        [DataMember(Name = "table")]
-        [Description("Name of source table.")]
-        public string Table
-        {
-            get { return table; }
-            set { table = value; }
+            get { return source; }
+            set { source = value; }
         }
 
         #endregion
@@ -97,8 +89,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.uri = null;
             this.fileFormat = null;
             this.credentials = null;
-            this.dataset = null;
-            this.table = null;
+            this.source = null;
         }
 
         #endregion
@@ -134,11 +125,14 @@ namespace Jhu.Graywulf.Web.Api.V1
                 var schemaname = xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/SourceSchemaName");
                 var tablename = xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/SourceObjectName");
 
-                this.dataset = datasetname;
-                this.table = schemaname +
-                    (!String.IsNullOrWhiteSpace(schemaname) ? "." : "") +
-                    tablename;
-
+                this.source = new SourceTable()
+                {
+                    Dataset = datasetname,
+                    Table = schemaname +
+                        (!String.IsNullOrWhiteSpace(schemaname) ? "." : "") +
+                        tablename
+                };
+                
                 // Format
                 var ff = FileFormatFactory.Create(jobInstance.Context.Federation.FileFormatFactory);
                 string filename, extension;
@@ -166,20 +160,21 @@ namespace Jhu.Graywulf.Web.Api.V1
                 throw new ArgumentException("File format must be specified for export"); // TODO ***
             }
 
-            // Verify source
-            if (String.IsNullOrWhiteSpace(table))
+            if (source == null || 
+                String.IsNullOrWhiteSpace(source.Table) ||
+                String.IsNullOrWhiteSpace(source.Dataset))
             {
-                throw new ArgumentException("Table must be specified"); // TODO ***
+                throw new ArgumentException("Source must be specified"); // TODO ***
             }
-
+            
             // Parse table name and create source object
             TableOrView tab;
-            if (!Util.SqlParser.TryParseTableName(context, table, out tab))
+            if (!Util.SqlParser.TryParseTableName(context, source.Table, out tab))
             {
                 throw new ArgumentException("Invalid table name");    // TODO ***
             }
 
-            var dataset = context.SchemaManager.Datasets[this.dataset];
+            var dataset = context.SchemaManager.Datasets[source.Dataset];
 
             // Make sure dataset is a user dataset, do not allow export from big catalogs
             if (!dataset.IsMutable)
@@ -189,7 +184,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             tab.Dataset = dataset;
 
-            var source = SourceTableQuery.Create(tab);
+            var sourcequery = SourceTableQuery.Create(tab);
 
             if (Credentials != null)
             {
@@ -197,7 +192,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
 
             var ff = ExportTablesJobFactory.Create(context.Federation);
-            return ff.CreateParameters(context.Federation, uri, credentials, source, FileFormat.MimeType);
+            return ff.CreateParameters(context.Federation, uri, credentials, sourcequery, FileFormat.MimeType);
         }
 
         public override void Schedule(FederationContext context)

@@ -73,8 +73,11 @@ namespace Jhu.Graywulf.Web.Api.V1
                         {
                             Uri = new Uri(uri),
                             Comments = comments,
-                            Dataset = dataset,
-                            Table = table,
+                            Destination = new DestinationTable()
+                            {
+                                Dataset = dataset,
+                                Table = table,
+                            },
                         };
 
                         var request = new JobRequest()

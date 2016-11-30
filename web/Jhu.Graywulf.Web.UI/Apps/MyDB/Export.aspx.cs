@@ -219,7 +219,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             {
                 Uri = uri,
                 Credentials = credentials == null ? null : new Web.Api.V1.Credentials(credentials),
-                Table = table.DisplayName,
+                Source = new SourceTable()
+                {
+                    Dataset = table.Dataset.Name,
+                    Table = table.ObjectNameWithSchema
+                },
                 FileFormat = format,
 
                 Comments = commentsForm.Comments,

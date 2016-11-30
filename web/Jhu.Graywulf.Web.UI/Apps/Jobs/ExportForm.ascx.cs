@@ -24,7 +24,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
 
         public void UpdateForm()
         {
-            table.Text = job.Table;
+            dataset.Text = job.Source.Dataset;
+            table.Text = job.Source.Table;
 
             if (job.Uri != null)
             {

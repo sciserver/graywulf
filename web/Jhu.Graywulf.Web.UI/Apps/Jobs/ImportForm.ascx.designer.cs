@@ -31,6 +31,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
         protected global::System.Web.UI.WebControls.Label fileFormat;
         
         /// <summary>
+        /// dataset control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label dataset;
+        
+        /// <summary>
         /// table control.
         /// </summary>
         /// <remarks>
