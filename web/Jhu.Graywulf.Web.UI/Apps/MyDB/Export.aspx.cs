@@ -14,7 +14,7 @@ using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public partial class Export : MyDbPageBase
+    public partial class Export : FederationPageBase
     {
         public static string GetUrl()
         {
@@ -53,8 +53,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         {
             if (!IsPostBack)
             {
-                RefreshDatasetList(sourceTableForm.DatasetList);
-                sourceTableForm.RefreshTableList();
+                //RefreshDatasetList(sourceTableForm.DatasetList);
+                //sourceTableForm.RefreshTableList();
             }
 
             if (!IsPostBack)

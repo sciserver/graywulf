@@ -40,6 +40,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         protected global::Jhu.Graywulf.Web.Controls.Tab Tables;
         
         /// <summary>
+        /// Copy control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Controls.Tab Copy;
+        
+        /// <summary>
         /// Import control.
         /// </summary>
         /// <remarks>

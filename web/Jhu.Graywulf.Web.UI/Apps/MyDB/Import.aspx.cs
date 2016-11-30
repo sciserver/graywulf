@@ -14,7 +14,7 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public partial class Import : MyDbPageBase
+    public partial class Import : FederationPageBase
     {
         public static string GetUrl()
         {
@@ -60,7 +60,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         {
             if (!IsPostBack)
             {
-                RefreshDatasetList(destinationTableForm.DatasetList);
+                //RefreshDatasetList(destinationTableForm.DatasetList);
                 RefreshImportMethodList();
             }
         }
@@ -161,7 +161,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         {
             var uri = uploadForm.Uri;
             var file = fileFormatForm.GetDataFile(uri);
-            var table = ImportJob.GetDestinationTable(FederationContext, destinationTableForm.DatasetList.SelectedValue, destinationTableForm.TableName);
+            var table = ImportJob.GetDestinationTable(FederationContext, destinationTableForm.Dataset.Name, destinationTableForm.TableName);
             var importer = uploadForm.GetTableImporter(file, table);
 
             importer.Execute();

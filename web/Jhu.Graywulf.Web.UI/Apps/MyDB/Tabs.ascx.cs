@@ -18,6 +18,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         {
             Summary.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.MyDB.Default.GetUrl();
             Tables.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.MyDB.Tables.GetUrl();
+            Copy.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.MyDB.Copy.GetUrl();
             Import.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.MyDB.Import.GetUrl();
             Export.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.MyDB.Export.GetUrl();
 

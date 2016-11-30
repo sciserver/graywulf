@@ -226,6 +226,13 @@
     <Compile Include="Apps\MyDB\CompressionForm.ascx.designer.cs">
       <DependentUpon>CompressionForm.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\MyDB\DatasetList.ascx.cs">
+      <DependentUpon>DatasetList.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\DatasetList.ascx.designer.cs">
+      <DependentUpon>DatasetList.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Apps\MyDB\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -268,15 +275,19 @@
     <Compile Include="Apps\MyDB\Import.aspx.designer.cs">
       <DependentUpon>Import.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Apps\MyDB\MyDbPageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Apps\MyDB\PrimaryKey.aspx.cs">
       <DependentUpon>PrimaryKey.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Apps\MyDB\PrimaryKey.aspx.designer.cs">
       <DependentUpon>PrimaryKey.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\Copy.aspx.cs">
+      <DependentUpon>Copy.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\Copy.aspx.designer.cs">
+      <DependentUpon>Copy.aspx</DependentUpon>
     </Compile>
     <Compile Include="Apps\MyDB\Rename.aspx.cs">
       <DependentUpon>Rename.aspx</DependentUpon>
@@ -291,6 +302,13 @@
     </Compile>
     <Compile Include="Apps\MyDB\SourceTableForm.ascx.designer.cs">
       <DependentUpon>SourceTableForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\MyDB\TableList.ascx.cs">
+      <DependentUpon>TableList.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\TableList.ascx.designer.cs">
+      <DependentUpon>TableList.ascx</DependentUpon>
     </Compile>
     <Compile Include="Apps\MyDB\Tables.aspx.cs">
       <DependentUpon>Tables.aspx</DependentUpon>
@@ -492,6 +510,7 @@
     <Content Include="Apps\Jobs\Web.config" />
     <Content Include="Apps\MyDB\CommentsForm.ascx" />
     <Content Include="Apps\MyDB\CompressionForm.ascx" />
+    <Content Include="Apps\MyDB\DatasetList.ascx" />
     <Content Include="Apps\MyDB\Default.aspx" />
     <Content Include="Apps\MyDB\DestinationTableForm.ascx" />
     <Content Include="Apps\MyDB\Drop.aspx" />
@@ -499,8 +518,10 @@
     <Content Include="Apps\MyDB\FileFormatForm.ascx" />
     <Content Include="Apps\MyDB\Import.aspx" />
     <Content Include="Apps\MyDB\PrimaryKey.aspx" />
+    <Content Include="Apps\MyDB\Copy.aspx" />
     <Content Include="Apps\MyDB\Rename.aspx" />
     <Content Include="Apps\MyDB\SourceTableForm.ascx" />
+    <Content Include="Apps\MyDB\TableList.ascx" />
     <Content Include="Apps\MyDB\Tables.aspx" />
     <Content Include="Apps\MyDB\Tabs.ascx" />
     <Content Include="Apps\MyDB\Toolbar.ascx" />

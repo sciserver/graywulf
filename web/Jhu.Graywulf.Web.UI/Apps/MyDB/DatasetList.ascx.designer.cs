@@ -10,16 +10,7 @@
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
     
     
-    public partial class Toolbar {
-        
-        /// <summary>
-        /// datasetListLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label datasetListLabel;
+    public partial class DatasetList {
         
         /// <summary>
         /// datasetList control.
@@ -28,6 +19,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.DatasetList datasetList;
+        protected global::System.Web.UI.WebControls.DropDownList datasetList;
     }
 }

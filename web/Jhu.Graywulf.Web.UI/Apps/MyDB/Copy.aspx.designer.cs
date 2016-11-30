@@ -10,42 +10,60 @@
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
     
     
-    public partial class SourceTableForm {
+    public partial class Copy {
         
         /// <summary>
-        /// datasetListLabel control.
+        /// MyDbTabs control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label datasetListLabel;
+        protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.Tabs MyDbTabs;
         
         /// <summary>
-        /// datasetList control.
+        /// sourceTable control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.DatasetList datasetList;
+        protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.SourceTableForm sourceTable;
         
         /// <summary>
-        /// tableListLabel control.
+        /// dropSourceTable control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label tableListLabel;
+        protected global::System.Web.UI.WebControls.CheckBox dropSourceTable;
         
         /// <summary>
-        /// tableList control.
+        /// destinationTable control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.TableList tableList;
+        protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.DestinationTableForm destinationTable;
+        
+        /// <summary>
+        /// Ok control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button Ok;
+        
+        /// <summary>
+        /// Cancel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button Cancel;
     }
 }

@@ -13,17 +13,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
     public partial class DestinationTableForm : FederationUserControlBase
     {
-        public ListControl DatasetList
+        public string DatasetName
         {
-            get { return datasetList; }
+            get { return datasetList.DatasetName; }
         }
 
         public DatasetBase Dataset
         {
-            get
-            {
-                return FederationContext.SchemaManager.Datasets[datasetList.SelectedValue];
-            }
+            get { return datasetList.Dataset; }
         }
 
         public string TableName

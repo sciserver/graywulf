@@ -1,21 +1,22 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="DestinationTableForm.ascx.cs" Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.DestinationTableForm" %>
 
-<p>To override automatic table name generation, specify table name below:</p>
+<%@ Register Src="~/Apps/MyDB/DatasetList.ascx" TagPrefix="jgwu" TagName="DatasetList" %>
+
 <table runat="server" class="FormTable">
     <tr>
         <td class="FormLabel">
-            <asp:Label runat="server" ID="datasetListLabel">Dataset:</asp:Label>
+            <asp:Label runat="server" ID="datasetListLabel">Destination dataset:</asp:Label>
         </td>
         <td class="FormField">
-            <asp:DropDownList runat="server" ID="datasetList" CssClass="FormField" />
+            <jgwu:DatasetList runat="server" id="datasetList" CssClass="FormField" />
         </td>
     </tr>
     <tr>
         <td class="FormLabel">
-            <asp:Label runat="server" ID="tableNameLabel">Table name:</asp:Label>
+            <asp:Label runat="server" ID="tableNameLabel">Destination table:</asp:Label>
         </td>
         <td class="FormField">
-            <asp:TextBox ID="tableName" runat="server" CssClass="FormField"></asp:TextBox>
+            <asp:TextBox ID="tableName" runat="server" CssClass="FormField" />
             <asp:CustomValidator runat="server" ControlToValidate="tableName" Display="Dynamic"
                 ErrorMessage="<br />Invalid table name" ID="tableNameValidator"
                 OnServerValidate="TableNameValidator_ServerValidate" />

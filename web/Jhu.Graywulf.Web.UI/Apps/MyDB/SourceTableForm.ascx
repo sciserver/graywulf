@@ -1,21 +1,25 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="SourceTableForm.ascx.cs" Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.SourceTableForm" %>
 
+<%@ Register Src="~/Apps/MyDB/DatasetList.ascx" TagPrefix="jgwu" TagName="DatasetList" %>
+<%@ Register Src="~/Apps/MyDB/TableList.ascx" TagPrefix="jgwu" TagName="TableList" %>
+
+
 <table class="FormTable">
     <tr>
         <td class="FormLabel">
-            <asp:Label runat="server" ID="datasetListLabel">Dataset:</asp:Label>
+            <asp:Label runat="server" ID="datasetListLabel">Source dataset:</asp:Label>
         </td>
         <td class="FormField">
-            <asp:DropDownList runat="server" ID="datasetList" CssClass="FormField" 
-                AutoPostBack="true" OnSelectedIndexChanged="DatasetList_SelectedIndexChanged"/>
+            <jgwu:DatasetList runat="server" id="datasetList" CssClass="FormField"
+                AutoPostBack="true" TableListControl="tableList"  />
         </td>
     </tr>
     <tr>
         <td class="FormLabel">
-            <asp:Label runat="server" ID="tableListLabel">Table name:</asp:Label>
+            <asp:Label runat="server" ID="tableListLabel">Source table:</asp:Label>
         </td>
         <td class="FormField">
-            <asp:DropDownList runat="server" ID="tableList" CssClass="FormField" />
+            <jgwu:TableList runat="server" id="tableList" CssClass="FormField" />
         </td>
     </tr>
 </table>

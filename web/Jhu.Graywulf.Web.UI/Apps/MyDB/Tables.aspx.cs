@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public partial class Tables : MyDbPageBase
+    public partial class Tables : FederationPageBase
     {
         public static string GetUrl()
         {
@@ -30,10 +30,10 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         {
             if (!IsPostBack)
             {
-                RefreshDatasetList(toolbar.DatasetList);
+                toolbar.RefreshDatasetList();
             }
 
-            var userdb = FederationContext.SchemaManager.Datasets[toolbar.DatasetList.SelectedValue];
+            var userdb = toolbar.Dataset;
             userdb.Tables.LoadAll(true);
 
             // TODO: change this to support arbitrary sorting

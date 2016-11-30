@@ -5,7 +5,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
-    public partial class Default : MyDbPageBase
+    public partial class Default : FederationPageBase
     {
         public static string GetUrl()
         {
@@ -28,10 +28,10 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         {
             if (!IsPostBack)
             {
-                RefreshDatasetList(toolbar.DatasetList);
+                toolbar.RefreshDatasetList();
             }
 
-            var userdb = FederationContext.SchemaManager.Datasets[toolbar.DatasetList.SelectedValue];
+            var userdb = toolbar.Dataset;
 
             datasetName.Text = userdb.Name;
             datasetUsageLabel.Text = userdb.Name;
