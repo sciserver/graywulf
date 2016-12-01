@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             if (!String.IsNullOrWhiteSpace(table))
             {
                 string schemaName, tableName;
-                if (Util.SqlParser.TryParseTableName(context, table, out schemaName, out tableName))
+                if (Util.SqlParser.TryParseTableName(context, dataset, table, out schemaName, out tableName))
                 {
                     return GetDestinationTable(context, dataset, schemaName, tableName);
                 }
@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             string schemaName, tableName;
 
-            if (Util.SqlParser.TryParseTableName(context, token, out schemaName, out tableName))
+            if (Util.SqlParser.TryParseTableName(context, datasetName, token, out schemaName, out tableName))
             {
                 return GetDestinationTable(context, datasetName, schemaName, tableName);
             }

@@ -53,12 +53,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         {
             if (!IsPostBack)
             {
-                //RefreshDatasetList(sourceTableForm.DatasetList);
-                //sourceTableForm.RefreshTableList();
-            }
-
-            if (!IsPostBack)
-            {
                 RefreshExportMethodList();
             }
         }

@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         protected void TableNameValidator_ServerValidate(object source, ServerValidateEventArgs args)
         {
             string sn, tn;
-            args.IsValid = Jhu.Graywulf.Web.Api.Util.SqlParser.TryParseTableName(FederationContext, tableName.Text, out sn, out tn);
+            args.IsValid = Jhu.Graywulf.Web.Api.Util.SqlParser.TryParseTableName(FederationContext, DatasetName, tableName.Text, out sn, out tn);
         }
     }
 }

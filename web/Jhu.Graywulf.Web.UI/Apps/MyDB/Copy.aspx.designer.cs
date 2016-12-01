@@ -22,6 +22,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.Tabs MyDbTabs;
         
         /// <summary>
+        /// copyForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Controls.Form copyForm;
+        
+        /// <summary>
         /// sourceTable control.
         /// </summary>
         /// <remarks>
@@ -49,6 +58,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.DestinationTableForm destinationTable;
         
         /// <summary>
+        /// commentsForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.CommentsForm commentsForm;
+        
+        /// <summary>
         /// Ok control.
         /// </summary>
         /// <remarks>
@@ -65,5 +83,23 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button Cancel;
+        
+        /// <summary>
+        /// jobResultsForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Controls.Form jobResultsForm;
+        
+        /// <summary>
+        /// Back control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button Back;
     }
 }

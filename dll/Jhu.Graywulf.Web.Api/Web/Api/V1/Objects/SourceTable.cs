@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
 
             // Parse table name and create source object
-            if (!Util.SqlParser.TryParseTableName(context, table, out sourcetable))
+            if (!Util.SqlParser.TryParseTableName(context, dataset, table, out sourcetable))
             {
                 throw new InvalidOperationException("Invalid table name");    // TODO ***
             }

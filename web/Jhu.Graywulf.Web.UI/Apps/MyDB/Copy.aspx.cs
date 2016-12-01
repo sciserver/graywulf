@@ -1,5 +1,6 @@
 ﻿using System;
 using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
@@ -22,23 +23,54 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             return url;
         }
 
-        protected DatabaseObject obj;
+        protected Jhu.Graywulf.Schema.DatabaseObject obj;
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack)
-            {       
-            }
         }    
 
         protected void Ok_Click(object sender, EventArgs e)
         {
+            if (IsValid)
+            {
+                ScheduleCopyJob();
+                jobResultsForm.Visible = true;
+                copyForm.Visible = false;
+            }
+
             Response.Redirect(Tables.GetUrl(), false);
         }
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
             Response.Redirect(OriginalReferer, false);
+        }
+
+        protected void Back_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(Jhu.Graywulf.Web.UI.Apps.MyDB.Tables.GetUrl(), false);
+        }
+
+        private void ScheduleCopyJob()
+        {
+            var job = new CopyJob()
+            {
+                Source = new SourceTable()
+                {
+                    Dataset = sourceTable.DatasetName,
+                    Table = sourceTable.Table.ObjectNameWithSchema
+                },
+                Destination = new DestinationTable()
+                {
+                    Dataset = destinationTable.DatasetName,
+                    Table = destinationTable.TableName
+                },
+                Move = dropSourceTable.Checked,
+                Comments = commentsForm.Comments,
+                Queue = JobQueue.Long,
+            };
+
+            job.Schedule(FederationContext);
         }
     }
 }

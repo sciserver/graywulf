@@ -32,6 +32,18 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             }
         }
 
+        public override void RegisterButtons(UIApplicationBase application)
+        {
+            var button = new Controls.MenuButton()
+            {
+                Key = Name,
+                Text = "my data",
+                NavigateUrl = "~/Apps/" + Name + "/Default.aspx"
+            };
+
+            application.RegisterMenuButton(button);
+        }
+
         public override void RegisterChecks(List<CheckRoutineBase> checks)
         {
             base.RegisterChecks(checks);

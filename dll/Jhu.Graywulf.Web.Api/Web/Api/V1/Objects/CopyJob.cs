@@ -133,7 +133,6 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
 
             var destinationtable = destination.GetDestinationTable(context);
-
             
             var ff = CopyTablesJobFactory.Create(context.RegistryContext);
             var par = ff.CreateParameters();
