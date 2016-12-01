@@ -11,6 +11,7 @@ CREATE TABLE [dbo].[Entity]
 	[EntityType] [int] NOT NULL,
 	[Number] [int] NOT NULL,
 	[Name] [nvarchar](128) NOT NULL,
+	[DisplayName] [nvarchar](128) NOT NULL,
 	[Version] [nvarchar](25) NOT NULL,
 	[System] [bit] NOT NULL,
 	[Hidden] [bit] NOT NULL,

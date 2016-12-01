@@ -40,6 +40,7 @@ namespace Jhu.Graywulf.Registry
         private EntityType entityTypeInternal;
         private int number;
         private string name;
+        private string displayName;
         private string version;
         private bool system;
         private bool hidden;
@@ -200,6 +201,16 @@ namespace Jhu.Graywulf.Registry
         {
             get { return name; }
             set { name = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the entity which is occasionally displayed on the user interface.
+        /// </summary>
+        [XmlAttribute]
+        public string DisplayName
+        {
+            get { return displayName; }
+            set { displayName = value; }
         }
 
         /// <summary>
@@ -501,6 +512,7 @@ namespace Jhu.Graywulf.Registry
             this.entityTypeInternal = EntityType.Unknown;
             this.number = 0;
             this.name = string.Empty;
+            this.displayName = string.Empty;
             this.version = string.Empty;
             this.system = false;
             this.hidden = false;
@@ -541,6 +553,7 @@ namespace Jhu.Graywulf.Registry
             this.EntityType = old.EntityType;   // always use property!
             this.number = old.number;
             this.name = old.name;
+            this.displayName = old.displayName;
             this.version = old.version;
             this.system = old.system;
             this.hidden = old.hidden;
@@ -572,6 +585,7 @@ namespace Jhu.Graywulf.Registry
             bool eq = true;
 
             eq &= Entity.StringComparer.Compare(this.name, other.name) == 0;
+            eq &= Entity.StringComparer.Compare(this.displayName, other.displayName) == 0;
             eq &= Entity.StringComparer.Compare(this.version, other.version) == 0;
             eq &= this.system == other.system;
             eq &= this.hidden == other.hidden;
@@ -590,6 +604,7 @@ namespace Jhu.Graywulf.Registry
         internal virtual void UpdateMembers(Entity other)
         {
             this.name = other.name;
+            this.displayName = other.displayName;
             this.version = other.version;
             this.system = other.system;
             this.hidden = other.hidden;

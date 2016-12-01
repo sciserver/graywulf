@@ -10,6 +10,9 @@ namespace Jhu.Graywulf.Install
     {
         private Federation federation;
 
+        protected abstract Type JobType { get; }
+        protected abstract string DisplayName { get; }
+        protected abstract bool IsSystem { get; }
 
         protected JobInstallerBase(Federation federation)
             :base(federation.Context)
@@ -18,27 +21,27 @@ namespace Jhu.Graywulf.Install
 
         }
 
-        protected abstract Type GetJobType();
-
         public JobDefinition Install()
         {
-            var jd = GenerateJobDefinition(GetJobType());
+            var jd = new JobDefinition(federation)
+            {
+                Name = JobType.Name,
+                DisplayName = DisplayName,
+                System = federation.System || IsSystem,
+                WorkflowTypeName = GetUnversionedTypeName(JobType),
+            };
+
+            jd.DiscoverWorkflowParameters();
+
+            CreateSettings(jd);
+
             jd.Save();
 
             return jd;
         }
 
-        protected virtual JobDefinition GenerateJobDefinition(Type jobType)
+        protected virtual void CreateSettings(JobDefinition jobDefinition)
         {
-            var jd = new JobDefinition(federation)
-            {
-                Name = jobType.Name,
-                System = federation.System,
-                WorkflowTypeName = GetUnversionedTypeName(jobType),
-            };
-            jd.DiscoverWorkflowParameters();
-
-            return jd;
-        }
+        }        
     }
 }

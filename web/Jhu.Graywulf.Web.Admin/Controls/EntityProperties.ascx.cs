@@ -31,6 +31,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
 
             FullyQualifiedName.Text = entity.GetFullyQualifiedName();
             EntityGuid.Text = entity.Guid.ToString();
+            DisplayName.Text = entity.DisplayName;
             Version.Text = entity.Version;
             RunningState.Text = entity.RunningState.ToString();
             AlertState.Text = entity.AlertState.ToString();

@@ -109,6 +109,7 @@ CREATE PROC [dbo].[spCreateEntity]
 	@ParentGuid uniqueidentifier,
 	@EntityType int,
 	@Name nvarchar(128),
+	@DisplayName nvarchar(128),
 	@Version nvarchar(25),
 	@RunningState int,
 	@AlertState int,
@@ -146,13 +147,13 @@ AS
 	-- Insert new entity
 	INSERT Entity
 		(Guid, ParentGuid, EntityType, 
-		 Number, Name, Version,
+		 Number, Name, DisplayName, Version,
 		 System, Hidden, ReadOnly, [Primary], Deleted, LockOwner,
 		 RunningState, AlertState, DeploymentState, UserGuidOwner, DateCreated, UserGuidCreated,
 		 DateModified, UserGuidModified, DateDeleted, UserGuidDeleted, Settings, Comments)
 	VALUES
 		(@Guid, @ParentGuid, @EntityType,  
-		 @Number, @Name, @Version,
+		 @Number, @Name, @DisplayName, @Version,
 		 0, 0, 0, 0, 0, NULL,
 		 @RunningState, @AlertState, @DeploymentState, @UserGuid, @DateCreated, @UserGuid,
 		 @DateModified, @UserGuid, NULL, NULL, @Settings, @Comments);
@@ -180,6 +181,7 @@ CREATE PROC [dbo].[spModifyEntity]
 	@ConcurrencyVersion binary(8) OUTPUT,
 	
 	@Name nvarchar(128),
+	@DisplayName nvarchar(128),
 	@Version nvarchar(25),
 	@RunningState int,
 	@AlertState int,
@@ -222,6 +224,7 @@ AS
 
 	UPDATE Entity
 	SET Name = @Name,
+		DisplayName = @DisplayName,
 		Version = @Version,
 		RunningState = @RunningState,
 		AlertState = @AlertState,

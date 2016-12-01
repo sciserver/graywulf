@@ -62,6 +62,7 @@ namespace Jhu.Graywulf.Registry
             this.EntityType = (EntityType)dr.GetInt32(++o);
             this.number = dr.GetInt32(++o);
             this.name = dr.GetString(++o);
+            this.displayName = dr.GetString(++o);
             this.version = dr.GetString(++o);
             this.system = dr.GetBoolean(++o);
             this.hidden = dr.GetBoolean(++o);
@@ -308,6 +309,7 @@ namespace Jhu.Graywulf.Registry
         private void AppendEntityCreateModifyParameters(SqlCommand cmd)
         {
             cmd.Parameters.Add("@Name", SqlDbType.NVarChar, 128).Value = name;
+            cmd.Parameters.Add("@DisplayName", SqlDbType.NVarChar, 128).Value = displayName;
             cmd.Parameters.Add("@Version", SqlDbType.NVarChar, 25).Value = version;
             cmd.Parameters.Add("@RunningState", SqlDbType.Int).Value = runningState;
             cmd.Parameters.Add("@AlertState", SqlDbType.Int).Value = alertState;

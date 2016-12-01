@@ -20,6 +20,14 @@
     </tr>
     <tr>
         <td class="FormLabel">
+            <asp:Label ID="DisplayNameLabel" runat="server" Text="Display name:"></asp:Label>
+        </td>
+        <td class="FormField">
+            <asp:Label ID="DisplayName" runat="server" Text="Label"></asp:Label>
+        </td>
+    </tr>
+    <tr>
+        <td class="FormLabel">
             <asp:Label ID="VersionLabel" runat="server" Text="Version:"></asp:Label>
         </td>
         <td class="FormField">

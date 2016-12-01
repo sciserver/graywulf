@@ -49,6 +49,24 @@ namespace Jhu.Graywulf.Web.Admin.Controls {
         protected global::System.Web.UI.WebControls.TextBox name;
         
         /// <summary>
+        /// displayNameLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label displayNameLabel;
+        
+        /// <summary>
+        /// displayName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox displayName;
+        
+        /// <summary>
         /// versionLabel control.
         /// </summary>
         /// <remarks>

@@ -43,6 +43,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             OperationLabel.Text = string.Format(op, Registry.Constants.EntityNames_Singular[entity.EntityType]);
 
             name.Text = entity.Name;
+            displayName.Text = entity.DisplayName;
             version.Text = entity.Version;
             comments.Text = entity.Comments;
         }
@@ -52,6 +53,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             Entity entity = ((IEntityForm)Page).Item;
 
             entity.Name = name.Text;
+            entity.DisplayName = displayName.Text;
             entity.Version = version.Text;
             entity.Comments = comments.Text;
         }

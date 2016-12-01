@@ -14,6 +14,14 @@
     </tr>
     <tr>
         <td class="FormLabel">
+            <asp:Label ID="displayNameLabel" runat="server" Text="Display name:"></asp:Label>
+        </td>
+        <td class="FormField">
+            <asp:TextBox ID="displayName" runat="server" CssClass="FormField"></asp:TextBox>
+        </td>
+    </tr>
+    <tr>
+        <td class="FormLabel">
             <asp:Label ID="versionLabel" runat="server" Text="Version:"></asp:Label>
         </td>
         <td class="FormField">
