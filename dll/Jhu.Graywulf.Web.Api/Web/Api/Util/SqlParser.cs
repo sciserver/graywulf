@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Web.Api.Util
 {
     public static class SqlParser
     {
-        public static bool TryParseTableName(FederationContext context, string token, out TableReference tr)
+        public static bool TryParseTableName(FederationContext context, string dataset, string token, out TableReference tr)
         {
             if (token != null)
             {
@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Web.Api.Util
                     var tn = (Jhu.Graywulf.SqlParser.TableOrViewName)parser.Execute(new Jhu.Graywulf.SqlParser.TableOrViewName(), token);
 
                     tr = tn.TableReference;
-                    tr.SubstituteDefaults(context.SchemaManager, Registry.Constants.UserDbName);
+                    tr.SubstituteDefaults(context.SchemaManager, dataset);
 
                     return true;
                 }
@@ -33,10 +33,10 @@ namespace Jhu.Graywulf.Web.Api.Util
             return false;
         }
 
-        public static bool TryParseTableName(FederationContext context, string token, out string schemaName, out string tableName)
+        public static bool TryParseTableName(FederationContext context, string dataset, string token, out string schemaName, out string tableName)
         {
             TableReference tr;
-            if (TryParseTableName(context, token, out tr))
+            if (TryParseTableName(context, dataset, token, out tr))
             {
                 schemaName = tr.SchemaName;
                 tableName = tr.DatabaseObjectName;
@@ -49,10 +49,10 @@ namespace Jhu.Graywulf.Web.Api.Util
             return false;
         }
 
-        public static bool TryParseTableName(FederationContext context, string token, out TableOrView table)
+        public static bool TryParseTableName(FederationContext context, string dataset, string token, out TableOrView table)
         {
             TableReference tr;
-            if (TryParseTableName(context, token, out tr))
+            if (TryParseTableName(context, dataset, token, out tr))
             {
                 var ds = context.SchemaManager.Datasets[tr.DatasetName];
                 table = (TableOrView)ds.GetObject(tr.DatabaseName, tr.SchemaName, tr.DatabaseObjectName);
