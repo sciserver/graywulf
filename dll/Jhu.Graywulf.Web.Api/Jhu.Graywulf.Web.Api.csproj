@@ -78,6 +78,7 @@
     <Compile Include="Web\Api\V1\Objects\Credentials.cs" />
     <Compile Include="Web\Api\V1\Objects\DatabaseObject.cs" />
     <Compile Include="Web\Api\V1\Objects\Dataset.cs" />
+    <Compile Include="Web\Api\V1\Objects\CopyJob.cs" />
     <Compile Include="Web\Api\V1\Objects\ExportJob.cs" />
     <Compile Include="Web\Api\V1\Objects\FileFormat.cs" />
     <Compile Include="Web\Api\V1\Objects\Headers.cs" />

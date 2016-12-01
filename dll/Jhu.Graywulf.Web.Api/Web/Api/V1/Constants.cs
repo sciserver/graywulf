@@ -13,6 +13,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             { JobType.Query, typeof(Jhu.Graywulf.Jobs.Query.IQueryJob) },
             { JobType.Export, typeof(Jhu.Graywulf.Jobs.ExportTables.IExportTablesJob) },
             { JobType.Import, typeof(Jhu.Graywulf.Jobs.ImportTables.IImportTablesJob) },
+            { JobType.Copy, typeof(Jhu.Graywulf.Jobs.CopyTables.ICopyTablesJob) },
             { JobType.SqlScript, typeof(Jhu.Graywulf.Jobs.SqlScript.ISqlScriptJob) },
         };
 
@@ -21,6 +22,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             { JobType.Query, typeof(QueryJob) },
             { JobType.Export, typeof(ExportJob) },
             { JobType.Import, typeof(ImportJob) },
+            { JobType.Copy, typeof(CopyJob) },
             { JobType.SqlScript, typeof(SqlScriptJob) },
         };
     }

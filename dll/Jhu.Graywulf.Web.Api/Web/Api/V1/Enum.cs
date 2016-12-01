@@ -13,7 +13,8 @@ namespace Jhu.Graywulf.Web.Api.V1
         Query = 1,
         Export = 2,
         Import = 4,
-        SqlScript = 8,
+        Copy = 8,
+        SqlScript = 16,
         All = 0xFFFF,
     }
 

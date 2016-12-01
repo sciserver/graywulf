@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
 using System.ComponentModel;
-using System.Xml;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
-using Jhu.Graywulf.SqlParser;
-using Jhu.Graywulf.Web.UI;
+using Jhu.Graywulf.Schema.SqlServer;
+using Jhu.Graywulf.IO;
+using Jhu.Graywulf.IO.Tasks;
+using Jhu.Graywulf.Format;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
@@ -366,6 +364,27 @@ namespace Jhu.Graywulf.Web.Api.V1
                 queuename);
 
             return queuename;
+        }
+
+        public static V1.FileFormat GetFileFormat(Context context, Uri uri)
+        {
+            var ff = FileFormatFactory.Create(context.Federation.FileFormatFactory);
+            string filename, extension;
+            DataFileCompression compression;
+            DataFileBase file;
+            ff.GetFileExtensions(uri, out filename, out extension, out compression);
+
+            if (ff.TryCreateFileFromExtension(extension, out file))
+            {
+                return new V1.FileFormat()
+                {
+                    MimeType = file.Description.MimeType
+                };
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

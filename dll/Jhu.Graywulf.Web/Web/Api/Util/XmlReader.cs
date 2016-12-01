@@ -24,6 +24,12 @@ namespace Jhu.Graywulf.Web.Api.Util
             this.nsmgr.AddNamespace("z", "http://schemas.microsoft.com/2003/10/Serialization/");
         }
 
+        public bool GetXmlBoolean(string path)
+        {
+            var text = GetXmlInnerText(path);
+            return Boolean.Parse(text);
+        }
+
         public string GetXmlInnerText(string path)
         {
             return GetXmlInnerText(path, true);

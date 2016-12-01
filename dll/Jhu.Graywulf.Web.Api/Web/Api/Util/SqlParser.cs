@@ -63,5 +63,10 @@ namespace Jhu.Graywulf.Web.Api.Util
             table = null;
             return false;
         }
+
+        public static string CombineTableName(string schemaName, string tableName)
+        {
+            return (String.IsNullOrWhiteSpace(schemaName) ? "" : (schemaName + ".")) + tableName;
+        }
     }
 }

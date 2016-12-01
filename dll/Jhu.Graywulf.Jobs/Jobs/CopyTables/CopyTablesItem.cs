@@ -6,6 +6,7 @@ using Jhu.Graywulf.RemoteService;
 namespace Jhu.Graywulf.Jobs.CopyTables
 {
     [Serializable]
+    [DataContract(Name = "CopyTablesItem", Namespace = "")]
     public class CopyTablesItem
     {
         #region Private member variables
@@ -17,18 +18,21 @@ namespace Jhu.Graywulf.Jobs.CopyTables
         #endregion
         #region Properties
 
+        [DataMember]
         public SourceTableQuery Source
         {
             get { return source; }
             set { source = value; }
         }
 
+        [DataMember]
         public DestinationTable Destination
         {
             get { return destination; }
             set { destination = value; }
         }
 
+        [DataMember]
         public bool DropSourceTable
         {
             get { return dropSourceTable; }

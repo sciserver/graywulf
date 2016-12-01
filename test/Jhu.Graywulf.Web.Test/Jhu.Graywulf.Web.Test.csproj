@@ -63,6 +63,7 @@
     <Compile Include="Web\Api\V1\ApiTestBase.cs" />
     <Compile Include="Web\Api\V1\AuthServiceTest.cs" />
     <Compile Include="Web\Api\V1\DataServiceTest.cs" />
+    <Compile Include="Web\Api\V1\CopyTableTest.cs" />
     <Compile Include="Web\Api\V1\ExportTest.cs" />
     <Compile Include="Web\Api\V1\ImportTest.cs" />
     <Compile Include="Web\Api\V1\JobsServiceTest.cs" />

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using System.ComponentModel;
+using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.Api.V1
 {
@@ -25,6 +27,35 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             get { return table; }
             set { table = value; }
+        }
+
+        public IO.Tasks.SourceTableQuery GetSourceTableQuery(FederationContext context)
+        {
+            TableOrView sourcetable;
+
+            if (String.IsNullOrWhiteSpace(table) ||
+                String.IsNullOrWhiteSpace(dataset))
+            {
+                throw new InvalidOperationException("Source dataset and table must be specified"); // TODO ***
+            }
+
+            // Parse table name and create source object
+            if (!Util.SqlParser.TryParseTableName(context, table, out sourcetable))
+            {
+                throw new InvalidOperationException("Invalid table name");    // TODO ***
+            }
+
+            sourcetable.Dataset = context.SchemaManager.Datasets[dataset];
+
+            // Make sure dataset is a user dataset, do not allow export from big catalogs
+            if (!sourcetable.Dataset.IsMutable)
+            {
+                throw new InvalidOperationException("Cannot read data from the specified dataset.");  // TODO ***
+            }
+
+            var sourcequery = IO.Tasks.SourceTableQuery.Create(sourcetable);
+
+            return sourcequery;
         }
     }
 }

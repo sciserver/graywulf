@@ -161,7 +161,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         {
             var uri = uploadForm.Uri;
             var file = fileFormatForm.GetDataFile(uri);
-            var table = ImportJob.GetDestinationTable(FederationContext, destinationTableForm.Dataset.Name, destinationTableForm.TableName);
+            var table = Web.Api.V1.DestinationTable.GetDestinationTable(FederationContext, destinationTableForm.Dataset.Name, destinationTableForm.TableName);
             var importer = uploadForm.GetTableImporter(file, table);
 
             importer.Execute();

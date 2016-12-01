@@ -26,6 +26,11 @@ namespace Jhu.Graywulf.Web.Api.V1
         [Description("Conveys a data table import job.")]
         public ImportJob ImportJob { get; set; }
 
+        [DataMember(Name = "copyJob", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        [Description("Conveys a data table copy job.")]
+        public CopyJob CopyJob { get; set; }
+
         public JobRequest()
         {
         }
@@ -43,6 +48,10 @@ namespace Jhu.Graywulf.Web.Api.V1
             else if (ImportJob != null)
             {
                 return ImportJob;
+            }
+            else if (CopyJob != null)
+            {
+                return CopyJob;
             }
             else
             {

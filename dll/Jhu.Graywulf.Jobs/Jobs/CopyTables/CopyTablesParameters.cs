@@ -14,6 +14,7 @@ namespace Jhu.Graywulf.Jobs.CopyTables
         #endregion
         #region Properties
 
+        [DataMember]
         public CopyTablesItem[] Items
         {
             get { return items; }

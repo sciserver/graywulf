@@ -147,6 +147,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 case JobType.Export:
                 case JobType.Import:
                 case JobType.Query:
+                case JobType.Copy:
                     jobFactory.JobDefinitionGuids.UnionWith(jobFactory.SelectJobDefinitions(jobType).Select(jd => jd.Guid));
                     break;
                 default:

@@ -102,6 +102,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                 var xr = new Util.XmlReader(xml);
 
+                // URI
                 // Try to take uri from the root (in case of archives) or from the first source
                 var uristring = xr.GetXmlInnerText("ImportTablesParameters/Uri");
                 if (String.IsNullOrWhiteSpace(uristring))
@@ -111,118 +112,47 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                 this.uri = new Uri(uristring, UriKind.RelativeOrAbsolute);
 
-                // Take target table name from the first destination object
-                var datasetname = xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/DatasetName");
-                var schemaname = xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/SchemaName");
-                var tablename = xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/TableNamePattern");
-
+                // Destination
                 this.destination = new DestinationTable()
                 {
-                    Dataset = datasetname,
-                    Table = schemaname +
-                        (!String.IsNullOrWhiteSpace(schemaname) ? "." : "") +
-                        tablename
+                    Dataset = xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/DatasetName"),
+                    Table = Util.SqlParser.CombineTableName(
+                        xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/SchemaName"),
+                        xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/TableNamePattern"))
                 };
 
                 // Format
-                var ff = FileFormatFactory.Create(jobInstance.Context.Federation.FileFormatFactory);
-                string filename, extension;
-                DataFileCompression compression;
-                DataFileBase file;
-                ff.GetFileExtensions(this.uri, out filename, out extension, out compression);
-
-                if (ff.TryCreateFileFromExtension(extension, out file))
-                {
-                    this.fileFormat = new V1.FileFormat()
-                    {
-                        MimeType = file.Description.MimeType
-                    };
-                }
+                this.fileFormat = GetFileFormat(JobInstance.Context, this.uri);
             }
         }
-
-        public static IO.Tasks.DestinationTable GetDestinationTable(FederationContext context, string datasetName, string token)
-        {
-            string schemaName, tableName;
-
-            if (Util.SqlParser.TryParseTableName(context, token, out schemaName, out tableName))
-            {
-                return GetDestinationTable(context, datasetName, schemaName, tableName);
-            }
-            else
-            {
-                return GetDestinationTable(context, datasetName, null, null);
-            }
-        }
-
-        public static IO.Tasks.DestinationTable GetDestinationTable(FederationContext context, string datasetName, string schemaName, string tableName)
-        {
-            var dataset = (SqlServerDataset)context.SchemaManager.Datasets[datasetName];
-
-            // Make sure dataset is a user dataset
-            if (!dataset.IsMutable)
-            {
-                throw new ArgumentException("Cannot import data into the specified dataset.");  // TODO ***
-            }
-
-            var destination = new IO.Tasks.DestinationTable(
-                    dataset,
-                    dataset.DatabaseName,
-                    dataset.DefaultSchemaName,
-                    IO.Constants.ResultsetNameToken,        // generate table names automatically
-                    TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName);
-
-            if (!String.IsNullOrWhiteSpace(schemaName))
-            {
-                destination.SchemaName = schemaName;
-            }
-
-            if (!String.IsNullOrWhiteSpace(tableName))
-            {
-                destination.TableNamePattern = tableName;   // TODO: handle patterns?
-            }
-
-            return destination;
-        }
-
-        public IO.Tasks.DestinationTable GetDestinationTable(FederationContext context)
-        {
-            if (destination != null && 
-                !String.IsNullOrWhiteSpace(destination.Table))
-            {
-                string schemaName, tableName;
-                if (Util.SqlParser.TryParseTableName(context, destination.Table, out schemaName, out tableName))
-                {
-                    return GetDestinationTable(context, destination.Dataset, schemaName, tableName);
-                }
-            }
-
-            return GetDestinationTable(context, destination.Dataset, null, null);
-        }
-
-
-
+        
         public ImportTablesParameters CreateParameters(FederationContext context)
         {
             DataFileBase source = null;
-            IO.Tasks.DestinationTable destination = null;
             IO.Credentials credentials = null;
 
+            // Source
             if (FileFormat != null)
             {
                 source = FileFormat.GetDataFile(context, uri);
             }
 
-            destination = GetDestinationTable(context);
+            // Destination
+            if (destination == null)
+            {
+                throw new InvalidOperationException("Destination must be specified"); // TODO ***
+            }
 
+            var destinationtable = destination.GetDestinationTable(context);
+
+            // Credentials
             if (Credentials != null)
             {
                 credentials = Credentials.GetCredentials(context);
             }
 
-
             var ff = ImportTablesJobFactory.Create(context.Federation);
-            return ff.CreateParameters(context.Federation, uri, credentials, source, destination);
+            return ff.CreateParameters(context.Federation, uri, credentials, source, destinationtable);
         }
 
         public override void Schedule(FederationContext context)

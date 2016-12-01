@@ -119,80 +119,46 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                 this.uri = new Uri(uristring, UriKind.RelativeOrAbsolute);
 
-                // Table
-                // Take exported table name from the first srouce object
-                var datasetname = xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/Dataset/Name");
-                var schemaname = xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/SourceSchemaName");
-                var tablename = xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/SourceObjectName");
-
+                // Source
                 this.source = new SourceTable()
                 {
-                    Dataset = datasetname,
-                    Table = schemaname +
-                        (!String.IsNullOrWhiteSpace(schemaname) ? "." : "") +
-                        tablename
+                    Dataset = xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/Dataset/Name"),
+                    Table = Util.SqlParser.CombineTableName(
+                        xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/SourceSchemaName"),
+                        xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/SourceObjectName"))
                 };
-                
-                // Format
-                var ff = FileFormatFactory.Create(jobInstance.Context.Federation.FileFormatFactory);
-                string filename, extension;
-                DataFileCompression compression;
-                DataFileBase file;
-                ff.GetFileExtensions(this.uri, out filename, out extension, out compression);
 
-                if (ff.TryCreateFileFromExtension(extension, out file))
-                {
-                    this.fileFormat = new V1.FileFormat()
-                    {
-                        MimeType = file.Description.MimeType
-                    };
-                }
+                // Format
+                this.fileFormat = GetFileFormat(JobInstance.Context, this.uri);
             }
         }
 
         public ExportTablesParameters CreateParameters(FederationContext context)
         {
-            IO.Credentials credentials = null;
-
             // Verify file format
             if (FileFormat == null || String.IsNullOrWhiteSpace(FileFormat.MimeType))
             {
                 throw new ArgumentException("File format must be specified for export"); // TODO ***
             }
 
-            if (source == null || 
-                String.IsNullOrWhiteSpace(source.Table) ||
-                String.IsNullOrWhiteSpace(source.Dataset))
+            // Source
+            if (source == null)
             {
-                throw new ArgumentException("Source must be specified"); // TODO ***
-            }
-            
-            // Parse table name and create source object
-            TableOrView tab;
-            if (!Util.SqlParser.TryParseTableName(context, source.Table, out tab))
-            {
-                throw new ArgumentException("Invalid table name");    // TODO ***
+                throw new InvalidOperationException("Source must be specified"); // TODO ***
             }
 
-            var dataset = context.SchemaManager.Datasets[source.Dataset];
+            var sourcequery = source.GetSourceTableQuery(context);
 
-            // Make sure dataset is a user dataset, do not allow export from big catalogs
-            if (!dataset.IsMutable)
-            {
-                throw new ArgumentException("Cannot export data from the specified dataset.");  // TODO ***
-            }
-
-            tab.Dataset = dataset;
-
-            var sourcequery = SourceTableQuery.Create(tab);
+            // Credentials
+            IO.Credentials targetcredentials = null;
 
             if (Credentials != null)
             {
-                credentials = Credentials.GetCredentials(context);
+                targetcredentials = Credentials.GetCredentials(context);
             }
 
             var ff = ExportTablesJobFactory.Create(context.Federation);
-            return ff.CreateParameters(context.Federation, uri, credentials, sourcequery, FileFormat.MimeType);
+            return ff.CreateParameters(context.Federation, uri, targetcredentials, sourcequery, FileFormat.MimeType);
         }
 
         public override void Schedule(FederationContext context)
