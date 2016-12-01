@@ -55,6 +55,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Jobs\JobNames.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>JobNames.resx</DependentUpon>
+    </Compile>
     <Compile Include="Jobs\Constants.cs" />
     <Compile Include="Jobs\CopyTables\CopyTable.cs" />
     <Compile Include="Jobs\CopyTables\CopyTablesItem.cs" />
@@ -116,6 +121,7 @@
     <Compile Include="Jobs\MirrorDatabase\FindSourcesAndDestinations.cs" />
     <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseFile.cs" />
     <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseJobFactory.cs" />
+    <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseJobInstaller.cs" />
     <Compile Include="Jobs\MirrorDatabase\MirrorDatabaseParameters.cs" />
     <Compile Include="Jobs\MirrorDatabase\RunCheckDb.cs" />
     <Compile Include="Jobs\Query\AssignServerInstance.cs" />
@@ -189,6 +195,7 @@
     <Compile Include="Jobs\SqlScript\SqlScriptJobFactory.cs" />
     <Compile Include="Jobs\SqlScript\SqlScriptJobInstaller.cs" />
     <Compile Include="Jobs\SqlScript\SqlScriptParameters.cs" />
+    <Compile Include="Jobs\Test\TestJobInstaller.cs" />
     <Compile Include="Jobs\Test\TestAsyncException.cs" />
     <Compile Include="Jobs\Test\TestQueryDelay.cs" />
     <Compile Include="Jobs\Test\TestJob.cs" />
@@ -196,6 +203,10 @@
     <Compile Include="Jobs\Test\TestDelay.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Jobs\JobNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>JobNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Jobs\ExceptionMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>

@@ -190,6 +190,13 @@
     <Compile Include="Apps\Jobs\ExportForm.ascx.designer.cs">
       <DependentUpon>ExportForm.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Jobs\CopyForm.ascx.cs">
+      <DependentUpon>CopyForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\CopyForm.ascx.designer.cs">
+      <DependentUpon>CopyForm.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Apps\Jobs\ImportForm.ascx.cs">
       <DependentUpon>ImportForm.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -504,6 +511,7 @@
     <Content Include="Apps\Jobs\Default.aspx" />
     <Content Include="Apps\Jobs\ErrorForm.ascx" />
     <Content Include="Apps\Jobs\ExportForm.ascx" />
+    <Content Include="Apps\Jobs\CopyForm.ascx" />
     <Content Include="Apps\Jobs\ImportForm.ascx" />
     <Content Include="Apps\Jobs\JobDetails.aspx" />
     <Content Include="Apps\Jobs\QueryForm.ascx" />

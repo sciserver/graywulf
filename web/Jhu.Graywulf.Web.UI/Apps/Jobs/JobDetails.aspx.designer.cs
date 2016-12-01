@@ -209,7 +209,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::Jhu.Graywulf.Web.Controls.TabView importTab;
-        
+        protected global::Jhu.Graywulf.Web.Controls.TabView copyTab;
+
         /// <summary>
         /// importForm control.
         /// </summary>
@@ -218,7 +219,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.ImportForm importForm;
-        
+        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.CopyForm copyForm;
+
         /// <summary>
         /// errorTab control.
         /// </summary>

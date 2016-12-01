@@ -11,9 +11,19 @@ namespace Jhu.Graywulf.Jobs.CopyTables
         {
         }
 
-        protected override Type GetJobType()
+        protected override Type JobType
         {
-            return typeof(Jobs.CopyTables.CopyTablesJob);
+            get { return typeof(Jobs.CopyTables.CopyTablesJob); }
+        }
+
+        protected override string DisplayName
+        {
+            get { return JobNames.CopyTablesJob; }
+        }
+
+        protected override bool IsSystem
+        {
+            get { return false; }
         }
     }
 }

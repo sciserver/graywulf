@@ -2,18 +2,18 @@
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Install;
 
-namespace Jhu.Graywulf.Jobs.SqlScript
+namespace Jhu.Graywulf.Jobs.Test
 {
-    public class SqlScriptJobInstaller : JobInstallerBase
+    public class TestJobInstaller : JobInstallerBase
     {
         protected override Type JobType
         {
-            get { return typeof(Jobs.SqlScript.SqlScriptJob); }
+            get { return typeof(TestJob); }
         }
 
         protected override string DisplayName
         {
-            get { return JobNames.SqlScriptJob; }
+            get { return JobNames.TestJob; }
         }
 
         protected override bool IsSystem
@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Jobs.SqlScript
             get { return true; }
         }
 
-        public SqlScriptJobInstaller(Federation federation)
+        public TestJobInstaller(Federation federation)
             : base(federation)
         {
         }

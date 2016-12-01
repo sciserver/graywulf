@@ -76,6 +76,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
         protected global::Jhu.Graywulf.Web.Controls.MultiSelectGridView QueryJobList;
         
         /// <summary>
+        /// CopyJobList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Controls.MultiSelectGridView CopyJobList;
+        
+        /// <summary>
         /// ImportJobList control.
         /// </summary>
         /// <remarks>

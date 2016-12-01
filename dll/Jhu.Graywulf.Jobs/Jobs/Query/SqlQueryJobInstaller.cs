@@ -7,41 +7,40 @@ using Jhu.Graywulf.Install;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class SqlQueryJobInstaller : InstallerBase
+    public class SqlQueryJobInstaller : JobInstallerBase
     {
-        private Federation federation;
+        protected override Type JobType
+        {
+            get { return typeof(SqlQueryJob); }
+        }
+
+        protected override string DisplayName
+        {
+            get { return JobNames.SqlQueryJob; }
+        }
+
+        protected override bool IsSystem
+        {
+            get { return false; }
+        }
 
         public SqlQueryJobInstaller(Federation federation)
-            : base(federation.Context)
+            : base(federation)
         {
-            this.federation = federation;
         }
 
-        public virtual JobDefinition Install()
+        protected override void CreateSettings(JobDefinition jobDefinition)
         {
-            return GenerateJobDefinition(typeof(Jobs.Query.SqlQueryJob));
-        }
+            base.CreateSettings(jobDefinition);
 
-        protected virtual JobDefinition GenerateJobDefinition(Type jobType)
-        {
-            var jd = new JobDefinition(federation)
+            jobDefinition.Settings = new SqlQueryJobSettings()
             {
-                Name = jobType.Name,
-                System = federation.System,
-                WorkflowTypeName = GetUnversionedTypeName(jobType),
-                Settings = new SqlQueryJobSettings()
-                {
-                    HotDatabaseVersionName = Registry.Constants.ProdDatabaseVersionName,
-                    StatDatabaseVersionName = Registry.Constants.StatDatabaseVersionName,
-                    DefaultSchemaName = Schema.SqlServer.Constants.DefaultSchemaName,
-                    DefaultDatasetName = Registry.Constants.UserDbName,
-                    QueryTimeout = 7200,    // TODO
-                }
+                HotDatabaseVersionName = Registry.Constants.ProdDatabaseVersionName,
+                StatDatabaseVersionName = Registry.Constants.StatDatabaseVersionName,
+                DefaultSchemaName = Schema.SqlServer.Constants.DefaultSchemaName,
+                DefaultDatasetName = Registry.Constants.UserDbName,
+                QueryTimeout = 7200,    // TODO
             };
-            jd.DiscoverWorkflowParameters();
-            jd.Save();
-
-            return jd;
         }
     }
 }

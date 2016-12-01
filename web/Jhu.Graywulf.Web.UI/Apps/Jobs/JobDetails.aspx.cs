@@ -85,6 +85,16 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
                 importTab.Hidden = true;
             }
 
+            // Copy
+            if (job is CopyJob)
+            {
+                copyForm.Job = (CopyJob)job;
+            }
+            else
+            {
+                copyTab.Hidden = true;
+            }
+
             // Set button actions
 
             Back.OnClientClick = Util.UrlFormatter.GetClientRedirect(OriginalReferer);

@@ -19,9 +19,10 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
         {
             All = 0,
             Query = 1,
-            Import = 2,
-            Export = 3,
-            Script = 4,
+            Copy = 2,
+            Import = 3,
+            Export = 4,
+            Script = 5,
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -48,6 +49,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
                     return JobList;
                 case Views.Query:
                     return QueryJobList;
+                case Views.Copy:
+                    return CopyJobList;
                 case Views.Export:
                     return ExportJobList;
                 case Views.Import:
@@ -70,6 +73,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
                     break;
                 case Views.Query:
                     jobType = JobType.Query;
+                    break;
+                case Views.Copy:
+                    jobType = JobType.Copy;
                     break;
                 case Views.Export:
                     jobType = JobType.Export;

@@ -72,6 +72,28 @@
                             </Columns>
                         </jgwc:MultiSelectGridView>
                     </jgwc:TabView>
+                    <jgwc:TabView runat="server" Text="Copy Jobs">
+                        <jgwc:MultiSelectGridView runat="server" ID="CopyJobList" PagerSettings-Position="TopAndBottom"
+                            AllowPaging="true" PageSize="30" AutoGenerateColumns="false" SelectionMode="Multiple" DataKeyNames="Guid">
+                            <Columns>
+                                <jgwc:SelectionField ItemStyle-Width="24px" />
+                                <jgwc:BoundField DataField="Name" HeaderText="Job ID" ItemStyle-Width="150px" />
+                                <jgwc:BoundDateTimeField DataField="DateCreated" HeaderText="Submitted" ItemStyle-Width="140px"
+                                    ItemStyle-HorizontalAlign="Center" />
+                                <jgwc:BoundDateTimeField DataField="DateStarted" HeaderText="Started" ItemStyle-Width="140px"
+                                    ItemStyle-HorizontalAlign="Center" />
+                                <jgwc:BoundDateTimeField DataField="DateFinished" HeaderText="Finished" ItemStyle-Width="140px"
+                                    ItemStyle-HorizontalAlign="Center" />
+                                <asp:TemplateField HeaderText="Status" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center">
+                                    <ItemTemplate>
+                                        <jgwuc:JobStatus runat="server" Status='<%# (Jhu.Graywulf.Web.Api.V1.JobStatus)Eval("Status") %>' />
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <jgwc:BoundField DataField="Comments" HeaderText="Comments" ItemStyle-CssClass="GridViewSpan"
+                                    HeaderStyle-CssClass="GridViewSpan" />
+                            </Columns>
+                        </jgwc:MultiSelectGridView>
+                    </jgwc:TabView>
                     <jgwc:TabView runat="server" Text="Import Jobs">
                         <jgwc:MultiSelectGridView runat="server" ID="ImportJobList" PagerSettings-Position="TopAndBottom"
                             AllowPaging="true" PageSize="30" AutoGenerateColumns="false" SelectionMode="Multiple" DataKeyNames="Guid">

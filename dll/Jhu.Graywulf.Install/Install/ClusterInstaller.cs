@@ -142,24 +142,12 @@ namespace Jhu.Graywulf.Install
             qi.Save();
 
             //      -- database mirror job
-            var jd = new JobDefinition(federation)
-            {
-                Name = typeof(Jhu.Graywulf.Jobs.MirrorDatabase.MirrorDatabaseJob).Name,
-                System = system,
-                WorkflowTypeName = GetUnversionedTypeName(typeof(Jhu.Graywulf.Jobs.MirrorDatabase.MirrorDatabaseJob)),
-            };
-            jd.DiscoverWorkflowParameters();
-            jd.Save();
+            JobInstallerBase jdi = new Jhu.Graywulf.Jobs.MirrorDatabase.MirrorDatabaseJobInstaller(federation);
+            var jd = jdi.Install();
 
             //      -- test job
-            jd = new JobDefinition(federation)
-            {
-                Name = typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name,
-                System = system,
-                WorkflowTypeName = GetUnversionedTypeName(typeof(Jhu.Graywulf.Jobs.Test.TestJob)),
-            };
-            jd.DiscoverWorkflowParameters();
-            jd.Save();
+            jdi = new Jhu.Graywulf.Jobs.Test.TestJobInstaller(federation);
+            jd = jdi.Install();
 
             return cluster;
         }

@@ -7,27 +7,33 @@ using Jhu.Graywulf.Install;
 
 namespace Jhu.Graywulf.Jobs.ImportTables
 {
-    public class ImportTablesJobInstaller : InstallerBase
+    public class ImportTablesJobInstaller : JobInstallerBase
     {
-        private Federation federation;
-
-        public ImportTablesJobInstaller(Federation federation)
+        protected override Type JobType
         {
-            this.federation = federation;
+            get { return typeof(ImportTablesJob); }
         }
 
-        public void Install()
+        protected override string DisplayName
         {
-            var jd = new JobDefinition(federation)
-            {
-                Name = typeof(ImportTablesJob).Name,
-                System = federation.System,
-                WorkflowTypeName = GetUnversionedTypeName(typeof(ImportTablesJob)),
-                Settings = new ImportTablesJobSettings()
-            };
+            get { return JobNames.ImportTablesJob; }
+        }
 
-            jd.DiscoverWorkflowParameters();
-            jd.Save();
+        protected override bool IsSystem
+        {
+            get { return false; }
+        }
+
+        public ImportTablesJobInstaller(Federation federation)
+            : base(federation)
+        {
+        }
+        
+        protected override void CreateSettings(JobDefinition jobDefinition)
+        {
+            base.CreateSettings(jobDefinition);
+
+            jobDefinition.Settings = new ImportTablesJobSettings();
         }
     }
 }

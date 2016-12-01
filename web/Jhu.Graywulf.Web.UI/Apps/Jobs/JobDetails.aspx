@@ -5,8 +5,7 @@
 <%@ Register Src="QueryForm.ascx" TagPrefix="jgwc" TagName="QueryForm" %>
 <%@ Register Src="ExportForm.ascx" TagPrefix="jgwc" TagName="ExportForm" %>
 <%@ Register Src="ImportForm.ascx" TagPrefix="jgwc" TagName="ImportForm" %>
-
-
+<%@ Register Src="CopyForm.ascx" TagPrefix="jgwc" TagName="CopyForm" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="head">
 </asp:Content>
@@ -85,6 +84,9 @@
             </jgwc:TabView>
             <jgwc:TabView ID="importTab" runat="server" Text="Import">
                 <jgwc:ImportForm runat="server" ID="importForm" />
+            </jgwc:TabView>
+            <jgwc:TabView ID="copyTab" runat="server" Text="Copy">
+                <jgwc:CopyForm runat="server" ID="copyForm" />
             </jgwc:TabView>
             <jgwc:TabView ID="errorTab" runat="server" Text="Error">
                 <jgwc:ErrorForm runat="server" ID="ErrorForm" />

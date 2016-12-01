@@ -7,27 +7,33 @@ using Jhu.Graywulf.Install;
 
 namespace Jhu.Graywulf.Jobs.ExportTables
 {
-    public class ExportMaintenanceJobInstaller : InstallerBase
+    public class ExportMaintenanceJobInstaller : JobInstallerBase
     {
-        private Federation federation;
-
-        public ExportMaintenanceJobInstaller(Federation federation)
+        protected override Type JobType
         {
-            this.federation = federation;
+            get { return typeof(ExportMaintenanceJob); }
         }
 
-        public void Install()
+        protected override string DisplayName
         {
-            var jd = new JobDefinition(federation)
-            {
-                Name = typeof(Jobs.ExportTables.ExportMaintenanceJob).Name,
-                System = federation.System,
-                WorkflowTypeName = GetUnversionedTypeName(typeof(Jobs.ExportTables.ExportMaintenanceJob)),
-                // TODO: add settings
-            };
+            get { return JobNames.ExportMaintenanceJob; }
+        }
 
-            jd.DiscoverWorkflowParameters();
-            jd.Save();
+        protected override bool IsSystem
+        {
+            get { return true; }
+        }
+
+        public ExportMaintenanceJobInstaller(Federation federation)
+            : base(federation)
+        {
+        }
+
+        protected override void CreateSettings(JobDefinition jobDefinition)
+        {
+            base.CreateSettings(jobDefinition);
+
+            // TODO: implement this
         }
     }
 }
