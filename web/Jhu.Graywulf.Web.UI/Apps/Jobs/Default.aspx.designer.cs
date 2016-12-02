@@ -13,6 +13,51 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
     public partial class Default {
         
         /// <summary>
+        /// all control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton all;
+        
+        /// <summary>
+        /// query control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton query;
+        
+        /// <summary>
+        /// copy control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton copy;
+        
+        /// <summary>
+        /// export control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton export;
+        
+        /// <summary>
+        /// import control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton import;
+        
+        /// <summary>
         /// JobDataSource control.
         /// </summary>
         /// <remarks>
@@ -49,57 +94,48 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
         protected global::System.Web.UI.WebControls.Button Cancel;
         
         /// <summary>
-        /// multiView control.
+        /// jobList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.MultiView multiView;
+        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.AllList jobList;
         
         /// <summary>
-        /// JobList control.
+        /// queryList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.MultiSelectGridView JobList;
+        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.QueryList queryList;
         
         /// <summary>
-        /// QueryJobList control.
+        /// copyList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.MultiSelectGridView QueryJobList;
+        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.CopyList copyList;
         
         /// <summary>
-        /// CopyJobList control.
+        /// exportList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.MultiSelectGridView CopyJobList;
+        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.ExportList exportList;
         
         /// <summary>
-        /// ImportJobList control.
+        /// importList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.MultiSelectGridView ImportJobList;
-        
-        /// <summary>
-        /// ExportJobList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.MultiSelectGridView ExportJobList;
+        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.ImportList importList;
     }
 }

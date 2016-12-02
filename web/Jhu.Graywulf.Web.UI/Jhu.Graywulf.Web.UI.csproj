@@ -163,6 +163,35 @@
     <Compile Include="Apps\Docs\Docs.master.designer.cs">
       <DependentUpon>Docs.master</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Jobs\CopyList.ascx.cs">
+      <DependentUpon>CopyList.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\CopyList.ascx.designer.cs">
+      <DependentUpon>CopyList.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Jobs\ExportList.ascx.cs">
+      <DependentUpon>ExportList.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\ExportList.ascx.designer.cs">
+      <DependentUpon>ExportList.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Jobs\IJobList.cs" />
+    <Compile Include="Apps\Jobs\ImportList.ascx.cs">
+      <DependentUpon>ImportList.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\ImportList.ascx.designer.cs">
+      <DependentUpon>ImportList.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Jobs\JobList.ascx.cs">
+      <DependentUpon>JobList.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\JobList.ascx.designer.cs">
+      <DependentUpon>JobList.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Apps\Jobs\App.cs" />
     <Compile Include="Apps\Jobs\CancelJob.aspx.cs">
       <DependentUpon>CancelJob.aspx</DependentUpon>
@@ -219,6 +248,13 @@
     </Compile>
     <Compile Include="Apps\Jobs\QueryForm.ascx.designer.cs">
       <DependentUpon>QueryForm.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Jobs\QueryList.ascx.cs">
+      <DependentUpon>QueryList.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\QueryList.ascx.designer.cs">
+      <DependentUpon>QueryList.ascx</DependentUpon>
     </Compile>
     <Compile Include="Apps\MyDB\App.cs" />
     <Compile Include="Apps\MyDB\CommentsForm.ascx.cs">
@@ -516,6 +552,10 @@
     <Content Include="Apps\Docs\Default.aspx" />
     <Content Include="Apps\Docs\Docs.master" />
     <Content Include="Apps\Docs\Web.config" />
+    <Content Include="Apps\Jobs\CopyList.ascx" />
+    <Content Include="Apps\Jobs\ExportList.ascx" />
+    <Content Include="Apps\Jobs\ImportList.ascx" />
+    <Content Include="Apps\Jobs\JobList.ascx" />
     <Content Include="Apps\Jobs\CancelJob.aspx" />
     <Content Include="Apps\Jobs\Default.aspx" />
     <Content Include="Apps\Jobs\ErrorForm.ascx" />
@@ -524,6 +564,7 @@
     <Content Include="Apps\Jobs\ImportForm.ascx" />
     <Content Include="Apps\Jobs\JobDetails.aspx" />
     <Content Include="Apps\Jobs\QueryForm.ascx" />
+    <Content Include="Apps\Jobs\QueryList.ascx" />
     <Content Include="Apps\Jobs\Web.config" />
     <Content Include="Apps\MyDB\CommentsForm.ascx" />
     <Content Include="Apps\MyDB\CompressionForm.ascx" />

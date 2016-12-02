@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Web.UI;
 using System.Web.UI.WebControls;
-using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Web.Controls;
-using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Jobs
@@ -15,24 +13,25 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
             return "~/Apps/Jobs/Default.aspx";
         }
 
-        enum Views : int
+        #region Properties
+
+        protected string CurrentView
         {
-            All = 0,
-            Query = 1,
-            Copy = 2,
-            Import = 3,
-            Export = 4,
-            Script = 5,
+            get { return (string)(ViewState["CurrentView"] ?? "all"); }
+            set { ViewState["CurrentView"] = value; }
         }
+
+        #endregion
+        #region Event handlers
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            
+            UpdateForm();
         }
 
         protected void Page_LoadComplete(object sender, EventArgs e)
         {
-            var list = GetVisibleListView();
+            var list = GetCurrentList().List;
             list.DataSource = JobDataSource;
         }
 
@@ -41,23 +40,10 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
             Page.DataBind();
         }
 
-        private MultiSelectGridView GetVisibleListView()
+        protected void ToolbarButton_Command(object sender, CommandEventArgs e)
         {
-            switch ((Views)multiView.ActiveViewIndex)
-            {
-                case Views.All:
-                    return JobList;
-                case Views.Query:
-                    return QueryJobList;
-                case Views.Copy:
-                    return CopyJobList;
-                case Views.Export:
-                    return ExportJobList;
-                case Views.Import:
-                    return ImportJobList;
-                default:
-                    throw new NotImplementedException();
-            }
+            CurrentView = e.CommandName;
+            UpdateForm();
         }
 
         protected void JobDataSource_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
@@ -66,21 +52,21 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
             var jf = new JobFactory(RegistryContext);
 
             var jobType = JobType.Unknown;
-            switch ((Views)multiView.ActiveViewIndex)
+            switch (CurrentView)
             {
-                case Views.All:
+                case "all":
                     jobType = JobType.All;
                     break;
-                case Views.Query:
+                case "query":
                     jobType = JobType.Query;
                     break;
-                case Views.Copy:
+                case "copy":
                     jobType = JobType.Copy;
                     break;
-                case Views.Export:
+                case "export":
                     jobType = JobType.Export;
                     break;
-                case Views.Import:
+                case "import":
                     jobType = JobType.Import;
                     break;
                 default:
@@ -94,7 +80,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
 
         protected void JobSelected_ServerValidate(object source, ServerValidateEventArgs args)
         {
-            var listview = GetVisibleListView();
+            var listview = GetCurrentList().List;
             args.IsValid = listview.SelectedDataKeys.Count > 0;
         }
 
@@ -102,7 +88,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
         {
             if (IsValid)
             {
-                var listview = GetVisibleListView();
+                var listview = GetCurrentList().List;
                 var guids = listview.SelectedDataKeys.Select(g => Guid.Parse(g)).ToArray();
 
                 switch (e.CommandName)
@@ -118,5 +104,99 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
                 }
             }
         }
+
+        #endregion
+
+        private IJobList GetCurrentList()
+        {
+            switch (CurrentView)
+            {
+                case "all":
+                    return jobList;
+                case "query":
+                    return queryList;
+                case "copy":
+                    return copyList;
+                case "export":
+                    return exportList;
+                case "import":
+                    return importList;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void HideAllViews()
+        {
+            jobList.Visible = false;
+            queryList.Visible = false;
+            copyList.Visible = false;
+            exportList.Visible = false;
+            importList.Visible = false;
+
+            all.CssClass = "";
+            query.CssClass = "";
+            copy.CssClass = "";
+            export.CssClass = "";
+            import.CssClass = "";
+        }
+
+        private void UpdateForm()
+        {
+            HideAllViews();
+
+            switch (CurrentView)
+            {
+                case "all":
+                    ShowAll();
+                    break;
+                case "query":
+                    ShowQuery();
+                    break;
+                case "copy":
+                    ShowCopy();
+                    break;
+                case "export":
+                    ShowExport();
+                    break;
+                case "import":
+                    ShowImport();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void ShowAll()
+        {
+            jobList.Visible = true;
+            all.CssClass = "selected";
+        }
+
+        private void ShowCopy()
+        {
+            copyList.Visible = true;
+            copy.CssClass = "selected";
+        }
+
+        private void ShowQuery()
+        {
+            queryList.Visible = true;
+            query.CssClass = "selected";
+        }
+
+        private void ShowExport()
+        {
+            exportList.Visible = true;
+            export.CssClass = "selected";
+        }
+
+        private void ShowImport()
+        {
+            importList.Visible = true;
+            import.CssClass = "selected";
+        }
+
+        
     }
 }
