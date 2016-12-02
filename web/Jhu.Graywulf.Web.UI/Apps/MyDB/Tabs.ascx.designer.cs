@@ -13,57 +13,48 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
     public partial class Tabs {
         
         /// <summary>
-        /// TabHeader control.
+        /// summary control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.TabHeader TabHeader;
+        protected global::System.Web.UI.WebControls.HyperLink summary;
         
         /// <summary>
-        /// Summary control.
+        /// tables control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.Tab Summary;
+        protected global::System.Web.UI.WebControls.HyperLink tables;
         
         /// <summary>
-        /// Tables control.
+        /// copy control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.Tab Tables;
+        protected global::System.Web.UI.WebControls.HyperLink copy;
         
         /// <summary>
-        /// Copy control.
+        /// import control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.Tab Copy;
+        protected global::System.Web.UI.WebControls.HyperLink import;
         
         /// <summary>
-        /// Import control.
+        /// export control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.Tab Import;
-        
-        /// <summary>
-        /// Export control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.Tab Export;
+        protected global::System.Web.UI.WebControls.HyperLink export;
     }
 }

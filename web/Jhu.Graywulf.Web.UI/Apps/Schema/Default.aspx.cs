@@ -19,6 +19,17 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             return String.Format("{0}?objid={1}", GetUrl(), objid);
         }
 
+        #region Properties
+
+        protected string CurrentView
+        {
+            get { return (string)(ViewState["CurrentView"] ?? "summary"); }
+            set { ViewState["CurrentView"] = value; }
+        }
+
+        #endregion
+        #region Event handlers
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -49,8 +60,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
                     RefreshObjectList();
                     ObjectList.SelectedValue = dbobj.UniqueKey;
-
-                    ShowDetails(dbobjid);
                 }
                 else
                 {
@@ -59,7 +68,53 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                     RefreshObjectList();
                 }
             }
+
+            UpdateForm();
         }
+
+        protected void DatasetList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RefreshObjectTypeList();
+            RefreshObjectList();
+        }
+
+        protected void ObjectTypeList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RefreshObjectList();
+        }
+
+        protected void ObjectList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateForm();
+        }
+
+        protected void ToolbarButton_Command(object sender, CommandEventArgs e)
+        {
+            CurrentView = e.CommandName;
+            UpdateForm();
+        }
+
+        protected void Export_Click(object sender, EventArgs e)
+        {
+            //Response.Redirect(Apps.MyDB.Export.GetUrl(databaseObjectID), false);
+        }
+
+        protected void Rename_Click(object sender, EventArgs e)
+        {
+            //Response.Redirect(Apps.MyDB.Rename.GetUrl(databaseObjectID), false);
+        }
+
+        protected void PrimaryKey_Click(object sender, EventArgs e)
+        {
+            //Response.Redirect(Apps.MyDB.PrimaryKey.GetUrl(databaseObjectID), false);
+        }
+
+        protected void Drop_Click(object sender, EventArgs e)
+        {
+            //Response.Redirect(Apps.MyDB.Drop.GetUrl(databaseObjectID), false);
+        }
+
+        #endregion
 
         private void RefreshDatasetList()
         {
@@ -217,16 +272,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             }
         }
 
-        private void HideAllPanels()
+        private DatabaseObject GetSelectedObject()
         {
-            IntroForm.Visible = false;
-            DetailsPanel.Visible = false;
-        }
-
-        private void ShowDetails(string dbobjid)
-        {
-            HideAllPanels();
-
+            var dbobjid = ObjectList.SelectedValue;
             DatabaseObject dbobj = null;
 
             try
@@ -240,29 +288,115 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             if (dbobj != null)
             {
                 // Display details
-                DetailsPanel.DatabaseObjectID = dbobjid;
-                DetailsPanel.Visible = true;
+                //DetailsPanel.DatabaseObjectID = dbobjid;
+                //DetailsPanel.Visible = true;
 
                 SelectedSchemaObject = dbobjid;
             }
+
+            return dbobj;
         }
 
-        //--
-
-        protected void DatasetList_SelectedIndexChanged(object sender, EventArgs e)
+        private void UpdateForm()
         {
-            RefreshObjectTypeList();
-            RefreshObjectList();
+            var dbobj = GetSelectedObject();
+
+            HideAllViews();
+
+            if (dbobj == null)
+            {
+                summary.Enabled = false;
+                columns.Enabled = false;
+                indexes.Enabled = false;
+                parameters.Enabled = false;
+            }
+            else
+            {
+                summary.Enabled = true;
+                columns.Enabled = (dbobj is IColumns);
+                indexes.Enabled = (dbobj is IIndexes);
+                parameters.Enabled = (dbobj is IParameters);
+
+                switch (CurrentView)
+                {
+                    case "columns":
+                        if (dbobj is IColumns)
+                        {
+                            ShowColumns();
+                        }
+                        else
+                        {
+                            goto default;
+                        }
+                        break;
+                    case "indexes":
+                        if (dbobj is IIndexes)
+                        {
+                            ShowIndexes();
+                        }
+                        else
+                        {
+                            goto default;
+                        }
+                        break;
+                    case "parameters":
+                        if (dbobj is IParameters)
+                        {
+                            ShowParameters();
+                        }
+                        else
+                        {
+                            goto default;
+                        }
+                        break;
+                    case "summary":
+                    default:
+                        ShowSummary();
+                        break;
+                }
+            }
         }
 
-        protected void ObjectTypeList_SelectedIndexChanged(object sender, EventArgs e)
+        private void HideAllViews()
         {
-            RefreshObjectList();
+            introForm.Visible = false;
+            summaryForm.Visible = false;
+            columnList.Visible = false;
+            indexList.Visible = false;
+            parameterList.Visible = false;
+
+            summary.CssClass = "";
+            columns.CssClass = "";
+            indexes.CssClass = "";
+            parameters.CssClass = "";
         }
 
-        protected void ObjectList_SelectedIndexChanged(object sender, EventArgs e)
+        private void ShowSummary()
         {
-            ShowDetails(ObjectList.SelectedValue);
+            summaryForm.DatabaseObject = GetSelectedObject();
+            summaryForm.Visible = true;
+            summary.CssClass = "selected";
+        }
+
+        private void ShowColumns()
+        {
+            columnList.DatabaseObject = (IColumns)GetSelectedObject();
+            columnList.Visible = true;
+            columns.CssClass = "selected";
+        }
+
+        private void ShowIndexes()
+        {
+            indexList.DatabaseObject = (IIndexes)GetSelectedObject();
+            indexList.Visible = true;
+            indexes.CssClass = "selected";
+        }
+
+        private void ShowParameters()
+        {
+            parameterList.DatabaseObject = (IParameters)GetSelectedObject();
+            parameterList.Visible = true;
+            parameters.CssClass = "selected";
         }
     }
 }

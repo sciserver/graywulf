@@ -115,3 +115,34 @@ div.TabFrameVertical
     border-right: 1px solid #C0C0C0;
     border-bottom: 1px solid #C0C0C0;
 }
+
+/* new tabs */
+
+div.TabHeaderFrame
+{
+    display: table;
+    border-collapse: collapse;
+    border: 0px;
+    background-color: #FFFFFF;  
+}
+
+div.TabHeader
+{
+    display: table-row;
+}
+
+a.TabButton 
+{
+    display: table-cell;
+    width: 100%;
+    height: 26px;
+    border-left: 1px solid #C0C0C0;
+    border-top: 1px solid #C0C0C0;
+    border-right: 1px solid #C0C0C0;
+    border-bottom: 1px solid #C0C0C0;
+}
+
+div.TabSpan
+{
+    width: auto;
+}

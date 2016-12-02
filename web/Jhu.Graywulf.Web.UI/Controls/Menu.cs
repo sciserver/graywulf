@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI.WebControls;
-using Jhu.Graywulf.Web.Controls;
+using System.Web.UI.HtmlControls;
 
 namespace Jhu.Graywulf.Web.UI.Controls
 {
@@ -16,14 +16,9 @@ namespace Jhu.Graywulf.Web.UI.Controls
             var m = AppRegex.Match(Page.AppRelativeVirtualPath);
             var app = m.Success ? m.Groups[1].Value : null;
 
-            var menuFrame = new Panel()
-            {
-                CssClass = "MenuFrame"
-            };
-
             var menu = new Panel()
             {
-                CssClass = "Menu"
+                CssClass = "menu"
             };
 
             foreach (var button in application.MenuButtons)
@@ -32,25 +27,21 @@ namespace Jhu.Graywulf.Web.UI.Controls
                 {
                     Text = button.Text.ToLower(),
                     NavigateUrl = VirtualPathUtility.MakeRelative(Page.AppRelativeVirtualPath, button.NavigateUrl),
-                    CssClass = "MenuButton"
                 };
 
                 if (app != null && StringComparer.InvariantCultureIgnoreCase.Compare(button.Key, app) == 0)
                 {
-                    b.CssClass += " MenuButtonSelected";
+                    b.CssClass = "selected";
                 }
 
                 menu.Controls.Add(b);
             }
 
-            var span = new Panel()
-            {
-                CssClass = "MenuSpan"
-            };
+            var span = new HtmlGenericControl("div");
+            span.Attributes.Add("class", "span");
 
             menu.Controls.Add(span);
-            menuFrame.Controls.Add(menu);
-            this.Controls.Add(menuFrame);
+            this.Controls.Add(menu);
         }
     }
 }

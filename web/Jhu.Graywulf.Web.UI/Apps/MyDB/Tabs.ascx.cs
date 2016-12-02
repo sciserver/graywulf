@@ -16,13 +16,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            Summary.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.MyDB.Default.GetUrl();
-            Tables.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.MyDB.Tables.GetUrl();
-            Copy.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.MyDB.Copy.GetUrl();
-            Import.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.MyDB.Import.GetUrl();
-            Export.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.MyDB.Export.GetUrl();
-
-            TabHeader.SelectedTab = (Tab)TabHeader.FindControl(SelectedTab);
+            summary.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.MyDB.Default.GetUrl();
+            tables.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.MyDB.Tables.GetUrl();
+            copy.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.MyDB.Copy.GetUrl();
+            import.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.MyDB.Import.GetUrl();
+            export.NavigateUrl = Jhu.Graywulf.Web.UI.Apps.MyDB.Export.GetUrl();
         }
     }
 }

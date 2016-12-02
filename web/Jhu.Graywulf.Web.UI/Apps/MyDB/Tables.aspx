@@ -1,17 +1,14 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true"
     Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.Tables" CodeBehind="Tables.aspx.cs" %>
 
-<%@ Register Src="Tabs.ascx" TagPrefix="jgwc" TagName="MyDbTabs" %>
 <%@ Register Src="Toolbar.ascx" TagPrefix="jgwc" TagName="Toolbar" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="toolbar">
-    <jgwc:Toolbar runat="server" id="toolbar" OnSelectedDatasetChanged="Toolbar_SelectedDatasetChanged" />
+    <jgwc:Toolbar runat="server" id="toolbar" SelectedTab="tables"
+        OnSelectedDatasetChanged="Toolbar_SelectedDatasetChanged" />
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="middle" runat="Server">
-    <div class="dock-top">
-        <jgwc:MyDbTabs ID="MyDbTabs1" runat="server" SelectedTab="Tables" />
-    </div>
     <div class="dock-bottom">
         <p class="FormMessage">
             <asp:CustomValidator ID="TableSelectedValidator" runat="server" ErrorMessage="No table was selected."

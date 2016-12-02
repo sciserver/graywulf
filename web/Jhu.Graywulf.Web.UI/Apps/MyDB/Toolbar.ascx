@@ -2,14 +2,22 @@
 
 <%@ Register Src="~/Apps/MyDB/DatasetList.ascx" TagPrefix="jgwu" TagName="DatasetList" %>
 
-<asp:Panel runat="server" class="ToolbarFrame">
-    <div class="Toolbar">
-        <div class="ToolbarElement" style="width: 140px;">
-            <asp:Label runat="server" ID="datasetListLabel" Text="Dataset:" /><br />
-            <jgwu:DatasetList runat="server" ID="datasetList" CssClass="ToolbarControl" Style="width: 140px;"
-                AutoPostBack="true" OnSelectedDatasetChanged="DatasetList_SelectedDatasetChanged" />
-        </div>
-        <div class="ToolbarElement" style="width: auto">
-        </div>
+<div runat="server" id="toolbar" class="toolbar">
+    <div style="min-width: 140px;">
+        <asp:Label runat="server" ID="datasetListLabel" Text="Dataset:" /><br />
+        <jgwu:DatasetList runat="server" ID="datasetList" CssClass="ToolbarControl" Style="width: 140px;"
+            AutoPostBack="true" CausesValidation="false"
+            OnSelectedDatasetChanged="DatasetList_SelectedDatasetChanged" />
     </div>
-</asp:Panel>
+    <asp:LinkButton runat="server" ID="summary" OnCommand="Button_Command" CommandName="summary"
+        CausesValidation="false" Text="summary" />
+    <asp:LinkButton runat="server" ID="tables" OnCommand="Button_Command" CommandName="tables"
+        CausesValidation="false" Text="tables" />
+    <asp:LinkButton runat="server" ID="copy" OnCommand="Button_Command" CommandName="copy"
+        CausesValidation="false" Text="copy" />
+    <asp:LinkButton runat="server" ID="export" OnCommand="Button_Command" CommandName="export"
+        CausesValidation="false" Text="export" />
+    <asp:LinkButton runat="server" ID="import" OnCommand="Button_Command" CommandName="import"
+        CausesValidation="false" Text="import" />
+    <div class="span"></div>
+</div>

@@ -13,15 +13,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
     public partial class Default {
         
         /// <summary>
-        /// ToolbarElement1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarElement ToolbarElement1;
-        
-        /// <summary>
         /// DatasetListLabel control.
         /// </summary>
         /// <remarks>
@@ -38,15 +29,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList DatasetList;
-        
-        /// <summary>
-        /// ToolbarElement2 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarElement ToolbarElement2;
         
         /// <summary>
         /// ObjectTypeListLabel control.
@@ -67,15 +49,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::System.Web.UI.WebControls.DropDownList ObjectTypeList;
         
         /// <summary>
-        /// ToolbarElement3 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.ToolbarElement ToolbarElement3;
-        
-        /// <summary>
         /// ObjectListLabel control.
         /// </summary>
         /// <remarks>
@@ -94,21 +67,138 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::System.Web.UI.WebControls.DropDownList ObjectList;
         
         /// <summary>
-        /// IntroForm control.
+        /// summary control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Controls.Form IntroForm;
+        protected global::System.Web.UI.WebControls.LinkButton summary;
         
         /// <summary>
-        /// DetailsPanel control.
+        /// columns control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.DbObjectDetails DetailsPanel;
+        protected global::System.Web.UI.WebControls.LinkButton columns;
+        
+        /// <summary>
+        /// indexes control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton indexes;
+        
+        /// <summary>
+        /// parameters control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton parameters;
+        
+        /// <summary>
+        /// buttonPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel buttonPanel;
+        
+        /// <summary>
+        /// peek control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button peek;
+        
+        /// <summary>
+        /// export control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button export;
+        
+        /// <summary>
+        /// rename control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button rename;
+        
+        /// <summary>
+        /// primaryKey control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button primaryKey;
+        
+        /// <summary>
+        /// drop control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button drop;
+        
+        /// <summary>
+        /// summaryForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.SummaryForm summaryForm;
+        
+        /// <summary>
+        /// columnList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.ColumnList columnList;
+        
+        /// <summary>
+        /// parameterList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.ParameterList parameterList;
+        
+        /// <summary>
+        /// indexList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.IndexList indexList;
+        
+        /// <summary>
+        /// introForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Controls.Form introForm;
     }
 }
