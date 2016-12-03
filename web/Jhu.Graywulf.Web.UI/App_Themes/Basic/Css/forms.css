@@ -21,6 +21,9 @@ table.DetailsForm {
 }
 
 div.FormFrame {
+    border: 1px solid #000000;
+    border-radius: 8px;
+    box-shadow: 0px 12px 6px -6px #c0c0c0;
     padding: 8px;
 }
 
@@ -30,28 +33,50 @@ table.FormTable {
 
 table.Form {
     border-collapse: collapse;
-    width: 640px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 48px;
+    width: 720px;
     background-color: #FFFFFF;
-    border: 1px;
-    box-shadow: 10px 10px 5px #888888;
+}
+
+td.FormHeadline {
+    font-family: Calibri, Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid #C0C0C0;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+}
+
+td.FormButton {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    border-top: 1px solid #C0C0C0;
+    margin-bottom: 8px;
+    padding-top: 16px;
+    padding-bottom: 8px;
+    text-align: center;
 }
 
 td.FormIcon {
     width: 140px;
-    padding-right: 10px;
+    padding-right: 40px;
+    padding-top: 32px;
+    padding-left: 24px;
     vertical-align: top;
 }
 
-td.FormHeadline {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 16px;
-    font-weight: bold;
-    border-bottom: 1px solid #C0C0C0;
-    margin-bottom: 8px;
-    padding-bottom: 4px;
+td.Form {
+    padding-top: 16px;
+    padding-bottom: 32px;
+    padding-right: 32px;
+    vertical-align: top;
+    min-height: 320px;
+}
+
+td.Form ul {
+    margin-top: 14px;
+    margin-bottom: 10px;
 }
 
 td.FormLabel {
@@ -69,6 +94,16 @@ td.FormField {
     td.FormLabel img, td.FormField img {
         vertical-align: bottom;
     }
+
+    td.FormField input[type="checkbox"],
+    td.FormField input[type="radio"] {
+        margin-top: 8px;
+        margin-right: 4px;
+    }
+
+label {
+    font: inherit;
+}
 
 input.FormField, select.FormField, textarea.FormField, div.FormField {
     border: 1px solid #000000;
@@ -107,17 +142,6 @@ ul.FormField {
 
 span.FormValidator {
     color: #FF0000;
-}
-
-td.FormButton {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 16px;
-    font-weight: bold;
-    border-bottom: 1px solid #C0C0C0;
-    margin-bottom: 8px;
-    padding-top: 16px;
-    padding-bottom: 8px;
-    text-align: center;
 }
 
 .CodeMirror-scroll {

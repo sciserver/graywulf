@@ -13,7 +13,6 @@ namespace Jhu.Graywulf.Web.UI.Controls
     public class Form : WebControl
     {
         private Panel formDiv;
-        private Panel buttonsDiv;
         private Label formTitle;
         private Image formIcon;
 
@@ -76,40 +75,35 @@ namespace Jhu.Graywulf.Web.UI.Controls
             var formrow = new TableRow();
             var iconcell = new TableCell();
             var formcell = new TableCell();
+            var buttonrow = new TableRow();
+            var buttoncell = new TableCell();
 
             this.formContainer = new Control();
             this.buttonsContainer = new Control();
 
             this.Controls.Add(formDiv);
             formDiv.Controls.Add(table);
-            table.Rows.AddRange(new[] { titlerow, formrow });
-            titlerow.Cells.AddRange(new[] { new TableCell(), titlecell });
+            table.Rows.AddRange(new[] { titlerow, formrow, buttonrow });
+            titlerow.Cells.AddRange(new[] { titlecell });
             formrow.Cells.AddRange(new[] { iconcell, formcell });
+            buttonrow.Cells.AddRange(new[] { buttoncell });
 
             titlecell.Controls.Add(formTitle);
             iconcell.Controls.Add(formIcon);
             formcell.Controls.Add(formContainer);
 
-            formDiv.CssClass = "FormFrame dock-fill dock-scroll";
+            formDiv.CssClass = "FormFrame dock-center dock-scroll";
             table.CssClass = "Form";
             titlecell.CssClass = "FormHeadline";
+            titlecell.ColumnSpan = 2;
             iconcell.CssClass = "FormIcon";
             formcell.CssClass = "Form";
 
-            // ---
+            buttoncell.CssClass = "FormButton";
+            buttoncell.ColumnSpan = 2;
 
-            buttonsDiv = new Panel();
+            buttoncell.Controls.Add(buttonsContainer);
 
-            buttonsDiv.Controls.Add(new LiteralControl("<p class=\"FormMessage\"></p>"));
-
-            buttonsDiv.Controls.Add(new LiteralControl("<p class=\"FormButtons\">"));
-            buttonsDiv.Controls.Add(buttonsContainer);
-            buttonsDiv.Controls.Add(new LiteralControl("</p>"));
-
-            buttonsDiv.CssClass = "dock-bottom";
-
-            // ---
-            Controls.Add(buttonsDiv);
             Controls.Add(formDiv);
         }
 
@@ -148,7 +142,6 @@ namespace Jhu.Graywulf.Web.UI.Controls
 
         protected override void Render(HtmlTextWriter writer)
         {
-            buttonsDiv.RenderControl(writer);
             formDiv.RenderControl(writer);
         }
     }
