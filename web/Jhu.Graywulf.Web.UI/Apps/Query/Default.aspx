@@ -18,9 +18,7 @@
                     Text="quick execute" />
                 <asp:LinkButton ID="executeLong" runat="server" Text="execute" OnClick="ExecuteLong_Click" />
             </div>
-            <asp:Panel runat="server" ID="messagePanel" CssClass="ToolbarMessage" Visible="false">
-                <asp:Label runat="server" ID="message" />
-            </asp:Panel>
+            <jgwc:MessageBar runat="server" ID="messageBar" Visible="false" />
         </ContentTemplate>
     </asp:UpdatePanel>
 </asp:Content>

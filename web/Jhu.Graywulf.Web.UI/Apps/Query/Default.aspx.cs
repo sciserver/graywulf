@@ -141,14 +141,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
 
         protected void HideMessage()
         {
-            messagePanel.Visible = false;
+            messageBar.Visible = false;
         }
 
         protected void ShowMessage(string msg, Color color)
         {
-            message.Text = msg;
-            message.ForeColor = color;
-            messagePanel.Visible = true;
+            messageBar.Text = msg;
+            messageBar.ForeColor = color;
+            messageBar.Visible = true;
         }
     }
 }

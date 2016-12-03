@@ -59,6 +59,9 @@
     <Compile Include="Web\Controls\Includer.cs" />
     <Compile Include="Web\Controls\Int32ArrayConverter.cs" />
     <Compile Include="Web\Controls\ListViewDataPager.cs" />
+    <Compile Include="Web\Controls\MessageBar.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Web\Controls\MultiSelectGridView.cs" />
     <Compile Include="Web\Controls\MultiSelectListView.cs" />
     <Compile Include="Web\Controls\MultiViewTabHeader.cs" />
@@ -95,6 +98,9 @@
   <ItemGroup>
     <None Include="post-build.ps1" />
     <None Include="pre-build.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\Controls\MessageBar.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
