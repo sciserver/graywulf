@@ -61,8 +61,6 @@ function dockContents(idx, element) {
 
     var ee = $(element);
 
-    //ee.css({ "border": "1px solid red" });
-
     left = ee.padding().left;
     top = ee.padding().top;
     right = ee.innerWidth() - ee.padding().right;
@@ -88,24 +86,32 @@ function dockContents(idx, element) {
                 vv.dockType = "right";
             } else if (vv.hasClass("dock-fill")) {
                 vv.dockType = "fill";
+            } else if (vv.hasClass("dock-hcenter")) {
+                vv.dockType = "hcenter";
+            } else if (vv.hasClass("dock-vcenter")) {
+                vv.dockType = "vcenter";
+            } else if (vv.hasClass("dock-center")) {
+                vv.dockType = "center";
             }
         }
 
         var width = 0;
         var height = 0;
 
-        switch (vv.dockType) {
-            case "top":
-            case "bottom":
-                width = right - left - vv.edgeCache.left - vv.edgeCache.right;
-                break;
-            case "left":
-            case "right":
-                height = bottom - top - vv.edgeCache.top - vv.edgeCache.bottom;
-                break;
-            case "fill":
-                width = right - left - vv.edgeCache.left - vv.edgeCache.right;
-                height = bottom - top - vv.edgeCache.top - vv.edgeCache.bottom;
+        if (vv.dockType == "top" || vv.dockType == "bottom" || vv.dockType == "fill") {
+            width = right - left - vv.edgeCache.left - vv.edgeCache.right;
+        }
+
+        if (vv.dockType == "left" || vv.dockType == "right" || vv.dockType == "fill") {
+            height = bottom - top - vv.edgeCache.top - vv.edgeCache.bottom;
+        }
+
+        if (vv.dockType == "hcenter" || vv.dockType == "center") {
+            left = (right - left - vv.width()) / 2;
+        }
+
+        if (vv.dockType == "vcenter" || vv.dockType == "center") {
+            top = (bottom - top - vv.height()) / 2.5;
         }
 
         switch (vv.dockType) {
@@ -128,6 +134,12 @@ function dockContents(idx, element) {
             case "fill":
                 vv.css({ "top": top, "left": left, "width": width, "height": height });
                 break;
+            case "hcenter":
+                vv.css({ "left": left });
+            case "vcenter":
+                vv.css({ "top": top });
+            case "center":
+                vv.css({ "left": left, "top": top });
         }
     }
 }
