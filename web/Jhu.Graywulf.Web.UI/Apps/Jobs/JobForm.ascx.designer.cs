@@ -10,132 +10,114 @@
 namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
     
     
-    public partial class JobDetails {
+    public partial class JobForm {
         
         /// <summary>
-        /// back control.
+        /// nameLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton back;
+        protected global::System.Web.UI.WebControls.Label nameLabel;
         
         /// <summary>
-        /// summary control.
+        /// name control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton summary;
+        protected global::System.Web.UI.WebControls.Label name;
         
         /// <summary>
-        /// query control.
+        /// dateCreatedLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton query;
+        protected global::System.Web.UI.WebControls.Label dateCreatedLabel;
         
         /// <summary>
-        /// copy control.
+        /// dateCreated control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton copy;
+        protected global::System.Web.UI.WebControls.Label dateCreated;
         
         /// <summary>
-        /// export control.
+        /// dateStartedLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton export;
+        protected global::System.Web.UI.WebControls.Label dateStartedLabel;
         
         /// <summary>
-        /// import control.
+        /// dateStarted control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton import;
+        protected global::System.Web.UI.WebControls.Label dateStarted;
         
         /// <summary>
-        /// error control.
+        /// dateFinishedLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton error;
+        protected global::System.Web.UI.WebControls.Label dateFinishedLabel;
         
         /// <summary>
-        /// cancel control.
+        /// dateFinished control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton cancel;
+        protected global::System.Web.UI.WebControls.Label dateFinished;
         
         /// <summary>
-        /// jobForm control.
+        /// statusLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.JobForm jobForm;
+        protected global::System.Web.UI.WebControls.Label statusLabel;
         
         /// <summary>
-        /// queryForm control.
+        /// status control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.QueryForm queryForm;
+        protected global::Jhu.Graywulf.Web.UI.Controls.JobStatus status;
         
         /// <summary>
-        /// exportForm control.
+        /// commentsLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.ExportForm exportForm;
+        protected global::System.Web.UI.WebControls.Label commentsLabel;
         
         /// <summary>
-        /// importForm control.
+        /// comments control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.ImportForm importForm;
-        
-        /// <summary>
-        /// copyForm control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.CopyForm copyForm;
-        
-        /// <summary>
-        /// errorForm control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.ErrorForm errorForm;
+        protected global::System.Web.UI.WebControls.Label comments;
     }
 }

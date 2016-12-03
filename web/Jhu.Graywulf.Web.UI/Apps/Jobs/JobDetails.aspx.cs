@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Security;
-using Jhu.Graywulf.Web.Security;
+using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Jobs.Query;
 using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Jobs
@@ -17,6 +15,43 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
         private Guid guid;
         private JobInstance jobInstance;
         private Job job;
+
+        #region Properties
+
+        protected string CurrentView
+        {
+            get { return (string)(ViewState["CurrentView"] ?? "summary"); }
+            set { ViewState["CurrentView"] = value; }
+        }
+
+        #endregion
+        #region Event handlers
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            guid = Guid.Parse(Request.QueryString["guid"]);
+
+            LoadJob();
+            UpdateForm();
+        }
+
+        protected void ToolbarButton_Command(object sender, CommandEventArgs e)
+        {
+            CurrentView = e.CommandName;
+            UpdateForm();
+        }
+
+        protected void Cancel_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(CancelJob.GetUrl(guid), false);
+        }
+
+        protected void Back_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(OriginalReferer, false);
+        }
+
+        #endregion
 
         private void LoadJob()
         {
@@ -34,83 +69,100 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
             job = JobFactory.CreateJobFromInstance(jobInstance);
         }
 
+        private void HideAllViews()
+        {
+            jobForm.Visible = false;
+            queryForm.Visible = false;
+            copyForm.Visible = false;
+            exportForm.Visible = false;
+            importForm.Visible = false;
+            errorForm.Visible = false;
+
+            summary.CssClass = "";
+            query.CssClass = "";
+            copy.CssClass = "";
+            export.CssClass = "";
+            import.CssClass = "";
+            error.CssClass = "";
+        }
+
         private void UpdateForm()
         {
-            Name.Text = job.Name;
-            Comments.Text = job.Comments;
-            DateCreated.Text = Util.DateFormatter.Format(job.DateCreated);
-            DateStarted.Text = Util.DateFormatter.Format(job.DateStarted);
-            DateFinished.Text = Util.DateFormatter.Format(job.DateFinished);
-            JobExecutionStatus.Status = job.Status;
-            Cancel.Enabled = job.CanCancel;
+            HideAllViews();
 
-            // Error
+            cancel.Enabled = job.CanCancel;
 
-            if (!String.IsNullOrEmpty(job.Error))
-            {
-                ErrorForm.Job = job;
-            }
-            else
-            {
-                errorTab.Hidden = true;
-            }
+            query.Visible = (job is QueryJob);
+            copy.Visible = (job is CopyJob);
+            export.Visible = (job is ExportJob);
+            import.Visible = (job is ImportJob);
+            error.Visible = !String.IsNullOrEmpty(job.Error);
 
-            // Query
-            if (job is QueryJob)
+            switch (CurrentView)
             {
-                queryForm.Job = (QueryJob)job;
+                case "summary":
+                    ShowSummary();
+                    break;
+                case "query":
+                    ShowQuery();
+                    break;
+                case "copy":
+                    ShowCopy();
+                    break;
+                case "export":
+                    ShowExport();
+                    break;
+                case "import":
+                    ShowImport();
+                    break;
+                case "error":
+                    ShowError();
+                    break;
+                default:
+                    break;
             }
-            else
-            {
-                queryTab.Hidden = true;
-            }
-
-            // Export
-            if (job is ExportJob)
-            {
-                exportForm.Job = (ExportJob)job;
-            }
-            else
-            {
-                exportTab.Hidden = true;
-            }
-
-            // Import
-            if (job is ImportJob)
-            {
-                importForm.Job = (ImportJob)job;
-            }
-            else
-            {
-                importTab.Hidden = true;
-            }
-
-            // Copy
-            if (job is CopyJob)
-            {
-                copyForm.Job = (CopyJob)job;
-            }
-            else
-            {
-                copyTab.Hidden = true;
-            }
-
-            // Set button actions
-
-            Back.OnClientClick = Util.UrlFormatter.GetClientRedirect(OriginalReferer);
         }
 
-        protected void Page_Load(object sender, EventArgs e)
+        private void ShowSummary()
         {
-            guid = Guid.Parse(Request.QueryString["guid"]);
-
-            LoadJob();
-            UpdateForm();
+            summary.CssClass = "selected";
+            jobForm.Visible = true;
+            jobForm.Job = this.job;
         }
 
-        protected void Cancel_Click(object sender, EventArgs e)
+        private void ShowQuery()
         {
-            Response.Redirect(CancelJob.GetUrl(guid), false);
+            query.CssClass = "selected";
+            queryForm.Visible = true;
+            queryForm.Job = (QueryJob)job;
+        }
+
+        private void ShowCopy()
+        {
+            copy.CssClass = "selected";
+            copyForm.Visible = true;
+            copyForm.Job = (CopyJob)job;
+        }
+
+        private void ShowExport()
+        {
+            export.CssClass = "selected";
+            exportForm.Visible = true;
+            exportForm.Job = (ExportJob)job;
+        }
+
+        private void ShowImport()
+        {
+            import.CssClass = "selected";
+            importForm.Visible = true;
+            importForm.Job = (ImportJob)job;
+        }
+
+        private void ShowError()
+        {
+            error.CssClass = "selected";
+            errorForm.Visible = true;
+            errorForm.Job = job;
         }
     }
 }

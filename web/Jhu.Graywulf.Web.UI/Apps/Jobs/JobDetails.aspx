@@ -1,96 +1,47 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true"
     Inherits="Jhu.Graywulf.Web.UI.Apps.Jobs.JobDetails" CodeBehind="JobDetails.aspx.cs" %>
 
+<%@ Register Src="JobForm.ascx" TagPrefix="jgwc" TagName="JobForm" %>
 <%@ Register Src="ErrorForm.ascx" TagPrefix="jgwc" TagName="ErrorForm" %>
 <%@ Register Src="QueryForm.ascx" TagPrefix="jgwc" TagName="QueryForm" %>
 <%@ Register Src="ExportForm.ascx" TagPrefix="jgwc" TagName="ExportForm" %>
 <%@ Register Src="ImportForm.ascx" TagPrefix="jgwc" TagName="ImportForm" %>
 <%@ Register Src="CopyForm.ascx" TagPrefix="jgwc" TagName="CopyForm" %>
 
-<asp:Content runat="server" ContentPlaceHolderID="head">
+<asp:Content runat="server" ContentPlaceHolderID="toolbar">
+    <asp:UpdatePanel runat="server">
+        <ContentTemplate>
+            <div class="toolbar">
+                <asp:LinkButton runat="server" ID="back" Text="back" CausesValidation="false"
+                    OnClick="Back_Click" />
+                <asp:LinkButton runat="server" ID="summary" Text="summary"
+                    CausesValidation="false" OnCommand="ToolbarButton_Command" CommandName="summary" />
+                <asp:LinkButton runat="server" ID="query" Text="query"
+                    CausesValidation="false" OnCommand="ToolbarButton_Command" CommandName="query" />
+                <asp:LinkButton runat="server" ID="copy" Text="details"
+                    CausesValidation="false" OnCommand="ToolbarButton_Command" CommandName="copy" />
+                <asp:LinkButton runat="server" ID="export" Text="details"
+                    CausesValidation="false" OnCommand="ToolbarButton_Command" CommandName="export" />
+                <asp:LinkButton runat="server" ID="import" Text="details"
+                    CausesValidation="false" OnCommand="ToolbarButton_Command" CommandName="import" />
+                <asp:LinkButton runat="server" ID="error" Text="error"
+                    CausesValidation="false" OnCommand="ToolbarButton_Command" CommandName="error" />
+                <asp:LinkButton runat="server" ID="cancel" Text="cancel" CausesValidation="false"
+                    OnClick="Cancel_Click" />
+            </div>
+        </ContentTemplate>
+    </asp:UpdatePanel>
 </asp:Content>
+
 <asp:Content ID="Content2" ContentPlaceHolderID="middle" runat="Server">
-    <div class="dock-top">
-        <jgwc:MultiViewTabHeader runat="server" ID="tabs" MultiViewID="multiView" />
-    </div>
-    <div class="TabFrame dock-fill dock-container">
-        <asp:MultiView runat="server" ID="multiView" ActiveViewIndex="0">
-            <jgwc:TabView runat="server" ID="summaryTab" Text="Summary">
-                <jgwuc:Form runat="Server" Text="Job details" SkinID="JobDetails">
-                    <FormTemplate>
-                        <table class="FormTable">
-                            <tr>
-                                <td class="FormLabel">
-                                    <asp:Label ID="Label1" runat="server" Text="Job ID:"></asp:Label>
-                                </td>
-                                <td>
-                                    <asp:Label ID="Name" runat="server" Text="Label"></asp:Label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="FormLabel">
-                                    <asp:Label ID="Label3" runat="server" Text="Submitted:"></asp:Label>
-                                </td>
-                                <td>
-                                    <asp:Label ID="DateCreated" runat="server" Text="Label"></asp:Label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="FormLabel">
-                                    <asp:Label ID="Label6" runat="server" Text="Started:"></asp:Label>
-                                </td>
-                                <td>
-                                    <asp:Label ID="DateStarted" runat="server" Text="Label"></asp:Label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="FormLabel">
-                                    <asp:Label ID="Label7" runat="server" Text="Finished:"></asp:Label>
-                                </td>
-                                <td>
-                                    <asp:Label ID="DateFinished" runat="server" Text="Label"></asp:Label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="FormLabel">
-                                    <asp:Label ID="Label4" runat="server" Text="Status:"></asp:Label>
-                                </td>
-                                <td>
-                                    <jgwuc:JobStatus runat="server" ID="JobExecutionStatus" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="FormLabel">
-                                    <asp:Label ID="Label2" runat="server" Text="Comments:"></asp:Label>
-                                </td>
-                                <td>
-                                    <asp:Label ID="Comments" runat="server" Text="Label"></asp:Label>
-                                </td>
-                            </tr>
-                        </table>
-                    </FormTemplate>
-                    <ButtonsTemplate>
-                        <asp:Button runat="Server" ID="Cancel" Text="Cancel job" CssClass="FormButton"
-                            OnClick="Cancel_Click" />
-                        <asp:Button runat="Server" ID="Back" Text="Back" CssClass="FormButton" />
-                    </ButtonsTemplate>
-                </jgwuc:Form>
-            </jgwc:TabView>
-            <jgwc:TabView ID="queryTab" runat="server" Text="Query">
-                <jgwc:QueryForm runat="server" ID="queryForm" />
-            </jgwc:TabView>
-            <jgwc:TabView ID="exportTab" runat="server" Text="Export">
-                <jgwc:ExportForm runat="server" ID="exportForm" />
-            </jgwc:TabView>
-            <jgwc:TabView ID="importTab" runat="server" Text="Import">
-                <jgwc:ImportForm runat="server" ID="importForm" />
-            </jgwc:TabView>
-            <jgwc:TabView ID="copyTab" runat="server" Text="Copy">
-                <jgwc:CopyForm runat="server" ID="copyForm" />
-            </jgwc:TabView>
-            <jgwc:TabView ID="errorTab" runat="server" Text="Error">
-                <jgwc:ErrorForm runat="server" ID="ErrorForm" />
-            </jgwc:TabView>
-        </asp:MultiView>
-    </div>
+    <asp:UpdatePanel runat="server" class="dock-fill dock-container">
+        <ContentTemplate>
+            <jgwc:JobForm runat="server" ID="jobForm" />
+            <jgwc:QueryForm runat="server" ID="queryForm" />
+            <jgwc:ExportForm runat="server" ID="exportForm" />
+            <jgwc:ImportForm runat="server" ID="importForm" />
+            <jgwc:CopyForm runat="server" ID="copyForm" />
+            <jgwc:ErrorForm runat="server" ID="errorForm" />
+        </ContentTemplate>
+    </asp:UpdatePanel>
 </asp:Content>

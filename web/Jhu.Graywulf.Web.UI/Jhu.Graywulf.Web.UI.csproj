@@ -185,6 +185,13 @@
     <Compile Include="Apps\Jobs\ImportList.ascx.designer.cs">
       <DependentUpon>ImportList.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Jobs\JobForm.ascx.cs">
+      <DependentUpon>JobForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\JobForm.ascx.designer.cs">
+      <DependentUpon>JobForm.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Apps\Jobs\JobList.ascx.cs">
       <DependentUpon>JobList.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -555,6 +562,7 @@
     <Content Include="Apps\Jobs\CopyList.ascx" />
     <Content Include="Apps\Jobs\ExportList.ascx" />
     <Content Include="Apps\Jobs\ImportList.ascx" />
+    <Content Include="Apps\Jobs\JobForm.ascx" />
     <Content Include="Apps\Jobs\JobList.ascx" />
     <Content Include="Apps\Jobs\CancelJob.aspx" />
     <Content Include="Apps\Jobs\Default.aspx" />
