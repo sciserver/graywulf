@@ -144,7 +144,10 @@ function dockContents(idx, element) {
     }
 }
 
-Sys.WebForms.PageRequestManager.getInstance().add_pageLoaded(resizePanels);
+function pageLoad() {
+    resizePanels();
+    $(".dock-container").each(dockContents);
+}
 
 $(document).ready(function () {
     $(window).resize(function () {
