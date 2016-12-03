@@ -128,7 +128,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
         protected void Back_Click(object sender, EventArgs e)
         {
-            Response.Redirect(Jhu.Graywulf.Web.UI.Apps.MyDB.Tables.GetUrl(), false);
+            Response.Redirect(Jhu.Graywulf.Web.UI.Apps.Jobs.Default.GetUrl(), false);
         }
 
         #endregion

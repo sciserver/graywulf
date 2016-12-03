@@ -21,8 +21,7 @@ table.DetailsForm {
 }
 
 div.FormFrame {
-    border: 1px solid #000000;
-    border-radius: 8px;
+    border: 1px solid #C0C0C0;
     box-shadow: 0px 12px 6px -6px #c0c0c0;
     padding: 8px;
 }

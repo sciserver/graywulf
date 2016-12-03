@@ -28,8 +28,10 @@
 <jgwuc:Form runat="server" SkinID="Welcome" ImageUrl="Icons/welcome.png" />
 <jgwuc:Form runat="server" SkinID="Schema" ImageUrl="Icons/schemabrowser.png" />
 <jgwuc:Form runat="server" SkinID="MyDb" ImageUrl="Icons/mydb.png" />
+<jgwuc:Form runat="server" SkinID="CopyTable" ImageUrl="Icons/copytable.png" />
 <jgwuc:Form runat="server" SkinID="ImportTable" ImageUrl="Icons/importtable.png" />
 <jgwuc:Form runat="server" SkinID="ExportTable" ImageUrl="Icons/exporttable.png" />
+<jgwuc:Form runat="server" SkinID="PrimaryKey" ImageUrl="Icons/primarykey.png" />
 <jgwuc:Form runat="server" SkinID="JobDetails" ImageUrl="Icons/job.png" />
 <jgwuc:Form runat="server" SkinID="QueryJobDetails" ImageUrl="Icons/job.png" />
 <jgwuc:Form runat="server" SkinID="ExportJobDetails" ImageUrl="Icons/job.png" />

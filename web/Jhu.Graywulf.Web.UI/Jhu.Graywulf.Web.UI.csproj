@@ -620,6 +620,7 @@
     <Content Include="App_Themes\Basic\Icons\activateuser.png" />
     <Content Include="App_Themes\Basic\Icons\api.png" />
     <Content Include="App_Themes\Basic\Icons\canceljob.png" />
+    <Content Include="App_Themes\Basic\Icons\copytable.png" />
     <Content Include="App_Themes\Basic\Icons\droptable.png" />
     <Content Include="App_Themes\Basic\Icons\email.png" />
     <Content Include="App_Themes\Basic\Icons\emailsent.png" />
@@ -628,6 +629,7 @@
     <Content Include="App_Themes\Basic\Icons\importtable.png" />
     <Content Include="App_Themes\Basic\Icons\job.png" />
     <Content Include="App_Themes\Basic\Icons\mydb.png" />
+    <Content Include="App_Themes\Basic\Icons\primarykey.png" />
     <Content Include="App_Themes\Basic\Icons\renametable.png" />
     <Content Include="App_Themes\Basic\Icons\resetpassword.png" />
     <Content Include="App_Themes\Basic\Icons\schemabrowser.png" />

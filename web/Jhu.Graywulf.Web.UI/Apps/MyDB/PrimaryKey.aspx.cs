@@ -73,81 +73,90 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
         protected void Ok_Click(object sender, EventArgs e)
         {
-            var cg = new SqlServerCodeGenerator();
-            string sql = "";
-            string columnname = null;
-            var comments = String.Format("Create primary key on {0}", table.DisplayName);
-
-            switch (primaryKeyType.SelectedValue)
+            if (IsValid)
             {
-                case "autogen":
-                    // Add identity column
-                    columnname = "__ID";
+                var cg = new SqlServerCodeGenerator();
+                string sql = "";
+                string columnname = null;
+                var comments = String.Format("Create primary key on {0}", table.DisplayName);
 
-                    var column = new Column(table)
-                    {
-                        ColumnName = columnname,
-                        DataType = DataTypes.SqlBigInt,
-                        IsIdentity = true,
-                    };
-                    column.DataType.IsNullable = false;
-                    table.Columns.TryAdd(column.Name, column);
+                switch (primaryKeyType.SelectedValue)
+                {
+                    case "autogen":
+                        // Add identity column
+                        columnname = "__ID";
 
-                    sql = cg.GenerateAddColumnScript(table, new[] { column });
-                    sql += Environment.NewLine + "GO" + Environment.NewLine;
+                        var column = new Column(table)
+                        {
+                            ColumnName = columnname,
+                            DataType = DataTypes.SqlBigInt,
+                            IsIdentity = true,
+                        };
+                        column.DataType.IsNullable = false;
+                        table.Columns.TryAdd(column.Name, column);
 
-                    break;
-                case "column":
-                    // Select column
-                    columnname = columnList.SelectedValue;
-                    break;
-                default:
-                    throw new NotImplementedException();
+                        sql = cg.GenerateAddColumnScript(table, new[] { column });
+                        sql += Environment.NewLine + "GO" + Environment.NewLine;
+
+                        break;
+                    case "column":
+                        // Select column
+                        columnname = columnList.SelectedValue;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                var pk = new Index(table)
+                {
+                    IsPrimaryKey = true,
+                    IsClustered = true,
+                    IsUnique = true,
+                    IsCompressed = true,
+                };
+
+                pk.GenerateIndexName(null);
+
+                var pkc = new IndexColumn(table.Columns[columnname])
+                {
+                    KeyOrdinal = 0,
+                };
+
+                pk.Columns.TryAdd(pkc.Name, pkc);
+                table.Indexes.TryAdd(pk.IndexName, pk);
+
+                sql += cg.GenerateCreatePrimaryKeyScript(table);
+
+                ScheduleScriptJob(sql, comments);
+
+                primaryKeyForm.Visible = false;
+                jobResultsForm.Visible = true;
             }
-
-            var pk = new Index(table)
-            {
-                IsPrimaryKey = true,
-                IsClustered = true,
-                IsUnique = true,
-                IsCompressed = true,
-            };
-
-            pk.GenerateIndexName(null);
-
-            var pkc = new IndexColumn(table.Columns[columnname])
-            {
-                KeyOrdinal = 0,
-            };
-
-            pk.Columns.TryAdd(pkc.Name, pkc);
-            table.Indexes.TryAdd(pk.IndexName, pk);
-
-            sql += cg.GenerateCreatePrimaryKeyScript(table);
-
-            ScheduleScriptJob(sql, comments);
-
-            primaryKeyForm.Visible = false;
-            jobResultsForm.Visible = true;
         }
-
-
-
+        
         protected void DropKey_Click(object sender, EventArgs e)
         {
-            var cg = new SqlServerCodeGenerator();
-            var sql = cg.GenerateDropPrimaryKeyScript(table);
-            var comments = String.Format("Drop primary key on {0}", table.DisplayName);
+            if (IsValid)
+            {
+                var cg = new SqlServerCodeGenerator();
+                var sql = cg.GenerateDropPrimaryKeyScript(table);
+                var comments = String.Format("Drop primary key on {0}", table.DisplayName);
 
-            ScheduleScriptJob(sql, comments);
+                ScheduleScriptJob(sql, comments);
 
-            primaryKeyForm.Visible = false;
-            jobResultsForm.Visible = true;
+                primaryKeyForm.Visible = false;
+                jobResultsForm.Visible = true;
+            }
         }
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
             Response.Redirect(OriginalReferer, false);
+        }
+
+        protected void Back_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(Jhu.Graywulf.Web.UI.Apps.Jobs.Default.GetUrl(), false);
         }
 
         protected void PrimaryKeyType_SelectedIndexChanged(object sender, EventArgs e)

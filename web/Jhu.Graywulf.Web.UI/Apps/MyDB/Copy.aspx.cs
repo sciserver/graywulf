@@ -36,9 +36,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 ScheduleCopyJob();
                 jobResultsForm.Visible = true;
                 copyForm.Visible = false;
+                jobResultsForm.Visible = true;
             }
-
-            Response.Redirect(Tables.GetUrl(), false);
         }
 
         protected void Cancel_Click(object sender, EventArgs e)
@@ -48,7 +47,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
         protected void Back_Click(object sender, EventArgs e)
         {
-            Response.Redirect(Jhu.Graywulf.Web.UI.Apps.MyDB.Tables.GetUrl(), false);
+            Response.Redirect(Jhu.Graywulf.Web.UI.Apps.Jobs.Default.GetUrl(), false);
         }
 
         private void ScheduleCopyJob()
