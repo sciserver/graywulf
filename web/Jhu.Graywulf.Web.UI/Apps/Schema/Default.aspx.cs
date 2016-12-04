@@ -288,9 +288,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             if (dbobj != null)
             {
                 // Display details
-                //DetailsPanel.DatabaseObjectID = dbobjid;
-                //DetailsPanel.Visible = true;
-
                 SelectedSchemaObject = dbobjid;
             }
 
@@ -305,17 +302,17 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
             if (dbobj == null)
             {
-                summary.Enabled = false;
-                columns.Enabled = false;
-                indexes.Enabled = false;
-                parameters.Enabled = false;
+                summary.Visible = false;
+                columns.Visible = false;
+                indexes.Visible = false;
+                parameters.Visible = false;
             }
             else
             {
-                summary.Enabled = true;
-                columns.Enabled = (dbobj is IColumns);
-                indexes.Enabled = (dbobj is IIndexes);
-                parameters.Enabled = (dbobj is IParameters);
+                summary.Visible = true;
+                columns.Visible = (dbobj is IColumns);
+                indexes.Visible = (dbobj is IIndexes);
+                parameters.Visible = (dbobj is IParameters);
 
                 switch (CurrentView)
                 {

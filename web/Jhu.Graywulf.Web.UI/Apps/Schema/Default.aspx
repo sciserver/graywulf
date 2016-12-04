@@ -50,7 +50,7 @@
                     <asp:DropDownList ID="ObjectList" runat="server" AutoPostBack="True" OnSelectedIndexChanged="ObjectList_SelectedIndexChanged">
                     </asp:DropDownList>
                 </div>
-                <asp:LinkButton runat="server" ID="summary" Text="summary" 
+                <asp:LinkButton runat="server" ID="summary" Text="summary"
                     OnCommand="ToolbarButton_Command" CommandName="summary" />
                 <asp:LinkButton runat="server" ID="columns" Text="columns"
                     OnCommand="ToolbarButton_Command" CommandName="columns" />
@@ -78,12 +78,10 @@
                         CssClass="FormButton" />
                 </p>
             </asp:Panel>
-            <div class="dock-fill dock-scroll">
-                <list:SummaryForm ID="summaryForm" runat="server" Visible="false" />
-                <list:ColumnList ID="columnList" runat="server" Visible="false" />
-                <list:ParameterList ID="parameterList" runat="server" Visible="false" />
-                <list:IndexList ID="indexList" runat="server" Visible="false" />
-            </div>
+            <list:SummaryForm ID="summaryForm" runat="server" Visible="false" />
+            <list:ColumnList ID="columnList" runat="server" Visible="false" />
+            <list:ParameterList ID="parameterList" runat="server" Visible="false" />
+            <list:IndexList ID="indexList" runat="server" Visible="false" />
             <jgwuc:Form runat="server" ID="introForm" SkinID="Schema" Text="Getting started with the schema browser">
                 <FormTemplate>
                     <ul>

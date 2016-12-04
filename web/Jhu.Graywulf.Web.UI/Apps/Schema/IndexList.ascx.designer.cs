@@ -19,6 +19,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.MultiSelectGridView listView;
+        protected global::Jhu.Graywulf.Web.Controls.MultiSelectListView listView;
     }
 }
