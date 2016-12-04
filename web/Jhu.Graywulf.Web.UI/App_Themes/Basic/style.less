@@ -1,0 +1,451 @@
+﻿@colorBlack: #000000;
+@colorDarkest: #333333;
+@colorDarker: #808080;
+@colorDark: #D0D0D0;
+@colorLight: #E0E0E0;
+@colorLighter: #F0F0F0;
+@colorWhite: #FFFFFF;
+
+@gutter: 8px;
+
+@colorMenuHover: #800000;
+@colorToolbarHover: #000080;
+@colorFooterHover: #FFFF00;
+
+.font() {
+    font-family: Calibri, Arial, Helvetica, Sans-Serif;
+}
+
+.menuFont() {
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: right;
+}
+
+.toolbarFont() {
+    font-size: 12px;
+    font-weight: normal;
+    text-decoration: none;
+    text-align: left;
+}
+
+.footerFont() {
+    text-align: center;
+    font-size: 12px;
+}
+
+/* Layout */
+
+html, body {
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+    min-width: 100%;
+    overflow: hidden;
+}
+
+body {
+    margin: 0px;
+    padding: 0px;
+    background-color: @colorWhite;
+    .font();
+}
+
+.dock-scroll {
+    overflow-y: auto;
+    padding-right: @gutter;
+    margin-right: 0px;
+}
+
+table.Layout {
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+    border-collapse: collapse;
+}
+
+table.Headline, table.Footline, div.LayoutFootline {
+    background-color: @colorDarkest;
+    color: @colorWhite;
+}
+
+td.HeadlineLeft {
+    height: 22px;
+    padding: 0px;
+}
+
+.HeadlineLogo {
+    min-width: 300px;
+}
+
+td.HeadlineUser {
+    width: auto;
+}
+
+div.LayoutMenu {
+    padding: 0px;
+}
+
+div.LayoutToolbar {
+}
+
+td.Footline, div.LayoutFootline {
+    height: 18px;
+    padding-top: 3px;
+    .footerFont();
+}
+
+td.Footline a, div.LayoutFootline a {
+    color: @colorWhite;
+    text-decoration: none;
+}
+
+td.Footline a:hover, div.LayoutFootline a:hover {
+    color: @colorFooterHover;
+    text-decoration: underline;
+}
+
+div.LayoutContent {
+    margin: @gutter;
+    padding: 0px;
+    background-color: @colorWhite;
+    color: @colorBlack;
+}
+
+#PlotCanvasContainer {
+    position: relative;
+}
+
+#refreshCanvasButton {
+    position: absolute;
+    left: 22px;
+    top: 22px;
+}
+
+/* Menu and toolbar */
+
+.bar(@backgroundColor) {
+    display: flex;
+    background-color: @backgroundColor;
+    width: auto;
+    padding-left: @gutter;
+    padding-top: @gutter;
+}
+
+.barElement(@width, @height, @backgroundColor, @border, @color) {
+    display: inline-block;
+    vertical-align: top;
+    background-color: @backgroundColor;
+    color: @color;
+    border-bottom: solid @gutter @border;
+    width: @width;
+    min-width: @width;
+    margin-right: @gutter;
+}
+
+.barButton(@width, @height, @backgroundColor, @border, @color) {
+    .barElement(@width, @height, @backgroundColor, @border, @color);
+    padding-left: @gutter;
+    padding-right: @gutter;
+    padding-bottom: @gutter;
+    padding-top: @height - 32;
+}
+
+.barBox(@width, @height, @backgroundColor, @border, @color) {
+    .barElement(@width, @height, @backgroundColor, @border, @color);
+    height: @height;
+    box-sizing: content-box;
+}
+
+/* Menu */
+
+div.menu {
+    .bar(@colorLight);
+}
+
+div.menu a, div.menu .span {
+    .barButton(120px, 64px, @colorDarker, @colorLight, @colorWhite);
+    .menuFont();
+}
+
+div.menu a.selected {
+    background-color: @colorLighter;
+    border-bottom-color: @colorLighter;
+    color: @colorBlack;
+}
+
+div.menu a:hover {
+    background-color: @colorMenuHover;
+    color: @colorWhite;
+}
+
+div.menu .span {
+    width: 100%;
+}
+
+/* Toolbar */
+
+div.toolbar {
+    .bar(@colorLighter);
+}
+
+div.toolbar div {
+    .barBox(120px, 38px, @colorDark, @colorLighter, @colorBlack);
+    .toolbarFont();
+}
+
+div.toolbar a {
+    .barButton(120px, 42px, @colorDark, @colorLighter, @colorBlack);
+    .menuFont();
+}
+
+div.toolbar a.selected {
+    background-color: @colorWhite;
+    border-bottom-color: @colorWhite;
+    color: @colorBlack;
+}
+
+div.toolbar a:hover {
+    background-color: @colorToolbarHover;
+    color: @colorWhite;
+}
+
+div.toolbar a.aspNetDisabled {
+    background-color: @colorLighter;
+    border-bottom-color: @colorLighter;
+    color: @colorDark;
+    cursor: default;
+}
+
+div.toolbar .span {
+    width: 100%;
+}
+
+div.toolbar div input[type="text"],
+div.toolbar div select {
+    .toolbarFont();
+    width: 100%;
+    border: 2px solid @colorDark;
+}
+
+/* Message bar */
+
+div.gw-messagebar {
+    .font();
+    font-size: 14px;
+    margin-top: @gutter;
+    margin-left: @gutter;
+    margin-right: @gutter;
+    padding: @gutter;
+    background-color: #f1ec98;
+}
+
+span.gw-messagebar-button {
+    float: right;
+    cursor: pointer;
+    border-left: solid 8px transparent;
+    border-right: solid 8px transparent;
+}
+
+/* Lists */
+
+.gw-list-item() {
+    .font();
+    width: 100%;
+    cursor: default;
+    margin: @gutter / 2;
+    padding: @gutter / 2;
+}
+
+@gw-list-border: solid 1px @colorBlack;
+
+div.gw-list-frame-top {
+    border-left: @gw-list-border;
+    border-right: @gw-list-border;
+    border-top: @gw-list-border;
+    background-color: @colorDark;
+}
+
+div.gw-list-frame {
+    border-left: @gw-list-border;
+    border-right: @gw-list-border;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+div.gw-list-frame-bottom {
+    border-left: @gw-list-border;
+    border-right: @gw-list-border;
+    border-bottom: @gw-list-border;
+    background-color: @colorDark;
+}
+
+div.gw-list-header,
+div.gw-list-footer {
+    .gw-list-item();
+    .font();
+    font-weight: bold;
+}
+
+div.gw-list-item {
+    .font();
+    .gw-list-item();
+}
+
+div.gw-list-item:hover {
+    background-color: @colorLighter;
+}
+
+div.gw-list-item-selected {
+    background-color: @colorLight;
+}
+
+div.gw-list-row {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+div.gw-list-item div span,
+div.gw-list-header div span {
+    display: inline-block;
+    flex-shrink: 0;
+    flex-grow: 0;
+    white-space: nowrap;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+span.gw-list-span {
+    text-align: left;
+    flex-shrink: 1 !important;
+    flex-grow: 1 !important;
+}
+
+span.gw-list-multiline-span {
+    text-align: left;
+    flex-shrink: 1 !important;
+    flex-grow: 1 !important;
+    white-space: normal !important;
+}
+
+div.gw-list-row span input {
+    margin: 0px;
+}
+
+span.gw-details-button {
+    width: 32px;
+    text-align: center;
+    cursor: pointer;
+}
+
+/* Box list */
+
+div.gw-box-frame-top {
+    border-top: @gw-list-border;
+    border-left: @gw-list-border;
+    border-right: @gw-list-border;
+    background-color: @colorDark;
+}
+
+div.gw-box-frame {
+    border-left: @gw-list-border;
+    border-right: @gw-list-border;
+    border-bottom: @gw-list-border;
+    margin-bottom: @gutter;
+}
+
+.gw-box-item() {
+    .font();
+    width: 100%;
+    cursor: default;
+    padding: @gutter;
+}
+
+div.gw-box-header {
+    .gw-box-item();
+    font-weight: bold;
+}
+
+div.gw-box-item {
+    .gw-box-item();
+}
+
+div.gw-box-row {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+div.gw-box-item div span,
+div.gw-box-header div span {
+    display: inline-block;
+    flex-shrink: 0;
+    flex-grow: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+span.gw-box-span {
+    text-align: left;
+    flex-shrink: 1 !important;
+    flex-grow: 1 !important;
+}
+
+
+/*
+div.ToolbarElement {
+    .toolbarButton(@colorWhite, @colorDark, @colorBlack);
+    padding: 0px;
+    vertical-align: bottom;
+}
+
+div.ToolbarElement, div.ToolbarElement label {
+    .toolbarFont();
+    height: 38px;
+    text-align: left;
+    text-decoration: none;
+}
+
+a.ToolbarButton {
+    .toolbarButton(@colorWhite, @colorDarker, @colorWhite);
+    .menuFont();
+}
+
+a.ToolbarButton:hover {
+    background-color: @colorToolbarHover;
+    color: @colorWhite;
+}
+
+a.ToolbarTab {
+    .toolbarButton(@colorWhite, @colorDark, @colorBlack);
+    .menuFont();
+}
+
+a.ToolbarTabSelected {
+    .toolbarButton(@colorWhite, @colorWhite, @colorBlack);
+    .menuFont();
+}
+
+a.ToolbarTab:hover, a.ToolbarTabSelected:hover {
+    background-color: @colorToolbarHover;
+    color: @colorWhite;
+}
+    */
+/* Message box */
+/*
+div.ToolbarMessage {
+    width: auto;
+    height: 36px;
+    vertical-align: middle;
+    padding: 8px;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    background-color: #F0F0C0;
+    color: #000000;
+}
+
+div.ToolbarMessageError {
+    color: #FF0000;
+}
+*/
