@@ -26,13 +26,12 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            UpdateForm();
+            //UpdateForm();
         }
 
         protected void Page_LoadComplete(object sender, EventArgs e)
         {
-            var list = GetCurrentList().List;
-            list.DataSource = JobDataSource;
+            jobList.List.DataSource = JobDataSource;
         }
 
         protected void Page_PreRender(object sender, EventArgs e)
@@ -43,7 +42,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
         protected void ToolbarButton_Command(object sender, CommandEventArgs e)
         {
             CurrentView = e.CommandName;
-            UpdateForm();
+            //UpdateForm();
         }
 
         protected void JobDataSource_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
@@ -80,12 +79,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
 
         protected void JobSelected_ServerValidate(object source, ServerValidateEventArgs args)
         {
-            var listview = GetCurrentList().List;
-            args.IsValid = listview.SelectedDataKeys.Count > 0;
+            args.IsValid = jobList.List.SelectedDataKeys.Count > 0;
         }
-
         protected void Button_Command(object sender, CommandEventArgs e)
         {
+            /*
             if (IsValid)
             {
                 var listview = GetCurrentList().List;
@@ -103,11 +101,12 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
                         throw new NotImplementedException();
                 }
             }
+            */
         }
 
         #endregion
 
-        private IJobList GetCurrentList()
+        /*private IJobList GetCurrentList()
         {
             switch (CurrentView)
             {
@@ -124,8 +123,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
                 default:
                     throw new NotImplementedException();
             }
-        }
+        }*/
 
+            /*
         private void HideAllViews()
         {
             jobList.Visible = false;
@@ -139,8 +139,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
             copy.CssClass = "";
             export.CssClass = "";
             import.CssClass = "";
-        }
+        }*/
 
+            /*
         private void UpdateForm()
         {
             HideAllViews();
@@ -166,7 +167,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
                     throw new NotImplementedException();
             }
         }
+        */
 
+        /*
         private void ShowAll()
         {
             jobList.Visible = true;
@@ -196,7 +199,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
             importList.Visible = true;
             import.CssClass = "selected";
         }
-
-        
+        */
     }
 }

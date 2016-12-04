@@ -1,87 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Drawing;
 using System.Web.UI.WebControls;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Controls
 {
-    public class JobStatus : WebControl
+    public class JobStatus : Label
     {
-        private Jhu.Graywulf.Web.Api.V1.JobStatus status;
-
         public Jhu.Graywulf.Web.Api.V1.JobStatus Status
         {
-            get { return status; }
-            set { status = value; }
+            get { return (Api.V1.JobStatus)(ViewState["Status"] ?? Api.V1.JobStatus.Unknown); }
+            set { ViewState["Status"] = value; }
+        }
+        
+        private void UpdateControl()
+        {
+            this.Text = Status.ToString().ToLower();
+            this.BackColor = GetStatusBackColor();
+            this.ForeColor = GetStatusForeColor();
         }
 
-        public JobStatus()
+        private Color GetStatusBackColor()
         {
-            InitializeMembers();
-        }
-
-        private void InitializeMembers()
-        {
-            this.status = Jhu.Graywulf.Web.Api.V1.JobStatus.Unknown;
-        }
-
-        private string GetStatusBackColor()
-        {
-            switch (status)
+            switch (Status)
             {
                 case Jhu.Graywulf.Web.Api.V1.JobStatus.Waiting:
-                    return "yellow";
+                    return Color.Yellow;
                 case Jhu.Graywulf.Web.Api.V1.JobStatus.Executing:
-                    return "green";
+                    return Color.Green;
                 case Jhu.Graywulf.Web.Api.V1.JobStatus.Completed:
-                    return "blue";
+                    return Color.Blue;
                 case Jhu.Graywulf.Web.Api.V1.JobStatus.Canceled:
-                    return "black";
+                    return Color.Black;
                 case Jhu.Graywulf.Web.Api.V1.JobStatus.Failed:
                 case Jhu.Graywulf.Web.Api.V1.JobStatus.TimedOut:
-                    return "red";
+                    return Color.Red;
                 case Jhu.Graywulf.Web.Api.V1.JobStatus.Unknown:
                 default:
-                    return "";
+                    return Color.White;
             }
         }
 
-        private string GetStatusForeColor()
+        private Color GetStatusForeColor()
         {
-            switch (status)
+            switch (Status)
             {
                 case Jhu.Graywulf.Web.Api.V1.JobStatus.Waiting:
-                    return "black";
+                    return Color.Black;
                 case Jhu.Graywulf.Web.Api.V1.JobStatus.Executing:
-                    return "white";
+                    return Color.White;
                 case Jhu.Graywulf.Web.Api.V1.JobStatus.Completed:
-                    return "white";
+                    return Color.White;
                 case Jhu.Graywulf.Web.Api.V1.JobStatus.Canceled:
-                    return "white";
+                    return Color.White;
                 case Jhu.Graywulf.Web.Api.V1.JobStatus.Failed:
                 case Jhu.Graywulf.Web.Api.V1.JobStatus.TimedOut:
-                    return "white";
+                    return Color.White;
                 case Jhu.Graywulf.Web.Api.V1.JobStatus.Unknown:
                 default:
-                    return "";
+                    return Color.Black;
             }
         }
 
         protected override void Render(System.Web.UI.HtmlTextWriter writer)
         {
-            AddAttributesToRender(writer);
-
-            writer.AddStyleAttribute("background-color", GetStatusBackColor());
-            writer.AddStyleAttribute("color", GetStatusForeColor());
-
-            writer.RenderBeginTag("span");
-
-            writer.Write(status.ToString().ToLower());
-
-            writer.RenderEndTag();
+            UpdateControl();
+            base.Render(writer);
         }
     }
 }

@@ -67,33 +67,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
         protected global::System.Web.UI.WebControls.ObjectDataSource JobDataSource;
         
         /// <summary>
-        /// JobSelectedValidator control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator JobSelectedValidator;
-        
-        /// <summary>
-        /// Details control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Details;
-        
-        /// <summary>
-        /// Cancel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Cancel;
-        
-        /// <summary>
         /// jobList control.
         /// </summary>
         /// <remarks>
@@ -101,41 +74,5 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.AllList jobList;
-        
-        /// <summary>
-        /// queryList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.QueryList queryList;
-        
-        /// <summary>
-        /// copyList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.CopyList copyList;
-        
-        /// <summary>
-        /// exportList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.ExportList exportList;
-        
-        /// <summary>
-        /// importList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.ImportList importList;
     }
 }

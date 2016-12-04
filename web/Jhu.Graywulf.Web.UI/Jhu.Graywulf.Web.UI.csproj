@@ -163,27 +163,12 @@
     <Compile Include="Apps\Docs\Docs.master.designer.cs">
       <DependentUpon>Docs.master</DependentUpon>
     </Compile>
-    <Compile Include="Apps\Jobs\CopyList.ascx.cs">
-      <DependentUpon>CopyList.ascx</DependentUpon>
+    <Compile Include="Apps\Jobs\ExportRow.ascx.cs">
+      <DependentUpon>ExportRow.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Apps\Jobs\CopyList.ascx.designer.cs">
-      <DependentUpon>CopyList.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Apps\Jobs\ExportList.ascx.cs">
-      <DependentUpon>ExportList.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Apps\Jobs\ExportList.ascx.designer.cs">
-      <DependentUpon>ExportList.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Apps\Jobs\IJobList.cs" />
-    <Compile Include="Apps\Jobs\ImportList.ascx.cs">
-      <DependentUpon>ImportList.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Apps\Jobs\ImportList.ascx.designer.cs">
-      <DependentUpon>ImportList.ascx</DependentUpon>
+    <Compile Include="Apps\Jobs\ExportRow.ascx.designer.cs">
+      <DependentUpon>ExportRow.ascx</DependentUpon>
     </Compile>
     <Compile Include="Apps\Jobs\JobForm.ascx.cs">
       <DependentUpon>JobForm.ascx</DependentUpon>
@@ -255,13 +240,6 @@
     </Compile>
     <Compile Include="Apps\Jobs\QueryForm.ascx.designer.cs">
       <DependentUpon>QueryForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Apps\Jobs\QueryList.ascx.cs">
-      <DependentUpon>QueryList.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Apps\Jobs\QueryList.ascx.designer.cs">
-      <DependentUpon>QueryList.ascx</DependentUpon>
     </Compile>
     <Compile Include="Apps\MyDB\App.cs" />
     <Compile Include="Apps\MyDB\CommentsForm.ascx.cs">
@@ -559,9 +537,7 @@
     <Content Include="Apps\Docs\Default.aspx" />
     <Content Include="Apps\Docs\Docs.master" />
     <Content Include="Apps\Docs\Web.config" />
-    <Content Include="Apps\Jobs\CopyList.ascx" />
-    <Content Include="Apps\Jobs\ExportList.ascx" />
-    <Content Include="Apps\Jobs\ImportList.ascx" />
+    <Content Include="Apps\Jobs\ExportRow.ascx" />
     <Content Include="Apps\Jobs\JobForm.ascx" />
     <Content Include="Apps\Jobs\JobList.ascx" />
     <Content Include="Apps\Jobs\CancelJob.aspx" />
@@ -572,7 +548,6 @@
     <Content Include="Apps\Jobs\ImportForm.ascx" />
     <Content Include="Apps\Jobs\JobDetails.aspx" />
     <Content Include="Apps\Jobs\QueryForm.ascx" />
-    <Content Include="Apps\Jobs\QueryList.ascx" />
     <Content Include="Apps\Jobs\Web.config" />
     <Content Include="Apps\MyDB\CommentsForm.ascx" />
     <Content Include="Apps\MyDB\CompressionForm.ascx" />
@@ -610,7 +585,6 @@
     <Content Include="App_Themes\Basic\Css\forms.css" />
     <Content Include="App_Themes\Basic\Css\frames.css" />
     <Content Include="App_Themes\Basic\Css\headline.css" />
-    <Content Include="App_Themes\Basic\Css\layout.css" />
     <Content Include="App_Themes\Basic\Css\lists.css" />
     <Content Include="App_Themes\Basic\Css\menu.css" />
     <Content Include="App_Themes\Basic\Css\syntaxhighlighter.css" />

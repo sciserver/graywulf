@@ -4,6 +4,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
 {
     interface IJobList
     {
-        MultiSelectGridView List { get; }
+        MultiSelectListView List { get; }
     }
 }
