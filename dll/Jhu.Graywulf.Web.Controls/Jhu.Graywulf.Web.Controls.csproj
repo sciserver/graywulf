@@ -54,6 +54,9 @@
     <Compile Include="Web\Controls\BoundDateTimeField.cs" />
     <Compile Include="Web\Controls\BoundField.cs" />
     <Compile Include="Web\Controls\CodeMirror.cs" />
+    <Compile Include="Web\Controls\DetailsButton.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Web\Controls\DockingPanel.cs" />
     <Compile Include="Web\Controls\Enum.cs" />
     <Compile Include="Web\Controls\Includer.cs" />
@@ -75,6 +78,7 @@
     <Compile Include="Web\Controls\ToolbarElement.cs" />
     <Compile Include="Web\Controls\ToolbarSpan.cs" />
     <Compile Include="Web\Controls\UsageBar.cs" />
+    <Compile Include="Web\Controls\FancyDateLabel.cs" />
     <Compile Include="Web\Scripts\Bootstrap.cs" />
     <Compile Include="Web\Scripts\DockingPanel.cs" />
     <Compile Include="Web\Scripts\JQueryValidation.cs" />
@@ -101,6 +105,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Web\Controls\MessageBar.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Web\Controls\DetailsButton.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

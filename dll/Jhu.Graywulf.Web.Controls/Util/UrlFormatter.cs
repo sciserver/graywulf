@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Util
             return String.Format("javascript:window.open('{0}');", ToRelativeUrl(url));
         }
 
-        private static string ToRelativeUrl(string url)
+        public static string ToRelativeUrl(string url)
         {
             if (HttpContext.Current != null && !String.IsNullOrEmpty(url) && VirtualPathUtility.IsAppRelative(url))
             {
