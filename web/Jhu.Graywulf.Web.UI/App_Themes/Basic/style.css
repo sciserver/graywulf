@@ -272,6 +272,9 @@ span.gw-details-button {
   text-align: center;
   cursor: pointer;
 }
+div.gw-details-panel {
+  display: none;
+}
 /* Box list */
 div.gw-box-frame-top {
   border-top: solid 1px #000000;
