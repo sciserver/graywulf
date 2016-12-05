@@ -10,42 +10,42 @@
 namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
     
     
-    public partial class ImportForm {
+    public partial class QueryDetails {
         
         /// <summary>
-        /// uri control.
+        /// sourceDataset control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label uri;
+        protected global::System.Web.UI.WebControls.Label sourceDataset;
         
         /// <summary>
-        /// fileFormat control.
+        /// sourceTable control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label fileFormat;
+        protected global::System.Web.UI.WebControls.Label sourceTable;
         
         /// <summary>
-        /// dataset control.
+        /// destinationDataset control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label dataset;
+        protected global::System.Web.UI.WebControls.Label destinationDataset;
         
         /// <summary>
-        /// table control.
+        /// destinationTable control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label table;
+        protected global::System.Web.UI.WebControls.Label destinationTable;
     }
 }

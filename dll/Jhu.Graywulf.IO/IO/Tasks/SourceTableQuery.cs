@@ -22,8 +22,8 @@ namespace Jhu.Graywulf.IO.Tasks
         #region Private member variables
 
         private DatasetBase dataset;
-        private string sourceSchemaName;
-        private string sourceObjectName;
+        private string schemaName;
+        private string objectName;
         private string header;
         private string query;
         private string footer;
@@ -47,20 +47,20 @@ namespace Jhu.Graywulf.IO.Tasks
         /// which data is to be returned.
         /// </summary>
         [DataMember]
-        public string SourceSchemaName
+        public string SchemaName
         {
-            get { return sourceSchemaName; }
-            set { sourceSchemaName = value; }
+            get { return schemaName; }
+            set { schemaName = value; }
         }
 
         /// <summary>
         /// Gets or sets the name table from which data is returned.
         /// </summary>
         [DataMember]
-        public string SourceObjectName
+        public string ObjectName
         {
-            get { return sourceObjectName; }
-            set { sourceObjectName = value; }
+            get { return objectName; }
+            set { objectName = value; }
         }
 
         /// <summary>
@@ -125,8 +125,8 @@ namespace Jhu.Graywulf.IO.Tasks
             return new SourceTableQuery()
             {
                 Dataset = table.Dataset,
-                SourceSchemaName = table.SchemaName,
-                SourceObjectName = table.ObjectName,
+                SchemaName = table.SchemaName,
+                ObjectName = table.ObjectName,
                 Query = cg.GenerateSelectStarQuery(table, top)
             };
         }
@@ -134,8 +134,8 @@ namespace Jhu.Graywulf.IO.Tasks
         private void InitializeMembers()
         {
             this.dataset = null;
-            this.sourceSchemaName = null;
-            this.sourceObjectName = null;
+            this.schemaName = null;
+            this.objectName = null;
             this.header = null;
             this.query = null;
             this.footer = null;
@@ -145,8 +145,8 @@ namespace Jhu.Graywulf.IO.Tasks
         private void CopyMembers(SourceTableQuery old)
         {
             this.dataset = Util.DeepCloner.CloneObject(old.dataset);
-            this.sourceSchemaName = old.sourceSchemaName;
-            this.sourceObjectName = old.sourceObjectName;
+            this.schemaName = old.schemaName;
+            this.objectName = old.objectName;
             this.header = old.header;
             this.query = old.query;
             this.footer = old.footer;

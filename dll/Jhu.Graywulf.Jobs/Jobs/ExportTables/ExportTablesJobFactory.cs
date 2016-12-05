@@ -92,7 +92,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             else
             {
                 destination.Compression = DataFileCompression.None;
-                destination.Uri = new Uri(source.SourceObjectName + destination.Description.Extension, UriKind.RelativeOrAbsolute);
+                destination.Uri = new Uri(source.ObjectName + destination.Description.Extension, UriKind.RelativeOrAbsolute);
             }
 
             var export = new ExportTablesParameters()

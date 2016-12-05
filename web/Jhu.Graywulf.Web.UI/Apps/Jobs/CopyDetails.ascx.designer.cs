@@ -10,15 +10,24 @@
 namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
     
     
-    public partial class ExportList {
+    public partial class CopyDetails {
         
         /// <summary>
-        /// list control.
+        /// source control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.MultiSelectGridView list;
+        protected global::System.Web.UI.WebControls.Label source;
+        
+        /// <summary>
+        /// destination control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label destination;
     }
 }

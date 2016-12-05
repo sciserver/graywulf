@@ -26,12 +26,12 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            //UpdateForm();
+            UpdateForm();
         }
 
         protected void Page_LoadComplete(object sender, EventArgs e)
         {
-            jobList.List.DataSource = JobDataSource;
+            list.DataSource = JobDataSource;
         }
 
         protected void Page_PreRender(object sender, EventArgs e)
@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
         protected void ToolbarButton_Command(object sender, CommandEventArgs e)
         {
             CurrentView = e.CommandName;
-            //UpdateForm();
+            UpdateForm();
         }
 
         protected void JobDataSource_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
@@ -68,6 +68,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
                 case "import":
                     jobType = JobType.Import;
                     break;
+                case "script":
+                    jobType = JobType.SqlScript;
+                    break;
                 default:
                     throw new NotImplementedException();
             }
@@ -77,71 +80,61 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
             e.ObjectInstance = jf;
         }
 
+        protected void List_ItemCreated(object sender, ListViewItemEventArgs e)
+        {
+            if (e.Item.ItemType == ListViewItemType.DataItem &&
+                e.Item.DataItem != null)
+            {
+                var job = (Job)e.Item.DataItem;
+                var detailsPlaceholder = (PlaceHolder)e.Item.FindControl("detailsPlaceholder");
+                var error = (ErrorDetails)e.Item.FindControl("errorDetails");
+
+                error.Job = job;
+
+                JobDetails details = null;
+
+                if (job is CopyJob)
+                {
+                    details = (JobDetails)LoadControl("CopyDetails.ascx");
+                }
+                else if (job is ExportJob)
+                {
+                    details = (JobDetails)LoadControl("ExportDetails.ascx");
+                }
+                else if (job is ImportJob)
+                {
+                    details = (JobDetails)LoadControl("ImportDetails.ascx");
+                }
+                else if (job is QueryJob)
+                {
+                    details = (JobDetails)LoadControl("QueryDetails.ascx");
+                }
+                else
+                {
+                    details = (JobDetails)LoadControl("JobDetails.ascx");
+                }
+
+                details.Job = job;
+                detailsPlaceholder.Controls.Add(details);
+            }
+        }
+
         protected void JobSelected_ServerValidate(object source, ServerValidateEventArgs args)
         {
-            args.IsValid = jobList.List.SelectedDataKeys.Count > 0;
-        }
-        protected void Button_Command(object sender, CommandEventArgs e)
-        {
-            /*
-            if (IsValid)
-            {
-                var listview = GetCurrentList().List;
-                var guids = listview.SelectedDataKeys.Select(g => Guid.Parse(g)).ToArray();
-
-                switch (e.CommandName)
-                {
-                    case "Details":
-                        Response.Redirect(JobDetails.GetUrl(guids[0]), false);
-                        break;
-                    case "Cancel":
-                        Response.Redirect(Jobs.CancelJob.GetUrl(guids), false);
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
-            }
-            */
+            args.IsValid = list.SelectedDataKeys.Count > 0;
         }
 
         #endregion
 
-        /*private IJobList GetCurrentList()
-        {
-            switch (CurrentView)
-            {
-                case "all":
-                    return jobList;
-                case "query":
-                    return queryList;
-                case "copy":
-                    return copyList;
-                case "export":
-                    return exportList;
-                case "import":
-                    return importList;
-                default:
-                    throw new NotImplementedException();
-            }
-        }*/
-
-            /*
         private void HideAllViews()
         {
-            jobList.Visible = false;
-            queryList.Visible = false;
-            copyList.Visible = false;
-            exportList.Visible = false;
-            importList.Visible = false;
-
             all.CssClass = "";
             query.CssClass = "";
             copy.CssClass = "";
             export.CssClass = "";
             import.CssClass = "";
-        }*/
-
-            /*
+            script.CssClass = "";
+        }
         private void UpdateForm()
         {
             HideAllViews();
@@ -163,42 +156,42 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
                 case "import":
                     ShowImport();
                     break;
+                case "script":
+                    ShowScript();
+                    break;
                 default:
                     throw new NotImplementedException();
             }
         }
-        */
 
-        /*
         private void ShowAll()
         {
-            jobList.Visible = true;
             all.CssClass = "selected";
         }
 
         private void ShowCopy()
         {
-            copyList.Visible = true;
             copy.CssClass = "selected";
         }
 
         private void ShowQuery()
         {
-            queryList.Visible = true;
             query.CssClass = "selected";
         }
 
         private void ShowExport()
         {
-            exportList.Visible = true;
             export.CssClass = "selected";
         }
 
         private void ShowImport()
         {
-            importList.Visible = true;
             import.CssClass = "selected";
         }
-        */
+
+        private void ShowScript()
+        {
+            script.CssClass = "selected";
+        }
     }
 }

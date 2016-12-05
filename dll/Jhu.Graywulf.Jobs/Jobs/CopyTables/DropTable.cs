@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Jobs.CopyTables
         {
             var item = Item.Get(activityContext);
             var ds = item.Source.Dataset;
-            var table = ds.Tables[ds.DatabaseName, item.Source.SourceSchemaName, item.Source.SourceObjectName];
+            var table = ds.Tables[ds.DatabaseName, item.Source.SchemaName, item.Source.ObjectName];
 
             table.Drop();
         }

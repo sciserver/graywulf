@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Util
                 }
                 else if (elapsed.TotalHours < 1)
                 {
-                    return String.Format("{0}:{1:D2} ago", elapsed.Minutes, elapsed.Seconds);
+                    return String.Format("{0}:{1:D2} minutes ago", elapsed.Minutes, elapsed.Seconds);
                 }
                 else if (elapsed.TotalDays < 1)
                 {

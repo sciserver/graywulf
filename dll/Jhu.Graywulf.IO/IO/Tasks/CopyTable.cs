@@ -105,8 +105,8 @@ namespace Jhu.Graywulf.IO.Tasks
             // Prepare results
             var result = new TableCopyResult()
             {
-                SchemaName = source.SourceSchemaName,
-                TableName = source.SourceObjectName,
+                SchemaName = source.SchemaName,
+                TableName = source.ObjectName,
             };
 
             Results.Add(result);

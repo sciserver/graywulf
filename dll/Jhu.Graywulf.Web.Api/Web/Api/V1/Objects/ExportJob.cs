@@ -124,8 +124,8 @@ namespace Jhu.Graywulf.Web.Api.V1
                 {
                     Dataset = xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/Dataset/Name"),
                     Table = Util.SqlParser.CombineTableName(
-                        xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/SourceSchemaName"),
-                        xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/SourceObjectName"))
+                        xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/SchemaName"),
+                        xr.GetXmlInnerText("ExportTablesParameters/Sources/SourceTableQuery/ObjectName"))
                 };
 
                 // Format

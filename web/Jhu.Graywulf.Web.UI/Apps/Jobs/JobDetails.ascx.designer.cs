@@ -10,24 +10,15 @@
 namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
     
     
-    public partial class QueryForm {
+    public partial class JobDetails {
         
         /// <summary>
-        /// Edit control.
+        /// cancel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Edit;
-        
-        /// <summary>
-        /// Query control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.CodeMirror Query;
+        protected global::System.Web.UI.WebControls.HyperLink cancel;
     }
 }

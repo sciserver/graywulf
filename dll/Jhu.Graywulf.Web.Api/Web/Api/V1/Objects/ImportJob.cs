@@ -115,7 +115,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 // Destination
                 this.destination = new DestinationTable()
                 {
-                    Dataset = xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/DatasetName"),
+                    Dataset = xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/Dataset/Name"),
                     Table = Util.SqlParser.CombineTableName(
                         xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/SchemaName"),
                         xr.GetXmlInnerText("ImportTablesParameters/Destinations/DestinationTable/TableNamePattern"))

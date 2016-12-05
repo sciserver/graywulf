@@ -10,42 +10,33 @@
 namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
     
     
-    public partial class ExportForm {
+    public partial class ErrorDetails {
         
         /// <summary>
-        /// dataset control.
+        /// errorLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label dataset;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl errorLabel;
         
         /// <summary>
-        /// table control.
+        /// error control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label table;
+        protected global::System.Web.UI.WebControls.Label error;
         
         /// <summary>
-        /// uri control.
+        /// errorInquiry control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label uri;
-        
-        /// <summary>
-        /// fileFormat control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label fileFormat;
+        protected global::System.Web.UI.WebControls.HyperLink errorInquiry;
     }
 }

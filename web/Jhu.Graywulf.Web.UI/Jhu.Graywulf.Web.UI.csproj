@@ -163,26 +163,47 @@
     <Compile Include="Apps\Docs\Docs.master.designer.cs">
       <DependentUpon>Docs.master</DependentUpon>
     </Compile>
-    <Compile Include="Apps\Jobs\ExportRow.ascx.cs">
-      <DependentUpon>ExportRow.ascx</DependentUpon>
+    <Compile Include="Apps\Jobs\ErrorDetails.ascx.cs">
+      <DependentUpon>ErrorDetails.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Apps\Jobs\ExportRow.ascx.designer.cs">
-      <DependentUpon>ExportRow.ascx</DependentUpon>
+    <Compile Include="Apps\Jobs\ErrorDetails.ascx.designer.cs">
+      <DependentUpon>ErrorDetails.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Apps\Jobs\JobForm.ascx.cs">
-      <DependentUpon>JobForm.ascx</DependentUpon>
+    <Compile Include="Apps\Jobs\JobDetails.ascx.cs">
+      <DependentUpon>JobDetails.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Apps\Jobs\JobForm.ascx.designer.cs">
-      <DependentUpon>JobForm.ascx</DependentUpon>
+    <Compile Include="Apps\Jobs\JobDetails.ascx.designer.cs">
+      <DependentUpon>JobDetails.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Apps\Jobs\JobList.ascx.cs">
-      <DependentUpon>JobList.ascx</DependentUpon>
+    <Compile Include="Apps\Jobs\QueryDetails.ascx.cs">
+      <DependentUpon>QueryDetails.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Apps\Jobs\JobList.ascx.designer.cs">
-      <DependentUpon>JobList.ascx</DependentUpon>
+    <Compile Include="Apps\Jobs\QueryDetails.ascx.designer.cs">
+      <DependentUpon>QueryDetails.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Jobs\ExportDetails.ascx.cs">
+      <DependentUpon>ExportDetails.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\ExportDetails.ascx.designer.cs">
+      <DependentUpon>ExportDetails.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Jobs\ImportDetails.ascx.cs">
+      <DependentUpon>ImportDetails.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\ImportDetails.ascx.designer.cs">
+      <DependentUpon>ImportDetails.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Jobs\CopyDetails.ascx.cs">
+      <DependentUpon>CopyDetails.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\CopyDetails.ascx.designer.cs">
+      <DependentUpon>CopyDetails.ascx</DependentUpon>
     </Compile>
     <Compile Include="Apps\Jobs\App.cs" />
     <Compile Include="Apps\Jobs\CancelJob.aspx.cs">
@@ -198,48 +219,6 @@
     </Compile>
     <Compile Include="Apps\Jobs\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Apps\Jobs\ErrorForm.ascx.cs">
-      <DependentUpon>ErrorForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Apps\Jobs\ErrorForm.ascx.designer.cs">
-      <DependentUpon>ErrorForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Apps\Jobs\ExportForm.ascx.cs">
-      <DependentUpon>ExportForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Apps\Jobs\ExportForm.ascx.designer.cs">
-      <DependentUpon>ExportForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Apps\Jobs\CopyForm.ascx.cs">
-      <DependentUpon>CopyForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Apps\Jobs\CopyForm.ascx.designer.cs">
-      <DependentUpon>CopyForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Apps\Jobs\ImportForm.ascx.cs">
-      <DependentUpon>ImportForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Apps\Jobs\ImportForm.ascx.designer.cs">
-      <DependentUpon>ImportForm.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Apps\Jobs\JobDetails.aspx.cs">
-      <DependentUpon>JobDetails.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Apps\Jobs\JobDetails.aspx.designer.cs">
-      <DependentUpon>JobDetails.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Apps\Jobs\QueryForm.ascx.cs">
-      <DependentUpon>QueryForm.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Apps\Jobs\QueryForm.ascx.designer.cs">
-      <DependentUpon>QueryForm.ascx</DependentUpon>
     </Compile>
     <Compile Include="Apps\MyDB\App.cs" />
     <Compile Include="Apps\MyDB\CommentsForm.ascx.cs">
@@ -537,17 +516,14 @@
     <Content Include="Apps\Docs\Default.aspx" />
     <Content Include="Apps\Docs\Docs.master" />
     <Content Include="Apps\Docs\Web.config" />
-    <Content Include="Apps\Jobs\ExportRow.ascx" />
-    <Content Include="Apps\Jobs\JobForm.ascx" />
-    <Content Include="Apps\Jobs\JobList.ascx" />
+    <Content Include="Apps\Jobs\ErrorDetails.ascx" />
+    <Content Include="Apps\Jobs\JobDetails.ascx" />
+    <Content Include="Apps\Jobs\QueryDetails.ascx" />
+    <Content Include="Apps\Jobs\ExportDetails.ascx" />
+    <Content Include="Apps\Jobs\ImportDetails.ascx" />
+    <Content Include="Apps\Jobs\CopyDetails.ascx" />
     <Content Include="Apps\Jobs\CancelJob.aspx" />
     <Content Include="Apps\Jobs\Default.aspx" />
-    <Content Include="Apps\Jobs\ErrorForm.ascx" />
-    <Content Include="Apps\Jobs\ExportForm.ascx" />
-    <Content Include="Apps\Jobs\CopyForm.ascx" />
-    <Content Include="Apps\Jobs\ImportForm.ascx" />
-    <Content Include="Apps\Jobs\JobDetails.aspx" />
-    <Content Include="Apps\Jobs\QueryForm.ascx" />
     <Content Include="Apps\Jobs\Web.config" />
     <Content Include="Apps\MyDB\CommentsForm.ascx" />
     <Content Include="Apps\MyDB\CompressionForm.ascx" />

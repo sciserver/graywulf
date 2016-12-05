@@ -30,6 +30,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         private JobType jobType;
         private JobStatus status;
         private bool canCancel;
+        private bool hasError;
         private JobQueue queue;
         private string comments;
         private string error;
@@ -93,6 +94,14 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             get { return canCancel; }
             set { canCancel = value; }
+        }
+
+        [DataMember(Name = "hasError")]
+        [Description("True, if the job has failed.")]
+        public bool HasError
+        {
+            get { return hasError; }
+            set { hasError = value; }
         }
 
         [IgnoreDataMember]
@@ -213,6 +222,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.jobType = JobType.Unknown;
             this.status = JobStatus.Unknown;
             this.canCancel = false;
+            this.hasError = false;
             this.queue = JobQueue.Unknown;
             this.comments = String.Empty;
             this.error = null;
@@ -230,6 +240,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.jobType = old.jobType;
             this.status = old.status;
             this.canCancel = old.canCancel;
+            this.hasError = old.hasError;
             this.queue = old.queue;
             this.comments = old.comments;
             this.error = old.error;
@@ -249,6 +260,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.guid = jobInstance.Guid;
             this.name = jobInstance.Name;
             this.canCancel = jobInstance.CanCancel;
+            this.hasError = !String.IsNullOrWhiteSpace(jobInstance.ExceptionMessage);
             this.comments = jobInstance.Comments;
             this.error = jobInstance.ExceptionMessage;
             this.dateCreated = jobInstance.DateCreated == DateTime.MinValue ? (DateTime?)null : jobInstance.DateCreated;

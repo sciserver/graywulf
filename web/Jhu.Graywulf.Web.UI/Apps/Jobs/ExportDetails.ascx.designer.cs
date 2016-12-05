@@ -10,24 +10,33 @@
 namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
     
     
-    public partial class AllList {
+    public partial class ExportDetails {
         
         /// <summary>
-        /// listPager control.
+        /// source control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DataPager listPager;
+        protected global::System.Web.UI.WebControls.Label source;
         
         /// <summary>
-        /// list control.
+        /// destination control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.MultiSelectListView list;
+        protected global::System.Web.UI.WebControls.Label destination;
+        
+        /// <summary>
+        /// fileFormat control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label fileFormat;
     }
 }

@@ -58,6 +58,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
         protected global::System.Web.UI.WebControls.LinkButton import;
         
         /// <summary>
+        /// script control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton script;
+        
+        /// <summary>
         /// JobDataSource control.
         /// </summary>
         /// <remarks>
@@ -67,12 +76,21 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
         protected global::System.Web.UI.WebControls.ObjectDataSource JobDataSource;
         
         /// <summary>
-        /// jobList control.
+        /// listPager control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Jobs.AllList jobList;
+        protected global::System.Web.UI.WebControls.DataPager listPager;
+        
+        /// <summary>
+        /// list control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Controls.MultiSelectListView list;
     }
 }

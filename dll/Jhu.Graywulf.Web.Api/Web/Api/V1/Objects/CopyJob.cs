@@ -93,16 +93,16 @@ namespace Jhu.Graywulf.Web.Api.V1
                 {
                     Dataset = xr.GetXmlInnerText("CopyTablesParameters/Items/CopyTablesItem/Source/Dataset/Name"),
                     Table = Util.SqlParser.CombineTableName(
-                        xr.GetXmlInnerText("CopyTablesParameters/Items/CopyTablesItem/Dataset/Source/SourceSchemaName"),
-                        xr.GetXmlInnerText("CopyTablesParameters/Items/CopyTablesItem/Dataset/Source/SourceObjectName")),
+                        xr.GetXmlInnerText("CopyTablesParameters/Items/CopyTablesItem/Source/SchemaName"),
+                        xr.GetXmlInnerText("CopyTablesParameters/Items/CopyTablesItem/Source/ObjectName")),
                 };
 
                 destination = new DestinationTable()
                 {
                     Dataset = xr.GetXmlInnerText("CopyTablesParameters/Items/CopyTablesItem/Destination/Dataset/Name"),
                     Table = Util.SqlParser.CombineTableName(
-                        xr.GetXmlInnerText("CopyTablesParameters/Items/CopyTablesItem/Dataset/Destination/SchemaName"),
-                        xr.GetXmlInnerText("CopyTablesParameters/Items/CopyTablesItem/Dataset/Destination/TableNamePattern")),
+                        xr.GetXmlInnerText("CopyTablesParameters/Items/CopyTablesItem/Destination/SchemaName"),
+                        xr.GetXmlInnerText("CopyTablesParameters/Items/CopyTablesItem/Destination/TableNamePattern")),
                 };
 
                 move = !xr.GetXmlBoolean("CopyTablesParameters/Items/CopyTablesItem/dropSourceTable");
