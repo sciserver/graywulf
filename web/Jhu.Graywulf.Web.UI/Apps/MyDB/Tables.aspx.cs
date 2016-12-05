@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
@@ -39,7 +40,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             // TODO: change this to support arbitrary sorting
             var tables = userdb.Tables.Values.OrderBy(t => t.UniqueKey).ToArray();
             
-            TableList.DataSource = tables;
+            tableList.DataSource = tables;
         }
 
         protected void Page_PreRender(object sender, EventArgs e)
@@ -49,60 +50,33 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
         protected void Toolbar_SelectedDatasetChanged(object sender, EventArgs e)
         {
-            TableList.SelectedDataKeys.Clear();
+            tableList.SelectedDataKeys.Clear();
         }
-
-        protected void TableSelected_ServerValidate(object source, ServerValidateEventArgs args)
+        
+        protected void TableList_ItemCreated(object sender, ListViewItemEventArgs e)
         {
-            args.IsValid = TableList.SelectedDataKeys.Count > 0;
-        }
-
-        protected void SingleTableSelectedValidator_ServerValidate(object source, ServerValidateEventArgs args)
-        {
-            args.IsValid = TableList.SelectedDataKeys.Count == 1;
-        }
-
-        protected void TableList_PageIndexChanging(object sender, GridViewPageEventArgs e)
-        {
-            TableList.PageIndex = e.NewPageIndex;
-            TableList.DataBind();
-        }
-
-        protected void Button_Command(object sender, CommandEventArgs e)
-        {
-            if (IsValid)
+            if (e.Item.ItemType == ListViewItemType.DataItem &&
+                e.Item.DataItem != null)
             {
-                var objid = TableList.SelectedDataKeys.First();
-                var objids = TableList.SelectedDataKeys.ToArray();
+                var table = (Jhu.Graywulf.Schema.Table)e.Item.DataItem;
+                var objid = table.UniqueKey;
 
-                switch (e.CommandName)
-                {
-                    case "View":
-                        Response.Redirect(Schema.Default.GetUrl(objid), false);
-                        break;
-                    //case "Edit":
-                    //    break;
-                    case "Peek":
-                        Response.Redirect(Schema.Peek.GetUrl(objid), false);
-                        break;
-                    case "Export":
-                        Response.Redirect(MyDB.Export.GetUrl(objid), false);
-                        break;
-                    case "Rename":
-                        Response.Redirect(MyDB.Rename.GetUrl(objid), false);
-                        break;
-                    case "PrimaryKey":
-                        Response.Redirect(MyDB.PrimaryKey.GetUrl(objid), false);
-                        break;
-                    case "Drop":
-                        Response.Redirect(MyDB.Drop.GetUrl(objids), false);
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
+                var schema = (HyperLink)e.Item.FindControl("schema");
+                var peek = (HyperLink)e.Item.FindControl("peek");
+                var export = (HyperLink)e.Item.FindControl("export");
+                var rename = (HyperLink)e.Item.FindControl("rename");
+                var copy = (HyperLink)e.Item.FindControl("copy");
+                var primaryKey = (HyperLink)e.Item.FindControl("primaryKey");
+                var drop = (HyperLink)e.Item.FindControl("drop");
+
+                schema.NavigateUrl = Schema.Default.GetUrl(objid);
+                peek.NavigateUrl = Schema.Peek.GetUrl(objid);
+                export.NavigateUrl = MyDB.Export.GetUrl(objid);
+                rename.NavigateUrl = MyDB.Rename.GetUrl(objid);
+                copy.NavigateUrl = MyDB.Copy.GetUrl(objid);
+                primaryKey.NavigateUrl = MyDB.PrimaryKey.GetUrl(objid);
+                drop.NavigateUrl = MyDB.Drop.GetUrl(objid);
             }
         }
-
-        
     }
 }

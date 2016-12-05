@@ -22,93 +22,21 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.Toolbar toolbar;
         
         /// <summary>
-        /// TableSelectedValidator control.
+        /// listPager control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator TableSelectedValidator;
+        protected global::System.Web.UI.WebControls.DataPager listPager;
         
         /// <summary>
-        /// SingleTableSelectedValidator control.
+        /// tableList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CustomValidator SingleTableSelectedValidator;
-        
-        /// <summary>
-        /// view control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button view;
-        
-        /// <summary>
-        /// Edit control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Edit;
-        
-        /// <summary>
-        /// peek control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button peek;
-        
-        /// <summary>
-        /// export control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button export;
-        
-        /// <summary>
-        /// rename control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button rename;
-        
-        /// <summary>
-        /// primaryKey control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button primaryKey;
-        
-        /// <summary>
-        /// Drop control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Drop;
-        
-        /// <summary>
-        /// TableList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.MultiSelectGridView TableList;
+        protected global::Jhu.Graywulf.Web.Controls.MultiSelectListView tableList;
     }
 }

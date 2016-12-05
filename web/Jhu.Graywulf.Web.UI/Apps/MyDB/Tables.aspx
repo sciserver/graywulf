@@ -4,52 +4,70 @@
 <%@ Register Src="Toolbar.ascx" TagPrefix="jgwc" TagName="Toolbar" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="toolbar">
-    <jgwc:Toolbar runat="server" id="toolbar" SelectedTab="tables"
+    <jgwc:Toolbar runat="server" ID="toolbar" SelectedTab="tables"
         OnSelectedDatasetChanged="Toolbar_SelectedDatasetChanged" />
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="middle" runat="Server">
-    <div class="dock-bottom">
-        <p class="FormMessage">
-            <asp:CustomValidator ID="TableSelectedValidator" runat="server" ErrorMessage="No table was selected."
-                OnServerValidate="TableSelected_ServerValidate" ValidationGroup="Table" />
-            <asp:CustomValidator ID="SingleTableSelectedValidator" runat="server" ErrorMessage="No table was selected."
-                OnServerValidate="SingleTableSelectedValidator_ServerValidate" ValidationGroup="SingleTable" /></p>
-        <p class="FormButtons">
-            <asp:Button ID="view" runat="server" Text="View Schema" CssClass="FormButton" CommandName="View"
-                OnCommand="Button_Command" ValidationGroup="SingleTable" />
-            <asp:Button ID="Edit" runat="server" Text="Edit Schema" CssClass="FormButton" CommandName="Edit" Visible="false" ValidationGroup="SingleTable" />
-            |
-            <asp:Button ID="peek" runat="server" Text="Peek" CssClass="FormButton" CommandName="Peek"
-                OnCommand="Button_Command" ValidationGroup="SingleTable" />
-            <asp:Button ID="export" runat="server" Text="Export" CssClass="FormButton" CommandName="Export"
-                OnCommand="Button_Command" ValidationGroup="SingleTable" />
-            <asp:Button ID="rename" runat="server" Text="Rename" CssClass="FormButton" CommandName="Rename"
-                OnCommand="Button_Command" ValidationGroup="SingleTable" />
-            <asp:Button ID="primaryKey" runat="server" Text="Primary Key" CssClass="FormButton" CommandName="PrimaryKey"
-                OnCommand="Button_Command" ValidationGroup="SingleTable" />
-            |
-            <asp:Button ID="Drop" runat="server" Text="Drop" CssClass="FormButton" CommandName="Drop"
-                OnCommand="Button_Command" ValidationGroup="Table" />
-        </p>
+    <div class="dock-top gw-list-frame-top">
+        <div class="gw-list-header">
+            <div class="gw-list-row">
+                <span style="width: 32px"></span>
+                <span class="gw-list-span">table name</span>
+                <span style="width: 100px">row count</span>
+                <span style="width: 100px">byte size</span>
+                <span style="width: 140px">created</span>
+                <span style="width: 140px">modified</span>
+            </div>
+        </div>
     </div>
-    <div class="TabFrame dock-fill dock-scroll">
-        <jgwc:MultiSelectGridView runat="server" ID="TableList" AllowPaging="true" PageSize="25" AutoGenerateColumns="false"
-            SelectionMode="Multiple" DataKeyNames="UniqueKey" OnPageIndexChanging="TableList_PageIndexChanging">
-            <Columns>
-                <jgwc:SelectionField ItemStyle-Width="24px" />
-                <asp:TemplateField HeaderText="Name" ItemStyle-Width="300px" ItemStyle-HorizontalAlign="Left">
-                    <ItemTemplate>
-                        <%# Eval("DatasetName") %>:<%# Eval("SchemaName") %>.<b><%# Eval("TableName") %></b>
-                    </ItemTemplate>
-                </asp:TemplateField>
-                <jgwc:BoundField DataField="Statistics.RowCount" HeaderText="Rows" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Right" />
-                <jgwc:BoundByteSizeField DataField="Statistics.DataSpace" HeaderText="Data Size" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Right" />
-                <asp:BoundField DataField="Metadata.DateCreated" HeaderText="Created" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center" />
-                <asp:BoundField DataField="Metadata.DateModified" HeaderText="Modified" ItemStyle-Width="100px" ItemStyle-HorizontalAlign="Center"/>
-                <asp:BoundField DataField="" HeaderText="Comments" ItemStyle-CssClass="GridViewSpan"
-                    HeaderStyle-CssClass="GridViewSpan" />
-            </Columns>
-        </jgwc:MultiSelectGridView>
+    <div class="dock-bottom gw-list-frame-bottom">
+        <div class="gw-list-footer">
+            <div class="gw-list-row">
+                <asp:DataPager runat="server" ID="listPager" PagedControlID="tableList" PageSize="20">
+                    <Fields>
+                        <asp:NextPreviousPagerField
+                            ShowLastPageButton="false"
+                            ShowNextPageButton="false" />
+                        <asp:NumericPagerField ButtonCount="10" ButtonType="Link" />
+                        <asp:NextPreviousPagerField
+                            ShowFirstPageButton="false"
+                            ShowPreviousPageButton="false" />
+                    </Fields>
+                </asp:DataPager>
+            </div>
+        </div>
+    </div>
+    <div class="gw-list-frame dock-fill">
+        <jgwc:MultiSelectListView runat="server" ID="tableList"
+            OnItemCreated="TableList_ItemCreated">
+            <LayoutTemplate>
+                <asp:PlaceHolder runat="server" ID="itemPlaceholder" />
+            </LayoutTemplate>
+            <ItemTemplate>
+                <div class="gw-list-item gw-details-container">
+                    <div class="gw-list-row">
+                        <jgwc:DetailsButton runat="server" Style="width: 32px" />
+                        <asp:Label runat="server" Text='<%# Eval("DisplayName") %>' CssClass="gw-list-span" />
+                        <asp:Label runat="server" Text='<%# Eval("Statistics.RowCount") %>' Width="100px" />
+                        <asp:Label runat="server" Text='<%# Eval("Statistics.DataSpace") %>' Width="100px" />
+                        <jgwc:FancyDateLabel runat="server" Value='<%# Eval("Metadata.DateCreated") %>' Width="140px" />
+                        <jgwc:FancyDateLabel runat="server" Value='<%# Eval("Metadata.DateModified") %>' Width="140px" />
+                    </div>
+                    <div class="gw-list-row gw-details-panel">
+                        <span style="width: 32px"></span>
+                        <span class="gw-list-span">
+                            <asp:HyperLink runat="server" ID="schema" Text="schema" /> |
+                            <asp:HyperLink runat="server" ID="peek" Text="peek" /> |
+                            <asp:HyperLink runat="server" ID="export" Text="export" /> |
+                            <asp:HyperLink runat="server" ID="rename" Text="rename" /> |
+                            <asp:HyperLink runat="server" ID="copy" Text="copy" /> |
+                            <asp:HyperLink runat="server" ID="primaryKey" Text="primary key" /> |
+                            <asp:HyperLink runat="server" ID="drop" Text="drop" />
+                        </span>
+                    </div>
+                </div>
+            </ItemTemplate>
+        </jgwc:MultiSelectListView>
     </div>
 </asp:Content>
