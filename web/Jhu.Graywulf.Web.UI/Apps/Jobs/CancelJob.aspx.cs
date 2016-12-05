@@ -88,7 +88,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
                     }
                 }
 
-                Response.Redirect(Jobs.Default.GetUrl(), false);
+                Response.Redirect(OriginalReferer, false);
             }
         }
 

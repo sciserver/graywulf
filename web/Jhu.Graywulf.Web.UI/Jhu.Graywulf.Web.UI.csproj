@@ -163,6 +163,13 @@
     <Compile Include="Apps\Docs\Docs.master.designer.cs">
       <DependentUpon>Docs.master</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Jobs\EditQuery.aspx.cs">
+      <DependentUpon>EditQuery.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Jobs\EditQuery.aspx.designer.cs">
+      <DependentUpon>EditQuery.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Apps\Jobs\ErrorDetails.ascx.cs">
       <DependentUpon>ErrorDetails.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -516,6 +523,7 @@
     <Content Include="Apps\Docs\Default.aspx" />
     <Content Include="Apps\Docs\Docs.master" />
     <Content Include="Apps\Docs\Web.config" />
+    <Content Include="Apps\Jobs\EditQuery.aspx" />
     <Content Include="Apps\Jobs\ErrorDetails.ascx" />
     <Content Include="Apps\Jobs\JobDetails.ascx" />
     <Content Include="Apps\Jobs\QueryDetails.ascx" />

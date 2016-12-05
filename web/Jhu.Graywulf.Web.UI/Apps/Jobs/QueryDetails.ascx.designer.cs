@@ -13,39 +13,30 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs {
     public partial class QueryDetails {
         
         /// <summary>
-        /// sourceDataset control.
+        /// output control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label sourceDataset;
+        protected global::System.Web.UI.WebControls.Label output;
         
         /// <summary>
-        /// sourceTable control.
+        /// edit control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label sourceTable;
+        protected global::System.Web.UI.WebControls.HyperLink edit;
         
         /// <summary>
-        /// destinationDataset control.
+        /// query control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label destinationDataset;
-        
-        /// <summary>
-        /// destinationTable control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label destinationTable;
+        protected global::System.Web.UI.WebControls.Label query;
     }
 }

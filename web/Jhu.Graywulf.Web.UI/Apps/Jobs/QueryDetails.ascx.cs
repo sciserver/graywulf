@@ -9,6 +9,18 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
             base.UpdateForm();
 
             var job = (QueryJob)Job;
+
+            edit.NavigateUrl = EditQuery.GetUrl(job.Guid);
+            output.Text = job.Output;
+
+            if (job.Query.Length < 100)
+            {
+                query.Text = job.Query;
+            }
+            else
+            {
+                query.Text = job.Query.Substring(0, 100) + "...";
+            }
         }
     }
 }

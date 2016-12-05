@@ -10,15 +10,26 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
     {
         public static string GetUrl()
         {
-            return "~/Apps/Jobs/Default.aspx";
+            return GetUrl(null);
+        }
+
+        public static string GetUrl(string view)
+        {
+            var url = "~/Apps/Jobs/Default.aspx";
+
+            if (view != null)
+            {
+                url += "?view=" + view;
+            }
+
+            return url;
         }
 
         #region Properties
 
         protected string CurrentView
         {
-            get { return (string)(ViewState["CurrentView"] ?? "all"); }
-            set { ViewState["CurrentView"] = value; }
+            get { return (string)(Request["view"] ?? "all"); }
         }
 
         #endregion
@@ -41,9 +52,10 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
 
         protected void ToolbarButton_Command(object sender, CommandEventArgs e)
         {
-            CurrentView = e.CommandName;
-            UpdateForm();
+            Response.Redirect(GetUrl(e.CommandName));
         }
+
+        // TODO: simplify this a little bit and try to get rid of the many switches
 
         protected void JobDataSource_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
         {
