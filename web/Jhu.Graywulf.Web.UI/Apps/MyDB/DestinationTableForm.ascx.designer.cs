@@ -49,6 +49,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         protected global::System.Web.UI.WebControls.TextBox tableName;
         
         /// <summary>
+        /// tableNameRequiredValidator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator tableNameRequiredValidator;
+        
+        /// <summary>
         /// tableNameValidator control.
         /// </summary>
         /// <remarks>

@@ -69,6 +69,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 Queue = JobQueue.Long,
             };
 
+            if (String.IsNullOrWhiteSpace(destinationTable.TableName))
+            {
+                job.Destination.Table = sourceTable.Table.TableName;
+            }
+
             job.Schedule(FederationContext);
         }
     }

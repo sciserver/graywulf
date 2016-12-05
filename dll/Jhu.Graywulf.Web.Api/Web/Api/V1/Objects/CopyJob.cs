@@ -112,28 +112,21 @@ namespace Jhu.Graywulf.Web.Api.V1
         public CopyTablesParameters CreateParameters(FederationContext context)
         {
             if (destination == null ||
-                String.IsNullOrWhiteSpace(destination.Table) ||
                 String.IsNullOrWhiteSpace(destination.Dataset))
             {
                 throw new ArgumentException("Destination must be specified"); // TODO ***
             }
 
             // Source
-            if (source == null)
+            if (source == null ||
+                String.IsNullOrWhiteSpace(source.Dataset) ||
+                String.IsNullOrWhiteSpace(source.Table))
             {
                 throw new InvalidOperationException("Source must be specified"); // TODO ***
             }
 
             var sourcequery = source.GetSourceTableQuery(context);
-
-            // Destination
-            if (destination == null)
-            {
-                throw new InvalidOperationException("Destination must be specified"); // TODO ***
-            }
-
             var destinationtable = destination.GetDestinationTable(context);
-            
             var ff = CopyTablesJobFactory.Create(context.RegistryContext);
             var par = ff.CreateParameters();
 
@@ -153,7 +146,6 @@ namespace Jhu.Graywulf.Web.Api.V1
         public override void Schedule(FederationContext context)
         {
             var p = CreateParameters(context);
-
             var ef = CopyTablesJobFactory.Create(context.RegistryContext);
             var job = ef.ScheduleAsJob(p, GetQueueName(context), TimeSpan.Zero, Comments);
 

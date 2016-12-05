@@ -13,6 +13,16 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
     public partial class DestinationTableForm : FederationUserControlBase
     {
+        public bool AllowEmptyTableName
+        {
+            get { return (bool)(ViewState["AllowEmptyTableName"] ?? true); }
+            set
+            {
+                ViewState["AllowEmptyTableName"] = value;
+                tableNameRequiredValidator.Enabled = !value;
+            }
+        }
+
         public string DatasetName
         {
             get { return datasetList.DatasetName; }

@@ -17,6 +17,9 @@
         </td>
         <td class="FormField">
             <asp:TextBox ID="tableName" runat="server" CssClass="FormField" />
+            <asp:RequiredFieldValidator runat="server" ControlToValidate="tableName" Display="Dynamic"
+                ErrorMessage="<br />Table name is required" ID="tableNameRequiredValidator"
+                Enabled="false" />
             <asp:CustomValidator runat="server" ControlToValidate="tableName" Display="Dynamic"
                 ErrorMessage="<br />Invalid table name" ID="tableNameValidator"
                 OnServerValidate="TableNameValidator_ServerValidate" />

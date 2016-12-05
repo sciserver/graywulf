@@ -40,6 +40,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             if (!String.IsNullOrWhiteSpace(table))
             {
                 string schemaName, tableName;
+
                 if (Util.SqlParser.TryParseTableName(context, dataset, table, out schemaName, out tableName))
                 {
                     return GetDestinationTable(context, dataset, schemaName, tableName);
@@ -48,6 +49,9 @@ namespace Jhu.Graywulf.Web.Api.V1
                 {
                     throw new InvalidOperationException("Cannot parse destination table name."); // TODO ***
                 }
+            }
+            else
+            {
             }
 
             return GetDestinationTable(context, dataset, null, null);
@@ -78,21 +82,21 @@ namespace Jhu.Graywulf.Web.Api.V1
                 throw new ArgumentException("Cannot import data into the specified dataset.");  // TODO ***
             }
 
-            var destination = new IO.Tasks.DestinationTable(
-                    dataset,
-                    dataset.DatabaseName,
-                    dataset.DefaultSchemaName,
-                    IO.Constants.ResultsetNameToken,        // generate table names automatically
-                    TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName);
+            var destination = new IO.Tasks.DestinationTable()
+            {
+                Dataset = (SqlServerDataset)dataset,
+                DatabaseName = dataset.DatabaseName,
+                TableNamePattern = tableName,
+                Options = TableInitializationOptions.Create | TableInitializationOptions.GenerateUniqueName
+            };
 
             if (!String.IsNullOrWhiteSpace(schemaName))
             {
                 destination.SchemaName = schemaName;
             }
-
-            if (!String.IsNullOrWhiteSpace(tableName))
+            else
             {
-                destination.TableNamePattern = tableName;   // TODO: handle patterns?
+                destination.SchemaName = dataset.DefaultSchemaName;
             }
 
             return destination;
