@@ -62,6 +62,18 @@ namespace Jhu.Graywulf.Util
             return (long)res;
         }
 
+        public static string Format(long? size)
+        {
+            if (size.HasValue)
+            {
+                return Format(size.Value);
+            }
+            else
+            {
+                return String.Empty;
+            }
+        }
+
         public static string Format(long size)
         {
             double res;

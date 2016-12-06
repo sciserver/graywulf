@@ -59,6 +59,7 @@
     </Compile>
     <Compile Include="Web\Controls\DockingPanel.cs" />
     <Compile Include="Web\Controls\Enum.cs" />
+    <Compile Include="Web\Controls\FancyByteSizeLabel.cs" />
     <Compile Include="Web\Controls\Includer.cs" />
     <Compile Include="Web\Controls\Int32ArrayConverter.cs" />
     <Compile Include="Web\Controls\ListViewDataPager.cs" />
