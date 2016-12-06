@@ -67,24 +67,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.FileFormatForm fileFormatForm;
         
         /// <summary>
-        /// toggleAdvanced control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton toggleAdvanced;
-        
-        /// <summary>
-        /// detailsPanel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel detailsPanel;
-        
-        /// <summary>
         /// compressionForm control.
         /// </summary>
         /// <remarks>

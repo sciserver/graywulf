@@ -28,6 +28,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButtonList compressionList;
+        protected global::System.Web.UI.WebControls.DropDownList compressionList;
     }
 }

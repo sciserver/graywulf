@@ -1,8 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="FileFormatForm.ascx.cs" Inherits="Jhu.Graywulf.Web.UI.Apps.MyDB.FileFormatForm" %>
 
-<p>
-    To override automatic file format detection, select format from the list below:
-</p>
 <table runat="server" class="FormTable">
     <tr>
         <td class="FormLabel">

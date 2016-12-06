@@ -18,24 +18,34 @@
                 Import single files or archives from any location.
             </p>
 
-            <asp:RadioButtonList runat="server" ID="importMethod" AutoPostBack="true" OnSelectedIndexChanged="ImportMethod_SelectedIndexChanged"
-                CausesValidation="false">
-                <asp:ListItem Text="Upload via browser" Value="upload" Selected="True" />
-            </asp:RadioButtonList>
+            <table class="FormTable">
+                <tr>
+                    <td class="FormLabel">
+                        <asp:Label runat="server" ID="importMethodLabel">Method:</asp:Label>
+                    </td>
+                    <td class="FormField">
+                        <asp:RadioButtonList runat="server" ID="importMethod" AutoPostBack="true" OnSelectedIndexChanged="ImportMethod_SelectedIndexChanged"
+                            CausesValidation="false">
+                            <asp:ListItem Text="Upload via browser" Value="upload" Selected="True" />
+                        </asp:RadioButtonList>
+                    </td>
+                </tr>
+            </table>
 
             <jgwc:UploadForm runat="server" ID="uploadForm" />
             <asp:PlaceHolder runat="server" ID="importFormPlaceholder" />
 
             <jgwc:DestinationTableForm runat="server" ID="destinationTableForm" />
 
-            <p style="text-align: center">
-                <asp:LinkButton runat="server" ID="toggleAdvanced" OnClick="ToggleAdvanced_Click" CausesValidation="false">advanced mode</asp:LinkButton>
-            </p>
-
-            <asp:Panel runat="server" ID="detailsPanel" Visible="false">
-                <jgwc:FileFormatForm runat="server" ID="fileFormatForm" FileMode="Read" />
-                <jgwc:CommentsForm runat="server" ID="commentsForm" />
-            </asp:Panel>
+            <div class="gw-details-container">
+                <p class="FormOptionsButton">
+                    <jgwc:DetailsButton runat="server" Text="more options" />
+                </p>
+                <div class="gw-details-panel">
+                    <jgwc:FileFormatForm runat="server" ID="fileFormatForm" FileMode="Read" />
+                    <jgwc:CommentsForm runat="server" ID="commentsForm" />
+                </div>
+            </div>
         </FormTemplate>
         <ButtonsTemplate>
             <asp:Button ID="Ok" runat="server" Text="OK" OnClick="Ok_Click" CssClass="FormButton" />&nbsp;

@@ -79,21 +79,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 }
             }
         }
-
-        protected void ToggleAdvanced_Click(object sender, EventArgs e)
-        {
-            detailsPanel.Visible = !detailsPanel.Visible;
-
-            if (detailsPanel.Visible)
-            {
-                toggleAdvanced.Text = "simple mode";
-            }
-            else
-            {
-                toggleAdvanced.Text = "advanced mode";
-            }
-        }
-
+        
         protected void Ok_Click(object sender, EventArgs e)
         {
             if (IsValid)
@@ -152,7 +138,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         {
             // TODO: add support for multi-table downloads
 
-            var compression = compressionForm.Visible ? compressionForm.Compression : DataFileCompression.GZip;
+            var compression = compressionForm.Compression;
             var file = fileFormatForm.GetDataFile();
             var table = sourceTableForm.Table;
             

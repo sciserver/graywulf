@@ -21,23 +21,32 @@
 
             <jgwc:SourceTableForm runat="server" ID="sourceTableForm" />
 
-            <asp:RadioButtonList runat="server" ID="exportMethod" AutoPostBack="true" OnSelectedIndexChanged="ExportMethod_SelectedIndexChanged">
-                <asp:ListItem Text="Download via browser" Value="download" Selected="True" />
-            </asp:RadioButtonList>
+            <table class="FormTable">
+                <tr>
+                    <td class="FormLabel">
+                        <asp:Label runat="server" ID="exportMethodLabel">Method:</asp:Label>
+                    </td>
+                    <td class="FormField">
+                        <asp:RadioButtonList runat="server" ID="exportMethod" AutoPostBack="true" OnSelectedIndexChanged="ExportMethod_SelectedIndexChanged">
+                            <asp:ListItem Text="Download via browser" Value="download" Selected="True" />
+                        </asp:RadioButtonList>
+                    </td>
+                </tr>
+            </table>
 
             <asp:PlaceHolder runat="server" ID="exportFormPlaceholder" />
 
             <jgwc:FileFormatForm runat="server" ID="fileFormatForm" FileMode="Write" Required="true" />
 
-            <p style="text-align: center">
-                <asp:LinkButton runat="server" ID="toggleAdvanced" OnClick="ToggleAdvanced_Click" CausesValidation="false">
-                        advanced mode</asp:LinkButton>
-            </p>
-
-            <asp:Panel runat="server" ID="detailsPanel" Visible="false">
-                <jgwc:CompressionForm runat="server" ID="compressionForm" />
-                <jgwc:CommentsForm runat="server" ID="commentsForm" Visible="false" />
-            </asp:Panel>
+            <div class="gw-details-container">
+                <p class="FormOptionsButton">
+                    <jgwc:DetailsButton runat="server" Text="more options" />
+                </p>
+                <div class="gw-details-panel">
+                    <jgwc:CompressionForm runat="server" ID="compressionForm" />
+                    <jgwc:CommentsForm runat="server" ID="commentsForm" Visible="false" />
+                </div>
+            </div>
         </FormTemplate>
         <ButtonsTemplate>
             <asp:Button ID="Ok" runat="server" Text="OK" CssClass="FormButton" OnClick="Ok_Click" />&nbsp;

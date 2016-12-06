@@ -31,6 +31,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         protected global::Jhu.Graywulf.Web.UI.Controls.Form importForm;
         
         /// <summary>
+        /// importMethodLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label importMethodLabel;
+        
+        /// <summary>
         /// importMethod control.
         /// </summary>
         /// <remarks>
@@ -65,24 +74,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.DestinationTableForm destinationTableForm;
-        
-        /// <summary>
-        /// toggleAdvanced control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton toggleAdvanced;
-        
-        /// <summary>
-        /// detailsPanel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel detailsPanel;
         
         /// <summary>
         /// fileFormatForm control.

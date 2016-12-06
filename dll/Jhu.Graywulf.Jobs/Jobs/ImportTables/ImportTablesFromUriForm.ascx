@@ -1,8 +1,5 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="ImportTablesFromUriForm.ascx.cs" Inherits="Jhu.Graywulf.Jobs.ImportTables.ImportTablesFromUriForm" %>
 
-<p>
-    Specify a URI to pull a data file from
-</p>
 <table class="FormTable">
     <tr>
         <td class="FormLabel" style="width: 50px">

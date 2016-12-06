@@ -87,21 +87,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 }
             }
         }
-
-        protected void ToggleAdvanced_Click(object sender, EventArgs e)
-        {
-            detailsPanel.Visible = !detailsPanel.Visible;
-
-            if (detailsPanel.Visible)
-            {
-                toggleAdvanced.Text = "simple mode";
-            }
-            else
-            {
-                toggleAdvanced.Text = "advanced mode";
-            }
-        }
-
+        
         protected void Ok_Click(object sender, EventArgs e)
         {
             if (IsValid)
