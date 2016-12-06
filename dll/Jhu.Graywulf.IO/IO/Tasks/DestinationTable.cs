@@ -155,6 +155,7 @@ namespace Jhu.Graywulf.IO.Tasks
             // -- Resultset name is the table within the file
 
             var name = "";
+            var pattern = tableNamePattern ?? Constants.ResultsetNameToken;
 
             if (!String.IsNullOrWhiteSpace(batchName))
             {
@@ -178,21 +179,13 @@ namespace Jhu.Graywulf.IO.Tasks
 
             // Substitute into name pattern
             // Strip leading _
-            name = tableNamePattern.Replace(Constants.ResultsetNameToken, name);
+            name = pattern.Replace(Constants.ResultsetNameToken, name);
 
-            // Generate unique name, if necessary
             if ((options & TableInitializationOptions.GenerateUniqueName) != 0)
             {
                 name = GetUniqueTableName(name);
-
-                // If table name is generated automatically, make sure to use the same name
-                // for every call of GetTableName so turn off automatic name creation here
-                // TODO: this might not be the best solution if there are mutliple output
-                // tables, so review this behavior when implementing multi-step queries
-                tableNamePattern = name;
-                options &= ~TableInitializationOptions.GenerateUniqueName;
             }
-            
+
             return name;
         }
 
@@ -240,8 +233,26 @@ namespace Jhu.Graywulf.IO.Tasks
                 SchemaName = this.schemaName,
                 TableName = GetTableName(batchName, queryName, resultsetName),
             };
-            
+
             // TODO: attach metadata to table
+        }
+
+        public Table GetQueryOutputTable(string batchName, string queryName, string resultsetName, DatabaseObjectMetadata metadata)
+        {
+            var table = GetTable(batchName, queryName, resultsetName, metadata);
+
+            // Generate unique name, if necessary
+            if ((options & TableInitializationOptions.GenerateUniqueName) != 0)
+            {
+                // If table name is generated automatically, make sure to use the same name
+                // for every call of GetTableName so turn off automatic name creation here
+                // TODO: this might not be the best solution if there are mutliple output
+                // tables, so review this behavior when implementing multi-step queries
+                tableNamePattern = table.TableName;
+                options &= ~TableInitializationOptions.GenerateUniqueName;
+            }
+
+            return table;
         }
 
         /// <summary>

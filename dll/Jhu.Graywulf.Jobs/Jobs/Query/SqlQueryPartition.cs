@@ -358,7 +358,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     var source = GetOutputSourceQuery();
 
                     // TODO: figure out metadata from query
-                    var table = query.Destination.GetTable(BatchName, QueryName, null, null);
+                    var table = query.Destination.GetQueryOutputTable(BatchName, QueryName, null, null);
                     var columns = source.GetColumns();
                     table.Initialize(columns, query.Destination.Options);
 
@@ -412,7 +412,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                         lock (syncRoot)
                         {
-                            table = query.Destination.GetTable(BatchName, QueryName, null, null);
+                            table = query.Destination.GetQueryOutputTable(BatchName, QueryName, null, null);
 
                             var source = GetExecuteSourceQuery();
                             var columns = source.GetColumns().Where(ci => ci.IsKey).ToArray();
