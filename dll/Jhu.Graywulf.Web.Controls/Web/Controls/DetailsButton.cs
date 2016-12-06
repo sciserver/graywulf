@@ -9,20 +9,27 @@ namespace Jhu.Graywulf.Web.Controls
 {
     public class DetailsButton : UserControl, IScriptControl
     {
-        private const string ClosedCssClass = "glyphicon-chevron-down";
-        private const string OpenCssClass = "glyphicon-chevron-up";
+        private const string ClosedCssClass = "glyphicon glyphicon-chevron-down";
+        private const string OpenCssClass = "glyphicon glyphicon-chevron-up";
         private Label label;
+        private Label glyph;
+
+        public string Text
+        {
+            get { return (string)ViewState["Text"]; }
+            set { ViewState["Text"] = value; }
+        }
 
         public string CssClass
         {
-            get { return (string)(ViewState["CssClass"] ?? "gw-details-button glyphicon"); }
+            get { return (string)(ViewState["CssClass"] ?? "gw-details-button"); }
             set { ViewState["CssClass"] = value; }
         }
 
         public string Style
         {
-            get { return label.Style.Value; }
-            set { label.Style.Value = value; }
+            get { return glyph.Style.Value; }
+            set { glyph.Style.Value = value; }
         }
 
         public DetailsButton()
@@ -33,6 +40,7 @@ namespace Jhu.Graywulf.Web.Controls
         private void InitializeMembers()
         {
             this.label = new Label();
+            this.glyph = new Label();
         }
 
         protected override void OnPreRender(EventArgs e)
@@ -57,8 +65,15 @@ namespace Jhu.Graywulf.Web.Controls
 
         public override void RenderControl(HtmlTextWriter writer)
         {
-            label.CssClass = CssClass + ' ' + ClosedCssClass;
-            label.RenderControl(writer);
+            if (Text != null)
+            {
+                label.CssClass = CssClass;
+                label.Text = Text;
+                label.RenderControl(writer);
+            }
+
+            glyph.CssClass = CssClass + ' ' + ClosedCssClass;
+            glyph.RenderControl(writer);
         }
 
         public IEnumerable<ScriptDescriptor> GetScriptDescriptors()

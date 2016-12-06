@@ -9,6 +9,10 @@ function toggleJobDetails(event) {
     $(more).toggle();
     $(btn).toggleClass("glyphicon-chevron-down");
     $(btn).toggleClass("glyphicon-chevron-up");
+
+    if (dockContents) {
+        $(btn).parents(".dock-container").first().each(dockContents);
+    }
 }
 
 function initToggleJobDetails(idx, btn) {
