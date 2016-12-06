@@ -235,9 +235,9 @@ WHERE [Graywulf_Schema_Test].[dbo].[Book].[ID] = 1
 
             var sql = cg.GenerateCreatePrimaryKeyScript(t);
 
-            var gt = 
+            var gt =
 @"ALTER TABLE [Graywulf_Schema_Test].[dbo].[TableWithPrimaryKey]
-ADD CONSTRAINT [PK_dbo_TableWithPrimaryKey] PRIMARY KEY (
+ADD CONSTRAINT [PK_TableWithPrimaryKey] PRIMARY KEY CLUSTERED (
 [ID]
  )
 ";

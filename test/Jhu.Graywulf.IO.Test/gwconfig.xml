@@ -3,5 +3,6 @@
   <includes>
     <include path="\connectionStrings.config" />
     <include path="\registry.config" />
+    <include path="\remoteService.config" />
   </includes>
 </config>

@@ -17,10 +17,18 @@ namespace Jhu.Graywulf.Web.Api.V1
     [TestClass]
     public class DataServiceTest : ApiTestBase
     {
+        protected string ServiceUri
+        {
+            get
+            {
+                return String.Format("http://{0}{1}/api/v1/data.svc", Environment.MachineName, Jhu.Graywulf.Test.AppSettings.WebUIPath);
+            }
+        }
+
         protected IDataService CreateClient(RestClientSession session)
         {
             AuthenticateTestUser(session);
-            var uri = String.Format("http://{0}/gwui/api/v1/data.svc", Environment.MachineName);
+            var uri = ServiceUri;
             var client = session.CreateClient<IDataService>(new Uri(uri));
             return client;
         }
@@ -38,7 +46,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 // We create a raw HTTP request here to stream data back.
                 // The WCF interface apparently doesn't support this
 
-                var uri = new Uri(String.Format("http://{0}/gwui/api/v1/data.svc/MYDB/SampleData", Environment.MachineName));
+                var uri = new Uri(String.Format("{0}/MYDB/dbo.SampleData", ServiceUri));
 
                 var req = (HttpWebRequest)WebRequest.Create(uri);
 
