@@ -3,9 +3,9 @@
 <asp:Content runat="server" ContentPlaceHolderID="toolbar">
 </asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="middle">
-    <asp:UpdatePanel runat="server" class="dock-fill">
+    <asp:UpdatePanel runat="server" class="dock-fill dock-container">
         <ContentTemplate>
-            <asp:Panel runat="server" ID="statusPanel" CssClass="dock-fill">
+            <asp:Panel runat="server" ID="statusPanel" CssClass="dock-fill dock-container">
                 <jgwuc:Form runat="Server" Text="Executing query" SkinID="JobDetails">
                     <FormTemplate>
                         <p><asp:Label runat="server" ID="statusLabel" Text="Query status:" /> <jgwuc:JobStatus runat="server" ID="status" /></p>
