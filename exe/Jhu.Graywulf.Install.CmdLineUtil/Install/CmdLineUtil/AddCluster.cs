@@ -14,6 +14,7 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
         protected string adminUsername;
         protected string adminEmail;
         protected string adminPassword;
+        protected bool createNode;
 
         [Parameter(Name = "ClusterName", Description = "Name of the cluster", Required = true)]
         public string ClusterName
@@ -43,6 +44,13 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
             set { adminPassword = value; }
         }
 
+        [Option(Name = "CreateNode", Description = "Generate first server node")]
+        public bool CreateNode
+        {
+            get { return createNode; }
+            set { createNode = value; }
+        }
+
         public AddCluster()
         {
             InitializeMembers();
@@ -54,6 +62,7 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
             this.adminUsername = Constants.ClusterAdminUserName;
             this.adminEmail = Constants.ClusterAdminUserEmail;
             this.adminPassword = Constants.ClusterAdminUserPassword;
+            this.createNode = true;
         }
 
         protected override string OnGetConnectionString()
@@ -72,8 +81,15 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
             
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit))
             {
-                var i = new ClusterInstaller(context);
-                i.Install(true, clusterName, adminUsername, adminEmail, adminPassword);
+                var i = new ClusterInstaller(context)
+                {
+                    ClusterName = clusterName,
+                    AdminUserName = adminUsername,
+                    AdminEmail = adminEmail,
+                    AdminPassword = adminPassword,
+                    CreateNode = createNode,
+                };
+                i.Install();
                 context.CommitTransaction();
             }
 

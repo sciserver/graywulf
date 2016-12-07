@@ -9,30 +9,78 @@ namespace Jhu.Graywulf.Install
 {
     public class ClusterInstaller : InstallerBase
     {
+        private bool system;
+        private string clusterName;
+        private string adminUserName;
+        private string adminEmail;
+        private string adminPassword;
+        private bool createNode;
+        
         Cluster cluster;
+
+        public bool System
+        {
+            get { return system; }
+            set { system = value; }
+        }
+
+        public string ClusterName
+        {
+            get { return clusterName; }
+            set { clusterName = value; }
+        }
+
+        public string AdminUserName
+        {
+            get { return adminUserName; }
+            set { adminUserName = value; }
+        }
+
+        public string AdminEmail
+        {
+            get { return adminEmail; }
+            set { adminEmail = value; }
+        }
+
+        public string AdminPassword
+        {
+            get { return adminPassword; }
+            set { adminPassword = value; }
+        }
+
+        public bool CreateNode
+        {
+            get { return createNode; }
+            set { createNode = value; }
+        }
 
         public ClusterInstaller(Context context)
             : base(context)
         {
+            InitializeMembers();
         }
 
         public ClusterInstaller(Cluster cluster)
             : base(cluster.Context)
         {
+            InitializeMembers();
+
             this.cluster = cluster;
         }
 
-        public Cluster Install()
+        private void InitializeMembers()
         {
-            return Install(
-                true,
-                Constants.ClusterName,
-                Constants.ClusterAdminUserName,
-                Constants.ClusterAdminUserEmail,
-                Constants.ClusterAdminUserPassword);
+            this.system = true;
+            this.clusterName = Constants.ClusterName;
+            this.adminUserName = Constants.ClusterAdminUserName;
+            this.adminEmail = Constants.ClusterAdminUserEmail;
+            this.adminPassword = Constants.ClusterAdminUserPassword;
+            this.createNode = true; ;
+
+            this.cluster = null;
         }
 
-        public Cluster Install(bool system, string clusterName, string username, string email, string password)
+        public Cluster Install()
         {
             cluster = new Cluster(Context)
             {
@@ -47,14 +95,11 @@ namespace Jhu.Graywulf.Install
             ServerVersion controllerServerVersion;
             GenerateController(system, out controllerMachineRole, out controllerMachine, out controllerServerVersion);
 
-            ServerVersion nodeServerVersion;
-            GenerateNode(system, out nodeServerVersion);
-
             // Create the shared domain for cluster level databases and users
             var domain = new Domain(cluster)
             {
                 Name = Constants.SystemDomainName,
-                Email = email,
+                Email = adminEmail,
                 System = system,
             };
             domain.Save();
@@ -62,13 +107,13 @@ namespace Jhu.Graywulf.Install
             // Create administrator group and user
             GenerateAdminGroup(system);
             GenerateAdminRole(system);
-            GenerateAdmin(system, username, email, password);
+            GenerateAdmin(system, adminUserName, adminEmail, adminPassword);
 
             // Create the shared feredation
             var federation = new Federation(domain)
             {
                 Name = Constants.SystemFederationName,
-                Email = email,
+                Email = adminEmail,
                 System = system,
                 ControllerMachineRole = controllerMachineRole,
             };
@@ -87,9 +132,15 @@ namespace Jhu.Graywulf.Install
             };
             tempdd.Save();
 
-            var tempddi = new DatabaseDefinitionInstaller(tempdd);
-            tempddi.GenerateDefaultChildren(nodeServerVersion, Constants.TempDbName);
-            // TODO: use temp designation for temp database file groups
+            if (createNode)
+            {
+                ServerVersion nodeServerVersion;
+                GenerateNode(system, out nodeServerVersion);
+
+                var tempddi = new DatabaseDefinitionInstaller(tempdd);
+                tempddi.GenerateDefaultChildren(nodeServerVersion, Constants.TempDbName);
+                // TODO: use temp designation for temp database file groups
+            }
 
             // Create cluster level jobs and queues
 
