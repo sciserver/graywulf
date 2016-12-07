@@ -7,7 +7,7 @@ using Jhu.Graywulf.Web.Api.V1;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Query
 {
-    public partial class Default : FederationPageBase
+    public partial class Default : QueryPageBase
     {
         public static string GetUrl()
         {
@@ -45,31 +45,52 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
         /// <param name="e"></param>
         protected void Check_Click(object sender, EventArgs e)
         {
-            CreateQueryJob(JobQueue.Unknown);
+            try
+            {
+                CreateQueryJob(GetQueryString(), JobQueue.Unknown);
+                ShowMessage("Query OK.", Color.Black);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
         }
 
         protected void ExecuteQuick_Click(object sender, EventArgs e)
         {
-            var q = CreateQueryJob(JobQueue.Quick);
-
-            if (q != null)
+            try
             {
-                var ji = ScheduleQuery(q);
-                Response.Redirect(Progress.GetUrl(ji.Guid));
+                var q = CreateQueryJob(GetQueryString(), JobQueue.Quick);
+                if (q != null)
+                {
+                    var ji = ScheduleQuery(q);
+                    Response.Redirect(Progress.GetUrl(ji.Guid));
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
             }
         }
 
         protected void ExecuteLong_Click(object sender, EventArgs e)
         {
-            var q = CreateQueryJob(JobQueue.Long);
-
-            if (q != null)
+            try
             {
-                ScheduleQuery(q);
-                Response.Redirect(Jobs.Default.GetUrl(), false);
+                var q = CreateQueryJob(GetQueryString(), JobQueue.Long);
+
+                if (q != null)
+                {
+                    ScheduleQuery(q);
+                    Response.Redirect(Jobs.Default.GetUrl(), false);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
             }
         }
-        
+
         #endregion
 
         /// <summary>
@@ -91,24 +112,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
             return query;
         }
 
-        /// <summary>
-        /// Creates a query job from the query string.
-        /// </summary>
-        /// <param name="queue"></param>
-        /// <returns></returns>
-        private QueryJob CreateQueryJob(JobQueue queue)
+        private void HandleException(Exception ex)
         {
-            try
-            {
-                var queryJob = new QueryJob(GetQueryString(), queue);
-                var query = queryJob.CreateQuery(FederationContext);
-
-                query.Verify();
-
-                ShowMessage("Query OK.", Color.Black);
-
-                return queryJob;
-            }
+            // TODO: implement if necessary
             /*catch (ValidatorException ex)
             {
             }
@@ -117,26 +123,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
             }
             catch (ParserException ex)
             {
-            }*/
+            }
             catch (Exception ex)
             {
-                // TODO: remove this case once all exceptions are handled correctly
-                ShowMessage(String.Format("Query error: {0}", ex.Message), Color.Red);
-            }
-            
-            return null;
-        }
+            }*/
 
 
-        /// <summary>
-        /// Schedules a query for execution.
-        /// </summary>
-        /// <param name="queryJob"></param>
-        /// <returns></returns>
-        protected JobInstance ScheduleQuery(QueryJob queryJob)
-        {
-            queryJob.Schedule(FederationContext);
-            return queryJob.JobInstance;
+            // TODO: remove this case once all exceptions are handled correctly
+            ShowMessage(String.Format("Query error: {0}", ex.Message), Color.Red);
         }
 
         protected void HideMessage()

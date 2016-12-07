@@ -369,6 +369,9 @@
     <Compile Include="Apps\Query\Progress.aspx.designer.cs">
       <DependentUpon>Progress.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Query\QueryPageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Apps\Query\Results.aspx.cs">
       <DependentUpon>Results.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
