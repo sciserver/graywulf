@@ -12,9 +12,29 @@ namespace Jhu.Graywulf.Entities
         protected const string TestUser = "test";
         protected const string OtherUser = "other";
 
+        protected static string GetSolutionDir()
+        {
+            var sln = Path.GetDirectoryName(Environment.GetEnvironmentVariable("SolutionPath"));
+            return sln;
+        }
+
         protected static string MapPath(string path)
         {
-            return Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\", path);
+            // TODO: this fails if all tests are executed in a single run
+            // figure out project directory
+            var file = Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\", path);
+
+            if (!File.Exists(file))
+            {
+                file = Path.Combine(GetSolutionDir(), path);
+            }
+
+            if (!File.Exists(file))
+            {
+                file = Path.Combine(GetSolutionDir(), "graywulf", path);
+            }
+
+            return file;
         }
 
         protected static Principal CreateTestPrincipal()
