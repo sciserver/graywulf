@@ -13,8 +13,58 @@ namespace Jhu.Graywulf.Web.Controls
 {
     public class SiteMap : WebControl
     {
-        private static readonly Regex titleRegex = new Regex(@"<%\s*@\s*page\s*[^>]*title\s*=\s*""([^""]*)""", RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled | RegexOptions.CultureInvariant);
-        private static readonly StringComparer comparer = StringComparer.InvariantCultureIgnoreCase;
+        class SiteMapVisitor : DocsTreeVisitor
+        {
+            private HtmlTextWriter writer;
+
+            public SiteMapVisitor(HtmlTextWriter writer)
+            {
+                this.writer = writer;
+            }
+
+            protected override void OnVisitingDir(VirtualPathProvider virtualPathProvider, DocsTreeVisitorEventArgs args)
+            {
+                base.OnVisitingDir(virtualPathProvider, args);
+
+                if (!args.Skip)
+                {
+                    RenderItem(args);
+                }
+
+                if (args.Expand)
+                {
+                    writer.RenderBeginTag("ul");
+                }
+            }
+
+            protected override void OnVisitedDir(VirtualPathProvider virtualPathProvider, DocsTreeVisitorEventArgs args)
+            {
+                if (args.Expand)
+                {
+                    writer.RenderEndTag();
+                }
+            }
+
+            protected override void OnVisitingFile(VirtualPathProvider virtualPathProvider, DocsTreeVisitorEventArgs args)
+            {
+                base.OnVisitingFile(virtualPathProvider, args);
+
+                if (!args.Skip)
+                {
+                    RenderItem(args);
+                }
+            }
+
+            private void RenderItem(DocsTreeVisitorEventArgs args)
+            {
+                writer.RenderBeginTag("li");
+                writer.AddAttribute("href", VirtualPathUtility.MakeRelative(CurrentPath, args.Path));
+                writer.RenderBeginTag("a");
+                writer.Write(args.Title);
+                writer.RenderEndTag();      // a
+                writer.RenderEndTag();      // li
+            }
+        }
 
         [Themeable(true)]
         public string CssClassSelected
@@ -35,6 +85,18 @@ namespace Jhu.Graywulf.Web.Controls
             set { ViewState["RootPath"] = value; }
         }
 
+        protected override void Render(HtmlTextWriter writer)
+        {
+            var v = new SiteMapVisitor(writer)
+            {
+                RootPath = RootPath,
+                CurrentPath = Page.AppRelativeVirtualPath
+            };
+
+            v.Execute();
+        }
+
+        /*
         protected override void Render(HtmlTextWriter writer)
         {
             var vpp = HostingEnvironment.VirtualPathProvider;
@@ -142,5 +204,6 @@ namespace Jhu.Graywulf.Web.Controls
                 return VirtualPathUtility.GetFileName(file.VirtualPath);
             }
         }
+        */
     }
 }

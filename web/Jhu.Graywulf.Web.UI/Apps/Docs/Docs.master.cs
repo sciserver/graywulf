@@ -11,7 +11,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Docs
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
         }
     }
 }

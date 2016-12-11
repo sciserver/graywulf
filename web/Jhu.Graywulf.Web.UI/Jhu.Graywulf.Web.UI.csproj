@@ -163,6 +163,13 @@
     <Compile Include="Apps\Docs\Docs.master.designer.cs">
       <DependentUpon>Docs.master</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Docs\Toolbar.ascx.cs">
+      <DependentUpon>Toolbar.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Docs\Toolbar.ascx.designer.cs">
+      <DependentUpon>Toolbar.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Apps\Jobs\EditQuery.aspx.cs">
       <DependentUpon>EditQuery.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -524,7 +531,9 @@
     <Content Include="Apps\Common\Error.aspx" />
     <Content Include="Apps\Common\Feedback.aspx" />
     <Content Include="Apps\Docs\Default.aspx" />
+    <Content Include="Apps\Docs\Toolbar.js" />
     <Content Include="Apps\Docs\Docs.master" />
+    <Content Include="Apps\Docs\Toolbar.ascx" />
     <Content Include="Apps\Docs\Web.config" />
     <Content Include="Apps\Jobs\EditQuery.aspx" />
     <Content Include="Apps\Jobs\ErrorDetails.ascx" />

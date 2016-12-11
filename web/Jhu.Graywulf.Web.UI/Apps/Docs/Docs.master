@@ -1,13 +1,13 @@
 ﻿<%@ Master Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true" CodeBehind="Docs.master.cs"
     Inherits="Jhu.Graywulf.Web.UI.Apps.Docs.Docs" %>
 
+<%@ Register Src="~/Apps/Docs/Toolbar.ascx" TagPrefix="uc1" TagName="Toolbar" %>
+
+<asp:Content runat="server" ContentPlaceHolderID="toolbar">
+    <uc1:Toolbar runat="server" ID="Toolbar" />
+</asp:Content>
 <asp:Content ID="Content3" ContentPlaceHolderID="middle" runat="server">
-    <div class="dock-left" style="width: 150px; margin-right: 8px">
-        <h3 class="DocsItem">
-            <a id="A1" runat="server" href="<%= Default.GetUrl() %>">Documentation</a></h3>
-        <jgwc:SiteMap runat="server" RootPath="~/Docs" />
-    </div>
-    <div class="dock-fill" style="overflow: auto;">
+    <div class="dock-fill" style="overflow: auto; margin-left: 100px; margin-right: 100px;">
         <asp:ContentPlaceHolder runat="server" ID="Text" />
     </div>
 </asp:Content>
