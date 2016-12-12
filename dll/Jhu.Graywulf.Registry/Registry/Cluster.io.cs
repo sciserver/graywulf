@@ -27,5 +27,39 @@ namespace Jhu.Graywulf.Registry
         }
 
         #endregion
+
+        public IEnumerable<ServerInstance> FindServerInstances()
+        {
+            var sql = @"
+SELECT sie.*, si.*
+FROM ServerInstance si
+INNER JOIN Entity sie ON sie.Guid = si.EntityGuid
+INNER JOIN Machine m ON m.EntityGuid = sie.ParentGuid
+INNER JOIN Entity me ON me.Guid = m.EntityGuid
+WHERE
+	sie.DeploymentState = DeploymentState::Deployed AND sie.RunningState = RunningState::Running AND
+    (@ShowHidden = 1 OR sie.Hidden = 0) AND
+	(@ShowDeleted = 1 OR sie.Deleted = 0)
+";
+
+            using (var cmd = Context.CreateTextCommand(sql))
+            {
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
+                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
+                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
+
+                using (var dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        var si = new ServerInstance();
+                        si.Context = Context;
+                        si.LoadFromDataReader(dr);
+                        yield return si;
+                    }
+                    dr.Close();
+                }
+            }
+        }
     }
 }

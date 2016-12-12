@@ -10,7 +10,7 @@ using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Check;
 using Jhu.Graywulf.Registry.Check;
 using Jhu.Graywulf.Web.Check;
-using Jhu.Graywulf.Schema;
+using Jhu.Graywulf.RemoteService;
 
 namespace Jhu.Graywulf.Web.UI
 {
@@ -66,6 +66,27 @@ namespace Jhu.Graywulf.Web.UI
             checks.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Schema.dll")));
             checks.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Sql.dll")));
             checks.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Web.dll")));
+
+            // Test remoting service on hosts running SQL Server
+            var hosts = new HashSet<string>();
+
+            foreach (var si in RegistryContext.Cluster.FindServerInstances())
+            {
+                var host = si.Machine.HostName.ResolvedValue;
+
+                if (!hosts.Contains(host))
+                {
+                    hosts.Add(host);
+                }
+            }
+
+            foreach (var host in hosts)
+            {
+                checks.Add(new RemoteServiceCheck(host));
+            }
+
+            // TODO: scheduler test
+
         }
     }
 }

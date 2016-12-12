@@ -59,6 +59,7 @@
     <Compile Include="RemoteService\NetDataContractSerializerOperationBehavior.cs" />
     <Compile Include="RemoteService\RemoteServiceAttribute.cs" />
     <Compile Include="RemoteService\RemoteServiceBase.cs" />
+    <Compile Include="RemoteService\RemoteServiceCheck.cs" />
     <Compile Include="RemoteService\RemoteServiceConfiguration.cs" />
     <Compile Include="RemoteService\RemoteServiceHelper.cs" />
     <Compile Include="Tasks\CancelableCollection.cs" />
