@@ -65,7 +65,9 @@ dis AS
 		dd.EntityGuid = @databaseDefinitionGuid AND
 		sie.DeploymentState = DeploymentState::Deployed AND sie.RunningState = RunningState::Running AND
 		mae.DeploymentState = DeploymentState::Deployed AND mae.RunningState = RunningState::Running AND
-        die.DeploymentState = DeploymentState::Deployed AND die.RunningState = RunningState::Attached
+        die.DeploymentState = DeploymentState::Deployed AND die.RunningState = RunningState::Attached AND
+    	(@ShowHidden = 1 OR die.Hidden = 0) AND
+	    (@ShowDeleted = 1 OR die.Deleted = 0)
 )
 SELECT * 
 FROM dis
@@ -73,6 +75,9 @@ FROM dis
 
             using (var cmd = Context.CreateTextCommand(sql))
             {
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
+                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
+                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
                 cmd.Parameters.Add("@databaseDefinitionGuid", SqlDbType.UniqueIdentifier).Value = this.Guid;
                 cmd.Parameters.Add("@databaseVersionName", SqlDbType.NVarChar).Value = databaseVersionName != null ? (object)databaseVersionName : DBNull.Value;
 
