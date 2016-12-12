@@ -58,6 +58,7 @@
                     OnCommand="ToolbarButton_Command" CommandName="indexes" />
                 <asp:LinkButton runat="server" ID="parameters" Text="parameters"
                     OnCommand="ToolbarButton_Command" CommandName="parameters" />
+                <asp:HyperLink runat="server" ID="peek" Text="peek" />
             </div>
         </ContentTemplate>
     </asp:UpdatePanel>
@@ -65,19 +66,6 @@
 <asp:Content ContentPlaceHolderID="middle" runat="Server">
     <asp:UpdatePanel runat="server" class="dock-fill dock-container">
         <ContentTemplate>
-            <asp:Panel runat="server" ID="buttonPanel" Visible="false" CssClass="dock-bottom">
-                <p class="FormButtons">
-                    <asp:Button ID="peek" runat="server" Text="Peek" Visible="false" CssClass="FormButton" />
-                    <asp:Button ID="export" runat="server" Text="Export" Visible="false" OnClick="Export_Click"
-                        CssClass="FormButton" />
-                    <asp:Button ID="rename" runat="server" Text="Rename" Visible="false" OnClick="Rename_Click"
-                        CssClass="FormButton" />
-                    <asp:Button ID="primaryKey" runat="server" Text="Primary Key" OnClick="PrimaryKey_Click"
-                        CssClass="FormButton" />
-                    <asp:Button ID="drop" runat="server" Text="Drop" Visible="false" OnClick="Drop_Click"
-                        CssClass="FormButton" />
-                </p>
-            </asp:Panel>
             <list:SummaryForm ID="summaryForm" runat="server" Visible="false" />
             <list:ColumnList ID="columnList" runat="server" Visible="false" />
             <list:ParameterList ID="parameterList" runat="server" Visible="false" />

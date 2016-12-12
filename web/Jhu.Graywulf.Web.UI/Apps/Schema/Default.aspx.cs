@@ -94,26 +94,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             UpdateForm();
         }
 
-        protected void Export_Click(object sender, EventArgs e)
-        {
-            //Response.Redirect(Apps.MyDB.Export.GetUrl(databaseObjectID), false);
-        }
-
-        protected void Rename_Click(object sender, EventArgs e)
-        {
-            //Response.Redirect(Apps.MyDB.Rename.GetUrl(databaseObjectID), false);
-        }
-
-        protected void PrimaryKey_Click(object sender, EventArgs e)
-        {
-            //Response.Redirect(Apps.MyDB.PrimaryKey.GetUrl(databaseObjectID), false);
-        }
-
-        protected void Drop_Click(object sender, EventArgs e)
-        {
-            //Response.Redirect(Apps.MyDB.Drop.GetUrl(databaseObjectID), false);
-        }
-
         #endregion
 
         private void RefreshDatasetList()
@@ -306,6 +286,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 columns.Visible = false;
                 indexes.Visible = false;
                 parameters.Visible = false;
+                peek.Visible = false;
             }
             else
             {
@@ -313,6 +294,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 columns.Visible = (dbobj is IColumns);
                 indexes.Visible = (dbobj is IIndexes);
                 parameters.Visible = (dbobj is IParameters);
+
+                peek.Visible = (dbobj is TableOrView);
+                peek.NavigateUrl = Peek.GetUrl(dbobj.UniqueKey);
 
                 switch (CurrentView)
                 {
