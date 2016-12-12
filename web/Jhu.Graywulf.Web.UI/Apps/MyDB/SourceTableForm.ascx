@@ -11,7 +11,7 @@
         </td>
         <td class="FormField">
             <jgwu:DatasetList runat="server" id="datasetList" CssClass="FormField"
-                AutoPostBack="true" TableListControl="tableList"  />
+                AutoPostBack="true" TableListControl="tableList" DefaultRequestField="objid"  />
         </td>
     </tr>
     <tr>
@@ -19,7 +19,7 @@
             <asp:Label runat="server" ID="tableListLabel">Source table:</asp:Label>
         </td>
         <td class="FormField">
-            <jgwu:TableList runat="server" id="tableList" CssClass="FormField" />
+            <jgwu:TableList runat="server" id="tableList" CssClass="FormField"  DefaultRequestField="objid" />
         </td>
     </tr>
 </table>
