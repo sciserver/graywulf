@@ -27,8 +27,5 @@ namespace Jhu.Graywulf.Web.UI
         
         public const string SessionException = "Jhu.Graywulf.Web.Exception";
         public const string SessionExceptionEventID = "Jhu.Graywulf.Web.ExceptionEventID";
-
-        public const string CaptchaVirtualPath = "~/Captcha.aspx";
-        public const string CaptchaMimeType = "image/jpeg";
     }
 }

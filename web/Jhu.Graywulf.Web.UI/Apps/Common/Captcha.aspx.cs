@@ -10,6 +10,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Common
 {
     public class Captcha : Page
     {
+        public const string MimeType = "image/jpeg";
+
         private static readonly Pen[] RandomPens =
         {
             Pens.DarkBlue, Pens.DarkCyan, Pens.DarkGoldenrod, Pens.DarkGray,
@@ -28,14 +30,22 @@ namespace Jhu.Graywulf.Web.UI.Apps.Common
             Brushes.DarkViolet,
         };
 
+        public static string GetUrl(int width, int height)
+        {
+            return String.Format(
+                "~/Apps/Common/Captcha.aspx?width={0}&height={1}",
+                width,
+                height);
+        }
+
         protected override void OnLoad(EventArgs e)
         {
-            Response.ContentType = Constants.CaptchaMimeType;
+            Response.ContentType = MimeType;
             Response.Expires = -1;
 
             var width = int.Parse(Request.QueryString["width"]);
             var height = int.Parse(Request.QueryString["height"]);
-            var digits = int.Parse(Request.QueryString["digits"]);
+            var digits = 8; // this is not a parameter as it could be set to 0
 
             var rnd = new Random();
             var code = "";
