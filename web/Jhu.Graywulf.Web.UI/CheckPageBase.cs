@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Web.Check
 
                 if (!Enum.TryParse(Request.QueryString["mode"], true, out filter))
                 {
-                    filter = CheckCategory.All;
+                    filter = CheckCategory.NoDb;
                 }
 
                 return filter;

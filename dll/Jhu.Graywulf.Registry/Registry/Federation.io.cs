@@ -27,5 +27,43 @@ namespace Jhu.Graywulf.Registry
         }
 
         #endregion
+
+        public IEnumerable<DatabaseInstance> FindDatabaseInstances()
+        {
+            var sql = @"
+SELECT die.*, di.*
+FROM DatabaseInstance di
+INNER JOIN Entity die ON die.Guid = di.EntityGuid
+INNER JOIN DatabaseDefinition dd ON dd.EntityGuid = die.ParentGuid
+INNER JOIN Entity dde ON dde.Guid = dd.EntityGuid
+INNER JOIN Entity fe ON fe.Guid = dde.ParentGuid
+WHERE
+    fe.Guid = @FederationGuid AND
+    dde.DeploymentState = DeploymentState::Deployed AND dde.RunningState = RunningState::Running AND
+	die.DeploymentState = DeploymentState::Deployed AND die.RunningState = RunningState::Attached AND
+    (@ShowHidden = 1 OR die.Hidden = 0) AND
+	(@ShowDeleted = 1 OR die.Deleted = 0)
+";
+
+            using (var cmd = Context.CreateTextCommand(sql))
+            {
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
+                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
+                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
+                cmd.Parameters.Add("@FederationGuid", SqlDbType.UniqueIdentifier).Value = this.Guid;
+
+                using (var dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        var di = new DatabaseInstance();
+                        di.Context = Context;
+                        di.LoadFromDataReader(dr);
+                        yield return di;
+                    }
+                    dr.Close();
+                }
+            }
+        }
     }
 }

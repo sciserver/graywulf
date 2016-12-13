@@ -20,6 +20,8 @@ namespace Jhu.Graywulf.Check
 
         Quick = Iis,
         All = 0xFFFF,
-        NoEmail = All & ~Email,
+
+        NoDb = All & ~Database,
+        NoEmail = NoDb & ~Email,
     }
 }

@@ -53,9 +53,11 @@ namespace Jhu.Graywulf.Web.UI
 
             // Test remoting service on hosts running SQL Server
             RegisterRemotingServiceChecks(checks);
-          
+
             // TODO: scheduler test
 
+            RegisterServerInstanceChecks(checks);
+            RegisterDatabaseChecks(checks);
         }
 
         private void RegisterDllChecks(List<CheckRoutineBase> checks)
@@ -88,6 +90,30 @@ namespace Jhu.Graywulf.Web.UI
             foreach (var host in hosts)
             {
                 checks.Add(new RemoteServiceCheck(host));
+            }
+        }
+
+        private void RegisterServerInstanceChecks(List<CheckRoutineBase> checks)
+        {
+            foreach (var si in RegistryContext.Cluster.FindServerInstances())
+            {
+                var csb = si.GetConnectionString();
+                csb.Pooling = false;
+                csb.ConnectTimeout = 1;
+                var dbc = new SqlServerCheck(csb.ConnectionString);
+                checks.Add(dbc);
+            }
+        }
+
+        private void RegisterDatabaseChecks(List<CheckRoutineBase> checks)
+        {
+            foreach (var di in RegistryContext.Federation.FindDatabaseInstances())
+            {
+                var csb = di.GetConnectionString();
+                csb.Pooling = false;
+                csb.ConnectTimeout = 1;
+                var dbc = new DatabaseCheck(csb.ConnectionString);
+                checks.Add(dbc);
             }
         }
     }
