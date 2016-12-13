@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.Security;
+using System.Reflection;
 using System.IO;
 using Jhu.Graywulf.Web.Security;
 using Jhu.Graywulf.Check;
@@ -24,12 +22,10 @@ namespace Jhu.Graywulf.Web.UI
             checks.Add(new IdentityCheck());
 
             // Test registry and log databases
-
             checks.Add(new DatabaseCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.ConnectionString));
             checks.Add(new DatabaseCheck(Jhu.Graywulf.Logging.AppSettings.ConnectionString));
 
             // Test SMTP and target email addresses
-
             checks.Add(new EmailCheck(RegistryContext.Domain.ShortTitle, RegistryContext.Domain.Email, RegistryContext.Domain.Email));
             checks.Add(new EmailCheck(RegistryContext.Federation.ShortTitle, RegistryContext.Federation.Email, RegistryContext.Federation.Email));
 
@@ -53,21 +49,30 @@ namespace Jhu.Graywulf.Web.UI
             checks.Add(new UrlCheck(authuri));
             checks.Add(new AuthenticationCheck(RegistryContext));
 
-            // Test DLLs
-            var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Jhu.Graywulf.Components.AppDomainManager.Configuration.AssemblyPath);
-
-            checks.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Activities.dll")));
-            checks.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Components.dll")));
-            checks.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Install.dll")));
-            checks.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.IO.dll")));
-            checks.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Jobs.dll")));
-            checks.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Logging.dll")));
-            checks.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Registry.dll")));
-            checks.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Schema.dll")));
-            checks.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Sql.dll")));
-            checks.Add(new AssemblyCheck(Path.Combine(dir, "Jhu.Graywulf.Web.dll")));
+            RegisterDllChecks(checks);
 
             // Test remoting service on hosts running SQL Server
+            RegisterRemotingServiceChecks(checks);
+          
+            // TODO: scheduler test
+
+        }
+
+        private void RegisterDllChecks(List<CheckRoutineBase> checks)
+        {
+            var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Jhu.Graywulf.Components.AppDomainManager.Configuration.AssemblyPath);
+            var webassembly = Assembly.GetAssembly(typeof(Check));
+            var aa = Util.AssemblyReflector.GetReferencedAssemblies(webassembly);
+
+            foreach (var a in aa.Values)
+            {
+                var path = Path.Combine(dir, a.Name + ".dll");
+                checks.Add(new AssemblyCheck(path, a));
+            }
+        }
+
+        private void RegisterRemotingServiceChecks(List<CheckRoutineBase> checks)
+        {
             var hosts = new HashSet<string>();
 
             foreach (var si in RegistryContext.Cluster.FindServerInstances())
@@ -84,9 +89,6 @@ namespace Jhu.Graywulf.Web.UI
             {
                 checks.Add(new RemoteServiceCheck(host));
             }
-
-            // TODO: scheduler test
-
         }
     }
 }
