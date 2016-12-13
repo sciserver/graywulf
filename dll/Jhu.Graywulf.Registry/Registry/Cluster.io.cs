@@ -36,7 +36,11 @@ FROM ServerInstance si
 INNER JOIN Entity sie ON sie.Guid = si.EntityGuid
 INNER JOIN Machine m ON m.EntityGuid = sie.ParentGuid
 INNER JOIN Entity me ON me.Guid = m.EntityGuid
+INNER JOIN Entity mre ON mre.Guid = me.ParentGuid
+INNER JOIN Entity ce ON ce.Guid = mre.ParentGuid
 WHERE
+    ce.Guid = @ClusterGuid AND
+    me.DeploymentState = DeploymentState::Deployed AND me.RunningState = RunningState::Running AND
 	sie.DeploymentState = DeploymentState::Deployed AND sie.RunningState = RunningState::Running AND
     (@ShowHidden = 1 OR sie.Hidden = 0) AND
 	(@ShowDeleted = 1 OR sie.Deleted = 0)
@@ -47,6 +51,7 @@ WHERE
                 cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
                 cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
                 cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
+                cmd.Parameters.Add("@ClusterGuid", SqlDbType.UniqueIdentifier).Value = this.Guid;
 
                 using (var dr = cmd.ExecuteReader())
                 {
