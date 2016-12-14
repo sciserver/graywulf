@@ -167,7 +167,7 @@ namespace Jhu.Graywulf.Web.Security
             // first time we see the user, we need to load details from the registry
 
             var httpContext = HttpContext.Current;
-            var httpApplication = (ApplicationBase)HttpContext.Current.ApplicationInstance;
+            var httpApplication = (ApplicationBase)httpContext.ApplicationInstance;
 
             if (httpContext.Session != null)
             {

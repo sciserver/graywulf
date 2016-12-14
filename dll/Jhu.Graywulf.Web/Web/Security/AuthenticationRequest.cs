@@ -24,6 +24,7 @@ namespace Jhu.Graywulf.Web.Security
         private NameValueCollection queryString;
         private NameValueCollection headers;
         private CookieContainer cookies;
+        private AuthenticatorProtocolType protocolType;
 
         /// <summary>
         /// Holds the principal established so far during the processing of
@@ -72,6 +73,11 @@ namespace Jhu.Graywulf.Web.Security
             get { return cookies; }
         }
 
+        public AuthenticatorProtocolType ProtocolType
+        {
+            get { return protocolType; }
+        }
+
         public IPrincipal Principal
         {
             get { return principal; }
@@ -88,6 +94,13 @@ namespace Jhu.Graywulf.Web.Security
             this.password = password;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <remarks>
+        /// Called for ASP.NET web requests
+        /// </remarks>
         public AuthenticationRequest(System.Web.HttpContext context)
         {
             InitializeMembers();
@@ -97,10 +110,11 @@ namespace Jhu.Graywulf.Web.Security
             this.uri = request.Url;
             this.queryString.Add(request.QueryString);
             this.headers.Add(request.Headers);
+            this.protocolType = AuthenticatorProtocolType.WebRequest;
 
             for (int i = 0; i < request.Cookies.Count; i ++)
             {
-                // TODO: this might not handle multi-values cookies, test
+                // TODO: this might not handle multi-valued cookies, test
 
                 var cookie = Util.CookieConverter.ToCookie(request.Cookies[i]);
                 this.cookies.Add(uri, cookie);
@@ -109,6 +123,13 @@ namespace Jhu.Graywulf.Web.Security
             this.principal = context.User;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <remarks>
+        /// Called for WCF REST requests
+        /// </remarks>
         public AuthenticationRequest(System.ServiceModel.Web.IncomingWebRequestContext context)
         {
             InitializeMembers();
@@ -116,6 +137,7 @@ namespace Jhu.Graywulf.Web.Security
             this.uri = System.ServiceModel.OperationContext.Current.RequestContext.RequestMessage.Headers.To;
             this.queryString = HttpUtility.ParseQueryString(uri.Query);
             this.headers = context.Headers;
+            this.protocolType = AuthenticatorProtocolType.RestRequest;
 
             // Web services don't parse cookies, so we do it now
             var cookies = headers[Services.Constants.HttpHeaderCookie];
@@ -133,6 +155,7 @@ namespace Jhu.Graywulf.Web.Security
             this.queryString = new NameValueCollection();
             this.headers = new NameValueCollection();
             this.cookies = new CookieContainer();
+            this.protocolType = AuthenticatorProtocolType.Unknown;
             this.principal = null;
         }
 

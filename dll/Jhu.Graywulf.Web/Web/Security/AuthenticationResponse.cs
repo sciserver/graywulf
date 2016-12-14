@@ -95,19 +95,31 @@ namespace Jhu.Graywulf.Web.Security
 
         public void SetResponseHeaders(HttpResponse response)
         {
+            int q = 0;
+
             foreach (string key in headers.Keys)
             {
                 response.Headers.Add(key, headers[key]);
+                q++;
             }
 
             foreach (string key in cookies)
             {
                 response.Cookies.Add(cookies[key]);
+                q++;
+            }
+
+            if (q > 0)
+            {
+                // This response contains sensitive data, do not cache
+                response.CacheControl = "private";
             }
         }
 
         public void DeleteResponseHeaders(HttpResponse response)
         {
+
+
             foreach (string key in headers.Keys)
             {
                 response.Headers.Remove(key);

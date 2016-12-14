@@ -202,9 +202,10 @@ namespace Jhu.Graywulf.Web.Security
             // REST services do not use a session but we don't want to load the user
             // every single time from the session so do some caching here.
             // The problem is, however, that we don't want to keep the user in the cache
-            // for ever, so some cache expiration should be done
+            // forever, so some cache expiration should be done
 
             GraywulfPrincipal cachedPrincipal;
+
             if (principalCache.TryGetValue(principal.UniqueID, out cachedPrincipal))
             {
                 principal = cachedPrincipal;
