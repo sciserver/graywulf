@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Web.Security
                     if (FormsAuthentication.SlidingExpiration)
                     {
                         ticket = FormsAuthentication.RenewTicketIfOld(oldToken);
-                    }                  
+                    }
 
                     // Set special cookie path, if necessary
                     if (!ticket.CookiePath.Equals("/"))
@@ -133,6 +133,28 @@ namespace Jhu.Graywulf.Web.Security
             }
         }
 
+        public override void Deauthenticate(AuthenticationRequest request, AuthenticationResponse response)
+        {
+            // Create a dummy cookie which will be explicitly deleted
+            // by the response
+
+            var cookie = new HttpCookie(FormsAuthentication.FormsCookieName)
+            {
+                Expires = DateTime.Now.AddDays(-1),
+                Path = FormsAuthentication.FormsCookiePath,
+                Value = "",
+                Secure = FormsAuthentication.RequireSSL,
+                HttpOnly = true
+            };
+
+            if (FormsAuthentication.CookieDomain != null)
+            {
+                cookie.Domain = FormsAuthentication.CookieDomain;
+            }
+
+            response.Cookies.Add(cookie);
+        }
+
         public override void Reset(AuthenticationRequest request, AuthenticationResponse response)
         {
             if (response.Cookies[FormsAuthentication.FormsCookieName] != null)
@@ -165,7 +187,7 @@ namespace Jhu.Graywulf.Web.Security
             identity.IsMasterAuthority = true;
 
             identity.UserReference.Name = ticket.Name;
-            
+
             return principal;
         }
 

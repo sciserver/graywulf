@@ -25,7 +25,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Auth
 
             // Sign out from authenticators
             var wam = (WebAuthenticationModule)HttpContext.Current.ApplicationInstance.Modules["WebAuthenticationModule"];
-            wam.DeleteAuthResponseHeaders();
+            var authrequest = new AuthenticationRequest(HttpContext.Current);
+            var authresponse = wam.Deauthenticate(authrequest);
+            authresponse.DeleteResponseHeaders(Response);
 
             Session.Abandon();
 

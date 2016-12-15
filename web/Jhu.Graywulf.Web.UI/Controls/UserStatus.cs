@@ -167,8 +167,10 @@ namespace Jhu.Graywulf.Web.UI.Controls
             // we can do it here
 
             var url = authenticationModule.GetSignOutUrl();
+            var authrequest = new AuthenticationRequest(HttpContext.Current);
+            var authresponse = authenticationModule.Deauthenticate(authrequest);
 
-            authenticationModule.DeleteAuthResponseHeaders();
+            authresponse.DeleteResponseHeaders(Response);
             Session.Abandon();
             Response.Redirect(url, false);
         }

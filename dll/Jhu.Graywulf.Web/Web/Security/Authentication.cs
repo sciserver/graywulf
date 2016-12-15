@@ -114,6 +114,8 @@ namespace Jhu.Graywulf.Web.Security
         /// </remarks>
         public abstract void Authenticate(AuthenticationRequest request, AuthenticationResponse response);
 
+        public abstract void Deauthenticate(AuthenticationRequest request, AuthenticationResponse response);
+
         public abstract void Reset(AuthenticationRequest request, AuthenticationResponse response);
 
         /// <summary>

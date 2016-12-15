@@ -118,11 +118,12 @@ namespace Jhu.Graywulf.Web.Security
 
         public void DeleteResponseHeaders(HttpResponse response)
         {
-
+            int q = 0;
 
             foreach (string key in headers.Keys)
             {
                 response.Headers.Remove(key);
+                q++;
             }
 
             foreach (string key in cookies)
@@ -133,6 +134,13 @@ namespace Jhu.Graywulf.Web.Security
                 var cookie = new HttpCookie(key, "");
                 cookie.Expires = DateTime.Now.AddDays(-1);
                 response.Cookies.Add(cookie);
+                q++;
+            }
+
+            if (q > 0)
+            {
+                // This response contains sensitive data, do not cache
+                response.CacheControl = "private";
             }
         }
 

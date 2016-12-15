@@ -158,6 +158,27 @@ namespace Jhu.Graywulf.Web.Security
         }
 
         /// <summary>
+        /// Reset headers and cookies
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public AuthenticationResponse Deauthenticate(AuthenticationRequest request)
+        {
+            var response = new AuthenticationResponse(request);
+
+            if (authentications != null)
+            {
+                // Try each authentication protocol
+                for (int i = 0; i < authentications.Length; i++)
+                {
+                    authentications[i].Deauthenticate(request, response);
+                }
+            }
+
+            return response;
+        }
+
+        /// <summary>
         /// When implemented in a derived class, called when a user is successfully authenticated.
         /// </summary>
         /// <param name="response"></param>
