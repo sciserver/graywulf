@@ -95,8 +95,16 @@ namespace Jhu.Graywulf.Schema
 
                 foreach (var ds in dbs.Values)
                 {
-                    EnsureUserDatabaseExists(user, ds);
-                    EnsureUserDatabaseConfigured(user, ds);
+                    try
+                    {
+                        EnsureUserDatabaseExists(user, ds);
+                        EnsureUserDatabaseConfigured(user, ds);
+                    }
+                    catch (Exception ex)
+                    {
+                        ds.IsInError = true;
+                        ds.ErrorMessage = ex.Message;
+                    }
                 }
 
                 userDatabaseCache.TryAdd(user.Name, dbs, DateTime.Now.AddMinutes(10));

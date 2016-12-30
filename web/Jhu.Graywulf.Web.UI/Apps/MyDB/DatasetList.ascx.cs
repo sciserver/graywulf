@@ -76,7 +76,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             foreach (var key in mydbds.Keys)
             {
                 var mydbli = new ListItem(key, key);
+
+                if (mydbds[key].IsInError)
+                {
+                    mydbli.Text += " (not available)";
+                }
+
                 datasetList.Items.Add(mydbli);
+
             }
 
             if (!IsPostBack && DefaultRequestField != null)

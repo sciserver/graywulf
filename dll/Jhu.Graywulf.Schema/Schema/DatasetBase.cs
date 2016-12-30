@@ -45,6 +45,12 @@ namespace Jhu.Graywulf.Schema
         private string connectionString;
 
         [NonSerialized]
+        private bool isInError;
+
+        [NonSerialized]
+        private string errorMessage;
+
+        [NonSerialized]
         private DatabaseObjectCollection<DataType> userDefinedTypes;
 
         [NonSerialized]
@@ -140,6 +146,20 @@ namespace Jhu.Graywulf.Schema
         {
             get { return connectionString; }
             set { connectionString = value; }
+        }
+
+        [IgnoreDataMember]
+        public bool IsInError
+        {
+            get { return isInError; }
+            set { isInError = value; }
+        }
+
+        [IgnoreDataMember]
+        public string ErrorMessage
+        {
+            get { return errorMessage; }
+            set { errorMessage = value; }
         }
 
         [IgnoreDataMember]
@@ -240,6 +260,9 @@ namespace Jhu.Graywulf.Schema
 
             this.connectionString = null;
 
+            this.isInError = false;
+            this.errorMessage = null;
+
             this.userDefinedTypes = new DatabaseObjectCollection<DataType>(this);
             this.tables = new DatabaseObjectCollection<Table>(this);
             this.views = new DatabaseObjectCollection<View>(this);
@@ -265,6 +288,9 @@ namespace Jhu.Graywulf.Schema
             this.defaultSchemaName = old.defaultSchemaName;
 
             this.connectionString = old.connectionString;
+
+            this.isInError = old.isInError;
+            this.errorMessage = old.errorMessage;
 
             // No deep copy here
             this.userDefinedTypes = new DatabaseObjectCollection<DataType>(this);

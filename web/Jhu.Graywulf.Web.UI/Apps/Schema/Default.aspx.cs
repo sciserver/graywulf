@@ -108,7 +108,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
                 foreach (var key in mydbds.Keys)
                 {
-                    var mydbli = new ListItem(key, key);
+                    var mydbli = CreateDatasetListItem(mydbds[key]);
                     mydbli.Attributes.Add("class", "ToolbarControlHighlight");
                     DatasetList.Items.Add(mydbli);
                 }
@@ -128,8 +128,21 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 k.Name != Graywulf.Registry.Constants.CodeDbName &&
                 k.Name != Graywulf.Registry.Constants.TempDbName).OrderBy(k => k.Name))
             {
-                DatasetList.Items.Add(dsd.Name);
+                var li = CreateDatasetListItem(dsd);
+                DatasetList.Items.Add(li);
             }
+        }
+
+        private ListItem CreateDatasetListItem(DatasetBase ds)
+        {
+            var li = new ListItem(ds.Name, ds.Name);
+
+            if (ds.IsInError)
+            {
+                li.Text += " (not available)";
+            }
+
+            return li;
         }
 
         private void RefreshObjectTypeList()
@@ -150,10 +163,10 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         private void RefreshObjectList()
         {
-            try
-            {
                 ObjectList.Items.Clear();
 
+            try
+            {
                 var dataset = FederationContext.SchemaManager.Datasets[DatasetList.SelectedValue];
 
                 DatabaseObjectType type;
