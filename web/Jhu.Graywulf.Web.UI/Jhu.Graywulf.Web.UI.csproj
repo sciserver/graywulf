@@ -394,13 +394,6 @@
     <Compile Include="Apps\Schema\ColumnList.ascx.designer.cs">
       <DependentUpon>ColumnList.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Apps\Schema\DbObjectDetails.ascx.cs">
-      <DependentUpon>DbObjectDetails.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Apps\Schema\DbObjectDetails.ascx.designer.cs">
-      <DependentUpon>DbObjectDetails.ascx</DependentUpon>
-    </Compile>
     <Compile Include="Apps\Schema\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -569,7 +562,6 @@
     <Content Include="Apps\Query\Results.aspx" />
     <Content Include="Apps\Query\Web.config" />
     <Content Include="Apps\Schema\ColumnList.ascx" />
-    <Content Include="Apps\Schema\DbObjectDetails.ascx" />
     <Content Include="Apps\Schema\Default.aspx" />
     <Content Include="Apps\Schema\IndexList.ascx" />
     <Content Include="Apps\Schema\ParameterList.ascx" />
