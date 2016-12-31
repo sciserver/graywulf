@@ -49,6 +49,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::System.Web.UI.WebControls.Label objectNameLabel;
         
         /// <summary>
+        /// summaryPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel summaryPanel;
+        
+        /// <summary>
         /// summaryLabel control.
         /// </summary>
         /// <remarks>

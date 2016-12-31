@@ -28,6 +28,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 objectNameLabel.Text = databaseObject.ObjectName;
 
                 summaryLabel.Text = databaseObject.Metadata.Summary;
+                summaryPanel.Visible = !String.IsNullOrEmpty(databaseObject.Metadata.Summary);
                 remarksLabel.Text = databaseObject.Metadata.Remarks;
                 remarksPanel.Visible = !String.IsNullOrEmpty(databaseObject.Metadata.Remarks);
                 exampleLabel.Text = Util.DocumentationFormatter.FormatExample(databaseObject.Metadata.Example);
