@@ -207,6 +207,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the name of the entity which is occasionally displayed on the user interface.
         /// </summary>
         [XmlAttribute]
+        [DefaultValue("")]
         public string DisplayName
         {
             get { return displayName; }
