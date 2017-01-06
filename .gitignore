@@ -1,5 +1,7 @@
 ## Project specific ignores
 
+AssemblyInfo.cs
+
 ## App.config files are generated on build
 dll/Jhu.Graywulf.Install/app.config
 dll/Jhu.Graywulf.Web/app.config
