@@ -1,5 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <config>
+  <assemblySettings>
+    <internals>
+      <visibleTo>Jhu.Graywulf.Sql</visibleTo>
+      <visibleTo>Jhu.Graywulf.Test</visibleTo>
+    </internals>
+  </assemblySettings>
   <includes>
     <include path="\connectionStrings.config" />
     <include path="\registry.config" />

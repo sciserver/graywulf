@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<config>
+  <assemblySettings>
+    <internals>
+      <visibleTo>Jhu.Graywulf.Entities.Test</visibleTo>
+    </internals>
+  </assemblySettings>
+</config>
