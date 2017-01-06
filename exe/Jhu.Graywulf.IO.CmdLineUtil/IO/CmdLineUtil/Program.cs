@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.IO.CmdLineUtil
         private static void PrintHeader()
         {
             Console.WriteLine("Graywulf IO Command Line Utility");
-            Console.WriteLine(Copyright.InfoCopyright);
+            Console.WriteLine(Util.AssemblyReflector.GetCopyright());
         }
     }
 }

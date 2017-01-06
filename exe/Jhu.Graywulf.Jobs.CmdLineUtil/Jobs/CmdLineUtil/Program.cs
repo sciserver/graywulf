@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
         private static void PrintHeader()
         {
             Console.WriteLine("Graywulf Jobs Command Line Utility");
-            Console.WriteLine(Copyright.InfoCopyright);
+            Console.WriteLine(Util.AssemblyReflector.GetCopyright());
         }
     }
 }

@@ -65,5 +65,16 @@ namespace Jhu.Graywulf.Util
                 }
             }
         }
+
+        public static string GetCopyright(Assembly a)
+        {
+            var cpr = a.GetCustomAttribute<AssemblyCopyrightAttribute>();
+            return cpr.Copyright;
+        }
+
+        public static string GetCopyright()
+        {
+            return GetCopyright(Assembly.GetExecutingAssembly());
+        }
     }
 }

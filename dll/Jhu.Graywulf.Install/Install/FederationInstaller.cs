@@ -159,7 +159,7 @@ namespace Jhu.Graywulf.Install
 
             federation.ShortTitle = "";
             federation.LongTitle = "";
-            federation.Copyright = Jhu.Graywulf.Copyright.InfoCopyright;
+            federation.Copyright = Util.AssemblyReflector.GetCopyright();
             federation.Disclaimer = domain.Disclaimer;
             federation.Email = domain.Email;
         }

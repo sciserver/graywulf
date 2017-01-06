@@ -137,6 +137,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="Base.config" />
+    <None Include="build.config" />
     <None Include="post-build.ps1" />
     <None Include="pre-build.ps1" />
   </ItemGroup>
@@ -161,9 +162,6 @@
       <ProductName>Windows Installer 4.5</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="gwconfig.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

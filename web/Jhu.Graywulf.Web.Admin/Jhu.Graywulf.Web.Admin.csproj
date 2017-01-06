@@ -154,7 +154,6 @@
     <Content Include="Federation\SliceForm.aspx" />
     <Content Include="Federation\SlicingWizard.aspx" />
     <Content Include="Global.asax" />
-    <Content Include="gwconfig.xml" />
     <Content Include="Icons\Large\Cluster.gif" />
     <Content Include="Icons\Large\DatabaseDefinition.gif" />
     <Content Include="Icons\Large\DatabaseInstance.gif" />
@@ -1631,6 +1630,7 @@
     <Content Include="Base.config" />
     <Content Include="pre-build.ps1" />
     <Content Include="post-build.ps1" />
+    <Content Include="build.config" />
     <None Include="Scripts\CodeMirror\mode\livescript\livescript.ls" />
   </ItemGroup>
   <ItemGroup>

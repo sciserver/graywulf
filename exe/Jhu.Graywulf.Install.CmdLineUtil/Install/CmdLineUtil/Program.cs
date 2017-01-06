@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
         private static void PrintHeader()
         {
             Console.WriteLine("Graywulf Cluster Registry Command-Line Utility");
-            Console.WriteLine(Copyright.InfoCopyright);
+            Console.WriteLine(Util.AssemblyReflector.GetCopyright());
         }
     }
 }

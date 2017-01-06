@@ -105,6 +105,7 @@
     </EmbeddedResource>
     <None Include="App.config" />
     <None Include="Base.config" />
+    <None Include="build.config" />
     <None Include="post-build.ps1" />
     <None Include="pre-build.ps1" />
     <None Include="Properties\Settings.settings">
@@ -142,9 +143,6 @@
       <Project>{AADA04EE-F578-4628-8AE0-D423BB94C738}</Project>
       <Name>Jhu.Graywulf.Sql</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="gwconfig.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

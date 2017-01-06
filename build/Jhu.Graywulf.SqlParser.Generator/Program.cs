@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.SqlParser.Generator
         private static void PrintHeader()
         {
             Console.WriteLine("Graywulf SQL Parser Generator");
-            Console.WriteLine(Copyright.InfoCopyright);
+            Console.WriteLine(Util.AssemblyReflector.GetCopyright());
         }
     }
 }

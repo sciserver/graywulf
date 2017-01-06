@@ -674,7 +674,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="gwconfig.xml" />
     <Content Include="Scripts\Bootstrap\css\bootstrap-theme.css" />
     <Content Include="Scripts\Bootstrap\css\bootstrap-theme.min.css" />
     <Content Include="Scripts\Bootstrap\css\bootstrap.css" />
@@ -1203,6 +1202,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Themes\Basic\style.less" />
+    <Content Include="build.config" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>

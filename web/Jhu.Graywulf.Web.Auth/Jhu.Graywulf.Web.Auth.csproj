@@ -69,7 +69,6 @@
     <Content Include="Api\V1\Auth.svc" />
     <Content Include="Check.aspx" />
     <Content Include="Global.asax" />
-    <Content Include="gwconfig.xml" />
     <Content Include="packages.config" />
     <Content Include="Scripts\Bootstrap\css\bootstrap-theme.css" />
     <Content Include="Scripts\Bootstrap\css\bootstrap-theme.min.css" />
@@ -152,6 +151,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Base.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="build.config" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

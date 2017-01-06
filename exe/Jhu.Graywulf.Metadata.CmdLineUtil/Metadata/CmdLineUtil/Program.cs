@@ -45,7 +45,7 @@ namespace Jhu.Graywulf.Metadata.CmdLineUtil
         private static void PrintHeader()
         {
             Console.WriteLine("Graywulf Metadata Command Line Utility");
-            Console.WriteLine(Copyright.InfoCopyright);
+            Console.WriteLine(Util.AssemblyReflector.GetCopyright());
         }
     }
 }
