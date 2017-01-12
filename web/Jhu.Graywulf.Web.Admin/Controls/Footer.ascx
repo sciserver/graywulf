@@ -1,6 +1,6 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" Inherits="Jhu.Graywulf.Web.Admin.Controls.Footer" Codebehind="Footer.ascx.cs" %>
-<%= Jhu.Graywulf.Copyright.InfoCopyright %>
-|
+<%= Application[Jhu.Graywulf.Web.UI.Constants.ApplicationCopyright]  %>
+
 <a runat="server" id="Feedback" href="~/Feedback.aspx">feedback</a>
 |
 <a runat="server" id="Personnel" href="~/Docs/99_info/01_personnel.aspx">personnel</a>

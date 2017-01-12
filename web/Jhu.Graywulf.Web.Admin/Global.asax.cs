@@ -18,6 +18,7 @@ namespace Jhu.Graywulf.Web.Admin
 
             Application[Web.UI.Constants.ApplicationShortTitle] = "Graywulf admin";
             Application[Web.UI.Constants.ApplicationLongTitle] = "Graywulf admin interface";
+            Application[Web.UI.Constants.ApplicationCopyright] = Util.AssemblyReflector.GetCopyright();
         }
 
         protected override void Session_Start(object sender, EventArgs e)
