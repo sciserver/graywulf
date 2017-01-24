@@ -97,6 +97,8 @@
     <Compile Include="Schema\TableOrView.cs" />
     <Compile Include="Schema\TableStatistics.cs" />
     <Compile Include="Schema\TableValuedFunction.cs" />
+    <Compile Include="Schema\Unit.cs" />
+    <Compile Include="Schema\UnitPart.cs" />
     <Compile Include="Schema\Variable.cs" />
     <Compile Include="Schema\VariableMetadata.cs" />
     <Compile Include="Schema\View.cs" />
