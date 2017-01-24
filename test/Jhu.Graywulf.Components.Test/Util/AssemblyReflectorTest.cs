@@ -13,11 +13,14 @@ namespace Jhu.Graywulf.Util
             Assert.IsTrue(AssemblyReflector.IsSystem(Assembly.GetAssembly(typeof(string))));
         }
 
+        /*
+         * logic moved to AssemblyCheck
         [TestMethod]
         public void GetReferencedAssembliesTest()
         {
-            var res = AssemblyReflector.GetReferencedAssemblies(Assembly.GetAssembly(typeof(AssemblyReflectorTest)));
+            var res = AssemblyReflector.GetReferencedAssemblies(Assembly.GetAssembly(typeof(AssemblyReflectorTest)), true);
             Assert.AreEqual(1, res.Count);
         }
+        */
     }
 }

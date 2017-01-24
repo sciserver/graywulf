@@ -39,33 +39,6 @@ namespace Jhu.Graywulf.Util
             return SystemNames.Contains(name);
         }
 
-        public static Dictionary<string, AssemblyName> GetReferencedAssemblies(Assembly a)
-        {
-            return GetReferencedAssemblies(a, false);
-        }
-
-        public static Dictionary<string, AssemblyName> GetReferencedAssemblies(Assembly a, bool includeSystemAssemblies)
-        {
-            var names = new Dictionary<string, AssemblyName>();
-            GetReferencedAssemblies(a, includeSystemAssemblies, names);
-            return names;
-        }
-
-        private static void GetReferencedAssemblies(Assembly a, bool includeSystemAssemblies, Dictionary<string, AssemblyName> names)
-        {
-            foreach (var an in a.GetReferencedAssemblies())
-            {
-                if (!names.ContainsKey(an.FullName) &&
-                    (includeSystemAssemblies || !IsSystem(an)))
-                {
-                    names.Add(an.FullName, an);
-
-                    var aa = Assembly.Load(an);
-                    GetReferencedAssemblies(aa, includeSystemAssemblies, names);
-                }
-            }
-        }
-
         public static string GetCopyright(Assembly a)
         {
             var cpr = a.GetCustomAttribute<AssemblyCopyrightAttribute>();

@@ -56,21 +56,27 @@ namespace Jhu.Graywulf.Web.UI
 
             // TODO: scheduler test
 
-            RegisterServerInstanceChecks(checks);
-            RegisterDatabaseChecks(checks);
+            // These take a long time so only add if not filtered
+            if ((Filter & CheckCategory.Service) != 0)
+            {
+                RegisterServerInstanceChecks(checks);
+            }
+
+            if ((Filter & CheckCategory.Database) != 0)
+            {
+                RegisterDatabaseChecks(checks);
+            }
         }
 
         private void RegisterDllChecks(List<CheckRoutineBase> checks)
         {
-            var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Jhu.Graywulf.Components.AppDomainManager.Configuration.AssemblyPath);
-            var webassembly = Assembly.GetAssembly(typeof(Check));
-            var aa = Util.AssemblyReflector.GetReferencedAssemblies(webassembly);
+            var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin");
+            dir = Path.Combine(dir, Jhu.Graywulf.Components.AppDomainManager.Configuration.AssemblyPath);
 
-            foreach (var a in aa.Values)
-            {
-                var path = Path.Combine(dir, a.Name + ".dll");
-                checks.Add(new AssemblyCheck(path, a));
-            }
+            var webassembly = Assembly.GetAssembly(this.GetType());
+            var check = new AssemblyCheck(dir, webassembly);
+
+            checks.Add(check);
         }
 
         private void RegisterRemotingServiceChecks(List<CheckRoutineBase> checks)
