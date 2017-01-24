@@ -211,7 +211,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     destination.SchemaName = into.TableReference.SchemaName ?? destination.Dataset.DefaultSchemaName;
                     destination.TableNamePattern = into.TableReference.DatabaseObjectName;
                 }
-                
+
                 // Turn off unique name generation in case an into clause is used
                 destination.Options &= ~TableInitializationOptions.GenerateUniqueName;
             }

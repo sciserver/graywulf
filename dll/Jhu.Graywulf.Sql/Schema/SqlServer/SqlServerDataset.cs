@@ -1461,6 +1461,13 @@ END",
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="index"></param>
+        /// <remarks>
+        /// Do not use this function to build large indices.
+        /// </remarks>
         internal override void CreateIndex(Index index)
         {
             EnsureMutable(index);

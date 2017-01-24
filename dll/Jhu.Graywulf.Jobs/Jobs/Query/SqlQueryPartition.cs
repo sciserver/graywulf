@@ -400,7 +400,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        public void PrepareCreateDestinationTablePrimaryKey(Context context, IScheduler scheduler, out Table table)
+        public void PrepareCreateDestinationTablePrimaryKey(Context context, IScheduler scheduler, out Table destination)
         {
             switch (ExecutionMode)
             {
@@ -412,21 +412,34 @@ namespace Jhu.Graywulf.Jobs.Query
 
                         lock (syncRoot)
                         {
-                            table = query.Destination.GetQueryOutputTable(BatchName, QueryName, null, null);
+                            destination = query.Destination.GetQueryOutputTable(BatchName, QueryName, null, null);
 
                             var source = GetExecuteSourceQuery();
                             var columns = source.GetColumns().Where(ci => ci.IsKey).ToArray();
 
                             if (columns.Length > 0)
                             {
-                                var pk = new Index(table, columns, null, true);
-                                table.Indexes.TryAdd(pk.IndexName, pk);
+                                var pk = new Index(destination, columns, null, true);
+                                destination.Indexes.TryAdd(pk.IndexName, pk);
                             }
                         }
                     }
                     break;
                 default:
                     throw new NotImplementedException();
+            }
+        }
+
+        public void CreateDestinationTablePrimaryKey(Table destination)
+        {
+            if (destination.PrimaryKey != null)
+            {
+                var sql = CodeGenerator.GenerateCreatePrimaryKeyScript(destination, true);
+
+                using (var cmd = new SqlCommand(sql))
+                {
+                    ExecuteSqlOnDataset(cmd, destination.Dataset);
+                }
             }
         }
 
