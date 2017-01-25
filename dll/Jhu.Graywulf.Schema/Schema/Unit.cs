@@ -41,17 +41,14 @@ namespace Jhu.Graywulf.Schema
 
         private void parseUnitString(string unitString)
         {
-            var parts =  unitString.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
-            var first = 0;
+            var parts =  unitString.Split(new char[0], StringSplitOptions.RemoveEmptyEntries).ToList<string>();
+            
             if (double.TryParse(parts[0], out factor))
             {
-                first = 1;
+                parts.RemoveAt(0);
             }
 
-            for (int i=first; i < parts.Length; i++ )
-            {
-                this.parts.Add(new UnitPart(parts[i]));
-            }
+            parts.ForEach(p => this.parts.Add(new UnitPart(p)));
 
         }
 
