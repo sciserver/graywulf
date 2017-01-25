@@ -58,11 +58,31 @@ namespace Jhu.Graywulf.Schema
 
         private void parseUnitPartString(string part)
         {
-            Regex sPattern = new Regex(@"(?<base>\w+)(?<exp>[\+-]\d*[/]?\d*)?"); //
+            Regex sPattern = new Regex(@"(?<unit>\w+)(?<exp>[\+-]\d*[/]?\d*)?"); //
 
             Match m = sPattern.Match(part);
-            unitBase = m.Groups["base"].Value;
-            //TODO: prefix detection
+            var unit = m.Groups["unit"].Value;
+
+            if (Constants.UnitNames.Contains(unit))
+            {
+                unitBase = unit;
+            }
+            else
+            {
+                foreach (string p in Constants.UnitPrefixes.Keys.ToList())
+                {
+                    if (unit.StartsWith(p) & Constants.UnitNames.Contains(unit.Substring(p.Length)))
+                    {
+                        prefix = p;
+                        unitBase = unit.Substring(p.Length);
+                        break;
+                    }
+                    else
+                    {
+                        unitBase = unit;
+                    }
+                }
+            }
 
             exponent = m.Groups["exp"].Value;
         }
