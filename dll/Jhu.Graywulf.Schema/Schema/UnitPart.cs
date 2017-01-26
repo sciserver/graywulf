@@ -9,6 +9,8 @@ namespace Jhu.Graywulf.Schema
 {
     public class UnitPart
     {
+        private static readonly Regex unitRegex = new Regex(@"((?<func>\w+)\()?(?<unit>\w+)\)?(?<exp>[\+-]\d*[/]?\d*)?", RegexOptions.Compiled);
+
         private string prefix;
         private string unitBase;
         private string exponent;
@@ -20,7 +22,7 @@ namespace Jhu.Graywulf.Schema
             set { prefix = value; }
         }
 
-        public string Unit
+        public string UnitBase
         {
             get { return unitBase; }
             set { unitBase = value; }
@@ -45,7 +47,8 @@ namespace Jhu.Graywulf.Schema
 
         public UnitPart(string unit)
         {
-            parseUnitPartString(unit);
+            initializeMembers();
+            Parse(unit);
         }
         private void initializeMembers()
         {
@@ -56,11 +59,9 @@ namespace Jhu.Graywulf.Schema
         }
 
 
-        private void parseUnitPartString(string part)
+        private void Parse(string part)
         {
-            Regex sPattern = new Regex(@"(?<unit>\w+)(?<exp>[\+-]\d*[/]?\d*)?"); //
-
-            Match m = sPattern.Match(part);
+            Match m = unitRegex.Match(part);
             var unit = m.Groups["unit"].Value;
 
             if (Constants.UnitNames.Contains(unit))
@@ -84,7 +85,19 @@ namespace Jhu.Graywulf.Schema
                 }
             }
 
+            function = m.Groups["func"].Value;
             exponent = m.Groups["exp"].Value;
+        }
+        override public string ToString()
+        {
+            if (function == "" | function == null)
+            {
+                return string.Format("{0}{1}{2}", prefix, unitBase, exponent);
+            }
+            else
+            {
+                return string.Format("{0}({1}{2}){3}", function,prefix, unitBase, exponent);
+            }
         }
     }
 }
