@@ -31,6 +31,11 @@ namespace Jhu.Graywulf.Web.Api.V1
         [Description("Conveys a data table copy job.")]
         public CopyJob CopyJob { get; set; }
 
+        [DataMember(Name = "sqlScriptJob", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        [Description("Conveys a SQL script job.")]
+        public SqlScriptJob SqlScriptJob { get; set; }
+
         public JobRequest()
         {
         }
@@ -52,6 +57,10 @@ namespace Jhu.Graywulf.Web.Api.V1
             else if (CopyJob != null)
             {
                 return CopyJob;
+            }
+            else if (SqlScriptJob != null)
+            {
+                return SqlScriptJob;
             }
             else
             {

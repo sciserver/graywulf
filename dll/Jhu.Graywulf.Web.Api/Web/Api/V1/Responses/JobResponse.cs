@@ -26,10 +26,15 @@ namespace Jhu.Graywulf.Web.Api.V1
         [Description("A data table import job.")]
         public ImportJob ImportJob { get; set; }
 
-        [DataMember(Name = "copyjob", EmitDefaultValue = false)]
+        [DataMember(Name = "copyJob", EmitDefaultValue = false)]
         [DefaultValue(null)]
         [Description("A data table copy job.")]
         public CopyJob CopyJob { get; set; }
+
+        [DataMember(Name = "sqlScriptJob", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        [Description("A SQL script job.")]
+        public SqlScriptJob SqlScriptJob { get; set; }
 
         [DataMember(Name = "job", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -61,6 +66,11 @@ namespace Jhu.Graywulf.Web.Api.V1
             CopyJob = job;
         }
 
+        private void SetValue(SqlScriptJob job)
+        {
+            SqlScriptJob = job;
+        }
+
         private void SetValue(Job job)
         {
             Job = job;
@@ -83,6 +93,10 @@ namespace Jhu.Graywulf.Web.Api.V1
             else if (CopyJob != null)
             {
                 return CopyJob;
+            }
+            else if (SqlScriptJob != null)
+            {
+                return SqlScriptJob;
             }
             else
             {
