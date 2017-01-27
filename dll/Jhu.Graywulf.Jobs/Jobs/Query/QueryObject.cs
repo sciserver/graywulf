@@ -746,11 +746,11 @@ namespace Jhu.Graywulf.Jobs.Query
             if (mirroredDatasets.Length == 0)
             {
                 // If no graywulf datasets are used, get a server from the scheduler
-                // that has an instance of the code database and assume that it is
+                // that has an instance of the temp database and assume that it is
                 // configured correctly
 
-                var dd = ((GraywulfDataset)CodeDataset).DatabaseVersionReference.Value.DatabaseDefinition;
-                serverInstance = GetNextServerInstance(dd, Registry.Constants.CodeDbName);
+                var dd = ((GraywulfDataset)TemporaryDataset).DatabaseVersionReference.Value.DatabaseDefinition;
+                serverInstance = GetNextServerInstance(dd, Registry.Constants.TempDbName);
             }
             else
             {
