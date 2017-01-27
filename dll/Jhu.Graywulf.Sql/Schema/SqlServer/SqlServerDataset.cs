@@ -269,7 +269,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
                 throw new InvalidOperationException("Operation valid on mutable schemas only.");    // *** TODO
             }
         }
-        
+
         private void SetSchemaNameParameter(SqlCommand cmd, string schemaName)
         {
             if (isRestrictedSchema && String.IsNullOrWhiteSpace(schemaName))
@@ -1488,22 +1488,7 @@ END",
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    try
-                    {
-                        cmd.ExecuteNonQuery();
-                    }
-                    catch (SqlException ex)
-                    {
-                        if (ex.Number == 1505)
-                        {
-                            // TODO
-                            // Duplicate key, eat exception
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
+                    cmd.ExecuteNonQuery();
                 }
             }
         }

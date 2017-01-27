@@ -438,7 +438,27 @@ namespace Jhu.Graywulf.Jobs.Query
 
                 using (var cmd = new SqlCommand(sql))
                 {
+                    // Since it's hard to tell whether an output column is unique
+                    // we just attempt to create the PK here and eat the exception
+                    // it happens. Users will be able to create a PK themselves if
+                    // necessary.
+
+                    try
+                    {
                     ExecuteSqlOnDataset(cmd, destination.Dataset);
+                    }
+                    catch (SqlException ex)
+                    {
+                        if (ex.Number == 1505)
+                        {
+                            // TODO
+                            // Duplicate key, eat exception
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
         }
