@@ -36,6 +36,22 @@ namespace Jhu.Graywulf.Schema
         }
 
         [TestMethod]
+        public void UnitPartToHtmlTest1()
+        {
+            var part = new UnitPart() { UnitBase = "m", Exponent = "-2", Prefix = "k" };
+
+            Assert.AreEqual(part.ToHtml(),"km<sup>-2</sup>");
+        }
+
+        [TestMethod]
+        public void UnitPartToHtmlTest2()
+        {
+            var part = new UnitPart() { UnitBase = "mag", Exponent = "-1", Prefix = "u", Function = "log" };
+
+            Assert.AreEqual(part.ToHtml(), "log(umag)<sup>-1</sup>");
+        }
+
+        [TestMethod]
         public void ParseUnitTest()
         {
             var unitString = "1E-27 erg s-1 cm-2 AA-1";
@@ -43,5 +59,25 @@ namespace Jhu.Graywulf.Schema
 
             Assert.AreEqual(unitString, unit.ToString());
         }
+
+        [TestMethod]
+        public void UnitToHtmlTest()
+        {
+            var unit = new Unit("1E-27 erg s-1 cm-2 AA-1");
+
+            Assert.AreEqual(unit.ToHtml(), @"1E-27 erg s<sup>-1</sup> cm<sup>-2</sup> AA<sup>-1</sup>");
+
+        }
+
+        
+        [TestMethod]
+        public void UnitToLatexTest()
+        {
+            var unit = new Unit("1E-27 erg s-1 cm-2 AA-1");
+
+            Assert.AreEqual(unit.ToLatex(), @"${\rm 1E-27 \times erg~s^{-1}~cm^{-2}~AA^{-1}}$");
+
+        }
+
     }
 }

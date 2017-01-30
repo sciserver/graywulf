@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Schema
         public Unit(string unitString)
         {
             initalizeMembers();
-            ParseUnitString(unitString);
+            Parse(unitString);
         }
 
         private void initalizeMembers()
@@ -39,10 +39,10 @@ namespace Jhu.Graywulf.Schema
             parts = new List<UnitPart>();
         }
 
-        private void ParseUnitString(string unitString)
+        private void Parse(string unitString)
         {
-            var parts =  unitString.Split(new char[0], StringSplitOptions.RemoveEmptyEntries).ToList<string>();
-            
+            var parts = unitString.Split(new char[0], StringSplitOptions.RemoveEmptyEntries).ToList<string>();
+
             if (double.TryParse(parts[0], out factor))
             {
                 parts.RemoveAt(0);
@@ -54,10 +54,31 @@ namespace Jhu.Graywulf.Schema
 
         override public string ToString()
         {
-            var s = string.Format("{0} {1}",factor,string.Join(" ",parts));
+            var s = string.Format("{0} {1}", factor, string.Join(" ", parts));
             return s;
         }
-       
+
+        public string ToHtml()
+        {
+            var htmlParts = new List<string>();
+            parts.ForEach(p => htmlParts.Add(p.ToHtml()));
+            return string.Format("{0} {1}", factor, string.Join(" ", htmlParts));
+
+           // TODO: factor
+           // TODO: special letters (greek, M_bol ...)
+           
+        }
+
+        public string ToLatex()
+        {
+            var latexParts = new List<string>();
+            parts.ForEach(p => latexParts.Add(p.ToLatex()));
+            return string.Format(@"${{\rm {0} \times {1}}}$",factor, string.Join("~", latexParts));
+
+
+            // TODO: factor
+            // TODO: special letters (greek, M_bol ...)
+        }
 
     }
 }
