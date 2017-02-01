@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Schema
         private string quantity;
 
         [NonSerialized]
-        private string unit;
+        private Unit unit;
 
         [NonSerialized]
         private string format;
@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Schema
         }
 
         [DataMember]
-        public string Unit
+        public Unit Unit
         {
             get { return unit; }
             set { unit = value; }
@@ -65,7 +65,7 @@ namespace Jhu.Graywulf.Schema
         {
             this.@class = String.Empty;
             this.quantity = String.Empty;
-            this.unit = String.Empty;
+            this.unit = new Unit();
             this.format = "{0}";
         }
 

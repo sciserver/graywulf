@@ -1219,7 +1219,7 @@ ORDER BY c.name, p.name";
                                     meta.Quantity = value;
                                     break;
                                 case Constants.MetaUnit:
-                                    meta.Unit = value;
+                                    meta.Unit = new Unit(value);
                                     break;
                                 case Constants.MetaFormat:
                                     meta.Format = value;

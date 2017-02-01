@@ -109,6 +109,8 @@ namespace Jhu.Graywulf.Schema
             
             return string.Format(@"${{\rm {0} \times {1}}}$", factor, string.Join("~", latexParts));
 
+            // Math.Floor
+            // Math.
 
             // TODO: factor
             // TODO: special letters (greek, M_bol ...)
