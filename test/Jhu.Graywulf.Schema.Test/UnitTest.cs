@@ -36,22 +36,6 @@ namespace Jhu.Graywulf.Schema
         }
 
         [TestMethod]
-        public void UnitPartToHtmlTest1()
-        {
-            var part = new UnitPart() { UnitBase = "m", Exponent = "-2", Prefix = "k" };
-
-            Assert.AreEqual(part.ToHtml(),"km<sup>-2</sup>");
-        }
-
-        [TestMethod]
-        public void UnitPartToHtmlTest2()
-        {
-            var part = new UnitPart() { UnitBase = "mag", Exponent = "-1", Prefix = "u", Function = "log" };
-
-            Assert.AreEqual(part.ToHtml(), "log(umag)<sup>-1</sup>");
-        }
-
-        [TestMethod]
         public void ParseUnitTest()
         {
             var unitString = "1E-27 erg s-1 cm-2 AA-1";

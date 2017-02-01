@@ -61,19 +61,53 @@ namespace Jhu.Graywulf.Schema
         public string ToHtml()
         {
             var htmlParts = new List<string>();
-            parts.ForEach(p => htmlParts.Add(p.ToHtml()));
+
+            foreach (var p in parts)
+            {
+                var s = string.Format("{0}{1}", p.Prefix, p.UnitBase);
+
+                if (p.Function != "" & p.Function != null)
+                {
+                    s = string.Format("{0}({1})", p.Function, s);
+                }
+
+                if (p.Exponent != "" & p.Exponent != null)
+                {
+                    s = string.Format("{0}<sup>{1}</sup>", s, p.Exponent);
+                }
+
+                htmlParts.Add(s);
+            }
+
             return string.Format("{0} {1}", factor, string.Join(" ", htmlParts));
 
-           // TODO: factor
-           // TODO: special letters (greek, M_bol ...)
-           
+            // TODO: factor
+            // TODO: special letters (greek, M_bol ...)
+
         }
 
         public string ToLatex()
         {
             var latexParts = new List<string>();
-            parts.ForEach(p => latexParts.Add(p.ToLatex()));
-            return string.Format(@"${{\rm {0} \times {1}}}$",factor, string.Join("~", latexParts));
+
+            foreach (var p in parts)
+            {
+                var s = string.Format(@"{0}{1}", p.Prefix, p.UnitBase);
+
+            if (p.Function != "" & p.Function != null)
+            {
+                s = string.Format(@"{0}({1})", p.Function, s);
+            }
+
+            if (p.Exponent != "" & p.Exponent != null)
+            {
+                s = string.Format(@"{0}^{{{1}}}", s, p.Exponent);
+            }
+            latexParts.Add(s);
+
+            }
+            
+            return string.Format(@"${{\rm {0} \times {1}}}$", factor, string.Join("~", latexParts));
 
 
             // TODO: factor

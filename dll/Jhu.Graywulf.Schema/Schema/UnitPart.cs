@@ -99,41 +99,6 @@ namespace Jhu.Graywulf.Schema
                 return string.Format("{0}({1}{2}){3}", function, prefix, unitBase, exponent);
             }
         }
-
-        public string ToHtml()
-        {
-            var s = string.Format("{0}{1}", prefix, unitBase);
-
-            if (function != "" & function != null)
-            { 
-                s = string.Format("{0}({1})", function, s);
-            }
-
-            if (exponent != "" & exponent != null)
-            {
-                s = string.Format("{0}<sup>{1}</sup>", s, exponent);
-            }
-
-            return s;
-        }
-
-        public string ToLatex()
-        {
-            var s = string.Format(@"{0}{1}",prefix,unitBase);
-
-            if (function != "" & function != null)
-            {
-                s = string.Format(@"{0}({1})", function, s);
-            }
-            
-            if (exponent != "" & exponent != null)
-            {
-                s = string.Format(@"{0}^{{{1}}}", s, exponent);
-            }
-
-            return s;
-        }
-
-
+        
     }
 }
