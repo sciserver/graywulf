@@ -24,25 +24,24 @@ namespace Jhu.Graywulf.Schema
 
         public Unit()
         {
-            initalizeMembers();
+            InitalizeMembers();
         }
 
         public Unit(string unitString)
         {
-            initalizeMembers();
+            InitalizeMembers();
             Parse(unitString);
         }
-
-        private void initalizeMembers()
+        private void InitalizeMembers()
         {
             factor = 1.0;
             parts = new List<UnitPart>();
         }
 
-        private void Parse(string unitString)
+        public Unit Parse(string unitString)
         {
             var parts = unitString.Split(new char[0], StringSplitOptions.RemoveEmptyEntries).ToList<string>();
-
+            
             if (double.TryParse(parts[0], out factor))
             {
                 parts.RemoveAt(0);
@@ -50,7 +49,10 @@ namespace Jhu.Graywulf.Schema
 
             parts.ForEach(p => this.parts.Add(new UnitPart(p)));
 
+            return this;
         }
+        
+        
 
         override public string ToString()
         {
