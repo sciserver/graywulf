@@ -54,8 +54,14 @@ namespace Jhu.Graywulf.Schema
 
         override public string ToString()
         {
-            var s = string.Format("{0} {1}", factor, string.Join(" ", parts));
-            return s;
+            if (factor == 1 | factor ==0)
+            {
+                return string.Join(" ", parts);
+            }
+
+            else {
+                return string.Format("{0} {1}", factor, string.Join(" ", parts));
+            } 
         }
 
         public string ToHtml()
