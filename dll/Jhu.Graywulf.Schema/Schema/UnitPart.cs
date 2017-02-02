@@ -42,15 +42,15 @@ namespace Jhu.Graywulf.Schema
 
         public UnitPart()
         {
-            initializeMembers();
+            InitializeMembers();
         }
 
         public UnitPart(string unit)
         {
-            initializeMembers();
+            InitializeMembers();
             Parse(unit);
         }
-        private void initializeMembers()
+        private void InitializeMembers()
         {
             prefix = "";
             unitBase = "";
