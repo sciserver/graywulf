@@ -27,11 +27,6 @@ namespace Jhu.Graywulf.Schema
             InitalizeMembers();
         }
 
-        public Unit(string unitString)
-        {
-            InitalizeMembers();
-            Parse(unitString);
-        }
         private void InitalizeMembers()
         {
             factor = 1.0;
@@ -88,7 +83,15 @@ namespace Jhu.Graywulf.Schema
                 htmlParts.Add(s);
             }
 
-            return string.Format("{0} {1}", factor, string.Join(" ", htmlParts));
+            if (factor == 1 | factor == 0)
+            {
+                return string.Join(" ", htmlParts);
+            }
+
+            else
+            {
+                return string.Format("{0} {1}", factor, string.Join(" ", htmlParts));
+            }
 
             // TODO: factor
             // TODO: special letters (greek, M_bol ...)

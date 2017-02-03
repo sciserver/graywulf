@@ -36,10 +36,20 @@ namespace Jhu.Graywulf.Schema
         }
 
         [TestMethod]
-        public void ParseUnitTest()
+        public void ParseUnitTest1()
         {
             var unitString = "1E-27 erg s-1 cm-2 AA-1";
-            var unit = new Unit(unitString);
+            var unit = Unit.Parse(unitString);
+
+            Assert.AreEqual(unitString, unit.ToString());
+        }
+
+        [TestMethod]
+        public void ParseUnitTest2()
+        {
+            var unitString = "dag";
+            var unit = Unit.Parse(unitString);
+            
 
             Assert.AreEqual(unitString, unit.ToString());
         }
@@ -47,7 +57,7 @@ namespace Jhu.Graywulf.Schema
         [TestMethod]
         public void UnitToHtmlTest()
         {
-            var unit = new Unit("1E-27 erg s-1 cm-2 AA-1");
+            var unit = Unit.Parse("1E-27 erg s-1 cm-2 AA-1");
 
             Assert.AreEqual(unit.ToHtml(), @"1E-27 erg s<sup>-1</sup> cm<sup>-2</sup> AA<sup>-1</sup>");
 
@@ -57,7 +67,7 @@ namespace Jhu.Graywulf.Schema
         [TestMethod]
         public void UnitToLatexTest()
         {
-            var unit = new Unit("1E-27 erg s-1 cm-2 AA-1");
+            var unit = Unit.Parse("1E-27 erg s-1 cm-2 AA-1");
 
             Assert.AreEqual(unit.ToLatex(), @"${\rm 1E-27 \times erg~s^{-1}~cm^{-2}~AA^{-1}}$");
 
