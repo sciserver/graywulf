@@ -9,7 +9,7 @@ namespace Jhu.Graywulf.Schema
 {
     public class UnitPart
     {
-        private static readonly Regex unitRegex = new Regex(@"((?<func>\w+)\()?(?<unit>\w+)\)?(?<exp>[\+-]\d*[/]?\d*)?", RegexOptions.Compiled);
+        private static readonly Regex unitRegex = new Regex(@"((?<func>\w+)\()?(?<unit>\w+|%)\)?(?<exp>[\+-]\d*[/]?\d*)?", RegexOptions.Compiled);
 
         private string prefix;
         private string unitBase;
