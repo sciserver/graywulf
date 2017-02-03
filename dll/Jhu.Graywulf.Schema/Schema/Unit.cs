@@ -38,18 +38,19 @@ namespace Jhu.Graywulf.Schema
             parts = new List<UnitPart>();
         }
 
-        public Unit Parse(string unitString)
+        public static Unit Parse(string unitString)
         {
+            var unit = new Unit();
             var parts = unitString.Split(new char[0], StringSplitOptions.RemoveEmptyEntries).ToList<string>();
             
-            if (double.TryParse(parts[0], out factor))
+            if (double.TryParse(parts[0], out unit.factor))
             {
                 parts.RemoveAt(0);
             }
 
-            parts.ForEach(p => this.parts.Add(new UnitPart(p)));
+            parts.ForEach(p => unit.parts.Add(new UnitPart(p)));
 
-            return this;
+            return unit;
         }
         
         
