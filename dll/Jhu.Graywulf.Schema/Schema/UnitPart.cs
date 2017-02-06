@@ -87,6 +87,11 @@ namespace Jhu.Graywulf.Schema
 
             function = m.Groups["func"].Value;
             exponent = m.Groups["exp"].Value;
+            if (exponent.StartsWith("+"))
+            {
+                exponent = exponent.Substring(1);
+            }
+
         }
         override public string ToString()
         {
