@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.Schema
         [TestMethod]
         public void ParseUnitTest2()
         {
-            var unitString = "dag";
+            var unitString = "%";
             var unit = Unit.Parse(unitString);
             
 
