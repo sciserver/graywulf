@@ -37,7 +37,12 @@ namespace Jhu.Graywulf.Schema
         {
             var unit = new Unit();
             var parts = unitString.Split(new char[0], StringSplitOptions.RemoveEmptyEntries).ToList<string>();
-            
+
+            if (parts.Count == 0)
+            {
+                return unit;
+            }
+
             if (double.TryParse(parts[0], out unit.factor))
             {
                 parts.RemoveAt(0);
