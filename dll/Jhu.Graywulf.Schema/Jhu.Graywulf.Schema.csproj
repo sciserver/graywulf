@@ -87,6 +87,8 @@
     <Compile Include="Schema\IParameters.cs" />
     <Compile Include="Schema\Metadata.cs" />
     <Compile Include="Schema\Parameter.cs" />
+    <Compile Include="Schema\Quantity.cs" />
+    <Compile Include="Schema\QuantityIndex.cs" />
     <Compile Include="Schema\ScalarFunction.cs" />
     <Compile Include="Schema\SchemaException.cs" />
     <Compile Include="Schema\SchemaManager.cs" />

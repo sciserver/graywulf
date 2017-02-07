@@ -30,7 +30,7 @@
                     <asp:Label runat="server" Text='<%# Eval("DataType.TypeNameWithLength") %>' Width="150px" />
                     <asp:Label runat="server" Text='<%# Eval("DataType.ByteSize") %>' Width="64px" />
                     <asp:Label runat="server" Text='<%# Eval("Metadata.Class") %>' Width="150px" />
-                    <asp:Label runat="server" Text='<%# Eval("Metadata.Quantity") %>' Width="250px" />
+                    <asp:Label runat="server" Text='<%# ((Jhu.Graywulf.Schema.Quantity)Eval("Metadata.Quantity")).ToString() %>' Width="250px" />
                     <asp:Label runat="server" Text='<%# ((Jhu.Graywulf.Schema.Unit)Eval("Metadata.Unit")).ToHtml() %>' Width="150px" />
                 </div>
                 <div class="gw-list-row">

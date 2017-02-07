@@ -269,7 +269,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
                 throw new InvalidOperationException("Operation valid on mutable schemas only.");    // *** TODO
             }
         }
-        
+
         private void SetSchemaNameParameter(SqlCommand cmd, string schemaName)
         {
             if (isRestrictedSchema && String.IsNullOrWhiteSpace(schemaName))
@@ -1149,6 +1149,7 @@ WHERE (s.name = @schemaName OR @schemaName IS NULL) AND o.name = @objectName
 ORDER BY c.name, p.name";
 
             LoadAllVariableMetadata(sql, databaseObject, ((IColumns)databaseObject).Columns);
+            // ****
         }
 
         /// <summary>
@@ -1216,7 +1217,7 @@ ORDER BY c.name, p.name";
                                     meta.Class = value;
                                     break;
                                 case Constants.MetaQuantity:
-                                    meta.Quantity = value;
+                                    meta.Quantity = Quantity.Parse(value);
                                     break;
                                 case Constants.MetaUnit:
                                     meta.Unit = Unit.Parse(value);

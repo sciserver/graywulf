@@ -55,7 +55,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.DataType = column.DataType.TypeNameWithLength;
             this.Size = column.DataType.ByteSize;
             this.Class = column.Metadata.Class;
-            this.Quantity = column.Metadata.Quantity;
+            this.Quantity = column.Metadata.Quantity.ToString();
             this.Unit = column.Metadata.Unit.ToString();
             this.Summary = column.Metadata.Summary;
             this.Remarks = column.Metadata.Remarks;

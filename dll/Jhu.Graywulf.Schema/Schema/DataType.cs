@@ -213,6 +213,9 @@ namespace Jhu.Graywulf.Schema
         private LazyProperty<ConcurrentDictionary<string, Column>> columns;
 
         [NonSerialized]
+        private QuantityIndex quantities;
+
+        [NonSerialized]
         private LazyProperty<ConcurrentDictionary<string, Index>> indexes;
 
         [NonSerialized]
@@ -442,6 +445,16 @@ namespace Jhu.Graywulf.Schema
         {
             get { return columns.Value; }
             protected set { columns.Value = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the quantity indexes
+        /// </summary>
+        [IgnoreDataMember]
+        public QuantityIndex Quantities
+        {
+            get { return quantities; }
+            set { quantities = value; }
         }
 
         /// <summary>
@@ -715,6 +728,7 @@ namespace Jhu.Graywulf.Schema
             this.isUserDefined = false;
             this.isTableType = false;
             this.columns = new LazyProperty<ConcurrentDictionary<string, Column>>(LoadColumns);
+            this.quantities = new QuantityIndex();
             this.indexes = new LazyProperty<ConcurrentDictionary<string, Index>>(LoadIndexes);
             this.isAssemblyType = false;
         }
@@ -737,6 +751,7 @@ namespace Jhu.Graywulf.Schema
             this.isUserDefined = old.isUserDefined;
             this.isTableType = old.IsTableType;
             this.columns = new LazyProperty<ConcurrentDictionary<string, Column>>(LoadColumns);
+            this.quantities = new QuantityIndex();
             this.indexes = new LazyProperty<ConcurrentDictionary<string, Index>>(LoadIndexes);
             this.isAssemblyType = old.isAssemblyType;
         }

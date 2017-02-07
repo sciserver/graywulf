@@ -22,6 +22,9 @@ namespace Jhu.Graywulf.Schema
         private LazyProperty<ConcurrentDictionary<string, Column>> columns;
 
         [NonSerialized]
+        private LazyProperty<QuantityIndex> quantities;
+
+        [NonSerialized]
         private LazyProperty<ConcurrentDictionary<string, Index>> indexes;
 
         // TODO: consider moving this from here
@@ -40,6 +43,16 @@ namespace Jhu.Graywulf.Schema
         {
             get { return columns.Value; }
             protected set { columns.Value = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the quantity indexes
+        /// </summary>
+        [IgnoreDataMember]
+        public QuantityIndex Quantities
+        {
+            get { return quantities.Value; }
+            set { quantities.Value = value; }
         }
 
         /// <summary>
@@ -106,6 +119,7 @@ namespace Jhu.Graywulf.Schema
             this.ObjectType = DatabaseObjectType.Unknown;
 
             this.columns = new LazyProperty<ConcurrentDictionary<string, Column>>(LoadColumns);
+            this.quantities = new LazyProperty<QuantityIndex>(LoadQuantities);
             this.indexes = new LazyProperty<ConcurrentDictionary<string, Index>>(LoadIndexes);
             this.statistics = new LazyProperty<TableStatistics>(LoadStatistics);
         }
@@ -119,8 +133,14 @@ namespace Jhu.Graywulf.Schema
             this.ObjectType = old.ObjectType;
 
             this.columns = new LazyProperty<ConcurrentDictionary<string, Column>>(LoadColumns);
+            this.quantities = new LazyProperty<QuantityIndex>(LoadQuantities);
             this.indexes = new LazyProperty<ConcurrentDictionary<string, Index>>(LoadIndexes);
             this.statistics = new LazyProperty<TableStatistics>(LoadStatistics);
+        }
+
+        protected QuantityIndex LoadQuantities()
+        {
+            return QuantityIndex.Create(Columns.Values);
         }
 
         private TableStatistics LoadStatistics()
