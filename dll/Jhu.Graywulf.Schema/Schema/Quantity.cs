@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Schema
         public static Quantity Parse(string quantityString)
         {
             var quantity = new Quantity();
-            var parts = quantityString.Split(new char[] { ',' },StringSplitOptions.RemoveEmptyEntries);
+            var parts = quantityString.Split(new char[] { ';' , ' ' },StringSplitOptions.RemoveEmptyEntries);
 
             quantity.parts.AddRange(parts);
 
@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Schema
 
         public override string ToString()
         {
-            return base.ToString();
+            return string.Join("; ", parts);
         }
     }
 }
