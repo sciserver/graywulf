@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 namespace Jhu.Graywulf.Schema
 {
     [TestClass]
-    public class UnitTest
+    public class UnitTest : Jhu.Graywulf.Test.TestClassBase
     {
         [TestMethod]
         public void ParseUnitPartTest1()

@@ -6,7 +6,7 @@
     <ProjectGuid>{08DA807C-0A14-4B90-AA6C-30F40FD92D41}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Jhu.Graywulf.Schema.Test</RootNamespace>
+    <RootNamespace>Jhu.Graywulf</RootNamespace>
     <AssemblyName>Jhu.Graywulf.Schema.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -46,12 +46,16 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
       </ItemGroup>
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTest.cs" />
+    <Compile Include="Schema\QuantityIndexTest.cs" />
+    <Compile Include="Schema\QuantityTest.cs" />
+    <Compile Include="Schema\UnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -59,7 +63,12 @@
       <Project>{5868b518-cbfc-43fb-b9c8-c617a65121c4}</Project>
       <Name>Jhu.Graywulf.Schema</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Test\Jhu.Graywulf.Test.csproj">
+      <Project>{ea6164ba-b283-46c2-874b-348d6bad41ad}</Project>
+      <Name>Jhu.Graywulf.Test</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
