@@ -11,17 +11,17 @@ namespace Jhu.Graywulf.Registry
 {
     public class RegistrySerializer : ContextObject
     {
-        private Entity rootEntity;
+        private Entity[] rootEntities;
         private EntityGroup entityGroupMask;
         private EntityType entityTypeMask;
         private bool recursive;
         private bool excludeUserCreated;
         private HashSet<Guid> systemUsers;
 
-        public Entity RootEntity
+        public Entity[] RootEntities
         {
-            get { return rootEntity; }
-            set { rootEntity = value; }
+            get { return rootEntities; }
+            set { rootEntities = value; }
         }
 
         public EntityGroup EntityGroupMask
@@ -59,12 +59,20 @@ namespace Jhu.Graywulf.Registry
         {
             InitializeMembers();
 
-            this.rootEntity = rootEntity;
+            this.rootEntities = new Entity[] { rootEntity };
+        }
+
+        public RegistrySerializer(Entity[] rootEntitites)
+            : base(rootEntitites[0].Context)
+        {
+            InitializeMembers();
+
+            this.rootEntities = rootEntitites;
         }
 
         private void InitializeMembers()
         {
-            this.rootEntity = null;
+            this.rootEntities = null;
             this.entityGroupMask = EntityGroup.All;
             this.entityTypeMask = EntityType.All;
             this.recursive = true;
@@ -94,8 +102,18 @@ namespace Jhu.Graywulf.Registry
                 LoadSystemUsers();
             }
 
+            var entities = new Dictionary<Guid, Entity>();
+
+            for (int i = 0; i < rootEntities.Length; i++)
+            {
+                foreach (var e in EnumerateChildrenForSerialize(rootEntities[i]))
+                {
+                    entities.Add(e.Guid, e);
+                }
+            }
+
             var registry = new Registry();
-            registry.Entities = EnumerateChildrenForSerialize(rootEntity).ToArray();
+            registry.Entities = entities.Values.ToArray();
 
             var ser = new XmlSerializer(registry.GetType());
             ser.Serialize(output, registry);

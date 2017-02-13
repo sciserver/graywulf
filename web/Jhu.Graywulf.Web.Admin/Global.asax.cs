@@ -6,6 +6,7 @@ using System.Web.Security;
 using System.Web.SessionState;
 using System.Data.SqlClient;
 using Jhu.Graywulf.AccessControl;
+using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Admin

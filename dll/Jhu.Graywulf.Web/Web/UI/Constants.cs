@@ -15,6 +15,8 @@ namespace Jhu.Graywulf.Web.UI
         public const string ApplicationLongTitle = "Jhu.Graywulf.Web.LongTitle";
         public const string ApplicationCopyright = "Jhu.Graywulf.Web.Copyright";
 
+        public const string ApplicationFormDataCache = "Jhu.Graywulf.Web.FormDataCache";
+
         public const string SessionRegistryDatabase = "Jhu.Graywulf.Registry.Database";
         public const string SessionPrincipal = "Jhu.Graywulf.Security.Principal";
         public const string SessionTempPrincipal = "Jhu.Graywulf.Security.TempUser";

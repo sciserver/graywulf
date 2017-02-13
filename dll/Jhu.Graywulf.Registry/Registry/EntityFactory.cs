@@ -256,6 +256,23 @@ ORDER BY Number";
         #endregion
         #region Entity Load Functions
 
+        public IEnumerable<Entity> LoadEntities(IEnumerable<Guid> guids)
+        {
+            foreach (var guid in guids)
+            {
+                yield return LoadEntity(guid);
+            }
+        }
+
+        public IEnumerable<T> LoadEntities<T>(IEnumerable<Guid> guids)
+            where T : Entity, new()
+        {
+            foreach (var guid in guids)
+            {
+                yield return LoadEntity<T>(guid);
+            }
+        }
+
         /// <summary>
         /// Loads a strongly typed entity by Guid.
         /// </summary>
