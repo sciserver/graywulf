@@ -31,6 +31,6 @@ namespace Jhu.Graywulf.Schema
 
         // TODO Test LazyProperty<Qunatity>s of TableValuedFunction, TableOrView, DataType
 
-
+       
     }
 }

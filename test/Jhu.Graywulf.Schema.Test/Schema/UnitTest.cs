@@ -55,6 +55,16 @@ namespace Jhu.Graywulf.Schema
         }
 
         [TestMethod]
+        public void ParseUnitTest3()
+        {
+
+            var unitString = " ";
+            var unit = Unit.Parse(unitString);
+
+            Assert.AreEqual("", unit.ToString());
+        }
+
+        [TestMethod]
         public void UnitToHtmlTest()
         {
             var unit = Unit.Parse("1E-27 erg s-1 cm-2 AA-1");
