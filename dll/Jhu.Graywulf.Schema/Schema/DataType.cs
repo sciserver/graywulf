@@ -213,7 +213,7 @@ namespace Jhu.Graywulf.Schema
         private LazyProperty<ConcurrentDictionary<string, Column>> columns;
 
         [NonSerialized]
-        private QuantityIndex quantities;
+        private LazyProperty<QuantityIndex> quantities;
 
         [NonSerialized]
         private LazyProperty<ConcurrentDictionary<string, Index>> indexes;
@@ -453,8 +453,8 @@ namespace Jhu.Graywulf.Schema
         [IgnoreDataMember]
         public QuantityIndex Quantities
         {
-            get { return quantities; }
-            set { quantities = value; }
+            get { return quantities.Value; }
+            set { quantities.Value = value; }
         }
 
         /// <summary>
@@ -728,7 +728,7 @@ namespace Jhu.Graywulf.Schema
             this.isUserDefined = false;
             this.isTableType = false;
             this.columns = new LazyProperty<ConcurrentDictionary<string, Column>>(LoadColumns);
-            this.quantities = new QuantityIndex();
+            this.quantities = new LazyProperty<QuantityIndex>(LoadQuantities);
             this.indexes = new LazyProperty<ConcurrentDictionary<string, Index>>(LoadIndexes);
             this.isAssemblyType = false;
         }
@@ -751,7 +751,7 @@ namespace Jhu.Graywulf.Schema
             this.isUserDefined = old.isUserDefined;
             this.isTableType = old.IsTableType;
             this.columns = new LazyProperty<ConcurrentDictionary<string, Column>>(LoadColumns);
-            this.quantities = new QuantityIndex();
+            this.quantities = new LazyProperty<QuantityIndex>(LoadQuantities);
             this.indexes = new LazyProperty<ConcurrentDictionary<string, Index>>(LoadIndexes);
             this.isAssemblyType = old.isAssemblyType;
         }
@@ -798,6 +798,11 @@ namespace Jhu.Graywulf.Schema
             dr[SchemaTableColumn.IsLong] = this.IsMaxLength;
             dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = this.ObjectName;
             dr[SchemaTableColumn.AllowDBNull] = this.isNullable;
+        }
+
+        protected QuantityIndex LoadQuantities()
+        {
+            return QuantityIndex.Create(Columns.Values);
         }
     }
 }

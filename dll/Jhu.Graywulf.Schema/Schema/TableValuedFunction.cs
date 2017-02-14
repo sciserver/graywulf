@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Schema
         private LazyProperty<ConcurrentDictionary<string, Column>> columns;
 
         [NonSerialized]
-        private QuantityIndex quantities;
+        private LazyProperty<QuantityIndex> quantities;
 
         [NonSerialized]
         private LazyProperty<ConcurrentDictionary<string, Parameter>> parameters;
@@ -51,8 +51,8 @@ namespace Jhu.Graywulf.Schema
         [IgnoreDataMember]
         public QuantityIndex Quantities
         {
-            get { return quantities; }
-            set { quantities = value; }
+            get { return quantities.Value; }
+            set { quantities.Value = value; }
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Jhu.Graywulf.Schema
             this.ObjectType = DatabaseObjectType.TableValuedFunction;
 
             this.columns = new LazyProperty<ConcurrentDictionary<string, Column>>(LoadColumns);
-            this.quantities = new QuantityIndex();
+            this.quantities = new LazyProperty<QuantityIndex>(LoadQuantities);
             this.parameters = new LazyProperty<ConcurrentDictionary<string, Parameter>>(LoadParameters);
         }
 
@@ -117,7 +117,7 @@ namespace Jhu.Graywulf.Schema
             this.ObjectType = old.ObjectType;
 
             this.columns = new LazyProperty<ConcurrentDictionary<string, Column>>(LoadColumns);
-            this.quantities = new QuantityIndex();
+            this.quantities = new LazyProperty<QuantityIndex>(LoadQuantities);
             this.parameters = new LazyProperty<ConcurrentDictionary<string, Parameter>>(LoadParameters);
         }
 
@@ -128,6 +128,11 @@ namespace Jhu.Graywulf.Schema
         public override object Clone()
         {
             return new TableValuedFunction(this);
+        }
+
+        protected QuantityIndex LoadQuantities()
+        {
+            return QuantityIndex.Create(Columns.Values);
         }
 
         #endregion
