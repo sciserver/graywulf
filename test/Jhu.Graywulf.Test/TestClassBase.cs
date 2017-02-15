@@ -20,11 +20,19 @@ namespace Jhu.Graywulf.Test
     public abstract class TestClassBase
     {
         private Random rnd = new Random();
-        private SqlServerDataset ioTestDataset = new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString);
+        private SqlServerDataset ioTestDataset;
 
         protected SqlServerDataset IOTestDataset
         {
-            get { return ioTestDataset; }
+            get
+            {
+                if (ioTestDataset == null)
+                {
+                    ioTestDataset = CreateIOTestDataset();
+                }
+
+                return ioTestDataset;
+            }
         }
 
         #region Scheduler functions
@@ -53,6 +61,11 @@ namespace Jhu.Graywulf.Test
         }
 
         protected Task scheduler;
+
+        protected virtual SqlServerDataset CreateIOTestDataset()
+        {
+            return new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString);
+        }
 
         protected User SignInTestUser(Context context)
         {
@@ -357,8 +370,8 @@ namespace Jhu.Graywulf.Test
 
             var t = obj.GetType();
             var f = t.GetMethod(
-                name, 
-                BindingFlags.Default | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static, 
+                name,
+                BindingFlags.Default | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static,
                 null, CallingConventions.Any, tt, null);
 
             try
