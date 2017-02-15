@@ -9,7 +9,13 @@
             <input type="file" id="importedFile" name="importedFile" runat="server" class="FormField"
                 style="width: 420px" />
             <asp:RequiredFieldValidator runat="server" ControlToValidate="importedFile"
-                display="Dynamic" ErrorMessage="<br/ >A file must be selected" />
+                Display="Dynamic" ErrorMessage="<br/ >A file must be selected" />
+        </td>
+    </tr>
+    <tr runat="server" id="fileSizeWarning">
+        <td class="FormLabel"></td>
+        <td class="FormField">File uploads are limited to 128MB. Please use another method to
+            import larger amounts of data.
         </td>
     </tr>
 </table>
