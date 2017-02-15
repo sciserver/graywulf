@@ -15,9 +15,15 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         [TestMethod]
         public void TableMetadataTest()
         {
-            var ds = CreateTestDataset();
+            var ds = IOTestDataset;
 
-            var m = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "Author"].Metadata;
+            var t = ds.Tables[ds.DatabaseName, Jhu.Graywulf.Schema.SqlServer.Constants.DefaultSchemaName, "CatalogA"];
+
+            // TODO: check metadata
+            
         }
+
+
+
     }
 }
