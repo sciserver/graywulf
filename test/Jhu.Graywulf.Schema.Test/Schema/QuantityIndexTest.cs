@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Schema
 
             var qi = QuantityIndex.Create(columns);
 
-            Assert.AreEqual(7, qi.Count());
+            Assert.IsTrue(qi.Count() == 7);
 
         }
 
