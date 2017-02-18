@@ -85,6 +85,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.FileFormatForm fileFormatForm;
         
         /// <summary>
+        /// importOptionsForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Apps.MyDB.ImportOptionsForm importOptionsForm;
+        
+        /// <summary>
         /// commentsForm control.
         /// </summary>
         /// <remarks>

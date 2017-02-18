@@ -24,6 +24,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         private Credentials credentials;
         private FileFormat fileFormat;
         private DestinationTable destination;
+        private ImportOptions options;
 
         #endregion
         #region Properties
@@ -63,6 +64,15 @@ namespace Jhu.Graywulf.Web.Api.V1
             set { destination = value; }
         }
 
+        [DataMember(Name = "options", EmitDefaultValue = false)]
+        [Description("Optional settings of the table import.")]
+        [DefaultValue(null)]
+        public ImportOptions Options
+        {
+            get { return options; }
+            set { options = value; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -87,6 +97,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             this.fileFormat = null;
             this.credentials = null;
             this.destination = null;
+            this.options = null;
         }
 
         #endregion
@@ -123,6 +134,13 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                 // Format
                 this.fileFormat = GetFileFormat(JobInstance.Context, this.uri);
+
+                // Options
+                var gid = xr.GetXmlBoolean("ImportTablesParameters/Options/GenerateIdentityColumn");
+                this.options = new ImportOptions()
+                {
+                    GenerateIdentityColumn = gid
+                };
             }
         }
         
@@ -130,6 +148,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         {
             DataFileBase source = null;
             IO.Credentials credentials = null;
+            IO.Tasks.ImportTableOptions options = null;
 
             // Source
             if (FileFormat != null)
@@ -151,8 +170,15 @@ namespace Jhu.Graywulf.Web.Api.V1
                 credentials = Credentials.GetCredentials(context);
             }
 
+            if (Options != null)
+            {
+                options = Options.GetOptions();
+            }
+
             var ff = ImportTablesJobFactory.Create(context.Federation);
-            return ff.CreateParameters(context.Federation, uri, credentials, source, destinationtable);
+            var par = ff.CreateParameters(context.Federation, uri, credentials, source, destinationtable, options);
+
+            return par;
         }
 
         public override void Schedule(FederationContext context)

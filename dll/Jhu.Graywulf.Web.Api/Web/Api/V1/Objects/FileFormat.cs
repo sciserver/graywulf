@@ -20,7 +20,10 @@ namespace Jhu.Graywulf.Web.Api.V1
         [Description("MIME type of file. Overrides type infered from extension.")]
         public string MimeType { get; set; }
 
-        // TODO: additional file options
+        [DataMember(Name = "generateIdentityColumn", EmitDefaultValue = false)]
+        [DefaultValue(false)]
+        [Description("If true, automatically generates identity column on new tables.")]
+        public bool GenerateIdentityColumn { get; set; }
 
         public DataFileBase GetDataFile(FederationContext context, Uri uri)
         {
@@ -53,6 +56,11 @@ namespace Jhu.Graywulf.Web.Api.V1
                 }
 
                 // TODO: it might be a single compressed file... test
+            }
+
+            if (file != null)
+            {
+                file.GenerateIdentityColumn = GenerateIdentityColumn;
             }
 
             // TODO: add compression option for export

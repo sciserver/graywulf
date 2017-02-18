@@ -5,6 +5,7 @@
 <%@ Register Src="UploadForm.ascx" TagPrefix="jgwc" TagName="UploadForm" %>
 <%@ Register Src="FileFormatForm.ascx" TagPrefix="jgwc" TagName="FileFormatForm" %>
 <%@ Register Src="DestinationTableForm.ascx" TagPrefix="jgwc" TagName="DestinationTableForm" %>
+<%@ Register Src="ImportOptionsForm.ascx" TagPrefix="jgwc" TagName="ImportOptionsForm" %>
 <%@ Register Src="CommentsForm.ascx" TagPrefix="jgwc" TagName="CommentsForm" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="toolbar">
@@ -43,6 +44,7 @@
                 </p>
                 <div class="gw-details-panel">
                     <jgwc:FileFormatForm runat="server" ID="fileFormatForm" FileMode="Read" />
+                    <jgwc:ImportOptionsForm runat="server" ID="importOptionsForm" />
                     <jgwc:CommentsForm runat="server" ID="commentsForm" />
                 </div>
             </div>

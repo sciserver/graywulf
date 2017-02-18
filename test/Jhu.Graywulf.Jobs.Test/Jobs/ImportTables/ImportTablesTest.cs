@@ -60,7 +60,8 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                     Util.UriConverter.FromFilePath(path),
                     null,
                     null,
-                    destination);
+                    destination,
+                    null);
 
                 var ji = itf.ScheduleAsJob(parameters, queue, TimeSpan.Zero, "comments");
 
