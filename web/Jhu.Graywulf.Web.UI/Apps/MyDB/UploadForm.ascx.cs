@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.IO;
+using System.Web.Configuration;
+using System.Xml;
 using Jhu.Graywulf.Format;
 using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
@@ -13,6 +9,13 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 {
     public partial class UploadForm : FederationUserControlBase
     {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            var configuration = WebConfigurationManager.OpenWebConfiguration("~");
+            var section = (HttpRuntimeSection)configuration.GetSection("system.web/httpRuntime");
+            maxRequestLength.Text = (section.MaxRequestLength / 1024).ToString();
+        }
+
         public Uri Uri
         {
             get
@@ -42,7 +45,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             }
         }
 
-        public CopyTableBase GetTableImporter(DataFileBase file, DestinationTable table)
+        public CopyTableBase GetTableImporter(DataFileBase file, DestinationTable table, ImportTableOptions options)
         {
             var uri = this.Uri;
 
@@ -69,6 +72,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                     Destination = table,
                     StreamFactoryType = RegistryContext.Federation.StreamFactory,
                     FileFormatFactoryType = RegistryContext.Federation.FileFormatFactory,
+                    Options = options,
                 };
 
                 task.Open();
@@ -85,6 +89,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                     Destination = table,
                     StreamFactoryType = RegistryContext.Federation.StreamFactory,
                     FileFormatFactoryType = RegistryContext.Federation.FileFormatFactory,
+                    Options = options,
                 };
 
                 task.Open(FederationContext.StreamFactory.Open(importedFile.PostedFile.InputStream, DataFileMode.Read, compression, archival));

@@ -24,6 +24,14 @@ namespace Jhu.Graywulf.IO.Tasks
             [OperationContract]
             set;
         }
+
+        ImportTableOptions Options
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
     }
 
     /// <summary>
@@ -38,6 +46,7 @@ namespace Jhu.Graywulf.IO.Tasks
         #region Private member variables
 
         private DestinationTable destination;
+        private ImportTableOptions options;
 
         #endregion
         #region Properties
@@ -49,6 +58,12 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             get { return destination; }
             set { destination = value; }
+        }
+
+        public ImportTableOptions Options
+        {
+            get { return options; }
+            set { options = value; }
         }
 
         #endregion
@@ -67,11 +82,13 @@ namespace Jhu.Graywulf.IO.Tasks
         private void InitializeMembers()
         {
             this.destination = null;
+            this.options = null;
         }
 
         private void CopyMembers(ImportTableArchive old)
         {
             this.destination = old.destination;
+            this.options = old.options;
         }
 
         public override object Clone()
@@ -137,6 +154,11 @@ namespace Jhu.Graywulf.IO.Tasks
                     // We simply skip unrecognized files
                     if (ff.TryCreateFile(Util.UriConverter.FromFilePath(entry.Filename), out filename, out extension, out compression, out file))
                     {
+                        if (options != null)
+                        {
+                            file.GenerateIdentityColumn = options.GenerateIdentityColumn;
+                        }
+
                         try
                         {
                             // Open the file. It's read directly from the archive stream.

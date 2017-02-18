@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
         /// <summary>
         /// Creates parameters for a single file or single-archive import job
         /// </summary>
-        public virtual ImportTablesParameters CreateParameters(Federation federation, Uri uri, Credentials credentials, DataFileBase source, DestinationTable destination)
+        public virtual ImportTablesParameters CreateParameters(Federation federation, Uri uri, Credentials credentials, DataFileBase source, DestinationTable destination, ImportTableOptions options)
         {
             var sf = StreamFactory.Create(federation.StreamFactory);
             var ff = FileFormatFactory.Create(federation.FileFormatFactory);
@@ -105,6 +105,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                     Sources = new[] { source },
                     Destinations = new[] { destination },
                     Archival = DataFileArchival.None,
+                    Options = options,
                     FileFormatFactoryType = federation.FileFormatFactory,
                     StreamFactoryType = federation.StreamFactory,
                 };
@@ -121,6 +122,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                     Sources = source == null ? null : new[] { source },
                     Destinations = new[] { destination },
                     Archival = archival,
+                    Options = options,
                     Credentials = credentials,
                     FileFormatFactoryType = federation.FileFormatFactory,
                     StreamFactoryType = federation.StreamFactory,

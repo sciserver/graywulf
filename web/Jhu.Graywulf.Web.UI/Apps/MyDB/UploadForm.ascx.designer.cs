@@ -38,5 +38,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlTableRow fileSizeWarning;
+        
+        /// <summary>
+        /// maxRequestLength control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label maxRequestLength;
     }
 }

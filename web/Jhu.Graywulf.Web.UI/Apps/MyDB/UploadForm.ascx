@@ -14,7 +14,7 @@
     </tr>
     <tr runat="server" id="fileSizeWarning">
         <td class="FormLabel"></td>
-        <td class="FormField">File uploads are limited to 128MB. Please use another method to
+        <td class="FormField">File uploads are limited to <asp:Label runat="server" ID="maxRequestLength" /> MB. Please use another method to
             import larger amounts of data.
         </td>
     </tr>
