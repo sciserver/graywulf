@@ -105,7 +105,10 @@ namespace Jhu.Graywulf.Web.Api.V1
                         xr.GetXmlInnerText("CopyTablesParameters/Items/CopyTablesItem/Destination/TableNamePattern")),
                 };
 
-                move = !xr.GetXmlBoolean("CopyTablesParameters/Items/CopyTablesItem/dropSourceTable");
+                if (xr.TryGetXmlBoolean("CopyTablesParameters/Items/CopyTablesItem/dropSourceTable", out move))
+                {
+                    move = !move;
+                }
             }
         }
 

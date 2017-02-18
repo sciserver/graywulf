@@ -48,12 +48,12 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        protected virtual void ImportFileHelper(string uri, string comments)
+        protected virtual void ImportFileHelper(string uri, bool generateIdentityColumn)
         {
-            ImportFileHelper(uri, Registry.Constants.UserDbName, null, comments);
+            ImportFileHelper(uri, Registry.Constants.UserDbName, null, generateIdentityColumn);
         }
 
-        protected virtual void ImportFileHelper(string uri, string dataset, string table, string comments)
+        protected virtual void ImportFileHelper(string uri, string dataset, string table, bool generateIdentityColumn)
         {
             using (SchedulerTester.Instance.GetToken())
             {
@@ -72,12 +72,16 @@ namespace Jhu.Graywulf.Web.Api.V1
                         var job = new ImportJob()
                         {
                             Uri = new Uri(uri),
-                            Comments = comments,
+                            Comments = GetTestUniqueName(),
                             Destination = new DestinationTable()
                             {
                                 Dataset = dataset,
                                 Table = table,
                             },
+                            Options = new ImportOptions()
+                            {
+                                GenerateIdentityColumn = generateIdentityColumn
+                            }
                         };
 
                         var request = new JobRequest()
@@ -103,7 +107,8 @@ namespace Jhu.Graywulf.Web.Api.V1
         [TestMethod]
         public void ImportFileFromHttpTest()
         {
-            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.csv", "ImportFileFromHttpTest");
+            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.csv", false);
+            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.csv", true);
         }
 
         // TODO: add FTP
@@ -111,19 +116,19 @@ namespace Jhu.Graywulf.Web.Api.V1
         [TestMethod]
         public void ImportFileWithTableNameTest()
         {
-            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.csv", Registry.Constants.UserDbName, "csv_numbers", "ImportFileWithTableNameTest");
+            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.csv", Registry.Constants.UserDbName, "csv_numbers", false);
         }
 
         [TestMethod]
         public void ImportCompressedTest()
         {
-            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.csv.gz", "ImportCompressedTest");
+            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.csv.gz", false);
         }
 
         [TestMethod]
         public void ImportArchiveTest()
         {
-            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.zip", "ImportArchiveTest");
+            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.zip", false);
         }
 
         [TestMethod]
@@ -131,7 +136,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         public void InvalidDatasetTest()
         {
             // Import into the TEST dataset is restricted
-            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.zip", "Test", "InvalidDatasetTest", "");
+            ImportFileHelper("http://localhost/graywulf_io_test/csv_numbers.zip", "Test", "InvalidDatasetTest", false);
         }
     }
 }

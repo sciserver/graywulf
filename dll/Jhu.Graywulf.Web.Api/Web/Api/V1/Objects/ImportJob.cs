@@ -136,7 +136,8 @@ namespace Jhu.Graywulf.Web.Api.V1
                 this.fileFormat = GetFileFormat(JobInstance.Context, this.uri);
 
                 // Options
-                var gid = xr.GetXmlBoolean("ImportTablesParameters/Options/GenerateIdentityColumn");
+                bool gid;
+                xr.TryGetXmlBoolean("ImportTablesParameters/Options/GenerateIdentityColumn", out gid);
                 this.options = new ImportOptions()
                 {
                     GenerateIdentityColumn = gid
