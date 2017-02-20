@@ -28,9 +28,6 @@ namespace Jhu.Graywulf.Schema
             Assert.IsTrue(qi.Count() == 7);
 
         }
-
-        // TODO Test LazyProperty<Qunatity>s of TableValuedFunction, TableOrView, DataType
-
-       
+              
     }
 }
