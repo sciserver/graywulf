@@ -12,8 +12,13 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
     public class SqlServerMetadataTest : SqlServerTestBase
     {
 
+        protected override SqlServerDataset CreateIOTestDataset()
+        {
+            return new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.SqlServerSchemaTestConnectionString);
+        }
+
         [TestMethod]
-        public void TableMetadataTest()
+        public void TableMetadataQuantityTest()
         {
             var ds = IOTestDataset;
 
@@ -36,13 +41,14 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
         }
 
         [TestMethod]
-        public void QuantiesLoadTest()
+        public void QuantitiesLoadTest()
         {
             var ds = IOTestDataset;
-            var TVF = new TableValuedFunction(ds);
 
-            Assert.IsTrue(TVF.Quantities.Count == 7);
-        } 
+            var tvf = ds.TableValuedFunctions["SqlInlineTableValuedFunction|TEST|Graywulf_Schema_Test|dbo|TestTableValuedFunction"];
+
+            Assert.IsTrue(tvf.Quantities.Count == 0);
+        }
 
 
     }
