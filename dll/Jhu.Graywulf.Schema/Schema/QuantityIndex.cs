@@ -9,6 +9,7 @@ namespace Jhu.Graywulf.Schema
 {
     public class QuantityIndex : ConcurrentDictionary<string, List<Variable>>
     {
+        
 
         public static QuantityIndex Create(IEnumerable<Variable> variables)
         {
@@ -31,6 +32,18 @@ namespace Jhu.Graywulf.Schema
             }
 
             return res;
+        }
+
+        public static List<Variable> SearchQuantity(IEnumerable<Variable> variables, string quantityName)
+        {
+            var quantities = Create(variables);
+
+            if (quantities.Keys.Contains(quantityName))
+            {
+                return quantities[quantityName];
+            }
+            else throw new SchemaException(ExceptionMessages.QuantityNotFound);
+
         }
     }
 

@@ -149,5 +149,14 @@ namespace Jhu.Graywulf.Schema {
                 return ResourceManager.GetString("InvalidViewName", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quantity &apos;{0}&apos; was not found..
+        /// </summary>
+        public static string QuantityNotFound {
+            get {
+                return ResourceManager.GetString("QuantityNotFound", resourceCulture);
+            }
+        }
     }
 }

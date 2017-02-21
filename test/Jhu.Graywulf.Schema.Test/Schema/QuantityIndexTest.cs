@@ -28,6 +28,24 @@ namespace Jhu.Graywulf.Schema
             Assert.IsTrue(qi.Count() == 7);
 
         }
-              
+
+
+
+        [TestMethod]
+        public void SearchQuantityTest1()
+        {
+            var res = QuantityIndex.SearchQuantity(columns, "pos.frame=j2000");
+
+            Assert.IsTrue(res[0].Name == "ra");
+            Assert.IsTrue(res.Count == 2);
+        }
+        
+        [TestMethod]
+        [ExpectedException(typeof(SchemaException))]
+        public void SearchQuantityTest2()
+        {
+            var res = QuantityIndex.SearchQuantity(columns, "pos.gal.l");
+        }
+
     }
 }
