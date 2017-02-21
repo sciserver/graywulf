@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Schema
             }
 
             else {
-                return string.Format("{0} {1}", factor, string.Join(" ", parts));
+                return string.Format("{0:0.###E+0} {1}", factor, string.Join(" ", parts));
             } 
         }
 
@@ -95,7 +95,7 @@ namespace Jhu.Graywulf.Schema
 
             else
             {
-                return string.Format("{0} {1}", factor, string.Join(" ", htmlParts));
+                return string.Format("{0:0.###E+0} {1}", factor, string.Join(" ", htmlParts));
             }
 
             // TODO: factor
