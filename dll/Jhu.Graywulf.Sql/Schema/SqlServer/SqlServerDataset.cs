@@ -1197,7 +1197,7 @@ ORDER BY c.name, p.name";
                         {
                             string name = dr.GetString(0);
                             string metaname = dr.GetString(1);
-                            string value = dr.GetString(2);
+                            string value = dr.GetValue(2).ToString();
 
                             if (name != variablename)
                             {
