@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Reflection;
 using System.IO;
 
@@ -9,6 +9,8 @@ namespace Jhu.Graywulf.Check
 {
     public class AssemblyCheck : CheckRoutineBase
     {
+        private static readonly Regex gitHashRegex = new Regex(@"\(([0-9a-f]{40})\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         private string baseDir;
         private Assembly assembly;
         private Dictionary<string, AssemblyName> references;
@@ -111,6 +113,28 @@ namespace Jhu.Graywulf.Check
                             else
                             {
                                 output.WriteLine("   <font color=\"red\">Error:</font> Referenced and available versions don't match!");
+                            }
+                        }
+
+                        var cad = aa.GetCustomAttributesData();
+
+                        if (cad != null)
+                        {
+                            var d = cad.Where(i => i.AttributeType.Name == "AssemblyTitleAttribute").FirstOrDefault();
+
+                            if (d != null && d.ConstructorArguments.Count > 0 && d.ConstructorArguments[0].Value != null)
+                            {
+                                var desc = (string)d.ConstructorArguments[0].Value;
+                                var m = gitHashRegex.Match(desc);
+
+                                if (m.Success)
+                                {
+                                    output.WriteLine("   Git commit hash: {0}", m.Groups[1].Value);
+                                }
+                                else
+                                {
+                                    output.WriteLine("   Git commit hash not found");
+                                }
                             }
                         }
                     }
