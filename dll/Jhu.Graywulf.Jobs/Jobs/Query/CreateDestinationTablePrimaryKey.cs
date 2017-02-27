@@ -34,15 +34,14 @@ namespace Jhu.Graywulf.Jobs.Query
 
             Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
             string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, destinationTable), callback, state);
+            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, queryPartition, destinationTable), callback, state);
         }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, Table destinationTable)
+        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlQueryPartition queryPartition, Table destinationTable)
         {
-            if (destinationTable.PrimaryKey != null)
-            {
-                destinationTable.PrimaryKey.Create();
-            }
+            RegisterCancelable(workflowInstanceGuid, activityInstanceId, queryPartition);
+            queryPartition.CreateDestinationTablePrimaryKey(destinationTable);
+            UnregisterCancelable(workflowInstanceGuid, activityInstanceId, queryPartition);
         }
     }
 }

@@ -1462,6 +1462,13 @@ END",
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="index"></param>
+        /// <remarks>
+        /// Do not use this function to build large indices.
+        /// </remarks>
         internal override void CreateIndex(Index index)
         {
             EnsureMutable(index);
@@ -1482,22 +1489,7 @@ END",
             {
                 using (var cmd = new SqlCommand(sql, cn))
                 {
-                    try
-                    {
-                        cmd.ExecuteNonQuery();
-                    }
-                    catch (SqlException ex)
-                    {
-                        if (ex.Number == 1505)
-                        {
-                            // TODO
-                            // Duplicate key, eat exception
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
+                    cmd.ExecuteNonQuery();
                 }
             }
         }

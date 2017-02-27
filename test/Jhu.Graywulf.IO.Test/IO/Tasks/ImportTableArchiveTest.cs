@@ -14,7 +14,13 @@ namespace Jhu.Graywulf.IO.Tasks
     [TestClass]
     public class ImportTableArchiveTest : TestClassBase
     {
-        private IImportTableArchive GetImportTableArchiveTask(string path, string table, bool remote)
+        enum ArchiveType
+        {
+            SingleFile,
+            MultipleFiles,
+        }
+
+        private IImportTableArchive GetImportTableArchiveTask(string path, string tableNamePattern, bool remote, bool generateIdentityColumn)
         {
             var ds = IOTestDataset;
             ds.IsMutable = true;
@@ -24,7 +30,7 @@ namespace Jhu.Graywulf.IO.Tasks
                 Dataset = ds,
                 DatabaseName = ds.DatabaseName,
                 SchemaName = ds.DefaultSchemaName,
-                TableNamePattern = table,
+                TableNamePattern = tableNamePattern,
             };
 
             IImportTableArchive it = null;
@@ -40,12 +46,23 @@ namespace Jhu.Graywulf.IO.Tasks
             it.BatchName = Path.GetFileNameWithoutExtension(path);
             it.Uri = Util.UriConverter.FromFilePath(path);
             it.Destination = destination;
+            it.Options = new ImportTableOptions()
+            {
+                GenerateIdentityColumn = generateIdentityColumn
+            };
 
             return it;
         }
 
-        private void DropTestTables(string name)
+        private void ExecuteImportTableArchiveTest(IImportTableArchive it)
         {
+            it.Open();
+            it.Execute();
+        }
+
+        private void DropTestTables()
+        {
+            var name = GetTestClassName();
             var ds = IOTestDataset;
             ds.IsMutable = true;
 
@@ -59,48 +76,106 @@ namespace Jhu.Graywulf.IO.Tasks
             }
         }
 
-        [TestMethod]
-        public void ImportTest()
+        private void ImportTableArchiveTestHelper(ArchiveType type, bool remote, bool generateIdentity)
         {
-            var path = @"..\..\..\graywulf\test\files\csv_numbers.zip";
-            var table = "TableImportArchiveTest_ImportTest";
-            var it = GetImportTableArchiveTask(path, table, false);
+            ServiceTesterToken token = null;
+            string path, tableNamePattern;
+            Schema.Table table;
+            int[] columnCount;
 
-            it.Open();
-            it.Execute();
+            DropTestTables();
 
-            it.Destination.GetTable().Drop();
+            if (remote)
+            {
+                token = RemoteServiceTester.Instance.GetToken();
+                RemoteServiceTester.Instance.EnsureRunning();
+            }
+
+            switch (type)
+            {
+                case ArchiveType.SingleFile:
+                    path = GetTestFilePath(@"graywulf\test\files\csv_numbers.zip");
+                    tableNamePattern = GetTestUniqueName();
+                    columnCount = new[] { 5 };
+                    break;
+                case ArchiveType.MultipleFiles:
+                    path = GetTestFilePath(@"graywulf\test\files\archive.zip");
+                    tableNamePattern = GetTestUniqueName() + "_[$ResultsetName]";
+                    columnCount = new[] { 5, 2 };
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            if (generateIdentity)
+            {
+                for (int i = 0; i < columnCount.Length; i++)
+                {
+                    columnCount[i]++;
+                }
+            }
+
+            var it = GetImportTableArchiveTask(path, tableNamePattern, remote, generateIdentity);
+            ExecuteImportTableArchiveTest(it);
+
+            for (int i = 0; i < it.Results.Count(); i++)
+            {
+                table = IOTestDataset.Tables[null, it.Results[i].SchemaName, it.Results[i].TableName];
+                Assert.AreEqual(columnCount[i], table.Columns.Count);
+            }
+            
+            if (remote)
+            {
+                token.Dispose();
+            }
         }
 
         [TestMethod]
-        public void RemoteImportTest()
+        public void ImportSingleFileTest()
         {
-            using (RemoteServiceTester.Instance.GetToken())
-            {
-                RemoteServiceTester.Instance.EnsureRunning();
+            ImportTableArchiveTestHelper(ArchiveType.SingleFile, false, false);
+        }
 
-                var path = @"..\..\..\graywulf\test\files\csv_numbers.zip";
-                var table = "TableImportArchiveTest_RemoteImportTest";
-                var it = GetImportTableArchiveTask(path, table, false);
+        [TestMethod]
+        public void ImportSingleFileGenerateIdentityTest()
+        {
+            ImportTableArchiveTestHelper(ArchiveType.SingleFile, false, true);
+        }
 
-                it.Open();
-                it.Execute();
+        [TestMethod]
+        public void RemoteImportSingleFileTest()
+        {
+            ImportTableArchiveTestHelper(ArchiveType.SingleFile, true, false);
+        }
 
-                it.Destination.GetTable().Drop();
-            }
+        [TestMethod]
+        public void RemoteImportSingleFileGenerateIdentityTest()
+        {
+            ImportTableArchiveTestHelper(ArchiveType.SingleFile, true, true);
         }
 
         [TestMethod]
         public void ImportArchiveTest()
         {
-            var path = @"..\..\..\graywulf\test\files\archive.zip";
-            var table = "TableImportArchiveTest_" + IO.Constants.ResultsetNameToken;
-            var it = GetImportTableArchiveTask(path, table, false);
+            ImportTableArchiveTestHelper(ArchiveType.MultipleFiles, false, false);
+        }
 
-            it.Open();
-            it.Execute();
+        [TestMethod]
+        public void ImportArchiveGenerateIdentityTest()
+        {
+            ImportTableArchiveTestHelper(ArchiveType.MultipleFiles, false, true);
+        }
 
-            DropTestTables("TableImportArchiveTest");
+        [TestMethod]
+        public void RemoteImportArchiveTest()
+        {
+            ImportTableArchiveTestHelper(ArchiveType.MultipleFiles, true, false);
+        }
+
+        [TestMethod]
+        public void RemoteImportArchiveGenerateIdentityTest()
+        {
+            ImportTableArchiveTestHelper(ArchiveType.MultipleFiles, true, true);
         }
     }
 }

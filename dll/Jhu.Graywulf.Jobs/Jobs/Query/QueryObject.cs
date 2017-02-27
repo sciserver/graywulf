@@ -746,11 +746,11 @@ namespace Jhu.Graywulf.Jobs.Query
             if (mirroredDatasets.Length == 0)
             {
                 // If no graywulf datasets are used, get a server from the scheduler
-                // that has an instance of the code database and assume that it is
+                // that has an instance of the temp database and assume that it is
                 // configured correctly
 
-                var dd = ((GraywulfDataset)CodeDataset).DatabaseVersionReference.Value.DatabaseDefinition;
-                serverInstance = GetNextServerInstance(dd, Registry.Constants.CodeDbName);
+                var dd = ((GraywulfDataset)TemporaryDataset).DatabaseVersionReference.Value.DatabaseDefinition;
+                serverInstance = GetNextServerInstance(dd, Registry.Constants.TempDbName);
             }
             else
             {
@@ -1259,6 +1259,20 @@ namespace Jhu.Graywulf.Jobs.Query
         #endregion
         #region Actual query execution functions
 
+        protected void ExecuteSqlOnDataset(SqlCommand cmd, DatasetBase dataset)
+        {
+            using (var cn = new SqlConnection(dataset.ConnectionString))
+            {
+                cn.Open();
+
+                cmd.Connection = cn;
+                cmd.CommandTimeout = queryTimeout;
+
+                DumpSqlCommand(cmd);
+
+                ExecuteSql(cmd);
+            }
+        }
 
         protected void ExecuteSqlOnAssignedServer(SqlCommand cmd, CommandTarget target)
         {

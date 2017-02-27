@@ -148,7 +148,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             var uri = uploadForm.Uri;
             var file = fileFormatForm.GetDataFile(uri);
             var table = Web.Api.V1.DestinationTable.GetDestinationTable(FederationContext, destinationTableForm.Dataset.Name, destinationTableForm.TableName);
-            var importer = uploadForm.GetTableImporter(file, table);
+            var options = importOptionsForm.GetOptions();
+            var importer = uploadForm.GetTableImporter(file, table, options);
 
             importer.Execute();
 
@@ -172,6 +173,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
             var file = fileFormatForm.GetFormat();
             var dataset = destinationTableForm.DatasetName;
             var table = destinationTableForm.TableName;
+            var options = importOptionsForm.GetOptions();
 
             var job = new ImportJob()
             {
@@ -183,6 +185,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                     Dataset = dataset,
                     Table = table,
                 },
+                Options = new Web.Api.V1.ImportOptions(options),
                 Comments = commentsForm.Comments,
                 Queue = JobQueue.Long,
             };

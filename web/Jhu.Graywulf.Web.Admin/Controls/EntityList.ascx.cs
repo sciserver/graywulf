@@ -177,6 +177,12 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             item.Move(dir);
         }
 
+        private void ExportItems(Guid[] guids)
+        {
+            var key = ((PageBase)Page).FormCacheSave(guids);
+            Response.Redirect(Web.Admin.Common.Export.GetUrl(key, EntityGroup));
+        }
+
         protected void Button_Command(object sender, CommandEventArgs e)
         {
             Guid guid = Guid.Empty;
@@ -208,6 +214,9 @@ namespace Jhu.Graywulf.Web.Admin.Controls
                         break;
                     case "MoveUp":
                         MoveItem(guid, EntityMoveDirection.Up);
+                        break;
+                    case "Export":
+                        ExportItems(guids);
                         break;
                     default:
                         throw new NotImplementedException();

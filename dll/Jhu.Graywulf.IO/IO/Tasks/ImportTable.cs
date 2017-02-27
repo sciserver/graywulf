@@ -32,6 +32,14 @@ namespace Jhu.Graywulf.IO.Tasks
             [OperationContract]
             set;
         }
+
+        ImportTableOptions Options
+        {
+            [OperationContract]
+            get;
+            [OperationContract]
+            set;
+        }
     }
 
     /// <summary>
@@ -47,6 +55,7 @@ namespace Jhu.Graywulf.IO.Tasks
 
         private DataFileBase source;
         private DestinationTable destination;
+        private ImportTableOptions options;
 
         #endregion
         #region Properties
@@ -69,6 +78,12 @@ namespace Jhu.Graywulf.IO.Tasks
             set { destination = value; }
         }
 
+        public ImportTableOptions Options
+        {
+            get { return options; }
+            set { options = value; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -86,12 +101,14 @@ namespace Jhu.Graywulf.IO.Tasks
         {
             this.source = null;
             this.destination = null;
+            this.options = null;
         }
 
         private void CopyMembers(ImportTable old)
         {
             this.source = old.source;
             this.destination = old.destination;
+            this.options = old.options;
         }
 
         public override object Clone()
@@ -139,6 +156,11 @@ namespace Jhu.Graywulf.IO.Tasks
             };
 
             Results.Add(result);
+
+            if (options != null)
+            {
+                source.GenerateIdentityColumn = options.GenerateIdentityColumn;
+            }
 
             try
             {

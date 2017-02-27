@@ -30,6 +30,8 @@ namespace Jhu.Graywulf.Web.Api.V1
             set { table = value; }
         }
 
+        // TODO: add options to replace, create new and append
+
         public IO.Tasks.DestinationTable GetDestinationTable(FederationContext context)
         {
             if (String.IsNullOrWhiteSpace(dataset))

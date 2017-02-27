@@ -284,6 +284,13 @@
     <Compile Include="Apps\MyDB\Export.aspx.designer.cs">
       <DependentUpon>Export.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\MyDB\ImportOptionsForm.ascx.cs">
+      <DependentUpon>ImportOptionsForm.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\MyDB\ImportOptionsForm.ascx.designer.cs">
+      <DependentUpon>ImportOptionsForm.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Apps\MyDB\FileFormatForm.ascx.cs">
       <DependentUpon>FileFormatForm.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -545,6 +552,7 @@
     <Content Include="Apps\MyDB\DestinationTableForm.ascx" />
     <Content Include="Apps\MyDB\Drop.aspx" />
     <Content Include="Apps\MyDB\Export.aspx" />
+    <Content Include="Apps\MyDB\ImportOptionsForm.ascx" />
     <Content Include="Apps\MyDB\FileFormatForm.ascx" />
     <Content Include="Apps\MyDB\Import.aspx" />
     <Content Include="Apps\MyDB\PrimaryKey.aspx" />
