@@ -49,9 +49,7 @@ web/Jhu.Graywulf.Web.Auth/App_Masters/Basic
 web/Jhu.Graywulf.Web.Auth/App_Themes/Basic
 web/Jhu.Graywulf.Web.Auth/Apps/Common
 web/Jhu.Graywulf.Web.Auth/Apps/Auth
-web/Jhu.Graywulf.Web.UI/App_Masters
-web/Jhu.Graywulf.Web.UI/App_Themes
-web/Jhu.Graywulf.Web.UI/Templates
+web/Jhu.Graywulf.Web.UI/App_Themes/Basic/style.css
 
 ## Ignore Javascript libraries
 **/Scripts/jQuery
@@ -273,4 +271,5 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+
 
