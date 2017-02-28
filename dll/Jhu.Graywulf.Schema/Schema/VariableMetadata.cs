@@ -30,18 +30,32 @@ namespace Jhu.Graywulf.Schema
             set { @class = value; }
         }
 
-        [DataMember]
+        [IgnoreDataMember]
         public Quantity Quantity
         {
             get { return quantity; }
             set { quantity = value; }
         }
 
-        [DataMember]
+        [DataMember(Name = "Quantity")]
+        public string Quantity_ForXml
+        {
+            get { return quantity.ToString(); }
+            set { quantity = Quantity.Parse(value); }
+        }
+
+        [IgnoreDataMember]
         public Unit Unit
         {
             get { return unit; }
             set { unit = value; }
+        }
+
+        [DataMember(Name = "Unit")]
+        public string Unit_ForXml
+        {
+            get { return unit.ToString(); }
+            set { unit = Unit.Parse(value); }
         }
 
         [DataMember]

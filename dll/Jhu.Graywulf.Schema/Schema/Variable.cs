@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Schema
             set { dataType = value; }
         }
 
-        [IgnoreDataMember]
+        [DataMember]
         public VariableMetadata Metadata
         {
             get { return metadata.Value; }

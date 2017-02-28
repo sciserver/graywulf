@@ -4,22 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Runtime.Serialization;
 
 namespace Jhu.Graywulf.Schema
 {
+    [Serializable]
+    [DataContract(Namespace = "")]
     public class Unit
     {
+        [NonSerialized]
         private double factor;
+
+        [NonSerialized]
         private List<UnitPart> parts;
 
+        [IgnoreDataMember]
         public double Factor
         {
             get { return factor; }
             set { factor = value; }
         }
+
+        [IgnoreDataMember]
         public List<UnitPart> Parts
         {
             get { return parts; }
+            set { parts = value; }
         }
 
         public Unit()
@@ -53,8 +63,6 @@ namespace Jhu.Graywulf.Schema
             return unit;
         }
         
-        
-
         override public string ToString()
         {
             if (factor == 1 | factor ==0)

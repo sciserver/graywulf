@@ -9,8 +9,6 @@ namespace Jhu.Graywulf.Schema
 {
     public class QuantityIndex : ConcurrentDictionary<string, List<Variable>>
     {
-        
-
         public static QuantityIndex Create(IEnumerable<Variable> variables)
         {
             var res = new QuantityIndex();
