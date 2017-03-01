@@ -7,41 +7,62 @@ using System.Threading.Tasks;
 
 namespace Jhu.Graywulf.Schema
 {
-    public class QuantityIndex : ConcurrentDictionary<string, List<Variable>>
+    public class QuantityIndex
     {
-        public static QuantityIndex Create(IEnumerable<Variable> variables)
-        {
-            var res = new QuantityIndex();
+        private Dictionary<string, List<Variable>> variableIndex;
+        private Dictionary<Variable, HashSet<string>> quantityIndex;
 
+        public QuantityIndex(IEnumerable<Variable> variables)
+        {
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
+        {
+            this.variableIndex = new Dictionary<string, List<Variable>>();
+            this.quantityIndex = new Dictionary<Variable, HashSet<string>>();
+        }
+
+        public void Build (IEnumerable<Variable> variables)
+        {
             foreach (Variable v in variables)
             {
-                foreach (string q in v.Metadata.Quantity.Parts)
+                Add(v);
+            }
+        }
+
+        private void Add(Variable variable)
+        {
+            foreach (string q in variable.Metadata.Quantity.Parts)
+            {
+                if (!variableIndex.ContainsKey(q))
                 {
-                    if (res.ContainsKey(q))
+                    variableIndex[q] = new List<Variable>();
+                }
+
+                variableIndex[q].Add(variable);
+            }
+
+            quantityIndex[variable] = new HashSet<string>(variable.Metadata.Quantity.Parts, Quantity.Comparer);
+        }
+
+        public List<Variable> SearchQuantity(IList<string> quantities)
+        {
+            var res = new List<Variable>();
+            var qs = new HashSet<string>(quantities, Quantity.Comparer);
+            
+            if (quantities.Count > 0 && variableIndex.Keys.Contains(quantities[0]))
+            {
+                foreach (var v in variableIndex[quantities[0]])
+                {
+                    if (qs.IsSubsetOf(quantityIndex[v]))
                     {
-                        res[q].Add(v);
-                    }
-                    else
-                    {
-                        res[q] = new List<Variable>();
-                        res[q].Add(v);
+                        res.Add(v);
                     }
                 }
             }
 
             return res;
-        }
-
-        public static List<Variable> SearchQuantity(IEnumerable<Variable> variables, string quantityName)
-        {
-            var quantities = Create(variables);
-
-            if (quantities.Keys.Contains(quantityName))
-            {
-                return quantities[quantityName];
-            }
-            else throw new SchemaException(ExceptionMessages.QuantityNotFound);
-
         }
     }
 

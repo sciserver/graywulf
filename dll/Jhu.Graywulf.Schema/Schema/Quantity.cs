@@ -11,6 +11,8 @@ namespace Jhu.Graywulf.Schema
     [DataContract(Namespace = "")]
     public class Quantity
     {
+        public static readonly StringComparer Comparer = StringComparer.InvariantCultureIgnoreCase;
+
         [NonSerialized]
         private List<string> parts;
 

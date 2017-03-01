@@ -802,7 +802,7 @@ namespace Jhu.Graywulf.Schema
 
         protected QuantityIndex LoadQuantities()
         {
-            return QuantityIndex.Create(Columns.Values);
+            return new QuantityIndex(Columns.Values);
         }
     }
 }
