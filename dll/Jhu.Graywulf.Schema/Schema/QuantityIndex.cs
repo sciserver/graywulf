@@ -12,9 +12,15 @@ namespace Jhu.Graywulf.Schema
         private Dictionary<string, List<Variable>> variableIndex;
         private Dictionary<Variable, HashSet<string>> quantityIndex;
 
+        public Dictionary<string, List<Variable>> VariableIndex
+        {
+            get { return variableIndex; }
+        }
+
         public QuantityIndex(IEnumerable<Variable> variables)
         {
             InitializeMembers();
+            Build(variables);
         }
 
         private void InitializeMembers()
