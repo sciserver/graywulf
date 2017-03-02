@@ -23,9 +23,9 @@ namespace Jhu.Graywulf.Schema
         public void QuantityCreateTest()
         {
 
-            var qi = QuantityIndex.Create(columns);
+            var qi = new QuantityIndex(columns);
 
-            Assert.IsTrue(qi.Count() == 7);
+            Assert.IsTrue(qi.VariableIndex.Count() == 7);
 
         }
 
@@ -34,17 +34,39 @@ namespace Jhu.Graywulf.Schema
         [TestMethod]
         public void SearchQuantityTest1()
         {
-            var res = QuantityIndex.SearchQuantity(columns, "pos.frame=j2000");
+            var qi = new QuantityIndex(columns);
+            var res = qi.SearchQuantity(new string[] { "pos.frame=j2000"});
 
             Assert.IsTrue(res[0].Name == "ra");
             Assert.IsTrue(res.Count == 2);
         }
         
         [TestMethod]
-        [ExpectedException(typeof(SchemaException))]
         public void SearchQuantityTest2()
         {
-            var res = QuantityIndex.SearchQuantity(columns, "pos.gal.l");
+            var qi = new QuantityIndex(columns);
+            var res = qi.SearchQuantity(new string[] { "pos.eq.ra", "pos.frame=j2000" });
+            Assert.IsTrue(res[0].Name == "ra");
+            Assert.IsTrue(res.Count == 1);
+        }
+
+
+
+        [TestMethod]
+        public void SearchQuantityTest3()
+        {
+            var qi = new QuantityIndex(columns);
+            var res = qi.SearchQuantity(new string[] { "phot.mag","stat.max" });
+            Assert.IsTrue(res[0].Name == "j_m_2mass");
+            Assert.IsTrue(res.Count == 1);
+        }
+
+        [TestMethod]
+        public void SearchQuantityTest4()
+        {
+            var qi = new QuantityIndex(columns);
+            var res = qi.SearchQuantity(new string[] { "phot.flux", "stat.max" });
+            Assert.IsTrue(res.Count == 0);
         }
 
     }

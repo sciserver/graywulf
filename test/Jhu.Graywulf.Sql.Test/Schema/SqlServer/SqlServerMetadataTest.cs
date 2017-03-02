@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
 
             var tvf = ds.TableValuedFunctions["SqlInlineTableValuedFunction|TEST|Graywulf_Schema_Test|dbo|TestTableValuedFunction"];
 
-            Assert.IsTrue(tvf.Quantities.Count == 0);
+            Assert.IsTrue(tvf.Quantities.VariableIndex.Count == 0);
         }
 
 
