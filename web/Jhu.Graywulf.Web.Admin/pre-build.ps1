@@ -1,18 +1,6 @@
-﻿param(
-	[string]$SolutionDir,
-	[string]$SolutionName,
-	[string]$ProjectDir,
-	[string]$ProjectName,
-	[string]$OutDir,
-	[string]$ConfigurationName,
-	[string]$TargetName
-)
-
-$ErrorActionPreference='Stop'
+﻿$ErrorActionPreference='Stop'
 
 . ../web-build.ps1
-
-& "${SolutionDir}${OutDir}${ConfigurationName}\gwconfig.exe" merge $SolutionDir$SolutionName.sln $ProjectName
 
 Add-Script "Bootstrap.Nuget.3.3.6" "Bootstrap"
 Add-Script "CodeMirror.Nuget.5.19.0" "CodeMirror"
