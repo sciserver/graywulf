@@ -166,6 +166,15 @@ namespace Jhu.Graywulf.Web.Admin.Layout {
         protected global::System.Web.UI.WebControls.CheckBox GenerateFileGroups;
         
         /// <summary>
+        /// SkipDuplicates control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox SkipDuplicates;
+        
+        /// <summary>
         /// MappingTable control.
         /// </summary>
         /// <remarks>

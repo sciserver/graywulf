@@ -156,12 +156,17 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
         protected void Ok_Click(object sender, EventArgs e)
         {
+            // TODO: add serverNumber or similar to add database instances to the layout
+            // when some are already in place
+
             double sizefactor = double.Parse(SizeFactor.Text);
             string postfix = String.Empty;
 
             DatabaseVersion databaseVersion = new DatabaseVersion(RegistryContext);
             databaseVersion.Guid = new Guid(databaseVersionList.SelectedValue);
             databaseVersion.Load();
+
+            databaseVersion.DatabaseDefinition.LoadDatabaseInstances(false);
 
             int q = 0;
             for (int sli = 0; sli < slices.Count; sli++)
@@ -180,15 +185,31 @@ namespace Jhu.Graywulf.Web.Admin.Layout
                                 break;
                         }
 
-                        var dii = new DatabaseInstanceInstaller(item);
+                        var name = NamePattern.Text.Replace("[$Number]", postfix);
+                        var dbname = DatabaseNamePattern.Text.Replace("[$Number]", postfix);
 
+                        // Check for name duplicate
+                        if (SkipDuplicates.Checked)
+                        {
+                            var ndi = new DatabaseInstance(databaseVersion.DatabaseDefinition);
+                            ndi.DatabaseVersion = databaseVersion;
+                            var nname = ExpressionProperty.ResolveExpression(ndi, name);
+
+                            if (databaseVersion.DatabaseDefinition.DatabaseInstances.ContainsKey(nname))
+                            {
+                                q++;
+                                continue;
+                            }
+                        }
+
+                        var dii = new DatabaseInstanceInstaller(item);
                         dii.GenerateDatabaseInstance(
-                            serverInstances[ssi], 
-                            slices[sli], 
-                            databaseVersion, 
-                            NamePattern.Text.Replace("[$Number]", postfix), 
-                            DatabaseNamePattern.Text.Replace("[$Number]", postfix), 
-                            sizefactor, 
+                            serverInstances[ssi],
+                            slices[sli],
+                            databaseVersion,
+                            name,
+                            dbname,
+                            sizefactor,
                             GenerateFileGroups.Checked);
 
                         q++;

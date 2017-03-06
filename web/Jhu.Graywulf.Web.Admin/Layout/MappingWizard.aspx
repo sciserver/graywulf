@@ -70,6 +70,15 @@
                             CssClass="FormField" Checked="true" />
                     </td>
                 </tr>
+                <tr>
+                    <td class="FormLabel">
+                        &nbsp;
+                    </td>
+                    <td class="FormField">
+                        <asp:CheckBox ID="SkipDuplicates" Text="Skip duplicates" runat="server"
+                            CssClass="FormField" Checked="true" />
+                    </td>
+                </tr>
             </table>
         </div>
         <div class="FormFrame">
