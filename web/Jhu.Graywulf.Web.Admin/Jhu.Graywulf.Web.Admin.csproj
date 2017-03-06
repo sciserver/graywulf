@@ -918,6 +918,7 @@
     <Compile Include="Common\Serialize.aspx.designer.cs">
       <DependentUpon>Serialize.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Controls\BoundEntityField.cs" />
     <Compile Include="Controls\EntityButtons.ascx.cs">
       <DependentUpon>EntityButtons.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

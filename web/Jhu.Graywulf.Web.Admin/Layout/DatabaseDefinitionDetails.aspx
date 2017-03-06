@@ -15,10 +15,11 @@
     <jgwac:EntityChildren runat="server">
         <jgwac:EntityList runat="server" ID="DatabaseInstanceList" ChildrenType="DatabaseInstance"
             EntityGroup="Layout">
-            <columns>
+            <Columns>
+                <jgwac:BoundEntityField DataField="ServerInstance" Expression="[$Parent.Name]\[$Name]" HeaderText="Server" />
                 <asp:BoundField DataField="DeploymentState" HeaderText="Deployment State" />
                 <asp:BoundField DataField="RunningState" HeaderText="Running State" />
-            </columns>
+            </Columns>
         </jgwac:EntityList>
         <jgwac:EntityList runat="server" ID="DatabaseVersionList" ChildrenType="DatabaseVersion" EntityGroup="Layout" />
     </jgwac:EntityChildren>

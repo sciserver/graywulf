@@ -14,6 +14,7 @@ namespace Jhu.Graywulf.Web.Controls
         protected override object GetValue(System.Web.UI.Control controlContainer)
         {
             var value = DataBinder.Eval(DataBinder.GetDataItem(controlContainer), DataField);
+
             if (value == null)
             {
                 return "";
