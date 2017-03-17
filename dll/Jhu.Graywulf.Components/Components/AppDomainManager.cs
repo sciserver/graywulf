@@ -97,7 +97,7 @@ namespace Jhu.Graywulf.Components
         {
             this.syncRoot = new object();
             this.appDomains = new Dictionary<int, AppDomainHandle>();
-            this.baseDirectory = Configuration?.AssemblyPath ?? Environment.CurrentDirectory;
+            this.baseDirectory = (Configuration != null ? Configuration.AssemblyPath : null) ?? Environment.CurrentDirectory;
         }
 
         #endregion

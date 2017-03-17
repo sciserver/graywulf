@@ -43,14 +43,13 @@ namespace Jhu.Graywulf.Parser.Test
 
                 rootNode = (Node)parser.Execute(sql.Text);
 
+                RefreshNodeTree(null, rootNode);
+                parsed.Text = Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator.GetCode(rootNode, false);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-
-            RefreshNodeTree(null, rootNode);
-            parsed.Text = Jhu.Graywulf.SqlCodeGen.SqlServer.SqlServerCodeGenerator.GetCode(rootNode, false);
         }
 
         private void toolbuttonResolve_Click(object sender, EventArgs e)

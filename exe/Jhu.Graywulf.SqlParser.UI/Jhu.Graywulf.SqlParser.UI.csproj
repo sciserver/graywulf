@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Jhu.Graywulf.Parser.Test</RootNamespace>
     <AssemblyName>Jhu.Graywulf.Parser.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -103,7 +103,6 @@
     <EmbeddedResource Include="SqlParser\UI\Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="App.config" />
     <None Include="Base.config" />
     <None Include="build.config" />
     <None Include="post-build.ps1" />
