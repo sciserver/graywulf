@@ -73,6 +73,18 @@ namespace Jhu.Graywulf.Metadata
             databaseConnection.Dispose();
         }
 
+        public void DropMetadata()
+        {
+            var sql = Scripts.DropExtendedProperties;
+
+            using (SqlCommand cmd = new SqlCommand(sql, databaseConnection, databaseTransaction))
+            {
+                cmd.ExecuteNonQuery();
+            }
+
+            databaseTransaction.Commit();
+        }
+
         public void CreateMetadata()
         {
             if (xml == null)

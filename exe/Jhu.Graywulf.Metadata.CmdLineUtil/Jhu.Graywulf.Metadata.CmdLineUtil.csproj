@@ -71,7 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Metadata\CmdLineUtil\DatabaseVerbBase.cs" />
-    <Compile Include="Metadata\CmdLineUtil\Delete.cs" />
+    <Compile Include="Metadata\CmdLineUtil\Drop.cs" />
     <Compile Include="Metadata\CmdLineUtil\Export.cs" />
     <Compile Include="Metadata\CmdLineUtil\Import.cs" />
     <Compile Include="Metadata\CmdLineUtil\Parse.cs" />

@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Metadata.CmdLineUtil
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
-            List<Type> verbs = new List<Type>() { typeof(Parse), typeof(Import) };
+            List<Type> verbs = new List<Type>() { typeof(Parse), typeof(Drop), typeof(Import) };
 
             Verb v = null;
 
