@@ -17,6 +17,7 @@
             EntityGroup="Layout">
             <Columns>
                 <jgwac:BoundEntityField DataField="ServerInstance" Expression="[$Parent.Name]\[$Name]" HeaderText="Server" />
+                <asp:BoundField DataField="DatabaseName" HeaderText="Database" />
                 <asp:BoundField DataField="DeploymentState" HeaderText="Deployment State" />
                 <asp:BoundField DataField="RunningState" HeaderText="Running State" />
             </Columns>
