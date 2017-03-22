@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Schema
         [TestMethod]
         public void ParseUnitPartTest1()
         {
-            var part = new UnitPart("arcsec");
+            var part = new UnitEntity("arcsec");
 
             Assert.AreEqual(part.UnitBase, "arcsec");
         }
@@ -19,21 +19,12 @@ namespace Jhu.Graywulf.Schema
         [TestMethod]
         public void ParseUnitPartTest2()
         {
-            var part = new UnitPart("km-2");
-            var tPart = new UnitPart() { UnitBase = "m", Exponent = "-2", Prefix = "k"};
+            var part = new UnitEntity("km-2");
+            var tPart = new UnitEntity() { UnitBase = "m", Exponent = "-2", Prefix = "k"};
 
             Assert.AreEqual(part.ToString(), tPart.ToString());
         }
-
-
-        [TestMethod]
-        public void ParseUnitPartTest3()
-        {
-            var part = new UnitPart("log(umag)-1");
-            var tPart = new UnitPart() { UnitBase = "mag", Exponent = "-1", Prefix = "u", Function="log" };
-
-            Assert.AreEqual(part.ToString(), tPart.ToString());
-        }
+        
 
         [TestMethod]
         public void ParseUnitTest1()

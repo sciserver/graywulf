@@ -129,7 +129,7 @@ namespace Jhu.Graywulf.Schema
         [TestMethod]
         public void UnitPartSerializationTest()
         {
-            Assert.IsTrue(TestType(typeof(UnitPart)));
+            Assert.IsTrue(TestType(typeof(UnitEntity)));
         }
     }
 }
