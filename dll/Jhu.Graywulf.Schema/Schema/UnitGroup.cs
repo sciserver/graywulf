@@ -66,7 +66,12 @@ namespace Jhu.Graywulf.Schema
         {
             var units = new List<string>();
             parts.ForEach(p => units.Add(p.ToString()));
-            
+
+            if (!exponent.StartsWith("-") & exponent.Length != 0)
+            {
+                exponent = string.Concat("+", exponent);
+            }
+
             return string.Format("{0}({1}){2}",function,string.Join(" ",units),exponent);
             
         }

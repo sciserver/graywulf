@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace Jhu.Graywulf.Schema
 {
-    public class UnitEntity: UnitPart
+    public class UnitEntity : UnitPart
     {
         private static readonly Regex unitRegex = new Regex(@"((?<func>\w+)\()?(?<unit>\w+|%)\)?(?<exp>[\+-]\d*[/]?\d*)?", RegexOptions.Compiled);
 
@@ -32,7 +32,7 @@ namespace Jhu.Graywulf.Schema
             get { return exponent; }
             set { exponent = value; }
         }
-        
+
 
         public UnitEntity()
         {
@@ -65,19 +65,24 @@ namespace Jhu.Graywulf.Schema
             {
                 foreach (string p in Constants.UnitPrefixes.Keys.ToList())
                 {
+                    if (unit.Length < p.Length)
+                    {
+                        continue;
+                    }
+
                     if (unit.StartsWith(p) & Constants.UnitNames.Contains(unit.Substring(p.Length)))
                     {
                         prefix = p;
                         unitBase = unit.Substring(p.Length);
                         break;
                     }
-                    else
-                    {
-                        unitBase = unit;
-                    }
+                }
+                if (prefix.Length == 0)
+                {
+                    unitBase = unit;
                 }
             }
-            
+
             exponent = m.Groups["exp"].Value;
             if (exponent.StartsWith("+"))
             {
@@ -87,8 +92,12 @@ namespace Jhu.Graywulf.Schema
         }
         override public string ToString()
         {
-                return string.Format("{0}{1}{2}", prefix, unitBase, exponent);
-           
+            if (!exponent.StartsWith("-") & exponent.Length != 0)
+            {
+                exponent = string.Concat("+", exponent);
+            }
+            return string.Format("{0}{1}{2}", prefix, unitBase, exponent);
+
         }
 
         public override string ToHtml()
@@ -115,6 +124,6 @@ namespace Jhu.Graywulf.Schema
             return s;
         }
 
-        
+
     }
 }
