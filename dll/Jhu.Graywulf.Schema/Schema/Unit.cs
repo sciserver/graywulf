@@ -72,22 +72,7 @@ namespace Jhu.Graywulf.Schema
                 }
                 mParts = mParts.NextMatch();
             }
-
-            /*
-            var parts = unitString.Split(new char[0], StringSplitOptions.RemoveEmptyEntries).ToList<string>();
-
-            if (parts.Count == 0)
-            {
-                return unit;
-            }
-
-            if (double.TryParse(parts[0], out unit.factor))
-            {
-                parts.RemoveAt(0);
-            }
-
-            parts.ForEach(p => unit.parts.Add(new UnitEntity(p)));
-            */
+            
             return unit;
         }
 
@@ -130,6 +115,10 @@ namespace Jhu.Graywulf.Schema
             if (factor != 1 & factor != 0)
             {
                 s = string.Format(@"${{\rm {0} \times {1}}}$", factor, s);
+            }
+            else
+            {
+                s = string.Format(@"${{\rm {0}}}$", s);
             }
 
             return s;

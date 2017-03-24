@@ -102,6 +102,16 @@ namespace Jhu.Graywulf.Schema
 
         public override string ToHtml()
         {
+            if (Constants.SpecialUnitCharsHtml.ContainsKey(prefix))
+            {
+                prefix = Constants.SpecialUnitCharsHtml[prefix];
+            }
+
+            if (Constants.SpecialUnitCharsHtml.ContainsKey(unitBase))
+            {
+                unitBase = Constants.SpecialUnitCharsHtml[unitBase];
+            }
+
             var s = string.Format("{0}{1}", prefix, unitBase);
 
             if (exponent != "" & exponent != null)
@@ -114,6 +124,16 @@ namespace Jhu.Graywulf.Schema
 
         public override string ToLatex()
         {
+            if (Constants.SpecialUnitCharsHtml.ContainsKey(prefix))
+            {
+                prefix = Constants.SpecialUnitCharsLatex[prefix];
+            }
+
+            if (Constants.SpecialUnitCharsHtml.ContainsKey(unitBase))
+            {
+                unitBase = Constants.SpecialUnitCharsLatex[unitBase];
+            }
+
             var s = string.Format(@"{0}{1}", prefix, unitBase);
 
             if (exponent != "" & exponent != null)

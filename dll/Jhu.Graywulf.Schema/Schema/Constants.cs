@@ -186,5 +186,23 @@ namespace Jhu.Graywulf.Schema
             {"Z", 1e+21},
             {"Y", 1e+24}
         };
+
+        public static readonly Dictionary<string, string> SpecialUnitCharsHtml = new Dictionary<string, string>
+        {
+            { "M_sol","M<sub>&odot;</sub>"},
+            { "L_sol","L<sub>&odot;</sub>"},
+            { "R_sol","R<sub>&odot;</sub>"},
+            { "AA","&#8491;"},
+            { "u","&mu;"}
+        };
+
+        public static readonly Dictionary<string, string> SpecialUnitCharsLatex = new Dictionary<string, string>
+        {
+            { "M_sol","M_{\\odot}"},
+            { "L_sol","L_{\\odot}"},
+            { "R_sol","R_{\\odot}"},
+            { "AA","\\AA"},
+            { "u","\\mu"}
+        };
     }
 }
