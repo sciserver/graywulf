@@ -295,6 +295,11 @@ namespace Jhu.Graywulf.Registry
                 dis = FindDatabaseInstances(null).FirstOrDefault();
             }
 
+            if (dis == null)
+            {
+                throw new DeployException(String.Format(ExceptionMessages.SchemaDatabaseNotFound, Name));
+            }
+
             return dis;
         }
 

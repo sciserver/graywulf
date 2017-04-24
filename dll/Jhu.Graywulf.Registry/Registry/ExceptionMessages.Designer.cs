@@ -176,5 +176,14 @@ namespace Jhu.Graywulf.Registry {
                 return ResourceManager.GetString("SchedulerUnexpectedShutdown", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The schema database for &apos;{0}&apos; is not found..
+        /// </summary>
+        public static string SchemaDatabaseNotFound {
+            get {
+                return ResourceManager.GetString("SchemaDatabaseNotFound", resourceCulture);
+            }
+        }
     }
 }

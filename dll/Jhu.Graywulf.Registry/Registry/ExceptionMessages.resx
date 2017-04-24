@@ -156,4 +156,7 @@
   <data name="DatabaseNotAttached" xml:space="preserve">
     <value>Database does not exist or is not attached.</value>
   </data>
+  <data name="SchemaDatabaseNotFound" xml:space="preserve">
+    <value>The schema database for '{0}' is not found.</value>
+  </data>
 </root>
