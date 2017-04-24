@@ -9,31 +9,22 @@ namespace Jhu.Graywulf.Schema
     public class UnitTest : Jhu.Graywulf.Test.TestClassBase
     {
         [TestMethod]
-        public void ParseUnitPartTest1()
+        public void ParseUnitEntityTest1()
         {
-            var part = new UnitPart("arcsec");
+            var part = new UnitEntity("arcsec");
 
             Assert.AreEqual(part.UnitBase, "arcsec");
         }
 
         [TestMethod]
-        public void ParseUnitPartTest2()
+        public void ParseUnitEntityTest2()
         {
-            var part = new UnitPart("km-2");
-            var tPart = new UnitPart() { UnitBase = "m", Exponent = "-2", Prefix = "k"};
+            var part = new UnitEntity("km-2");
+            var tPart = new UnitEntity() { UnitBase = "m", Exponent = "-2", Prefix = "k"};
 
             Assert.AreEqual(part.ToString(), tPart.ToString());
         }
-
-
-        [TestMethod]
-        public void ParseUnitPartTest3()
-        {
-            var part = new UnitPart("log(umag)-1");
-            var tPart = new UnitPart() { UnitBase = "mag", Exponent = "-1", Prefix = "u", Function="log" };
-
-            Assert.AreEqual(part.ToString(), tPart.ToString());
-        }
+        
 
         [TestMethod]
         public void ParseUnitTest1()
@@ -55,6 +46,15 @@ namespace Jhu.Graywulf.Schema
         }
 
         [TestMethod]
+        public void ParseUnitGroupTest()
+        {
+            var groupString = "log(s z+2)-3";
+            var group = new UnitGroup(groupString);
+
+            Assert.AreEqual(group.ToString(),groupString);
+        }
+
+        [TestMethod]
         public void ParseUnitTest3()
         {
 
@@ -65,21 +65,40 @@ namespace Jhu.Graywulf.Schema
         }
 
         [TestMethod]
-        public void UnitToHtmlTest()
+        public void UnitToHtmlTest1()
         {
-            var unit = Unit.Parse("1E-27 erg s-1 cm-2 AA-1");
+            var unit = Unit.Parse("1E-27 erg log(s-1 cm-2)");
 
-            Assert.AreEqual(unit.ToHtml(), @"1E-27 erg s<sup>-1</sup> cm<sup>-2</sup> AA<sup>-1</sup>");
+            Assert.AreEqual(unit.ToHtml(), @"1E-27 erg log(s<sup>-1</sup> cm<sup>-2</sup>)");
 
         }
 
-        
         [TestMethod]
-        public void UnitToLatexTest()
+        public void UnitToHtmlTest2()
         {
-            var unit = Unit.Parse("1E-27 erg s-1 cm-2 AA-1");
+            var unit = Unit.Parse("uAA M_sol");
 
-            Assert.AreEqual(unit.ToLatex(), @"${\rm 1E-27 \times erg~s^{-1}~cm^{-2}~AA^{-1}}$");
+            Assert.AreEqual(unit.ToHtml(), @"&mu;&#8491; M<sub>&odot;</sub>");
+
+        }
+
+
+        [TestMethod]
+        public void UnitToLatexTest1()
+        {
+            var unit = Unit.Parse("1E-27 erg log(s-1 cm-2)");
+
+            Assert.AreEqual(unit.ToLatex(), @"${\rm 1E-27 \times erg~log(s^{-1}~cm^{-2})}$");
+
+        }
+
+
+        [TestMethod]
+        public void UnitToLatexTest2()
+        {
+            var unit = Unit.Parse("uAA M_sol");
+
+            Assert.AreEqual(unit.ToLatex(), @"${\rm \mu\AA~M_{\odot}}$");
 
         }
 

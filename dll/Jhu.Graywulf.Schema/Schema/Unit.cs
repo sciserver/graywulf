@@ -13,6 +13,9 @@ namespace Jhu.Graywulf.Schema
     public class Unit
     {
         [NonSerialized]
+        private static Regex regex = new Regex(@"(?<factor>\d+[e|E][\+|\-]\d+)|(?<unit>[\w\-\+\%]+)(\s)|(?<unit>[\w\-\+\%]+)$|(?<func>\w+\(.*?\)([\+|\-]\d+)?)", RegexOptions.ExplicitCapture);
+
+        [NonSerialized]
         private double factor;
 
         [NonSerialized]
@@ -46,66 +49,58 @@ namespace Jhu.Graywulf.Schema
         public static Unit Parse(string unitString)
         {
             var unit = new Unit();
-            var parts = unitString.Split(new char[0], StringSplitOptions.RemoveEmptyEntries).ToList<string>();
 
-            if (parts.Count == 0)
+            var mParts = regex.Match(unitString);
+
+            if (!mParts.Success)
             {
                 return unit;
             }
 
-            if (double.TryParse(parts[0], out unit.factor))
+            double.TryParse(mParts.Groups["factor"].ToString(), out unit.factor);
+
+            while (mParts.Success)
             {
-                parts.RemoveAt(0);
+                if (mParts.Groups["unit"].Length != 0)
+                {
+                    unit.parts.Add(new UnitEntity(mParts.Groups["unit"].ToString()));
+                }
+
+                else if (mParts.Groups["func"].Length != 0)
+                {
+                    unit.parts.Add(new UnitGroup(mParts.Groups["func"].ToString()));
+                }
+                mParts = mParts.NextMatch();
             }
-
-            parts.ForEach(p => unit.parts.Add(new UnitPart(p)));
-
+            
             return unit;
         }
-        
+
         override public string ToString()
         {
-            if (factor == 1 | factor ==0)
+            if (factor == 1 | factor == 0)
             {
                 return string.Join(" ", parts);
             }
 
-            else {
+            else
+            {
                 return string.Format("{0:0.###E+0} {1}", factor, string.Join(" ", parts));
-            } 
+            }
         }
 
         public string ToHtml()
         {
             var htmlParts = new List<string>();
-
-            foreach (var p in parts)
+            parts.ForEach(p => htmlParts.Add(p.ToHtml()));
+            
+            var s = string.Join(" ", htmlParts);
+            if (factor != 1 & factor != 0)
             {
-                var s = string.Format("{0}{1}", p.Prefix, p.UnitBase);
-
-                if (p.Function != "" & p.Function != null)
-                {
-                    s = string.Format("{0}({1})", p.Function, s);
-                }
-
-                if (p.Exponent != "" & p.Exponent != null)
-                {
-                    s = string.Format("{0}<sup>{1}</sup>", s, p.Exponent);
-                }
-
-                htmlParts.Add(s);
+                s= string.Format("{0:0.###E+0} {1}", factor, s);
             }
 
-            if (factor == 1 | factor == 0)
-            {
-                return string.Join(" ", htmlParts);
-            }
-
-            else
-            {
-                return string.Format("{0:0.###E+0} {1}", factor, string.Join(" ", htmlParts));
-            }
-
+            return s;
             // TODO: factor
             // TODO: special letters (greek, M_bol ...)
 
@@ -114,25 +109,19 @@ namespace Jhu.Graywulf.Schema
         public string ToLatex()
         {
             var latexParts = new List<string>();
+            parts.ForEach(p => latexParts.Add(p.ToLatex()));
 
-            foreach (var p in parts)
+            var s = string.Join("~", latexParts);
+            if (factor != 1 & factor != 0)
             {
-                var s = string.Format(@"{0}{1}", p.Prefix, p.UnitBase);
-
-            if (p.Function != "" & p.Function != null)
+                s = string.Format(@"${{\rm {0} \times {1}}}$", factor, s);
+            }
+            else
             {
-                s = string.Format(@"{0}({1})", p.Function, s);
+                s = string.Format(@"${{\rm {0}}}$", s);
             }
 
-            if (p.Exponent != "" & p.Exponent != null)
-            {
-                s = string.Format(@"{0}^{{{1}}}", s, p.Exponent);
-            }
-            latexParts.Add(s);
-
-            }
-            
-            return string.Format(@"${{\rm {0} \times {1}}}$", factor, string.Join("~", latexParts));
+            return s;
 
             // Math.Floor
             // Math.
