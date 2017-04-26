@@ -14,39 +14,43 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Admin.Common
 {
-    public partial class Discover : PageBase
+    public partial class Discover : CommonPage
     {
-        public static string GetUrl(Guid guid)
+        private List<Entity> update;
+        private List<Entity> delete;
+        private List<Entity> create;
+
+        public static string GetUrl(Guid key)
         {
-            return String.Format("~/Common/Discover.aspx?guid={0}", guid);
+            return String.Format("~/Common/Discover.aspx?key={0}", key);
         }
 
-        protected Entity item;
-
-        protected void Page_Load(object sender, EventArgs e)
+        private void RunDiscovery()
         {
-            if (!IsPostBack)
+            LoadEntities();
+
+            update = new List<Entity>();
+            delete = new List<Entity>();
+            create = new List<Entity>();
+
+            foreach (var e in Entities)
             {
-                LoadItem();
-                UpdateForm();
-                ViewState["ConcurrencyVersion"] = item.ConcurrencyVersion;
+                e.Discover(update, delete, create);
             }
         }
 
-        protected void LoadItem()
+        protected override void UpdateForm()
         {
-            var f = new EntityFactory(RegistryContext);
-            item = f.LoadEntity(new Guid(Request.QueryString["guid"]));
-        }
+            RunDiscovery();
 
-        protected virtual void UpdateForm()
-        {
-            Name.Text = item.Name;
-
-            var update = new List<Entity>();
-            var delete = new List<Entity>();
-            var create = new List<Entity>();
-            item.Discover(update, delete, create);
+            if (Entities.Length > 1)
+            {
+                Name.Text = "Multiple objects";
+            }
+            else
+            {
+                Name.Text = Entities[0].Name;
+            }
 
             EntityList.Items.Clear();
 
@@ -54,47 +58,26 @@ namespace Jhu.Graywulf.Web.Admin.Common
             {
                 EntityList.Items.Add(String.Format("{0} - {1} ({2})", entity.Name, entity.EntityType, "to be updated"));
             }
+
             foreach (var entity in delete)
             {
                 EntityList.Items.Add(String.Format("{0} - {1} ({2})", entity.Name, entity.EntityType, "to be deleted"));
             }
+
             foreach (var entity in create)
             {
                 EntityList.Items.Add(String.Format("{0} - {1} ({2})", entity.Name, entity.EntityType, "to be created"));
             }
         }
 
-        protected void Ok_Click(object sender, EventArgs e)
+        protected override void ProcessForm()
         {
-            if (IsValid)
-            {
-                LoadItem();
-                item.ConcurrencyVersion = (long)ViewState["ConcurrencyVersion"];       // TODO
+            RunDiscovery();
 
-                // Discover again
-                var update = new List<Entity>();
-                var delete = new List<Entity>();
-                var create = new List<Entity>();
-                item.Discover(update, delete, create);
+            var ef = new EntityFactory(RegistryContext);
+            ef.ApplyChanges(update, delete, create);
 
-                var ef = new EntityFactory(RegistryContext);
-                ef.ApplyChanges(update, delete, create);
-
-                Response.Redirect(item.GetDetailsUrl(), false);
-            }
-        }
-
-        protected void Cancel_Click(object sender, EventArgs e)
-        {
-            if (Request.QueryString["redirect"] != null)
-            {
-                Response.Redirect(Request.QueryString["redirect"], false);
-            }
-            else
-            {
-                LoadItem();
-                Response.Redirect(item.GetDetailsUrl(), false);
-            }
+            Response.Redirect(OriginalReferer, false);
         }
     }
 }

@@ -73,6 +73,7 @@
     <Compile Include="Install\InstallerBase.cs" />
     <Compile Include="Install\UserDatabaseInstanceInstaller.cs" />
     <Compile Include="Registry\Check\EntityCheck.cs" />
+    <Compile Include="Registry\EntitySearch.cs" />
     <Compile Include="Registry\Registry.cs" />
     <Compile Include="Registry\RegistrySerializer.cs" />
     <Compile Include="Registry\RegistryDeserializer.cs" />
@@ -213,7 +214,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Registry\WebEntityFactory.cs" />
     <Compile Include="Schema\GraywulfDataset.cs" />
     <Compile Include="Schema\GraywulfSchemaManager.cs" />
     <Compile Include="Schema\GraywulfUserDatabaseFactory.cs" />

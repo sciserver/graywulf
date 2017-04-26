@@ -87,6 +87,7 @@
     <Content Include="Common\Export.aspx" />
     <Content Include="Common\Delete.aspx" />
     <Content Include="Common\Discover.aspx" />
+    <Content Include="Common\Search.aspx" />
     <Content Include="Common\Serialize.aspx" />
     <Content Include="Controls\EntityButtons.ascx" />
     <Content Include="Controls\EntityChildren.ascx" />
@@ -911,6 +912,13 @@
     <Compile Include="Common\Discover.aspx.designer.cs">
       <DependentUpon>Discover.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Common\Search.aspx.cs">
+      <DependentUpon>Search.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Common\Search.aspx.designer.cs">
+      <DependentUpon>Search.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Common\Serialize.aspx.cs">
       <DependentUpon>Serialize.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -933,6 +941,7 @@
     <Compile Include="Controls\EntityChildren.ascx.designer.cs">
       <DependentUpon>EntityChildren.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Controls\EntityListPager.cs" />
     <Compile Include="Controls\EntityProperties.ascx.cs">
       <DependentUpon>EntityProperties.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

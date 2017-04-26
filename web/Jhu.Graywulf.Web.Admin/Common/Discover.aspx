@@ -15,7 +15,7 @@
         <h3>
             Discovering configuration</h3>
         <p>
-            Discovery procedure ran on item '<asp:Label ID="Name" runat="server" Text="Label"></asp:Label>'
+            Discovery procedure ran on '<asp:Label ID="Name" runat="server" Text="Label"></asp:Label>'
             and found the following differences. Do you want to update registry to reflect these
             configuration changes?
         </p>

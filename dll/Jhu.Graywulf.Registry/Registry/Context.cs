@@ -447,9 +447,23 @@ namespace Jhu.Graywulf.Registry
             return cmd;
         }
 
+        public SqlCommand CreateCommand()
+        {
+            var cmd = new SqlCommand();
+            cmd.Connection = DatabaseConnection;
+            cmd.Transaction = DatabaseTransaction;
+
+            return cmd;
+        }
+
         private SqlCommand CreateCommand(string sql)
         {
-            return new SqlCommand(sql, DatabaseConnection, DatabaseTransaction);
+            var cmd = new SqlCommand();
+            cmd.CommandText = sql;
+            cmd.Connection = DatabaseConnection;
+            cmd.Transaction = DatabaseTransaction;
+
+            return cmd;
         }
 
         #endregion

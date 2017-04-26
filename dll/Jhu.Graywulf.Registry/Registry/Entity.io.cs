@@ -83,7 +83,11 @@ namespace Jhu.Graywulf.Registry
             this.settings.LoadFromXml(dr.IsDBNull(++o) ? null : dr.GetString(o));
             this.comments = dr.GetString(++o);
 
-            DBHelpers[this.GetType()].LoadFromDataReader(this, dr, ++o);
+            // In case of generic search, no more fields loaded
+            if (dr.FieldCount > o + 2)
+            {
+                DBHelpers[this.GetType()].LoadFromDataReader(this, dr, ++o);
+            }
 
             isExisting = true;
 

@@ -31,6 +31,15 @@ namespace Jhu.Graywulf.Web.Admin.Controls {
         protected global::Jhu.Graywulf.Web.Controls.ToolbarButton Home;
         
         /// <summary>
+        /// Search control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Controls.ToolbarButton Search;
+        
+        /// <summary>
         /// Cluster control.
         /// </summary>
         /// <remarks>

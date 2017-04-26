@@ -2,6 +2,7 @@
 
 <jgwc:Toolbar runat="server" ID="TheMenu" SkinID="Menu">
     <jgwc:ToolbarButton ID="Home" runat="server" Text="home" SkinID="Menu" />
+    <jgwc:ToolbarButton ID="Search" runat="server" Text="search" SkinID="Menu" />
     <jgwc:ToolbarButton ID="Cluster" runat="server" Text="cluster" SkinID="Menu" />
     <jgwc:ToolbarButton ID="Domain" runat="server" Text="domain" SkinID="Menu" />
     <jgwc:ToolbarButton ID="Federation" runat="server" Text="federation" SkinID="Menu" />

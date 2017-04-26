@@ -14,11 +14,54 @@ namespace Jhu.Graywulf.Web.Admin.Controls
     [PersistChildren(true)]
     public partial class EntityList : Jhu.Graywulf.Web.UI.UserControlBase
     {
+        private EntitySearch search;
         private Entity parentEntity;
         private EntityType childrenType;
         private EntityGroup entityGroup;
         private string text;
         private DataControlFieldCollection columns;
+
+        public bool CreateVisible
+        {
+            get { return create.Visible; }
+            set { create.Visible = value; }
+        }
+
+        public bool CopyVisible
+        {
+            get { return copy.Visible; }
+            set { copy.Visible = value; }
+        }
+        
+        public bool EditVisible
+        {
+            get { return edit.Visible; }
+            set { edit.Visible = value; }
+        }
+
+        public bool DeleteVisible
+        {
+            get { return delete.Visible; }
+            set { delete.Visible = value; }
+        }
+
+        public bool ExportVisible
+        {
+            get { return export.Visible; }
+            set { export.Visible = value; }
+        }
+
+        public bool MoveVisible
+        {
+            get { return moveGroup.Visible; }
+            set { moveGroup.Visible = value; }
+        }
+
+        public EntitySearch Search
+        {
+            get { return search; }
+            set { search = value; }
+        }
 
         public Entity ParentEntity
         {
@@ -78,6 +121,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
 
         private void InitializeMembers()
         {
+            this.search = null;
             this.parentEntity = null;
             this.childrenType = EntityType.Unknown;
             this.entityGroup = Registry.EntityGroup.Unknown;
@@ -87,12 +131,16 @@ namespace Jhu.Graywulf.Web.Admin.Controls
 
         protected void InternalDataSource_ObjectCreating(object sender, ObjectDataSourceEventArgs e)
         {
-            if (parentEntity != null)
+            if (search != null)
             {
-                WebEntityFactory ef = new WebEntityFactory(((PageBase)Page).RegistryContext);
-                ef.ParentEntity = parentEntity;
-                ef.ChildrenType = childrenType;
-                e.ObjectInstance = ef;
+                e.ObjectInstance = search;
+            }
+            else if (parentEntity != null)
+            {
+                var s = new EntitySearch(((PageBase)Page).RegistryContext);
+                s.Parent = parentEntity;
+                s.EntityType = childrenType;
+                e.ObjectInstance = s;
             }
             else
             {
@@ -139,7 +187,10 @@ namespace Jhu.Graywulf.Web.Admin.Controls
 
             if (!IsPostBack)
             {
-                Create.OnClientClick = Util.UrlFormatter.GetClientRedirect(parentEntity.GetNewChildFormUrl(childrenType));
+                if (create.Visible && parentEntity != null)
+                {
+                    create.OnClientClick = Util.UrlFormatter.GetClientRedirect(parentEntity.GetNewChildFormUrl(childrenType));
+                }
             }
         }
 
@@ -164,7 +215,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             Response.Redirect(item.GetFormUrl(), false);
         }
 
-        private void DeleteItem(Guid[] guids)
+        private void DeleteItems(Guid[] guids)
         {
             Response.Redirect(Jhu.Graywulf.Web.Admin.Common.Delete.GetUrl(guids), false);
         }
@@ -181,6 +232,12 @@ namespace Jhu.Graywulf.Web.Admin.Controls
         {
             var key = ((PageBase)Page).FormCacheSave(guids);
             Response.Redirect(Web.Admin.Common.Export.GetUrl(key, EntityGroup));
+        }
+
+        private void DiscoverItems(Guid[] guids)
+        {
+            var key = ((PageBase)Page).FormCacheSave(guids);
+            Response.Redirect(Web.Admin.Common.Discover.GetUrl(key));
         }
 
         protected void Button_Command(object sender, CommandEventArgs e)
@@ -207,7 +264,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
                         EditItem(new Guid(InternalGridView.SelectedDataKeys.First()));
                         break;
                     case "Delete":
-                        DeleteItem(guids);
+                        DeleteItems(guids);
                         break;
                     case "MoveDown":
                         MoveItem(guid, EntityMoveDirection.Down);
@@ -218,6 +275,18 @@ namespace Jhu.Graywulf.Web.Admin.Controls
                     case "Export":
                         ExportItems(guids);
                         break;
+                    case "Deploy":
+                    case "Undeploy":
+                    case "Allocate":
+                    case "Detach":
+                    case "Attach":
+                    case "Drop":
+                        break;
+                    case "Discover":
+                        DiscoverItems(guids);
+                        break;
+                    case "Start":
+                    case "Stop":
                     default:
                         throw new NotImplementedException();
                 }

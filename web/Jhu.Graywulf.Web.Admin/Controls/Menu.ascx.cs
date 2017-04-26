@@ -13,6 +13,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             {
                 var clusterGuid = ((PageBase)Page).RegistryContext.ClusterReference.Guid;
 
+                Search.NavigateUrl = Jhu.Graywulf.Web.Admin.Common.Search.GetUrl();
                 Cluster.NavigateUrl = Jhu.Graywulf.Web.Admin.Cluster.ClusterDetails.GetUrl(clusterGuid);
                 Domain.NavigateUrl = Jhu.Graywulf.Web.Admin.Domain.ClusterDetails.GetUrl(clusterGuid);
                 Federation.NavigateUrl = Jhu.Graywulf.Web.Admin.Federation.ClusterDetails.GetUrl(clusterGuid);
@@ -24,6 +25,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             }
             else
             {
+                Search.Visible = false;
                 Cluster.Visible = false;
                 Domain.Visible = false;
                 Federation.Visible = false;

@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Web.Admin
 
         public Guid FormCacheSave(object data)
         {
-            var guid = new Guid();
+            var guid = Guid.NewGuid();
             var key = GetFormDataCacheKey(guid);
 
             Page.Cache[key] = data;

@@ -121,11 +121,7 @@ FROM __e
 
         public IEnumerable<T> Find(int max, int from, string orderBy)
         {
-            // Prevent any injection attacks
-            if (!String.IsNullOrWhiteSpace(orderBy) && !OrderByRegex.Match(orderBy).Success)
-            {
-                Error.AccessDenied();
-            }
+            ValidateOrderBy(orderBy);
 
             using (searchCommand = Context.CreateCommand())
             {
@@ -271,6 +267,15 @@ ORDER BY __rn
         protected void AppendSearchParameter(SqlParameter parameter)
         {
             searchCommand.Parameters.Add(parameter);
+        }
+
+        private void ValidateOrderBy(string orderBy)
+        {
+            // Prevent any injection attacks
+            if (!String.IsNullOrWhiteSpace(orderBy) && !OrderByRegex.Match(orderBy).Success)
+            {
+                Error.AccessDenied();
+            }
         }
 
         protected string BuildOrderByClause(string orderBy)

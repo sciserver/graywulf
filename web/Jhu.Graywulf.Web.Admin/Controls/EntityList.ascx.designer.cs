@@ -40,67 +40,76 @@ namespace Jhu.Graywulf.Web.Admin.Controls {
         protected global::System.Web.UI.WebControls.CustomValidator ItemSelectedValidator;
         
         /// <summary>
-        /// Create control.
+        /// create control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Create;
+        protected global::System.Web.UI.WebControls.Button create;
         
         /// <summary>
-        /// Copy control.
+        /// edit control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Copy;
+        protected global::System.Web.UI.WebControls.LinkButton edit;
         
         /// <summary>
-        /// Edit control.
+        /// copy control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Edit;
+        protected global::System.Web.UI.WebControls.LinkButton copy;
         
         /// <summary>
-        /// Delete control.
+        /// delete control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Delete;
+        protected global::System.Web.UI.WebControls.LinkButton delete;
         
         /// <summary>
-        /// Export control.
+        /// export control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Export;
+        protected global::System.Web.UI.WebControls.LinkButton export;
         
         /// <summary>
-        /// MoveUp control.
+        /// moveGroup control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button MoveUp;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl moveGroup;
         
         /// <summary>
-        /// MoveDown control.
+        /// moveUp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button MoveDown;
+        protected global::System.Web.UI.WebControls.LinkButton moveUp;
+        
+        /// <summary>
+        /// moveDown control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton moveDown;
         
         /// <summary>
         /// InternalGridView control.
