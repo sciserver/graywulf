@@ -8,22 +8,30 @@ namespace Jhu.Graywulf.Registry
 {
     public partial class Entity
     {
-        public void Discover()
+        public void Discover(List<Entity> update, List<Entity> delete, List<Entity> create, List<Entity> error, bool supressError)
         {
-            var update = new List<Entity>();
-            var delete = new List<Entity>();
-            var create = new List<Entity>();
-            Discover(update, delete, create);
-
-            var ef = new EntityFactory(Context);
-            ef.ApplyChanges(update, delete, create);
+            try
+            {
+                OnDiscover(update, delete, create);
+            }
+            catch (Exception ex)
+            {
+                if (!supressError)
+                {
+                    throw;
+                }
+                else
+                {
+                    error.Add(this);
+                }
+            }
         }
 
         /// <summary>
         /// Updates the entity to reflect actual system configuration
         /// </summary>
         /// <returns></returns>
-        public virtual void Discover(List<Entity> update, List<Entity> delete, List<Entity> create)
+        protected virtual void OnDiscover(List<Entity> update, List<Entity> delete, List<Entity> create)
         {
             throw new NotImplementedException();
         }

@@ -780,5 +780,35 @@ namespace Jhu.Graywulf.Registry
         {
             return GetFullyQualifiedName();
         }
+
+        public MethodInfo GetOperation(Operation op)
+        {
+            var method = GetType().GetMethod(op.ToString());
+            return method;
+        }
+
+        public bool IsOperationSupported(Operation op)
+        {
+            var method = GetOperation(op);
+            return method != null;
+        }
+        
+        public void RunOperation(Operation op)
+        {
+            var method = GetOperation(op);
+            method.Invoke(this, null);
+        }
+
+        public virtual void Start()
+        {
+            RunningState = RunningState.Running;
+            Save();
+        }
+
+        public virtual void Stop()
+        {
+            RunningState = RunningState.Stopped;
+            Save();
+        }
     }
 }

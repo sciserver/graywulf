@@ -19,6 +19,7 @@ namespace Jhu.Graywulf.Web.Admin.Common
         private List<Entity> update;
         private List<Entity> delete;
         private List<Entity> create;
+        private List<Entity> error;
 
         public static string GetUrl(Guid key)
         {
@@ -32,10 +33,11 @@ namespace Jhu.Graywulf.Web.Admin.Common
             update = new List<Entity>();
             delete = new List<Entity>();
             create = new List<Entity>();
+            error = new List<Entity>();
 
             foreach (var e in Entities)
             {
-                e.Discover(update, delete, create);
+                e.Discover(update, delete, create, error, true);
             }
         }
 
@@ -52,21 +54,32 @@ namespace Jhu.Graywulf.Web.Admin.Common
                 Name.Text = Entities[0].Name;
             }
 
-            EntityList.Items.Clear();
+            if (error.Count > 0)
+            {
+                errorListDiv.Visible = true;
+                errorList.Items.Clear();
+
+                foreach (var entity in error)
+                {
+                    errorList.Items.Add(String.Format("{0} - {1} ({2})", entity.Name, entity.EntityType, "discovery error"));
+                }
+            }
+
+            updateList.Items.Clear();
 
             foreach (var entity in update)
             {
-                EntityList.Items.Add(String.Format("{0} - {1} ({2})", entity.Name, entity.EntityType, "to be updated"));
+                updateList.Items.Add(String.Format("{0} - {1} ({2})", entity.Name, entity.EntityType, "to be updated"));
             }
 
             foreach (var entity in delete)
             {
-                EntityList.Items.Add(String.Format("{0} - {1} ({2})", entity.Name, entity.EntityType, "to be deleted"));
+                updateList.Items.Add(String.Format("{0} - {1} ({2})", entity.Name, entity.EntityType, "to be deleted"));
             }
 
             foreach (var entity in create)
             {
-                EntityList.Items.Add(String.Format("{0} - {1} ({2})", entity.Name, entity.EntityType, "to be created"));
+                updateList.Items.Add(String.Format("{0} - {1} ({2})", entity.Name, entity.EntityType, "to be created"));
             }
         }
 

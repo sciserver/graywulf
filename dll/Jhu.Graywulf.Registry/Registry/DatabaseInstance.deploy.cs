@@ -331,5 +331,14 @@ namespace Jhu.Graywulf.Registry
             this.Context.LogEvent(new Event("Jhu.Graywulf.Registry.DatabaseInstance.CreateFileGroups", this.Guid));
         }
 
+        public void Allocate()
+        {
+            Deploy();
+        }
+
+        public void Drop()
+        {
+            Undeploy();
+        }
     }
 }

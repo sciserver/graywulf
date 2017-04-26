@@ -246,6 +246,13 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             Response.Redirect(Web.Admin.Common.Discover.GetUrl(key));
         }
 
+        private void RunOperation(string operation, Guid[] guids)
+        {
+            var key = ((PageBase)Page).FormCacheSave(guids);
+            var op = (Operation)Enum.Parse(typeof(Operation), operation);
+            Response.Redirect(Web.Admin.Common.Process.GetUrl(op, key));
+        }
+
         protected void Button_Command(object sender, CommandEventArgs e)
         {
             Guid guid = Guid.Empty;
@@ -281,20 +288,12 @@ namespace Jhu.Graywulf.Web.Admin.Controls
                     case "Export":
                         ExportItems(guids);
                         break;
-                    case "Deploy":
-                    case "Undeploy":
-                    case "Allocate":
-                    case "Detach":
-                    case "Attach":
-                    case "Drop":
-                        break;
                     case "Discover":
                         DiscoverItems(guids);
                         break;
-                    case "Start":
-                    case "Stop":
                     default:
-                        throw new NotImplementedException();
+                        RunOperation(e.CommandName, guids);
+                        break;
                 }
             }
         }

@@ -49,12 +49,39 @@ namespace Jhu.Graywulf.Web.Admin.Common {
         protected global::System.Web.UI.WebControls.Label Name;
         
         /// <summary>
-        /// EntityList control.
+        /// errorListDiv control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.BulletedList EntityList;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl errorListDiv;
+        
+        /// <summary>
+        /// errorList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.BulletedList errorList;
+        
+        /// <summary>
+        /// updateListDiv control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl updateListDiv;
+        
+        /// <summary>
+        /// updateList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.BulletedList updateList;
     }
 }

@@ -84,6 +84,7 @@
     <Content Include="Cluster\ServerInstanceForm.aspx" />
     <Content Include="Cluster\ServerVersionDetails.aspx" />
     <Content Include="Cluster\ServerVersionForm.aspx" />
+    <Content Include="Common\Process.aspx" />
     <Content Include="Common\Export.aspx" />
     <Content Include="Common\Delete.aspx" />
     <Content Include="Common\Discover.aspx" />
@@ -890,6 +891,13 @@
     </Compile>
     <Compile Include="Common\CommonPage.cs">
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Common\Process.aspx.cs">
+      <DependentUpon>Process.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Common\Process.aspx.designer.cs">
+      <DependentUpon>Process.aspx</DependentUpon>
     </Compile>
     <Compile Include="Common\Export.aspx.cs">
       <DependentUpon>Export.aspx</DependentUpon>

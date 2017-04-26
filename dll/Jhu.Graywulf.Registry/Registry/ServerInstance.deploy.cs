@@ -29,6 +29,8 @@ namespace Jhu.Graywulf.Registry
             csb.DataSource = this.GetCompositeName();
             csb.Enlist = false;
             csb.IntegratedSecurity = this.integratedSecurity;
+            csb.ConnectTimeout = 5;
+
             if (!integratedSecurity)
             {
                 csb.UserID = this.adminUser;
@@ -39,6 +41,7 @@ namespace Jhu.Graywulf.Registry
             cn.Open();
 
             var scn = new ServerConnection(cn);
+            scn.AutoDisconnectMode = Microsoft.SqlServer.Management.Common.AutoDisconnectMode.DisconnectIfPooled;
 
             Server srv = new Server(scn);
             srv.ConnectionContext.StatementTimeout = 3600; //1 hour timeout

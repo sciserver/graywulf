@@ -173,15 +173,13 @@ namespace Jhu.Graywulf.Web.Admin
 
         protected void StartItem()
         {
-            item.RunningState = RunningState.Running;
-            item.Save();
+            item.Start();
             UpdateForm();
         }
 
         protected void StopItem()
         {
-            item.RunningState = RunningState.Stopped;
-            item.Save();
+            item.Stop();
             UpdateForm();
         }
     }

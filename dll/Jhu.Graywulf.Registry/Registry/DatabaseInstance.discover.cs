@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Registry
 {
     public partial class DatabaseInstance
     {
-        public override void Discover(List<Entity> update, List<Entity> delete, List<Entity> create)
+        protected override void OnDiscover(List<Entity> update, List<Entity> delete, List<Entity> create)
         {
             if (IsExisting)
             {

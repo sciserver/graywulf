@@ -31,4 +31,17 @@ namespace Jhu.Graywulf.Registry
         Update,
         Fail
     }
+
+    public enum Operation
+    {
+        Start,
+        Stop,
+        Deploy,
+        Undeploy,
+        Allocate,
+        Attach,
+        Detach,
+        Drop,
+        Discover
+    }
 }
