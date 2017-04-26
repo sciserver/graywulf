@@ -64,7 +64,7 @@
             <asp:LinkButton ID="moveDown" runat="server" CssClass="btn btn-default" CommandName="MoveDown"
                 OnCommand="Button_Command" ValidationGroup="EntityList"><span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true" /></asp:LinkButton>
         </div>
-        <jgwac:EntityListPager runat="server" PagedControlID="InternalGridView" PageSize="25" class="btn-group pull-right">
+        <jgwac:EntityListPager runat="server" ID="EntityListPager" PagedControlID="InternalGridView" PageSize="200" class="btn-group pull-right">
             <Fields>
                 <asp:NumericPagerField ButtonType="Link" ButtonCount="5" CurrentPageLabelCssClass="btn btn-default disabled" NumericButtonCssClass="btn btn-default" />
             </Fields>
@@ -72,7 +72,7 @@
     </nav>
 </div>
 <div class="dock-fill" style="overflow: auto">
-    <jgwc:MultiSelectGridView runat="server" ID="InternalGridView" DataSourceID="InternalDataSource"
+    <jgwc:MultiSelectGridView runat="server" ID="InternalGridView" DataSourceID="InternalDataSource" AllowSorting="true"
         AllowPaging="true" AllowCustomPaging="true" DataKeyNames="Guid" AutoGenerateColumns="false" PagerSettings-Visible="false">
     </jgwc:MultiSelectGridView>
 </div>

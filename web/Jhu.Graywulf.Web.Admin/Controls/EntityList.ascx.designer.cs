@@ -112,6 +112,15 @@ namespace Jhu.Graywulf.Web.Admin.Controls {
         protected global::System.Web.UI.WebControls.LinkButton moveDown;
         
         /// <summary>
+        /// EntityListPager control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Admin.Controls.EntityListPager EntityListPager;
+        
+        /// <summary>
         /// InternalGridView control.
         /// </summary>
         /// <remarks>

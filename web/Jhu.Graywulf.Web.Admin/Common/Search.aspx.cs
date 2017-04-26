@@ -23,15 +23,50 @@ namespace Jhu.Graywulf.Web.Admin.Common
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            
+            if (!IsPostBack)
+            {
+                RefreshTypeList();
+            }
+            else
+            {
+                SearchResultList.Search = GetSearchObject();
+            }
+        }
+
+        private void RefreshTypeList()
+        {
+            var types = Constants.EntityTypeMap
+                .Select(i => i.Key)
+                .OrderBy(i => Constants.EntityNames_Singular[i])
+                .ToArray();
+
+            type.Items.Clear();
+
+            type.Items.Add(new ListItem("(any)", ""));
+
+            foreach (var t in types)
+            {
+                var li = new ListItem(Constants.EntityNames_Singular[t], t.ToString());
+                type.Items.Add(li);
+            }
+        }
+
+        private EntitySearch GetSearchObject()
+        {
+            var s = new EntitySearch(RegistryContext);
+            s.Name = name.Text;
+
+            if (!String.IsNullOrWhiteSpace(type.SelectedValue))
+            {
+                s.EntityType = (EntityType)Enum.Parse(typeof(EntityType), type.SelectedValue);
+            }
+
+            return s;
         }
 
         protected void Ok_Click(object sender, EventArgs e)
         {
-            var s = new EntitySearch(RegistryContext);
-            s.Name = name.Text;
-            SearchResultList.Search = s;
-
+            SearchResultList.Sort("name", SortDirection.Ascending);
             SearchResultList.Visible = true;
         }
     }

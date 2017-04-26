@@ -21,6 +21,12 @@ namespace Jhu.Graywulf.Web.Admin.Controls
         private string text;
         private DataControlFieldCollection columns;
 
+        public bool ButtonsVisible
+        {
+            get { return buttonsDiv.Visible; }
+            set { buttonsDiv.Visible = value; }
+        }
+
         public bool CreateVisible
         {
             get { return create.Visible; }
@@ -32,7 +38,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             get { return copy.Visible; }
             set { copy.Visible = value; }
         }
-        
+
         public bool EditVisible
         {
             get { return edit.Visible; }
@@ -63,6 +69,12 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             set { search = value; }
         }
 
+        public int PageSize
+        {
+            get { return EntityListPager.PageSize; }
+            set { EntityListPager.PageSize = PageSize; }
+        }
+
         public Entity ParentEntity
         {
             get { return parentEntity; }
@@ -85,12 +97,6 @@ namespace Jhu.Graywulf.Web.Admin.Controls
         {
             get { return text; }
             set { text = value; }
-        }
-
-        public bool ButtonsVisible
-        {
-            get { return buttonsDiv.Visible; }
-            set { buttonsDiv.Visible = value; }
         }
 
         public DataControlFieldCollection Columns
@@ -298,6 +304,9 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             args.IsValid = InternalGridView.SelectedDataKeys.Count > 0;
         }
 
-
+        public void Sort(string sortExpression, SortDirection sortDirection)
+        {
+            InternalGridView.Sort(sortExpression, sortDirection);
+        }
     }
 }
