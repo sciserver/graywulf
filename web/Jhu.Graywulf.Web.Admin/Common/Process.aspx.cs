@@ -34,6 +34,9 @@ namespace Jhu.Graywulf.Web.Admin.Common
             var op = Operation;
             LoadEntities();
 
+            update = new List<Entity>();
+            error = new List<Entity>();
+
             foreach (var e in Entities)
             {
                 if (e.IsOperationSupported(op))
