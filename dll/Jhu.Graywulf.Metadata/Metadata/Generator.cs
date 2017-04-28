@@ -129,6 +129,11 @@ namespace Jhu.Graywulf.Metadata
                                 throw new Exception("Invalid tag found.");
                         }
 
+                        if (smoobject == null)
+                        {
+                            throw new Exception(String.Format("Missing object: {0}.{1}.", schema, name));
+                        }
+
                         ProcessObject(e, ot, smoobject);
                         break;
                 }
