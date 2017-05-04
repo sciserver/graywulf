@@ -16,8 +16,7 @@ namespace Jhu.Graywulf.Web.UI
 {
     public class FederationPageBase : Jhu.Graywulf.Web.UI.PageBase
     {
-        private const string SessionSelectedSchemaObject = "Jhu.Graywulf.Web.UI.SelectedSchemaObject";
-        private const string SessionLastQueryJobGuid = "Jhu.Graywulf.Web.UI.LastQueryJobGuid";
+        private const string SessionLastQueryJobGuidKey = "Jhu.Graywulf.Web.UI.LastQueryJobGuid";
 
         private FederationContext federationContext;
 
@@ -51,10 +50,5 @@ namespace Jhu.Graywulf.Web.UI
             Util.QueryEditorUtil.GetQueryFromSession(this, out query, out selection, out executeSelectedOnly);
         }
 
-        public string SelectedSchemaObject
-        {
-            get { return (string)Session[SessionSelectedSchemaObject]; }
-            set { Session[SessionSelectedSchemaObject] = value; }
-        }
     }
 }

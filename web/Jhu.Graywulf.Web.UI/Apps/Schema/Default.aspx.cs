@@ -9,34 +9,90 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 {
     public partial class Default : FederationPageBase
     {
+        public enum SchemaView
+        {
+            Default,
+            Datasets,
+            Objects,
+            Object,
+            Columns,
+            Parameters,
+            Indexes
+        }
+
         public static string GetUrl()
         {
-            return "~/Apps/Schema/Default.aspx";
+            return "~/Apps/Schema";
         }
 
         public static string GetUrl(string objid)
         {
-            return String.Format("{0}?objid={1}", GetUrl(), objid);
+            return GetUrl(SchemaView.Default, objid);
+        }
+
+        public static string GetUrl(SchemaView view, string objid)
+        {
+            var pars = "";
+
+            if (view != SchemaView.Default)
+            {
+                pars += String.Format("&view={0}", view);
+            }
+
+            if (!String.IsNullOrWhiteSpace(objid))
+            {
+                pars += String.Format("&objid={0}", objid);
+            }
+
+            if (String.IsNullOrEmpty(pars))
+            {
+                return GetUrl();
+            }
+            else
+            {
+                return GetUrl() + "?" + pars.Substring(1);
+            }
         }
 
         #region Properties
 
-        protected string CurrentView
+        public SchemaView SessionView
         {
-            get { return (string)(ViewState["CurrentView"] ?? "summary"); }
-            set { ViewState["CurrentView"] = value; }
+            get { return (SchemaView)(Session["Jhu.Graywulf.Web.UI.App.Schema.DatabaseObject"] ?? SchemaView.Default); }
+            set { Session["Jhu.Graywulf.Web.UI.App.Schema.DatabaseObject"] = value; }
         }
 
-        #endregion
-        #region Event handlers
-
-        protected void Page_Load(object sender, EventArgs e)
+        public string SessionDatabaseObject
         {
-            if (!IsPostBack)
+            get { return (string)Session["Jhu.Graywulf.Web.UI.App.Schema.DatabaseObject"]; }
+            set { Session["Jhu.Graywulf.Web.UI.App.Schema.DatabaseObject"] = value; }
+        }
+
+        protected SchemaView View
+        {
+            get
+            {
+                SchemaView view;
+
+                if (Enum.TryParse<SchemaView>(Request["view"], out view))
+                {
+                    return view;
+                }
+                else
+                {
+                    return SchemaView.Default;
+                }
+            }
+        }
+
+        protected DatabaseObject DatabaseObject
+        {
+            get
             {
                 DatabaseObject dbobj = null;
 
-                var dbobjid = (string)Request.QueryString["objid"] ?? SelectedSchemaObject;
+                var dbobjid = (string)Request["objid"] ?? SessionDatabaseObject;
+
                 if (dbobjid != null)
                 {
 
@@ -49,6 +105,19 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
                     }
                 }
+
+                return dbobj;
+            }
+        }
+
+        #endregion
+        #region Event handlers
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                var dbobj = DatabaseObject;
 
                 if (dbobj != null)
                 {
@@ -96,54 +165,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         #endregion
 
-        private void RefreshDatasetList()
-        {
-            DatasetList.Items.Clear();
-
-            // Add MyDB etc. to the beginning of the list
-            if (FederationContext.RegistryUser != null)
-            {
-                var uf = UserDatabaseFactory.Create(RegistryContext.Federation);
-                var mydbds = uf.GetUserDatabases(RegistryUser);
-
-                foreach (var key in mydbds.Keys)
-                {
-                    var mydbli = CreateDatasetListItem(mydbds[key]);
-                    mydbli.Attributes.Add("class", "ToolbarControlHighlight");
-                    DatasetList.Items.Add(mydbli);
-                }
-            }
-
-            // Code is the next
-            var codedbli = new ListItem(Registry.Constants.CodeDbName, Registry.Constants.CodeDbName);
-            codedbli.Attributes.Add("class", "ToolbarControlHighlight");
-            DatasetList.Items.Add(codedbli);
-
-            // Add other registered catalogs     
-            FederationContext.SchemaManager.Datasets.LoadAll(false);
-
-            // TODO: this needs to be modified here, use flags instead of filtering on name!
-            foreach (var dsd in FederationContext.SchemaManager.Datasets.Values.Where(k =>
-                k.Name != Graywulf.Registry.Constants.UserDbName &&
-                k.Name != Graywulf.Registry.Constants.CodeDbName &&
-                k.Name != Graywulf.Registry.Constants.TempDbName).OrderBy(k => k.Name))
-            {
-                var li = CreateDatasetListItem(dsd);
-                DatasetList.Items.Add(li);
-            }
-        }
-
-        private ListItem CreateDatasetListItem(DatasetBase ds)
-        {
-            var li = new ListItem(ds.Name, ds.Name);
-
-            if (ds.IsInError)
-            {
-                li.Text += " (not available)";
-            }
-
-            return li;
-        }
+        
 
         private void RefreshObjectTypeList()
         {
@@ -163,7 +185,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         private void RefreshObjectList()
         {
-                ObjectList.Items.Clear();
+            ObjectList.Items.Clear();
 
             try
             {
@@ -281,7 +303,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             if (dbobj != null)
             {
                 // Display details
-                SelectedSchemaObject = dbobjid;
+                SessionDatabaseObject = dbobjid;
             }
 
             return dbobj;

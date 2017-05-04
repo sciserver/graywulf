@@ -32,12 +32,12 @@
             <div class="toolbar">
                 <div style="min-width: 140px">
                     <asp:Label ID="DatasetListLabel" runat="server" Text="Catalog:" /><br />
-                    <asp:DropDownList ID="DatasetList" runat="server" AutoPostBack="True" OnSelectedIndexChanged="DatasetList_SelectedIndexChanged">
+                    <asp:DropDownList ID="dataset" runat="server" AutoPostBack="True" OnSelectedIndexChanged="Dataset_SelectedIndexChanged">
                     </asp:DropDownList>
                 </div>
                 <div style="min-width: 140px">
                     <asp:Label ID="ObjectTypeListLabel" runat="server" Text="Object category:" /><br />
-                    <asp:DropDownList ID="ObjectTypeList" runat="server" AutoPostBack="True" OnSelectedIndexChanged="ObjectTypeList_SelectedIndexChanged">
+                    <asp:DropDownList ID="objectType" runat="server" AutoPostBack="True" OnSelectedIndexChanged="ObjectType_SelectedIndexChanged">
                         <asp:ListItem Selected="True" Value="Table">Tables</asp:ListItem>
                         <asp:ListItem Value="View">Views</asp:ListItem>
                         <asp:ListItem Value="StoredProcedure">Stored Procedures</asp:ListItem>
@@ -47,7 +47,7 @@
                 </div>
                 <div class="span">
                     <asp:Label ID="ObjectListLabel" runat="server" Text="Object:" /><br />
-                    <asp:DropDownList ID="ObjectList" runat="server" AutoPostBack="True" OnSelectedIndexChanged="ObjectList_SelectedIndexChanged">
+                    <asp:DropDownList ID="databaseObject" runat="server" AutoPostBack="True" OnSelectedIndexChanged="DatabaseObject_SelectedIndexChanged">
                     </asp:DropDownList>
                 </div>
                 <asp:LinkButton runat="server" ID="summary" Text="summary"
@@ -67,6 +67,7 @@
     <asp:UpdatePanel runat="server" class="dock-fill dock-container">
         <ContentTemplate>
             <list:SummaryForm ID="summaryForm" runat="server" Visible="false" />
+            <list:ColumnList ID="datasetList" runat="server" Visible="false" />
             <list:ColumnList ID="columnList" runat="server" Visible="false" />
             <list:ParameterList ID="parameterList" runat="server" Visible="false" />
             <list:IndexList ID="indexList" runat="server" Visible="false" />
