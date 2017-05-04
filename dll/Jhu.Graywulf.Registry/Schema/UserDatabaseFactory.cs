@@ -24,25 +24,25 @@ namespace Jhu.Graywulf.Schema
         #endregion
         #region Private member variables
 
-        private Federation federation;
+        private FederationContext federationContext;
 
         #endregion
         #region Properties
 
-        protected Federation Federation
+        protected FederationContext FederationContext
         {
-            get { return federation; }
+            get { return federationContext; }
         }
 
         #endregion
         #region Constructors and initializers
 
-        public static UserDatabaseFactory Create(Federation federation)
+        public static UserDatabaseFactory Create(FederationContext federationContext)
         {
-            return Create(federation.UserDatabaseFactory, federation);
+            return Create(federationContext.Federation.UserDatabaseFactory, federationContext);
         }
 
-        public static UserDatabaseFactory Create(string typeName, Federation federation)
+        public static UserDatabaseFactory Create(string typeName, FederationContext federationContext)
         {
             Type type = null;
 
@@ -57,16 +57,16 @@ namespace Jhu.Graywulf.Schema
                 throw new Exception("Cannot load UserDatabaseFactory.");    // TODO ***
             }
 
-            return (UserDatabaseFactory)Activator.CreateInstance(type, new object[] { federation });
+            return (UserDatabaseFactory)Activator.CreateInstance(type, new object[] { federationContext });
         }
 
         // TODO: add assigned server instance
-        protected UserDatabaseFactory(Federation federation)
-            :base(federation.Context)
+        protected UserDatabaseFactory(FederationContext federationContext)
+            :base(federationContext.RegistryContext)
         {
             InitializeMembers(new StreamingContext());
 
-            this.federation = federation;
+            this.federationContext = federationContext;
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Schema
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.federation = null;
+            this.federationContext = null;
         }
 
         #endregion

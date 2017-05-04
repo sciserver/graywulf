@@ -48,26 +48,21 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
         {
             base.RegisterChecks(checks);
 
-            checks.Add(new UserDatabaseCheck(RegistryContext));
-            checks.Add(new TypeCheck(RegistryContext.Federation.FileFormatFactory));
-            checks.Add(new TypeCheck(RegistryContext.Federation.StreamFactory));
+            checks.Add(new UserDatabaseCheck(FederationContext));
+            checks.Add(new TypeCheck(FederationContext.Federation.FileFormatFactory));
+            checks.Add(new TypeCheck(FederationContext.Federation.StreamFactory));
         }
 
         public override void OnUserArrived(UIApplicationBase application, GraywulfPrincipal principal)
         {
             base.OnUserArrived(application, principal);
 
-            using (var context = application.CreateRegistryContext())
-            {
-                // Check if user database (MYDB) exists, and create it if necessary
-                var user = principal.Identity.User;
-                var uf = UserDatabaseFactory.Create(context.Federation);
+            // Check if user database (MYDB) exists, and create it if necessary
+            var user = principal.Identity.User;
+            var uf = UserDatabaseFactory.Create(FederationContext);
 
-                // This call will make sure all user databases are in place
-                uf.GetUserDatabases(user);
-                
-                context.CommitTransaction();
-            }
+            // This call will make sure all user databases are in place
+            uf.GetUserDatabases(user);
         }
     }
 }

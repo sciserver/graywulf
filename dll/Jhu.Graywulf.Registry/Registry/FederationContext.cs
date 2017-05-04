@@ -15,9 +15,7 @@ namespace Jhu.Graywulf.Registry
 
         private Context registryContext;
         private User registryUser;
-
         private GraywulfSchemaManager schemaManager;
-        private DatasetBase myDBDataset;
 
         #endregion
         #region Properties
@@ -67,36 +65,17 @@ namespace Jhu.Graywulf.Registry
             {
                 if (schemaManager == null)
                 {
-                    schemaManager = GraywulfSchemaManager.Create(registryContext.Federation);
+                    schemaManager = GraywulfSchemaManager.Create(this);
 
                     if (registryUser != null)
                     {
-                        schemaManager.AddUserDatabases(Federation, registryUser);
+                        schemaManager.AddUserDatabases(registryUser);
                     }
                 }
 
                 return schemaManager;
             }
         }
-
-        /*
-        public Jhu.Graywulf.Schema.SqlServer.SqlServerDataset MyDBDataset
-        {
-            get
-            {
-                if (myDBDataset == null)
-                {
-                    var uf = UserDatabaseFactory.Create(registryContext.Federation);
-                    var mydbds = uf.GetUserDatabases(registryUser);
-
-                    // TODO: this is temporary fall-back logic, implement multi-mydb forms
-                    myDBDataset = mydbds[Constants.UserDbName];
-                }
-
-                return (Jhu.Graywulf.Schema.SqlServer.SqlServerDataset)myDBDataset;
-            }
-        }
-        */
 
         #endregion
         #region Constructors and initializers

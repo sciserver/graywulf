@@ -14,24 +14,24 @@ namespace Jhu.Graywulf.Web.Security
             get { return CheckCategory.Plugin; }
         }
 
-        public Context Context { get; set; }
+        public FederationContext FederationContext { get; set; }
 
-        public IdentityProviderCheck(Context context)
+        public IdentityProviderCheck(FederationContext context)
         {
-            this.Context = context;
+            this.FederationContext = context;
         }
 
         public override void Execute(System.IO.TextWriter output)
         {
             output.WriteLine("Checking identity provider module.");
 
-            var ip = IdentityProvider.Create(Context.Domain);
+            var ip = IdentityProvider.Create(FederationContext.Domain);
             output.WriteLine("Identity provider module: {0}", ip.GetType().FullName);
         }
 
         public override IEnumerable<Graywulf.Check.CheckRoutineBase> GetCheckRoutines()
         {
-            var ip = IdentityProvider.Create(Context.Domain);
+            var ip = IdentityProvider.Create(FederationContext.Domain);
             return ip.GetCheckRoutines();
         }
     }

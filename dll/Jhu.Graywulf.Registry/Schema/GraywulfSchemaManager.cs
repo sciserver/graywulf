@@ -29,31 +29,25 @@ namespace Jhu.Graywulf.Schema
             Registry.Constants.TempDbName,
         };
 
-        private Federation federation;
-
-        public Federation Federation
-        {
-            get { return federation; }
-            set { federation = value; }
-        }
-
+        private FederationContext federationContext;
+        
         #region Constructors and initializers
 
         // TODO: add assigned server instance
-        public GraywulfSchemaManager(Federation federation)
+        public GraywulfSchemaManager(FederationContext federationContext)
         {
             InitializeMembers(new StreamingContext());
 
-            this.federation = federation;
+            this.federationContext = federationContext;
         }
 
-        public static GraywulfSchemaManager Create(Federation federation)
+        public static GraywulfSchemaManager Create(FederationContext federationContext)
         {
             Type type = null;
 
-            if (!String.IsNullOrWhiteSpace(federation.SchemaManager))
+            if (!String.IsNullOrWhiteSpace(federationContext.Federation.SchemaManager))
             {
-                type = Type.GetType(federation.SchemaManager);
+                type = Type.GetType(federationContext.Federation.SchemaManager);
             }
 
             // Fall back logic if config is invalid
@@ -62,7 +56,7 @@ namespace Jhu.Graywulf.Schema
                 type = typeof(GraywulfSchemaManager);
             }
 
-            return (GraywulfSchemaManager)Activator.CreateInstance(type, new object[] { federation });
+            return (GraywulfSchemaManager)Activator.CreateInstance(type, new object[] { federationContext });
         }
 
         /// <summary>
@@ -71,7 +65,7 @@ namespace Jhu.Graywulf.Schema
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.federation = null;
+            this.federationContext = null;
         }
 
         #endregion
@@ -83,7 +77,7 @@ namespace Jhu.Graywulf.Schema
             if (ds is GraywulfDataset)
             {
                 var gwds = (GraywulfDataset)ds;
-                gwds.Context = federation.Context;
+                gwds.Context = federationContext.RegistryContext;
             }
 
             base.OnDatasetAdded(datasetName, ds);
@@ -91,10 +85,10 @@ namespace Jhu.Graywulf.Schema
 
         protected override IEnumerable<KeyValuePair<string, DatasetBase>> LoadAllDatasets()
         {
-            federation.LoadDatabaseDefinitions(true);
+            federationContext.Federation.LoadDatabaseDefinitions(true);
 
             // Load database definitions
-            foreach (var dd in federation.DatabaseDefinitions.Values.Where(d => d.RunningState == RunningState.Running))
+            foreach (var dd in federationContext.Federation.DatabaseDefinitions.Values.Where(d => d.RunningState == RunningState.Running))
             {
                 // Make sure it's not a reserved database definition
                 if (!ReservedDatabaseDefinitions.Contains(dd.Name))
@@ -105,10 +99,10 @@ namespace Jhu.Graywulf.Schema
                 }
             }
 
-            federation.LoadRemoteDatabases(true);
+            federationContext.Federation.LoadRemoteDatabases(true);
 
             // Load remote databases
-            foreach (var rd in federation.RemoteDatabases.Values.Where(d => d.RunningState == RunningState.Running))
+            foreach (var rd in federationContext.Federation.RemoteDatabases.Values.Where(d => d.RunningState == RunningState.Running))
             {
                 // Make sure it's not a reserved database definition
                 if (!ReservedDatabaseDefinitions.Contains(rd.Name))
@@ -127,8 +121,8 @@ namespace Jhu.Graywulf.Schema
         /// <returns></returns>
         protected override DatasetBase LoadDataset(string datasetName)
         {
-            var ef = new EntityFactory(federation.Context);
-            var ddrd = ef.LoadEntity(EntityType.Unknown, federation.GetFullyQualifiedName(), datasetName);
+            var ef = new EntityFactory(federationContext.RegistryContext);
+            var ddrd = ef.LoadEntity(EntityType.Unknown, federationContext.Federation.GetFullyQualifiedName(), datasetName);
 
             if (ddrd is DatabaseDefinition)
             {
@@ -233,15 +227,56 @@ namespace Jhu.Graywulf.Schema
             return ds;
         }
 
-        public void AddUserDatabases(Federation federation, User user)
+        public void AddUserDatabases(User user)
         {
-            var uf = UserDatabaseFactory.Create(federation);
+            var uf = UserDatabaseFactory.Create(federationContext);
             var mydbds = uf.GetUserDatabases(user);
 
             foreach (var key in mydbds.Keys)
             {
                 this.Datasets[key] = mydbds[key];
             }
+        }
+
+        public IEnumerable<DatasetBase> EnumerateDatasets(bool includeUserDatabase, bool includeCodeDb)
+        {
+            var res = new List<DatasetBase>();
+
+            if (includeUserDatabase)
+            {
+                foreach (var ds in Datasets.Values.Where(k => IsUserDb(k)).OrderBy(k => k.Name))
+                {
+                    res.Add(ds);
+                }
+            }
+
+            foreach (var ds in Datasets.Values.Where(k => !IsSystemDataset(k)).OrderBy(k => k.Name))
+            {
+                res.Add(ds);
+            }
+
+            if (includeCodeDb)
+            {
+                res.Add(Datasets[Graywulf.Registry.Constants.CodeDbName]);
+            }
+
+            return res;
+        }
+
+        public bool IsUserDb(DatasetBase ds)
+        {
+            return ds.IsMutable;
+        }
+
+        public bool IsCodeDb(DatasetBase ds)
+        {
+            return Comparer.Compare(ds.Name, Graywulf.Registry.Constants.CodeDbName) == 0;
+        }
+
+        public bool IsSystemDataset(DatasetBase ds)
+        {
+            return Comparer.Compare(ds.Name, Graywulf.Registry.Constants.CodeDbName) == 0 ||
+                   Comparer.Compare(ds.Name, Graywulf.Registry.Constants.TempDbName) == 0;
         }
     }
 }

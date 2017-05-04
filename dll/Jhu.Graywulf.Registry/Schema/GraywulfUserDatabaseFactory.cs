@@ -15,8 +15,8 @@ namespace Jhu.Graywulf.Schema
         // TODO: this is not currently used
         // TODO: add support for multiple MyDBs, group dbs, scratch, anything
 
-        public GraywulfUserDatabaseFactory(Federation federation)
-            : base(federation)
+        public GraywulfUserDatabaseFactory(FederationContext federationContext)
+            : base(federationContext)
         {
         }
 
@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Schema
             // TODO: update this to support multiple user databases
             
             var udii = new UserDatabaseInstanceInstaller(Context);
-            udii.EnsureUserDatabaseInstanceExists(user, Federation.UserDatabaseVersion);
+            udii.EnsureUserDatabaseInstanceExists(user, FederationContext.Federation.UserDatabaseVersion);
         }
 
         protected override void EnsureUserDatabaseConfigured(User user, SqlServerDataset dataset)
@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.Schema
 
         protected override Dictionary<string, SqlServerDataset> OnGetUserDatabases(User user)
         {
-            var di = Federation.UserDatabaseVersion.GetUserDatabaseInstance(user);
+            var di = FederationContext.Federation.UserDatabaseVersion.GetUserDatabaseInstance(user);
             var ds = di.GetDataset();
 
             ds.Name = Registry.Constants.UserDbName;
@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.Schema
 
         protected override Dictionary<string, ServerInstance> OnGetUserDatabaseServerInstances(User user)
         {
-            var di = Federation.UserDatabaseVersion.GetUserDatabaseInstance(user);
+            var di = FederationContext.Federation.UserDatabaseVersion.GetUserDatabaseInstance(user);
 
             return new Dictionary<string, ServerInstance>(SchemaManager.Comparer)
             {

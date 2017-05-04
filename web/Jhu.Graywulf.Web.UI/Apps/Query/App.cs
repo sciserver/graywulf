@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
         {
             base.RegisterChecks(checks);
 
-            checks.Add(new TypeCheck(RegistryContext.Federation.QueryFactory));
+            checks.Add(new TypeCheck(FederationContext.Federation.QueryFactory));
         }
     }
 }

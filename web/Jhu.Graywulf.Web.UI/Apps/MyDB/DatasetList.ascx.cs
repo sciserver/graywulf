@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
         public void RefreshDatasetList()
         {
-            var uf = UserDatabaseFactory.Create(RegistryContext.Federation);
+            var uf = UserDatabaseFactory.Create(FederationContext);
             var mydbds = uf.GetUserDatabases(FederationContext.RegistryUser);
 
             datasetList.Items.Clear();

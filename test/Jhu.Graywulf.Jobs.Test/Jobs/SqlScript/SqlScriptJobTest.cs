@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.Jobs.SqlScript
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var user = SignInTestUser(context);
-                var udf = UserDatabaseFactory.Create(context.Federation);
+                var udf = UserDatabaseFactory.Create(new FederationContext(context, user));
                 mydb = udf.GetUserDatabases(user)[Registry.Constants.UserDbName];
             }
 

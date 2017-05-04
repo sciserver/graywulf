@@ -8,7 +8,7 @@ namespace Jhu.Graywulf.Web.UI
 {
     public abstract class AppBase
     {
-        private Context registryContext;
+        private FederationContext federationContext;
 
         protected virtual string Name
         {
@@ -26,10 +26,10 @@ namespace Jhu.Graywulf.Web.UI
             }
         }
 
-        public Context RegistryContext
+        public FederationContext FederationContext
         {
-            get { return registryContext; }
-            set { registryContext = value; }
+            get { return federationContext; }
+            set { federationContext = value; }
         }
 
         public virtual void Initialize(UIApplicationBase application)
@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Web.UI
             {
                 Key = Name,
                 Text = Name,
-                NavigateUrl = "~/Apps/" + Name + "/Default.aspx"
+                NavigateUrl = "~/Apps/" + Name
             };
 
             application.RegisterMenuButton(button);

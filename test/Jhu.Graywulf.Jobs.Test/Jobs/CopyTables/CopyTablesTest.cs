@@ -28,9 +28,7 @@ namespace Jhu.Graywulf.Jobs.CopyTables
                 var user = SignInTestUser(context);
 
                 var ef = new EntityFactory(context);
-                var federation = ef.LoadEntity<Federation>(Registry.ContextManager.Configuration.FederationName);
-
-                var udf = UserDatabaseFactory.Create(federation);
+                var udf = UserDatabaseFactory.Create(new FederationContext(context, user));
                 var mydbds = udf.GetUserDatabases(user)[Registry.Constants.UserDbName];
 
                 var sourcetable = new Table()

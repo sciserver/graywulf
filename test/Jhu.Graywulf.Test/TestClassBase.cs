@@ -276,8 +276,7 @@ namespace Jhu.Graywulf.Test
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var user = SignInTestUser(context);
-
-                var udf = UserDatabaseFactory.Create(context.Federation);
+                var udf = UserDatabaseFactory.Create(new FederationContext(context, user));
                 var userdb = udf.GetUserDatabases(user)[Registry.Constants.UserDbName];
 
                 DropTable(userdb.ConnectionString, userdb.DefaultSchemaName, tableName);

@@ -14,24 +14,24 @@ namespace Jhu.Graywulf.Schema
             get { return CheckCategory.Database; }
         }
 
-        public Context Context { get; set; }
+        public FederationContext FederationContext { get; set; }
 
-        public UserDatabaseCheck(Context context)
+        public UserDatabaseCheck(FederationContext context)
         {
-            this.Context = context;
+            this.FederationContext = context;
         }
 
         public override void Execute(System.IO.TextWriter output)
         {
             output.WriteLine("Checking user database module.");
 
-            var uf = UserDatabaseFactory.Create(Context.Federation);
+            var uf = UserDatabaseFactory.Create(FederationContext);
             output.WriteLine("User database module: {0}", uf.GetType().FullName);
         }
 
         public override IEnumerable<Graywulf.Check.CheckRoutineBase> GetCheckRoutines()
         {
-            var uf = UserDatabaseFactory.Create(Context.Federation);
+            var uf = UserDatabaseFactory.Create(FederationContext);
             return uf.GetCheckRoutines();
         }
     }

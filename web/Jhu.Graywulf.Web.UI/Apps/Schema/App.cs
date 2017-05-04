@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         {
             base.RegisterChecks(checks);
 
-            checks.Add(new TypeCheck(RegistryContext.Federation.SchemaManager));
+            checks.Add(new TypeCheck(FederationContext.Federation.SchemaManager));
         }
     }
 }

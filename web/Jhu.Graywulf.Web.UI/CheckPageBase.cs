@@ -6,7 +6,7 @@ using Jhu.Graywulf.Check;
 
 namespace Jhu.Graywulf.Web.Check
 {
-    public class CheckPageBase : PageBase
+    public class CheckPageBase : FederationPageBase
     {
         private CheckRoutineExecutor checks;
 
@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Web.Check
             foreach (var apptype in application.Apps)
             {
                 var app = (AppBase)Activator.CreateInstance(apptype);
-                app.RegistryContext = RegistryContext;
+                app.FederationContext = FederationContext;
                 app.Initialize(application);
                 app.RegisterChecks(checks.Routines);
             }

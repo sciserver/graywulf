@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Auth
         {
             base.RegisterChecks(checks);
 
-            checks.Add(new IdentityProviderCheck(RegistryContext));
+            checks.Add(new IdentityProviderCheck(FederationContext));
         }
     }
 }

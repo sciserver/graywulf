@@ -17,11 +17,9 @@ namespace Jhu.Graywulf.Jobs.Query
 {
     public class SqlQueryTestBase : TestClassBase
     {
-        protected virtual UserDatabaseFactory CreateUserDatabaseFactory(Context context)
+        protected virtual UserDatabaseFactory CreateUserDatabaseFactory(FederationContext context)
         {
-            return UserDatabaseFactory.Create(
-                //typeof(GraywulfUserDatabaseFactory).AssemblyQualifiedName,
-                context.Federation);
+            return UserDatabaseFactory.Create(context);
         }
 
         protected virtual QueryFactory CreateQueryFactory(Context context)
@@ -45,7 +43,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             var user = SignInTestUser(qf.Context);
 
-            var udf = CreateUserDatabaseFactory(qf.Context);
+            var udf = CreateUserDatabaseFactory(new FederationContext(qf.Context, user));
             var mydb = udf.GetUserDatabases(user)[Registry.Constants.UserDbName];
             var mysi = udf.GetUserDatabaseServerInstances(user)[Registry.Constants.UserDbName];
 

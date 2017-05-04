@@ -142,7 +142,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             var qf = QueryFactory.Create(context.Federation);
             var q = qf.CreateQuery(query);
 
-            var udf = UserDatabaseFactory.Create(context.Federation);
+            var udf = UserDatabaseFactory.Create(context);
             var udbs = udf.GetUserDatabases(context.RegistryUser);
             var usis = udf.GetUserDatabaseServerInstances(context.RegistryUser);
 
