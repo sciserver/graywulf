@@ -13,103 +13,103 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
     public partial class Default {
         
         /// <summary>
-        /// DatasetListLabel control.
+        /// datasetListLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label DatasetListLabel;
+        protected global::System.Web.UI.WebControls.Label datasetListLabel;
         
         /// <summary>
-        /// DatasetList control.
+        /// datasetList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList DatasetList;
+        protected global::System.Web.UI.WebControls.DropDownList datasetList;
         
         /// <summary>
-        /// ObjectTypeListLabel control.
+        /// objectTypeListLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label ObjectTypeListLabel;
+        protected global::System.Web.UI.WebControls.Label objectTypeListLabel;
         
         /// <summary>
-        /// ObjectTypeList control.
+        /// objectTypeList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ObjectTypeList;
+        protected global::System.Web.UI.WebControls.DropDownList objectTypeList;
         
         /// <summary>
-        /// ObjectListLabel control.
+        /// databaseObjectListLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label ObjectListLabel;
+        protected global::System.Web.UI.WebControls.Label databaseObjectListLabel;
         
         /// <summary>
-        /// ObjectList control.
+        /// databaseObjectList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ObjectList;
+        protected global::System.Web.UI.WebControls.DropDownList databaseObjectList;
         
         /// <summary>
-        /// summary control.
+        /// summaryButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton summary;
+        protected global::System.Web.UI.WebControls.LinkButton summaryButton;
         
         /// <summary>
-        /// columns control.
+        /// columnsButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton columns;
+        protected global::System.Web.UI.WebControls.LinkButton columnsButton;
         
         /// <summary>
-        /// indexes control.
+        /// indexesButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton indexes;
+        protected global::System.Web.UI.WebControls.LinkButton indexesButton;
         
         /// <summary>
-        /// parameters control.
+        /// parametersButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton parameters;
+        protected global::System.Web.UI.WebControls.LinkButton parametersButton;
         
         /// <summary>
-        /// peek control.
+        /// peekButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink peek;
+        protected global::System.Web.UI.WebControls.HyperLink peekButton;
         
         /// <summary>
         /// summaryForm control.

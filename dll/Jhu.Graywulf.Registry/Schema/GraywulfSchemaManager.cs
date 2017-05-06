@@ -242,6 +242,8 @@ namespace Jhu.Graywulf.Schema
         {
             var res = new List<DatasetBase>();
 
+            Datasets.LoadAll(false);
+
             if (includeUserDatabase)
             {
                 foreach (var ds in Datasets.Values.Where(k => IsUserDb(k)).OrderBy(k => k.Name))

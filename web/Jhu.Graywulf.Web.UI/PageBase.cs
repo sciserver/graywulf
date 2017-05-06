@@ -12,6 +12,7 @@ namespace Jhu.Graywulf.Web.UI
 {
     public class PageBase : Page, IContextObject
     {
+        private string overrideUrl;
         private Context registryContext;
 
         /// <summary>
@@ -84,6 +85,16 @@ namespace Jhu.Graywulf.Web.UI
 
         #region Initializer functions
 
+        public PageBase()
+        {
+            InitializeMembers();
+        }
+
+        private void InitializeMembers()
+        {
+            overrideUrl = null;
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -91,6 +102,16 @@ namespace Jhu.Graywulf.Web.UI
             if (!IsPostBack && Request.UrlReferrer != null)
             {
                 OriginalReferer = Request.UrlReferrer.ToString();
+            }
+        }
+
+        protected override void OnPreRender(EventArgs e)
+        {
+            base.OnPreRender(e);
+
+            if (!String.IsNullOrEmpty(overrideUrl))
+            {
+                ScriptManager.RegisterClientScriptBlock(this, typeof(PageBase), "Jhu.Graywulf.Web.UI.PageBase.OverrideUrl", GetOverrideUrlScript(), true);
             }
         }
 
@@ -156,6 +177,22 @@ namespace Jhu.Graywulf.Web.UI
         public Control FindControlRecursive(string id)
         {
             return Util.PageUtility.FindControlRecursive(this, id);
+        }
+
+        public void OverrideUrl(string overrideUrl)
+        {
+            this.overrideUrl = overrideUrl;
+        }
+
+        private string GetOverrideUrlScript()
+        {
+            var script =
+@"if (typeof (history.replaceState) != 'undefined') {{
+    var obj = {{ Page: '{0}', Url: '{1}' }};
+    history.replaceState(obj, obj.Page, obj.Url);
+}}";
+
+            return String.Format(script, "", overrideUrl);
         }
     }
 }

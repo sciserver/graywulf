@@ -10,10 +10,9 @@
 <asp:Content runat="server" ContentPlaceHolderID="toolbar">
     <script>
         function ShowRefreshing() {
-            var datasetList = document.getElementById("<%= DatasetList.ClientID %>");
-            var objectTypeList = document.getElementById("<%= ObjectTypeList.ClientID %>");
-            var objectList = document.getElementById("<%= ObjectList.ClientID %>");
-
+            var datasetList = document.getElementById("<%= datasetList.ClientID %>");
+            var objectTypeList = document.getElementById("<%= objectTypeList.ClientID %>");
+            var objectList = document.getElementById("<%= databaseObjectList.ClientID %>");
 
             datasetList.disabled = true;
             objectTypeList.disabled = true;
@@ -31,34 +30,22 @@
         <ContentTemplate>
             <div class="toolbar">
                 <div style="min-width: 140px">
-                    <asp:Label ID="DatasetListLabel" runat="server" Text="Catalog:" /><br />
-                    <asp:DropDownList ID="dataset" runat="server" AutoPostBack="True" OnSelectedIndexChanged="Dataset_SelectedIndexChanged">
-                    </asp:DropDownList>
+                    <asp:Label ID="datasetListLabel" runat="server" Text="Catalog:" /><br />
+                    <asp:DropDownList ID="datasetList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DatasetList_SelectedIndexChanged" />
                 </div>
                 <div style="min-width: 140px">
-                    <asp:Label ID="ObjectTypeListLabel" runat="server" Text="Object category:" /><br />
-                    <asp:DropDownList ID="objectType" runat="server" AutoPostBack="True" OnSelectedIndexChanged="ObjectType_SelectedIndexChanged">
-                        <asp:ListItem Selected="True" Value="Table">Tables</asp:ListItem>
-                        <asp:ListItem Value="View">Views</asp:ListItem>
-                        <asp:ListItem Value="StoredProcedure">Stored Procedures</asp:ListItem>
-                        <asp:ListItem Value="ScalarFunction">Scalar Functions</asp:ListItem>
-                        <asp:ListItem Value="TableValuedFunction">Table-valued Functions</asp:ListItem>
-                    </asp:DropDownList>
+                    <asp:Label ID="objectTypeListLabel" runat="server" Text="Object category:" /><br />
+                    <asp:DropDownList ID="objectTypeList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ObjectTypeList_SelectedIndexChanged" />
                 </div>
                 <div class="span">
-                    <asp:Label ID="ObjectListLabel" runat="server" Text="Object:" /><br />
-                    <asp:DropDownList ID="databaseObject" runat="server" AutoPostBack="True" OnSelectedIndexChanged="DatabaseObject_SelectedIndexChanged">
-                    </asp:DropDownList>
+                    <asp:Label ID="databaseObjectListLabel" runat="server" Text="Object:" /><br />
+                    <asp:DropDownList ID="databaseObjectList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DatabaseObjectList_SelectedIndexChanged"/>
                 </div>
-                <asp:LinkButton runat="server" ID="summary" Text="summary"
-                    OnCommand="ToolbarButton_Command" CommandName="summary" />
-                <asp:LinkButton runat="server" ID="columns" Text="columns"
-                    OnCommand="ToolbarButton_Command" CommandName="columns" />
-                <asp:LinkButton runat="server" ID="indexes" Text="indexes"
-                    OnCommand="ToolbarButton_Command" CommandName="indexes" />
-                <asp:LinkButton runat="server" ID="parameters" Text="parameters"
-                    OnCommand="ToolbarButton_Command" CommandName="parameters" />
-                <asp:HyperLink runat="server" ID="peek" Text="peek" />
+                <asp:LinkButton runat="server" ID="summaryButton" Text="summary" OnCommand="ViewButton_Command" CommandName="Summary" />
+                <asp:LinkButton runat="server" ID="columnsButton" Text="columns" OnCommand="ViewButton_Command" CommandName="Columns" />
+                <asp:LinkButton runat="server" ID="indexesButton" Text="indexes" OnCommand="ViewButton_Command" CommandName="Indexes" />
+                <asp:LinkButton runat="server" ID="parametersButton" Text="parameters" OnCommand="ViewButton_Command" CommandName="Parameters" />
+                <asp:HyperLink runat="server" ID="peekButton" Text="peek" />
             </div>
         </ContentTemplate>
     </asp:UpdatePanel>
@@ -67,7 +54,7 @@
     <asp:UpdatePanel runat="server" class="dock-fill dock-container">
         <ContentTemplate>
             <list:SummaryForm ID="summaryForm" runat="server" Visible="false" />
-            <list:ColumnList ID="datasetList" runat="server" Visible="false" />
+            <%--<list:ColumnList ID="datasetList" runat="server" Visible="false" />--%>
             <list:ColumnList ID="columnList" runat="server" Visible="false" />
             <list:ParameterList ID="parameterList" runat="server" Visible="false" />
             <list:IndexList ID="indexList" runat="server" Visible="false" />

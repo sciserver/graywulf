@@ -41,6 +41,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\PublicAssemblies\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -69,6 +70,7 @@
     <Compile Include="Web\Api\V1\ImportTest.cs" />
     <Compile Include="Web\Api\V1\JobsServiceTest.cs" />
     <Compile Include="Web\Api\V1\ObjectSerializationTest.cs" />
+    <Compile Include="Web\Util\UrlFormatterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
@@ -91,6 +93,10 @@
       <Project>{975EE996-A41B-4C73-8562-E2B2035E8899}</Project>
       <Name>Jhu.Graywulf.Web.Api</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web.Controls\Jhu.Graywulf.Web.Controls.csproj">
+      <Project>{3adb72a9-4417-4454-aa10-1af3b2750a94}</Project>
+      <Name>Jhu.Graywulf.Web.Controls</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Web\Jhu.Graywulf.Web.csproj">
       <Project>{E9D182CF-746E-4E40-B01C-74A32FB70749}</Project>
       <Name>Jhu.Graywulf.Web</Name>
@@ -109,6 +115,7 @@
     <None Include="post-build.ps1" />
     <None Include="pre-build.ps1" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

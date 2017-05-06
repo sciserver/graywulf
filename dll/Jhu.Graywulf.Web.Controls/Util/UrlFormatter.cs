@@ -10,7 +10,11 @@ namespace Jhu.Graywulf.Util
     {
         public static string ToBaseUrl(String url, string applicationPath)
         {
-            var uri = new Uri(url);
+            return ToBaseUrl(new Uri(url), applicationPath);
+        }
+
+        public static string ToBaseUrl(Uri uri, string applicationPath)
+        {
             return String.Format("{0}://{1}{2}/", uri.Scheme, uri.Authority, applicationPath.TrimEnd('/'));
         }
 

@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Web.UI
             {
                 Key = Name,
                 Text = Name,
-                NavigateUrl = "~/Apps/" + Name
+                NavigateUrl = "~/Apps/" + Name + "/Default.aspx"
             };
 
             application.RegisterMenuButton(button);
