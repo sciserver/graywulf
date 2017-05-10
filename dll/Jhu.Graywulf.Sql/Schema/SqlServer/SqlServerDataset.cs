@@ -1107,6 +1107,12 @@ ORDER BY 1";
                                 case Constants.MetaRemarks:
                                     metadata.Remarks = value;
                                     break;
+                                case Constants.MetaUrl:
+                                    metadata.Url = value;
+                                    break;
+                                case Constants.MetaIcon:
+                                    metadata.Icon = value;
+                                    break;
                                 case Constants.MetaExample:
                                     metadata.Example = value;
                                     break;
@@ -1300,7 +1306,78 @@ WHERE f.type = 1
 
         protected override DatasetMetadata LoadDatasetMetadata()
         {
-            return new DatasetMetadata();      // *** TODO: implement
+            var meta = new DatasetMetadata();
+
+            LoadDatasetProperties(meta);
+            LoadDatasetExtendedProperties(meta);
+
+            return meta;
+        }
+
+        private void LoadDatasetProperties(DatasetMetadata metadata)
+        {
+            var sql = @"
+SELECT create_date
+FROM sys.databases
+WHERE name = @name";
+
+            using (var cn = OpenConnectionInternal())
+            {
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    cmd.Parameters.Add("@name", SqlDbType.NVarChar).Value = DatabaseName;
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            metadata.DateCreated = dr.GetDateTime(0);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void LoadDatasetExtendedProperties(DatasetMetadata metadata)
+        {
+            var sql = @"
+SELECT p.name, p.value
+FROM sys.extended_properties p
+WHERE p.class = 0 -- DATABASE
+      AND p.name LIKE 'meta.%'";
+
+            using (var cn = OpenConnectionInternal())
+            {
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            var name = dr.GetString(0);
+                            var value = dr.GetString(1);
+
+                            switch (name)
+                            {
+                                case Constants.MetaSummary:
+                                    metadata.Summary = value;
+                                    break;
+                                case Constants.MetaRemarks:
+                                    metadata.Remarks = value;
+                                    break;
+                                case Constants.MetaUrl:
+                                    metadata.Url = value;
+                                    break;
+                                case Constants.MetaIcon:
+                                    metadata.Icon = value;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>

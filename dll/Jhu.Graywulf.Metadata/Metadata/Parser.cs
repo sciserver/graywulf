@@ -42,6 +42,7 @@ namespace Jhu.Graywulf.Metadata
         private static readonly Regex ObjectNameRegex = new Regex(ObjectName, RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static readonly Regex CreateObjectRegex = new Regex(@"\G\s*CREATE\s+([a-z]+)\s+(" + ObjectName + @")\s*\(", RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
         private static readonly Regex ReturnsTableRegex = new Regex(@"\s*RETURNS\s+" + QuotedIdentifier + @"\s+TABLE\s*\(", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex GoRegex = new Regex(@"\G\s*GO\s*");
 
         private const string XmlTag = @"<([a-z]+)(?:(?:\s+[a-z]+)\s*=\s*(?:""[^""]*""))*\s*(/>|>.*</\1>)";
         private static readonly Regex XmlTagRegex = new Regex(XmlTag, RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
@@ -73,13 +74,6 @@ namespace Jhu.Graywulf.Metadata
 
             RemoveMultilineComments(new StringReader(input), buffer);
             RemoveSinglelineComments(new StringReader(buffer.ToString()), buffer2);
-
-            //var script = new StringBuilder(buffer2.ToString());
-            //InsertObjectTags(script);
-
-            //ExtractXmlComments(new StringReader(script.ToString()), buffer3);
-
-            //return buffer3.ToString();
 
             return ExtractXmlComments(buffer2.ToString());
         }
@@ -226,8 +220,29 @@ namespace Jhu.Graywulf.Metadata
 
                 if (mode == ExtractMode.Object)
                 {
-                    // Try to match a CREATE ... command
+                    // Try to match a GO statement
+                    // This means that all xml tags collected so far should
+                    // be copied verbatim into the results
+                    m = GoRegex.Match(script, i);
 
+                    if (m.Success)
+                    {
+                        if (buffer.Length > 0)
+                        {
+                            var x = new XmlDocument();
+                            x.LoadXml(buffer.ToString());
+                            var nx = element.OwnerDocument.ImportNode(x.DocumentElement, true);
+                            element.AppendChild(nx);
+
+                            // Reset the buffer
+                            buffer.Clear();
+                        }
+
+                        i = m.Index + m.Length + 1;
+                        continue;
+                    }
+
+                    // Try to match a CREATE ... command
                     m = CreateObjectRegex.Match(script, i);
 
                     if (m.Success)
@@ -412,7 +427,7 @@ namespace Jhu.Graywulf.Metadata
         {
             ObjectType ot;
 
-            if (!Enum.TryParse(tagname, out ot))
+            if (!Enum.TryParse(tagname, true, out ot))
             {
                 if (StringComparer.InvariantCultureIgnoreCase.Compare("PROC", tagname) == 0)
                 {

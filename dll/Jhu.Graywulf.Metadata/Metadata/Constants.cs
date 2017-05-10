@@ -33,21 +33,23 @@ namespace Jhu.Graywulf.Metadata
         };
 
         public static readonly List<string> ObjectElements = new List<string>() { "summary", "remarks", "type", "returns" };
-        public static readonly List<string> ParameterAttributes = new List<string>() { "unit", "content", "utype", "enum" };
+        public static readonly List<string> ParameterAttributes = new List<string>() { "unit", "content", "class", "enum" };
 
+        // TODO: remove there
         public const string SchemaMeta = "meta";
         public const string SchemaSys = "sys";
         public const string SchemaInfoSch = "INFORMATION_SCHEMA";
-        
         public const string TableEnum = "Enum";
         public const string TableIndexMap = "Enum";
+        // -------------------
+
+        public const string MetaExtendedPropertyName = "meta.{0}";
 
         public const string TagMetadata = "metadata";
+        public const string TagDataset = "dataset";
         public const string TagEnum = "enum";
-        public const string TagVersion = "version";
         public const string TagKey = "key";
         public const string AttributeName = "name";
         public const string AttributeValue = "value";
-        public const string KeyVersion = SchemaMeta + ".Version";
     }
 }

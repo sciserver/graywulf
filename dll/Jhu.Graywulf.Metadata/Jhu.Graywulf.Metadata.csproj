@@ -90,6 +90,7 @@
     <Compile Include="Metadata\Enum.cs" />
     <Compile Include="Metadata\Extractor.cs" />
     <Compile Include="Metadata\Generator.cs" />
+    <Compile Include="Metadata\MetadataXmlWriter.cs" />
     <Compile Include="Metadata\Parser.cs" />
     <Compile Include="Metadata\Scripts.Designer.cs">
       <AutoGen>True</AutoGen>

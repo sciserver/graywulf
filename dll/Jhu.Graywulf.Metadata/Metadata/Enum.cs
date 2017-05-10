@@ -7,6 +7,8 @@ namespace Jhu.Graywulf.Metadata
 {
     public enum ObjectType
     {
+        Dataset,
+        Enum,
         Table,
         View,
         Procedure,

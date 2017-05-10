@@ -73,6 +73,11 @@ namespace Jhu.Graywulf.Metadata
             databaseConnection.Dispose();
         }
 
+        private string GetExtendedPropertyName(string tagName)
+        {
+            return String.Format(Constants.MetaExtendedPropertyName, tagName);
+        }
+
         public void DropMetadata()
         {
             var sql = Scripts.DropExtendedProperties;
@@ -99,11 +104,11 @@ namespace Jhu.Graywulf.Metadata
             {
                 switch (e.Name.ToLower())
                 {
+                    case Constants.TagDataset:
+                        ProcessDatasetMetaTag(e);
+                        break;
                     case Constants.TagEnum:
                         //ProcessEnum(e);
-                        break;
-                    case Constants.TagVersion:
-                        ProcessVersion(e);
                         break;
                     default:
                         var ot = (ObjectType)Enum.Parse(typeof(ObjectType), e.Name, true);
@@ -134,42 +139,17 @@ namespace Jhu.Graywulf.Metadata
                             throw new Exception(String.Format("Missing object: {0}.{1}.", schema, name));
                         }
 
-                        ProcessObject(e, ot, smoobject);
+                        ProcessObjectMetaTag(e, ot, smoobject);
                         break;
-                }
-            }
-        }
-
-        private void CreateMetaSchema()
-        {
-            if (!database.Schemas.Contains(Constants.SchemaMeta))
-            {
-                string sql = "CREATE SCHEMA [{0}]";
-                sql = String.Format(sql, Constants.SchemaMeta);
-
-                using (SqlCommand cmd = new SqlCommand(sql, databaseConnection, databaseTransaction))
-                {
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-
-        private void CreateEnumTable()
-        {
-            if (!database.Tables.Contains(Constants.TableEnum, Constants.SchemaMeta))
-            {
-                string sql = "CREATE TABLE [{0}].[{1}] ([Name] nvarchar(50), [Key] nvarchar(50), [Value] sql_variant, [Summary] ntext)";
-                sql = String.Format(sql, Constants.SchemaMeta, Constants.TableEnum);
-
-                using (SqlCommand cmd = new SqlCommand(sql, databaseConnection, databaseTransaction))
-                {
-                    cmd.ExecuteNonQuery();
                 }
             }
         }
 
         private void ProcessEnum(XmlElement xmlElement)
         {
+            throw new NotImplementedException();
+
+            /*
             string sql;
 
             // Delete old values
@@ -205,23 +185,34 @@ namespace Jhu.Graywulf.Metadata
                     cmd.ExecuteNonQuery();
                 }
             }
+            */
         }
 
-        private void ProcessVersion(XmlElement xmlElement)
+        private void ProcessMetaTag(IExtendedProperties smoObject, XmlElement element)
         {
+            var meta = GetExtendedPropertyName(element.Name);
+
             // Drop version property if present
-            if (database.ExtendedProperties.Contains(Constants.KeyVersion))
+            if (smoObject.ExtendedProperties.Contains(meta))
             {
-                database.ExtendedProperties[Constants.KeyVersion].Drop();
+                smoObject.ExtendedProperties[meta].Drop();
             }
 
-            ExtendedProperty exp = new ExtendedProperty(database, Constants.KeyVersion);
-            exp.Value = xmlElement.InnerText;
-            database.ExtendedProperties.Add(exp);
+            ExtendedProperty exp = new ExtendedProperty((SqlSmoObject)smoObject, meta);
+            exp.Value = element.InnerXml;
+            smoObject.ExtendedProperties.Add(exp);
             exp.Create();
         }
 
-        private void ProcessObject(XmlElement xmlElement, ObjectType objectType, IExtendedProperties smoObject)
+        private void ProcessDatasetMetaTag(XmlElement element)
+        {
+            foreach (XmlElement e in element.ChildNodes)
+            {
+                ProcessMetaTag(database, e);
+            }
+        }
+
+        private void ProcessObjectMetaTag(XmlElement xmlElement, ObjectType objectType, IExtendedProperties smoObject)
         {
             // Delete old ExtendedProperties
             while (smoObject.ExtendedProperties.Count > 0)

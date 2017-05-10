@@ -66,9 +66,23 @@ namespace Jhu.Graywulf.Metadata.CmdLineUtil
                     filename = outputFilename;
                 }
 
+                // -----------------
+                var all = xml.SelectNodes("//*");
+                foreach (XmlNode n in all)
+                {
+                    if (n is XmlText)
+                    {
+                    }
+                }
+                // -----
+
                 Console.Write("Saving XML... ");
 
-                xml.Save(filename);
+                // Save xml with fixed indentation
+                using (var xw = new MetadataXmlWriter(filename))
+                {
+                    xml.Save(xw);
+                }
 
                 Console.WriteLine("done.");
             }
