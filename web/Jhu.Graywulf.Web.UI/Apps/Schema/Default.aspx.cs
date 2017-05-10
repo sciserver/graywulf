@@ -386,17 +386,17 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         private void UpdateForm()
         {
+            var ds = SelectedDataset;
             var dbobj = SelectedDatabaseObject;
 
             HideAllViews();
 
-            if (dbobj == null)
+            if (ds == null)
             {
-                summaryButton.Visible = false;
-                columnsButton.Visible = false;
-                indexesButton.Visible = false;
-                parametersButton.Visible = false;
-                peekButton.Visible = false;
+
+            }
+            else if (dbobj == null)
+            {
             }
             else
             {
@@ -407,44 +407,48 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
                 peekButton.Visible = (dbobj is TableOrView);
                 peekButton.NavigateUrl = Peek.GetUrl(dbobj.UniqueKey);
+            }
 
-                switch (SelectedView)
-                {
-                    case SchemaView.Columns:
-                        if (dbobj is IColumns)
-                        {
-                            ShowColumns();
-                        }
-                        else
-                        {
-                            goto default;
-                        }
-                        break;
-                    case SchemaView.Indexes:
-                        if (dbobj is IIndexes)
-                        {
-                            ShowIndexes();
-                        }
-                        else
-                        {
-                            goto default;
-                        }
-                        break;
-                    case SchemaView.Parameters:
-                        if (dbobj is IParameters)
-                        {
-                            ShowParameters();
-                        }
-                        else
-                        {
-                            goto default;
-                        }
-                        break;
-                    case SchemaView.Summary:
-                    default:
-                        ShowSummary();
-                        break;
-                }
+            switch (SelectedView)
+            {
+                case SchemaView.Default:
+                case SchemaView.Datasets:
+                    ShowDatasetsView();
+                    break;
+                case SchemaView.Columns:
+                    if (dbobj is IColumns)
+                    {
+                        ShowColumns();
+                    }
+                    else
+                    {
+                        goto default;
+                    }
+                    break;
+                case SchemaView.Indexes:
+                    if (dbobj is IIndexes)
+                    {
+                        ShowIndexes();
+                    }
+                    else
+                    {
+                        goto default;
+                    }
+                    break;
+                case SchemaView.Parameters:
+                    if (dbobj is IParameters)
+                    {
+                        ShowParameters();
+                    }
+                    else
+                    {
+                        goto default;
+                    }
+                    break;
+                case SchemaView.Summary:
+                default:
+                    ShowSummary();
+                    break;
             }
 
             SessionView = SelectedView;
@@ -457,14 +461,27 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         {
             introForm.Visible = false;
             summaryForm.Visible = false;
+            datasetsView.Visible = false;
             columnList.Visible = false;
             indexList.Visible = false;
             parameterList.Visible = false;
+
+            summaryButton.Visible = false;
+            columnsButton.Visible = false;
+            indexesButton.Visible = false;
+            parametersButton.Visible = false;
+            peekButton.Visible = false;
 
             summaryButton.CssClass = "";
             columnsButton.CssClass = "";
             indexesButton.CssClass = "";
             parametersButton.CssClass = "";
+        }
+
+        private void ShowDatasetsView()
+        {
+            datasetsView.Datasets = FederationContext.SchemaManager.EnumerateDatasets(true, true);
+            datasetsView.Visible = true;
         }
 
         private void ShowSummary()

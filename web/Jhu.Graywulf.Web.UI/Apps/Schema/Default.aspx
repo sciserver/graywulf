@@ -2,6 +2,7 @@
     Inherits="Jhu.Graywulf.Web.UI.Apps.Schema.Default" CodeBehind="Default.aspx.cs" %>
 
 <%@ Register Src="SummaryForm.ascx" TagName="SummaryForm" TagPrefix="list" %>
+<%@ Register Src="DatasetsView.ascx" TagName="Datasets" TagPrefix="view" %>
 <%@ Register Src="ColumnList.ascx" TagName="ColumnList" TagPrefix="list" %>
 <%@ Register Src="ParameterList.ascx" TagName="ParameterList" TagPrefix="list" %>
 <%@ Register Src="IndexList.ascx" TagName="IndexList" TagPrefix="list" %>
@@ -54,7 +55,7 @@
     <asp:UpdatePanel runat="server" class="dock-fill dock-container">
         <ContentTemplate>
             <list:SummaryForm ID="summaryForm" runat="server" Visible="false" />
-            <%--<list:ColumnList ID="datasetList" runat="server" Visible="false" />--%>
+            <view:Datasets ID="datasetsView" runat="server" Visible="false" />
             <list:ColumnList ID="columnList" runat="server" Visible="false" />
             <list:ParameterList ID="parameterList" runat="server" Visible="false" />
             <list:IndexList ID="indexList" runat="server" Visible="false" />

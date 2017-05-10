@@ -121,6 +121,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::Jhu.Graywulf.Web.UI.Apps.Schema.SummaryForm summaryForm;
         
         /// <summary>
+        /// datasetsView control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.DatasetsView datasetsView;
+        
+        /// <summary>
         /// columnList control.
         /// </summary>
         /// <remarks>
