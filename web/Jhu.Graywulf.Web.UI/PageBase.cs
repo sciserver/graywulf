@@ -149,7 +149,10 @@ namespace Jhu.Graywulf.Web.UI
             var ex = Server.GetLastError();
 
 #if BREAKDEBUG
-            System.Diagnostics.Debugger.Break();
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                System.Diagnostics.Debugger.Break();
+            }
 #endif
 
             var error = LogError(ex);

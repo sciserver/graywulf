@@ -1,5 +1,5 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" Inherits="Jhu.Graywulf.Web.UI.Apps.Schema.ColumnList"
-    CodeBehind="ColumnList.ascx.cs" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" Inherits="Jhu.Graywulf.Web.UI.Apps.Schema.ColumnsView"
+    CodeBehind="ColumnsView.ascx.cs" %>
 
 <div class="dock-top gw-list-frame-top">
     <div class="gw-list-header">

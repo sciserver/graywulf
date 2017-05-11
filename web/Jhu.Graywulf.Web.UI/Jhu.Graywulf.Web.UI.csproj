@@ -37,7 +37,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;BREAKDEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -395,12 +395,33 @@
       <DependentUpon>Results.aspx</DependentUpon>
     </Compile>
     <Compile Include="Apps\Schema\App.cs" />
-    <Compile Include="Apps\Schema\ColumnList.ascx.cs">
-      <DependentUpon>ColumnList.ascx</DependentUpon>
+    <Compile Include="Apps\Schema\ColumnsView.ascx.cs">
+      <DependentUpon>ColumnsView.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Apps\Schema\ColumnList.ascx.designer.cs">
-      <DependentUpon>ColumnList.ascx</DependentUpon>
+    <Compile Include="Apps\Schema\ColumnsView.ascx.designer.cs">
+      <DependentUpon>ColumnsView.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Schema\DatasetView.ascx.cs">
+      <DependentUpon>DatasetView.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Schema\DatasetView.ascx.designer.cs">
+      <DependentUpon>DatasetView.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Schema\DatabaseObjectView.ascx.cs">
+      <DependentUpon>DatabaseObjectView.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Schema\DatabaseObjectView.ascx.designer.cs">
+      <DependentUpon>DatabaseObjectView.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Schema\DatasetsView.ascx.cs">
+      <DependentUpon>DatasetsView.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Schema\DatasetsView.ascx.designer.cs">
+      <DependentUpon>DatasetsView.ascx</DependentUpon>
     </Compile>
     <Compile Include="Apps\Schema\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -409,19 +430,19 @@
     <Compile Include="Apps\Schema\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Apps\Schema\IndexList.ascx.cs">
-      <DependentUpon>IndexList.ascx</DependentUpon>
+    <Compile Include="Apps\Schema\IndexesView.ascx.cs">
+      <DependentUpon>IndexesView.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Apps\Schema\IndexList.ascx.designer.cs">
-      <DependentUpon>IndexList.ascx</DependentUpon>
+    <Compile Include="Apps\Schema\IndexesView.ascx.designer.cs">
+      <DependentUpon>IndexesView.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Apps\Schema\ParameterList.ascx.cs">
-      <DependentUpon>ParameterList.ascx</DependentUpon>
+    <Compile Include="Apps\Schema\ParametersView.ascx.cs">
+      <DependentUpon>ParametersView.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Apps\Schema\ParameterList.ascx.designer.cs">
-      <DependentUpon>ParameterList.ascx</DependentUpon>
+    <Compile Include="Apps\Schema\ParametersView.ascx.designer.cs">
+      <DependentUpon>ParametersView.ascx</DependentUpon>
     </Compile>
     <Compile Include="Apps\Schema\Peek.aspx.cs">
       <DependentUpon>Peek.aspx</DependentUpon>
@@ -430,12 +451,11 @@
     <Compile Include="Apps\Schema\Peek.aspx.designer.cs">
       <DependentUpon>Peek.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Apps\Schema\SummaryForm.ascx.cs">
-      <DependentUpon>SummaryForm.ascx</DependentUpon>
+    <Compile Include="Apps\Schema\SchemaItemView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Apps\Schema\SummaryForm.ascx.designer.cs">
-      <DependentUpon>SummaryForm.ascx</DependentUpon>
+    <Compile Include="Apps\Schema\SchemaView.cs">
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="App_Masters\Basic\Basic.master.cs">
       <DependentUpon>Basic.master</DependentUpon>
@@ -570,12 +590,14 @@
     <Content Include="Apps\Query\Progress.aspx" />
     <Content Include="Apps\Query\Results.aspx" />
     <Content Include="Apps\Query\Web.config" />
-    <Content Include="Apps\Schema\ColumnList.ascx" />
+    <Content Include="Apps\Schema\ColumnsView.ascx" />
+    <Content Include="Apps\Schema\DatasetView.ascx" />
+    <Content Include="Apps\Schema\DatabaseObjectView.ascx" />
+    <Content Include="Apps\Schema\DatasetsView.ascx" />
     <Content Include="Apps\Schema\Default.aspx" />
-    <Content Include="Apps\Schema\IndexList.ascx" />
-    <Content Include="Apps\Schema\ParameterList.ascx" />
+    <Content Include="Apps\Schema\IndexesView.ascx" />
+    <Content Include="Apps\Schema\ParametersView.ascx" />
     <Content Include="Apps\Schema\Peek.aspx" />
-    <Content Include="Apps\Schema\SummaryForm.ascx" />
     <Content Include="App_Themes\Basic\Css\codemirror.css" />
     <Content Include="App_Themes\Basic\Css\docs.css" />
     <Content Include="App_Themes\Basic\Css\fonts.css" />
@@ -683,6 +705,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Scripts\Bootstrap-Lightbox\ekko-lightbox.css" />
+    <Content Include="Scripts\Bootstrap-Lightbox\ekko-lightbox.js" />
+    <Content Include="Scripts\Bootstrap-Lightbox\ekko-lightbox.min.css" />
+    <Content Include="Scripts\Bootstrap-Lightbox\ekko-lightbox.min.js" />
     <Content Include="Scripts\Bootstrap\css\bootstrap-theme.css" />
     <Content Include="Scripts\Bootstrap\css\bootstrap-theme.min.css" />
     <Content Include="Scripts\Bootstrap\css\bootstrap.css" />
@@ -1216,6 +1242,9 @@
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
+    <Content Include="Scripts\Bootstrap-Lightbox\ekko-lightbox.min.js.map" />
+    <Content Include="Scripts\Bootstrap-Lightbox\ekko-lightbox.min.css.map" />
+    <Content Include="Scripts\Bootstrap-Lightbox\ekko-lightbox.js.map" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

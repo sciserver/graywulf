@@ -10,7 +10,7 @@
 namespace Jhu.Graywulf.Web.UI.Apps.Schema {
     
     
-    public partial class ColumnsView {
+    public partial class IndexesView {
         
         /// <summary>
         /// listView control.

@@ -1,38 +1,26 @@
 ﻿using System;
-using schema = Jhu.Graywulf.Schema;
+using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Schema
 {
-    public partial class SummaryForm : System.Web.UI.UserControl
+    public partial class DatabaseObjectView : SchemaItemView<DatabaseObject>
     {
-        protected schema::DatabaseObject databaseObject;
-
-        public schema::DatabaseObject DatabaseObject
+        public override void UpdateView()
         {
-            get { return databaseObject; }
-            set
+            if (Item != null)
             {
-                databaseObject = value;
-                RefreshForm();
-            }
-        }
+                fullyQualifiedNameLabel.Text = Jhu.Graywulf.Schema.Constants.DatabaseObjectsName_Singular[Item.ObjectType];
 
-        private void RefreshForm()
-        {
-            if (databaseObject != null)
-            {
-                fullyQualifiedNameLabel.Text = Jhu.Graywulf.Schema.Constants.DatabaseObjectsName_Singular[databaseObject.ObjectType];
+                datasetNameLabel.Text = Item.DatasetName;
+                schemaNameLabel.Text = Item.SchemaName;
+                objectNameLabel.Text = Item.ObjectName;
 
-                datasetNameLabel.Text = databaseObject.DatasetName;
-                schemaNameLabel.Text = databaseObject.SchemaName;
-                objectNameLabel.Text = databaseObject.ObjectName;
-
-                summaryLabel.Text = databaseObject.Metadata.Summary;
-                summaryPanel.Visible = !String.IsNullOrEmpty(databaseObject.Metadata.Summary);
-                remarksLabel.Text = databaseObject.Metadata.Remarks;
-                remarksPanel.Visible = !String.IsNullOrEmpty(databaseObject.Metadata.Remarks);
-                exampleLabel.Text = Util.DocumentationFormatter.FormatExample(databaseObject.Metadata.Example);
-                examplePanel.Visible = !String.IsNullOrEmpty(databaseObject.Metadata.Example);
+                summaryLabel.Text = Item.Metadata.Summary;
+                summaryPanel.Visible = !String.IsNullOrEmpty(Item.Metadata.Summary);
+                remarksLabel.Text = Item.Metadata.Remarks;
+                remarksPanel.Visible = !String.IsNullOrEmpty(Item.Metadata.Remarks);
+                exampleLabel.Text = Util.DocumentationFormatter.FormatExample(Item.Metadata.Example);
+                examplePanel.Visible = !String.IsNullOrEmpty(Item.Metadata.Example);
             }
         }
     }

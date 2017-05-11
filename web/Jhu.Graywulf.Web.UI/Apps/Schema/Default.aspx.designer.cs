@@ -112,15 +112,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::System.Web.UI.WebControls.HyperLink peekButton;
         
         /// <summary>
-        /// summaryForm control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.SummaryForm summaryForm;
-        
-        /// <summary>
         /// datasetsView control.
         /// </summary>
         /// <remarks>
@@ -130,31 +121,49 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::Jhu.Graywulf.Web.UI.Apps.Schema.DatasetsView datasetsView;
         
         /// <summary>
-        /// columnList control.
+        /// datasetView control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.ColumnList columnList;
+        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.DatasetView datasetView;
         
         /// <summary>
-        /// parameterList control.
+        /// databaseObjectView control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.ParameterList parameterList;
+        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.DatabaseObjectView databaseObjectView;
         
         /// <summary>
-        /// indexList control.
+        /// columnsView control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.IndexList indexList;
+        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.ColumnsView columnsView;
+        
+        /// <summary>
+        /// parametersView control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.ParametersView parametersView;
+        
+        /// <summary>
+        /// indexesView control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.IndexesView indexesView;
         
         /// <summary>
         /// introForm control.

@@ -10,16 +10,7 @@
 namespace Jhu.Graywulf.Web.UI.Apps.Schema {
     
     
-    public partial class DatabaseObjectView {
-        
-        /// <summary>
-        /// fullyQualifiedNameLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label fullyQualifiedNameLabel;
+    public partial class DatasetView {
         
         /// <summary>
         /// datasetNameLabel control.
@@ -31,22 +22,49 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::System.Web.UI.WebControls.Label datasetNameLabel;
         
         /// <summary>
-        /// schemaNameLabel control.
+        /// datasetName control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label schemaNameLabel;
+        protected global::System.Web.UI.WebControls.Label datasetName;
         
         /// <summary>
-        /// objectNameLabel control.
+        /// urlPar control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label objectNameLabel;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl urlPar;
+        
+        /// <summary>
+        /// urlLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label urlLabel;
+        
+        /// <summary>
+        /// urlLink control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink urlLink;
+        
+        /// <summary>
+        /// url control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label url;
         
         /// <summary>
         /// summaryPanel control.
@@ -58,13 +76,13 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::System.Web.UI.WebControls.Panel summaryPanel;
         
         /// <summary>
-        /// summaryLabel control.
+        /// summary control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label summaryLabel;
+        protected global::Jhu.Graywulf.Web.Controls.HtmlLabel summary;
         
         /// <summary>
         /// remarksPanel control.
@@ -76,30 +94,21 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::System.Web.UI.WebControls.Panel remarksPanel;
         
         /// <summary>
-        /// remarksLabel control.
+        /// remarks control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label remarksLabel;
+        protected global::Jhu.Graywulf.Web.Controls.HtmlLabel remarks;
         
         /// <summary>
-        /// examplePanel control.
+        /// detailsPage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel examplePanel;
-        
-        /// <summary>
-        /// exampleLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label exampleLabel;
+        protected global::Jhu.Graywulf.Web.Controls.HtmlIncluder detailsPage;
     }
 }

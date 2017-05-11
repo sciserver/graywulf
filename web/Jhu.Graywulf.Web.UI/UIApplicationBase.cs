@@ -153,6 +153,7 @@ namespace Jhu.Graywulf.Web.UI
             Scripts.ScriptLibrary.RegisterMappings(new Scripts.JQuery());
             Scripts.ScriptLibrary.RegisterMappings(new Scripts.JQueryValidation());
             Scripts.ScriptLibrary.RegisterMappings(new Scripts.Bootstrap());
+            Scripts.ScriptLibrary.RegisterMappings(new Scripts.BootstrapLighbox());
             Scripts.ScriptLibrary.RegisterMappings(new Scripts.DockingPanel());
         }
 

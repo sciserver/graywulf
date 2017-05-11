@@ -17,10 +17,11 @@ namespace Jhu.Graywulf.Web.UI.Masters
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            Scripts.ScriptLibrary.RegisterReferences(ScriptManager, new Scripts.JQuery());
-            Scripts.ScriptLibrary.RegisterReferences(ScriptManager, new Scripts.JQueryValidation());
-            Scripts.ScriptLibrary.RegisterReferences(ScriptManager, new Scripts.Bootstrap());
-            Scripts.ScriptLibrary.RegisterReferences(ScriptManager, new Scripts.DockingPanel());
+            Scripts.ScriptLibrary.Register(ScriptManager, new Scripts.JQuery());
+            Scripts.ScriptLibrary.Register(ScriptManager, new Scripts.JQueryValidation());
+            Scripts.ScriptLibrary.Register(ScriptManager, new Scripts.Bootstrap());
+            Scripts.ScriptLibrary.Register(ScriptManager, new Scripts.BootstrapLighbox());
+            Scripts.ScriptLibrary.Register(ScriptManager, new Scripts.DockingPanel());
 
             Page.Title = (string)Page.Application[Constants.ApplicationLongTitle];
             Caption.Text = (string)Page.Application[Constants.ApplicationDomainName] + " :: " + (string)Page.Application[Constants.ApplicationShortTitle];

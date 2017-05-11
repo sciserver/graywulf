@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="SummaryForm.ascx.cs" Inherits="Jhu.Graywulf.Web.UI.Apps.Schema.SummaryForm" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="DatabaseObjectView.ascx.cs" Inherits="Jhu.Graywulf.Web.UI.Apps.Schema.DatabaseObjectView" %>
 <div class="dock-fill dock-scroll">
     <h3>
         <asp:Label ID="fullyQualifiedNameLabel" runat="server" Text="Table:" />:&nbsp;

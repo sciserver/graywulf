@@ -1,12 +1,12 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/App_Masters/Basic/UI.master" AutoEventWireup="true"
     Inherits="Jhu.Graywulf.Web.UI.Apps.Schema.Default" CodeBehind="Default.aspx.cs" %>
 
-<%@ Register Src="SummaryForm.ascx" TagName="SummaryForm" TagPrefix="list" %>
+<%@ Register Src="ColumnsView.ascx" TagName="Columns" TagPrefix="view" %>
+<%@ Register Src="DatabaseObjectView.ascx" TagName="DatabaseObject" TagPrefix="view" %>
 <%@ Register Src="DatasetsView.ascx" TagName="Datasets" TagPrefix="view" %>
-<%@ Register Src="ColumnList.ascx" TagName="ColumnList" TagPrefix="list" %>
-<%@ Register Src="ParameterList.ascx" TagName="ParameterList" TagPrefix="list" %>
-<%@ Register Src="IndexList.ascx" TagName="IndexList" TagPrefix="list" %>
-
+<%@ Register Src="DatasetView.ascx" TagName="Dataset" TagPrefix="view" %>
+<%@ Register Src="IndexesView.ascx" TagName="Indexes" TagPrefix="view" %>
+<%@ Register Src="ParametersView.ascx" TagName="Parameters" TagPrefix="view" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="toolbar">
     <script>
@@ -54,11 +54,12 @@
 <asp:Content ContentPlaceHolderID="middle" runat="Server">
     <asp:UpdatePanel runat="server" class="dock-fill dock-container">
         <ContentTemplate>
-            <list:SummaryForm ID="summaryForm" runat="server" Visible="false" />
-            <view:Datasets ID="datasetsView" runat="server" Visible="false" />
-            <list:ColumnList ID="columnList" runat="server" Visible="false" />
-            <list:ParameterList ID="parameterList" runat="server" Visible="false" />
-            <list:IndexList ID="indexList" runat="server" Visible="false" />
+            <view:Datasets ID="datasetsView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
+            <view:Dataset ID="datasetView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
+            <view:DatabaseObject ID="databaseObjectView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
+            <view:Columns ID="columnsView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
+            <view:Parameters ID="parametersView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
+            <view:Indexes ID="indexesView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
             <jgwuc:Form runat="server" ID="introForm" SkinID="Schema" Text="Getting started with the schema browser">
                 <FormTemplate>
                     <ul>

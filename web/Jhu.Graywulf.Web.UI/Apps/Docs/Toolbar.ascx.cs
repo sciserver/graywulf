@@ -215,7 +215,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Docs
 
                 if (scriptManager != null)
                 {
-                    Scripts.ScriptLibrary.RegisterReferences(scriptManager, new Scripts.JQuery());
+                    Scripts.ScriptLibrary.Register(scriptManager, new Scripts.JQuery());
                     scriptManager.RegisterScriptControl(this);
                 }
                 else

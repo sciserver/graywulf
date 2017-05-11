@@ -6,13 +6,8 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Schema
 {
-    public partial class DatasetsView : FederationUserControlBase
+    public partial class DatasetsView : SchemaView
     {
-        public static string GetIconUrl(DatasetBase dataset)
-        {
-            return String.Format("~/Assets/Datasets/Icons/{0}", dataset.Metadata.Icon);
-        }
-
         private IEnumerable<DatasetBase> datasets;
 
         public IEnumerable<DatasetBase> Datasets
@@ -24,15 +19,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             set
             {
                 datasets = value;
-                RefreshForm();
+                UpdateView();
             }
         }
 
-        protected void Page_Load(object sender, EventArgs e)
-        {
-        }
-
-        private void RefreshForm()
+        public override void UpdateView()
         {
             if (datasets != null)
             {
@@ -40,7 +31,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 listView.DataBind();
             }
         }
-
+        
         protected void ListView_ItemCreated(object sender, System.Web.UI.WebControls.ListViewItemEventArgs e)
         {
             if (e.Item.ItemType == ListViewItemType.DataItem)
@@ -48,10 +39,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 var di = (ListViewDataItem)e.Item;
                 var ds = (DatasetBase)di.DataItem;
 
-                if (!String.IsNullOrWhiteSpace(ds.Metadata.Icon))
+                if (ds != null && !String.IsNullOrWhiteSpace(ds.Metadata.Icon))
                 {
                     var img = (Image)e.Item.FindControl("icon");
                     img.ImageUrl = GetIconUrl(ds);
+
+                    var link1 = (HyperLink)e.Item.FindControl("link1");
+                    var link2 = (HyperLink)e.Item.FindControl("link2");
+                    link1.NavigateUrl = link2.NavigateUrl = Page.GetUrl(ds);
                 }
             }
         }
@@ -60,17 +55,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         {
             if (e.Item.ItemType == ListViewItemType.DataItem)
             {
-                var di = (ListViewDataItem)e.Item;
-                var ds = (DatasetBase)di.DataItem;
-
-                switch (e.CommandName)
-                {
-                    case "dataset_click":
-
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
+                OnCommand(e);
             }
+        }
     }
 }
