@@ -274,3 +274,4 @@ UpgradeLog*.htm
 FakesAssemblies/
 
 
+/web/Jhu.Graywulf.Web.UI/Scripts/Bootstrap-Lightbox

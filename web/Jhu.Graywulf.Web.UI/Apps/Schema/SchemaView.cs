@@ -34,12 +34,12 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         protected string GetIconUrl(DatasetBase dataset)
         {
-            return String.Format("~/Assets/Datasets/Icons/{0}", dataset.Metadata.Icon);
+            return String.Format("~/Assets/Schema/Icons/{0}", dataset.Metadata.Icon);
         }
 
         protected string GetDetailsPageUrl(DatasetBase dataset)
         {
-            return String.Format("~/Assets/Datasets/Pages/{0}.html", dataset.Name);
+            return String.Format("~/Assets/Schema/Pages/{0}.html", dataset.Name);
         }
     }
 }

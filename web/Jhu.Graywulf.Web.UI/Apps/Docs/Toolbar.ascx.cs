@@ -186,14 +186,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.Docs
         {
             var smv = new SiteMapVisitor(buttonPlaceHolder)
             {
-                RootPath = "~/Docs",
+                RootPath = App.AssetsPath,
                 CurrentPath = Page.AppRelativeVirtualPath
             };
             smv.Execute();
 
             var nmv = new NavigationMapVisitor()
             {
-                RootPath = "~/Docs",
+                RootPath = App.AssetsPath,
                 CurrentPath = Page.AppRelativeVirtualPath
             };
             nmv.Execute();
