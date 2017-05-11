@@ -51,7 +51,7 @@ namespace Jhu.Graywulf.Web.Controls
 
                 if (scriptManager != null)
                 {
-                    Scripts.ScriptLibrary.RegisterReferences(scriptManager, new Scripts.JQuery());
+                    Scripts.ScriptLibrary.Register(scriptManager, new Scripts.JQuery());
                     scriptManager.RegisterScriptControl(this);
                 }
                 else

@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Web.Scripts
             get
             {
                 return new[] {
-                    new Script()
+                    new ScriptMapping()
                     {
                         Name = "bootstrap",
                         Mapping = new ScriptResourceDefinition()
@@ -24,6 +24,17 @@ namespace Jhu.Graywulf.Web.Scripts
                             CdnDebugPath = "http://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.js",
                         },
                     }
+                };
+            }
+        }
+
+        public override string[] StyleSheets
+        {
+            get
+            {
+                return new[] {
+                    "~/Scripts/Bootstrap/css/bootstrap.min.css",
+                    "~/Scripts/Bootstrap/css/bootstrap-theme.min.css"
                 };
             }
         }

@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Web.Scripts
             get
             {
                 return new[] {
-                    new Script()
+                    new ScriptMapping()
                     {
                         Name = "dockingPanel",
                         Mapping = null,

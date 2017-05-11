@@ -62,7 +62,8 @@
     <Compile Include="Web\Controls\DocsTreeVisitor.cs" />
     <Compile Include="Web\Controls\Enum.cs" />
     <Compile Include="Web\Controls\FancyByteSizeLabel.cs" />
-    <Compile Include="Web\Controls\Includer.cs" />
+    <Compile Include="Web\Controls\HtmlIncluder.cs" />
+    <Compile Include="Web\Controls\HtmlLabel.cs" />
     <Compile Include="Web\Controls\Int32ArrayConverter.cs" />
     <Compile Include="Web\Controls\ListViewDataPager.cs" />
     <Compile Include="Web\Controls\MessageBar.cs">
@@ -83,12 +84,15 @@
     <Compile Include="Web\Controls\UsageBar.cs" />
     <Compile Include="Web\Controls\FancyDateLabel.cs" />
     <Compile Include="Web\Controls\DocsTreeVisitorEventArgs.cs" />
+    <Compile Include="Web\Scripts\BootstrapLightbox.cs" />
     <Compile Include="Web\Scripts\Bootstrap.cs" />
     <Compile Include="Web\Scripts\DockingPanel.cs" />
     <Compile Include="Web\Scripts\JQueryValidation.cs" />
     <Compile Include="Web\Scripts\JQuery.cs" />
     <Compile Include="Web\Scripts\Script.cs" />
+    <Compile Include="Web\Scripts\ScriptBlock.cs" />
     <Compile Include="Web\Scripts\ScriptLibrary.cs" />
+    <Compile Include="Web\Scripts\ScriptMapping.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">

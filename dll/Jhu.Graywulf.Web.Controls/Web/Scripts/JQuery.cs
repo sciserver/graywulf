@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Web.Scripts
             get
             {
                 return new[] {
-                    new Script()
+                    new ScriptMapping()
                     {
                         Name = "jquery",
                         Mapping = new ScriptResourceDefinition()

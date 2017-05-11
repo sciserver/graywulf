@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Web.Scripts
             get
             {
                 return new[] {
-                    new Script()
+                    new ScriptMapping()
                     {
                         Name = "jquery-validation",
                         Mapping = new ScriptResourceDefinition()
@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Web.Scripts
                             CdnDebugPath = "http://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.1/jquery.validate.js"
                         }
                     },
-                    new Script()
+                    new ScriptMapping()
                     {
                         Name = "jquery-validation-additional",
                         Mapping = new ScriptResourceDefinition()
@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.Web.Scripts
                             CdnDebugPath = "http://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.1/additional-methods.js"
                         }
                     },
-                    new Script()
+                    new ScriptMapping()
                     {
                         Name = "jquery-validation-unobtrusive",
                         Mapping = new ScriptResourceDefinition()
@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.Web.Scripts
                             CdnDebugPath = "http://ajax.aspnetcdn.com/ajax/mvc/5.2.3/jquery.validate.unobtrusive.js"
                         }
                     },
-                    new Script()
+                    new ScriptMapping()
                     {
                         Reference = new ScriptReference("WebUIValidation.js", "System.Web")
                     }
