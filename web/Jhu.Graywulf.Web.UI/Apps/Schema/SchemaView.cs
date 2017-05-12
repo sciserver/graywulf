@@ -30,11 +30,36 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         protected void OnCommand(CommandEventArgs e)
         {
             ((CommandEventHandler)events[eventCommand])?.Invoke(this, e);
+
+            // Command events are bubbled up the control heirarchy
+            RaiseBubbleEvent(this, e);
+        }
+
+        protected string GetIconUrl(object item)
+        {
+            if (item is DatasetBase)
+            {
+                return GetIconUrl((DatasetBase)item);
+            }
+            else if (item is DatabaseObject)
+            {
+                return GetIconUrl((DatabaseObject)item);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         protected string GetIconUrl(DatasetBase dataset)
         {
             return String.Format("~/Assets/Schema/Icons/{0}", dataset.Metadata.Icon);
+        }
+
+        protected string GetIconUrl(DatabaseObject dbobj)
+        {
+            //return String.Format("~/Assets/Schema/Icons/{0}", dataset.Metadata.Icon);
+            return null;
         }
 
         protected string GetDetailsPageUrl(DatasetBase dataset)

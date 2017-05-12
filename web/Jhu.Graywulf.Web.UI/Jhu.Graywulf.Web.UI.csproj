@@ -402,6 +402,13 @@
     <Compile Include="Apps\Schema\ColumnsView.ascx.designer.cs">
       <DependentUpon>ColumnsView.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Schema\DatabaseObjectsView.ascx.cs">
+      <DependentUpon>DatabaseObjectsView.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Schema\DatabaseObjectsView.ascx.designer.cs">
+      <DependentUpon>DatabaseObjectsView.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Apps\Schema\DatasetView.ascx.cs">
       <DependentUpon>DatasetView.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -452,6 +459,9 @@
       <DependentUpon>Peek.aspx</DependentUpon>
     </Compile>
     <Compile Include="Apps\Schema\SchemaItemView.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Schema\SchemaListView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Apps\Schema\SchemaView.cs">
@@ -591,6 +601,7 @@
     <Content Include="Apps\Query\Results.aspx" />
     <Content Include="Apps\Query\Web.config" />
     <Content Include="Apps\Schema\ColumnsView.ascx" />
+    <Content Include="Apps\Schema\DatabaseObjectsView.ascx" />
     <Content Include="Apps\Schema\DatasetView.ascx" />
     <Content Include="Apps\Schema\DatabaseObjectView.ascx" />
     <Content Include="Apps\Schema\DatasetsView.ascx" />

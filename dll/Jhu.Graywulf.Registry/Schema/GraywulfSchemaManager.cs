@@ -244,6 +244,11 @@ namespace Jhu.Graywulf.Schema
 
             Datasets.LoadAll(false);
 
+            if (includeCodeDb)
+            {
+                res.Add(Datasets[Graywulf.Registry.Constants.CodeDbName]);
+            }
+
             if (includeUserDatabase)
             {
                 foreach (var ds in Datasets.Values.Where(k => IsUserDb(k)).OrderBy(k => k.Name))
@@ -256,12 +261,7 @@ namespace Jhu.Graywulf.Schema
             {
                 res.Add(ds);
             }
-
-            if (includeCodeDb)
-            {
-                res.Add(Datasets[Graywulf.Registry.Constants.CodeDbName]);
-            }
-
+            
             return res;
         }
 

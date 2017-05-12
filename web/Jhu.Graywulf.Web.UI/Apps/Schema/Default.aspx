@@ -3,6 +3,7 @@
 
 <%@ Register Src="ColumnsView.ascx" TagName="Columns" TagPrefix="view" %>
 <%@ Register Src="DatabaseObjectView.ascx" TagName="DatabaseObject" TagPrefix="view" %>
+<%@ Register Src="DatabaseObjectsView.ascx" TagName="DatabaseObjects" TagPrefix="view" %>
 <%@ Register Src="DatasetsView.ascx" TagName="Datasets" TagPrefix="view" %>
 <%@ Register Src="DatasetView.ascx" TagName="Dataset" TagPrefix="view" %>
 <%@ Register Src="IndexesView.ascx" TagName="Indexes" TagPrefix="view" %>
@@ -57,6 +58,7 @@
             <view:Datasets ID="datasetsView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
             <view:Dataset ID="datasetView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
             <view:DatabaseObject ID="databaseObjectView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
+            <view:DatabaseObjects ID="databaseObjectsView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
             <view:Columns ID="columnsView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
             <view:Parameters ID="parametersView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
             <view:Indexes ID="indexesView" runat="server" Visible="false" OnCommand="SchemaView_Command" />

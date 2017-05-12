@@ -15,6 +15,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             Datasets,
             Dataset,
             DatabaseObject,
+            DatabaseObjects,
             Columns,
             Parameters,
             Indexes
@@ -25,19 +26,25 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             return "~/Apps/Schema/Default.aspx";
         }
 
-        public static string GetUrl(string objid)
+        public string GetUrl(DatasetBase dataset)
         {
-            return GetUrl(SchemaView.Default, null, objid);
+            return GetUrl(SchemaView.Dataset, dataset.Name, null, null);
         }
 
-        public static string GetUrl(SchemaView view, DatasetBase dataset, DatabaseObject dbobj)
+        public static string GetUrl(string objid)
+        {
+            return GetUrl(SchemaView.Default, null, null, objid);
+        }
+
+        public static string GetUrl(SchemaView view, DatasetBase dataset, DatabaseObjectType objtype, DatabaseObject dbobj)
         {
             return GetUrl(view,
                 dataset == null ? null : dataset.Name,
+                objtype == DatabaseObjectType.Unknown ? null : objtype.ToString(),
                 dbobj == null ? null : dbobj.UniqueKey);
         }
 
-        public static string GetUrl(SchemaView view, string dataset, string objid)
+        private static string GetUrl(SchemaView view, string dataset, string objtype, string objid)
         {
             var pars = "";
 
@@ -49,6 +56,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             if (!String.IsNullOrWhiteSpace(dataset))
             {
                 pars += String.Format("&ds={0}", dataset);
+            }
+
+            if (!String.IsNullOrWhiteSpace(objtype))
+            {
+                pars += String.Format("&ot={0}", objtype);
             }
 
             if (!String.IsNullOrWhiteSpace(objid))
@@ -66,15 +78,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             }
         }
 
-        public string GetUrl(DatasetBase dataset)
-        {
-            return GetUrl(SchemaView.Dataset, dataset.Name, null);
-        }
-
         #region Private member variables
 
         private SchemaView selectedView;
         private DatasetBase selectedDataset;
+        private DatabaseObjectType selectedObjectType;
         private DatabaseObject selectedDatabaseObject;
 
         #endregion
@@ -83,39 +91,45 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         public SchemaView SessionView
         {
             get { return (SchemaView)(Session["Jhu.Graywulf.Web.UI.App.Schema.View"] ?? SchemaView.Default); }
-            set { Session["Jhu.Graywulf.Web.UI.App.Schema.View"] = value; }
+            set { Session["Jhu.Graywulf.Web.UI.App.Schema.View"] = value.ToString(); }
         }
 
-        public string SessionDataset
+        public DatasetBase SessionDataset
         {
-            get { return (string)Session["Jhu.Graywulf.Web.UI.App.Schema.Dataset"]; }
-            set { Session["Jhu.Graywulf.Web.UI.App.Schema.Dataset"] = value; }
+            get { return ParseDataset((string)Session["Jhu.Graywulf.Web.UI.App.Schema.Dataset"]); }
+            set { Session["Jhu.Graywulf.Web.UI.App.Schema.Dataset"] = value?.Name; }
         }
 
-        public string SessionDatabaseObject
+        public DatabaseObjectType SessionObjectType
         {
-            get { return (string)Session["Jhu.Graywulf.Web.UI.App.Schema.DatabaseObject"]; }
-            set { Session["Jhu.Graywulf.Web.UI.App.Schema.DatabaseObject"] = value; }
+            get { return ParseObjectType((string)Session["Jhu.Graywulf.Web.UI.App.Schema.ObjectType"]); }
+            set { Session["Jhu.Graywulf.Web.UI.App.Schema.ObjectType"] = value.ToString(); }
+        }
+
+        public DatabaseObject SessionDatabaseObject
+        {
+            get { return ParseDatabaseObject((string)Session["Jhu.Graywulf.Web.UI.App.Schema.DatabaseObject"]); }
+            set { Session["Jhu.Graywulf.Web.UI.App.Schema.DatabaseObject"] = value?.UniqueKey; }
         }
 
         public SchemaView RequestView
         {
-            get
-            {
-                SchemaView view = SchemaView.Default;
-                Enum.TryParse<SchemaView>(Request.QueryString["view"], out view);
-                return view;
-            }
+            get { return ParseSchemaView(Request["view"]); }
         }
 
-        public string RequestDataset
+        public DatasetBase RequestDataset
         {
-            get { return Request.QueryString["ds"]; }
+            get { return ParseDataset(Request.QueryString["ds"]); }
         }
 
-        public string RequestDatabaseObject
+        public DatabaseObjectType RequestObjectType
         {
-            get { return Request.QueryString["objid"]; }
+            get { return ParseObjectType(Request.QueryString["ot"]); }
+        }
+
+        public DatabaseObject RequestDatabaseObject
+        {
+            get { return ParseDatabaseObject(Request.QueryString["objid"]); }
         }
 
         protected SchemaView SelectedView
@@ -132,13 +146,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 {
                     return selectedDataset;
                 }
-                else if (!String.IsNullOrWhiteSpace(datasetList.SelectedValue))
+                else
                 {
-                    try
-                    {
-                        selectedDataset = FederationContext.SchemaManager.Datasets[datasetList.SelectedValue];
-                    }
-                    catch { }
+                    selectedDataset = ParseDataset(datasetList.SelectedValue);
                 }
 
                 if (selectedDataset == null && SelectedDatabaseObject != null)
@@ -154,6 +164,32 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             }
         }
 
+        protected DatabaseObjectType SelectedObjectType
+        {
+            get
+            {
+                if (selectedObjectType != DatabaseObjectType.Unknown)
+                {
+                    return selectedObjectType;
+                }
+                else
+                {
+                    selectedObjectType = ParseObjectType(objectTypeList.SelectedValue);
+                }
+
+                if (selectedObjectType == DatabaseObjectType.Unknown && SelectedDatabaseObject != null)
+                {
+                    selectedObjectType = Jhu.Graywulf.Schema.Constants.SimpleDatabaseObjectTypes[SelectedDatabaseObject.ObjectType];
+                }
+
+                return selectedObjectType;
+            }
+            set
+            {
+                selectedObjectType = value;
+            }
+        }
+
         protected DatabaseObject SelectedDatabaseObject
         {
             get
@@ -162,13 +198,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 {
                     return selectedDatabaseObject;
                 }
-                else if (!String.IsNullOrWhiteSpace(databaseObjectList.SelectedValue))
+                else
                 {
-                    try
-                    {
-                        selectedDatabaseObject = FederationContext.SchemaManager.GetDatabaseObjectByKey(databaseObjectList.SelectedValue);
-                    }
-                    catch { }
+                    selectedDatabaseObject = ParseDatabaseObject(databaseObjectList.SelectedValue);
                 }
 
                 return selectedDatabaseObject;
@@ -192,30 +224,78 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                     SessionView != SchemaView.Default ? SessionView :
                     SchemaView.Default;
 
-                RefreshDatasetList();
+                selectedDataset = RequestDataset ?? SessionDataset;
+
+                selectedObjectType =
+                    RequestObjectType != DatabaseObjectType.Unknown ? RequestObjectType :
+                    SessionObjectType != DatabaseObjectType.Unknown ? SessionObjectType :
+                    DatabaseObjectType.Unknown;
+
+                selectedDatabaseObject = RequestDatabaseObject ?? SessionDatabaseObject;
             }
         }
 
         protected void Page_PreRender(object sender, EventArgs e)
         {
+            RefreshDatasetList();
+            RefreshObjectTypeList();
+            RefreshDatabaseObjectList();
+
             UpdateForm();
         }
 
         protected void DatasetList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            RefreshObjectTypeList();
-            RefreshObjectList();
-        }
+            var dataset = datasetList.SelectedValue;
 
+            if (!String.IsNullOrWhiteSpace(dataset))
+            {
+                ShowDatasetView(ParseDataset(dataset));
+            }
+            else
+            {
+                ShowDatasetsView();
+            }
+        }
 
         protected void ObjectTypeList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            RefreshObjectList();
+            var objectType = objectTypeList.SelectedValue;
+
+            if (!String.IsNullOrWhiteSpace(objectType))
+            {
+                ShowDatabaseObjectsView(SelectedDataset, ParseObjectType(objectType));
+            }
+            else if (SelectedDataset != null)
+            {
+                ShowDatasetView(SelectedDataset);
+            }
+            else
+            {
+                ShowDatasetsView();
+            }
         }
 
         protected void DatabaseObjectList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Do nothing here, pre_render event will show requested view
+            var objid = databaseObjectList.SelectedValue;
+
+            if (!String.IsNullOrWhiteSpace(objid))
+            {
+                ShowDatabaseObjectView(ParseDatabaseObject(objid));
+            }
+            else if (SelectedDataset != null && SelectedObjectType != DatabaseObjectType.Unknown)
+            {
+                ShowDatabaseObjectsView(SelectedDataset, SelectedObjectType);
+            }
+            else if (SelectedDataset != null)
+            {
+                ShowDatasetView(SelectedDataset);
+            }
+            else
+            {
+                ShowDatasetsView();
+            }
         }
 
         protected void ViewButton_Command(object sender, CommandEventArgs e)
@@ -237,7 +317,10 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 switch (view)
                 {
                     case SchemaView.Dataset:
-                        ShowDataset(FederationContext.SchemaManager.Datasets[(string)e.CommandArgument]);
+                        ShowDatasetView(ParseDataset((string)e.CommandArgument));
+                        break;
+                    case SchemaView.DatabaseObject:
+                        ShowDatabaseObjectView(ParseDatabaseObject((string)e.CommandArgument));
                         break;
                     default:
                         throw new NotImplementedException();
@@ -247,10 +330,65 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         #endregion
 
+        private SchemaView ParseSchemaView(string view)
+        {
+            SchemaView v = SchemaView.Default;
+            Enum.TryParse<SchemaView>(view, out v);
+            return v;
+        }
+
+        private DatasetBase ParseDataset(string dataset)
+        {
+            if (!String.IsNullOrWhiteSpace(dataset))
+            {
+                try
+                {
+                    return FederationContext.SchemaManager.Datasets[dataset];
+                }
+                catch { }
+            }
+
+            return null;
+        }
+
+        private DatabaseObjectType ParseObjectType(string objectType)
+        {
+            var ot = DatabaseObjectType.Unknown;
+
+            if (!String.IsNullOrWhiteSpace(objectType))
+            {
+                Enum.TryParse<DatabaseObjectType>(objectType, out ot);
+            }
+
+            return ot;
+        }
+
+        private DatabaseObject ParseDatabaseObject(string objid)
+        {
+            if (!String.IsNullOrWhiteSpace(objid))
+            {
+                try
+                {
+                    return FederationContext.SchemaManager.GetDatabaseObjectByKey(objid);
+                }
+                catch { }
+            }
+
+            return null;
+        }
+
         private void RefreshDatasetList()
         {
             datasetList.Items.Clear();
-            datasetList.Items.Add(new ListItem("(select data set)", ""));
+
+            if (SelectedDataset != null)
+            {
+                datasetList.Items.Add(new ListItem("(show overview)", ""));
+            }
+            else
+            {
+                datasetList.Items.Add(new ListItem("(select data set)", ""));
+            }
 
             var dss = FederationContext.SchemaManager.EnumerateDatasets(true, true);
 
@@ -270,12 +408,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
                 datasetList.Items.Add(li);
             }
-
-            if (!IsPostBack)
-            {
-                datasetList.SelectedValue = RequestDataset ?? SessionDataset ?? "";
-                RefreshObjectTypeList();
-            }
         }
 
         private void RefreshObjectTypeList()
@@ -284,114 +416,76 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
             if (SelectedDataset != null)
             {
-                objectTypeList.Items.Add(new ListItem("Tables", DatabaseObjectType.Table.ToString()));
-                objectTypeList.Items.Add(new ListItem("Views", DatabaseObjectType.View.ToString()));
-
-                if (SchemaManager.Comparer.Compare(datasetList.SelectedValue, Registry.Constants.CodeDbName) == 0)
+                if (SelectedObjectType != DatabaseObjectType.Unknown)
                 {
-                    objectTypeList.Items.Add(new ListItem("User-defined Types", DatabaseObjectType.DataType.ToString()));
-                    objectTypeList.Items.Add(new ListItem("Stored Procedures", DatabaseObjectType.StoredProcedure.ToString()));
-                    objectTypeList.Items.Add(new ListItem("Scalar Functions", DatabaseObjectType.ScalarFunction.ToString()));
-                    objectTypeList.Items.Add(new ListItem("Table-valued Functions", DatabaseObjectType.TableValuedFunction.ToString()));
-                }
-            }
-
-            if (!IsPostBack)
-            {
-                var dbobjid = RequestDatabaseObject ?? SessionDatabaseObject;
-
-                if (!String.IsNullOrWhiteSpace(dbobjid))
-                {
-                    var dbobjtype = SchemaManager.GetDatabaseObjectTypeFromKey(dbobjid);
-                    dbobjtype = Jhu.Graywulf.Schema.Constants.SimpleDatabaseObjectTypes[dbobjtype];
-                    objectTypeList.SelectedValue = dbobjtype.ToString();
-                    RefreshObjectList();
-                }
-            }
-        }
-
-        private void RefreshObjectList()
-        {
-            databaseObjectList.Items.Clear();
-
-            try
-            {
-                var dataset = FederationContext.SchemaManager.Datasets[datasetList.SelectedValue];
-
-                DatabaseObjectType type;
-                if (Enum.TryParse<DatabaseObjectType>(objectTypeList.SelectedValue, out type))
-                {
-                    var li = new ListItem("(select item)", "");
-                    databaseObjectList.Items.Add(li);
-
-                    switch (type)
-                    {
-                        case DatabaseObjectType.DataType:
-                            dataset.UserDefinedTypes.LoadAll(dataset.IsMutable);
-                            LoadDatabaseObjects(dataset.UserDefinedTypes.Values);
-                            break;
-                        case DatabaseObjectType.Table:
-                            dataset.Tables.LoadAll(dataset.IsMutable);
-                            LoadDatabaseObjects(dataset.Tables.Values);
-                            break;
-                        case DatabaseObjectType.View:
-                            dataset.Views.LoadAll(dataset.IsMutable);
-                            LoadDatabaseObjects(dataset.Views.Values);
-                            break;
-                        case DatabaseObjectType.TableValuedFunction:
-                            dataset.TableValuedFunctions.LoadAll(dataset.IsMutable);
-                            LoadDatabaseObjects(dataset.TableValuedFunctions.Values);
-                            break;
-                        case DatabaseObjectType.ScalarFunction:
-                            dataset.ScalarFunctions.LoadAll(dataset.IsMutable);
-                            LoadDatabaseObjects(dataset.ScalarFunctions.Values);
-                            break;
-                        case DatabaseObjectType.StoredProcedure:
-                            dataset.StoredProcedures.LoadAll(dataset.IsMutable);
-                            LoadDatabaseObjects(dataset.StoredProcedures.Values);
-                            break;
-                        default:
-                            throw new NotImplementedException();
-                    }
+                    objectTypeList.Items.Add(new ListItem("(show overview)", ""));
                 }
                 else
                 {
-                    var li = new ListItem("(no items)", "");
-                    databaseObjectList.Items.Add(li);
+                    objectTypeList.Items.Add(new ListItem("(select object type)", ""));
                 }
-            }
-            catch (Exception ex)
-            {
-                databaseObjectList.Items.Clear();
-                var li = new ListItem("(not available)", "");
-                databaseObjectList.Items.Add(li);
-            }
 
-            if (!IsPostBack)
-            {
-                databaseObjectList.SelectedValue = RequestDatabaseObject ?? SessionDatabaseObject;
+                if (SelectedDataset != null)
+                {
+                    objectTypeList.Items.Add(new ListItem("Tables", DatabaseObjectType.Table.ToString()));
+                    objectTypeList.Items.Add(new ListItem("Views", DatabaseObjectType.View.ToString()));
+
+                    if (SchemaManager.Comparer.Compare(datasetList.SelectedValue, Registry.Constants.CodeDbName) == 0)
+                    {
+                        objectTypeList.Items.Add(new ListItem("User-defined Types", DatabaseObjectType.DataType.ToString()));
+                        objectTypeList.Items.Add(new ListItem("Stored Procedures", DatabaseObjectType.StoredProcedure.ToString()));
+                        objectTypeList.Items.Add(new ListItem("Scalar Functions", DatabaseObjectType.ScalarFunction.ToString()));
+                        objectTypeList.Items.Add(new ListItem("Table-valued Functions", DatabaseObjectType.TableValuedFunction.ToString()));
+                    }
+                }
             }
         }
 
-        protected void LoadDatabaseObjects(IEnumerable<DatabaseObject> objects)
+        private void RefreshDatabaseObjectList()
         {
-            foreach (var d in objects.OrderBy(f => f.DisplayName))
-            {
-                var li = new ListItem(d.DisplayName, d.UniqueKey);
-                databaseObjectList.Items.Add(li);
-            }
+            databaseObjectList.Items.Clear();
 
-            if (databaseObjectList.Items.Count == 1)
+            if (SelectedDataset != null && SelectedObjectType != DatabaseObjectType.Unknown)
             {
-                databaseObjectList.Items.Clear();
-                var li = new ListItem("(no items)", "");
-                databaseObjectList.Items.Add(li);
+                if (SelectedDatabaseObject != null)
+                {
+                    databaseObjectList.Items.Add(new ListItem("(show overview)", ""));
+                }
+                else
+                {
+                    databaseObjectList.Items.Add(new ListItem("(select database object)", ""));
+                }
+
+                try
+                {
+                    SelectedDataset.LoadAllObjects(SelectedObjectType, SelectedDataset.IsMutable);
+
+                    foreach (var d in SelectedDataset.GetAllObjects(SelectedObjectType).OrderBy(f => f.DisplayName))
+                    {
+                        var li = new ListItem(d.DisplayName, d.UniqueKey);
+                        databaseObjectList.Items.Add(li);
+                    }
+
+                    if (databaseObjectList.Items.Count == 1)
+                    {
+                        databaseObjectList.Items.Clear();
+                        var li = new ListItem("(no items)", "error");
+                        databaseObjectList.Items.Add(li);
+                    }
+                }
+                catch (Exception)
+                {
+                    databaseObjectList.Items.Clear();
+                    var li = new ListItem("(not available)", "error");
+                    databaseObjectList.Items.Add(li);
+                }
             }
         }
 
         private void UpdateForm()
         {
             var ds = SelectedDataset;
+            var ot = SelectedObjectType;
             var dbobj = SelectedDatabaseObject;
 
             HideAllViews();
@@ -402,6 +496,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             }
             else if (dbobj == null)
             {
+                objectTypeList.Visible = true;
             }
             else
             {
@@ -418,61 +513,52 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             {
                 case SchemaView.Default:
                 case SchemaView.Datasets:
-                    datasetsView.Datasets = FederationContext.SchemaManager.EnumerateDatasets(true, true);
+                    datasetsView.Items = FederationContext.SchemaManager.EnumerateDatasets(true, true);
                     datasetsView.Visible = true;
                     break;
                 case SchemaView.Dataset:
                     datasetView.Item = SelectedDataset;
                     datasetView.Visible = true;
                     break;
-                case SchemaView.Columns:
-                    if (dbobj is IColumns)
-                    {
-                        columnsView.Item = (IColumns)SelectedDatabaseObject;
-                        columnsView.Visible = true;
-                        columnsButton.CssClass = "selected";
-                    }
-                    else
-                    {
-                        goto default;
-                    }
-                    break;
-                case SchemaView.Indexes:
-                    if (dbobj is IIndexes)
-                    {
-                        indexesView.Item = (IIndexes)SelectedDatabaseObject;
-                        indexesView.Visible = true;
-                        indexesButton.CssClass = "selected";
-                    }
-                    else
-                    {
-                        goto default;
-                    }
-                    break;
-                case SchemaView.Parameters:
-                    if (dbobj is IParameters)
-                    {
-                        parametersView.Item = (IParameters)SelectedDatabaseObject;
-                        parametersView.Visible = true;
-                        parametersButton.CssClass = "selected";
-                    }
-                    else
-                    {
-                        goto default;
-                    }
+                case SchemaView.DatabaseObjects:
+                    SelectedDataset.LoadAllObjects(SelectedObjectType, SelectedDataset.IsMutable);
+                    databaseObjectsView.Items = SelectedDataset.GetAllObjects(SelectedObjectType);
+                    databaseObjectsView.Visible = true;
                     break;
                 case SchemaView.DatabaseObject:
-                default:
                     databaseObjectView.Item = SelectedDatabaseObject;
                     databaseObjectView.Visible = true;
-                    //columnsButton.CssClass = "selected";
+                    summaryButton.CssClass = "selected";
                     break;
+                case SchemaView.Columns:
+                    columnsView.Item = (IColumns)SelectedDatabaseObject;
+                    columnsView.Visible = true;
+                    columnsButton.CssClass = "selected";
+                    break;
+                case SchemaView.Indexes:
+                    indexesView.Item = (IIndexes)SelectedDatabaseObject;
+                    indexesView.Visible = true;
+                    indexesButton.CssClass = "selected";
+                    break;
+                case SchemaView.Parameters:
+                    parametersView.Item = (IParameters)SelectedDatabaseObject;
+                    parametersView.Visible = true;
+                    parametersButton.CssClass = "selected";
+                    break;
+                default:
+                    throw new NotImplementedException();
             }
 
+            datasetList.SelectedValue = SelectedDataset?.Name;
+            objectTypeList.SelectedValue = SelectedObjectType == DatabaseObjectType.Unknown ? null : SelectedObjectType.ToString();
+            databaseObjectList.SelectedValue = SelectedDatabaseObject?.UniqueKey;
+
             SessionView = SelectedView;
-            SessionDataset = SelectedDataset?.Name;
-            SessionDatabaseObject = SelectedDatabaseObject?.UniqueKey;
-            OverrideUrl(Page.ResolveUrl(GetUrl(SelectedView, SelectedDataset, SelectedDatabaseObject)));
+            SessionDataset = SelectedDataset;
+            SessionObjectType = SelectedObjectType;
+            SessionDatabaseObject = SelectedDatabaseObject;
+
+            OverrideUrl(Page.ResolveUrl(GetUrl(SelectedView, SelectedDataset, SelectedObjectType, SelectedDatabaseObject)));
         }
 
         private void HideAllViews()
@@ -480,6 +566,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             introForm.Visible = false;
             datasetsView.Visible = false;
             datasetView.Visible = false;
+            databaseObjectsView.Visible = false;
             databaseObjectView.Visible = false;
             columnsView.Visible = false;
             parametersView.Visible = false;
@@ -497,14 +584,32 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             parametersButton.CssClass = "";
         }
 
-        private void ShowDatasets()
+        private void ShowDatasetsView()
         {
+            SelectedDataset = null;
+            SelectedDatabaseObject = null;
+            SelectedView = SchemaView.Datasets;
         }
 
-        private void ShowDataset(DatasetBase ds)
+        private void ShowDatasetView(DatasetBase ds)
         {
             SelectedDataset = ds;
             SelectedView = SchemaView.Dataset;
+        }
+
+        private void ShowDatabaseObjectsView(DatasetBase ds, DatabaseObjectType objectType)
+        {
+            SelectedDataset = ds;
+            SelectedObjectType = objectType;
+            SelectedView = SchemaView.DatabaseObjects;
+        }
+
+        private void ShowDatabaseObjectView(DatabaseObject dbobj)
+        {
+            SelectedDataset = dbobj.Dataset;
+            SelectedObjectType = Jhu.Graywulf.Schema.Constants.SimpleDatabaseObjectTypes[dbobj.ObjectType];
+            SelectedDatabaseObject = dbobj;
+            SelectedView = SchemaView.DatabaseObject;   // TODO
         }
     }
 }

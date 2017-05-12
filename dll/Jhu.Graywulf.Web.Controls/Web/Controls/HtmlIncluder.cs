@@ -41,30 +41,33 @@ namespace Jhu.Graywulf.Web.Controls
                 path = Src;
             }
 
-            var content = File.ReadAllText(path);
-
-            // Get body
-            var m1 = BodyRegex.Match(content);
-
-            if (!m1.Success)
+            if (File.Exists(path))
             {
-                throw new Exception("Body tag not found"); // *** TODO
+                var content = File.ReadAllText(path);
+
+                // Get body
+                var m1 = BodyRegex.Match(content);
+
+                if (!m1.Success)
+                {
+                    throw new Exception("Body tag not found"); // *** TODO
+                }
+
+                var m2 = EndBodyRegex.Match(content);
+
+                if (!m2.Success)
+                {
+                    throw new Exception("Body end tag not found");  // **** TODO
+                }
+
+                int start = m1.Index + m1.Length;
+                int end = m2.Index;
+
+                content = content.Substring(start, end - start);
+                content = UrlRegex.Replace(content, ReplaceUrl);
+
+                writer.Write(content);
             }
-
-            var m2 = EndBodyRegex.Match(content);
-
-            if (!m2.Success)
-            {
-                throw new Exception("Body end tag not found");  // **** TODO
-            }
-
-            int start = m1.Index + m1.Length;
-            int end = m2.Index;
-
-            content = content.Substring(start, end - start);
-            content = UrlRegex.Replace(content, ReplaceUrl);
-
-            writer.Write(content);
         }
 
         private string ReplaceUrl(Match match)
