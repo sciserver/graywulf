@@ -10,7 +10,6 @@
 namespace Jhu.Graywulf.Web.UI.Apps.Schema {
     
     
-    public partial class DatabaseObjectsView {
-        
+    public partial class DatabaseObjectListView {
     }
 }

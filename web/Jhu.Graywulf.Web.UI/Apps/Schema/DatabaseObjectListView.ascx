@@ -1,5 +1,5 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" Inherits="Jhu.Graywulf.Web.UI.Apps.Schema.DatabaseObjectsView"
-    CodeBehind="DatabaseObjectsView.ascx.cs" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" Inherits="Jhu.Graywulf.Web.UI.Apps.Schema.DatabaseObjectListView"
+    CodeBehind="DatabaseObjectListView.ascx.cs" %>
 
 <div class="dock-top gw-list-frame-top">
     <div class="gw-list-header">

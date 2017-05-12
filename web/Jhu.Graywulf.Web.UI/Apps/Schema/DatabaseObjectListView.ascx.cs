@@ -6,7 +6,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Schema
 {
-    public partial class DatabaseObjectsView : SchemaListView<DatabaseObject>
+    public partial class DatabaseObjectListView : SchemaListView<DatabaseObject>
     {
         
     }

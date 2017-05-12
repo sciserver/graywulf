@@ -402,12 +402,19 @@
     <Compile Include="Apps\Schema\ColumnsView.ascx.designer.cs">
       <DependentUpon>ColumnsView.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Apps\Schema\DatabaseObjectsView.ascx.cs">
-      <DependentUpon>DatabaseObjectsView.ascx</DependentUpon>
+    <Compile Include="Apps\Schema\DatabaseObjectListView.ascx.cs">
+      <DependentUpon>DatabaseObjectListView.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Apps\Schema\DatabaseObjectsView.ascx.designer.cs">
-      <DependentUpon>DatabaseObjectsView.ascx</DependentUpon>
+    <Compile Include="Apps\Schema\DatabaseObjectListView.ascx.designer.cs">
+      <DependentUpon>DatabaseObjectListView.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Apps\Schema\DatasetListView.ascx.cs">
+      <DependentUpon>DatasetListView.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Schema\DatasetListView.ascx.designer.cs">
+      <DependentUpon>DatasetListView.ascx</DependentUpon>
     </Compile>
     <Compile Include="Apps\Schema\DatasetView.ascx.cs">
       <DependentUpon>DatasetView.ascx</DependentUpon>
@@ -422,13 +429,6 @@
     </Compile>
     <Compile Include="Apps\Schema\DatabaseObjectView.ascx.designer.cs">
       <DependentUpon>DatabaseObjectView.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Apps\Schema\DatasetsView.ascx.cs">
-      <DependentUpon>DatasetsView.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Apps\Schema\DatasetsView.ascx.designer.cs">
-      <DependentUpon>DatasetsView.ascx</DependentUpon>
     </Compile>
     <Compile Include="Apps\Schema\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -601,10 +601,10 @@
     <Content Include="Apps\Query\Results.aspx" />
     <Content Include="Apps\Query\Web.config" />
     <Content Include="Apps\Schema\ColumnsView.ascx" />
-    <Content Include="Apps\Schema\DatabaseObjectsView.ascx" />
+    <Content Include="Apps\Schema\DatabaseObjectListView.ascx" />
+    <Content Include="Apps\Schema\DatasetListView.ascx" />
     <Content Include="Apps\Schema\DatasetView.ascx" />
     <Content Include="Apps\Schema\DatabaseObjectView.ascx" />
-    <Content Include="Apps\Schema\DatasetsView.ascx" />
     <Content Include="Apps\Schema\Default.aspx" />
     <Content Include="Apps\Schema\IndexesView.ascx" />
     <Content Include="Apps\Schema\ParametersView.ascx" />

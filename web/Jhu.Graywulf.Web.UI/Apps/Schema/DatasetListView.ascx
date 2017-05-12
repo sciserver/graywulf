@@ -1,5 +1,5 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" Inherits="Jhu.Graywulf.Web.UI.Apps.Schema.DatasetsView"
-    CodeBehind="DatasetsView.ascx.cs" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" Inherits="Jhu.Graywulf.Web.UI.Apps.Schema.DatasetListView"
+    CodeBehind="DatasetListView.ascx.cs" %>
 
 <div class="dock-top gw-list-frame-top">
     <div class="gw-list-header">

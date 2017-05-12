@@ -6,7 +6,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Schema
 {
-    public partial class DatasetsView : SchemaListView<DatasetBase>
+    public partial class DatasetListView : SchemaListView<DatasetBase>
     {        
 
     }

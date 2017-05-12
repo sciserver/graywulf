@@ -112,13 +112,13 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::System.Web.UI.WebControls.HyperLink peekButton;
         
         /// <summary>
-        /// datasetsView control.
+        /// datasetListView control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.DatasetsView datasetsView;
+        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.DatasetListView datasetListView;
         
         /// <summary>
         /// datasetView control.
@@ -139,13 +139,13 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::Jhu.Graywulf.Web.UI.Apps.Schema.DatabaseObjectView databaseObjectView;
         
         /// <summary>
-        /// databaseObjectsView control.
+        /// databaseObjectListView control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.DatabaseObjectsView databaseObjectsView;
+        protected global::Jhu.Graywulf.Web.UI.Apps.Schema.DatabaseObjectListView databaseObjectListView;
         
         /// <summary>
         /// columnsView control.

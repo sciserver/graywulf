@@ -10,8 +10,6 @@
 namespace Jhu.Graywulf.Web.UI.Apps.Schema {
     
     
-    public partial class DatasetsView {
-        
-
+    public partial class DatasetListView {
     }
 }

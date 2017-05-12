@@ -12,10 +12,10 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         public enum SchemaView
         {
             Default,
-            Datasets,
+            DatasetList,
             Dataset,
             DatabaseObject,
-            DatabaseObjects,
+            DatabaseObjectList,
             Columns,
             Parameters,
             Indexes
@@ -254,7 +254,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             }
             else
             {
-                ShowDatasetsView();
+                ShowDatasetListView();
             }
         }
 
@@ -264,7 +264,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
             if (!String.IsNullOrWhiteSpace(objectType))
             {
-                ShowDatabaseObjectsView(SelectedDataset, ParseObjectType(objectType));
+                ShowDatabaseObjectListView(SelectedDataset, ParseObjectType(objectType));
             }
             else if (SelectedDataset != null)
             {
@@ -272,7 +272,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             }
             else
             {
-                ShowDatasetsView();
+                ShowDatasetListView();
             }
         }
 
@@ -286,7 +286,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             }
             else if (SelectedDataset != null && SelectedObjectType != DatabaseObjectType.Unknown)
             {
-                ShowDatabaseObjectsView(SelectedDataset, SelectedObjectType);
+                ShowDatabaseObjectListView(SelectedDataset, SelectedObjectType);
             }
             else if (SelectedDataset != null)
             {
@@ -294,7 +294,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             }
             else
             {
-                ShowDatasetsView();
+                ShowDatasetListView();
             }
         }
 
@@ -512,18 +512,18 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             switch (SelectedView)
             {
                 case SchemaView.Default:
-                case SchemaView.Datasets:
-                    datasetsView.Items = FederationContext.SchemaManager.EnumerateDatasets(true, true);
-                    datasetsView.Visible = true;
+                case SchemaView.DatasetList:
+                    datasetListView.Items = FederationContext.SchemaManager.EnumerateDatasets(true, true);
+                    datasetListView.Visible = true;
                     break;
                 case SchemaView.Dataset:
                     datasetView.Item = SelectedDataset;
                     datasetView.Visible = true;
                     break;
-                case SchemaView.DatabaseObjects:
+                case SchemaView.DatabaseObjectList:
                     SelectedDataset.LoadAllObjects(SelectedObjectType, SelectedDataset.IsMutable);
-                    databaseObjectsView.Items = SelectedDataset.GetAllObjects(SelectedObjectType);
-                    databaseObjectsView.Visible = true;
+                    databaseObjectListView.Items = SelectedDataset.GetAllObjects(SelectedObjectType);
+                    databaseObjectListView.Visible = true;
                     break;
                 case SchemaView.DatabaseObject:
                     databaseObjectView.Item = SelectedDatabaseObject;
@@ -564,13 +564,16 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         private void HideAllViews()
         {
             introForm.Visible = false;
-            datasetsView.Visible = false;
+            datasetListView.Visible = false;
             datasetView.Visible = false;
-            databaseObjectsView.Visible = false;
+            databaseObjectListView.Visible = false;
             databaseObjectView.Visible = false;
             columnsView.Visible = false;
             parametersView.Visible = false;
             indexesView.Visible = false;
+
+            objectTypeList.Visible = false;
+            databaseObjectList.Visible = false;
 
             summaryButton.Visible = false;
             columnsButton.Visible = false;
@@ -584,11 +587,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             parametersButton.CssClass = "";
         }
 
-        private void ShowDatasetsView()
+        private void ShowDatasetListView()
         {
             SelectedDataset = null;
             SelectedDatabaseObject = null;
-            SelectedView = SchemaView.Datasets;
+            SelectedView = SchemaView.DatasetList;
         }
 
         private void ShowDatasetView(DatasetBase ds)
@@ -597,11 +600,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             SelectedView = SchemaView.Dataset;
         }
 
-        private void ShowDatabaseObjectsView(DatasetBase ds, DatabaseObjectType objectType)
+        private void ShowDatabaseObjectListView(DatasetBase ds, DatabaseObjectType objectType)
         {
             SelectedDataset = ds;
             SelectedObjectType = objectType;
-            SelectedView = SchemaView.DatabaseObjects;
+            SelectedView = SchemaView.DatabaseObjectList;
         }
 
         private void ShowDatabaseObjectView(DatabaseObject dbobj)

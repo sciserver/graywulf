@@ -3,31 +3,13 @@
 
 <%@ Register Src="ColumnsView.ascx" TagName="Columns" TagPrefix="view" %>
 <%@ Register Src="DatabaseObjectView.ascx" TagName="DatabaseObject" TagPrefix="view" %>
-<%@ Register Src="DatabaseObjectsView.ascx" TagName="DatabaseObjects" TagPrefix="view" %>
-<%@ Register Src="DatasetsView.ascx" TagName="Datasets" TagPrefix="view" %>
+<%@ Register Src="DatabaseObjectListView.ascx" TagName="DatabaseObjectList" TagPrefix="view" %>
+<%@ Register Src="DatasetListView.ascx" TagName="DatasetList" TagPrefix="view" %>
 <%@ Register Src="DatasetView.ascx" TagName="Dataset" TagPrefix="view" %>
 <%@ Register Src="IndexesView.ascx" TagName="Indexes" TagPrefix="view" %>
 <%@ Register Src="ParametersView.ascx" TagName="Parameters" TagPrefix="view" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="toolbar">
-    <script>
-        function ShowRefreshing() {
-            var datasetList = document.getElementById("<%= datasetList.ClientID %>");
-            var objectTypeList = document.getElementById("<%= objectTypeList.ClientID %>");
-            var objectList = document.getElementById("<%= databaseObjectList.ClientID %>");
-
-            datasetList.disabled = true;
-            objectTypeList.disabled = true;
-            objectList.disabled = true;
-
-            objectList.options.length = 0;
-            var opt = new Option("Refreshing...", "");
-            objectList.options.add(opt);
-        }
-
-        var prm = Sys.WebForms.PageRequestManager.getInstance();
-        prm.add_initializeRequest(ShowRefreshing);
-    </script>
     <asp:UpdatePanel runat="server">
         <ContentTemplate>
             <div class="toolbar">
@@ -41,7 +23,7 @@
                 </div>
                 <div class="span">
                     <asp:Label ID="databaseObjectListLabel" runat="server" Text="Object:" /><br />
-                    <asp:DropDownList ID="databaseObjectList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DatabaseObjectList_SelectedIndexChanged"/>
+                    <asp:DropDownList ID="databaseObjectList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DatabaseObjectList_SelectedIndexChanged" />
                 </div>
                 <asp:LinkButton runat="server" ID="summaryButton" Text="summary" OnCommand="ViewButton_Command" CommandName="Summary" />
                 <asp:LinkButton runat="server" ID="columnsButton" Text="columns" OnCommand="ViewButton_Command" CommandName="Columns" />
@@ -55,10 +37,10 @@
 <asp:Content ContentPlaceHolderID="middle" runat="Server">
     <asp:UpdatePanel runat="server" class="dock-fill dock-container">
         <ContentTemplate>
-            <view:Datasets ID="datasetsView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
+            <view:DatasetList ID="datasetListView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
             <view:Dataset ID="datasetView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
             <view:DatabaseObject ID="databaseObjectView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
-            <view:DatabaseObjects ID="databaseObjectsView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
+            <view:DatabaseObjectList ID="databaseObjectListView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
             <view:Columns ID="columnsView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
             <view:Parameters ID="parametersView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
             <view:Indexes ID="indexesView" runat="server" Visible="false" OnCommand="SchemaView_Command" />
