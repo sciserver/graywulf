@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Schema
     /// </summary>
     [Serializable]
     [DataContract(Namespace = "")]
-    public class DatabaseObject : ICloneable
+    public class DatabaseObject : ICloneable, IMetadata
     {
         #region Private members
 
@@ -115,6 +115,12 @@ namespace Jhu.Graywulf.Schema
         // TODO: how to serialize metadata?
         [IgnoreDataMember]
         public DatabaseObjectMetadata Metadata
+        {
+            get { return metadata.Value; }
+        }
+
+        [IgnoreDataMember]
+        Metadata IMetadata.Metadata
         {
             get { return metadata.Value; }
         }

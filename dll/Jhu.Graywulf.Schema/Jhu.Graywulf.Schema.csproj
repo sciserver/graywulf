@@ -83,6 +83,7 @@
     <Compile Include="Schema\IColumns.cs" />
     <Compile Include="Schema\IDatabaseObject.cs" />
     <Compile Include="Schema\IIndexes.cs" />
+    <Compile Include="Schema\IMetadata.cs" />
     <Compile Include="Schema\Index.cs" />
     <Compile Include="Schema\IndexColumn.cs" />
     <Compile Include="Schema\IParameters.cs" />

@@ -25,7 +25,7 @@ namespace Jhu.Graywulf.Schema
     /// </remarks>
     [Serializable]
     [DataContract(Namespace = "")]
-    public abstract partial class DatasetBase : ICloneable, IDatasetSafe
+    public abstract partial class DatasetBase : ICloneable, IDatasetSafe, IMetadata
     {
         #region Property storage member variables
 
@@ -224,6 +224,12 @@ namespace Jhu.Graywulf.Schema
         {
             get { return metadata.Value; }
             set { metadata.Value = value; }
+        }
+
+        [IgnoreDataMember]
+        Metadata IMetadata.Metadata
+        {
+            get { return metadata.Value; }
         }
 
         #endregion
@@ -540,6 +546,58 @@ namespace Jhu.Graywulf.Schema
         protected abstract IEnumerable<KeyValuePair<string, T>> LoadAllObjects<T>()
             where T : DatabaseObject, new();
 
+        public void LoadAllObjects(DatabaseObjectType objectType, bool forceReload)
+        {
+            objectType = Constants.SimpleDatabaseObjectTypes[objectType];
+
+            switch (objectType)
+            {
+                case DatabaseObjectType.DataType:
+                    UserDefinedTypes.LoadAll(forceReload);
+                    break;
+                case DatabaseObjectType.Table:
+                    Tables.LoadAll(forceReload);
+                    break;
+                case DatabaseObjectType.View:
+                    Views.LoadAll(forceReload);
+                    break;
+                case DatabaseObjectType.TableValuedFunction:
+                    TableValuedFunctions.LoadAll(forceReload);
+                    break;
+                case DatabaseObjectType.ScalarFunction:
+                    ScalarFunctions.LoadAll(forceReload);
+                    break;
+                case DatabaseObjectType.StoredProcedure:
+                    StoredProcedures.LoadAll(forceReload);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public IEnumerable<DatabaseObject> GetAllObjects(DatabaseObjectType objectType)
+        {
+            objectType = Constants.SimpleDatabaseObjectTypes[objectType];
+
+            switch (objectType)
+            {
+                case DatabaseObjectType.DataType:
+                    return UserDefinedTypes.Values;
+                case DatabaseObjectType.Table:
+                    return Tables.Values;
+                case DatabaseObjectType.View:
+                    return Views.Values;
+                case DatabaseObjectType.TableValuedFunction:
+                    return TableValuedFunctions.Values;
+                case DatabaseObjectType.ScalarFunction:
+                    return ScalarFunctions.Values;
+                case DatabaseObjectType.StoredProcedure:
+                    return StoredProcedures.Values;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
         /// <summary>
         /// When overloaded in derived classes, loads all columns of a database object
         /// </summary>
@@ -691,7 +749,7 @@ namespace Jhu.Graywulf.Schema
 
             throw new SchemaException(String.Format(message, databaseObject.ToString()));
         }
-        
+
         public abstract string GetSpecializedConnectionString(string connectionString, bool integratedSecurity, string username, string password, bool enlist);
 
         #region Column and data type mapping functions
