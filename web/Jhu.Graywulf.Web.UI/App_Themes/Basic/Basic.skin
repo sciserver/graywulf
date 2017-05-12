@@ -24,6 +24,7 @@
 
 <jgwuc:UserStatus runat="server" CssClass="UserStatus" ImageUrl="icons/userstatus.png" />
 
+<asp:Image runat="server" SkinID="Progress" ImageUrl="Icons/progress.gif" />
 
 <jgwuc:Form runat="server" SkinID="Welcome" ImageUrl="Icons/welcome.png" />
 <jgwuc:Form runat="server" SkinID="Schema" ImageUrl="Icons/schemabrowser.png" />

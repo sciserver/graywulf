@@ -13,6 +13,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
     public partial class Default {
         
         /// <summary>
+        /// datasetListDiv control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl datasetListDiv;
+        
+        /// <summary>
         /// datasetListLabel control.
         /// </summary>
         /// <remarks>
@@ -31,6 +40,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::System.Web.UI.WebControls.DropDownList datasetList;
         
         /// <summary>
+        /// objectTypeListDiv control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl objectTypeListDiv;
+        
+        /// <summary>
         /// objectTypeListLabel control.
         /// </summary>
         /// <remarks>
@@ -47,6 +65,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList objectTypeList;
+        
+        /// <summary>
+        /// databaseObjectListDiv control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl databaseObjectListDiv;
         
         /// <summary>
         /// databaseObjectListLabel control.

@@ -13,19 +13,19 @@
     <asp:UpdatePanel runat="server">
         <ContentTemplate>
             <div class="toolbar">
-                <div style="min-width: 140px">
+                <div runat="server" id="datasetListDiv" style="min-width: 140px">
                     <asp:Label ID="datasetListLabel" runat="server" Text="Catalog:" /><br />
                     <asp:DropDownList ID="datasetList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DatasetList_SelectedIndexChanged" />
                 </div>
-                <div style="min-width: 140px">
+                <div runat="server" id="objectTypeListDiv" style="min-width: 140px">
                     <asp:Label ID="objectTypeListLabel" runat="server" Text="Object category:" /><br />
                     <asp:DropDownList ID="objectTypeList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ObjectTypeList_SelectedIndexChanged" />
                 </div>
-                <div class="span">
+                <div runat="server" id="databaseObjectListDiv" class="span">
                     <asp:Label ID="databaseObjectListLabel" runat="server" Text="Object:" /><br />
                     <asp:DropDownList ID="databaseObjectList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DatabaseObjectList_SelectedIndexChanged" />
                 </div>
-                <asp:LinkButton runat="server" ID="summaryButton" Text="summary" OnCommand="ViewButton_Command" CommandName="Summary" />
+                <asp:LinkButton runat="server" ID="summaryButton" Text="summary" OnCommand="ViewButton_Command" CommandName="DatabaseObject" />
                 <asp:LinkButton runat="server" ID="columnsButton" Text="columns" OnCommand="ViewButton_Command" CommandName="Columns" />
                 <asp:LinkButton runat="server" ID="indexesButton" Text="indexes" OnCommand="ViewButton_Command" CommandName="Indexes" />
                 <asp:LinkButton runat="server" ID="parametersButton" Text="parameters" OnCommand="ViewButton_Command" CommandName="Parameters" />
@@ -35,6 +35,13 @@
     </asp:UpdatePanel>
 </asp:Content>
 <asp:Content ContentPlaceHolderID="middle" runat="Server">
+    <asp:UpdateProgress runat="server" DisplayAfter="150">
+        <ProgressTemplate>
+            <div class="LayoutProgress">
+                <asp:Image runat="server" SkinID="Progress" />
+            </div>
+        </ProgressTemplate>
+    </asp:UpdateProgress>
     <asp:UpdatePanel runat="server" class="dock-fill dock-container">
         <ContentTemplate>
             <view:DatasetList ID="datasetListView" runat="server" Visible="false" OnCommand="SchemaView_Command" />

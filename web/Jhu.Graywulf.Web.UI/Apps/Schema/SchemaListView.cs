@@ -43,11 +43,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             {
                 var di = (ListViewDataItem)e.Item;
                 var item = (T)di.DataItem;
+                var img = (Image)e.Item.FindControl("icon");
 
                 if (item != null && !String.IsNullOrWhiteSpace(item.Metadata.Icon))
                 {
-                    var img = (Image)e.Item.FindControl("icon");
                     img.ImageUrl = GetIconUrl(item);
+                }
+                else
+                {
+                    img.Height = System.Web.UI.WebControls.Unit.Parse("1px");
                 }
             }
         }

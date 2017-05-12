@@ -80,7 +80,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         #region Private member variables
 
-        private SchemaView selectedView;
         private DatasetBase selectedDataset;
         private DatabaseObjectType selectedObjectType;
         private DatabaseObject selectedDatabaseObject;
@@ -90,7 +89,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         public SchemaView SessionView
         {
-            get { return (SchemaView)(Session["Jhu.Graywulf.Web.UI.App.Schema.View"] ?? SchemaView.Default); }
+            get { return ParseSchemaView((string)Session["Jhu.Graywulf.Web.UI.App.Schema.View"]); }
             set { Session["Jhu.Graywulf.Web.UI.App.Schema.View"] = value.ToString(); }
         }
 
@@ -134,8 +133,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         protected SchemaView SelectedView
         {
-            get { return selectedView; }
-            set { selectedView = value; }
+            get { return (SchemaView)(ViewState["SelectedView"] ?? SchemaView.Default); }
+            set { ViewState["SelectedView"] = value; }
         }
 
         protected DatasetBase SelectedDataset
@@ -161,6 +160,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             set
             {
                 selectedDataset = value;
+                datasetList.SelectedValue = value?.Name;
             }
         }
 
@@ -187,6 +187,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             set
             {
                 selectedObjectType = value;
+                objectTypeList.SelectedValue = value == DatabaseObjectType.Unknown ? "" : value.ToString();
             }
         }
 
@@ -208,6 +209,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             set
             {
                 selectedDatabaseObject = value;
+                databaseObjectList.SelectedValue = value?.UniqueKey;
             }
         }
 
@@ -219,7 +221,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         {
             if (!IsPostBack)
             {
-                selectedView =
+                SelectedView =
                     RequestView != SchemaView.Default ? RequestView :
                     SessionView != SchemaView.Default ? SessionView :
                     SchemaView.Default;
@@ -282,7 +284,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
             if (!String.IsNullOrWhiteSpace(objid))
             {
-                ShowDatabaseObjectView(ParseDatabaseObject(objid));
+                ShowDatabaseObjectView(ParseDatabaseObject(objid), SelectedView);
             }
             else if (SelectedDataset != null && SelectedObjectType != DatabaseObjectType.Unknown)
             {
@@ -300,12 +302,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         protected void ViewButton_Command(object sender, CommandEventArgs e)
         {
-            SchemaView view;
-
-            if (Enum.TryParse<SchemaView>(e.CommandName, out view))
-            {
-                SelectedView = view;
-            }
+            SelectedView = ParseSchemaView(e.CommandName);
         }
 
         protected void SchemaView_Command(object sender, CommandEventArgs e)
@@ -320,7 +317,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                         ShowDatasetView(ParseDataset((string)e.CommandArgument));
                         break;
                     case SchemaView.DatabaseObject:
-                        ShowDatabaseObjectView(ParseDatabaseObject((string)e.CommandArgument));
+                        ShowDatabaseObjectView(ParseDatabaseObject((string)e.CommandArgument), SelectedView);
                         break;
                     default:
                         throw new NotImplementedException();
@@ -490,25 +487,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
             HideAllViews();
 
-            if (ds == null)
-            {
-
-            }
-            else if (dbobj == null)
-            {
-                objectTypeList.Visible = true;
-            }
-            else
-            {
-                summaryButton.Visible = true;
-                columnsButton.Visible = (dbobj is IColumns);
-                indexesButton.Visible = (dbobj is IIndexes);
-                parametersButton.Visible = (dbobj is IParameters);
-
-                peekButton.Visible = (dbobj is TableOrView);
-                peekButton.NavigateUrl = Peek.GetUrl(dbobj.UniqueKey);
-            }
-
             switch (SelectedView)
             {
                 case SchemaView.Default:
@@ -549,9 +527,31 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                     throw new NotImplementedException();
             }
 
-            datasetList.SelectedValue = SelectedDataset?.Name;
-            objectTypeList.SelectedValue = SelectedObjectType == DatabaseObjectType.Unknown ? null : SelectedObjectType.ToString();
-            databaseObjectList.SelectedValue = SelectedDatabaseObject?.UniqueKey;
+            objectTypeListDiv.Visible = ds != null;
+            databaseObjectListDiv.Visible = ot != DatabaseObjectType.Unknown;
+
+            datasetList.SelectedValue = ds?.Name;
+
+            if (ds != null)
+            {
+                objectTypeList.SelectedValue = ot == DatabaseObjectType.Unknown ? "" : ot.ToString();
+            }
+
+            if (ot != DatabaseObjectType.Unknown)
+            {
+                databaseObjectList.SelectedValue = dbobj?.UniqueKey;
+            }
+
+            if (dbobj != null)
+            {
+                summaryButton.Visible = true;
+                columnsButton.Visible = (dbobj is IColumns);
+                indexesButton.Visible = (dbobj is IIndexes);
+                parametersButton.Visible = (dbobj is IParameters);
+
+                peekButton.Visible = (dbobj is TableOrView);
+                peekButton.NavigateUrl = Peek.GetUrl(dbobj.UniqueKey);
+            }
 
             SessionView = SelectedView;
             SessionDataset = SelectedDataset;
@@ -572,8 +572,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             parametersView.Visible = false;
             indexesView.Visible = false;
 
-            objectTypeList.Visible = false;
-            databaseObjectList.Visible = false;
+            objectTypeListDiv.Visible = false;
+            databaseObjectListDiv.Visible = false;
 
             summaryButton.Visible = false;
             columnsButton.Visible = false;
@@ -589,30 +589,58 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
         private void ShowDatasetListView()
         {
-            SelectedDataset = null;
-            SelectedDatabaseObject = null;
             SelectedView = SchemaView.DatasetList;
         }
 
         private void ShowDatasetView(DatasetBase ds)
         {
-            SelectedDataset = ds;
             SelectedView = SchemaView.Dataset;
+            SelectedDataset = ds;
+            SelectedObjectType = DatabaseObjectType.Unknown;
+            SelectedDatabaseObject = null;
         }
 
         private void ShowDatabaseObjectListView(DatasetBase ds, DatabaseObjectType objectType)
         {
+            SelectedView = SchemaView.DatabaseObjectList;
             SelectedDataset = ds;
             SelectedObjectType = objectType;
-            SelectedView = SchemaView.DatabaseObjectList;
+            SelectedDatabaseObject = null;
         }
 
-        private void ShowDatabaseObjectView(DatabaseObject dbobj)
+        private void ShowDatabaseObjectView(DatabaseObject dbobj, SchemaView view)
         {
+            switch (view)
+            {
+                case SchemaView.DatabaseObject:
+                    break;
+                case SchemaView.Columns:
+                    if (!(dbobj is IColumns))
+                    {
+                        goto default;
+                    }
+                    break;
+                case SchemaView.Indexes:
+                    if (!(dbobj is IIndexes))
+                    {
+                        goto default;
+                    }
+                    break;
+                case SchemaView.Parameters:
+                    if (!(dbobj is IParameters))
+                    {
+                        goto default;
+                    }
+                    break;
+                default:
+                    view = SchemaView.DatabaseObject;
+                    break;
+            }
+
+            SelectedView = view;
             SelectedDataset = dbobj.Dataset;
             SelectedObjectType = Jhu.Graywulf.Schema.Constants.SimpleDatabaseObjectTypes[dbobj.ObjectType];
             SelectedDatabaseObject = dbobj;
-            SelectedView = SchemaView.DatabaseObject;   // TODO
         }
     }
 }
