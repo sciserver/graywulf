@@ -544,6 +544,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
             if (dbobj != null)
             {
+                toolbarSpan.Visible = false;
                 summaryButton.Visible = true;
                 columnsButton.Visible = (dbobj is IColumns);
                 indexesButton.Visible = (dbobj is IIndexes);
@@ -551,6 +552,10 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
                 peekButton.Visible = (dbobj is TableOrView);
                 peekButton.NavigateUrl = Peek.GetUrl(dbobj.UniqueKey);
+            }
+            else
+            {
+                toolbarSpan.Visible = true;
             }
 
             SessionView = SelectedView;

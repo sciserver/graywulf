@@ -25,6 +25,7 @@
                     <asp:Label ID="databaseObjectListLabel" runat="server" Text="Object:" /><br />
                     <asp:DropDownList ID="databaseObjectList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DatabaseObjectList_SelectedIndexChanged" />
                 </div>
+                <div runat="server" id="toolbarSpan" class="span"></div>
                 <asp:LinkButton runat="server" ID="summaryButton" Text="summary" OnCommand="ViewButton_Command" CommandName="DatabaseObject" />
                 <asp:LinkButton runat="server" ID="columnsButton" Text="columns" OnCommand="ViewButton_Command" CommandName="Columns" />
                 <asp:LinkButton runat="server" ID="indexesButton" Text="indexes" OnCommand="ViewButton_Command" CommandName="Indexes" />
