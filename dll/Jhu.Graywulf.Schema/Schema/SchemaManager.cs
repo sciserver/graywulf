@@ -207,6 +207,8 @@ namespace Jhu.Graywulf.Schema
 
             switch (type)
             {
+                case DatabaseObjectType.DataType:
+                    return this.Datasets[parts[1]].UserDefinedTypes[parts[2], parts[3], parts[4]];
                 case DatabaseObjectType.Table:
                     return this.Datasets[parts[1]].Tables[parts[2], parts[3], parts[4]];
                 case DatabaseObjectType.View:

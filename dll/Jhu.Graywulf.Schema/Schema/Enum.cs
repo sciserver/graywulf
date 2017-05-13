@@ -12,10 +12,12 @@ namespace Jhu.Graywulf.Schema
     public enum DatabaseObjectType
     {
         Unknown = 0,
+        
         DataType = 1,
+
         Table = 2,
         View = 4,
-        Function = 8,
+
         SqlTableValuedFunction = 16,
         SqlInlineTableValuedFunction = 32,
         ClrTableValuedFunction = 64,
@@ -23,10 +25,17 @@ namespace Jhu.Graywulf.Schema
         SqlScalarFunction = 128,
         ClrScalarFunction = 256,
         ScalarFunction = SqlScalarFunction | ClrScalarFunction,
-        SqlStoredProcedure = 512,
-        ClrStoredProcedure = 1024,
+        Function = TableValuedFunction | ScalarFunction,
+
+        SqlAggregateFunction = 512,
+        ClrAggregateFunction = 1024,
+        AggregateFunction = SqlAggregateFunction | ClrAggregateFunction,
+
+        SqlStoredProcedure = 2048,
+        ClrStoredProcedure = 4096,
         StoredProcedure = SqlStoredProcedure | ClrStoredProcedure,
-        Index = 2048,
+
+        Index = 8192,
     }
 
     /// <summary>

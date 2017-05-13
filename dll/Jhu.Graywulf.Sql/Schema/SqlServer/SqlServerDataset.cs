@@ -1031,9 +1031,17 @@ ORDER BY p.parameter_id";
         {
             var meta = new DatabaseObjectMetadata();
 
-            LoadDatabaseObjectProperties(databaseObject, meta);
-            LoadDatabaseObjectExtendedProperties(databaseObject, meta);
-
+            if (databaseObject is DataType)
+            {
+                LoadDataTypeProperties((DataType)databaseObject, meta);
+                LoadDataTypeExtendedProperties((DataType)databaseObject, meta);
+            }
+            else
+            {
+                LoadDatabaseObjectProperties(databaseObject, meta);
+                LoadDatabaseObjectExtendedProperties(databaseObject, meta);
+            }
+            
             return meta;
         }
 
@@ -1062,6 +1070,32 @@ WHERE o.type IN ({0}) AND
                             metadata.System = dr.GetBoolean(0);
                             metadata.DateCreated = dr.GetDateTime(1);
                             metadata.DateModified = dr.GetDateTime(2);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void LoadDataTypeProperties(DataType dataType, DatabaseObjectMetadata metadata)
+        {
+            var sql = @"
+SELECT t.is_user_defined
+FROM sys.types t
+INNER JOIN sys.schemas s ON s.schema_id = t.schema_id
+WHERE (s.name = @schemaName OR @schemaName IS NULL) AND t.name = @objectName";
+
+            using (var cn = OpenConnectionInternal())
+            {
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    SetSchemaNameParameter(cmd, dataType.SchemaName);
+                    SetObjectNameParameter(cmd, dataType.ObjectName);
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            metadata.System = dr.GetBoolean(0);
                         }
                     }
                 }
@@ -1099,32 +1133,75 @@ ORDER BY 1";
                             var name = dr.GetString(0);
                             var value = dr.GetString(1);
 
-                            switch (name)
-                            {
-                                case Constants.MetaSummary:
-                                    metadata.Summary = value;
-                                    break;
-                                case Constants.MetaRemarks:
-                                    metadata.Remarks = value;
-                                    break;
-                                case Constants.MetaUrl:
-                                    metadata.Url = value;
-                                    break;
-                                case Constants.MetaIcon:
-                                    metadata.Icon = value;
-                                    break;
-                                case Constants.MetaExample:
-                                    metadata.Example = value;
-                                    break;
-                                case Constants.MetaClass:
-                                    metadata.Class = value;
-                                    break;
-                                default:
-                                    break;
-                            }
+                            SetMetadataProperty(metadata, name, value);
                         }
                     }
                 }
+            }
+        }
+
+        private void LoadDataTypeExtendedProperties(DataType dataType, DatabaseObjectMetadata metadata)
+        {
+            var sql = @"
+SELECT p.name, p.value
+FROM sys.types t
+INNER JOIN sys.schemas s ON s.schema_id = t.schema_id
+INNER JOIN sys.extended_properties p ON t.user_type_id = p.major_id
+WHERE (s.name = @schemaName OR @schemaName IS NULL) AND t.name = @objectName AND
+      p.class = 1 -- OBJECT_OR_COLUMN
+      AND p.major_id = t.user_type_id
+      AND p.minor_id = 0  -- only objects
+      AND p.name LIKE 'meta.%'
+ORDER BY 1";
+
+            using (var cn = OpenConnectionInternal())
+            {
+                using (var cmd = new SqlCommand(sql, cn))
+                {
+                    SetSchemaNameParameter(cmd, dataType.SchemaName);
+                    SetObjectNameParameter(cmd, dataType.ObjectName);
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            var name = dr.GetString(0);
+                            var value = dr.GetString(1);
+
+                            SetMetadataProperty(metadata, name, value);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void SetMetadataProperty(DatabaseObjectMetadata metadata, string name, string value)
+        {
+            switch (name)
+            {
+                case Constants.MetaSummary:
+                    metadata.Summary = value;
+                    break;
+                case Constants.MetaRemarks:
+                    metadata.Remarks = value;
+                    break;
+                case Constants.MetaUrl:
+                    metadata.Url = value;
+                    break;
+                case Constants.MetaIcon:
+                    metadata.Icon = value;
+                    break;
+                case Constants.MetaDocPage:
+                    metadata.DocPage = value;
+                    break;
+                case Constants.MetaExample:
+                    metadata.Example = value;
+                    break;
+                case Constants.MetaClass:
+                    metadata.Class = value;
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -1370,6 +1447,9 @@ WHERE p.class = 0 -- DATABASE
                                     break;
                                 case Constants.MetaIcon:
                                     metadata.Icon = value;
+                                    break;
+                                case Constants.MetaDocPage:
+                                    metadata.DocPage = value;
                                     break;
                                 default:
                                     break;
