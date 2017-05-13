@@ -51,20 +51,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             }
         }
 
-        protected string GetIconUrl(DatasetBase dataset)
+        protected string GetIconUrl(Metadata metadata)
         {
-            return String.Format("~/Assets/Schema/Icons/{0}", dataset.Metadata.Icon);
+            return String.Format("~/Assets/Schema/Icons/{0}", metadata.Icon);
         }
-
-        protected string GetIconUrl(DatabaseObject dbobj)
+        
+        protected string GetDocPageUrl(Metadata metadata)
         {
-            //return String.Format("~/Assets/Schema/Icons/{0}", dataset.Metadata.Icon);
-            return null;
-        }
-
-        protected string GetDetailsPageUrl(DatasetBase dataset)
-        {
-            return String.Format("~/Assets/Schema/Pages/{0}.html", dataset.Name);
+            return String.Format("~/Assets/Schema/Pages/{0}", metadata.DocPage);
         }
     }
 }

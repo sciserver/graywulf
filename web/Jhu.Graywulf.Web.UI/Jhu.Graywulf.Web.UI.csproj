@@ -402,6 +402,7 @@
     <Compile Include="Apps\Schema\ColumnsView.ascx.designer.cs">
       <DependentUpon>ColumnsView.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Schema\DatabaseObjectLexicographicComparer.cs" />
     <Compile Include="Apps\Schema\DatabaseObjectListView.ascx.cs">
       <DependentUpon>DatabaseObjectListView.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

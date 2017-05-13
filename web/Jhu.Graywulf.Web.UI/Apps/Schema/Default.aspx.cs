@@ -427,7 +427,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                     objectTypeList.Items.Add(new ListItem("Tables", DatabaseObjectType.Table.ToString()));
                     objectTypeList.Items.Add(new ListItem("Views", DatabaseObjectType.View.ToString()));
 
-                    if (SchemaManager.Comparer.Compare(datasetList.SelectedValue, Registry.Constants.CodeDbName) == 0)
+                    if (SchemaManager.Comparer.Compare(SelectedDataset.Name, Registry.Constants.CodeDbName) == 0)
                     {
                         objectTypeList.Items.Add(new ListItem("User-defined Types", DatabaseObjectType.DataType.ToString()));
                         objectTypeList.Items.Add(new ListItem("Stored Procedures", DatabaseObjectType.StoredProcedure.ToString()));
@@ -457,7 +457,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 {
                     SelectedDataset.LoadAllObjects(SelectedObjectType, SelectedDataset.IsMutable);
 
-                    foreach (var d in SelectedDataset.GetAllObjects(SelectedObjectType).OrderBy(f => f.DisplayName))
+                    foreach (var d in SelectedDataset.GetAllObjects(SelectedObjectType).OrderBy(o => o, new DatabaseObjectLexicographicComparer()))
                     {
                         var li = new ListItem(d.DisplayName, d.UniqueKey);
                         databaseObjectList.Items.Add(li);
@@ -500,7 +500,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                     break;
                 case SchemaView.DatabaseObjectList:
                     SelectedDataset.LoadAllObjects(SelectedObjectType, SelectedDataset.IsMutable);
-                    databaseObjectListView.Items = SelectedDataset.GetAllObjects(SelectedObjectType);
+                    databaseObjectListView.Items = SelectedDataset.GetAllObjects(SelectedObjectType).OrderBy(o => o, new DatabaseObjectLexicographicComparer());
                     databaseObjectListView.Visible = true;
                     break;
                 case SchemaView.DatabaseObject:

@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
                 if (item != null && !String.IsNullOrWhiteSpace(item.Metadata.Icon))
                 {
-                    img.ImageUrl = GetIconUrl(item);
+                    img.ImageUrl = GetIconUrl(item.Metadata);
                 }
                 else
                 {
