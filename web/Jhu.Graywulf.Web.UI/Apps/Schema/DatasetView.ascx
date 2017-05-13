@@ -21,5 +21,5 @@
             <jgwc:HtmlLabel runat="server" ID="remarks" />
         </p>
     </asp:Panel>
-    <jgwc:HtmlIncluder runat="server" ID="detailsPage" />
+    <jgwc:HtmlIncluder runat="server" ID="docPage" />
 </div>

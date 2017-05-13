@@ -13,13 +13,13 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
     public partial class DatabaseObjectView {
         
         /// <summary>
-        /// fullyQualifiedNameLabel control.
+        /// objectTypeLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label fullyQualifiedNameLabel;
+        protected global::System.Web.UI.WebControls.Label objectTypeLabel;
         
         /// <summary>
         /// datasetNameLabel control.
@@ -101,5 +101,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label exampleLabel;
+        
+        /// <summary>
+        /// docPage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.Controls.HtmlIncluder docPage;
     }
 }

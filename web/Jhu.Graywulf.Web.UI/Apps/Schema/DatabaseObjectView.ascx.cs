@@ -9,7 +9,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         {
             if (Item != null)
             {
-                fullyQualifiedNameLabel.Text = Jhu.Graywulf.Schema.Constants.DatabaseObjectsName_Singular[Item.ObjectType];
+                objectTypeLabel.Text = Jhu.Graywulf.Schema.Constants.DatabaseObjectsName_Singular[Item.ObjectType];
 
                 datasetNameLabel.Text = Item.DatasetName;
                 schemaNameLabel.Text = Item.SchemaName;
@@ -21,6 +21,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 remarksPanel.Visible = !String.IsNullOrEmpty(Item.Metadata.Remarks);
                 exampleLabel.Text = Util.DocumentationFormatter.FormatExample(Item.Metadata.Example);
                 examplePanel.Visible = !String.IsNullOrEmpty(Item.Metadata.Example);
+
+                docPage.Visible = !String.IsNullOrWhiteSpace(Item.Metadata.DocPage);
+                docPage.Src = GetDocPageUrl(Item.Metadata);
             }
         }
     }

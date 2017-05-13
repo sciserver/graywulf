@@ -22,6 +22,9 @@ namespace Jhu.Graywulf.Schema
         [NonSerialized]
         private string icon;
 
+        [NonSerialized]
+        private string docPage;
+
         [DataMember]
         public string Summary
         {
@@ -43,12 +46,20 @@ namespace Jhu.Graywulf.Schema
             set { url = value; }
         }
 
-        [DataMember]
+        [IgnoreDataMember]
         public string Icon
         {
             get { return icon; }
             set { icon = value; }
         }
+
+        [IgnoreDataMember]
+        public string DocPage
+        {
+            get { return docPage; }
+            set { docPage = value; }
+        }
+
 
         public Metadata()
         {
@@ -66,6 +77,7 @@ namespace Jhu.Graywulf.Schema
             this.remarks = String.Empty;
             this.url = String.Empty;
             this.icon = String.Empty;
+            this.docPage = String.Empty;
         }
 
         private void CopyMembers(Metadata old)
@@ -74,6 +86,7 @@ namespace Jhu.Graywulf.Schema
             this.remarks = old.remarks;
             this.url = old.url;
             this.icon = old.icon;
+            this.docPage = old.docPage;
         }
 
     }

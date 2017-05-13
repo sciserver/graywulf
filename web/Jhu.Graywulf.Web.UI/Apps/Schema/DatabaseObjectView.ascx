@@ -1,7 +1,7 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="DatabaseObjectView.ascx.cs" Inherits="Jhu.Graywulf.Web.UI.Apps.Schema.DatabaseObjectView" %>
 <div class="dock-fill dock-scroll">
     <h3>
-        <asp:Label ID="fullyQualifiedNameLabel" runat="server" Text="Table:" />:&nbsp;
+        <asp:Label ID="objectTypeLabel" runat="server" Text="Table:" />:&nbsp;
     <asp:Label ID="datasetNameLabel" runat="server" />:<!--
  --><asp:Label ID="schemaNameLabel" runat="server" />.<!--
  --><asp:Label ID="objectNameLabel" runat="server" />
@@ -24,4 +24,5 @@
             <asp:Label runat="server" ID="exampleLabel" />
         </p>
     </asp:Panel>
+    <jgwc:HtmlIncluder runat="server" ID="docPage" />
 </div>

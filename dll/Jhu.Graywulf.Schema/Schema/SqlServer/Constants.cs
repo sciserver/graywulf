@@ -47,6 +47,7 @@ namespace Jhu.Graywulf.Schema.SqlServer
         public const string MetaRemarks = "meta.remarks";
         public const string MetaUrl = "meta.url";
         public const string MetaIcon = "meta.icon";
+        public const string MetaDocPage = "meta.docpage";
         public const string MetaExample = "meta.example";
         public const string MetaClass = "meta.class";
         public const string MetaQuantity = "meta.quantity";

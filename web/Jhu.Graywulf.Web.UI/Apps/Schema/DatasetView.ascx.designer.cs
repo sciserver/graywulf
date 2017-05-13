@@ -103,12 +103,12 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::Jhu.Graywulf.Web.Controls.HtmlLabel remarks;
         
         /// <summary>
-        /// detailsPage control.
+        /// docPage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.HtmlIncluder detailsPage;
+        protected global::Jhu.Graywulf.Web.Controls.HtmlIncluder docPage;
     }
 }

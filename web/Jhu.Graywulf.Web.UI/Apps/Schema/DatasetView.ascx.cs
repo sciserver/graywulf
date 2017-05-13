@@ -19,7 +19,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             remarksPanel.Visible = !String.IsNullOrWhiteSpace(Item.Metadata.Remarks);
             remarks.Text = Item.Metadata.Remarks;
 
-            detailsPage.Src = GetDetailsPageUrl(Item);
+            docPage.Visible = !String.IsNullOrWhiteSpace(Item.Metadata.DocPage);
+            docPage.Src = GetDocPageUrl(Item.Metadata);
         }
     }
 }
