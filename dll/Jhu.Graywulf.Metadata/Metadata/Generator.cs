@@ -192,7 +192,7 @@ namespace Jhu.Graywulf.Metadata
         {
             var meta = GetExtendedPropertyName(element.Name);
 
-            // Drop version property if present
+            // Drop existing meta element, if exists
             if (smoObject.ExtendedProperties.Contains(meta))
             {
                 smoObject.ExtendedProperties[meta].Drop();
