@@ -87,12 +87,14 @@
     <Compile Include="Web\Scripts\BootstrapLightbox.cs" />
     <Compile Include="Web\Scripts\Bootstrap.cs" />
     <Compile Include="Web\Scripts\DockingPanel.cs" />
+    <Compile Include="Web\Scripts\Enum.cs" />
     <Compile Include="Web\Scripts\JQueryValidation.cs" />
     <Compile Include="Web\Scripts\JQuery.cs" />
     <Compile Include="Web\Scripts\Script.cs" />
     <Compile Include="Web\Scripts\ScriptBlock.cs" />
     <Compile Include="Web\Scripts\ScriptLibrary.cs" />
     <Compile Include="Web\Scripts\ScriptMapping.cs" />
+    <Compile Include="Web\Scripts\StyleSheet.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">

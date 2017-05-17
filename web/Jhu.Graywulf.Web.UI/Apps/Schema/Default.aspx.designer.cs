@@ -13,6 +13,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
     public partial class Default {
         
         /// <summary>
+        /// datasetListButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton datasetListButton;
+        
+        /// <summary>
         /// datasetListDiv control.
         /// </summary>
         /// <remarks>
@@ -38,6 +47,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList datasetList;
+        
+        /// <summary>
+        /// datasetButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton datasetButton;
         
         /// <summary>
         /// objectTypeListDiv control.
@@ -112,6 +130,15 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         protected global::System.Web.UI.WebControls.LinkButton summaryButton;
         
         /// <summary>
+        /// parametersButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton parametersButton;
+        
+        /// <summary>
         /// columnsButton control.
         /// </summary>
         /// <remarks>
@@ -128,15 +155,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.LinkButton indexesButton;
-        
-        /// <summary>
-        /// parametersButton control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton parametersButton;
         
         /// <summary>
         /// peekButton control.

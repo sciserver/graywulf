@@ -13,10 +13,12 @@
     <asp:UpdatePanel runat="server">
         <ContentTemplate>
             <div class="toolbar">
+                <asp:LinkButton runat="server" ID="datasetListButton" Text="schema home" OnCommand="SchemaView_Command" CommandName="datasetlist" />
                 <div runat="server" id="datasetListDiv" style="min-width: 140px">
-                    <asp:Label ID="datasetListLabel" runat="server" Text="Catalog:" /><br />
+                    <asp:Label ID="datasetListLabel" runat="server" Text="Data set:" /><br />
                     <asp:DropDownList ID="datasetList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DatasetList_SelectedIndexChanged" />
                 </div>
+                <asp:LinkButton runat="server" ID="datasetButton" Text="data set" OnCommand="SchemaView_Command" CommandName="dataset" />
                 <div runat="server" id="objectTypeListDiv" style="min-width: 140px">
                     <asp:Label ID="objectTypeListLabel" runat="server" Text="Object category:" /><br />
                     <asp:DropDownList ID="objectTypeList" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ObjectTypeList_SelectedIndexChanged" />
@@ -27,9 +29,9 @@
                 </div>
                 <div runat="server" id="toolbarSpan" class="span"></div>
                 <asp:LinkButton runat="server" ID="summaryButton" Text="summary" OnCommand="ViewButton_Command" CommandName="DatabaseObject" />
+                <asp:LinkButton runat="server" ID="parametersButton" Text="parameters" OnCommand="ViewButton_Command" CommandName="Parameters" />
                 <asp:LinkButton runat="server" ID="columnsButton" Text="columns" OnCommand="ViewButton_Command" CommandName="Columns" />
                 <asp:LinkButton runat="server" ID="indexesButton" Text="indexes" OnCommand="ViewButton_Command" CommandName="Indexes" />
-                <asp:LinkButton runat="server" ID="parametersButton" Text="parameters" OnCommand="ViewButton_Command" CommandName="Parameters" />
                 <asp:HyperLink runat="server" ID="peekButton" Text="peek" />
             </div>
         </ContentTemplate>

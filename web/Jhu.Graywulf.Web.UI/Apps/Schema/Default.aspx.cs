@@ -187,7 +187,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             set
             {
                 selectedObjectType = value;
-                objectTypeList.SelectedValue = value == DatabaseObjectType.Unknown ? "" : value.ToString();
+                objectTypeList.SelectedValue = value == DatabaseObjectType.Unknown ? null : value.ToString();
             }
         }
 
@@ -254,10 +254,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             {
                 ShowDatasetView(ParseDataset(dataset));
             }
-            else
-            {
-                ShowDatasetListView();
-            }
         }
 
         protected void ObjectTypeList_SelectedIndexChanged(object sender, EventArgs e)
@@ -313,8 +309,18 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             {
                 switch (view)
                 {
+                    case SchemaView.DatasetList:
+                        ShowDatasetListView();
+                        break;
                     case SchemaView.Dataset:
-                        ShowDatasetView(ParseDataset((string)e.CommandArgument));
+                        if (String.IsNullOrWhiteSpace((string)e.CommandArgument))
+                        {
+                            ShowDatasetView(SelectedDataset);
+                        }
+                        else
+                        {
+                            ShowDatasetView(ParseDataset((string)e.CommandArgument));
+                        }
                         break;
                     case SchemaView.DatabaseObject:
                         ShowDatabaseObjectView(ParseDatabaseObject((string)e.CommandArgument), SelectedView);
@@ -378,11 +384,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         {
             datasetList.Items.Clear();
 
-            if (SelectedDataset != null)
-            {
-                datasetList.Items.Add(new ListItem("(show overview)", ""));
-            }
-            else
+            if (SelectedDataset == null)
             {
                 datasetList.Items.Add(new ListItem("(select data set)", ""));
             }
@@ -413,11 +415,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
             if (SelectedDataset != null)
             {
-                if (SelectedObjectType != DatabaseObjectType.Unknown)
-                {
-                    objectTypeList.Items.Add(new ListItem("(show overview)", ""));
-                }
-                else
+                if (SelectedObjectType == DatabaseObjectType.Unknown)
                 {
                     objectTypeList.Items.Add(new ListItem("(select object type)", ""));
                 }
@@ -493,10 +491,12 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 case SchemaView.DatasetList:
                     datasetListView.Items = FederationContext.SchemaManager.EnumerateDatasets(true, true);
                     datasetListView.Visible = true;
+                    datasetListButton.CssClass = "selected";
                     break;
                 case SchemaView.Dataset:
                     datasetView.Item = SelectedDataset;
                     datasetView.Visible = true;
+                    datasetButton.CssClass = "selected";
                     break;
                 case SchemaView.DatabaseObjectList:
                     SelectedDataset.LoadAllObjects(SelectedObjectType, SelectedDataset.IsMutable);
@@ -527,6 +527,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                     throw new NotImplementedException();
             }
 
+            datasetButton.Visible = ds != null;
             objectTypeListDiv.Visible = ds != null;
             databaseObjectListDiv.Visible = ot != DatabaseObjectType.Unknown;
 
@@ -586,6 +587,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
             parametersButton.Visible = false;
             peekButton.Visible = false;
 
+            datasetListButton.CssClass = "";
+            datasetButton.CssClass = "";
             summaryButton.CssClass = "";
             columnsButton.CssClass = "";
             indexesButton.CssClass = "";
@@ -595,6 +598,9 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
         private void ShowDatasetListView()
         {
             SelectedView = SchemaView.DatasetList;
+            SelectedDataset = null;
+            SelectedObjectType = DatabaseObjectType.Unknown;
+            selectedDatabaseObject = null;
         }
 
         private void ShowDatasetView(DatasetBase ds)
