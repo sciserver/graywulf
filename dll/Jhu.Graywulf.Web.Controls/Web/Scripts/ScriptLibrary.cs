@@ -11,7 +11,8 @@ namespace Jhu.Graywulf.Web.Scripts
     public abstract class ScriptLibrary
     {
         public abstract Script[] Scripts { get; }
-        public virtual string[] StyleSheets { get; } 
+
+        public virtual StyleSheet[] StyleSheets { get; }
 
         public static void Register(ScriptManager scriptManager, ScriptLibrary scriptlib)
         {
@@ -26,11 +27,22 @@ namespace Jhu.Graywulf.Web.Scripts
             {
                 for (int i = 0; i < scriptlib.StyleSheets.Length; i++)
                 {
+                    var ss = scriptlib.StyleSheets[i];
                     var link = new HtmlLink();
-                    link.Href = scriptlib.StyleSheets[i];
+                    link.Href = ss.Href;
                     link.Attributes["rel"] = "stylesheet";
 
-                    page.Header.Controls.Add(link);
+                    switch (ss.Position)
+                    {
+                        case StyleSheetPosition.Beginning:
+                            page.Header.Controls.AddAt(0, link);
+                            break;
+                        case StyleSheetPosition.End:
+                            page.Header.Controls.Add(link);
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
                 }
             }
         }

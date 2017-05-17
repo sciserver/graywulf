@@ -38,12 +38,16 @@ $(document).on('click', '[data-toggle=""lightbox""]', function(event) {
             }
         }
 
-        public override string[] StyleSheets
+        public override StyleSheet[] StyleSheets
         {
             get
             {
                 return new[] {
-                    "~/Scripts/Bootstrap-Lightbox/ekko-lightbox.min.css"
+                    new StyleSheet()
+                    {
+                        Position = StyleSheetPosition.End,
+                        Href = "~/Scripts/Bootstrap-Lightbox/ekko-lightbox.min.css"
+                    },
                 };
             }
         }

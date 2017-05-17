@@ -28,13 +28,21 @@ namespace Jhu.Graywulf.Web.Scripts
             }
         }
 
-        public override string[] StyleSheets
+        public override StyleSheet[] StyleSheets
         {
             get
             {
                 return new[] {
-                    "~/Scripts/Bootstrap/css/bootstrap.min.css",
-                    "~/Scripts/Bootstrap/css/bootstrap-theme.min.css"
+                    new StyleSheet()
+                    {
+                        Position = StyleSheetPosition.Beginning,
+                        Href = "~/Scripts/Bootstrap/css/bootstrap.min.css"
+                    },
+                    new StyleSheet()
+                    {
+                        Position = StyleSheetPosition.Beginning,
+                        Href = "~/Scripts/Bootstrap/css/bootstrap-theme.min.css"
+                    }
                 };
             }
         }

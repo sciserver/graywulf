@@ -612,7 +612,6 @@
     <Content Include="Apps\Schema\Peek.aspx" />
     <Content Include="App_Themes\Basic\Css\codemirror.css" />
     <Content Include="App_Themes\Basic\Css\docs.css" />
-    <Content Include="App_Themes\Basic\Css\fonts.css" />
     <Content Include="App_Themes\Basic\Css\forms.css" />
     <Content Include="App_Themes\Basic\Css\frames.css" />
     <Content Include="App_Themes\Basic\Css\headline.css" />
@@ -635,6 +634,7 @@
     <Content Include="App_Themes\Basic\Icons\job.png" />
     <Content Include="App_Themes\Basic\Icons\mydb.png" />
     <Content Include="App_Themes\Basic\Icons\primarykey.png" />
+    <Content Include="App_Themes\Basic\Icons\progress.gif" />
     <Content Include="App_Themes\Basic\Icons\renametable.png" />
     <Content Include="App_Themes\Basic\Icons\resetpassword.png" />
     <Content Include="App_Themes\Basic\Icons\schemabrowser.png" />
