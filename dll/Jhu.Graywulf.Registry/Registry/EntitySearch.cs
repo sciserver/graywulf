@@ -76,11 +76,11 @@ namespace Jhu.Graywulf.Registry
 
             if (!Constants.EntityTypeMap.ContainsKey(entityType))
             {
-                sql = "SELECT * FROM Entity";
+                sql = "SELECT * FROM [Entity]";
             }
             else
             {
-                sql = "SELECT * FROM Entity INNER JOIN {0} ON EntityGuid = Guid";
+                sql = "SELECT * FROM [Entity] INNER JOIN [{0}] ON EntityGuid = Guid";
                 sql = String.Format(sql, entityType.ToString());
             }
 
