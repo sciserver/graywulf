@@ -50,7 +50,10 @@ namespace Jhu.Graywulf.Web.Services
             catch (Exception ex)
             {
 #if BREAKDEBUG
-                System.Diagnostics.Debugger.Break();
+                if (System.Diagnostics.Debugger.IsAttached)
+                {
+                    System.Diagnostics.Debugger.Break();
+                }
 #endif
                 // TODO: this won't catch exceptions from IEnumerator that occur
                 // in MoveNext, so they won't be logged.
