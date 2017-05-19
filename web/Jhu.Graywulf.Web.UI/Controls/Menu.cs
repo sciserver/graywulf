@@ -8,13 +8,12 @@ namespace Jhu.Graywulf.Web.UI.Controls
 {
     public partial class Menu : System.Web.UI.UserControl
     {
-        static readonly Regex AppRegex = new Regex("/apps/([^/]+)/", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        
 
         protected void Page_Load(object sender, EventArgs e)
         {
             var application = (UIApplicationBase)HttpContext.Current.ApplicationInstance;
-            var m = AppRegex.Match(Page.AppRelativeVirtualPath);
-            var app = m.Success ? m.Groups[1].Value : null;
+            var key = ((PageBase)Page).SelectedButton;
 
             var menu = new Panel()
             {
@@ -29,7 +28,7 @@ namespace Jhu.Graywulf.Web.UI.Controls
                     NavigateUrl = VirtualPathUtility.MakeRelative(Page.AppRelativeVirtualPath, button.NavigateUrl),
                 };
 
-                if (app != null && StringComparer.InvariantCultureIgnoreCase.Compare(button.Key, app) == 0)
+                if (key != null && StringComparer.InvariantCultureIgnoreCase.Compare(button.Key, key) == 0)
                 {
                     b.CssClass = "selected";
                 }

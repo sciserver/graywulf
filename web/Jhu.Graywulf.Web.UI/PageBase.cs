@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.Security;
@@ -12,6 +12,8 @@ namespace Jhu.Graywulf.Web.UI
 {
     public class PageBase : Page, IContextObject
     {
+        static readonly Regex AppRegex = new Regex("/apps/([^/]+)/", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         private string overrideUrl;
         private Context registryContext;
 
@@ -30,6 +32,17 @@ namespace Jhu.Graywulf.Web.UI
         public string BaseUrl
         {
             get { return Util.UrlFormatter.ToBaseUrl(Request.Url.AbsoluteUri, Request.ApplicationPath); }
+        }
+
+        public virtual string SelectedButton
+        {
+            get
+            {
+                var m = AppRegex.Match(Page.AppRelativeVirtualPath);
+                var key = m.Success ? m.Groups[1].Value : null;
+
+                return key;
+            }
         }
 
         /// <summary>
