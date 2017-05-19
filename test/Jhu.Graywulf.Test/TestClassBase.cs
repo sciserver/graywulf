@@ -19,8 +19,32 @@ namespace Jhu.Graywulf.Test
 {
     public abstract class TestClassBase
     {
+        // Well-known test constants and settings
+
+        /*
+         * Test prerequisites in Graywulf Registry:
+         * Users: test, test-admin, test-writer, test-reader
+         * Groups: testgroup
+         * Roles: footprint-admin, footprint-writer, footprint-reader
+         * test-* users in testgroup with role footprint-*
+         * */
+
+        protected const string TestUser = "test";
+        protected const string OtherUser = "other";
+        protected const string TestGroup = "testgroup";
+        protected const string GroupAdminUser = "test-admin";
+        protected const string GroupWriterUser = "test-writer";
+        protected const string GroupReaderUser = "test-reader";
+
         private Random rnd = new Random();
+        private TestContext testContext;
         private SqlServerDataset ioTestDataset;
+
+        public TestContext TestContext
+        {
+            get { return testContext; }
+            set { testContext = value; }
+        }
 
         protected SqlServerDataset IOTestDataset
         {
@@ -34,6 +58,7 @@ namespace Jhu.Graywulf.Test
                 return ioTestDataset;
             }
         }
+        
 
         #region Scheduler functions
 
@@ -303,15 +328,32 @@ namespace Jhu.Graywulf.Test
             }
         }
 
-        protected string GetTestFilePath(string filename)
+        private static string GetSolutionPath()
         {
-            var sln = Path.GetDirectoryName(Environment.GetEnvironmentVariable("SolutionPath"));
+            var dir = Environment.CurrentDirectory;
+
+            while (true)
+            {
+                if (Directory.GetFiles(dir, "*.sln").Length != 0)
+                {
+                    return dir;
+                }
+                else
+                {
+                    dir = Directory.GetParent(dir).FullName;
+                }
+            }
+        }
+
+        public static string GetTestFilePath(string filename)
+        {
+            var sln = GetSolutionPath();
             return Path.Combine(sln, filename);
         }
 
-        protected string GetTestFilePath(params string[] filename)
+        public static string GetTestFilePath(params string[] filename)
         {
-            var sln = Path.GetDirectoryName(Environment.GetEnvironmentVariable("SolutionPath"));
+            var sln = GetSolutionPath();
             return Path.Combine(sln, Path.Combine(filename));
         }
 
