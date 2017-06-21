@@ -11,7 +11,7 @@
     </p>
     <nav class="btn-toolbar">
         <div class="btn-group">
-            <asp:Button ID="create" runat="server" CssClass="btn btn-default" Text="New" />
+            <asp:LinkButton ID="create" runat="server" CssClass="btn btn-default" Text="New" />
             <div class="btn-group dropup" role="group">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Deploy

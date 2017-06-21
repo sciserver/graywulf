@@ -783,7 +783,7 @@ namespace Jhu.Graywulf.Registry
 
         public MethodInfo GetOperation(Operation op)
         {
-            var method = GetType().GetMethod(op.ToString());
+            var method = GetType().GetMethod(op.ToString(), new Type[0]);
             return method;
         }
 

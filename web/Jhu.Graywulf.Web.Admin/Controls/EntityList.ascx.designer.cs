@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button create;
+        protected global::System.Web.UI.WebControls.LinkButton create;
         
         /// <summary>
         /// edit control.

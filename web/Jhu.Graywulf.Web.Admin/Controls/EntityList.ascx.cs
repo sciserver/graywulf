@@ -191,12 +191,9 @@ namespace Jhu.Graywulf.Web.Admin.Controls
         {
             base.OnLoad(e);
 
-            if (!IsPostBack)
+            if (parentEntity != null)
             {
-                if (create.Visible && parentEntity != null)
-                {
-                    create.OnClientClick = Util.UrlFormatter.GetClientRedirect(parentEntity.GetNewChildFormUrl(childrenType));
-                }
+                create.OnClientClick = Util.UrlFormatter.GetClientRedirect(parentEntity.GetNewChildFormUrl(childrenType));
             }
         }
 
