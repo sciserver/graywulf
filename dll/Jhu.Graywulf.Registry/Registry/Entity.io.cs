@@ -302,7 +302,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="cmd">The <b>SqlCommand</b> to append the parameters to.</param>
         protected void AppendBasicParameters(SqlCommand cmd)
         {
-            cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
+            cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserReference.Guid;
             cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = guid;
         }
 
@@ -410,7 +410,7 @@ namespace Jhu.Graywulf.Registry
                 this.concurrencyVersion = BitConverter.ToInt64((byte[])cmd.Parameters["@ConcurrencyVersion"].Value, 0);
                 this.deleted = true;
                 this.dateDeleted = DateTime.Now;
-                this.userGuidDeleted = Context.UserGuid;
+                this.userGuidDeleted = Context.UserReference.Guid;
             }
 
             Context.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.Delete", this.guid));

@@ -57,19 +57,11 @@ namespace Jhu.Graywulf.Web.Api.V1
             {
                 if (jobInstanceFactory == null)
                 {
-                    // Use user guid from context (only returns jobs of particular user)
                     jobInstanceFactory = new JobInstanceFactory(Context);
-                    jobInstanceFactory.UserGuid = Context.UserGuid;
                 }
 
                 return jobInstanceFactory;
             }
-        }
-
-        public Guid UserGuid
-        {
-            get { return JobInstanceFactory.UserGuid; }
-            set { JobInstanceFactory.UserGuid = value; }
         }
 
         public HashSet<Guid> QueueInstanceGuids

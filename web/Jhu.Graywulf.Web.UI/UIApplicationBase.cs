@@ -73,10 +73,9 @@ namespace Jhu.Graywulf.Web.UI
                 if (session[Constants.SessionPrincipal] != null)
                 {
                     var sessionPrincipal = (GraywulfPrincipal)session[Constants.SessionPrincipal];
-                    var userProperty = ((GraywulfIdentity)sessionPrincipal.Identity).UserReference;
+                    var user = ((GraywulfIdentity)sessionPrincipal.Identity).UserReference.Value;
 
-                    context.UserGuid = userProperty.Guid;
-                    context.UserName = userProperty.Name;
+                    context.UserReference.Value = user;
                 }
 
                 // TODO: These are only used by the admin interface, consider removing them:

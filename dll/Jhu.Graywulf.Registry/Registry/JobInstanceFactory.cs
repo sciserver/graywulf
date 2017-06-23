@@ -118,7 +118,7 @@ namespace Jhu.Graywulf.Registry
 
         private void AppendCommandParameters(SqlCommand cmd, int from, int max)
         {
-            cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
+            cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserReference.Guid;
             cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
             cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
             cmd.Parameters.Add("@From", SqlDbType.Int).Value = from == -1 ? DBNull.Value : (object)from;
@@ -147,7 +147,7 @@ namespace Jhu.Graywulf.Registry
 
             using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
             {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserReference.Guid;
                 cmd.Parameters.Add("@QueueInstanceGuid", SqlDbType.UniqueIdentifier).Value = queueInstanceGuid;
                 cmd.Parameters.Add("@LastUserGuid", SqlDbType.UniqueIdentifier).Value = lastUserGuid;
                 cmd.Parameters.Add("@MaxJobs", SqlDbType.Int).Value = max;
@@ -185,7 +185,7 @@ namespace Jhu.Graywulf.Registry
 
         public static string GenerateUniqueJobID(Context context)
         {
-            return String.Format("{0}_{1}", EntityFactory.GetName(context.UserName), GenerateUniqueJobID());
+            return String.Format("{0}_{1}", EntityFactory.GetName(context.User.Name), GenerateUniqueJobID());
         }
 
         public static string GenerateRecurringJobID(Context context, string oldName)
@@ -202,7 +202,7 @@ namespace Jhu.Graywulf.Registry
             }
             else if (i == 0)
             {
-                newname = context.UserName;
+                newname = context.User.Name;
             }
             else
             {

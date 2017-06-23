@@ -108,9 +108,7 @@ namespace Jhu.Graywulf.Web.Services
             if (Thread.CurrentPrincipal is GraywulfPrincipal)
             {
                 var identity = (GraywulfIdentity)Thread.CurrentPrincipal.Identity;
-
-                context.UserGuid = identity.UserReference.Guid;
-                context.UserName = identity.UserReference.Name;
+                context.UserReference.Value = identity.User;
             }
 
             return context;
@@ -151,7 +149,7 @@ namespace Jhu.Graywulf.Web.Services
             var error = Logging.Logger.Instance.LogException(
                 AppRelativePath,
                 Logging.EventSource.WebService,
-                registryContext == null ? Guid.Empty : registryContext.UserGuid,
+                registryContext == null ? Guid.Empty : registryContext.UserReference.Guid,
                 registryContext == null ? Guid.Empty : registryContext.ContextGuid,
                 ex);
 

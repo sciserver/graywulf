@@ -516,7 +516,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     tempname = String.Format("skyquerytemp_{0}_{1}", id.ToString(), tableName);
                     break;
                 case Jobs.Query.ExecutionMode.Graywulf:
-                    tempname = String.Format("{0}_{1}_{2}_{3}", Context.UserName, Context.JobID, id.ToString(), tableName);
+                    tempname = String.Format("{0}_{1}_{2}_{3}", Context.User.Name, Context.JobID, id.ToString(), tableName);
                     break;
                 default:
                     throw new NotImplementedException();

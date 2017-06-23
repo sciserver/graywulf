@@ -41,9 +41,6 @@ namespace Jhu.Graywulf.Registry
         private string connectionString;
         private string smtpString;
 
-        private Guid userGuid;
-        private string userName;
-
         private string clusterName;
         private string domainName;
         private string federationName;
@@ -96,9 +93,6 @@ namespace Jhu.Graywulf.Registry
                 this.connectionString = config.ConnectionString;
                 this.smtpString = string.Empty;
 
-                this.userGuid = Guid.Empty;
-                this.userName = null;
-
                 this.clusterName = config.ClusterName;
                 this.domainName = config.DomainName;
                 this.federationName = config.FederationName;
@@ -132,9 +126,6 @@ namespace Jhu.Graywulf.Registry
                 ConnectionString = connectionString,
                 ConnectionMode = connectionMode,
                 TransactionMode = transactionMode,
-
-                UserGuid = userGuid,
-                UserName = userName,
             };
 
             context.ClusterReference.Name = clusterName;

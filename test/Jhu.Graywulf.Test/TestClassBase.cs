@@ -73,9 +73,7 @@ namespace Jhu.Graywulf.Test
             ip.VerifyPassword(new AuthenticationRequest("test", "almafa"));
 
             var user = ip.GetUserByUserName("test");
-
-            context.UserGuid = user.Guid;
-            context.UserName = user.Name;
+            context.UserReference.Value = user;
 
             return user;
         }
@@ -109,7 +107,6 @@ namespace Jhu.Graywulf.Test
                 var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
 
                 var jf = new JobInstanceFactory(context);
-                jf.UserGuid = Guid.Empty;
                 jf.JobDefinitionGuids.Add(jd.Guid);
                 jf.JobExecutionStatus = JobExecutionState.Scheduled | JobExecutionState.Executing;
 
@@ -303,15 +300,39 @@ namespace Jhu.Graywulf.Test
             }
         }
 
+        /// <summary>
+        /// Find the outmost directory with a solution file
+        /// </summary>
+        /// <returns></returns>
+        protected string GetSolutionDir()
+        {
+            var dir = Environment.CurrentDirectory;
+            string best = null;
+
+            while (dir != null)
+            {
+                var files = Directory.GetFiles(dir, "*.sln");
+
+                if (files != null && files.Length > 0)
+                {
+                    best = dir;
+                }
+
+                dir = Directory.GetParent(dir)?.FullName;
+            }
+
+            return best;
+        }
+
         protected string GetTestFilePath(string filename)
         {
-            var sln = Path.GetDirectoryName(Environment.GetEnvironmentVariable("SolutionPath"));
+            var sln = GetSolutionDir();
             return Path.Combine(sln, filename);
         }
 
         protected string GetTestFilePath(params string[] filename)
         {
-            var sln = Path.GetDirectoryName(Environment.GetEnvironmentVariable("SolutionPath"));
+            var sln = GetSolutionDir();
             return Path.Combine(sln, Path.Combine(filename));
         }
 

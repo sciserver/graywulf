@@ -162,7 +162,14 @@ ORDER BY EventID DESC";
                         }
                     }
 
-                    Assert.AreEqual(expectedOutcome, ji.JobExecutionStatus);
+                    if (ji.JobExecutionStatus == JobExecutionState.Failed)
+                    {
+                        throw new Exception(ji.ExceptionMessage);
+                    }
+                    else
+                    {
+                        Assert.AreEqual(expectedOutcome, ji.JobExecutionStatus);
+                    }
                 }
             }
         }

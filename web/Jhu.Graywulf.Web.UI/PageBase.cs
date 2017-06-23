@@ -137,7 +137,7 @@ namespace Jhu.Graywulf.Web.UI
             var error = Logging.Logger.Instance.LogException(
                 AppRelativeVirtualPath,
                 Logging.EventSource.WebUI,
-                registryContext == null ? Guid.Empty : registryContext.UserGuid,
+                registryContext == null ? Guid.Empty : registryContext.UserReference.Guid,
                 registryContext == null ? Guid.Empty : registryContext.ContextGuid,
                 ex);
 

@@ -48,7 +48,7 @@ WHERE
 
             using (var cmd = Context.CreateTextCommand(sql))
             {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserReference.Guid;
                 cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
                 cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
                 cmd.Parameters.Add("@ClusterGuid", SqlDbType.UniqueIdentifier).Value = this.Guid;

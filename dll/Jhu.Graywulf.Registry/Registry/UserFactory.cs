@@ -74,8 +74,7 @@ namespace Jhu.Graywulf.Registry
             }
 
             // Update context
-            Context.UserGuid = user.Guid;
-            Context.UserName = user.Name;
+            Context.UserReference.Value = user;
 
             Context.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.UserFactory.LoginUser", user.Guid));
 

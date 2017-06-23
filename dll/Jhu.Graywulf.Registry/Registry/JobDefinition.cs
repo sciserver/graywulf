@@ -208,7 +208,7 @@ namespace Jhu.Graywulf.Registry
         {
             JobInstance job = new JobInstance(Context);
 
-            job.Name = GenerateJobID();
+            job.Name = JobInstanceFactory.GenerateUniqueJobID(Context);
             job.JobDefinition = this;
             job.ParentReference.Name = queueName;
             job.WorkflowTypeName = this.workflowTypeName;
@@ -228,11 +228,6 @@ namespace Jhu.Graywulf.Registry
             }
 
             return job;
-        }
-
-        public string GenerateJobID()
-        {
-            return String.Format("{0}_{1:yyMMddHHmmssff}", Context.UserName, DateTime.Now);
         }
 
         #endregion

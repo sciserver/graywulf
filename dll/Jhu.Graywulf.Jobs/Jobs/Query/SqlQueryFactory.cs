@@ -109,10 +109,6 @@ namespace Jhu.Graywulf.Jobs.Query
 
             var settings = new SqlQueryJobSettings(jd.Settings);
 
-            var user = new User(Context);
-            user.Guid = Context.UserGuid;
-            user.Load();
-
             query.ExecutionMode = ExecutionMode.Graywulf;
             query.FederationReference.Name = Registry.ContextManager.Configuration.FederationName;
             query.QueryString = queryString;

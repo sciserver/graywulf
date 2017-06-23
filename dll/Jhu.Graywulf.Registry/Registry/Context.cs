@@ -20,11 +20,9 @@ namespace Jhu.Graywulf.Registry
     {
         #region Member Variables
 
-        private Guid userGuid;
-        private string userName;
+        private Guid contextGuid;
         private Guid jobGuid;
         private string jobID;
-        private Guid contextGuid;
 
 #if DEBUG
         private int sqlSpId;
@@ -32,8 +30,10 @@ namespace Jhu.Graywulf.Registry
 
         private bool isValid;
 
+        // TODO: move these to entity search
         private bool showHidden;
         private bool showDeleted;
+        //
 
         private string connectionString;
         private ConnectionMode connectionMode;
@@ -49,26 +49,11 @@ namespace Jhu.Graywulf.Registry
         private EntityReference<Cluster> clusterReference;
         private EntityReference<Domain> domainReference;
         private EntityReference<Federation> federationReference;
+        private EntityReference<User> userReference;
 
         #endregion
         #region Member Access Properties
 
-        /// <summary>
-        /// Gets or sets the GUID of the user under who's account the operations
-        /// will be executed.
-        /// </summary>
-        public Guid UserGuid
-        {
-            get { return userGuid; }
-            set { userGuid = value; }
-        }
-
-        // TODO: use reference instead
-        public string UserName
-        {
-            get { return userName; }
-            set { userName = value; }
-        }
 
         /// <summary>
         /// Gets or sets the guid of the job which creates the context.
@@ -202,6 +187,16 @@ namespace Jhu.Graywulf.Registry
             get { return federationReference.Value; }
         }
 
+        public EntityReference<User> UserReference
+        {
+            get { return userReference; }
+        }
+
+        public User User
+        {
+            get { return userReference.Value;  }
+        }
+
         #endregion
         #region Constructors
 
@@ -231,8 +226,7 @@ namespace Jhu.Graywulf.Registry
                     out userguid, out username,
                     out jobguid, out jobid);
 
-                this.userGuid = userguid;
-                this.userName = username;
+                this.userReference.Guid = userguid;
                 this.jobGuid = jobguid;
                 this.jobID = jobid;
 
@@ -251,11 +245,9 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         private void InitializeMembers()
         {
-            this.userGuid = Guid.Empty;
-            this.userName = null;
+            this.contextGuid = Guid.NewGuid();
             this.jobGuid = Guid.Empty;
             this.jobID = null;
-            this.contextGuid = Guid.NewGuid();
 
             this.isValid = true;
 
@@ -275,6 +267,7 @@ namespace Jhu.Graywulf.Registry
             this.clusterReference = new EntityReference<Cluster>(this);
             this.domainReference = new EntityReference<Domain>(this);
             this.federationReference = new EntityReference<Federation>(this);
+            this.userReference = new EntityReference<User>(this);
         }
 
         #endregion
@@ -523,7 +516,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="e"></param>
         public void LogEvent(Event e)
         {
-            e.UserGuid = this.userGuid;
+            e.UserGuid = this.userReference.Guid;
             e.JobGuid = this.jobGuid;
             e.ContextGuid = this.contextGuid;
             e.EventSource = EventSource.Registry;
