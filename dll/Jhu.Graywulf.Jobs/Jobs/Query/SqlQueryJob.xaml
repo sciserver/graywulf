@@ -28,8 +28,7 @@
  xmlns:st="clr-namespace:System.Text;assembly=mscorlib"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
-    <x:Property Name="UserGuid" Type="InArgument(s:Guid)" />
-    <x:Property Name="JobGuid" Type="InArgument(s:Guid)" />
+    <x:Property Name="JobContext" Type="InArgument(jga:JobContext)" />
     <x:Property Name="Query" Type="InOutArgument(local:SqlQuery)" />
   </x:Members>
   <sap:VirtualizedContainerService.HintSize>451,2389</sap:VirtualizedContainerService.HintSize>
@@ -41,56 +40,56 @@
           <x:Boolean x:Key="IsExpanded">True</x:Boolean>
         </scg3:Dictionary>
       </sap:WorkflowViewStateService.ViewState>
-      <local:InitializeQuery EntityGuid="{x:Null}" sap:VirtualizedContainerService.HintSize="353,22" JobGuid="[JobGuid]" Query="[Query]" UserGuid="[UserGuid]" />
-      <local:CheckDestinationTable sap:VirtualizedContainerService.HintSize="353,22" JobGuid="[JobGuid]" Query="[Query]" UserGuid="[UserGuid]" />
-      <local:AssignServerInstance EntityGuid="{x:Null}" DisplayName="AssignServerInstance" sap:VirtualizedContainerService.HintSize="353,22" JobGuid="[JobGuid]" QueryObject="[Query]" UserGuid="[UserGuid]" />
+      <local:InitializeQuery EntityGuid="{x:Null}" sap:VirtualizedContainerService.HintSize="353,22" JobContext="[JobContext]" Query="[Query]" />
+      <local:CheckDestinationTable sap:VirtualizedContainerService.HintSize="353,22" Query="[Query]" JobContext="[JobContext]" />
+      <local:AssignServerInstance EntityGuid="{x:Null}" DisplayName="AssignServerInstance" sap:VirtualizedContainerService.HintSize="353,22" QueryObject="[Query]" JobContext="[JobContext]" />
       <ParallelForEach x:TypeArguments="jgs:ITableSource" DisplayName="ParallelForEach&lt;ITableSource&gt;" sap:VirtualizedContainerService.HintSize="353,276" Values="[Query.TableSourceStatistics]">
         <ActivityAction x:TypeArguments="jgs:ITableSource">
           <ActivityAction.Argument>
             <DelegateInArgument x:TypeArguments="jgs:ITableSource" Name="tableSource" />
           </ActivityAction.Argument>
-          <jga:Retry Finally="{x:Null}" sap:VirtualizedContainerService.HintSize="214,128" JobGuid="[JobGuid]" MaxRetries="3" UserGuid="[UserGuid]">
-            <local:ComputeTableStatistics sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" Query="[Query]" TableSource="[tableSource]" UserGuid="[UserGuid]" />
+          <jga:Retry Finally="{x:Null}" sap:VirtualizedContainerService.HintSize="214,128" MaxRetries="3" JobContext="[JobContext]">
+            <local:ComputeTableStatistics sap:VirtualizedContainerService.HintSize="200,22" Query="[Query]" TableSource="[tableSource]" JobContext="[JobContext]" />
           </jga:Retry>
         </ActivityAction>
       </ParallelForEach>
-      <local:GeneratePartitions EntityGuid="{x:Null}" sap:VirtualizedContainerService.HintSize="353,22" JobGuid="[JobGuid]" Query="[Query]" UserGuid="[UserGuid]" />
+      <local:GeneratePartitions EntityGuid="{x:Null}" sap:VirtualizedContainerService.HintSize="353,22" JobContext="[JobContext]" Query="[Query]" />
       <ParallelForEach x:TypeArguments="local:SqlQueryPartition" DisplayName="ParallelForEach&lt;SqlQueryPartition&gt;" sap:VirtualizedContainerService.HintSize="353,896" Values="[Query.Partitions]">
         <ActivityAction x:TypeArguments="local:SqlQueryPartition">
           <ActivityAction.Argument>
             <DelegateInArgument x:TypeArguments="local:SqlQueryPartition" Name="queryPartition" />
           </ActivityAction.Argument>
-          <jga:Retry Finally="{x:Null}" sap:VirtualizedContainerService.HintSize="323,748" JobGuid="[JobGuid]" MaxRetries="3" UserGuid="[UserGuid]">
+          <jga:Retry Finally="{x:Null}" sap:VirtualizedContainerService.HintSize="323,748" MaxRetries="3" JobContext="[JobContext]">
             <Sequence sap:VirtualizedContainerService.HintSize="309,642">
               <sap:WorkflowViewStateService.ViewState>
                 <scg3:Dictionary x:TypeArguments="x:String, x:Object">
                   <x:Boolean x:Key="IsExpanded">True</x:Boolean>
                 </scg3:Dictionary>
               </sap:WorkflowViewStateService.ViewState>
-              <local:AssignServerInstance EntityGuid="{x:Null}" sap:VirtualizedContainerService.HintSize="287,22" JobGuid="[JobGuid]" QueryObject="[queryPartition]" UserGuid="[UserGuid]" />
-              <local:FindRemoteTables sap:VirtualizedContainerService.HintSize="287,22" JobGuid="[JobGuid]" QueryPartition="[queryPartition]" UserGuid="[UserGuid]" />
+              <local:AssignServerInstance EntityGuid="{x:Null}" sap:VirtualizedContainerService.HintSize="287,22" QueryObject="[queryPartition]" JobContext="[JobContext]" />
+              <local:FindRemoteTables sap:VirtualizedContainerService.HintSize="287,22" JobContext="[JobContext]" QueryPartition="[queryPartition]" />
               <ParallelForEach x:TypeArguments="x:String" sap:VirtualizedContainerService.HintSize="287,208" Values="[queryPartition.RemoteTableReferences.Keys]">
                 <ActivityAction x:TypeArguments="x:String">
                   <ActivityAction.Argument>
                     <DelegateInArgument x:TypeArguments="x:String" Name="tableReference" />
                   </ActivityAction.Argument>
-                  <local:CopyRemoteTable sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" QueryPartition="[queryPartition]" RemoteTable="[tableReference]" UserGuid="[UserGuid]" />
+                  <local:CopyRemoteTable sap:VirtualizedContainerService.HintSize="200,22" JobContext="[JobContext]" QueryPartition="[queryPartition]" RemoteTable="[tableReference]" />
                 </ActivityAction>
               </ParallelForEach>
-              <local:ExecuteQuery sap:VirtualizedContainerService.HintSize="287,22" JobGuid="[JobGuid]" QueryPartition="[queryPartition]" UserGuid="[UserGuid]" />
-              <local:PrepareDestinationTable sap:VirtualizedContainerService.HintSize="287,22" JobGuid="[JobGuid]" QueryPartition="[queryPartition]" UserGuid="[UserGuid]" />
-              <local:CopyResultset sap:VirtualizedContainerService.HintSize="287,22" JobGuid="[JobGuid]" QueryPartition="[queryPartition]" UserGuid="[UserGuid]" />
+              <local:ExecuteQuery sap:VirtualizedContainerService.HintSize="287,22" JobContext="[JobContext]" QueryPartition="[queryPartition]" />
+              <local:PrepareDestinationTable sap:VirtualizedContainerService.HintSize="287,22" JobContext="[JobContext]" QueryPartition="[queryPartition]" />
+              <local:CopyResultset sap:VirtualizedContainerService.HintSize="287,22" JobContext="[JobContext]" QueryPartition="[queryPartition]" />
             </Sequence>
           </jga:Retry>
         </ActivityAction>
       </ParallelForEach>
-      <local:CreateDestinationTablePrimaryKey sap:VirtualizedContainerService.HintSize="353,22" JobGuid="[JobGuid]" Query="[Query]" UserGuid="[UserGuid]" />
+      <local:CreateDestinationTablePrimaryKey sap:VirtualizedContainerService.HintSize="353,22" JobContext="[JobContext]" Query="[Query]" />
       <ParallelForEach x:TypeArguments="local:SqlQueryPartition" DisplayName="ParallelForEach&lt;SqlQueryPartition&gt;" sap:VirtualizedContainerService.HintSize="353,208" Values="[Query.Partitions]">
         <ActivityAction x:TypeArguments="local:SqlQueryPartition">
           <ActivityAction.Argument>
             <DelegateInArgument x:TypeArguments="local:SqlQueryPartition" Name="queryPartition" />
           </ActivityAction.Argument>
-          <local:DropTemporaryTables DisplayName="DropTemporaryTables" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" QueryPartition="[queryPartition]" SuppressErrors="True" UserGuid="[UserGuid]" />
+          <local:DropTemporaryTables DisplayName="DropTemporaryTables" sap:VirtualizedContainerService.HintSize="200,22" JobContext="[JobContext]" QueryPartition="[queryPartition]" SuppressErrors="True" />
         </ActivityAction>
       </ParallelForEach>
     </Sequence>
@@ -100,7 +99,7 @@
           <ActivityAction.Argument>
             <DelegateInArgument x:TypeArguments="local:SqlQueryPartition" Name="queryPartition" />
           </ActivityAction.Argument>
-          <local:DropTemporaryTables DisplayName="Cancel:DropTemporaryTables" sap:VirtualizedContainerService.HintSize="200,22" JobGuid="[JobGuid]" QueryPartition="[queryPartition]" SuppressErrors="True" UserGuid="[UserGuid]" />
+          <local:DropTemporaryTables DisplayName="Cancel:DropTemporaryTables" sap:VirtualizedContainerService.HintSize="200,22" JobContext="[JobContext]" QueryPartition="[queryPartition]" SuppressErrors="True" />
         </ActivityAction>
       </ParallelForEach>
     </CancellationScope.CancellationHandler>

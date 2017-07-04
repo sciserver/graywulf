@@ -433,7 +433,7 @@ namespace Jhu.Graywulf.Registry
             using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
             {
                 AppendBasicParameters(cmd);
-                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = Context.JobGuid;
+                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = Context.JobReference.Guid;
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Value = BitConverter.GetBytes(this.concurrencyVersion);
                 cmd.Parameters.Add("RETVAL", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
 
@@ -617,7 +617,7 @@ namespace Jhu.Graywulf.Registry
             using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
             {
                 AppendBasicParameters(cmd);
-                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = Context.JobGuid;
+                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = Context.JobReference.Guid;
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Direction = ParameterDirection.Output;
                 cmd.Parameters.Add("RETVAL", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
 

@@ -11,9 +11,7 @@ namespace Jhu.Graywulf.Jobs.Query
     public class FindRemoteTables : CodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
+        public InArgument<JobContext> JobContext { get; set; }
 
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
@@ -22,7 +20,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
 
-            using (Context context = querypartition.Query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (Context context = querypartition.Query.CreateContext(this, activityContext))
             {
                 querypartition.InitializeQueryObject(context);
                 querypartition.FindRemoteTableReferences();

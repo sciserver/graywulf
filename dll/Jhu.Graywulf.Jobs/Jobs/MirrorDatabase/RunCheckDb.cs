@@ -14,9 +14,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
     public class RunCheckDb : GraywulfAsyncCodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
+        public InArgument<JobContext> JobContext { get; set; }
 
         public OutArgument<Guid> EntityGuid { get; set; }
 

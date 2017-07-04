@@ -13,9 +13,7 @@ namespace Jhu.Graywulf.Jobs.Query
     public class CreateDestinationTablePrimaryKey : GraywulfAsyncCodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
+        public InArgument<JobContext> JobContext { get; set; }
 
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
@@ -26,7 +24,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var queryPartition = query.Partitions[0];
             Table destinationTable;
 
-            using (Context context = query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (Context context = query.CreateContext(this, activityContext))
             {
                 queryPartition.InitializeQueryObject(context, null, true);
                 queryPartition.PrepareCreateDestinationTablePrimaryKey(context, activityContext.GetExtension<IScheduler>(), out destinationTable);

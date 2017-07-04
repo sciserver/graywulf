@@ -16,9 +16,7 @@ namespace Jhu.Graywulf.Jobs.Query
     public class ComputeTableStatistics : GraywulfAsyncCodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
+        public InArgument<JobContext> JobContext { get; set; }
 
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
@@ -32,7 +30,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var tableSource = TableSource.Get(activityContext);
             DatasetBase statisticsDataset = null;
 
-            using (Context context = query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (Context context = query.CreateContext(this, activityContext))
             {
                 query.InitializeQueryObject(context, activityContext.GetExtension<IScheduler>(), true);
                 statisticsDataset = query.GetStatisticsDataset(tableSource);

@@ -15,9 +15,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
     public class ExportTablesJob : GraywulfAsyncCodeActivity, IGraywulfActivity, IExportTablesJob
     {
         [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
+        public InArgument<JobContext> JobContext { get; set; }
 
         [RequiredArgument]
         public InArgument<ExportTablesParameters> Parameters { get; set; }

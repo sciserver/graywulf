@@ -14,10 +14,7 @@ namespace Jhu.Graywulf.Jobs.SqlScript
     public class ExecuteScript : GraywulfAsyncCodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
+        public InArgument<JobContext> JobContext { get; set; }
 
         [RequiredArgument]
         public InArgument<SqlScriptParameters> Parameters { get; set; }

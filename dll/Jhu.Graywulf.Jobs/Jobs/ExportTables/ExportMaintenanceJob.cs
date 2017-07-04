@@ -16,9 +16,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
     public class ExportMaintenanceJob : CodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
+        public InArgument<JobContext> JobContext { get; set; }
 
         /// <summary>
         /// Age (in days) of exported data to be deleted

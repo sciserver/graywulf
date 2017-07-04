@@ -1,5 +1,6 @@
 ﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="Jhu.Graywulf.Jobs.CopyTables.CopyTablesJob"
  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:jga="clr-namespace:Jhu.Graywulf.Activities;assembly=Jhu.Graywulf.Activities"
  xmlns:local="clr-namespace:Jhu.Graywulf.Jobs.CopyTables"
  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
  xmlns:mca="clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities"
@@ -11,8 +12,7 @@
  xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
-    <x:Property Name="JobGuid" Type="InArgument(s:Guid)" />
-    <x:Property Name="UserGuid" Type="InArgument(s:Guid)" />
+    <x:Property Name="JobContext" Type="InArgument(jga:JobContext)" />
     <x:Property Name="Parameters" Type="InArgument(local:CopyTablesParameters)" />
   </x:Members>
   <sap2010:ExpressionActivityEditor.ExpressionActivityEditor>C#</sap2010:ExpressionActivityEditor.ExpressionActivityEditor>
@@ -79,21 +79,16 @@
               <mca:CSharpValue x:TypeArguments="local:CopyTablesItem">item</mca:CSharpValue>
             </InArgument>
           </local:CopyTable.Item>
-          <local:CopyTable.JobGuid>
-            <InArgument x:TypeArguments="s:Guid">
-              <mca:CSharpValue x:TypeArguments="s:Guid">JobGuid</mca:CSharpValue>
+          <local:CopyTable.JobContext>
+            <InArgument x:TypeArguments="jga:JobContext">
+              <mca:CSharpValue x:TypeArguments="jga:JobContext">JobContext</mca:CSharpValue>
             </InArgument>
-          </local:CopyTable.JobGuid>
+          </local:CopyTable.JobContext>
           <local:CopyTable.Parameters>
             <InArgument x:TypeArguments="local:CopyTablesParameters">
               <mca:CSharpValue x:TypeArguments="local:CopyTablesParameters">Parameters</mca:CSharpValue>
             </InArgument>
           </local:CopyTable.Parameters>
-          <local:CopyTable.UserGuid>
-            <InArgument x:TypeArguments="s:Guid">
-              <mca:CSharpValue x:TypeArguments="s:Guid">UserGuid</mca:CSharpValue>
-            </InArgument>
-          </local:CopyTable.UserGuid>
         </local:CopyTable>
         <If sap2010:WorkflowViewState.IdRef="If_1">
           <If.Condition>
@@ -108,16 +103,11 @@
                   <mca:CSharpValue x:TypeArguments="local:CopyTablesItem">item</mca:CSharpValue>
                 </InArgument>
               </local:DropTable.Item>
-              <local:DropTable.JobGuid>
-                <InArgument x:TypeArguments="s:Guid">
-                  <mca:CSharpValue x:TypeArguments="s:Guid">JobGuid</mca:CSharpValue>
+              <local:DropTable.JobContext>
+                <InArgument x:TypeArguments="jga:JobContext">
+                  <mca:CSharpValue x:TypeArguments="jga:JobContext">JobContext</mca:CSharpValue>
                 </InArgument>
-              </local:DropTable.JobGuid>
-              <local:DropTable.UserGuid>
-                <InArgument x:TypeArguments="s:Guid">
-                  <mca:CSharpValue x:TypeArguments="s:Guid">UserGuid</mca:CSharpValue>
-                </InArgument>
-              </local:DropTable.UserGuid>
+              </local:DropTable.JobContext>
             </local:DropTable>
           </If.Then>
         </If>

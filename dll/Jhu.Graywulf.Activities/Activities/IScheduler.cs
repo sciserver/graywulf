@@ -11,11 +11,7 @@ namespace Jhu.Graywulf.Activities
         /// 
         /// </summary>
         /// <param name="workflowInstanceId"></param>
-        /// <param name="userGuid"></param>
-        /// <param name="userName"></param>
-        /// <param name="jobGuid"></param>
-        /// <param name="jobID"></param>
-        void GetContextInfo(Guid workflowInstanceId, out Guid userGuid, out string userName, out Guid jobGuid, out string jobID);
+        JobContext GetJobContext(Guid workflowInstanceId);
 
         /// <summary>
         /// Returns a server instance containing all necessary database instances

@@ -16,10 +16,7 @@ namespace Jhu.Graywulf.Jobs.Test
     public class TestAsyncException : GraywulfAsyncCodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
+        public InArgument<JobContext> JobContext { get; set; }
 
         [RequiredArgument]
         public InArgument<string> Message { get; set; }

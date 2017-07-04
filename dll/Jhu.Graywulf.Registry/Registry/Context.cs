@@ -21,8 +21,6 @@ namespace Jhu.Graywulf.Registry
         #region Member Variables
 
         private Guid contextGuid;
-        private Guid jobGuid;
-        private string jobID;
 
 #if DEBUG
         private int sqlSpId;
@@ -50,25 +48,11 @@ namespace Jhu.Graywulf.Registry
         private EntityReference<Domain> domainReference;
         private EntityReference<Federation> federationReference;
         private EntityReference<User> userReference;
+        private EntityReference<JobInstance> jobReference;
+        private string jobID;
 
         #endregion
         #region Member Access Properties
-
-
-        /// <summary>
-        /// Gets or sets the guid of the job which creates the context.
-        /// </summary>
-        public Guid JobGuid
-        {
-            get { return jobGuid; }
-            set { jobGuid = value; }
-        }
-
-        public string JobID
-        {
-            get { return jobID; }
-            set { jobID = value; }
-        }
 
         /// <summary>
         /// Gets or sets the guid of this context.
@@ -197,6 +181,25 @@ namespace Jhu.Graywulf.Registry
             get { return userReference.Value;  }
         }
 
+        public EntityReference<JobInstance> JobReference
+        {
+            get { return jobReference; }
+        }
+
+        /// <summary>
+        /// Gets or sets the guid of the job which creates the context.
+        /// </summary>
+        public JobInstance Job
+        {
+            get { return jobReference.Value; }
+        }
+
+        public string JobID
+        {
+            get { return jobID; }
+            set { jobID = value; }
+        }
+
         #endregion
         #region Constructors
 
@@ -218,17 +221,14 @@ namespace Jhu.Graywulf.Registry
 
             if (scheduler != null)
             {
-                Guid jobguid, userguid;
-                string jobid, username;
+                var cx = scheduler.GetJobContext(activityContext.WorkflowInstanceId);
 
-                scheduler.GetContextInfo(
-                    activityContext.WorkflowInstanceId,
-                    out userguid, out username,
-                    out jobguid, out jobid);
-
-                this.userReference.Guid = userguid;
-                this.jobGuid = jobguid;
-                this.jobID = jobid;
+                this.clusterReference.Guid = cx.ClusterGuid;
+                this.domainReference.Guid = cx.DomainGuid;
+                this.federationReference.Guid = cx.FederationGuid;
+                this.userReference.Guid = cx.UserGuid;
+                this.jobReference.Guid = cx.JobGuid;
+                this.jobID = cx.JobID;
 
                 this.contextGuid = activityContext.WorkflowInstanceId;
 
@@ -246,8 +246,6 @@ namespace Jhu.Graywulf.Registry
         private void InitializeMembers()
         {
             this.contextGuid = Guid.NewGuid();
-            this.jobGuid = Guid.Empty;
-            this.jobID = null;
 
             this.isValid = true;
 
@@ -268,6 +266,8 @@ namespace Jhu.Graywulf.Registry
             this.domainReference = new EntityReference<Domain>(this);
             this.federationReference = new EntityReference<Federation>(this);
             this.userReference = new EntityReference<User>(this);
+            this.jobReference = new EntityReference<JobInstance>(this);
+            this.jobID = null;
         }
 
         #endregion
@@ -401,6 +401,15 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
+        public void EnsureEntitiesLoaded()
+        {
+            this.clusterReference.EnsureEntityLoaded();
+            this.domainReference.EnsureEntityLoaded();
+            this.federationReference.EnsureEntityLoaded();
+            this.userReference.EnsureEntityLoaded();
+            this.jobReference.EnsureEntityLoaded();
+        }
+
         #region Command Creation Functions
 
         /// <summary>
@@ -517,7 +526,7 @@ namespace Jhu.Graywulf.Registry
         public void LogEvent(Event e)
         {
             e.UserGuid = this.userReference.Guid;
-            e.JobGuid = this.jobGuid;
+            e.JobGuid = this.jobReference.Guid;
             e.ContextGuid = this.contextGuid;
             e.EventSource = EventSource.Registry;
             e.ExecutionStatus = ExecutionStatus.Closed;

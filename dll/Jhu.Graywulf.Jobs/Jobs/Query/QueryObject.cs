@@ -775,14 +775,16 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="connectionMode"></param>
         /// <param name="transactionMode"></param>
         /// <returns></returns>
-        public Jhu.Graywulf.Registry.Context CreateContext(IGraywulfActivity activity, System.Activities.CodeActivityContext activityContext, Jhu.Graywulf.Registry.ConnectionMode connectionMode, Jhu.Graywulf.Registry.TransactionMode transactionMode)
+        public Jhu.Graywulf.Registry.Context CreateContext(IGraywulfActivity activity, System.Activities.CodeActivityContext activityContext)
         {
             switch (executionMode)
             {
                 case Query.ExecutionMode.SingleServer:
                     return null;
                 case Query.ExecutionMode.Graywulf:
-                    return Jhu.Graywulf.Registry.ContextManager.Instance.CreateContext(activity, activityContext, connectionMode, transactionMode);
+                    var context = Jhu.Graywulf.Registry.ContextManager.Instance.CreateContext(activity, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit);
+                    context.EnsureEntitiesLoaded();
+                    return context;
                 default:
                     throw new NotImplementedException();
             }

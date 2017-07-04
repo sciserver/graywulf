@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
+using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Scheduler
 {
@@ -10,12 +8,8 @@ namespace Jhu.Graywulf.Scheduler
     /// Represents a running job
     /// </summary>
     [Serializable]
-    public class Job : MarshalByRefObject
+    public class Job : JobContext
     {
-        private Guid guid;
-        private string jobID;
-        private Guid userGuid;
-        private string userName;
         private int appDomainID;
         private Guid queueGuid;
         private string workflowTypeName;
@@ -29,26 +23,8 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         public Guid Guid
         {
-            get { return guid; }
-            set { guid = value; }
-        }
-
-        public string JobID
-        {
-            get { return jobID; }
-            set { jobID = value; }
-        }
-
-        public Guid UserGuid
-        {
-            get { return userGuid; }
-            set { userGuid = value; }
-        }
-
-        public string UserName
-        {
-            get { return userName; }
-            set { userName = value; }
+            get { return JobGuid; }
+            set { JobGuid = value; }
         }
 
         /// <summary>
@@ -148,10 +124,6 @@ namespace Jhu.Graywulf.Scheduler
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.guid = Guid.Empty;
-            this.jobID = null;
-            this.userGuid = Guid.Empty;
-            this.userName = null;
             this.appDomainID = -1;
             this.queueGuid = Guid.Empty;
             this.workflowTypeName = null;

@@ -152,7 +152,7 @@ namespace Jhu.Graywulf.Scheduler
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 context.ContextGuid = contextGuid;
-                context.JobGuid = job.Guid;
+                context.JobReference.Guid = job.Guid;
 
                 JobInstance ji = LoadJobInstance(context, job);
 
@@ -166,9 +166,17 @@ namespace Jhu.Graywulf.Scheduler
                     }
                 }
 
-                // Set default parameters
-                pars.Add("UserGuid", ji.UserGuidOwner);
-                pars.Add("JobGuid", ji.Guid);
+                // Set default parameters to be passed to the job
+                // These will be passed around from activity to activity and
+                // can be used by the job tracker (logger)
+                var cx = new JobContext()
+                {
+                    UserGuid = ji.UserGuidOwner,
+                    JobGuid = ji.Guid
+                    // **** TODO: set domain and federation here if necessary
+                };
+
+                pars.Add(Jhu.Graywulf.Activities.Constants.ActivityParameterJobContext, cx);
 
                 // Start the workflow
                 Guid wfguid = PrepareStartWorkflow(job, pars);
@@ -196,7 +204,7 @@ namespace Jhu.Graywulf.Scheduler
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 context.ContextGuid = contextGuid;
-                context.JobGuid = job.Guid;
+                context.JobReference.Guid = job.Guid;
 
                 JobInstance ji = LoadJobInstance(context, job);
 
@@ -232,7 +240,7 @@ namespace Jhu.Graywulf.Scheduler
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 context.ContextGuid = contextGuid;
-                context.JobGuid = job.Guid;
+                context.JobReference.Guid = job.Guid;
 
                 JobInstance ji = LoadJobInstance(context, job);
 
@@ -269,7 +277,7 @@ namespace Jhu.Graywulf.Scheduler
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 context.ContextGuid = contextGuid;
-                context.JobGuid = job.Guid;
+                context.JobReference.Guid = job.Guid;
 
                 ji = LoadJobInstance(context, job);
 
@@ -294,7 +302,7 @@ namespace Jhu.Graywulf.Scheduler
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 context.ContextGuid = contextGuid;
-                context.JobGuid = job.Guid;
+                context.JobReference.Guid = job.Guid;
 
                 ji = LoadJobInstance(context, job);
 
@@ -314,7 +322,7 @@ namespace Jhu.Graywulf.Scheduler
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 context.ContextGuid = contextGuid;
-                context.JobGuid = job.Guid;
+                context.JobReference.Guid = job.Guid;
 
                 ji = LoadJobInstance(context, job);
 

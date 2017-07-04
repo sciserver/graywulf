@@ -24,11 +24,10 @@ namespace Jhu.Graywulf.Activities
             ActivityStateQuery aq = new ActivityStateQuery();
             aq.ActivityName = "*";
             aq.States.Add("*");
-            aq.Arguments.Add("JobGuid");
-            aq.Arguments.Add("UserGuid");
-            aq.Arguments.Add("EntityGuid");
-            aq.Arguments.Add("EntityGuidFrom");
-            aq.Arguments.Add("EntityGuidTo");
+            aq.Arguments.Add(Constants.ActivityParameterJobContext);
+            aq.Arguments.Add(Constants.ActivityParameterEntityGuid);
+            aq.Arguments.Add(Constants.ActivityParameterEntityGuidFrom);
+            aq.Arguments.Add(Constants.ActivityParameterEntityGuidTo);
             trackingProfile.Queries.Add(aq);
 
             CustomTrackingQuery cq = new CustomTrackingQuery();
@@ -72,7 +71,7 @@ namespace Jhu.Graywulf.Activities
         {
             // Only record events of IGraywulfActivity activities
 
-            if (record.Arguments.ContainsKey("JobGuid"))
+            if (record.Arguments.ContainsKey(Constants.ActivityParameterJobContext))
             {
 
                 Event e = new Event();
@@ -188,29 +187,26 @@ namespace Jhu.Graywulf.Activities
 
         private void SetEventProperties(Event e, IDictionary<string,object> data)
         {
-            if (data.ContainsKey("JobGuid"))
+            if (data.ContainsKey(Constants.ActivityParameterJobContext))
             {
-                e.JobGuid = (Guid)data["JobGuid"];
+                var cx = (JobContext)data[Constants.ActivityParameterJobContext];
+                e.JobGuid = cx.JobGuid;
+                e.UserGuid = cx.UserGuid;
             }
 
-            if (data.ContainsKey("UserGuid"))
+            if (data.ContainsKey(Constants.ActivityParameterEntityGuid))
             {
-                e.UserGuid = (Guid)data["UserGuid"];
+                e.EntityGuid = (Guid)data[Constants.ActivityParameterEntityGuid];
             }
 
-            if (data.ContainsKey("EntityGuid"))
+            if (data.ContainsKey(Constants.ActivityParameterEntityGuidFrom))
             {
-                e.EntityGuid = (Guid)data["EntityGuid"];
+                e.EntityGuidFrom = (Guid)data[Constants.ActivityParameterEntityGuidFrom];
             }
 
-            if (data.ContainsKey("EntityGuidFrom"))
+            if (data.ContainsKey(Constants.ActivityParameterEntityGuidTo))
             {
-                e.EntityGuidFrom = (Guid)data["EntityGuidFrom"];
-            }
-
-            if (data.ContainsKey("EntityGuidTo"))
-            {
-                e.EntityGuidTo = (Guid)data["EntityGuidTo"];
+                e.EntityGuidTo = (Guid)data[Constants.ActivityParameterEntityGuidTo];
             }
 
             if (data.ContainsKey("Exception"))

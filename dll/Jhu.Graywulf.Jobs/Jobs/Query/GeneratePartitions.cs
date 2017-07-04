@@ -12,9 +12,7 @@ namespace Jhu.Graywulf.Jobs.Query
     public class GeneratePartitions : CodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
+        public InArgument<JobContext> JobContext { get; set; }
 
         public OutArgument<Guid> EntityGuid { get; set; }
 
@@ -32,7 +30,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     query.GeneratePartitions();
                     break;
                 case ExecutionMode.Graywulf:
-                    using (Context context = query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                    using (Context context = query.CreateContext(this, activityContext))
                     {
                         var scheduler = activityContext.GetExtension<IScheduler>();
 

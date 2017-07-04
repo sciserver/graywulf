@@ -2,17 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Configuration;
-using System.Reflection;
-using System.Activities;
-using System.Activities.DurableInstancing;
-using System.Runtime.DurableInstancing;
-using System.Data;
-using System.Data.SqlClient;
 using Jhu.Graywulf.Components;
+using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Logging;
 
@@ -176,14 +169,105 @@ namespace Jhu.Graywulf.Scheduler
         /// Loads the configuration of the entire cluster from the database.
         /// </summary>
         /// <returns></returns>
-        private Cluster LoadCluster(string clusterName)
+        public Cluster LoadCluster(string clusterName)
         {
-            var cluster = new Cluster();
-            cluster.Load(clusterName);
+            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            {
+                var ef = new EntityFactory(context);
+                var c = ef.LoadEntity<Jhu.Graywulf.Registry.Cluster>(clusterName);
 
-            LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.LoadCluster", Guid.Empty));
+                var cluster = new Cluster(c);
 
-            return cluster;
+                c.LoadMachineRoles(true);
+
+                // *** TODO: handle machines that are down
+                // *** TODO: define root object which limits queues handled by scheduler instance
+                foreach (var mr in c.MachineRoles.Values)
+                {
+                    var mri = new MachineRole(mr);
+                    cluster.MachineRoles.Add(mr.Guid, mri);
+
+                    mr.LoadQueueInstances(true);
+
+                    foreach (var qi in mr.QueueInstances.Values)
+                    {
+                        var q = new Queue();
+                        q.Update(qi);
+                        cluster.Queues.Add(qi.Guid, q);
+                    }
+
+                    mr.LoadMachines(true);
+
+                    foreach (var mm in mr.Machines.Values)
+                    {
+                        var mmi = new Machine(mm);
+                        cluster.Machines.Add(mm.Guid, mmi);
+
+                        mm.LoadServerInstances(true);
+
+                        foreach (var si in mm.ServerInstances.Values)
+                        {
+                            var ssi = new ServerInstance(si);
+                            ssi.Machine = mmi;
+
+                            cluster.ServerInstances.Add(si.Guid, ssi);
+                        }
+
+                        mm.LoadQueueInstances(true);
+
+                        foreach (var qi in mm.QueueInstances.Values)
+                        {
+                            var q = new Queue();
+                            q.Update(qi);
+                            cluster.Queues.Add(qi.Guid, q);
+                        }
+                    }
+                }
+
+                c.LoadDomains(true);
+                foreach (var dom in c.Domains.Values)
+                {
+                    dom.LoadFederations(true);
+                    foreach (var ff in dom.Federations.Values)
+                    {
+                        ff.LoadDatabaseDefinitions(true);
+                        foreach (var dd in ff.DatabaseDefinitions.Values)
+                        {
+                            cluster.DatabaseDefinitions.Add(dd.Guid, new DatabaseDefinition(dd));
+
+                            dd.LoadDatabaseInstances(true);
+                            foreach (var di in dd.DatabaseInstances.Values)
+                            {
+                                var ddi = new DatabaseInstance(di);
+
+                                // add to global list
+                                cluster.DatabaseInstances.Add(di.Guid, ddi);
+
+                                // add to database definition lists
+                                Dictionary<Guid, DatabaseInstance> databaseinstances;
+                                if (cluster.DatabaseDefinitions[dd.Guid].DatabaseInstances.ContainsKey((di.DatabaseVersion.Name)))
+                                {
+                                    databaseinstances = cluster.DatabaseDefinitions[dd.Guid].DatabaseInstances[di.DatabaseVersion.Name];
+                                }
+                                else
+                                {
+                                    databaseinstances = new Dictionary<Guid, DatabaseInstance>();
+                                    cluster.DatabaseDefinitions[dd.Guid].DatabaseInstances.Add(di.DatabaseVersion.Name, databaseinstances);
+                                }
+
+                                databaseinstances.Add(di.Guid, ddi);
+
+                                ddi.ServerInstance = cluster.ServerInstances[di.ServerInstanceReference.Guid];
+                                ddi.DatabaseDefinition = cluster.DatabaseDefinitions[dd.Guid];
+                            }
+                        }
+                    }
+                }
+
+                LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.LoadCluster", Guid.Empty));
+
+                return cluster;
+            }
         }
 
         #endregion
@@ -528,20 +612,24 @@ namespace Jhu.Graywulf.Scheduler
 
                     foreach (var ji in jis)
                     {
-                        var user = new User(context);
-                        user.Guid = ji.UserGuidOwner;
-                        user.Load();
-
                         var job = new Job()
                         {
                             Guid = ji.Guid,
                             JobID = ji.JobID,
-                            UserGuid = user.Guid,
-                            UserName = user.Name,
                             QueueGuid = ji.ParentReference.Guid,
                             WorkflowTypeName = ji.WorkflowTypeName,
                             Timeout = ji.JobTimeout,
                         };
+
+                        var user = new User(context);
+                        user.Guid = ji.UserGuidOwner;
+                        user.Load();
+
+                        job.ClusterGuid = cluster.Guid;
+                        job.UserGuid = user.Guid;
+                        job.UserName = user.Name;
+                        job.DomainGuid = ji.JobDefinition.Federation.Domain.Guid;
+                        job.FederationGuid = ji.JobDefinition.Federation.Guid;
 
                         if ((ji.JobExecutionStatus & JobExecutionState.Scheduled) != 0)
                         {
@@ -627,7 +715,8 @@ namespace Jhu.Graywulf.Scheduler
 
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                context.JobGuid = job.Guid;
+                // TODO: why need to set job guid here manually?
+                context.JobReference.Guid = job.Guid;
                 context.ContextGuid = contextGuid;
 
                 JobInstance ji = new JobInstance(context);
@@ -688,7 +777,8 @@ namespace Jhu.Graywulf.Scheduler
         {
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                context.JobGuid = job.Guid;
+                // *** TODO: why set guid here manually?
+                context.JobReference.Guid = job.Guid;
                 context.ContextGuid = contextGuid;
 
                 var ji = new JobInstance(context);
@@ -718,7 +808,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                context.JobGuid = job.Guid;
+                context.JobReference.Guid = job.Guid;
                 context.ContextGuid = contextGuid;
 
                 var ji = new JobInstance(context);
@@ -753,7 +843,7 @@ namespace Jhu.Graywulf.Scheduler
             {
                 using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
                 {
-                    context.JobGuid = job.Guid;
+                    context.JobReference.Guid = job.Guid;
                     context.ContextGuid = contextGuid;
 
                     JobInstance ji = new JobInstance(context);
@@ -807,18 +897,10 @@ namespace Jhu.Graywulf.Scheduler
         /// a new context to access the registry.
         /// </remarks>
         /// <param name="workflowInstanceId"></param>
-        /// <param name="userGuid"></param>
-        /// <param name="userName"></param>
-        /// <param name="jobGuid"></param>
-        /// <param name="jobID"></param>
-        internal void GetContextInfo(Guid workflowInstanceId, out Guid userGuid, out string userName, out Guid jobGuid, out string jobID)
+        internal JobContext GetJobContext(Guid workflowInstanceId)
         {
             var job = runningJobs[workflowInstanceId];
-
-            userGuid = job.UserGuid;
-            userName = job.UserName;
-            jobGuid = job.Guid;
-            jobID = job.JobID;
+            return new JobContext(job);
         }
 
         #endregion

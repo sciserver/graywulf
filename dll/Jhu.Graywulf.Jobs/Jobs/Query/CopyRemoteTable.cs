@@ -16,12 +16,11 @@ namespace Jhu.Graywulf.Jobs.Query
     public class CopyRemoteTable : GraywulfAsyncCodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
+        public InArgument<JobContext> JobContext { get; set; }
 
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
+
         [RequiredArgument]
         public InArgument<string> RemoteTable { get; set; }
 
@@ -32,7 +31,7 @@ namespace Jhu.Graywulf.Jobs.Query
             TableReference remotetable = null;
             SourceTableQuery source;
 
-            using (Context context = querypartition.Query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (Context context = querypartition.Query.CreateContext(this, activityContext))
             {       
                 remotetable = querypartition.RemoteTableReferences[RemoteTable.Get(activityContext)];
                 querypartition.PrepareCopyRemoteTable(remotetable, out source);

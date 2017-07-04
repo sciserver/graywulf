@@ -16,9 +16,7 @@ namespace Jhu.Graywulf.Jobs.Test
     public class TestQueryDelay : GraywulfAsyncCodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
+        public InArgument<JobContext> JobContext { get; set; }
 
         [RequiredArgument]
         public InArgument<int> DelayPeriod { get; set; }

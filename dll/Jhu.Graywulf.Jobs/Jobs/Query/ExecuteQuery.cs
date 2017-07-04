@@ -14,9 +14,7 @@ namespace Jhu.Graywulf.Jobs.Query
     public class ExecuteQuery : GraywulfAsyncCodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
+        public InArgument<JobContext> JobContext { get; set; }
 
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
@@ -27,7 +25,7 @@ namespace Jhu.Graywulf.Jobs.Query
             SourceTableQuery source;
             Table destination;
 
-            using (Context context = querypartition.Query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (Context context = querypartition.Query.CreateContext(this, activityContext))
             {
                 querypartition.PrepareExecuteQuery(context, activityContext.GetExtension<IScheduler>(), out source, out destination);
             }

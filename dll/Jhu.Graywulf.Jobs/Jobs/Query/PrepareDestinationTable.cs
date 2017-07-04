@@ -11,9 +11,7 @@ namespace Jhu.Graywulf.Jobs.Query
     public class PrepareDestinationTable : CodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
+        public InArgument<JobContext> JobContext { get; set; }
 
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
@@ -23,7 +21,7 @@ namespace Jhu.Graywulf.Jobs.Query
             SqlQueryPartition queryPartition = QueryPartition.Get(activityContext);
             SqlQuery query = queryPartition.Query;
 
-            using (Context context = queryPartition.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (Context context = queryPartition.CreateContext(this, activityContext))
             {
                 query.InitializeQueryObject(context, null, true);
                 queryPartition.PrepareDestinationTable(context, activityContext.GetExtension<IScheduler>());

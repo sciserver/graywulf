@@ -59,9 +59,9 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="userName"></param>
         /// <param name="jobGuid"></param>
         /// <param name="jobID"></param>
-        public void GetContextInfo(Guid workflowInstanceId, out Guid userGuid, out string userName, out Guid jobGuid, out string jobID)
+        public JobContext GetJobContext(Guid workflowInstanceId)
         {
-            queueManager.GetContextInfo(workflowInstanceId, out userGuid, out userName, out jobGuid, out jobID);            
+            return queueManager.GetJobContext(workflowInstanceId);
         }
 
         public Guid GetNextServerInstance(Guid[] databaseDefinitions, string databaseVersion, Guid[] databaseInstances)
