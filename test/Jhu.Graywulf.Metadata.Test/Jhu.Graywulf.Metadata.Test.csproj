@@ -67,6 +67,10 @@
       <Project>{129e1b6f-b0b3-4c7c-8fe2-4b1b8556b96d}</Project>
       <Name>Jhu.Graywulf.Metadata</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Test\Jhu.Graywulf.Test.csproj">
+      <Project>{ea6164ba-b283-46c2-874b-348d6bad41ad}</Project>
+      <Name>Jhu.Graywulf.Test</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="post-build.ps1" />

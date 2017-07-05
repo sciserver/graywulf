@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Jhu.Graywulf.Metadata
 {
     [TestClass]
-    public class ParserTest
+    public class ParserTest : Jhu.Graywulf.Test.TestClassBase
     {
         const string TestConnectionString = "Data Source=localhost; Initial Catalog=Graywulf_Metadata_Test;Integrated Security=true;";
 
@@ -18,9 +18,7 @@ namespace Jhu.Graywulf.Metadata
         {
             get
             {
-                return Path.Combine(
-                    Path.GetDirectoryName(Environment.GetEnvironmentVariable("SolutionPath")),
-                    @"graywulf\test\files\metadata.sql");
+                return Path.Combine(GetSolutionDir(), @"graywulf\test\files\metadata.sql");
             }
         }
 
