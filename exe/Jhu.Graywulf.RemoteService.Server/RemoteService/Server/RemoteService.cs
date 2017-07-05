@@ -62,6 +62,10 @@ namespace Jhu.Graywulf.RemoteService.Server
             e.UserData.Add("UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName));
             LogEvent(e);
 
+            // In case the server has been just rebooted
+            // wait for the Windows Process Activation Service (WAS)
+            Util.ServiceHelper.WaitForService("WAS", 1000, 500);
+
             // Initialize WCF service host to run the control service
             // TODO: the localhost setting needs to be tested!
             var fdqn = RemoteServiceHelper.GetFullyQualifiedDnsName();

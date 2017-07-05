@@ -39,6 +39,7 @@
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
@@ -95,6 +96,7 @@
     <Compile Include="Util\DeepCloner.cs" />
     <Compile Include="Util\EmailFormatter.cs" />
     <Compile Include="Util\MediaTypeComparer.cs" />
+    <Compile Include="Util\ServiceHelper.cs" />
     <Compile Include="Util\SqlScriptSplitter.cs" />
     <Compile Include="Util\TypeNameFormatter.cs" />
     <Compile Include="Util\UriConverter.cs" />

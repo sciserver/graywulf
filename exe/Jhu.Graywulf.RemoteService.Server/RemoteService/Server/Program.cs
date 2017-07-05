@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ServiceProcess;
 
 namespace Jhu.Graywulf.RemoteService.Server
@@ -11,7 +8,9 @@ namespace Jhu.Graywulf.RemoteService.Server
         private static RemoteService service;
 
         static void Main(string[] args)
-        {           
+        {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             if (Environment.UserInteractive)
             {
                 // Run in command-prompt
@@ -30,6 +29,11 @@ namespace Jhu.Graywulf.RemoteService.Server
 
                 ServiceBase.Run(new RemoteService());
             }
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Util.ServiceHelper.WriteErrorDump(e);
         }
 
         public static void Start(string[] args)
