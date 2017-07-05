@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.IO;
 using System.Reflection;
 using System.ServiceProcess;
@@ -7,6 +8,12 @@ namespace Jhu.Graywulf.Util
 {
     public static class ServiceHelper
     {
+        public static bool IsServiceInstalled(string service)
+        {
+            return System.ServiceProcess.ServiceController.GetServices()
+                .Any(serviceController => serviceController.ServiceName.Equals(service));
+        }
+
         public static void WaitForService(string service, int timeout, int retry)
         {
             int q = 0;
@@ -29,7 +36,7 @@ namespace Jhu.Graywulf.Util
             }
         }
 
-        public static void WriteErrorDump(UnhandledExceptionEventArgs e)
+        public static void WriteErrorDump(object sender, UnhandledExceptionEventArgs e)
         {
             var ex = (Exception)e.ExceptionObject;
             var dump = Assembly.GetEntryAssembly().Location;

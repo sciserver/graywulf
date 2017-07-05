@@ -53,6 +53,8 @@ namespace Jhu.Graywulf.RemoteService.Server
 
         protected override void OnStart(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += Util.ServiceHelper.WriteErrorDump;
+
             // Initialize logger
             Jhu.Graywulf.Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.SqlLogWriter());
 
@@ -64,7 +66,10 @@ namespace Jhu.Graywulf.RemoteService.Server
 
             // In case the server has been just rebooted
             // wait for the Windows Process Activation Service (WAS)
-            Util.ServiceHelper.WaitForService("WAS", 1000, 500);
+            if (Util.ServiceHelper.IsServiceInstalled("WAS"))
+            {
+                Util.ServiceHelper.WaitForService("WAS", 1000, 500);
+            }
 
             // Initialize WCF service host to run the control service
             // TODO: the localhost setting needs to be tested!
