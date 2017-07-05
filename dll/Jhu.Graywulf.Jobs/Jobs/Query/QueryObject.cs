@@ -782,9 +782,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 case Query.ExecutionMode.SingleServer:
                     return null;
                 case Query.ExecutionMode.Graywulf:
-                    var context = Jhu.Graywulf.Registry.ContextManager.Instance.CreateContext(activity, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit);
-                    context.EnsureEntitiesLoaded();
-                    return context;
+                    return Jhu.Graywulf.Registry.ContextManager.Instance.CreateContext(activity, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit);
                 default:
                     throw new NotImplementedException();
             }

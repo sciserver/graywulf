@@ -144,6 +144,8 @@ namespace Jhu.Graywulf.Registry
                 TransactionMode = transactionMode,
             };
 
+            context.EnsureEntitiesLoaded();
+
             return context;
         }
 
