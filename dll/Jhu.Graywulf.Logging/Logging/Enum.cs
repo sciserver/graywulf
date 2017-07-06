@@ -32,19 +32,19 @@ namespace Jhu.Graywulf.Logging
         All = 0xFFFFFFFF,
     }
 
-    // Must conform to ActivityExecutionStatus in the WF foundation
-    public enum ExecutionStatus : int
+    [Flags]
+    public enum ExecutionStatus : uint
     {
-        Unknown = -1,
+        Unknown = 0,
 
-        Initialized = 0,
-        Executing = 1,
-        Canceled = 2,
-        Closed = 3,
-        Compensating = 4,
-        Faulted = 5,
+        Initialized = 1,
+        Executing = 2,
+        Canceled = 4,
+        Closed = 8,
+        Compensating = 16,
+        Faulted = 32,
 
-        // ....
+        All = 0xFFFFFFFF,
     }
 
     public enum EventColumn

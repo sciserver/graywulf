@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 
 namespace Jhu.Graywulf.Logging
 {
-    public class SqlLogWriter : LogWriter
+    public class SqlLogWriter : LogWriterBase
     {
         #region Private member variables
 
@@ -62,6 +62,14 @@ namespace Jhu.Graywulf.Logging
         }
 
         #endregion
+
+        public override void Start()
+        {
+        }
+
+        public override void Stop()
+        {
+        }
 
         /// <summary>
         /// Creates a command that records an event in the database.
@@ -144,54 +152,54 @@ namespace Jhu.Graywulf.Logging
             cmd.Parameters["@Data"].Value = data;
         }
 
-        public override void WriteEvent(Event e)
+        protected override void OnWriteEvent(Event e)
         {
-            //try
-            //{
-            using (SqlConnection cn = new SqlConnection(connectionString))
+            try
             {
-                cn.Open();
-                using (SqlTransaction tn = cn.BeginTransaction())
+                using (SqlConnection cn = new SqlConnection(connectionString))
                 {
-                    // --- write event
-                    using (var cmd = createEventCommandPool.Take())
+                    cn.Open();
+                    using (SqlTransaction tn = cn.BeginTransaction())
                     {
-                        SetCreateEventCommandValues(cmd.Value, e);
-
-                        cmd.Value.Connection = cn;
-                        cmd.Value.Transaction = tn;
-
-                        cmd.Value.ExecuteNonQuery();
-                        e.EventId = Convert.ToInt64(cmd.Value.Parameters["@EventId"].Value);
-                    }
-
-                    // --- write data
-                    if (e.UserData.Count > 0)
-                    {
-                        using (var cmd = createEventDataCommandPool.Take())
+                        // --- write event
+                        using (var cmd = createEventCommandPool.Take())
                         {
+                            SetCreateEventCommandValues(cmd.Value, e);
+
                             cmd.Value.Connection = cn;
                             cmd.Value.Transaction = tn;
 
-                            foreach (string key in e.UserData.Keys)
+                            cmd.Value.ExecuteNonQuery();
+                            e.EventId = Convert.ToInt64(cmd.Value.Parameters["@EventId"].Value);
+                        }
+
+                        // --- write data
+                        if (e.UserData.Count > 0)
+                        {
+                            using (var cmd = createEventDataCommandPool.Take())
                             {
-                                SetCreateEventDataCommandValues(cmd.Value, e.EventId, key, e.UserData[key]);
-                                cmd.Value.ExecuteNonQuery();
+                                cmd.Value.Connection = cn;
+                                cmd.Value.Transaction = tn;
+
+                                foreach (string key in e.UserData.Keys)
+                                {
+                                    SetCreateEventDataCommandValues(cmd.Value, e.EventId, key, e.UserData[key]);
+                                    cmd.Value.ExecuteNonQuery();
+                                }
                             }
                         }
-                    }
 
-                    tn.Commit();
+                        tn.Commit();
+                    }
                 }
             }
-            //}
-            //catch (SqlException)
-            //{
-            //    if (!skipExceptions)
-            //    {
-            //        throw;
-            //    }
-            //}
+            catch (SqlException)
+            {
+                if (!skipExceptions)
+                {
+                    throw;
+                }
+            }
         }
     }
 }

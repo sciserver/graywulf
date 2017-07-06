@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Activities
         {
             EnsureNotStopping();
 
-            Jhu.Graywulf.Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.StreamLogWriter(Console.Out));
+            Logging.Logger.Instance.Start(true);
             graywulfLogger = new Jhu.Graywulf.Activities.GraywulfTrackingParticipant();
         }
 
@@ -91,6 +91,8 @@ namespace Jhu.Graywulf.Activities
 
             graywulfLogger = null;
             stopRequested = false;
+
+            Logging.Logger.Instance.Stop();
         }
 
         private WorkflowApplication CreateWorkflowApplication(Activity wf, Dictionary<string, object> par)

@@ -62,7 +62,7 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
             var wfapp = par == null ? new WorkflowApplication(wf) : new WorkflowApplication(wf, par);
 
             // Turn on logging to console window
-            Jhu.Graywulf.Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.StreamLogWriter(Console.Out));
+            Logging.Logger.Instance.Start(true);
             wfapp.Extensions.Add(new Jhu.Graywulf.Activities.GraywulfTrackingParticipant());
 
             // Wire-up workflow runtime events
@@ -75,6 +75,8 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
             wfapp.Run();
 
             workflowCompletedEvent.WaitOne();
+
+            Logging.Logger.Instance.Stop();
         }
 
         private UnhandledExceptionAction wfapp_OnUnhandledException(WorkflowApplicationUnhandledExceptionEventArgs e)

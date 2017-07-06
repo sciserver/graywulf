@@ -10,7 +10,8 @@ namespace Jhu.Graywulf.Logging
     {
         public static string ConnectionString
         {
-            get {
+            get
+            {
                 if (ConfigurationManager.ConnectionStrings["Jhu.Graywulf.Logging"] != null)
                 {
                     return ConfigurationManager.ConnectionStrings["Jhu.Graywulf.Logging"].ConnectionString;

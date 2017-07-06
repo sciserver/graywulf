@@ -3,6 +3,7 @@
 AssemblyInfo.cs
 
 ## App.config files are generated on build
+test/Jhu.Graywulf.Logging.Test/app.config
 dll/Jhu.Graywulf.Install/app.config
 dll/Jhu.Graywulf.Web/app.config
 exe/Jhu.Graywulf.Install.CmdLineUtil/App.config

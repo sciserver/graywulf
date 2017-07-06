@@ -288,12 +288,7 @@ namespace Jhu.Graywulf.Scheduler
             this.contextGuid = Guid.NewGuid();
 
             // Initialize logger
-            Logger.Instance.Writers.Add(new SqlLogWriter());
-
-            if (interactive)
-            {
-                Logger.Instance.Writers.Add(new StreamLogWriter(Console.Out));
-            }
+            Logger.Instance.Start(interactive);
 
             // Log starting event
             Event e = new Event("Jhu.Graywulf.Scheduler.QueueManager.Start", Guid.Empty);
@@ -357,6 +352,9 @@ namespace Jhu.Graywulf.Scheduler
             e.UserData.Add("MachineName", Environment.MachineName);
             e.UserData.Add("UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName));
             LogEvent(e);
+
+            // Stop logger
+            Logger.Instance.Stop();
         }
 
         /// <summary>

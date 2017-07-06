@@ -47,12 +47,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Logging\AppSettings.cs" />
+    <Compile Include="Logging\ConsoleLogWriter.cs" />
+    <Compile Include="Logging\ConsoleLogWriterConfiguration.cs" />
+    <Compile Include="Logging\Constants.cs" />
     <Compile Include="Logging\Enum.cs" />
     <Compile Include="Logging\Event.cs" />
     <Compile Include="Logging\EventFilter.cs" />
+    <Compile Include="Logging\FileLogWriterConfiguration.cs" />
     <Compile Include="Logging\FileLogWriter.cs" />
     <Compile Include="Logging\Logger.cs" />
-    <Compile Include="Logging\LogWriter.cs" />
+    <Compile Include="Logging\LogWriterBase.cs" />
+    <Compile Include="Logging\LogWriterConfigurationBase.cs" />
+    <Compile Include="Logging\LogWriterFactory.cs" />
+    <Compile Include="Logging\SqlLogWriterConfiguration.cs" />
     <Compile Include="Logging\SqlLogWriter.cs" />
     <Compile Include="Logging\StreamLogWriter.cs" />
     <Compile Include="Logging\WebEventFactory.cs" />

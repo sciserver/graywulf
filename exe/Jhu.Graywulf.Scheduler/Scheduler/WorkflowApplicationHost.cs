@@ -101,19 +101,12 @@ namespace Jhu.Graywulf.Scheduler
         public void Start(Scheduler scheduler, bool interactive)
         {
             EnsureNotStopping();
+            
+            Logging.Logger.Instance.Start(interactive);
 
-            // Store a reference to the scheduler
+            // Store a reference to the scheduler and tracker
             this.scheduler = scheduler;
-
-            // Initialize logging participant
-            Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.SqlLogWriter());
-
-            if (interactive)
-            {
-                Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.StreamLogWriter(Console.Out));
-            }
-
-            graywulfLogger = new GraywulfTrackingParticipant();
+            this.graywulfLogger = new GraywulfTrackingParticipant();
 
             // Initialize persistence participant
             workflowInstanceStore = new SqlWorkflowInstanceStore(Scheduler.Configuration.PersistenceConnectionString);

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Activities.Tracking;
 using Jhu.Graywulf.Logging;
 
@@ -85,7 +83,6 @@ namespace Jhu.Graywulf.Activities
 
                 e.EventSource = EventSource.Workflow;
 
-                // *** TODO
                 ExecutionStatus exst;
                 if (Enum.TryParse<ExecutionStatus>(record.State, true, out exst))
                 {
@@ -125,7 +122,11 @@ namespace Jhu.Graywulf.Activities
 
                 if (record.Data.ContainsKey("ExecutionStatus"))
                 {
-                    e.ExecutionStatus = (ExecutionStatus)record.Data["ExecutionStatus"];
+                    /*switch (record.Data["ExecutionStatus"])
+                    {
+                    }
+
+                    e.ExecutionStatus = (ExecutionStatus)record.Data["ExecutionStatus"];*/
                 }
                 else
                 {
