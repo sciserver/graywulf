@@ -19,6 +19,8 @@ namespace Jhu.Graywulf.Logging
         WebAdmin = 128,
         WebService = 256,
         RemoteService = 512,
+
+        Test = 0x10000000,
         All = 0xFFFFFFFF,
     }
 
