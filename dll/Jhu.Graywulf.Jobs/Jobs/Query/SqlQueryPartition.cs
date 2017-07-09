@@ -445,7 +445,7 @@ namespace Jhu.Graywulf.Jobs.Query
 
                     try
                     {
-                    ExecuteSqlOnDataset(cmd, destination.Dataset);
+                        ExecuteSqlOnDataset(cmd, destination.Dataset);
                     }
                     catch (SqlException ex)
                     {

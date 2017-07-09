@@ -38,21 +38,17 @@ namespace Jhu.Graywulf.Web.Admin.Log
 
         private void UpdateForm()
         {
-            var ef = new EntityFactory(RegistryContext);
+            SetEntityLink(Logging.Constants.UserDataEntityGuid, EntityLink);
+            SetEntityLink(Logging.Constants.UserDataEntityGuidFrom, EntityFromLink);
+            SetEntityLink(Logging.Constants.UserDataEntityGuidTo, EntityToLink);
+        }
 
-            if (@event.EntityGuid != null && @event.EntityGuid != Guid.Empty)
+        private void SetEntityLink(string key, Web.Admin.Controls.EntityLink link)
+        {
+            if (@event.UserData.ContainsKey(key) && (Guid)@event.UserData[key] != Guid.Empty)
             {
-                EntityLink.EntityReference.Value = ef.LoadEntity(@event.EntityGuid);
-            }
-
-            if (@event.EntityGuidFrom != null && @event.EntityGuidFrom != Guid.Empty)
-            {
-                EntityFromLink.EntityReference.Value = ef.LoadEntity(@event.EntityGuidFrom);
-            }
-
-            if (@event.EntityGuidTo != null && @event.EntityGuidTo != Guid.Empty)
-            {
-                EntityToLink.EntityReference.Value = ef.LoadEntity(@event.EntityGuidTo);
+                var ef = new EntityFactory(RegistryContext);
+                link.EntityReference.Value = ef.LoadEntity((Guid)@event.UserData[key]);
             }
         }
     }

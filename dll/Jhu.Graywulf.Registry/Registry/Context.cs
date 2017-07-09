@@ -528,7 +528,7 @@ namespace Jhu.Graywulf.Registry
             e.UserGuid = this.userReference.Guid;
             e.JobGuid = this.jobReference.Guid;
             e.ContextGuid = this.contextGuid;
-            e.EventSource = EventSource.Registry;
+            e.Source = EventSource.Registry;
             e.ExecutionStatus = ExecutionStatus.Closed;
 
 
@@ -538,7 +538,7 @@ namespace Jhu.Graywulf.Registry
                 // Direct logging invoked from code running outside a workflow.
                 // Event will be written directly into the database.
 
-                e.EventOrder = ++eventOrder;
+                e.Order = ++eventOrder;
 
                 Logger.Instance.LogEvent(e);
             }

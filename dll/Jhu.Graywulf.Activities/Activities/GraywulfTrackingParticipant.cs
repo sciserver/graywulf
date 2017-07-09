@@ -18,6 +18,13 @@ namespace Jhu.Graywulf.Activities
         public GraywulfTrackingParticipant()
         {
             trackingProfile = new TrackingProfile();
+            trackingProfile.ActivityDefinitionId = "*";
+            trackingProfile.ImplementationVisibility = ImplementationVisibility.All;
+
+            CustomTrackingQuery cq = new CustomTrackingQuery();
+            cq.Name = "*";
+            cq.ActivityName = "*";
+            trackingProfile.Queries.Add(cq);
 
             ActivityStateQuery aq = new ActivityStateQuery();
             aq.ActivityName = "*";
@@ -27,10 +34,6 @@ namespace Jhu.Graywulf.Activities
             aq.Arguments.Add(Constants.ActivityParameterEntityGuidFrom);
             aq.Arguments.Add(Constants.ActivityParameterEntityGuidTo);
             trackingProfile.Queries.Add(aq);
-
-            CustomTrackingQuery cq = new CustomTrackingQuery();
-            cq.ActivityName = "*";
-            trackingProfile.Queries.Add(cq);
 
             FaultPropagationQuery fq = new FaultPropagationQuery();
             fq.FaultHandlerActivityName = "*";
@@ -42,7 +45,10 @@ namespace Jhu.Graywulf.Activities
         {
             Event e = null;
 
-            if (record is ActivityStateRecord)
+            if (record is WorkflowInstanceRecord)
+            {
+            }
+            else if (record is ActivityStateRecord)
             {
                 e = ProcessTrackingRecord((ActivityStateRecord)record);
             }
@@ -75,13 +81,13 @@ namespace Jhu.Graywulf.Activities
                 Event e = new Event();
 
                 e.ContextGuid = record.InstanceId;
-                e.EventDateTime = record.EventTime;
-                e.EventOrder = record.RecordNumber;
+                e.DateTime = record.EventTime;
+                e.Order = record.RecordNumber;
                 e.Operation = record.Activity.Name;
 
-                e.EventSeverity = MapEventSeverity(record.Level);
+                e.Severity = MapEventSeverity(record.Level);
 
-                e.EventSource = EventSource.Workflow;
+                e.Source = EventSource.Workflow;
 
                 ExecutionStatus exst;
                 if (Enum.TryParse<ExecutionStatus>(record.State, true, out exst))
@@ -110,13 +116,13 @@ namespace Jhu.Graywulf.Activities
                 var e = new Event();
 
                 e.ContextGuid = record.InstanceId;
-                e.EventDateTime = record.EventTime;
-                e.EventOrder = record.RecordNumber;
+                e.DateTime = record.EventTime;
+                e.Order = record.RecordNumber;
                 e.Operation = record.Activity.Name;
 
-                e.EventSeverity = MapEventSeverity(record.Level);
+                e.Severity = MapEventSeverity(record.Level);
 
-                e.EventSource = EventSource.Workflow;
+                e.Source = EventSource.Workflow;
 
                 // *** TODO
 
@@ -150,12 +156,12 @@ namespace Jhu.Graywulf.Activities
                 Event e = new Event();
 
                 e.ContextGuid = record.InstanceId;
-                e.EventDateTime = record.EventTime;
-                e.EventOrder = record.RecordNumber;
+                e.DateTime = record.EventTime;
+                e.Order = record.RecordNumber;
                 e.Operation = record.FaultSource.Name;
 
-                e.EventSeverity = MapEventSeverity(record.Level);
-                e.EventSource = EventSource.Workflow;
+                e.Severity = MapEventSeverity(record.Level);
+                e.Source = EventSource.Workflow;
                 e.ExecutionStatus = ExecutionStatus.Faulted;
 
                 e.Exception = record.Fault;
@@ -176,7 +182,7 @@ namespace Jhu.Graywulf.Activities
                     return Logging.EventSeverity.Error;
                 case System.Diagnostics.TraceLevel.Verbose:
                 case System.Diagnostics.TraceLevel.Info:
-                    return Logging.EventSeverity.Status;
+                    return Logging.EventSeverity.Info;
                 case System.Diagnostics.TraceLevel.Off:
                     return Logging.EventSeverity.None;
                 case System.Diagnostics.TraceLevel.Warning:
@@ -191,23 +197,26 @@ namespace Jhu.Graywulf.Activities
             if (data.ContainsKey(Constants.ActivityParameterJobContext))
             {
                 var cx = (JobContext)data[Constants.ActivityParameterJobContext];
-                e.JobGuid = cx.JobGuid;
                 e.UserGuid = cx.UserGuid;
+                e.JobGuid = cx.JobGuid;
+                e.SessionGuid = cx.SessionGuid;
             }
+
+            // TODO Why don't we just copy everything?
 
             if (data.ContainsKey(Constants.ActivityParameterEntityGuid))
             {
-                e.EntityGuid = (Guid)data[Constants.ActivityParameterEntityGuid];
+                e.UserData[Constants.ActivityParameterEntityGuid] = (Guid)data[Constants.ActivityParameterEntityGuid];
             }
 
             if (data.ContainsKey(Constants.ActivityParameterEntityGuidFrom))
             {
-                e.EntityGuidFrom = (Guid)data[Constants.ActivityParameterEntityGuidFrom];
+                e.UserData[Constants.ActivityParameterEntityGuidFrom] = (Guid)data[Constants.ActivityParameterEntityGuidFrom];
             }
 
             if (data.ContainsKey(Constants.ActivityParameterEntityGuidTo))
             {
-                e.EntityGuidTo = (Guid)data[Constants.ActivityParameterEntityGuidTo];
+                e.UserData[Constants.ActivityParameterEntityGuidTo] = (Guid)data[Constants.ActivityParameterEntityGuidTo];
             }
 
             if (data.ContainsKey("Exception"))

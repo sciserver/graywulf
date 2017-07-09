@@ -56,7 +56,8 @@ namespace Jhu.Graywulf.RemoteService.Server
             AppDomain.CurrentDomain.UnhandledException += Util.ServiceHelper.WriteErrorDump;
 
             // Initialize logger
-            Jhu.Graywulf.Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.SqlLogWriter());
+            // TODO: add interactive mode
+            Logger.Instance.Start(false);
 
             // Log starting event
             var e = new Event("Jhu.Graywulf.RemoteService.Server.RemoteService.OnStart", Guid.Empty);
@@ -142,6 +143,8 @@ namespace Jhu.Graywulf.RemoteService.Server
             return uri;
         }
 
+
+        // *** TODO: how to log if event order is not available (in context)
         /// <summary>
         /// Logs scheduler events
         /// </summary>
@@ -149,12 +152,12 @@ namespace Jhu.Graywulf.RemoteService.Server
         static private void LogEvent(Event e)
         {
             e.UserGuid = Guid.Empty;
-            e.EventSource = EventSource.RemoteService;
+            e.Source = EventSource.RemoteService;
             e.ExecutionStatus = ExecutionStatus.Closed;
 
             e.JobGuid = Guid.Empty;
             e.ContextGuid = Guid.Empty;
-            e.EventOrder = ++eventOrder;
+            e.Order = ++eventOrder;
 
             Logger.Instance.LogEvent(e);
         }

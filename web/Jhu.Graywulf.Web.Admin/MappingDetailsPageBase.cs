@@ -52,21 +52,5 @@ namespace Jhu.Graywulf.Web.Admin
         {
             name.Text = item.Name;
         }
-
-        /* TODO: Delete
-        protected void Edit_Click(object sender, EventArgs e)
-        {
-            CreateItem();
-            LoadItem();
-            Response.Redirect(item.GetFormUrl());
-        }
-
-        protected void Delete_Click(object sender, EventArgs e)
-        {
-            CreateItem();
-            LoadItem();
-            Response.Redirect(item.GetDeleteFormUrl());
-        }*/
-
     }
 }

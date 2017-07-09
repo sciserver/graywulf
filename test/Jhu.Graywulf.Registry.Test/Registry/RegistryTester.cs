@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Registry
         {
         }
 
-        protected override void OnStart()
+        protected override void OnStart(object state)
         {
         }
 

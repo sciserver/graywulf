@@ -37,6 +37,9 @@ namespace Jhu.Graywulf.Web.Services
 
         public object Invoke(object instance, object[] inputs, out object[] outputs)
         {
+            var e = Logging.Event.CreateWebServiceOperationEvent(operationName);
+            Logging.Logger.Instance.LogEvent(e);
+
             object res = null;
             var svc = (RestServiceBase)instance;
 
@@ -50,7 +53,10 @@ namespace Jhu.Graywulf.Web.Services
             catch (Exception ex)
             {
 #if BREAKDEBUG
-                System.Diagnostics.Debugger.Break();
+                if (System.Diagnostics.Debugger != null)
+                {
+                    System.Diagnostics.Debugger.Break();
+                }
 #endif
                 // TODO: this won't catch exceptions from IEnumerator that occur
                 // in MoveNext, so they won't be logged.
@@ -58,7 +64,7 @@ namespace Jhu.Graywulf.Web.Services
 
                 // Wrap up exception into a RestOperationException which will convey it to
                 // the error handler implementation
-                throw new RestOperationException(ex, logevent.EventId.ToString());
+                throw new RestOperationException(ex, logevent.ID.ToString());
             }
 
             svc.OnAfterInvoke();

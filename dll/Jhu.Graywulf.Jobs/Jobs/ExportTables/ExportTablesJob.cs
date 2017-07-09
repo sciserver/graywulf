@@ -15,12 +15,9 @@ namespace Jhu.Graywulf.Jobs.ExportTables
     public class ExportTablesJob : GraywulfAsyncCodeActivity, IGraywulfActivity, IExportTablesJob
     {
         [RequiredArgument]
-        public InArgument<JobContext> JobContext { get; set; }
-
-        [RequiredArgument]
         public InArgument<ExportTablesParameters> Parameters { get; set; }
 
-        protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
+        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
             var parameters = Parameters.Get(activityContext);
 
@@ -40,30 +37,25 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 }
             }
 
-            Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
-            string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, parameters), callback, state);
-        }
-
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, ExportTablesParameters exportTable)
-        {
-            // Create table exporter
-            var exporter = exportTable.GetInitializedTableExportTask();
-
-            RegisterCancelable(workflowInstanceGuid, activityInstanceId, exporter);
-
-            try
+            return delegate (AsyncJobContext asyncContext)
             {
-                exporter.Open();
-                exporter.Execute();
-            }
-            finally
-            {
-                exporter.Close();
-            }
+                // Create table exporter
+                var exporter = parameters.GetInitializedTableExportTask();
 
-            UnregisterCancelable(workflowInstanceGuid, activityInstanceId, exporter);
+                asyncContext.RegisterCancelable(exporter);
+
+                try
+                {
+                    exporter.Open();
+                    exporter.Execute();
+                }
+                finally
+                {
+                    exporter.Close();
+                }
+
+                asyncContext.UnregisterCancelable(exporter);
+            };
         }
-
     }
 }

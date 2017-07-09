@@ -12,12 +12,9 @@ namespace Jhu.Graywulf.Jobs.Query
     public class CopyResultset : GraywulfAsyncCodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<JobContext> JobContext { get; set; }
-
-        [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
 
-        protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
+        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
             SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
 
@@ -26,16 +23,12 @@ namespace Jhu.Graywulf.Jobs.Query
                 querypartition.PrepareCopyResultset(context);
             }
 
-            Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
-            string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, querypartition), callback, state);
-        }
-
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlQueryPartition querypartition)
-        {
-            RegisterCancelable(workflowInstanceGuid, activityInstanceId, querypartition);
-            querypartition.CopyResultset();
-            UnregisterCancelable(workflowInstanceGuid, activityInstanceId, querypartition);
+            return delegate(AsyncJobContext asyncContext)
+            {
+                asyncContext.RegisterCancelable(querypartition);
+                querypartition.CopyResultset();
+                asyncContext.UnregisterCancelable(querypartition);
+            };
         }
     }
 }

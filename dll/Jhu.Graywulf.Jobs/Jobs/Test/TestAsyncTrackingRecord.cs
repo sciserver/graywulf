@@ -2,18 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Activities;
 using System.Threading.Tasks;
-using System.Data;
-using System.Data.SqlClient;
-using System.Threading;
-using Jhu.Graywulf.Registry;
+using System.Activities;
+using System.Activities.Tracking;
 using Jhu.Graywulf.Activities;
-using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Test
 {
-    public class TestAsyncException : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class TestAsyncTrackingRecord : GraywulfAsyncCodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
         public InArgument<string> Message { get; set; }
@@ -22,9 +18,15 @@ namespace Jhu.Graywulf.Jobs.Test
         {
             string message = activityContext.GetValue(Message);
 
+            var r = new CustomTrackingRecord("test");
+            r.Data.Add("message", message);
+            activityContext.Track(r);
+
             return delegate (AsyncJobContext asyncContext)
             {
-                throw new Exception(message);
+                var r2 = new CustomTrackingRecord("test");
+                r2.Data.Add("message", message);
+                asyncContext.Track(r);
             };
         }
     }

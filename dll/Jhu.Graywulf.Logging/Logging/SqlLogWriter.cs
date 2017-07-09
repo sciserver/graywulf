@@ -87,20 +87,19 @@ namespace Jhu.Graywulf.Logging
             cmd.Parameters.Add("@EventId", SqlDbType.BigInt).Direction = ParameterDirection.Output;
             cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier);
             cmd.Parameters.Add("@JobGuid", SqlDbType.UniqueIdentifier);
+            cmd.Parameters.Add("@SessionGuid", SqlDbType.UniqueIdentifier);
             cmd.Parameters.Add("@ContextGuid", SqlDbType.UniqueIdentifier);
-            cmd.Parameters.Add("@EventSource", SqlDbType.Int);
-            cmd.Parameters.Add("@EventSeverity", SqlDbType.Int);
-            cmd.Parameters.Add("@EventDateTime", SqlDbType.DateTime);
-            cmd.Parameters.Add("@EventOrder", SqlDbType.BigInt);
-            cmd.Parameters.Add("@ExecutionStatus", SqlDbType.Int);
-            cmd.Parameters.Add("@Operation", SqlDbType.NVarChar, 255);
-            cmd.Parameters.Add("@EntityGuid", SqlDbType.UniqueIdentifier);
-            cmd.Parameters.Add("@EntityGuidFrom", SqlDbType.UniqueIdentifier);
-            cmd.Parameters.Add("@EntityGuidTo", SqlDbType.UniqueIdentifier);
-            cmd.Parameters.Add("@ExceptionType", SqlDbType.NVarChar, 255);
-            cmd.Parameters.Add("@Site", SqlDbType.NVarChar, 255);
-            cmd.Parameters.Add("@Message", SqlDbType.NVarChar, 1024);
-            cmd.Parameters.Add("@StackTrace", SqlDbType.NVarChar);
+            cmd.Parameters.Add("@Source", SqlDbType.Int);
+            cmd.Parameters.Add("@Severity", SqlDbType.TinyInt);
+            cmd.Parameters.Add("@DateTime", SqlDbType.DateTime);
+            cmd.Parameters.Add("@Order", SqlDbType.BigInt);
+            cmd.Parameters.Add("@ExecutionStatus", SqlDbType.TinyInt);
+            cmd.Parameters.Add("@Operation", SqlDbType.VarChar, 255);
+            cmd.Parameters.Add("@Server", SqlDbType.VarChar, 255);
+            cmd.Parameters.Add("@Client", SqlDbType.VarChar, 255);
+            cmd.Parameters.Add("@Message", SqlDbType.VarChar, 1024);
+            cmd.Parameters.Add("@ExceptionType", SqlDbType.VarChar, 255);
+            cmd.Parameters.Add("@ExceptionStackTrace", SqlDbType.VarChar);
 
             return cmd;
         }
@@ -119,7 +118,7 @@ namespace Jhu.Graywulf.Logging
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.Add("@EventId", SqlDbType.BigInt);
-            cmd.Parameters.Add("@Key", SqlDbType.NVarChar, 50);
+            cmd.Parameters.Add("@Key", SqlDbType.VarChar, 50);
             cmd.Parameters.Add("@Data", SqlDbType.Variant);
 
             return cmd;
@@ -129,20 +128,19 @@ namespace Jhu.Graywulf.Logging
         {
             cmd.Parameters["@UserGuid"].Value = e.UserGuid;
             cmd.Parameters["@JobGuid"].Value = e.JobGuid;
+            cmd.Parameters["@SessionGuid"].Value = e.SessionGuid;
             cmd.Parameters["@ContextGuid"].Value = e.ContextGuid;
-            cmd.Parameters["@EventSource"].Value = e.EventSource;
-            cmd.Parameters["@EventSeverity"].Value = e.EventSeverity;
-            cmd.Parameters["@EventDateTime"].Value = e.EventDateTime;
-            cmd.Parameters["@EventOrder"].Value = e.EventOrder;
+            cmd.Parameters["@Source"].Value = e.Source;
+            cmd.Parameters["@Severity"].Value = e.Severity;
+            cmd.Parameters["@DateTime"].Value = e.DateTime;
+            cmd.Parameters["@Order"].Value = e.Order;
             cmd.Parameters["@ExecutionStatus"].Value = e.ExecutionStatus;
             cmd.Parameters["@Operation"].Value = e.Operation;
-            cmd.Parameters["@EntityGuid"].Value = e.EntityGuid;
-            cmd.Parameters["@EntityGuidFrom"].Value = e.EntityGuidFrom;
-            cmd.Parameters["@EntityGuidTo"].Value = e.EntityGuidTo;
-            cmd.Parameters["@ExceptionType"].Value = e.ExceptionType == null ? (object)DBNull.Value : (object)e.ExceptionType;
-            cmd.Parameters["@Site"].Value = e.Site == null ? (object)DBNull.Value : (object)e.Site;
+            cmd.Parameters["@Server"].Value = e.Server == null ? (object)DBNull.Value : (object)e.Server;
+            cmd.Parameters["@Client"].Value = e.Client == null ? (object)DBNull.Value : (object)e.Client;
             cmd.Parameters["@Message"].Value = e.Message == null ? (object)DBNull.Value : (object)e.Message;
-            cmd.Parameters["@StackTrace"].Value = e.StackTrace == null ? (object)DBNull.Value : (object)e.StackTrace;
+            cmd.Parameters["@ExceptionType"].Value = e.ExceptionType == null ? (object)DBNull.Value : (object)e.ExceptionType;
+            cmd.Parameters["@ExceptionStackTrace"].Value = e.ExceptionStackTrace == null ? (object)DBNull.Value : (object)e.ExceptionStackTrace;
         }
 
         private void SetCreateEventDataCommandValues(SqlCommand cmd, long eventId, string key, object data)
@@ -170,7 +168,7 @@ namespace Jhu.Graywulf.Logging
                             cmd.Value.Transaction = tn;
 
                             cmd.Value.ExecuteNonQuery();
-                            e.EventId = Convert.ToInt64(cmd.Value.Parameters["@EventId"].Value);
+                            e.ID = Convert.ToInt64(cmd.Value.Parameters["@EventId"].Value);
                         }
 
                         // --- write data
@@ -183,7 +181,7 @@ namespace Jhu.Graywulf.Logging
 
                                 foreach (string key in e.UserData.Keys)
                                 {
-                                    SetCreateEventDataCommandValues(cmd.Value, e.EventId, key, e.UserData[key]);
+                                    SetCreateEventDataCommandValues(cmd.Value, e.ID, key, e.UserData[key]);
                                     cmd.Value.ExecuteNonQuery();
                                 }
                             }

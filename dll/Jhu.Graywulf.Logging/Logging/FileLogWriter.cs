@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 
 namespace Jhu.Graywulf.Logging
 {
@@ -27,13 +28,30 @@ namespace Jhu.Graywulf.Logging
 
         public override void Start()
         {
-            stream = File.Open(path, FileMode.Append, FileAccess.Write, FileShare.Read);
+            stream = File.Open(path, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             Open(stream);
         }
 
         public override void Stop()
         {
             Close();
+        }
+
+        protected override void OnWriteEvent(Event e)
+        {
+            using (var m = new Mutex(false, "Global\\Jhu.Graywulf.Logging.FileLogWriter"))
+            {
+                m.WaitOne();
+
+                try
+                {
+                    base.OnWriteEvent(e);
+                }
+                finally
+                {
+                    m.ReleaseMutex();
+                }
+            }
         }
     }
 }

@@ -16,49 +16,41 @@ namespace Jhu.Graywulf.Jobs.Test
     public class TestQueryDelay : GraywulfAsyncCodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<JobContext> JobContext { get; set; }
-
-        [RequiredArgument]
         public InArgument<int> DelayPeriod { get; set; }
 
         [RequiredArgument]
         public InArgument<int> QueryTimeout { get; set; }
 
-        protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
+        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
             var delay = DelayPeriod.Get(activityContext);
             var queryTimeout = QueryTimeout.Get(activityContext);
 
-            Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
-            string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, delay, queryTimeout), callback, state);
-        }
-
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, int period, int queryTimeout)
-        {
-            var sql = String.Format("WAITFOR DELAY '{0:mm\\:ss}'", TimeSpan.FromMilliseconds(period));
-
-            using (var cn = new SqlConnection("Data Source=localhost;Integrated Security=true"))
+            return delegate (AsyncJobContext asyncContext)
             {
-                cn.Open();
-                using (var cmd = new SqlCommand(sql, cn))
+                var sql = String.Format("WAITFOR DELAY '{0:mm\\:ss}'", TimeSpan.FromMilliseconds(delay));
+
+                using (var cn = new SqlConnection("Data Source=localhost;Integrated Security=true"))
                 {
-                    cmd.CommandTimeout = queryTimeout;
-
-                    var ccmd = new CancelableDbCommand(cmd);
-                    RegisterCancelable(workflowInstanceGuid, activityInstanceId, ccmd);
-
-                    try
+                    cn.Open();
+                    using (var cmd = new SqlCommand(sql, cn))
                     {
-                        ccmd.ExecuteNonQuery();
-                    }
-                    finally
-                    {
-                        UnregisterCancelable(workflowInstanceGuid, activityInstanceId, ccmd);
+                        cmd.CommandTimeout = queryTimeout;
+
+                        var ccmd = new CancelableDbCommand(cmd);
+                        asyncContext.RegisterCancelable(ccmd);
+
+                        try
+                        {
+                            ccmd.ExecuteNonQuery();
+                        }
+                        finally
+                        {
+                            asyncContext.UnregisterCancelable(ccmd);
+                        }
                     }
                 }
-            }
+            };
         }
-
     }
 }

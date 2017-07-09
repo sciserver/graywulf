@@ -196,6 +196,7 @@
     <Compile Include="Jobs\SqlScript\SqlScriptJobFactory.cs" />
     <Compile Include="Jobs\SqlScript\SqlScriptJobInstaller.cs" />
     <Compile Include="Jobs\SqlScript\SqlScriptParameters.cs" />
+    <Compile Include="Jobs\Test\TestAsyncTrackingRecord.cs" />
     <Compile Include="Jobs\Test\TestJobInstaller.cs" />
     <Compile Include="Jobs\Test\TestAsyncException.cs" />
     <Compile Include="Jobs\Test\TestQueryDelay.cs" />

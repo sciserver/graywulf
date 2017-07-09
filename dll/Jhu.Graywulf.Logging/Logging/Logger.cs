@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.Logging
             {
                 foreach (LogWriterBase writer in writers)
                 {
-                    if ((writer.SourceMask & e.EventSource) > 0)
+                    if ((writer.SourceMask & e.Source) > 0)
                     {
                         writer.WriteEvent(e);
                     }
@@ -79,7 +79,7 @@ namespace Jhu.Graywulf.Logging
                 Exception = ex,
                 UserGuid = userGuid,
                 ContextGuid = contextGuid,
-                EventSource = source,
+                Source = source,
             };
 
             Logging.Logger.Instance.LogEvent(errorEvent);

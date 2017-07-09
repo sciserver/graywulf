@@ -23,6 +23,7 @@ namespace Jhu.Graywulf.AccessControl
         private string authorityUri;
         private bool isMasterAuthority;
         private string identifier;
+        private object evidence;
         private EntityReference<User> userReference;
 
         #endregion
@@ -89,6 +90,16 @@ namespace Jhu.Graywulf.AccessControl
         }
 
         /// <summary>
+        /// Gets or sets the value of the evidence used to
+        /// authenticate the identity
+        /// </summary>
+        public object Evidence
+        {
+            get { return evidence; }
+            set { evidence = value; }
+        }
+
+        /// <summary>
         /// Gets or sets an object holding a reference to
         /// the registry user object.
         /// </summary>
@@ -138,6 +149,7 @@ namespace Jhu.Graywulf.AccessControl
             this.authorityName = String.Empty;
             this.authorityUri = String.Empty;
             this.identifier = String.Empty;
+            this.evidence = null;
             this.userReference = new EntityReference<User>(null);
         }
 
@@ -147,6 +159,7 @@ namespace Jhu.Graywulf.AccessControl
             this.authorityName = old.authorityName;
             this.authorityUri = old.authorityUri;
             this.identifier = old.identifier;
+            this.evidence = old.evidence;
             this.userReference = new EntityReference<User>(null, old.userReference);
         }
 

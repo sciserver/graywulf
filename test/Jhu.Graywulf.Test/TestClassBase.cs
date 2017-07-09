@@ -58,6 +58,7 @@ namespace Jhu.Graywulf.Test
             QueryTimeout,
             QueryDelayRetry,
             QueryTimeoutRetry,
+            AsyncTrackingRecord,
         }
 
         protected Task scheduler;

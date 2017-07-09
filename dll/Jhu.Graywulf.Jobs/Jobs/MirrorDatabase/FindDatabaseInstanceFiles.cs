@@ -52,18 +52,6 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                     }
                 }
 
-                // Append logfiles
-                /* *** TODO: delete
-                foreach (DatabaseInstanceFile f in di.Files.Values)
-                {
-                    if (!guids.ContainsKey(f.DiskVolume.Guid))
-                    {
-                        guids.Add(f.DiskVolume.Guid, new List<Guid>());
-                    }
-
-                    guids[f.DiskVolume.Guid].Add(f.Guid);
-                }*/
-
                 SourceDatabaseInstanceFileGuids.Set(activityContext, guids);
             }
 

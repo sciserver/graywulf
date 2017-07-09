@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Logging
 
         protected override void OnWriteEvent(Event e)
         {
-            textWriter.WriteLine("{0} {1:s} {2} {3}", e.EventOrder, e.EventDateTime, e.Operation, e.ExecutionStatus);
+            textWriter.WriteLine("{0} {1:s} {2} {3}", e.Order, e.DateTime, e.Operation, e.ExecutionStatus);
 
             if (e.Exception != null)
             {

@@ -25,17 +25,19 @@ namespace Jhu.Graywulf.Logging
     }
 
     [Flags]
-    public enum EventSeverity : uint
+    public enum EventSeverity : byte
     {
         None = 0,
-        Status = 1,
-        Warning = 2,
-        Error = 4,
-        All = 0xFFFFFFFF,
+        Debug = 1,
+        Info = 2,
+        Status = 4,
+        Warning = 8,
+        Error = 16,
+        All = 0xFF,
     }
 
     [Flags]
-    public enum ExecutionStatus : uint
+    public enum ExecutionStatus : byte
     {
         Unknown = 0,
 
@@ -46,7 +48,7 @@ namespace Jhu.Graywulf.Logging
         Compensating = 16,
         Faulted = 32,
 
-        All = 0xFFFFFFFF,
+        All = 0xFF,
     }
 
     public enum EventColumn

@@ -15,12 +15,9 @@ namespace Jhu.Graywulf.Jobs.ImportTables
     public class ImportTablesJob : GraywulfAsyncCodeActivity, IGraywulfActivity, IImportTablesJob
     {
         [RequiredArgument]
-        public InArgument<JobContext> JobContext { get; set; }
-
-        [RequiredArgument]
         public InArgument<ImportTablesParameters> Parameters { get; set; }
 
-        protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
+        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
             var parameters = Parameters.Get(activityContext);
 
@@ -38,30 +35,25 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                 }
             }
 
-            Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
-            string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, parameters), callback, state);
-        }
-
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, ImportTablesParameters parameters)
-        {
-            // Create table exporter
-            var importer = parameters.GetInitializedTableImportTask();
-
-            RegisterCancelable(workflowInstanceGuid, activityInstanceId, importer);
-
-            try
+            return delegate (AsyncJobContext asyncContext)
             {
-                importer.Open();
-                importer.Execute();
-            }
-            finally
-            {
-                importer.Close();
-            }
+                // Create table importer
+                var importer = parameters.GetInitializedTableImportTask();
 
-            UnregisterCancelable(workflowInstanceGuid, activityInstanceId, importer);
+                asyncContext.RegisterCancelable(importer);
+
+                try
+                {
+                    importer.Open();
+                    importer.Execute();
+                }
+                finally
+                {
+                    importer.Close();
+                }
+
+                asyncContext.UnregisterCancelable(importer);
+            };
         }
-
     }
 }

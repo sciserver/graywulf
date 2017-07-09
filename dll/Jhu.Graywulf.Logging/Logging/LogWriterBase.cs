@@ -54,8 +54,8 @@ namespace Jhu.Graywulf.Logging
         {
             // Enforce mask
 
-            if ((e.EventSource & this.SourceMask) != 0 &&
-                (e.EventSeverity & this.SeverityMask) != 0 &&
+            if ((e.Source & this.SourceMask) != 0 &&
+                (e.Severity & this.SeverityMask) != 0 &&
                 (e.ExecutionStatus & this.StatusMask) != 0)
             {
                 OnWriteEvent(e);

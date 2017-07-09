@@ -16,37 +16,29 @@ namespace Jhu.Graywulf.Jobs.Query
     public class CopyRemoteTable : GraywulfAsyncCodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<JobContext> JobContext { get; set; }
-
-        [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
 
         [RequiredArgument]
         public InArgument<string> RemoteTable { get; set; }
 
-        protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
+        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
             SqlQueryPartition querypartition = (SqlQueryPartition)QueryPartition.Get(activityContext);
-            
             TableReference remotetable = null;
             SourceTableQuery source;
 
             using (Context context = querypartition.Query.CreateContext(this, activityContext))
-            {       
+            {
                 remotetable = querypartition.RemoteTableReferences[RemoteTable.Get(activityContext)];
                 querypartition.PrepareCopyRemoteTable(remotetable, out source);
             }
 
-            Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
-            string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, querypartition, remotetable, source), callback, state);
-        }
-
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlQueryPartition querypartition, TableReference remotetable, SourceTableQuery source)
-        {
-            RegisterCancelable(workflowInstanceGuid, activityInstanceId, querypartition);
-            querypartition.CopyRemoteTable(remotetable, source);
-            UnregisterCancelable(workflowInstanceGuid, activityInstanceId, querypartition);
+            return delegate (AsyncJobContext asyncContext)
+            {
+                asyncContext.RegisterCancelable(querypartition);
+                querypartition.CopyRemoteTable(remotetable, source);
+                asyncContext.UnregisterCancelable(querypartition);
+            };
         }
     }
 }

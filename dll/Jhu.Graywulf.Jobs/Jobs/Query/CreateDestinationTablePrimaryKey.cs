@@ -13,12 +13,9 @@ namespace Jhu.Graywulf.Jobs.Query
     public class CreateDestinationTablePrimaryKey : GraywulfAsyncCodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<JobContext> JobContext { get; set; }
-
-        [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
 
-        protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
+        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
             var query = Query.Get(activityContext);
             var queryPartition = query.Partitions[0];
@@ -30,16 +27,12 @@ namespace Jhu.Graywulf.Jobs.Query
                 queryPartition.PrepareCreateDestinationTablePrimaryKey(context, activityContext.GetExtension<IScheduler>(), out destinationTable);
             }
 
-            Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
-            string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, queryPartition, destinationTable), callback, state);
-        }
-
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlQueryPartition queryPartition, Table destinationTable)
-        {
-            RegisterCancelable(workflowInstanceGuid, activityInstanceId, queryPartition);
-            queryPartition.CreateDestinationTablePrimaryKey(destinationTable);
-            UnregisterCancelable(workflowInstanceGuid, activityInstanceId, queryPartition);
+            return delegate (AsyncJobContext asyncContext)
+            {
+                asyncContext.RegisterCancelable(queryPartition);
+                queryPartition.CreateDestinationTablePrimaryKey(destinationTable);
+                asyncContext.UnregisterCancelable(queryPartition);
+            };
         }
     }
 }

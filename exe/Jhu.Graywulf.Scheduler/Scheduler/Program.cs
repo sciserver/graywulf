@@ -23,6 +23,7 @@ namespace Jhu.Graywulf.Scheduler
             {
                 Console.WriteLine("Graywulf scheduler is starting...");
 
+                // TODO: move to logger
 #if BREAKDEBUG
                 Console.WriteLine("Warning: built with BREAKDEBUG flag enabled.");
 #endif
@@ -59,10 +60,15 @@ namespace Jhu.Graywulf.Scheduler
         /// <summary>
         /// Stars the scheduler in debug mode, used for testing.
         /// </summary>
-        internal static void StartDebug()
+        internal static void StartDebug(object options)
         {
             Scheduler.Configuration.RunSanityCheck();
 
+            if (options != null)
+            {
+                QueueManager.Instance.IsLayoutRequired = (bool)options;
+            }
+            
             QueueManager.Instance.Start(Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName, true);
         }
 

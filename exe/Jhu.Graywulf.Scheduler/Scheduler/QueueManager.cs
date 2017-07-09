@@ -86,6 +86,12 @@ namespace Jhu.Graywulf.Scheduler
         private Guid contextGuid;
 
         /// <summary>
+        /// Debug option to prevent loading the entire cluster config
+        /// Used for faster test execution
+        /// </summary>
+        private bool isLayouRequired;
+
+        /// <summary>
         /// Cached cluster information
         /// </summary>
         private Cluster cluster;
@@ -122,6 +128,12 @@ namespace Jhu.Graywulf.Scheduler
             get { return scheduler; }
         }
 
+        internal bool IsLayoutRequired
+        {
+            get { return isLayouRequired; }
+            set { isLayouRequired = value; }
+        }
+
         #endregion
         #region Constructors and initializers
 
@@ -143,6 +155,7 @@ namespace Jhu.Graywulf.Scheduler
             this.eventOrder = 0;
             this.contextGuid = Guid.Empty;
 
+            this.isLayouRequired = true;
             this.cluster = null;
             this.scheduler = null;
         }
@@ -224,41 +237,44 @@ namespace Jhu.Graywulf.Scheduler
                     }
                 }
 
-                c.LoadDomains(true);
-                foreach (var dom in c.Domains.Values)
+                if (isLayouRequired)
                 {
-                    dom.LoadFederations(true);
-                    foreach (var ff in dom.Federations.Values)
+                    c.LoadDomains(true);
+                    foreach (var dom in c.Domains.Values)
                     {
-                        ff.LoadDatabaseDefinitions(true);
-                        foreach (var dd in ff.DatabaseDefinitions.Values)
+                        dom.LoadFederations(true);
+                        foreach (var ff in dom.Federations.Values)
                         {
-                            cluster.DatabaseDefinitions.Add(dd.Guid, new DatabaseDefinition(dd));
-
-                            dd.LoadDatabaseInstances(true);
-                            foreach (var di in dd.DatabaseInstances.Values)
+                            ff.LoadDatabaseDefinitions(true);
+                            foreach (var dd in ff.DatabaseDefinitions.Values)
                             {
-                                var ddi = new DatabaseInstance(di);
+                                cluster.DatabaseDefinitions.Add(dd.Guid, new DatabaseDefinition(dd));
 
-                                // add to global list
-                                cluster.DatabaseInstances.Add(di.Guid, ddi);
-
-                                // add to database definition lists
-                                Dictionary<Guid, DatabaseInstance> databaseinstances;
-                                if (cluster.DatabaseDefinitions[dd.Guid].DatabaseInstances.ContainsKey((di.DatabaseVersion.Name)))
+                                dd.LoadDatabaseInstances(true);
+                                foreach (var di in dd.DatabaseInstances.Values)
                                 {
-                                    databaseinstances = cluster.DatabaseDefinitions[dd.Guid].DatabaseInstances[di.DatabaseVersion.Name];
-                                }
-                                else
-                                {
-                                    databaseinstances = new Dictionary<Guid, DatabaseInstance>();
-                                    cluster.DatabaseDefinitions[dd.Guid].DatabaseInstances.Add(di.DatabaseVersion.Name, databaseinstances);
-                                }
+                                    var ddi = new DatabaseInstance(di);
 
-                                databaseinstances.Add(di.Guid, ddi);
+                                    // add to global list
+                                    cluster.DatabaseInstances.Add(di.Guid, ddi);
 
-                                ddi.ServerInstance = cluster.ServerInstances[di.ServerInstanceReference.Guid];
-                                ddi.DatabaseDefinition = cluster.DatabaseDefinitions[dd.Guid];
+                                    // add to database definition lists
+                                    Dictionary<Guid, DatabaseInstance> databaseinstances;
+                                    if (cluster.DatabaseDefinitions[dd.Guid].DatabaseInstances.ContainsKey((di.DatabaseVersion.Name)))
+                                    {
+                                        databaseinstances = cluster.DatabaseDefinitions[dd.Guid].DatabaseInstances[di.DatabaseVersion.Name];
+                                    }
+                                    else
+                                    {
+                                        databaseinstances = new Dictionary<Guid, DatabaseInstance>();
+                                        cluster.DatabaseDefinitions[dd.Guid].DatabaseInstances.Add(di.DatabaseVersion.Name, databaseinstances);
+                                    }
+
+                                    databaseinstances.Add(di.Guid, ddi);
+
+                                    ddi.ServerInstance = cluster.ServerInstances[di.ServerInstanceReference.Guid];
+                                    ddi.DatabaseDefinition = cluster.DatabaseDefinitions[dd.Guid];
+                                }
                             }
                         }
                     }
@@ -307,7 +323,7 @@ namespace Jhu.Graywulf.Scheduler
 
             StartPoller();
         }
-        
+
         /// <summary>
         /// Persists all jobs and stops the scheduler.
         /// </summary>
@@ -1010,12 +1026,12 @@ namespace Jhu.Graywulf.Scheduler
             // TODO: add guids, etc.
 
             e.UserGuid = Guid.Empty;
-            e.EventSource = EventSource.Scheduler;
+            e.Source = EventSource.Scheduler;
             e.ExecutionStatus = ExecutionStatus.Closed;
 
             e.JobGuid = Guid.Empty;
             e.ContextGuid = contextGuid;
-            e.EventOrder = ++eventOrder;
+            e.Order = ++eventOrder;
 
             Logger.Instance.LogEvent(e);
         }

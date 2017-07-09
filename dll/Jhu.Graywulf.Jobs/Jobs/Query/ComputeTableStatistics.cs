@@ -16,15 +16,12 @@ namespace Jhu.Graywulf.Jobs.Query
     public class ComputeTableStatistics : GraywulfAsyncCodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<JobContext> JobContext { get; set; }
-
-        [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
 
         [RequiredArgument]
         public InArgument<ITableSource> TableSource { get; set; }
 
-        protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
+        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
             var query = Query.Get(activityContext);
             var tableSource = TableSource.Get(activityContext);
@@ -36,16 +33,12 @@ namespace Jhu.Graywulf.Jobs.Query
                 statisticsDataset = query.GetStatisticsDataset(tableSource);
             }
 
-            Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
-            string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, query, tableSource, statisticsDataset), callback, state);
-        }
-
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlQuery query, ITableSource tableSource, DatasetBase statisticsDataset)
-        {
-            RegisterCancelable(workflowInstanceGuid, activityInstanceId, query);
-            query.ComputeTableStatistics(tableSource, statisticsDataset);
-            UnregisterCancelable(workflowInstanceGuid, activityInstanceId, query);
+            return delegate(AsyncJobContext asyncContext)
+            {
+                asyncContext.RegisterCancelable(query);
+                query.ComputeTableStatistics(tableSource, statisticsDataset);
+                asyncContext.UnregisterCancelable(query);
+            };
         }
     }
 }

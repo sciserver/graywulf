@@ -159,7 +159,7 @@ namespace Jhu.Graywulf.Web.UI
 
             // Save exception to session for future use
             Session[Constants.SessionException] = ex;
-            Session[Constants.SessionExceptionEventID] = error.EventId;
+            Session[Constants.SessionExceptionEventID] = error.ID;
 
             if (registryContext != null)
             {

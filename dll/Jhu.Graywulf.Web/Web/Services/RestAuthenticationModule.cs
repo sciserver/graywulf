@@ -81,7 +81,10 @@ namespace Jhu.Graywulf.Web.Services
                 // is returned to the client nicely packed.
 
 #if BREAKDEBUG
-                System.Diagnostics.Debugger.Break();
+                if (System.Diagnostics.Debugger != null)
+                {
+                    System.Diagnostics.Debugger.Break();
+                }
 #endif
 
                 throw new WebFaultException<Exception>(ex, System.Net.HttpStatusCode.InternalServerError);

@@ -9,31 +9,35 @@ namespace Jhu.Graywulf.Logging
 {
     public class Event
     {
-        private long eventId;
+        #region Private member variables
+
+        private long id;
         private Guid userGuid;
         private Guid jobGuid;
+        private Guid sessionGuid;
         private Guid contextGuid;
-        private EventSource eventSource;
-        private EventSeverity eventSeverity;
-        private DateTime eventDateTime;
-        private long eventOrder;
+        private EventSource source;
+        private EventSeverity severity;
+        private DateTime dateTime;
+        private long order;
         private ExecutionStatus executionStatus;
         private string operation;
-        private Guid entityGuid;
-        private Guid entityGuidFrom;
-        private Guid entityGuidTo;
-        private string exceptionType;
-        private string site;
+        private string server;
+        private string client;
         private string message;
-        private string stackTrace;
+        private string exceptionType;
+        private string exceptionStackTrace;
 
         private Dictionary<string, object> userData;
         private Exception exception;
 
-        public long EventId
+        #endregion
+        #region Properties
+
+        public long ID
         {
-            get { return eventId; }
-            set { eventId = value; }
+            get { return id; }
+            set { id = value; }
         }
 
         public Guid UserGuid
@@ -48,34 +52,40 @@ namespace Jhu.Graywulf.Logging
             set { jobGuid = value; }
         }
 
+        public Guid SessionGuid
+        {
+            get { return sessionGuid; }
+            set { sessionGuid = value; }
+        }
+
         public Guid ContextGuid
         {
             get { return contextGuid; }
             set { contextGuid = value; }
         }
 
-        public EventSource EventSource
+        public EventSource Source
         {
-            get { return eventSource; }
-            set { eventSource = value; }
+            get { return source; }
+            set { source = value; }
         }
 
-        public EventSeverity EventSeverity
+        public EventSeverity Severity
         {
-            get { return eventSeverity; }
-            set { eventSeverity = value; }
+            get { return severity; }
+            set { severity = value; }
         }
 
-        public DateTime EventDateTime
+        public DateTime DateTime
         {
-            get { return eventDateTime; }
-            set { eventDateTime = value; }
+            get { return dateTime; }
+            set { dateTime = value; }
         }
 
-        public long EventOrder
+        public long Order
         {
-            get { return eventOrder; }
-            set { eventOrder = value; }
+            get { return order; }
+            set { order = value; }
         }
 
         public ExecutionStatus ExecutionStatus
@@ -90,34 +100,16 @@ namespace Jhu.Graywulf.Logging
             set { operation = value; }
         }
 
-        public Guid EntityGuid
+        public string Server
         {
-            get { return entityGuid; }
-            set { entityGuid = value; }
+            get { return server; }
+            set { server = value; }
         }
 
-        public Guid EntityGuidFrom
+        public string Client
         {
-            get { return entityGuidFrom; }
-            set { entityGuidFrom = value; }
-        }
-
-        public Guid EntityGuidTo
-        {
-            get { return entityGuidTo; }
-            set { entityGuidTo = value; }
-        }
-
-        public string ExceptionType
-        {
-            get { return exceptionType; }
-            set { exceptionType = value; }
-        }
-
-        public string Site
-        {
-            get { return site; }
-            set { site = value; }
+            get { return client; }
+            set { client = value; }
         }
 
         public string Message
@@ -126,10 +118,16 @@ namespace Jhu.Graywulf.Logging
             set { message = value; }
         }
 
-        public string StackTrace
+        public string ExceptionType
         {
-            get { return stackTrace; }
-            set { stackTrace = value; }
+            get { return exceptionType; }
+            set { exceptionType = value; }
+        }
+
+        public string ExceptionStackTrace
+        {
+            get { return exceptionStackTrace; }
+            set { exceptionStackTrace = value; }
         }
 
         public Dictionary<string, object> UserData
@@ -143,6 +141,9 @@ namespace Jhu.Graywulf.Logging
             set { SetException(value); }
         }
 
+        #endregion
+        #region Constructors and initializers
+
         public Event()
         {
             InitializeMembers();
@@ -153,14 +154,17 @@ namespace Jhu.Graywulf.Logging
             CopyMembers(old);
         }
 
+        // TODO ****
         public Event(string operation, Guid entityGuid)
         {
             InitializeMembers();
 
             this.operation = operation;
-            this.entityGuid = entityGuid;
+
+            userData[Constants.UserDataEntityGuid] = entityGuid;
         }
 
+        // TODO ***
         public Event(string operation, Exception ex)
         {
             InitializeMembers();
@@ -171,23 +175,22 @@ namespace Jhu.Graywulf.Logging
 
         private void InitializeMembers()
         {
-            this.eventId = 0;
+            this.id = 0;
             this.userGuid = Guid.Empty;
             this.jobGuid = Guid.Empty;
+            this.sessionGuid = Guid.Empty;
             this.contextGuid = Guid.Empty;
-            this.eventSource = EventSource.None;
-            this.eventSeverity = EventSeverity.Status;
-            this.eventDateTime = DateTime.Now;
-            this.eventOrder = 0;
+            this.source = EventSource.None;
+            this.severity = EventSeverity.Info;
+            this.dateTime = DateTime.Now;
+            this.order = 0;
             this.executionStatus = ExecutionStatus.Executing;
             this.operation = string.Empty;
-            this.entityGuid = Guid.Empty;
-            this.entityGuidFrom = Guid.Empty;
-            this.entityGuidTo = Guid.Empty;
-            this.exceptionType = null;
-            this.site = Environment.MachineName;
+            this.server = Environment.MachineName;
+            this.client = null;
             this.message = null;
-            this.stackTrace = null;
+            this.exceptionType = null;
+            this.exceptionStackTrace = null;
 
             this.userData = new Dictionary<string, object>();
             this.exception = null;
@@ -195,23 +198,22 @@ namespace Jhu.Graywulf.Logging
 
         private void CopyMembers(Event old)
         {
-            this.eventId = old.eventId;
+            this.id = old.id;
             this.userGuid = old.userGuid;
             this.jobGuid = old.jobGuid;
+            this.sessionGuid = old.sessionGuid;
             this.contextGuid = old.contextGuid;
-            this.eventSource = old.eventSource;
-            this.eventSeverity = old.eventSeverity;
-            this.eventDateTime = old.eventDateTime;
-            this.eventOrder = old.eventOrder;
+            this.source = old.source;
+            this.severity = old.severity;
+            this.dateTime = old.dateTime;
+            this.order = old.order;
             this.executionStatus = old.executionStatus;
             this.operation = old.operation;
-            this.entityGuid = old.entityGuid;
-            this.entityGuidFrom = old.entityGuidFrom;
-            this.entityGuidTo = old.entityGuidTo;
-            this.exceptionType = old.exceptionType;
-            this.site = old.site;
+            this.server = old.server;
+            this.client = old.client;
             this.message = old.message;
-            this.stackTrace = old.stackTrace;
+            this.exceptionType = old.exceptionType;
+            this.exceptionStackTrace = old.exceptionStackTrace;
 
             this.userData = new Dictionary<string, object>(old.userData);
             this.exception = old.exception;
@@ -221,48 +223,98 @@ namespace Jhu.Graywulf.Logging
         {
             int o = -1;
 
-            this.eventId = dr.GetInt64(++o);
+            this.id = dr.GetInt64(++o);
             this.userGuid = dr.GetGuid(++o);
             this.jobGuid = dr.GetGuid(++o);
+            this.sessionGuid = dr.GetGuid(++o);
             this.contextGuid = dr.GetGuid(++o);
-            this.eventSource = (EventSource)dr.GetInt32(++o);
-            this.eventSeverity = (EventSeverity)dr.GetInt32(++o);
-            this.eventDateTime = dr.GetDateTime(++o);
-            this.eventOrder = dr.GetInt64(++o);
-            this.executionStatus = (ExecutionStatus)dr.GetInt32(++o);
+            this.source = (EventSource)dr.GetInt32(++o);
+            this.severity = (EventSeverity)dr.GetByte(++o);
+            this.dateTime = dr.GetDateTime(++o);
+            this.order = dr.GetInt64(++o);
+            this.executionStatus = (ExecutionStatus)dr.GetByte(++o);
             this.operation = dr.GetString(++o);
-            this.entityGuid = dr.GetGuid(++o);
-            this.entityGuidFrom = dr.GetGuid(++o);
-            this.entityGuidTo = dr.GetGuid(++o);
-            this.exceptionType = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.server = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.client = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.message = dr.IsDBNull(++o) ? null : dr.GetString(o);
-            this.site = dr.IsDBNull(++o) ? null : dr.GetString(o);
-            this.stackTrace = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.exceptionType = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.exceptionStackTrace = dr.IsDBNull(++o) ? null : dr.GetString(o);
+
             this.exception = null;
 
             return o;
         }
 
+        #endregion
+
+        public static Event CreateWebServiceOperationEvent(string operation)
+        {
+            var e = new Event()
+            {
+            };
+
+            e.SetWebContext();
+            e.SetWcfContext();
+            e.SetWcfWebContext();
+
+            return e;
+        }
+
+        public static Event CreateWebServiceExceptionEvent(string operation, Exception ex)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void SetWebContext()
+        {
+            var context = System.Web.HttpContext.Current;
+
+            if (context != null)
+            {
+
+            }
+        }
+
+        private void SetWcfContext()
+        {
+            var context = System.ServiceModel.OperationContext.Current;
+            
+            if (context != null)
+            {
+                //context.IncomingMessageProperties
+            }
+        }
+
+        private void SetWcfWebContext()
+        {
+            var context = System.ServiceModel.Web.WebOperationContext.Current;
+
+            if (context != null)
+            {
+
+            }
+        }
+
         private void SetException(Exception ex)
         {
             message = null;
-            site = null;
-            stackTrace = null;
+            server = null;
+            exceptionStackTrace = null;
             exceptionType = null;
 
             exception = ex;
 
             if (ex != null)
             {
-                message = GetMessage(ex);
-                stackTrace = GetStackTrace(ex);
-                exceptionType = GetType(ex);
-                site = GetSite(ex);
-                eventSeverity = Logging.EventSeverity.Error;
+                message = GetExceptionMessage(ex);
+                exceptionStackTrace = GetExceptionStackTrace(ex);
+                exceptionType = GetExceptionType(ex);
+                server = GetExceptionSite(ex);
+                severity = Logging.EventSeverity.Error;
             }
         }
 
-        private string GetMessage(Exception ex)
+        private string GetExceptionMessage(Exception ex)
         {
             if (ex is AggregateException)
             {
@@ -274,7 +326,7 @@ namespace Jhu.Graywulf.Logging
             }
         }
 
-        private string GetType(Exception ex)
+        private string GetExceptionType(Exception ex)
         {
             if (ex is AggregateException)
             {
@@ -291,7 +343,7 @@ namespace Jhu.Graywulf.Logging
         /// </summary>
         /// <param name="ex"></param>
         /// <returns></returns>
-        private string GetStackTrace(Exception ex)
+        private string GetExceptionStackTrace(Exception ex)
         {
             var sb = new StringBuilder();
             var e = ex;
@@ -317,7 +369,7 @@ namespace Jhu.Graywulf.Logging
             }
         }
 
-        private string GetSite(Exception ex)
+        private string GetExceptionSite(Exception ex)
         {
             // Unwrap one level
             if (ex is AggregateException)

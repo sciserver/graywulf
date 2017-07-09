@@ -9,12 +9,24 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Activities
 {
-    public abstract class GraywulfAsyncCodeActivity : AsyncCodeActivity
+    public abstract class GraywulfAsyncCodeActivity : AsyncCodeActivity, IGraywulfActivity
     {
+        protected delegate void AsyncActivityWorker(AsyncJobContext asyncContext);
+        private delegate AsyncJobContext AsyncActivityWorkerTask(AsyncJobContext asyncContext, AsyncActivityWorker worker);
 
         #region Private member variables
-        
+
         private ConcurrentDictionary<string, ICancelableTask> cancelableTasks;
+
+        #endregion
+        #region Properties
+
+        internal ConcurrentDictionary<string, ICancelableTask> CancelableTasks
+        {
+            get { return cancelableTasks; }
+        }
+
+        public InArgument<JobContext> JobContext { get; set; }
 
         #endregion
         #region Constructors and initializers
@@ -31,71 +43,62 @@ namespace Jhu.Graywulf.Activities
 
         #endregion
 
-        protected Task EnqueueAsync(Action<object> action, AsyncCallback callback, object state)
+        protected abstract AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext);
+
+        protected sealed override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
         {
-            Task task = Task.Factory.StartNew(action, state);
-            task.ContinueWith(res => callback(task));
-            return task;
+            var asyncContext = new AsyncJobContext(this, activityContext);
+            var action = OnBeginExecute(activityContext);
+            var task = new AsyncActivityWorkerTask(Execute);
+            activityContext.UserState = task;
+
+            return task.BeginInvoke(asyncContext, action, callback, state);
         }
 
-        protected override void EndExecute(AsyncCodeActivityContext context, IAsyncResult result)
+        private AsyncJobContext Execute(AsyncJobContext context, AsyncActivityWorker action)
         {
+            AsyncJobContext.Current = context;
+
             try
             {
-                ((Task)result).Wait();
+                action(context);
             }
-            catch (AggregateException ex)
+            catch (Exception ex)
             {
-                if (ex.InnerException is OperationCanceledException)
+                context.Exception = ex;
+            }
+
+            AsyncJobContext.Current = null;
+
+            return context;
+        }
+
+        protected override void EndExecute(AsyncCodeActivityContext activityContext, IAsyncResult result)
+        {
+            var task = (AsyncActivityWorkerTask)activityContext.UserState;
+            var gwcx = task.EndInvoke(result);
+            var ex = gwcx.Exception;
+
+            // Process tracking records from async call
+            foreach (var r in gwcx.TrackingRecords)
+            {
+                activityContext.Track(r);
+            }
+
+            gwcx.Dispose();
+
+            if (ex != null)
+            {
+                if (ex is AggregateException &&
+                   ((AggregateException)gwcx.Exception).InnerException is OperationCanceledException)
                 {
                     // This is a normal way of operation
                 }
                 else
                 {
                     throw ex;
-                }            
-            }
-        }
-
-        /// <summary>
-        /// Registers a task that have to be canceled when the activity is canceled.
-        /// </summary>
-        /// <param name="workflowInstanceGuid"></param>
-        /// <param name="activityInstanceId"></param>
-        /// <param name="cancelableTask"></param>
-        protected void RegisterCancelable(Guid workflowInstanceGuid, string activityInstanceId, ICancelableTask cancelableTask)
-        {
-            if (cancelableTasks.ContainsKey(activityInstanceId))
-            {
-                throw new InvalidOperationException(ExceptionMessages.OnlyOneCancelable);
-            }
-
-            cancelableTasks.TryAdd(GetUniqueActivityID( workflowInstanceGuid, activityInstanceId), cancelableTask);
-        }
-
-        /// <summary>
-        /// Unregisteres a task that no longer needs to be cancelable.
-        /// </summary>
-        /// <param name="workflowInstanceGuid"></param>
-        /// <param name="activityInstanceId"></param>
-        /// <param name="cancelableTask"></param>
-        protected void UnregisterCancelable(Guid workflowInstanceGuid, string activityInstanceId, ICancelableTask cancelableTask)
-        {
-            // TODO: apparently, this gets called more than once sometimes
-
-            ICancelableTask finishedtask;
-            if (cancelableTasks.TryRemove(GetUniqueActivityID(workflowInstanceGuid, activityInstanceId), out finishedtask))
-            {
-                if (finishedtask != cancelableTask)
-                {
-                    throw new InvalidOperationException(ExceptionMessages.ObjectsDoNotMatch);
                 }
             }
-        }
-
-        private string GetUniqueActivityID(Guid workflowInstanceGuid, string activityInstanceId)
-        {
-            return String.Format("{0}_{1}", workflowInstanceGuid.ToString(), activityInstanceId);
         }
 
         /// <summary>
@@ -103,7 +106,7 @@ namespace Jhu.Graywulf.Activities
         /// </summary>
         /// <param name="context"></param>
         /// <remarks>
-        /// This method cancels all registered runnin cancelable tasks before marking the
+        /// This method cancels all registered running cancelable tasks before marking the
         /// activity canceled.
         /// </remarks>
         protected override void Cancel(AsyncCodeActivityContext context)
@@ -124,6 +127,9 @@ namespace Jhu.Graywulf.Activities
             base.Cancel(context);
         }
 
-
+        internal string GetUniqueActivityID(Guid workflowInstanceGuid, string activityInstanceId)
+        {
+            return String.Format("{0}_{1}", workflowInstanceGuid.ToString(), activityInstanceId);
+        }
     }
 }

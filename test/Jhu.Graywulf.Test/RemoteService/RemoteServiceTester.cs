@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.RemoteService
         {
         }
 
-        protected override void OnStart()
+        protected override void OnStart(object options)
         {
             rs = new Jhu.Graywulf.RemoteService.Server.RemoteService();
             rs.Start(null);

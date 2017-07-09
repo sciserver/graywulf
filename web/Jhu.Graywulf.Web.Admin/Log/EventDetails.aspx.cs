@@ -17,12 +17,12 @@ namespace Jhu.Graywulf.Web.Admin.Log
                 var ef = new WebEventFactory();
                 var ev = ef.LoadEvent(long.Parse(Request.QueryString["eventId"]));
 
-                EventId.Text = ev.EventId.ToString();
-                EventOrder.Text = ev.EventOrder.ToString();
-                EventSeverity.Text = ev.EventSeverity.ToString();
+                EventId.Text = ev.ID.ToString();
+                EventOrder.Text = ev.Order.ToString();
+                EventSeverity.Text = ev.Severity.ToString();
                 ExceptionType.Text = ev.ExceptionType;
 
-                StackTrace.Text = Server.HtmlEncode(ev.StackTrace).Replace("\r\n", "<br />");
+                StackTrace.Text = Server.HtmlEncode(ev.ExceptionStackTrace).Replace("\r\n", "<br />");
             }
         }
     }
