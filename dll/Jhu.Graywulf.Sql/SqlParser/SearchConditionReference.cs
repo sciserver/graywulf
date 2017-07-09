@@ -39,15 +39,6 @@ namespace Jhu.Graywulf.SqlParser
             get { return node; }
         }
 
-        /* TODO: delete
-        public string Code
-        {
-            get
-            {
-                return (node == null) ? String.Empty : node.GetCode(false);
-            }
-        }*/
-
         public SearchConditionReference()
         {
             InitializeMembers();
