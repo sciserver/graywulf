@@ -12,7 +12,6 @@ namespace Jhu.Graywulf.Activities
         private Guid domainGuid;
         private Guid federationGuid;
         private Guid jobGuid;
-        private Guid sessionGuid;
         private Guid userGuid;
         private string userName;
         private string jobID;
@@ -42,12 +41,6 @@ namespace Jhu.Graywulf.Activities
         {
             get { return jobGuid; }
             set { jobGuid = value; }
-        }
-
-        public Guid SessionGuid
-        {
-            get { return sessionGuid; }
-            set { sessionGuid = value; }
         }
 
         public Guid UserGuid
@@ -89,7 +82,6 @@ namespace Jhu.Graywulf.Activities
             this.domainGuid = Guid.Empty;
             this.federationGuid = Guid.Empty;
             this.jobGuid = Guid.Empty;
-            this.sessionGuid = Guid.Empty;
             this.userGuid = Guid.Empty;
             this.userName = null;
             this.jobID = null;
@@ -101,15 +93,9 @@ namespace Jhu.Graywulf.Activities
             this.domainGuid = old.domainGuid;
             this.federationGuid = old.federationGuid;
             this.jobGuid = old.jobGuid;
-            this.sessionGuid = old.sessionGuid;
             this.userGuid = old.userGuid;
             this.userName = old.userName;
             this.jobID = old.jobID;
-        }
-
-        public override object InitializeLifetimeService()
-        {
-            return null;
         }
         
         public JobContext Clone()

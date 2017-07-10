@@ -10,8 +10,19 @@ namespace Jhu.Graywulf.Activities
     /// </summary>
     public enum WorkflowEventType
     {
+        /// <summary>
+        /// Workflow completed without unhandled exceptions.
+        /// </summary>
         Completed,
+
+        /// <summary>
+        /// Workflow forcefully cancelled, either by the user, either because of timeout.
+        /// </summary>
         Cancelled,
+
+        TimedOut,
+
         Failed,
+        Persisted,
     }
 }

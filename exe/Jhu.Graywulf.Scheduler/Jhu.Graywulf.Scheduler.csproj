@@ -102,7 +102,6 @@
     </Compile>
     <Compile Include="Scheduler\ServerInstance.cs" />
     <Compile Include="Scheduler\WorkflowApplicationHost.cs" />
-    <Compile Include="Scheduler\WorkflowApplicationHostEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Scheduler\ExceptionMessages.resx">

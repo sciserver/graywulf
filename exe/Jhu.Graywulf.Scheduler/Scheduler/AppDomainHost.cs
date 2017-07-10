@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.Remoting.Lifetime;
+using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Scheduler
@@ -117,7 +114,8 @@ namespace Jhu.Graywulf.Scheduler
                 typeof(Jhu.Graywulf.Scheduler.WorkflowApplicationHost).Assembly.FullName,
                 typeof(Jhu.Graywulf.Scheduler.WorkflowApplicationHost).FullName);
 
-            workflowHost.ContextGuid = contextGuid;
+            // TODO: delete
+            // workflowHost.ContextGuid = contextGuid;
 
             // Now create a reference to the event handler and cache it in
             // workflowEventHandler. This is necessary to keep the delegate alive because

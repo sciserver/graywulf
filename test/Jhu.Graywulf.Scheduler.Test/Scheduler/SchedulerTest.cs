@@ -207,7 +207,7 @@ namespace Jhu.Graywulf.Scheduler
 
                 using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
                 {
-                    ji.Context = context;
+                    ji.RegistryContext = context;
                     ji.Cancel();
                 }
 

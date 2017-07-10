@@ -199,7 +199,6 @@ namespace Jhu.Graywulf.Activities
                 var cx = (JobContext)data[Constants.ActivityParameterJobContext];
                 e.UserGuid = cx.UserGuid;
                 e.JobGuid = cx.JobGuid;
-                e.SessionGuid = cx.SessionGuid;
             }
 
             // TODO Why don't we just copy everything?

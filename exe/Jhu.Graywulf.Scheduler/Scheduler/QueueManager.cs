@@ -184,7 +184,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <returns></returns>
         public Cluster LoadCluster(string clusterName)
         {
-            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var ef = new EntityFactory(context);
                 var c = ef.LoadEntity<Jhu.Graywulf.Registry.Cluster>(clusterName);
@@ -534,7 +534,7 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         private void ProcessInterruptedJobs()
         {
-            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 int failed = 0;
                 int started = 0;
@@ -606,7 +606,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             List<Job> temp = new List<Job>();
 
-            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 context.ContextGuid = contextGuid;
 
@@ -727,7 +727,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             AppDomainHost adh = null;
 
-            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 // TODO: why need to set job guid here manually?
                 context.JobReference.Guid = job.Guid;
@@ -789,7 +789,7 @@ namespace Jhu.Graywulf.Scheduler
 
         private void CancelOrTimeOutJob(Job job, bool timeout)
         {
-            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 // *** TODO: why set guid here manually?
                 context.JobReference.Guid = job.Guid;
@@ -820,7 +820,7 @@ namespace Jhu.Graywulf.Scheduler
 
         private void PersistJob(Job job)
         {
-            using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 context.JobReference.Guid = job.Guid;
                 context.ContextGuid = contextGuid;
@@ -855,7 +855,7 @@ namespace Jhu.Graywulf.Scheduler
             Job job;
             if (runningJobs.TryRemove(instanceID, out job))
             {
-                using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
                 {
                     context.JobReference.Guid = job.Guid;
                     context.ContextGuid = contextGuid;
