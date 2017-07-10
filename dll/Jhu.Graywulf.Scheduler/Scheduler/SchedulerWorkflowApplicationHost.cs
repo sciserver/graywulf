@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Scheduler
     /// than the main one and marshaled back to provide cross-domain
     /// functionality.
     /// </remarks>
-    class WorkflowApplicationHost : WorkflowApplicationHostBase
+    class SchedulerWorkflowApplicationHost : WorkflowApplicationHostBase
     {
         public new class WorkflowApplicationDetails : WorkflowApplicationHostBase.WorkflowApplicationDetails
         {
@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Scheduler
 
         #endregion
 
-        public WorkflowApplicationHost()
+        public SchedulerWorkflowApplicationHost()
         {
             InitializeMembers();
         }

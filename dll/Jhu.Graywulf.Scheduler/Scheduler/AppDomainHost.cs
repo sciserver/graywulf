@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <summary>
         /// Proxy to the workflow host created inside the AppDomain
         /// </summary>
-        private WorkflowApplicationHost workflowHost;
+        private SchedulerWorkflowApplicationHost workflowHost;
 
         /// <summary>
         /// Event handler to forward workflow events to the
@@ -110,9 +110,9 @@ namespace Jhu.Graywulf.Scheduler
             lastTimeActive = DateTime.Now;
 
             // Create the new WorkflowHost inside the new AppDomain and unwrap the proxy
-            workflowHost = (WorkflowApplicationHost)appDomain.CreateInstanceAndUnwrap(
-                typeof(Jhu.Graywulf.Scheduler.WorkflowApplicationHost).Assembly.FullName,
-                typeof(Jhu.Graywulf.Scheduler.WorkflowApplicationHost).FullName);
+            workflowHost = (SchedulerWorkflowApplicationHost)appDomain.CreateInstanceAndUnwrap(
+                typeof(Jhu.Graywulf.Scheduler.SchedulerWorkflowApplicationHost).Assembly.FullName,
+                typeof(Jhu.Graywulf.Scheduler.SchedulerWorkflowApplicationHost).FullName);
 
             // TODO: delete
             // workflowHost.ContextGuid = contextGuid;

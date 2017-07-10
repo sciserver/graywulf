@@ -89,9 +89,9 @@
     <Compile Include="Scheduler\Scheduler.cs" />
     <Compile Include="Scheduler\SchedulerConfiguration.cs" />
     <Compile Include="Scheduler\SchedulerException.cs" />
+    <Compile Include="Scheduler\SchedulerWorkflowApplicationHost.cs" />
     <Compile Include="Scheduler\ServerInstance.cs" />
     <Compile Include="Scheduler\StandaloneWorkflowApplicationHost.cs" />
-    <Compile Include="Scheduler\WorkflowApplicationHost.cs" />
     <Compile Include="Scheduler\WorkflowApplicationHostBase.cs" />
     <Compile Include="Scheduler\WorkflowApplicationHostEventArgs.cs" />
   </ItemGroup>
