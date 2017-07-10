@@ -140,12 +140,12 @@ namespace Jhu.Graywulf.Jobs.Query
             CopyMembers(old);
         }
 
-        public SqlQuery(Context context)
+        public SqlQuery(RegistryContext context)
             : base(context)
         {
             InitializeMembers(new StreamingContext());
 
-            this.Context = context;
+            this.RegistryContext = context;
         }
 
         [OnDeserializing]
@@ -475,7 +475,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     tempname = String.Format("skyquerytemp_{0}", tableName);
                     break;
                 case Jobs.Query.ExecutionMode.Graywulf:
-                    tempname = String.Format("{0}_{1}_{2}", Context.User.Name, Context.JobID, tableName);
+                    tempname = String.Format("{0}_{1}_{2}", RegistryContext.User.Name, RegistryContext.JobID, tableName);
                     break;
                 default:
                     throw new NotImplementedException();

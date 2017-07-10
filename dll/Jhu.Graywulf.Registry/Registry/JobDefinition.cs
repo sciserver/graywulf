@@ -106,7 +106,7 @@ namespace Jhu.Graywulf.Registry
         /// Constructor for creating a new <b>Database Definition</b> object and setting object context.
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
-        public JobDefinition(Context context)
+        public JobDefinition(RegistryContext context)
             : base(context)
         {
             InitializeMembers(new StreamingContext());
@@ -118,7 +118,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity in the entity hierarchy.</param>
         public JobDefinition(Federation parent)
-            : base(parent.Context, parent)
+            : base(parent.RegistryContext, parent)
         {
             InitializeMembers(new StreamingContext());
         }
@@ -206,9 +206,9 @@ namespace Jhu.Graywulf.Registry
 
         public JobInstance CreateJobInstance(string queueName, ScheduleType scheduleType, TimeSpan timeout)
         {
-            JobInstance job = new JobInstance(Context);
+            JobInstance job = new JobInstance(RegistryContext);
 
-            job.Name = JobInstanceFactory.GenerateUniqueJobID(Context);
+            job.Name = JobInstanceFactory.GenerateUniqueJobID(RegistryContext);
             job.JobDefinition = this;
             job.ParentReference.Name = queueName;
             job.WorkflowTypeName = this.workflowTypeName;

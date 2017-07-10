@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Web.Admin
 
         private void LoadItem()
         {
-            item.Context = RegistryContext;
+            item.RegistryContext = RegistryContext;
             item.Load();
         }
 

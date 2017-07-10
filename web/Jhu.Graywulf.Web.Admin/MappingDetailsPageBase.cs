@@ -44,7 +44,7 @@ namespace Jhu.Graywulf.Web.Admin
 
         protected void LoadItem()
         {
-            item.Context = RegistryContext;
+            item.RegistryContext = RegistryContext;
             item.Load();
         }
 

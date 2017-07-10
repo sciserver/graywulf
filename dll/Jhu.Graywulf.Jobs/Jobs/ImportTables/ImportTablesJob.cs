@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                     if (parameters.Destinations[i].Dataset is GraywulfDataset)
                     {
                         var gwds = (GraywulfDataset)parameters.Destinations[i].Dataset;
-                        gwds.Context = context;
+                        gwds.RegistryContext = context;
                         gwds.CacheSchemaConnectionString();
                     }
                 }

@@ -101,7 +101,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Auth
                 var identity = (GraywulfIdentity)TemporaryPrincipal.Identity;
                 user = new Registry.User(identity.User);
                 user.ParentReference.Value = RegistryContext.Domain;
-                user.Context = RegistryContext;
+                user.RegistryContext = RegistryContext;
             }
             else
             {

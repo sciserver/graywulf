@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.Schema
         {
             // TODO: update this to support multiple user databases
             
-            var udii = new UserDatabaseInstanceInstaller(Context);
+            var udii = new UserDatabaseInstanceInstaller(RegistryContext);
             udii.EnsureUserDatabaseInstanceExists(user, FederationContext.Federation.UserDatabaseVersion);
         }
 

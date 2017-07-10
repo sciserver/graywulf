@@ -55,7 +55,7 @@ namespace Jhu.Graywulf.Web.Admin
         private void LoadItem()
         {
             item = new T();
-            item.Context = RegistryContext;
+            item.RegistryContext = RegistryContext;
             if (Request.QueryString["guid"] != null)
             {
                 item.Guid = new Guid(Request.QueryString["guid"]);
@@ -107,7 +107,7 @@ namespace Jhu.Graywulf.Web.Admin
                 OnSaveForm();
 
                 item.ConcurrencyVersion = (long)ViewState["ConcurrencyVersion"];
-                item.Context = RegistryContext;
+                item.RegistryContext = RegistryContext;
 
                 try
                 {

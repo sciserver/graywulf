@@ -54,7 +54,7 @@ namespace Jhu.Graywulf.Registry
 
         #region Contructors and initializers
 
-        public EntitySearch(Context context)
+        public EntitySearch(RegistryContext context)
             : base(context)
         {
             InitializeMembers();
@@ -108,8 +108,8 @@ namespace Jhu.Graywulf.Registry
         {
             AppendSearchCriterion("@ShowHidden = 1 OR Hidden = 0");
             AppendSearchCriterion("@ShowDeleted = 1 OR Deleted = 0");
-            AppendSearchParameter("@ShowHidden", SqlDbType.Bit, Context.ShowHidden);
-            AppendSearchParameter("@ShowDeleted", SqlDbType.Bit, Context.ShowDeleted);
+            AppendSearchParameter("@ShowHidden", SqlDbType.Bit, RegistryContext.ShowHidden);
+            AppendSearchParameter("@ShowDeleted", SqlDbType.Bit, RegistryContext.ShowDeleted);
 
             if (parent != null)
             {
@@ -193,7 +193,7 @@ namespace Jhu.Graywulf.Registry
 
         public int Count()
         {
-            using (queryCommand = Context.CreateCommand())
+            using (queryCommand = RegistryContext.CreateCommand())
             {
                 string sql = @"
 {0}
@@ -229,7 +229,7 @@ SELECT COUNT(*) FROM __e
         {
             ValidateOrderBy(orderBy);
 
-            using (queryCommand = Context.CreateCommand())
+            using (queryCommand = RegistryContext.CreateCommand())
             {
                 string sql = @"
 {0}
@@ -293,11 +293,11 @@ ORDER BY __rn
                                 classtype = typeof(Entity);
                             }
 
-                            item = (Entity)classtype.GetConstructor(new Type[] { typeof(Context) }).Invoke(new object[] { Context });
+                            item = (Entity)classtype.GetConstructor(new Type[] { typeof(RegistryContext) }).Invoke(new object[] { RegistryContext });
                         }
                         else
                         {
-                            item = new Entity(Context);
+                            item = new Entity(RegistryContext);
                         }
 
                         item.LoadFromDataReader(dr);

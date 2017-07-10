@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     query.GeneratePartitions();
                     break;
                 case ExecutionMode.Graywulf:
-                    using (Context context = query.CreateContext(this, activityContext))
+                    using (RegistryContext context = query.CreateContext(this, activityContext))
                     {
                         var scheduler = activityContext.GetExtension<IScheduler>();
 

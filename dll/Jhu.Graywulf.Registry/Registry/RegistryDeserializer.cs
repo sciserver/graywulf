@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Registry
             set { duplicateMergeMethod = value; }
         }
 
-        public RegistryDeserializer(Context context)
+        public RegistryDeserializer(RegistryContext context)
             : base(context)
         {
             InitializeMembers();
@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Registry
             // Console.Error.Write("Deserializing {0}... ", entity.Name);
 
             entity.IsDeserializing = true;
-            entity.Context = this.Context;
+            entity.RegistryContext = this.RegistryContext;
 
             if (!entity.ParentReference.IsEmpty)
             {
@@ -127,7 +127,7 @@ namespace Jhu.Graywulf.Registry
 
         private void UpdateEntity(Entity entity)
         {
-            var ef = new EntityFactory(Context);
+            var ef = new EntityFactory(RegistryContext);
             var e = ef.LoadEntity(entity.GetFullyQualifiedName());
             e.UpdateMembers(entity);
             e.Save();

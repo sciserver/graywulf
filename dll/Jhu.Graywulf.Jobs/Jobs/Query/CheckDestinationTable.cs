@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             SqlQuery query = Query.Get(activityContext);
 
-            using (Context context = query.CreateContext(this, activityContext))
+            using (RegistryContext context = query.CreateContext(this, activityContext))
             {
                 query.InitializeQueryObject(context);
                 query.Destination.CheckTableExistence();

@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Install
         private DatabaseDefinition databaseDefinition;
 
         public DatabaseDefinitionInstaller(DatabaseDefinition databaseDefinition)
-            : base(databaseDefinition.Context)
+            : base(databaseDefinition.RegistryContext)
         {
             this.databaseDefinition = databaseDefinition;
         }

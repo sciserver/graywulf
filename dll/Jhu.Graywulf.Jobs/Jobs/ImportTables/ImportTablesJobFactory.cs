@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
             }
 
             var factory = (ImportTablesJobFactory)Activator.CreateInstance(type, true);
-            factory.Context = federation.Context;
+            factory.RegistryContext = federation.RegistryContext;
 
             return factory;
         }
@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
             InitializeMembers(new StreamingContext());
         }
 
-        protected ImportTablesJobFactory(Context context)
+        protected ImportTablesJobFactory(RegistryContext context)
             : base(context)
         {
             InitializeMembers(new StreamingContext());
@@ -146,7 +146,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
 
         public ImportTablesJobSettings GetJobDefinitionSettings()
         {
-            var ef = new EntityFactory(Context);
+            var ef = new EntityFactory(RegistryContext);
             var jd = ef.LoadEntity<JobDefinition>(GetJobDefinitionName());
             return new ImportTablesJobSettings(jd.Settings);
         }

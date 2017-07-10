@@ -156,14 +156,14 @@ namespace Jhu.Graywulf.Registry
         /// Constructor for creating a new <b>Domamin</b> object and setting object context.
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
-        public Domain(Context context)
+        public Domain(RegistryContext context)
             : base(context)
         {
             InitializeMembers();
         }
 
         public Domain(Cluster parent)
-            : base(parent.Context, parent)
+            : base(parent.RegistryContext, parent)
         {
             InitializeMembers();
         }

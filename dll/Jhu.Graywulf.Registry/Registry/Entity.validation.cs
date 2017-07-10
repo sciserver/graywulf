@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Registry
         {
             get
             {
-                return (lockOwner != Guid.Empty && lockOwner != Context.ContextGuid);
+                return (lockOwner != Guid.Empty && lockOwner != RegistryContext.ContextGuid);
             }
         }
 
@@ -73,7 +73,7 @@ namespace Jhu.Graywulf.Registry
             if (checkReferencing)
             {
                 // Check if there are any referencing entities
-                var ef = new EntityFactory(Context);
+                var ef = new EntityFactory(RegistryContext);
                 if (ef.FindReferencing(this).Count() > 0)
                 {
                     return false;

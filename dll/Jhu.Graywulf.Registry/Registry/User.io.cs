@@ -31,11 +31,11 @@ namespace Jhu.Graywulf.Registry
                 throw new Exception("Already a member of ..."); // TODO ***
             }
 
-            var group = new UserGroup(Context);
+            var group = new UserGroup(RegistryContext);
             group.Guid = userGroupGuid;
             group.Load();
 
-            var role = new UserRole(Context);
+            var role = new UserRole(RegistryContext);
             role.Guid = userRoleGuid;
             role.Load();
 

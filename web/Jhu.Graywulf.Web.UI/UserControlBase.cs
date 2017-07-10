@@ -7,19 +7,19 @@ using System.Web.UI.WebControls;
 
 namespace Jhu.Graywulf.Web.UI
 {
-    public abstract class UserControlBase : UserControl, Registry.IContextObject
+    public abstract class UserControlBase : UserControl, Registry.IRegistryContextObject
     {
         public string ReturnUrl
         {
             get { return Page.Request.QueryString[Constants.ReturnUrl] ?? ""; }
         }
 
-        public Registry.Context RegistryContext
+        public Registry.RegistryContext RegistryContext
         {
             get { return ((PageBase)Page).RegistryContext; }
         }
 
-        Registry.Context Registry.IContextObject.Context
+        Registry.RegistryContext Registry.IRegistryContextObject.RegistryContext
         {
             get { return ((PageBase)Page).RegistryContext; }
             set { throw new InvalidOperationException(); }

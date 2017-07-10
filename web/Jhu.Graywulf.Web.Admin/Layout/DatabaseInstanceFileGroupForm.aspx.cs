@@ -48,7 +48,7 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             FileGroup.Items.Clear();
             FileGroup.Items.Add(new ListItem("(select file group)", Guid.Empty.ToString()));
 
-            Item.Context = RegistryContext;
+            Item.RegistryContext = RegistryContext;
             Item.DatabaseInstance.DatabaseDefinition.LoadFileGroups(false);
             foreach (FileGroup fg in Item.DatabaseInstance.DatabaseDefinition.FileGroups.Values)
             {
@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             Partition.Items.Clear();
             Partition.Items.Add(new ListItem(Resources.Labels.NotApplicable, Guid.Empty.ToString()));
 
-            Item.Context = RegistryContext;
+            Item.RegistryContext = RegistryContext;
             Item.DatabaseInstance.Slice.LoadPartitions(false);
             foreach (Partition p in Item.DatabaseInstance.Slice.Partitions.Values)
             {

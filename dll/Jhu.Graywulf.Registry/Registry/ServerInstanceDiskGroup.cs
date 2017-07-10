@@ -108,7 +108,7 @@ namespace Jhu.Graywulf.Registry
         /// Constructor for creating a new <b>Server Instance Disk Group</b> object and setting object context.
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
-        public ServerInstanceDiskGroup(Context context)
+        public ServerInstanceDiskGroup(RegistryContext context)
             : base(context)
         {
             InitializeMembers();
@@ -120,7 +120,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity in the entity hierarchy.</param>
         public ServerInstanceDiskGroup(ServerInstance parent)
-            : base(parent.Context, parent)
+            : base(parent.RegistryContext, parent)
         {
             InitializeMembers();
         }

@@ -279,7 +279,7 @@ namespace Jhu.Graywulf.Jobs.Query
             return source;
         }
 
-        public virtual void PrepareExecuteQuery(Context context, IScheduler scheduler, out SourceTableQuery source, out Table destination)
+        public virtual void PrepareExecuteQuery(RegistryContext context, IScheduler scheduler, out SourceTableQuery source, out Table destination)
         {
             InitializeQueryObject(context, scheduler, true);
 
@@ -384,7 +384,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// determined in case only a table name pattern is specified and automatic
         /// unique naming is turned on.
         /// </remarks>
-        public void PrepareDestinationTable(Context context, IScheduler scheduler)
+        public void PrepareDestinationTable(RegistryContext context, IScheduler scheduler)
         {
             switch (ExecutionMode)
             {
@@ -400,7 +400,7 @@ namespace Jhu.Graywulf.Jobs.Query
             }
         }
 
-        public void PrepareCreateDestinationTablePrimaryKey(Context context, IScheduler scheduler, out Table destination)
+        public void PrepareCreateDestinationTablePrimaryKey(RegistryContext context, IScheduler scheduler, out Table destination)
         {
             switch (ExecutionMode)
             {
@@ -464,7 +464,7 @@ namespace Jhu.Graywulf.Jobs.Query
         }
 
 
-        public virtual void PrepareCopyResultset(Context context)
+        public virtual void PrepareCopyResultset(RegistryContext context)
         {
             this.InitializeQueryObject(context);
         }
@@ -516,7 +516,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     tempname = String.Format("skyquerytemp_{0}_{1}", id.ToString(), tableName);
                     break;
                 case Jobs.Query.ExecutionMode.Graywulf:
-                    tempname = String.Format("{0}_{1}_{2}_{3}", Context.User.Name, Context.JobID, id.ToString(), tableName);
+                    tempname = String.Format("{0}_{1}_{2}_{3}", RegistryContext.User.Name, RegistryContext.JobID, id.ToString(), tableName);
                     break;
                 default:
                     throw new NotImplementedException();

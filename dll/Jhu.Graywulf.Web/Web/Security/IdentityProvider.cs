@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Web.Security
     {
         #region Member Variables
 
-        private Context context;
+        private RegistryContext context;
         private bool isActivationRequired;
 
         #endregion
@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Web.Security
         /// Gets or sets the context of the object.
         /// </summary>
         [XmlIgnore]
-        public Context Context
+        public RegistryContext Context
         {
             get { return context; }
             set { context = value; }
@@ -57,7 +57,7 @@ namespace Jhu.Graywulf.Web.Security
         /// Constructor that creates an objects with a context set.
         /// </summary>
         /// <param name="context"></param>
-        protected IdentityProvider(Context context)
+        protected IdentityProvider(RegistryContext context)
         {
             InitializeMembers(new StreamingContext());
 

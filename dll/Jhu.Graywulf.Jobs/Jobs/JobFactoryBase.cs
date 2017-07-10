@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.Jobs
         {
         }
 
-        public JobFactoryBase(Context context)
+        public JobFactoryBase(RegistryContext context)
             : base(context)
         {
         }
@@ -51,12 +51,12 @@ namespace Jhu.Graywulf.Jobs
         /// <remarks>The parameters of the job are not initialized.</remarks>
         protected JobInstance CreateJobInstance(string jobName, string jobDefinitionName, string queueName, TimeSpan timeout, string comments)
         {
-            var ef = new EntityFactory(Context);
+            var ef = new EntityFactory(RegistryContext);
             var jd = ef.LoadEntity<JobDefinition>(jobDefinitionName);
 
             var job = jd.CreateJobInstance(queueName, ScheduleType.Queued, timeout);
 
-            job.Name = String.IsNullOrWhiteSpace(jobName) ? JobInstanceFactory.GenerateUniqueJobID(Context) : jobName;
+            job.Name = String.IsNullOrWhiteSpace(jobName) ? JobInstanceFactory.GenerateUniqueJobID(RegistryContext) : jobName;
             job.Comments = comments;
 
             return job;
@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.Jobs
 
         public string GetDefaultMaintenanceQueue()
         {
-            return EntityFactory.CombineName(EntityType.QueueInstance, Context.Federation.ControllerMachineRole.GetFullyQualifiedName(), Registry.Constants.MaintenanceQueueName);
+            return EntityFactory.CombineName(EntityType.QueueInstance, RegistryContext.Federation.ControllerMachineRole.GetFullyQualifiedName(), Registry.Constants.MaintenanceQueueName);
         }
     }
 }

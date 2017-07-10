@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Web.Services
 {
     public abstract class RestServiceBase : IDisposable
     {
-        private Context registryContext;
+        private RegistryContext registryContext;
         private FederationContext federationContext;
 
         protected string AppRelativePath
@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Web.Services
                 if (Thread.CurrentPrincipal is GraywulfPrincipal)
                 {
                     var identity = (GraywulfIdentity)Thread.CurrentPrincipal.Identity;
-                    identity.User.Context = RegistryContext;
+                    identity.User.RegistryContext = RegistryContext;
                     return identity.User;
                 }
                 else
@@ -52,7 +52,7 @@ namespace Jhu.Graywulf.Web.Services
         /// <summary>
         /// Gets an initialized  registry context.
         /// </summary>
-        protected Context RegistryContext
+        protected RegistryContext RegistryContext
         {
             get
             {
@@ -101,7 +101,7 @@ namespace Jhu.Graywulf.Web.Services
         /// <summary>
         /// Gets an initialized registry context.
         /// </summary>
-        public Context CreateRegistryContext()
+        public RegistryContext CreateRegistryContext()
         {
             var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.ManualCommit);
 

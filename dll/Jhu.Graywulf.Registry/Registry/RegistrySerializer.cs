@@ -48,14 +48,14 @@ namespace Jhu.Graywulf.Registry
             set { excludeUserCreated = value; }
         }
 
-        public RegistrySerializer(Context context)
+        public RegistrySerializer(RegistryContext context)
             : base(context)
         {
             InitializeMembers();
         }
 
         public RegistrySerializer(Entity rootEntity)
-            : base(rootEntity.Context)
+            : base(rootEntity.RegistryContext)
         {
             InitializeMembers();
 
@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Registry
         }
 
         public RegistrySerializer(Entity[] rootEntitites)
-            : base(rootEntitites[0].Context)
+            : base(rootEntitites[0].RegistryContext)
         {
             InitializeMembers();
 
@@ -82,8 +82,8 @@ namespace Jhu.Graywulf.Registry
 
         private void LoadSystemUsers()
         {
-            Context.Cluster.LoadDomains(true);
-            var sysdom = Context.Cluster.Domains[Constants.SystemDomainName];
+            RegistryContext.Cluster.LoadDomains(true);
+            var sysdom = RegistryContext.Cluster.Domains[Constants.SystemDomainName];
             sysdom.LoadUsers(true);
             systemUsers = new HashSet<Guid>();
             systemUsers.Add(Guid.Empty);

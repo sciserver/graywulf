@@ -464,7 +464,7 @@ namespace Jhu.Graywulf.Registry
         /// Override this in derived classes and pass the object context to it.
         /// </remarks>
         /// <param name="context">An object context class containing session information.</param>
-        public Entity(Context context)
+        public Entity(RegistryContext context)
             : base(context)
         {
             InitializeMembers(new StreamingContext());
@@ -475,7 +475,7 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity in the entity hierarchy.</param>
-        protected Entity(Context context, Entity parent)
+        protected Entity(RegistryContext context, Entity parent)
             : base(context)
         {
             InitializeMembers(new StreamingContext());

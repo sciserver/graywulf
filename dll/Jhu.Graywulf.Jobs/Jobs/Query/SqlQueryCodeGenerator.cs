@@ -299,7 +299,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 if (ds is GraywulfDataset)
                 {
                     var gwds = ds as GraywulfDataset;
-                    gwds.Context = queryObject.Context;
+                    gwds.RegistryContext = queryObject.RegistryContext;
 
                     DatabaseInstance di;
                     if (gwds.IsSpecificInstanceRequired)

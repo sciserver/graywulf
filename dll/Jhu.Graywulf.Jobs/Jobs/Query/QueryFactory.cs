@@ -26,10 +26,10 @@ namespace Jhu.Graywulf.Jobs.Query
 
         public static QueryFactory Create(Federation federation)
         {
-            return Create(federation.QueryFactory, federation.Context);
+            return Create(federation.QueryFactory, federation.RegistryContext);
         }
 
-        public static QueryFactory Create(string typeName, Context context)
+        public static QueryFactory Create(string typeName, RegistryContext context)
         {
             var ft = Type.GetType(typeName);
             var res = (QueryFactory)Activator.CreateInstance(ft, new object[] { context });
@@ -70,7 +70,7 @@ namespace Jhu.Graywulf.Jobs.Query
             InitializeMembers(new StreamingContext());
         }
 
-        protected QueryFactory(Context context)
+        protected QueryFactory(RegistryContext context)
             : base(context)
         {
             InitializeMembers(new StreamingContext());

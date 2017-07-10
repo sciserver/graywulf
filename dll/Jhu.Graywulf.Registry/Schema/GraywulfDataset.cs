@@ -12,12 +12,12 @@ namespace Jhu.Graywulf.Schema
 {
     [Serializable]
     [DataContract(Namespace = "")]
-    public class GraywulfDataset : Schema.SqlServer.SqlServerDataset, IContextObject, ICloneable
+    public class GraywulfDataset : Schema.SqlServer.SqlServerDataset, IRegistryContextObject, ICloneable
     {
         #region Private member variables
 
         [NonSerialized]
-        private Context context;
+        private RegistryContext context;
 
         [NonSerialized]
         private EntityReference<DatabaseDefinition> databaseDefinitionReference;
@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Schema
         #endregion
         #region Properties
 
-        public Context Context
+        public RegistryContext RegistryContext
         {
             get { return context; }
             set { context = value; }
@@ -85,7 +85,7 @@ namespace Jhu.Graywulf.Schema
         #endregion
         #region Constructors and initializers
 
-        public GraywulfDataset(Context context)
+        public GraywulfDataset(RegistryContext context)
             : base()
         {
             InitializeMembers(new StreamingContext());
@@ -93,7 +93,7 @@ namespace Jhu.Graywulf.Schema
             this.context = context;
         }
 
-        public GraywulfDataset(Context context, DatasetBase old)
+        public GraywulfDataset(RegistryContext context, DatasetBase old)
             : base(old)
         {
             InitializeMembers(new StreamingContext());

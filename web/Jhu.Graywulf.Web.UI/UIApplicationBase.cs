@@ -60,7 +60,7 @@ namespace Jhu.Graywulf.Web.UI
         /// <summary>
         /// Gets an initialized registry context.
         /// </summary>
-        public Context CreateRegistryContext()
+        public RegistryContext CreateRegistryContext()
         {
             var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.ManualCommit);
 

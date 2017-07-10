@@ -10,10 +10,10 @@ using Jhu.Graywulf.AccessControl;
 
 namespace Jhu.Graywulf.Web.UI
 {
-    public class PageBase : Page, IContextObject
+    public class PageBase : Page, IRegistryContextObject
     {
         private string overrideUrl;
-        private Context registryContext;
+        private RegistryContext registryContext;
 
         /// <summary>
         /// Gets the original referer of the page, even after postbacks.
@@ -50,7 +50,7 @@ namespace Jhu.Graywulf.Web.UI
                 if (User.Identity is GraywulfIdentity)
                 {
                     var identity = (GraywulfIdentity)User.Identity;
-                    identity.User.Context = RegistryContext;
+                    identity.User.RegistryContext = RegistryContext;
                     return identity.User;
                 }
                 else
@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Web.UI
         /// <summary>
         /// Gets an initialized  registry context.
         /// </summary>
-        public Context RegistryContext
+        public RegistryContext RegistryContext
         {
             get
             {
@@ -77,7 +77,7 @@ namespace Jhu.Graywulf.Web.UI
             }
         }
 
-        Context IContextObject.Context
+        RegistryContext IRegistryContextObject.RegistryContext
         {
             get { return registryContext; }
             set { throw new InvalidOperationException(); }

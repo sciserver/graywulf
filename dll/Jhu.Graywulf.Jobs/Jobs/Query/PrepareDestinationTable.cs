@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Jobs.Query
             SqlQueryPartition queryPartition = QueryPartition.Get(activityContext);
             SqlQuery query = queryPartition.Query;
 
-            using (Context context = queryPartition.CreateContext(this, activityContext))
+            using (RegistryContext context = queryPartition.CreateContext(this, activityContext))
             {
                 query.InitializeQueryObject(context, null, true);
                 queryPartition.PrepareDestinationTable(context, activityContext.GetExtension<IScheduler>());

@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Jobs.Query
             return UserDatabaseFactory.Create(context);
         }
 
-        protected virtual QueryFactory CreateQueryFactory(Context context)
+        protected virtual QueryFactory CreateQueryFactory(RegistryContext context)
         {
             var qf = QueryFactory.Create(typeof(SqlQueryFactory).AssemblyQualifiedName, context);
             return qf;
@@ -41,9 +41,9 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private SqlQuery CreateQuery(QueryFactory qf, string query)
         {
-            var user = SignInTestUser(qf.Context);
+            var user = SignInTestUser(qf.RegistryContext);
 
-            var udf = CreateUserDatabaseFactory(new FederationContext(qf.Context, user));
+            var udf = CreateUserDatabaseFactory(new FederationContext(qf.RegistryContext, user));
             var mydb = udf.GetUserDatabases(user)[Registry.Constants.UserDbName];
             var mysi = udf.GetUserDatabaseServerInstances(user)[Registry.Constants.UserDbName];
 
@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 Options = TableInitializationOptions.Create | TableInitializationOptions.Drop
             };
 
-            q.InitializeQueryObject(qf.Context);
+            q.InitializeQueryObject(qf.RegistryContext);
 
             return q;
         }

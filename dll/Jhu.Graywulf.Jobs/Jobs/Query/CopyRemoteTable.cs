@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Jobs.Query
             TableReference remotetable = null;
             SourceTableQuery source;
 
-            using (Context context = querypartition.Query.CreateContext(this, activityContext))
+            using (RegistryContext context = querypartition.Query.CreateContext(this, activityContext))
             {
                 remotetable = querypartition.RemoteTableReferences[RemoteTable.Get(activityContext)];
                 querypartition.PrepareCopyRemoteTable(remotetable, out source);

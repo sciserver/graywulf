@@ -68,7 +68,7 @@ namespace Jhu.Graywulf.Test
             return new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString);
         }
 
-        protected User SignInTestUser(Context context)
+        protected User SignInTestUser(RegistryContext context)
         {
             var ip = IdentityProvider.Create(context.Domain);
             ip.VerifyPassword(new AuthenticationRequest("test", "almafa"));

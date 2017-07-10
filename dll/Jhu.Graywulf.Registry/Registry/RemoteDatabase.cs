@@ -149,7 +149,7 @@ namespace Jhu.Graywulf.Registry
         /// Constructor for creating a new <b>Remote Database</b> object and setting object context.
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
-        public RemoteDatabase(Context context)
+        public RemoteDatabase(RegistryContext context)
             : base(context)
         {
             InitializeMembers();
@@ -161,7 +161,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity in the entity hierarchy.</param>
         public RemoteDatabase(Federation parent)
-            : base(parent.Context, parent)
+            : base(parent.RegistryContext, parent)
         {
             InitializeMembers();
         }

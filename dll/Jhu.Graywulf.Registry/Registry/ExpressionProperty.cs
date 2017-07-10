@@ -164,7 +164,7 @@ namespace Jhu.Graywulf.Registry
 
                 if (StringComparer.InvariantCultureIgnoreCase.Compare(key, "username") == 0)
                 {
-                    var name = entity.Context.User.Name;
+                    var name = entity.RegistryContext.User.Name;
                     res = res.Replace(m.Value, name);
                 }
             }

@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Install
         {
         }
 
-        protected InstallerBase(Context context)
+        protected InstallerBase(RegistryContext context)
             : base(context)
         {
         }

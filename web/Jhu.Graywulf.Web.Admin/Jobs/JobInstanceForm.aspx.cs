@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
         {
             JobDefinition.Items.Add(new ListItem("(select job definition)", Guid.Empty.ToString()));
 
-            Item.Context = RegistryContext;
+            Item.RegistryContext = RegistryContext;
             IEnumerable<JobDefinition> list = null;
 
 

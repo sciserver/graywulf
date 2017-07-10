@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Install
         private Domain domain;
 
         public DomainInstaller(Domain domain)
-            : base(domain.Context)
+            : base(domain.RegistryContext)
         {
             this.domain = domain;
         }

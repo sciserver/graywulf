@@ -54,14 +54,14 @@ namespace Jhu.Graywulf.Install
             set { createNode = value; }
         }
 
-        public ClusterInstaller(Context context)
+        public ClusterInstaller(RegistryContext context)
             : base(context)
         {
             InitializeMembers();
         }
 
         public ClusterInstaller(Cluster cluster)
-            : base(cluster.Context)
+            : base(cluster.RegistryContext)
         {
             InitializeMembers();
 
@@ -82,7 +82,7 @@ namespace Jhu.Graywulf.Install
 
         public Cluster Install()
         {
-            cluster = new Cluster(Context)
+            cluster = new Cluster(RegistryContext)
             {
                 Name = clusterName,
                 System = system,

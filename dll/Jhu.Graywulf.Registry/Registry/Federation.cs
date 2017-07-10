@@ -289,7 +289,7 @@ namespace Jhu.Graywulf.Registry
         /// Constructor for creating a new <b>Federation</b> object and setting object context.
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
-        public Federation(Context context)
+        public Federation(RegistryContext context)
             : base(context)
         {
             InitializeMembers();
@@ -301,7 +301,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity in the entity hierarchy.</param>
         public Federation(Domain parent)
-            : base(parent.Context, parent)
+            : base(parent.RegistryContext, parent)
         {
             InitializeMembers();
         }

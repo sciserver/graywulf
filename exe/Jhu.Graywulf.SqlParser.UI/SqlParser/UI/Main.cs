@@ -57,7 +57,7 @@ namespace Jhu.Graywulf.Parser.Test
         {
             if (rootNode != null)
             {
-                using (Context context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
                 {
 
                     //try

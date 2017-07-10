@@ -113,7 +113,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         internal JobInstanceDependency CreateRegistryObject(JobInstance jobInstance)
         {
-            var ef = new EntityFactory(jobInstance.Context);
+            var ef = new EntityFactory(jobInstance.RegistryContext);
             var predji = ef.LoadEntity<JobInstance>(predecessorJobGuid);
 
             var jd = new JobInstanceDependency(jobInstance);

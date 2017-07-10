@@ -105,13 +105,13 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         /// <remarks>
         /// The value of the <see cref="Guid" /> property and the object context must be set.
-        /// The <see cref="Context" /> property must have a value of a valid object context with open database connection.
+        /// The <see cref="RegistryContext" /> property must have a value of a valid object context with open database connection.
         /// </remarks>
         public void Load()
         {
             var sql = DBHelpers[this.GetType()].SelectQuery;
 
-            using (var cmd = Context.CreateTextCommand(sql))
+            using (var cmd = RegistryContext.CreateTextCommand(sql))
             {
                 AppendBasicParameters(cmd);
 
@@ -133,7 +133,7 @@ namespace Jhu.Graywulf.Registry
             {
                 var sql = "spFindEntityReference";
 
-                using (var cmd = Context.CreateStoredProcedureCommand(sql))
+                using (var cmd = RegistryContext.CreateStoredProcedureCommand(sql))
                 {
                     AppendBasicParameters(cmd);
 
@@ -159,7 +159,7 @@ namespace Jhu.Graywulf.Registry
         /// <remarks>
         /// This function attempts to save the entity but throws and exception if
         /// a concurrency issue is detected.
-        /// The <see cref="Context" /> property must have a value of a valid object context with open database connection.
+        /// The <see cref="RegistryContext" /> property must have a value of a valid object context with open database connection.
         /// </remarks>
         /// <exception cref="InvalidConcurrencyVersionException">
         /// Thrown when someone else modified the entity since it was loaded from the database.
@@ -175,7 +175,7 @@ namespace Jhu.Graywulf.Registry
         /// <remarks>
         /// This function attempts to save the entity but throws and exception if
         /// the value of the <b>forceOverwrite</b> parameter is false and a concurrency issue is detected.
-        /// The <see cref="Context" /> property must have a value of a valid object context with open database connection.
+        /// The <see cref="RegistryContext" /> property must have a value of a valid object context with open database connection.
         /// </remarks>
         /// <param name="forceOverwrite">Determines if concurrency issues are ignored.</param>
         /// <exception cref="InvalidConcurrencyVersionException">
@@ -184,7 +184,7 @@ namespace Jhu.Graywulf.Registry
         public void Save(bool forceOverwrite)
         {
             // Check entity duplicate
-            var ef = new EntityFactory(Context);
+            var ef = new EntityFactory(RegistryContext);
 
             var parentGuid = this.parentReference.IsEmpty ? Guid.Empty : this.parentReference.Guid;
 
@@ -204,7 +204,7 @@ namespace Jhu.Graywulf.Registry
         /// <remarks>
         /// This function is called by the <see cref="Save()"/> function of the <see cref="Entity" /> class
         /// through the <see cref="Create"/> function in the derived classes.
-        /// The <see cref="Context" /> property must have a value of a valid object context with open database connection.
+        /// The <see cref="RegistryContext" /> property must have a value of a valid object context with open database connection.
         /// </remarks>
         protected virtual void Create()
         {
@@ -215,7 +215,7 @@ namespace Jhu.Graywulf.Registry
 
             string sql = "spCreateEntity";
 
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
+            using (var cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 AppendBasicParameters(cmd);
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Direction = ParameterDirection.Output;
@@ -248,14 +248,14 @@ namespace Jhu.Graywulf.Registry
 
             isExisting = true;
 
-            Context.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.Create", this.guid));
+            RegistryContext.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.Create", this.guid));
         }
 
         /// <summary>
         /// Modifies the already existing entity in the database.
         /// </summary>
         /// <remarks>
-        /// The <see cref="Context" /> property must have a value of a valid object context with open database connection.
+        /// The <see cref="RegistryContext" /> property must have a value of a valid object context with open database connection.
         /// </remarks>
         /// <param name="forceOverwrite">Determines if concurrency issues are ignored.</param>
         /// <exception cref="InvalidConcurrencyVersionException">
@@ -270,7 +270,7 @@ namespace Jhu.Graywulf.Registry
 
             string sql = "spModifyEntity";
 
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
+            using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 AppendBasicParameters(cmd);
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Direction = ParameterDirection.Output;
@@ -293,7 +293,7 @@ namespace Jhu.Graywulf.Registry
                 }
             }
 
-            Context.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.Modify", this.guid));
+            RegistryContext.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.Modify", this.guid));
         }
 
         /// <summary>
@@ -302,7 +302,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="cmd">The <b>SqlCommand</b> to append the parameters to.</param>
         protected void AppendBasicParameters(SqlCommand cmd)
         {
-            cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserReference.Guid;
+            cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
             cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = guid;
         }
 
@@ -350,7 +350,7 @@ namespace Jhu.Graywulf.Registry
         /// Flags an already existing entity in the database as deleted.
         /// </summary>
         /// <remarks>
-        /// The <see cref="Context" /> property must have a value of a valid object context with open database connection.
+        /// The <see cref="RegistryContext" /> property must have a value of a valid object context with open database connection.
         /// </remarks>
         /// <exception cref="InvalidConcurrencyVersionException">
         /// Thrown when someone else modified the entity since it was loaded from the database.
@@ -364,7 +364,7 @@ namespace Jhu.Graywulf.Registry
         /// Flags an already existing entity in the database as deleted.
         /// </summary>
         /// <remarks>
-        /// The <see cref="Context" /> property must have a value of a valid object context with open database connection.
+        /// The <see cref="RegistryContext" /> property must have a value of a valid object context with open database connection.
         /// </remarks>
         /// <param name="forceOverwrite">Determines if concurrency issues are ignored.</param>
         /// <exception cref="InvalidConcurrencyVersionException">
@@ -400,7 +400,7 @@ namespace Jhu.Graywulf.Registry
 
             string sql = "spDeleteEntity";
 
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
+            using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 AppendBasicParameters(cmd);
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Direction = ParameterDirection.Output;
@@ -410,10 +410,10 @@ namespace Jhu.Graywulf.Registry
                 this.concurrencyVersion = BitConverter.ToInt64((byte[])cmd.Parameters["@ConcurrencyVersion"].Value, 0);
                 this.deleted = true;
                 this.dateDeleted = DateTime.Now;
-                this.userGuidDeleted = Context.UserReference.Guid;
+                this.userGuidDeleted = RegistryContext.UserReference.Guid;
             }
 
-            Context.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.Delete", this.guid));
+            RegistryContext.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.Delete", this.guid));
         }
 
         /// <summary>
@@ -421,7 +421,7 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         /// <remarks>
         /// Refer to the Developer's Guide about the optimistic concurrency model.
-        /// The <see cref="Context" /> property must have a value of a valid object context with open database connection.
+        /// The <see cref="RegistryContext" /> property must have a value of a valid object context with open database connection.
         /// </remarks>
         /// <exception cref="InvalidConcurrencyVersionException">Thrown when a potential concurrency issue is detected.</exception>
         /// <exception cref="LockingCollisionException">TODO</exception>
@@ -430,10 +430,10 @@ namespace Jhu.Graywulf.Registry
             // TODO: implement locking for move operations (don't allow move if any locked)
             string sql = "spCheckEntityConcurrency";
 
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
+            using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 AppendBasicParameters(cmd);
-                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = Context.JobReference.Guid;
+                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = RegistryContext.JobReference.Guid;
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Value = BitConverter.GetBytes(this.concurrencyVersion);
                 cmd.Parameters.Add("RETVAL", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
 
@@ -448,11 +448,11 @@ namespace Jhu.Graywulf.Registry
                     {
                         case -1:
                             e.Message = LogMessages.InvalidConcurrencyVersion;
-                            Context.LogEvent(e);
+                            RegistryContext.LogEvent(e);
                             throw new InvalidConcurrencyVersionException();
                         case -2:
                             e.Message = LogMessages.LockingCollision;
-                            Context.LogEvent(e);
+                            RegistryContext.LogEvent(e);
                             throw new LockingCollisionException();
                     }
                 }
@@ -463,7 +463,7 @@ namespace Jhu.Graywulf.Registry
         {
             string sql = "spShowEntity";
 
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
+            using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 AppendBasicParameters(cmd);
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Direction = ParameterDirection.Output;
@@ -479,7 +479,7 @@ namespace Jhu.Graywulf.Registry
         {
             string sql = "spHideEntity";
 
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
+            using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 AppendBasicParameters(cmd);
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Direction = ParameterDirection.Output;
@@ -512,7 +512,7 @@ namespace Jhu.Graywulf.Registry
 
             CheckConcurrency();
 
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
+            using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 AppendBasicParameters(cmd);
                 cmd.Parameters.Add("RETVAL", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
@@ -525,7 +525,7 @@ namespace Jhu.Graywulf.Registry
                     this.number = retval;
             }
 
-            Context.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.Move", this.guid));
+            RegistryContext.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.Move", this.guid));
         }
 
         private string[] LoadAscendantNames()
@@ -533,7 +533,7 @@ namespace Jhu.Graywulf.Registry
             var res = new List<string>();
             var sql = "spFindEntityAscendants";
 
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
+            using (var cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = guid;
 
@@ -583,7 +583,7 @@ namespace Jhu.Graywulf.Registry
         /// Obtains a lock for the <b>Entity</b>.
         /// </summary>
         /// <remarks>
-        /// The <see cref="Context.JobGuid" /> property of the context must be set.
+        /// The <see cref="RegistryContext.JobGuid" /> property of the context must be set.
         /// </remarks>
         /// <exception cref="InvalidConcurrencyVersionException"></exception>
         /// <exception cref="LockingCollisionException"></exception>
@@ -595,12 +595,12 @@ namespace Jhu.Graywulf.Registry
             }
             catch (LockingCollisionException)
             {
-                Context.RollbackTransaction();
+                RegistryContext.RollbackTransaction();
                 throw;
             }
             catch (InvalidConcurrencyVersionException)
             {
-                Context.RollbackTransaction();
+                RegistryContext.RollbackTransaction();
                 throw;
             }
         }
@@ -614,27 +614,27 @@ namespace Jhu.Graywulf.Registry
 
             string sql = "spObtainEntityLock";
 
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
+            using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 AppendBasicParameters(cmd);
-                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = Context.JobReference.Guid;
+                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = RegistryContext.JobReference.Guid;
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Direction = ParameterDirection.Output;
                 cmd.Parameters.Add("RETVAL", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
 
                 cmd.ExecuteNonQuery();
 
-                this.lockOwner = Context.ContextGuid;
+                this.lockOwner = RegistryContext.ContextGuid;
                 this.concurrencyVersion = BitConverter.ToInt64((byte[])cmd.Parameters["@ConcurrencyVersion"].Value, 0);
             }
 
-            Context.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.ObtainLock", this.guid));
+            RegistryContext.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.ObtainLock", this.guid));
         }
 
         /// <summary>
         /// Releases the lock on the <b>Entity</b>.
         /// </summary>
         /// <remarks>
-        /// The <see cref="Jhu.Graywulf.Registry.Context.JobGuid" /> property of the context must be set.
+        /// The <see cref="Jhu.Graywulf.Registry.RegistryContext.JobGuid" /> property of the context must be set.
         /// </remarks>
         /// <exception cref="InvalidConcurrencyVersionException"></exception>
         /// <exception cref="LockingCollisionException"></exception>
@@ -646,12 +646,12 @@ namespace Jhu.Graywulf.Registry
             }
             catch (LockingCollisionException)
             {
-                Context.RollbackTransaction();
+                RegistryContext.RollbackTransaction();
                 throw;
             }
             catch (InvalidConcurrencyVersionException)
             {
-                Context.RollbackTransaction();
+                RegistryContext.RollbackTransaction();
                 throw;
             }
         }
@@ -668,10 +668,10 @@ namespace Jhu.Graywulf.Registry
 
             string sql = "spReleaseEntityLock";
 
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
+            using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 AppendBasicParameters(cmd);
-                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = Context.ContextGuid;
+                cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = RegistryContext.ContextGuid;
                 cmd.Parameters.Add("@ConcurrencyVersion", SqlDbType.Binary, 8).Direction = ParameterDirection.Output;
                 cmd.Parameters.Add("RETVAL", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
 
@@ -683,7 +683,7 @@ namespace Jhu.Graywulf.Registry
                 this.concurrencyVersion = BitConverter.ToInt64((byte[])cmd.Parameters["@ConcurrencyVersion"].Value, 0);
             }
 
-            Context.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.ReleaseLock", this.guid));
+            RegistryContext.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.ReleaseLock", this.guid));
         }
 
         #endregion
@@ -716,7 +716,7 @@ namespace Jhu.Graywulf.Registry
 
             if (IsExisting && reload)
             {
-                var f = new EntityFactory(Context);
+                var f = new EntityFactory(RegistryContext);
                 foreach (var entity in f.FindChildren<T>(this))
                 {
                     children.Add(entity.name, entity);
@@ -736,7 +736,7 @@ namespace Jhu.Graywulf.Registry
         /// Call this function on entities before accessing the <see cref="EnumerateAllChildren"/> function, since
         /// that property does not do lazy loading.
         /// The function is only implemented in derived classes.
-        /// The <see cref="Context" /> property must have a value of a valid object context with open database connection.
+        /// The <see cref="RegistryContext" /> property must have a value of a valid object context with open database connection.
         /// </remarks>
         /// <param name="forceReload">If true, reloads previously loaded entities too.</param>
         public void LoadAllChildren(bool forceReload)

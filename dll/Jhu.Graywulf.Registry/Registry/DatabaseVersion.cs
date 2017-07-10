@@ -115,7 +115,7 @@ namespace Jhu.Graywulf.Registry
         /// Constructor for creating a new <b>Database Version</b> object and setting object context.
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
-        public DatabaseVersion(Context context)
+        public DatabaseVersion(RegistryContext context)
             : base(context)
         {
             InitializeMembers();
@@ -127,7 +127,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity in the entity hierarchy.</param>
         public DatabaseVersion(DatabaseDefinition parent)
-            : base(parent.Context, parent)
+            : base(parent.RegistryContext, parent)
         {
             InitializeMembers();
         }
@@ -204,7 +204,7 @@ namespace Jhu.Graywulf.Registry
 
         public DatabaseInstance GetUserDatabaseInstance(User user)
         {
-            var ef = new EntityFactory(Context);
+            var ef = new EntityFactory(RegistryContext);
 
             var udis = ef.FindConnection<UserDatabaseInstance>(this, user, (int)UserDatabaseInstance.ReferenceType.User);
             var udi = udis.FirstOrDefault();

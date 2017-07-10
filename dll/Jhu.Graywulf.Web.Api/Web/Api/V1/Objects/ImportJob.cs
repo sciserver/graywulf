@@ -133,7 +133,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 };
 
                 // Format
-                this.fileFormat = GetFileFormat(JobInstance.Context, this.uri);
+                this.fileFormat = GetFileFormat(JobInstance.RegistryContext, this.uri);
 
                 // Options
                 bool gid;

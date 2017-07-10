@@ -14,9 +14,9 @@ namespace Jhu.Graywulf.Web.Security
             get { return CheckCategory.Plugin; }
         }
 
-        public Context Context { get; set; }
+        public RegistryContext Context { get; set; }
 
-        public AuthenticationCheck(Context context)
+        public AuthenticationCheck(RegistryContext context)
         {
             this.Context = context;
         }

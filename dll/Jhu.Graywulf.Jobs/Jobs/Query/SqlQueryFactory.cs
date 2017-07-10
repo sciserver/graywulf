@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Jobs.Query
             InitializeMembers(new StreamingContext());
         }
 
-        public SqlQueryFactory(Context context)
+        public SqlQueryFactory(RegistryContext context)
             : base(context)
         {
             InitializeMembers(new StreamingContext());
@@ -55,7 +55,7 @@ namespace Jhu.Graywulf.Jobs.Query
             SqlQuery res;
             if (root is SelectStatement)
             {
-                res = new SqlQuery(Context);
+                res = new SqlQuery(RegistryContext);
             }
             else
             {
@@ -104,7 +104,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </remarks>
         protected override void InitializeQuery(SqlQuery query, string queryString)
         {
-            var ef = new EntityFactory(Context);
+            var ef = new EntityFactory(RegistryContext);
             var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.FederationName, typeof(SqlQueryJob).Name);
 
             var settings = new SqlQueryJobSettings(jd.Settings);

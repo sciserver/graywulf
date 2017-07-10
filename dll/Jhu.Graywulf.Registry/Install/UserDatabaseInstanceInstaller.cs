@@ -8,7 +8,7 @@ namespace Jhu.Graywulf.Install
 {
     public class UserDatabaseInstanceInstaller : InstallerBase
     {
-        public UserDatabaseInstanceInstaller(Context context)
+        public UserDatabaseInstanceInstaller(RegistryContext context)
             :base(context)
         {
         }
@@ -26,11 +26,11 @@ namespace Jhu.Graywulf.Install
 
         public UserDatabaseInstance CreateUserDatabaseInstance(User user, DatabaseVersion databaseVersion)
         {
-            user.Context = this.Context;
-            databaseVersion.Context = this.Context;
+            user.RegistryContext = this.RegistryContext;
+            databaseVersion.RegistryContext = this.RegistryContext;
 
             // Load server instances that can store user databases
-            var ef = new EntityFactory(Context);
+            var ef = new EntityFactory(RegistryContext);
             var serverInstances = ef.FindAll<ServerInstance>()
                 .Where(i =>
                     i.ServerVersionReference.Guid == databaseVersion.ServerVersionReference.Guid &&

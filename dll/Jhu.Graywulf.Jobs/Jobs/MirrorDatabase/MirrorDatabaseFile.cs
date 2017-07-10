@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
             string hostname;
 
             // Load files
-            using (Context context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 // Load destination database instance
                 DatabaseInstance di = new DatabaseInstance(context);

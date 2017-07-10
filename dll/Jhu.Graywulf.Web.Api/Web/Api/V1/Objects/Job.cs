@@ -304,7 +304,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             // Here we make the assumption that the queue is named the same as
             // the queue definition
-            var jobFactory = new JobFactory(jobInstance.Context);
+            var jobFactory = new JobFactory(jobInstance.RegistryContext);
             var qi = jobFactory.GetQueueInstance(jobInstance.ParentReference.Guid);
 
             switch (qi.Name)
@@ -378,7 +378,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             return queuename;
         }
 
-        public static V1.FileFormat GetFileFormat(Context context, Uri uri)
+        public static V1.FileFormat GetFileFormat(RegistryContext context, Uri uri)
         {
             var ff = FileFormatFactory.Create(context.Federation.FileFormatFactory);
             string filename, extension;

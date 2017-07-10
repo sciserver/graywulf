@@ -103,7 +103,7 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
             cluster.LoadDomains(false);
             var domain = cluster.Domains[Registry.Constants.SystemDomainName];
 
-            var uu = new UserFactory(cluster.Context);
+            var uu = new UserFactory(cluster.RegistryContext);
             uu.LoginUser(domain, userName, password);
         }
     }

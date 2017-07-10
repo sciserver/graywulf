@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             DiskVolume.Items.Clear();
             DiskVolume.Items.Add(new ListItem("(select disk volume)", Guid.Empty.ToString()));
 
-            Item.Context = RegistryContext;
+            Item.RegistryContext = RegistryContext;
             
             DatabaseInstance di;
             if (Item.Parent is DatabaseInstanceFileGroup)

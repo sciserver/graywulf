@@ -91,7 +91,7 @@ namespace Jhu.Graywulf.Registry
 
         public SqlCommand CreateInsertCommand(Entity entity)
         {
-            var cmd = entity.Context.CreateTextCommand(InsertQuery);
+            var cmd = entity.RegistryContext.CreateTextCommand(InsertQuery);
 
             cmd.CommandType = CommandType.Text;
 
@@ -102,7 +102,7 @@ namespace Jhu.Graywulf.Registry
 
         public SqlCommand CreateUpdateCommand(Entity entity)
         {
-            var cmd = entity.Context.CreateTextCommand(UpdateQuery);
+            var cmd = entity.RegistryContext.CreateTextCommand(UpdateQuery);
 
             cmd.CommandType = CommandType.Text;
 

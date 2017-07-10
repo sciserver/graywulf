@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                         // Load database instace and get connection string to make it cached
 
                         var gwds = (GraywulfDataset)parameters.Sources[i].Dataset;
-                        gwds.Context = context;
+                        gwds.RegistryContext = context;
                         gwds.CacheSchemaConnectionString();
                     }
                 }

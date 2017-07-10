@@ -74,7 +74,9 @@
     <Compile Include="Install\UserDatabaseInstanceInstaller.cs" />
     <Compile Include="Registry\Check\EntityCheck.cs" />
     <Compile Include="Registry\EntitySearch.cs" />
+    <Compile Include="Registry\IRegistryContextObject.cs" />
     <Compile Include="Registry\Registry.cs" />
+    <Compile Include="Registry\RegistryContext.cs" />
     <Compile Include="Registry\RegistrySerializer.cs" />
     <Compile Include="Registry\RegistryDeserializer.cs" />
     <Compile Include="Registry\ServerInstanceDiskGroup.io.cs" />
@@ -84,7 +86,6 @@
     <Compile Include="Registry\Error.cs" />
     <Compile Include="Registry\FederationContext.cs" />
     <Compile Include="Registry\JobInstanceDependency.cs" />
-    <Compile Include="Registry\IContextObject.cs" />
     <Compile Include="Registry\DiskGroup.io.cs" />
     <Compile Include="Registry\RegistryConfiguration.cs" />
     <Compile Include="Registry\UserRole.cs" />
@@ -95,7 +96,6 @@
     <Compile Include="Registry\Constants.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Registry\Context.cs" />
     <Compile Include="Registry\ContextManager.cs" />
     <Compile Include="Registry\ContextObject.cs" />
     <Compile Include="Registry\DatabaseDefinition.cs" />

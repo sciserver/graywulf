@@ -147,7 +147,7 @@ namespace Jhu.Graywulf.Registry
         /// Constructor for creating a new <b>Database Definition</b> object and setting object context.
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
-        public QueueInstance(Context context)
+        public QueueInstance(RegistryContext context)
             : base(context)
         {
             InitializeMembers();
@@ -159,7 +159,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity in the entity hierarchy.</param>
         public QueueInstance(Machine parent)
-            : base(parent.Context, parent)
+            : base(parent.RegistryContext, parent)
         {
             InitializeMembers();
         }
@@ -170,7 +170,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity in the entity hierarchy.</param>
         public QueueInstance(MachineRole parent)
-            : base(parent.Context, parent)
+            : base(parent.RegistryContext, parent)
         {
             InitializeMembers();
         }

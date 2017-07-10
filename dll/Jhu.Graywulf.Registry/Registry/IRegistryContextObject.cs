@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Jhu.Graywulf.Registry
 {
-    public interface IContextObject
+    public interface IRegistryContextObject
     {
-        Context Context { get; set; }
+        RegistryContext RegistryContext { get; set; }
     }
 }

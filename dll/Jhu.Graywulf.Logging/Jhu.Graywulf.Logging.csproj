@@ -57,6 +57,7 @@
     <Compile Include="Logging\EventFilter.cs" />
     <Compile Include="Logging\FileLogWriterConfiguration.cs" />
     <Compile Include="Logging\FileLogWriter.cs" />
+    <Compile Include="Logging\LoggingContext.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LogWriterBase.cs" />
     <Compile Include="Logging\LogWriterConfigurationBase.cs" />

@@ -17,10 +17,10 @@ namespace Jhu.Graywulf.Registry.Check
                 return CheckCategory.Registry;
             }
         }
-        public Context Context { get; set; }
+        public RegistryContext Context { get; set; }
         public string Name { get; set; }
 
-        public EntityCheck(Context context, string name)
+        public EntityCheck(RegistryContext context, string name)
         {
             this.Context = context;
             this.Name = name;

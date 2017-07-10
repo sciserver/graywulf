@@ -64,7 +64,7 @@ namespace Jhu.Graywulf.Registry
         /// Constructor for creating a new <b>User Role</b> object and setting object context.
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
-        public UserRole(Context context)
+        public UserRole(RegistryContext context)
             : base(context)
         {
             InitializeMembers();
@@ -77,7 +77,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity of the <b>User Role</b> of type Domain.</param>
         public UserRole(Domain parent)
-            : base(parent.Context, parent)
+            : base(parent.RegistryContext, parent)
         {
             InitializeMembers();
         }
