@@ -94,6 +94,10 @@
       <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
       <Name>Jhu.Graywulf.Registry</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Scheduler\Jhu.Graywulf.Scheduler.csproj">
+      <Project>{94ab6a2e-6877-4fed-87e2-1f9f17622f43}</Project>
+      <Name>Jhu.Graywulf.Scheduler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Schema\Jhu.Graywulf.Schema.csproj">
       <Project>{5868B518-CBFC-43FB-B9C8-C617A65121C4}</Project>
       <Name>Jhu.Graywulf.Schema</Name>
@@ -113,6 +117,10 @@
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
       <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
       <Name>Jhu.Graywulf.RemoteService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\exe\Jhu.Graywulf.Scheduler.Server\Jhu.Graywulf.Scheduler.Server.csproj">
+      <Project>{496518f5-99bf-42fb-9f42-4450c766d29f}</Project>
+      <Name>Jhu.Graywulf.Scheduler.Server</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

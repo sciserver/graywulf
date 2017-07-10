@@ -10,11 +10,11 @@ using System.Configuration;
 
 namespace Jhu.Graywulf.Scheduler
 {
-    partial class SchedulerService : ServiceBase
+    public class SchedulerService : ServiceBase
     {
         public SchedulerService()
         {
-            InitializeComponent();
+            this.ServiceName = "SchedulerService";
         }
 
         protected override void OnStart(string[] args)
@@ -35,18 +35,6 @@ namespace Jhu.Graywulf.Scheduler
         protected override void OnContinue()
         {
             QueueManager.Instance.StartPoller();
-        }
-
-        // internal functions to support command line
-
-        internal void Start(string[] args)
-        {
-            OnStart(args);
-        }
-
-        internal new void Stop()
-        {
-            OnStop();
         }
     }
 }

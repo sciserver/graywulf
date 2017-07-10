@@ -128,7 +128,7 @@ namespace Jhu.Graywulf.Scheduler
             get { return scheduler; }
         }
 
-        internal bool IsLayoutRequired
+        public bool IsLayoutRequired
         {
             get { return isLayouRequired; }
             set { isLayouRequired = value; }
