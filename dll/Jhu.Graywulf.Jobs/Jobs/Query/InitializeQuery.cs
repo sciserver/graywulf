@@ -9,17 +9,14 @@ using Jhu.Graywulf.SqlParser;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class InitializeQuery : CodeActivity, IGraywulfActivity
+    public class InitializeQuery : JobCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<JobInfo> JobInfo { get; set; }
-
         public OutArgument<Guid> EntityGuid { get; set; }
 
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
 
-        protected override void Execute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             SqlQuery query = Query.Get(activityContext);
 

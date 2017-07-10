@@ -13,7 +13,7 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Test
 {
-    public class TestAsyncException : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class TestAsyncException : JobAsyncCodeActivity, IJobActivity
     {
         [RequiredArgument]
         public InArgument<string> Message { get; set; }
@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Jobs.Test
         {
             string message = activityContext.GetValue(Message);
 
-            return delegate (AsyncJobContext asyncContext)
+            return delegate (JobContext asyncContext)
             {
                 throw new Exception(message);
             };

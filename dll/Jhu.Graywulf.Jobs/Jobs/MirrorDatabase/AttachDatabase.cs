@@ -8,11 +8,8 @@ using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Jobs.MirrorDatabase
 {
-    public class AttachDatabase : CodeActivity, IGraywulfActivity
+    public class AttachDatabase : JobCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<JobInfo> JobInfo { get; set; }
-
         public OutArgument<Guid> EntityGuid { get; set; }
 
         [RequiredArgument]
@@ -21,7 +18,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
         [RequiredArgument]
         public InArgument<bool> AttachReadOnly { get; set; }
 
-        protected override void Execute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             Guid databaseinstanceguid = DatabaseInstanceGuid.Get(activityContext);
             bool attachReadOnly = AttachReadOnly.Get(activityContext);

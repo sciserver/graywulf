@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
 
             // Turn on logging to console window
             Logging.Logger.Instance.Start(true);
-            wfapp.Extensions.Add(new Jhu.Graywulf.Activities.GraywulfTrackingParticipant());
+            wfapp.Extensions.Add(new Jhu.Graywulf.Activities.JobTrackingParticipant());
 
             // Wire-up workflow runtime events
             wfapp.OnUnhandledException = wfapp_OnUnhandledException;

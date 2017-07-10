@@ -3,7 +3,7 @@ using System.Activities;
 
 namespace Jhu.Graywulf.Activities
 {
-    public interface IGraywulfActivity
+    public interface IJobActivity
     {
         InArgument<JobInfo> JobInfo { get; set; }
     }

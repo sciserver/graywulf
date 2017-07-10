@@ -8,15 +8,12 @@ using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class CheckDestinationTable : CodeActivity, IGraywulfActivity
+    public class CheckDestinationTable : JobCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<JobInfo> JobInfo { get; set; }
-
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
 
-        protected override void Execute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             SqlQuery query = Query.Get(activityContext);
 

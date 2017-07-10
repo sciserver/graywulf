@@ -12,7 +12,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Jobs.ImportTables
 {
-    public class ImportTablesJob : GraywulfAsyncCodeActivity, IGraywulfActivity, IImportTablesJob
+    public class ImportTablesJob : JobAsyncCodeActivity, IJobActivity, IImportTablesJob
     {
         [RequiredArgument]
         public InArgument<ImportTablesParameters> Parameters { get; set; }
@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                 }
             }
 
-            return delegate (AsyncJobContext asyncContext)
+            return delegate (JobContext asyncContext)
             {
                 // Create table importer
                 var importer = parameters.GetInitializedTableImportTask();

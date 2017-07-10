@@ -11,7 +11,7 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.MirrorDatabase
 {
-    public class RunCheckDb : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class RunCheckDb : JobAsyncCodeActivity, IJobActivity
     {
         public OutArgument<Guid> EntityGuid { get; set; }
 
@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                 connectionString = di.GetConnectionString().ConnectionString;
             }
 
-            return delegate (AsyncJobContext asyncContext)
+            return delegate (JobContext asyncContext)
             {
                 using (var cn = new SqlConnection(connectionString))
                 {

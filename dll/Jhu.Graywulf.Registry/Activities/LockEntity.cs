@@ -7,15 +7,12 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Activities
 {
-    public class LockEntity : CodeActivity, IGraywulfActivity
+    public class LockEntity : JobCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<JobInfo> JobInfo { get; set; }
-
         [RequiredArgument]
         public InArgument<Guid> EntityGuid { get; set; }
 
-        protected override void Execute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             var entityguid = EntityGuid.Get(activityContext);
 

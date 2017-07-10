@@ -133,7 +133,7 @@ namespace Jhu.Graywulf.Registry
             return context;
         }
 
-        public RegistryContext CreateContext(IGraywulfActivity activity, CodeActivityContext activityContext, ConnectionMode connectionMode, TransactionMode transactionMode)
+        public RegistryContext CreateContext(IJobActivity activity, CodeActivityContext activityContext, ConnectionMode connectionMode, TransactionMode transactionMode)
         {
             /*var context = new RegistryContext(activity, activityContext)
             {

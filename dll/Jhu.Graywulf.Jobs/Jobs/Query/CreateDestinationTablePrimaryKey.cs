@@ -11,7 +11,7 @@ using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class CreateDestinationTablePrimaryKey : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class CreateDestinationTablePrimaryKey : JobAsyncCodeActivity, IJobActivity
     {
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 queryPartition.PrepareCreateDestinationTablePrimaryKey(context, activityContext.GetExtension<IScheduler>(), out destinationTable);
             }
 
-            return delegate (AsyncJobContext asyncContext)
+            return delegate (JobContext asyncContext)
             {
                 asyncContext.RegisterCancelable(queryPartition);
                 queryPartition.CreateDestinationTablePrimaryKey(destinationTable);

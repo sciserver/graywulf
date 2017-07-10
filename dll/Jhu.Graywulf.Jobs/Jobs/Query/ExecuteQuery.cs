@@ -12,7 +12,7 @@ using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class ExecuteQuery : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class ExecuteQuery : JobAsyncCodeActivity, IJobActivity
     {
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 querypartition.PrepareExecuteQuery(context, activityContext.GetExtension<IScheduler>(), out source, out destination);
             }
 
-            return delegate (AsyncJobContext asyncContext)
+            return delegate (JobContext asyncContext)
             {
                 asyncContext.RegisterCancelable(querypartition);
                 querypartition.ExecuteQuery(source, destination);

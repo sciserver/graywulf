@@ -13,7 +13,7 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Test
 {
-    public class TestDelay : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class TestDelay : JobAsyncCodeActivity, IJobActivity
     {
         [RequiredArgument]
         public InArgument<int> DelayPeriod { get; set; }
@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Jobs.Test
             var period = DelayPeriod.Get(activityContext);
             var cancelable = Cancelable.Get(activityContext);
 
-            return delegate (AsyncJobContext asyncContext)
+            return delegate (JobContext asyncContext)
             {
                 if (cancelable)
                 {

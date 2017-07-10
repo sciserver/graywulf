@@ -4,7 +4,7 @@ using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Jobs.CopyTables
 {
-    public class CopyTable : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class CopyTable : JobAsyncCodeActivity, IJobActivity
     {
         [RequiredArgument]
         public InArgument<CopyTablesParameters> Parameters { get; set; }
@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Jobs.CopyTables
             var parameters = Parameters.Get(activityContext);
             var item = Item.Get(activityContext);
 
-            return delegate (AsyncJobContext asyncContext)
+            return delegate (JobContext asyncContext)
             {
                 var task = item.GetInitializedCopyTableTask(parameters);
                 asyncContext.RegisterCancelable(task);

@@ -9,7 +9,7 @@ using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Jobs.Test
 {
-    public class TestAsyncTrackingRecord : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class TestAsyncTrackingRecord : JobAsyncCodeActivity, IJobActivity
     {
         [RequiredArgument]
         public InArgument<string> Message { get; set; }
@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Jobs.Test
             r.Data.Add("message", message);
             activityContext.Track(r);
 
-            return delegate (AsyncJobContext asyncContext)
+            return delegate (JobContext asyncContext)
             {
                 var r2 = new CustomTrackingRecord("test");
                 r2.Data.Add("message", message);

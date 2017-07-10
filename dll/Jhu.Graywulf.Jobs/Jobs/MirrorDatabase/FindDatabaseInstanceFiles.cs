@@ -8,11 +8,8 @@ using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Jobs.MirrorDatabase
 {
-    public class FindDatabaseInstanceFiles : CodeActivity, IGraywulfActivity
+    public class FindDatabaseInstanceFiles : JobCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<JobInfo> JobInfo { get; set; }
-
         public OutArgument<Guid> EntityGuid { get; set; }
 
         [RequiredArgument]
@@ -20,7 +17,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
         [RequiredArgument]
         public OutArgument<Dictionary<Guid, List<Guid>>> SourceDatabaseInstanceFileGuids { get; set; }
 
-        protected override void Execute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             Guid databaseinstanceguid = SourceDatabaseInstanceGuid.Get(activityContext);
 

@@ -8,15 +8,12 @@ using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class FindRemoteTables : CodeActivity, IGraywulfActivity
+    public class FindRemoteTables : JobCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<JobInfo> JobInfo { get; set; }
-
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
 
-        protected override void Execute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
 

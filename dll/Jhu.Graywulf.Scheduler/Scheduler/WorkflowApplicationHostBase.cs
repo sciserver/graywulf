@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <summary>
         /// Logging participant, same for all WorkflowApplications
         /// </summary>
-        private GraywulfTrackingParticipant trackingParticipant;
+        private JobTrackingParticipant trackingParticipant;
 
         #endregion
         #region Events
@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Scheduler
 
             // Initialize logging
             Logging.Logger.Instance.Start(iteractive);
-            trackingParticipant = new GraywulfTrackingParticipant();
+            trackingParticipant = new JobTrackingParticipant();
         }
 
         public virtual void Stop(TimeSpan timeout)

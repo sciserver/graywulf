@@ -11,7 +11,7 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.SqlScript
 {
-    public class ExecuteScript : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class ExecuteScript : JobAsyncCodeActivity, IJobActivity
     {
         [RequiredArgument]
         public InArgument<SqlScriptParameters> Parameters { get; set; }
@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Jobs.SqlScript
             var dataset = Dataset.Get(activityContext);
             var script = Script.Get(activityContext);
 
-            return delegate (AsyncJobContext asyncContext)
+            return delegate (JobContext asyncContext)
             {
                 var cn = dataset.OpenConnection();
                 var cmd = cn.CreateCommand();

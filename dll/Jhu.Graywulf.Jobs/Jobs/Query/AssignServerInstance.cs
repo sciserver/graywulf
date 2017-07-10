@@ -10,17 +10,14 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class AssignServerInstance : CodeActivity, IGraywulfActivity
+    public class AssignServerInstance : JobCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<JobInfo> JobInfo { get; set; }
-
         public OutArgument<Guid> EntityGuid { get; set; }
 
         [RequiredArgument]
         public InArgument<QueryObject> QueryObject { get; set; }
 
-        protected override void Execute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             var queryObject = QueryObject.Get(activityContext);
 

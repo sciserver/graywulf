@@ -8,17 +8,14 @@ using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Jobs.MirrorDatabase
 {
-    public class DetachDatabase : CodeActivity, IGraywulfActivity
+    public class DetachDatabase : JobCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<JobInfo> JobInfo { get; set; }
-
         public OutArgument<Guid> EntityGuid { get; set; }
 
         [RequiredArgument]
         public InArgument<Guid> DatabaseInstanceGuid { get; set; }
 
-        protected override void Execute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             Guid databaseinstanceguid = DatabaseInstanceGuid.Get(activityContext);
 

@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Activities
 {
     [Designer(typeof(RetryDesigner))]
     [ContentProperty("Try")]
-    public class Retry : NativeActivity, IGraywulfActivity
+    public class Retry : NativeActivity, IJobActivity
     {
         [DataContract]
         class RetryState

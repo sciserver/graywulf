@@ -12,7 +12,7 @@ using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.MirrorDatabase
 {
-    public class MirrorDatabaseFile : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class MirrorDatabaseFile : JobAsyncCodeActivity, IJobActivity
     {
         public OutArgument<Guid> EntityGuid { get; set; }
         public OutArgument<Guid> EntityGuidFrom { get; set; }
@@ -71,7 +71,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                 hostname = ssf.DatabaseInstanceFileGroup.DatabaseInstance.ServerInstance.Machine.HostName.ResolvedValue;
             }
 
-            return delegate (AsyncJobContext asyncContext)
+            return delegate (JobContext asyncContext)
             {
                 if (!skipExistingFile ||
                     !File.Exists(destinationfilename) ||

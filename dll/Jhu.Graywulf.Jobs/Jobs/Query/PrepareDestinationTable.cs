@@ -9,15 +9,12 @@ using Jhu.Graywulf.Scheduler;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class PrepareDestinationTable : CodeActivity, IGraywulfActivity
+    public class PrepareDestinationTable : JobCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<JobInfo> JobInfo { get; set; }
-
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
 
-        protected override void Execute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             SqlQueryPartition queryPartition = QueryPartition.Get(activityContext);
             SqlQuery query = queryPartition.Query;

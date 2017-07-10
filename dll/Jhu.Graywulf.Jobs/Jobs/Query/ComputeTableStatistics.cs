@@ -14,7 +14,7 @@ using Jhu.Graywulf.SqlParser;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class ComputeTableStatistics : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class ComputeTableStatistics : JobAsyncCodeActivity, IJobActivity
     {
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 statisticsDataset = query.GetStatisticsDataset(tableSource);
             }
 
-            return delegate(AsyncJobContext asyncContext)
+            return delegate(JobContext asyncContext)
             {
                 asyncContext.RegisterCancelable(query);
                 query.ComputeTableStatistics(tableSource, statisticsDataset);

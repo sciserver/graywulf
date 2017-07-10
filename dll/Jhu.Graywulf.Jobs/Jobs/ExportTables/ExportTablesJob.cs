@@ -12,7 +12,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Jobs.ExportTables
 {
-    public class ExportTablesJob : GraywulfAsyncCodeActivity, IGraywulfActivity, IExportTablesJob
+    public class ExportTablesJob : JobAsyncCodeActivity, IJobActivity, IExportTablesJob
     {
         [RequiredArgument]
         public InArgument<ExportTablesParameters> Parameters { get; set; }
@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 }
             }
 
-            return delegate (AsyncJobContext asyncContext)
+            return delegate (JobContext asyncContext)
             {
                 // Create table exporter
                 var exporter = parameters.GetInitializedTableExportTask();

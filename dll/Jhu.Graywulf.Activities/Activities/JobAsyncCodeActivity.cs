@@ -9,10 +9,10 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Activities
 {
-    public abstract class GraywulfAsyncCodeActivity : AsyncCodeActivity, IGraywulfActivity
+    public abstract class JobAsyncCodeActivity : AsyncCodeActivity, IJobActivity
     {
-        protected delegate void AsyncActivityWorker(AsyncJobContext asyncContext);
-        private delegate AsyncJobContext AsyncActivityWorkerTask(AsyncJobContext asyncContext, AsyncActivityWorker worker);
+        protected delegate void AsyncActivityWorker(JobContext asyncContext);
+        private delegate JobContext AsyncActivityWorkerTask(JobContext asyncContext, AsyncActivityWorker worker);
 
         #region Private member variables
 
@@ -26,12 +26,13 @@ namespace Jhu.Graywulf.Activities
             get { return cancelableTasks; }
         }
 
+        [RequiredArgument]
         public InArgument<JobInfo> JobInfo { get; set; }
 
         #endregion
         #region Constructors and initializers
 
-        public GraywulfAsyncCodeActivity()
+        public JobAsyncCodeActivity()
         {
             InitializeMembers();
         }
@@ -43,11 +44,9 @@ namespace Jhu.Graywulf.Activities
 
         #endregion
 
-        protected abstract AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext);
-
         protected sealed override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
         {
-            var asyncContext = new AsyncJobContext(this, activityContext);
+            var asyncContext = new JobContext(this, activityContext);
             var action = OnBeginExecute(activityContext);
             var task = new AsyncActivityWorkerTask(Execute);
             activityContext.UserState = task;
@@ -55,9 +54,11 @@ namespace Jhu.Graywulf.Activities
             return task.BeginInvoke(asyncContext, action, callback, state);
         }
 
-        private AsyncJobContext Execute(AsyncJobContext context, AsyncActivityWorker action)
+        protected abstract AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext);
+
+        private JobContext Execute(JobContext context, AsyncActivityWorker action)
         {
-            AsyncJobContext.Current = context;
+            JobContext.Current = context;
 
             try
             {
@@ -68,7 +69,7 @@ namespace Jhu.Graywulf.Activities
                 context.Exception = ex;
             }
 
-            AsyncJobContext.Current = null;
+            JobContext.Current = null;
 
             return context;
         }

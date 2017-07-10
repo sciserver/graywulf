@@ -9,14 +9,14 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Activities
 {
-    public class AsyncJobContext : IDisposable
+    public class JobContext : IDisposable
     {
         #region Singleton
 
         [ThreadStatic]
-        private static AsyncJobContext context;
+        private static JobContext context;
 
-        public static AsyncJobContext Current
+        public static JobContext Current
         {
             get
             {
@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Activities
         #endregion
         #region Private member variables
 
-        private GraywulfAsyncCodeActivity activity;
+        private JobAsyncCodeActivity activity;
         private string activityInstanceId;
         private Guid workflowInstanceId;
         private JobInfo jobInfo;
@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Activities
         #endregion
         #region Properties
 
-        internal GraywulfAsyncCodeActivity Activity
+        internal JobAsyncCodeActivity Activity
         {
             get { return activity; }
         }
@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.Activities
 
         #endregion
 
-        internal AsyncJobContext(GraywulfAsyncCodeActivity activity, AsyncCodeActivityContext activityContext)
+        internal JobContext(JobAsyncCodeActivity activity, AsyncCodeActivityContext activityContext)
         {
             this.activity = activity;
             this.activityInstanceId = activityContext.ActivityInstanceId;

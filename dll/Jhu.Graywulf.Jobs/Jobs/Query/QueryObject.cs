@@ -774,7 +774,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="connectionMode"></param>
         /// <param name="transactionMode"></param>
         /// <returns></returns>
-        public Jhu.Graywulf.Registry.RegistryContext CreateContext(IGraywulfActivity activity, System.Activities.CodeActivityContext activityContext)
+        public Jhu.Graywulf.Registry.RegistryContext CreateContext(IJobActivity activity, System.Activities.CodeActivityContext activityContext)
         {
             switch (executionMode)
             {

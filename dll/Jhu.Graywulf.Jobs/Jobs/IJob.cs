@@ -3,7 +3,7 @@ using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Jobs
 {
-    public interface IJob : IGraywulfActivity
+    public interface IJob : IJobActivity
     {
     }
 }

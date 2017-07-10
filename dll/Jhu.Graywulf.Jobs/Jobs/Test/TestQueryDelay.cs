@@ -13,7 +13,7 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Test
 {
-    public class TestQueryDelay : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class TestQueryDelay : JobAsyncCodeActivity, IJobActivity
     {
         [RequiredArgument]
         public InArgument<int> DelayPeriod { get; set; }
@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Jobs.Test
             var delay = DelayPeriod.Get(activityContext);
             var queryTimeout = QueryTimeout.Get(activityContext);
 
-            return delegate (AsyncJobContext asyncContext)
+            return delegate (JobContext asyncContext)
             {
                 var sql = String.Format("WAITFOR DELAY '{0:mm\\:ss}'", TimeSpan.FromMilliseconds(delay));
 

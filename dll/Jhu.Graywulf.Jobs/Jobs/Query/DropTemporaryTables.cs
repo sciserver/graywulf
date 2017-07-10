@@ -8,18 +8,15 @@ using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class DropTemporaryTables : CodeActivity, IGraywulfActivity
+    public class DropTemporaryTables : JobCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<JobInfo> JobInfo { get; set; }
-
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
 
         [RequiredArgument]
         public InArgument<bool> SuppressErrors { get; set; }
 
-        protected override void Execute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
 

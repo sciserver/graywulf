@@ -5,7 +5,7 @@ using Jhu.Graywulf.Logging;
 
 namespace Jhu.Graywulf.Activities
 {
-    public class GraywulfTrackingParticipant : TrackingParticipant
+    public class JobTrackingParticipant : TrackingParticipant
     {
         TrackingProfile trackingProfile;
 
@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Activities
             set { this.trackingProfile = value; }
         }
 
-        public GraywulfTrackingParticipant()
+        public JobTrackingParticipant()
         {
             trackingProfile = new TrackingProfile();
             trackingProfile.ActivityDefinitionId = "*";

@@ -13,7 +13,7 @@ using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class CopyRemoteTable : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class CopyRemoteTable : JobAsyncCodeActivity, IJobActivity
     {
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 querypartition.PrepareCopyRemoteTable(remotetable, out source);
             }
 
-            return delegate (AsyncJobContext asyncContext)
+            return delegate (JobContext asyncContext)
             {
                 asyncContext.RegisterCancelable(querypartition);
                 querypartition.CopyRemoteTable(remotetable, source);
