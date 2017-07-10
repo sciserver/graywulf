@@ -13,7 +13,7 @@
  xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
-    <x:Property Name="JobContext" Type="InArgument(jga:JobContext)" />
+    <x:Property Name="JobInfo" Type="InArgument(jga:JobInfo)" />
     <x:Property Name="Parameters" Type="InArgument(local:SqlScriptParameters)" />
   </x:Members>
   <sap2010:ExpressionActivityEditor.ExpressionActivityEditor>C#</sap2010:ExpressionActivityEditor.ExpressionActivityEditor>
@@ -84,22 +84,22 @@
             <DelegateInArgument x:TypeArguments="x:String" Name="scriptPart" />
           </ActivityAction.Argument>
           <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_1" MaxRetries="3">
-            <jga:Retry.JobContext>
-              <InArgument x:TypeArguments="jga:JobContext">
-                <mca:CSharpValue x:TypeArguments="jga:JobContext">JobContext</mca:CSharpValue>
+            <jga:Retry.JobInfo>
+              <InArgument x:TypeArguments="jga:JobInfo">
+                <mca:CSharpValue x:TypeArguments="jga:JobInfo">JobInfo</mca:CSharpValue>
               </InArgument>
-            </jga:Retry.JobContext>
+            </jga:Retry.JobInfo>
             <local:ExecuteScript sap2010:WorkflowViewState.IdRef="ExecuteScript_3">
               <local:ExecuteScript.Dataset>
                 <InArgument x:TypeArguments="jgs:DatasetBase">
                   <mca:CSharpValue x:TypeArguments="jgs:DatasetBase">item</mca:CSharpValue>
                 </InArgument>
               </local:ExecuteScript.Dataset>
-              <local:ExecuteScript.JobContext>
-                <InArgument x:TypeArguments="jga:JobContext">
-                  <mca:CSharpValue x:TypeArguments="jga:JobContext">JobContext</mca:CSharpValue>
+              <local:ExecuteScript.JobInfo>
+                <InArgument x:TypeArguments="jga:JobInfo">
+                  <mca:CSharpValue x:TypeArguments="jga:JobInfo">JobInfo</mca:CSharpValue>
                 </InArgument>
-              </local:ExecuteScript.JobContext>
+              </local:ExecuteScript.JobInfo>
               <local:ExecuteScript.Parameters>
                 <InArgument x:TypeArguments="local:SqlScriptParameters">
                   <mca:CSharpValue x:TypeArguments="local:SqlScriptParameters">Parameters</mca:CSharpValue>

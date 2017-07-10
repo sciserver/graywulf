@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Jhu.Graywulf.Activities;
 
-namespace Jhu.Graywulf.Activities
+namespace Jhu.Graywulf.Scheduler
 {
     public interface IScheduler
     {
@@ -11,7 +9,7 @@ namespace Jhu.Graywulf.Activities
         /// 
         /// </summary>
         /// <param name="workflowInstanceId"></param>
-        JobContext GetJobContext(Guid workflowInstanceId);
+        JobInfo GetJobInfo(Guid workflowInstanceId);
 
         /// <summary>
         /// Returns a server instance containing all necessary database instances

@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Activities
             get { return cancelableTasks; }
         }
 
-        public InArgument<JobContext> JobContext { get; set; }
+        public InArgument<JobInfo> JobInfo { get; set; }
 
         #endregion
         #region Constructors and initializers

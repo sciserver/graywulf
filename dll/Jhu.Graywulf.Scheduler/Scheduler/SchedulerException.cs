@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 
-namespace Jhu.Graywulf.Activities
+namespace Jhu.Graywulf.Scheduler
 {
     [Serializable]
     public class SchedulerException : Exception

@@ -8,7 +8,7 @@ namespace Jhu.Graywulf.Scheduler
     /// Represents a running job
     /// </summary>
     [Serializable]
-    public class Job : JobContext
+    internal class Job : JobInfo
     {
         private int appDomainID;
         private Guid queueGuid;

@@ -6,7 +6,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Scheduler
 {
-    public class Cluster : RegistryObject
+    internal class Cluster : RegistryObject
     {
         private Dictionary<Guid, MachineRole> machineRoles;
 

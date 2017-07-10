@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.Activities
         private GraywulfAsyncCodeActivity activity;
         private string activityInstanceId;
         private Guid workflowInstanceId;
-        private JobContext jobContext;
+        private JobInfo jobInfo;
         private Exception exception;
         private List<CustomTrackingRecord> trackingRecords;
 
@@ -56,9 +56,9 @@ namespace Jhu.Graywulf.Activities
             get { return workflowInstanceId; }
         }
 
-        public JobContext JobContext
+        public JobInfo JobInfo
         {
-            get { return jobContext; }
+            get { return jobInfo; }
         }
 
         internal Exception Exception
@@ -80,9 +80,9 @@ namespace Jhu.Graywulf.Activities
             this.activityInstanceId = activityContext.ActivityInstanceId;
             this.workflowInstanceId = activityContext.WorkflowInstanceId;
 
-            if (jobContext != null)
+            if (jobInfo != null)
             {
-                this.jobContext = activityContext.GetValue(activity.JobContext);
+                this.jobInfo = activityContext.GetValue(activity.JobInfo);
             }
 
             this.trackingRecords = new List<CustomTrackingRecord>();

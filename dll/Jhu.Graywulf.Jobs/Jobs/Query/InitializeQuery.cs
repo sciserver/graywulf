@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Jobs.Query
     public class InitializeQuery : CodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<JobContext> JobContext { get; set; }
+        public InArgument<JobInfo> JobInfo { get; set; }
 
         public OutArgument<Guid> EntityGuid { get; set; }
 

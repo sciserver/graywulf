@@ -115,7 +115,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <summary>
         /// Gets a cached version of the cluster configuration
         /// </summary>
-        public Cluster Cluster
+        internal Cluster Cluster
         {
             get { return cluster; }
         }
@@ -182,7 +182,7 @@ namespace Jhu.Graywulf.Scheduler
         /// Loads the configuration of the entire cluster from the database.
         /// </summary>
         /// <returns></returns>
-        public Cluster LoadCluster(string clusterName)
+        internal Cluster LoadCluster(string clusterName)
         {
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
@@ -911,10 +911,10 @@ namespace Jhu.Graywulf.Scheduler
         /// a new context to access the registry.
         /// </remarks>
         /// <param name="workflowInstanceId"></param>
-        internal JobContext GetJobContext(Guid workflowInstanceId)
+        internal JobInfo GetJobContext(Guid workflowInstanceId)
         {
             var job = runningJobs[workflowInstanceId];
-            return new JobContext(job);
+            return new JobInfo(job);
         }
 
         #endregion

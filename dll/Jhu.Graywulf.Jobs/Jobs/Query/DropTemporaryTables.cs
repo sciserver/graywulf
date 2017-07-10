@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Jobs.Query
     public class DropTemporaryTables : CodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<JobContext> JobContext { get; set; }
+        public InArgument<JobInfo> JobInfo { get; set; }
 
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }

@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Scheduler
     /// <summary>
     /// Represents a job queue
     /// </summary>
-    public class Queue
+    internal class Queue
     {
         private Guid guid;
         private int maxOutstandingJobs;

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Scheduler
 {
-    public class Machine : RegistryObject
+    internal class Machine : RegistryObject
     {
         
         public bool IsAvailable

@@ -36,8 +36,6 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Variables
 
-        private object syncRoot = new object();
-
         private string connectionString;
         private string smtpString;
 
@@ -137,7 +135,7 @@ namespace Jhu.Graywulf.Registry
 
         public RegistryContext CreateContext(IGraywulfActivity activity, CodeActivityContext activityContext, ConnectionMode connectionMode, TransactionMode transactionMode)
         {
-            var context = new RegistryContext(activity, activityContext)
+            /*var context = new RegistryContext(activity, activityContext)
             {
                 ConnectionString = connectionString,
                 ConnectionMode = connectionMode,
@@ -147,6 +145,9 @@ namespace Jhu.Graywulf.Registry
             context.EnsureEntitiesLoaded();
 
             return context;
+            */
+
+            return null;
         }
 
         #endregion

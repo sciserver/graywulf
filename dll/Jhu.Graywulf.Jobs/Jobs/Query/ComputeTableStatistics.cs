@@ -8,6 +8,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.SqlParser;
 

@@ -12,7 +12,7 @@
  xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
-    <x:Property Name="JobContext" Type="InArgument(jga:JobContext)" />
+    <x:Property Name="JobInfo" Type="InArgument(jga:JobInfo)" />
     <x:Property Name="Parameters" Type="InArgument(local:CopyTablesParameters)" />
   </x:Members>
   <sap2010:ExpressionActivityEditor.ExpressionActivityEditor>C#</sap2010:ExpressionActivityEditor.ExpressionActivityEditor>
@@ -79,11 +79,11 @@
               <mca:CSharpValue x:TypeArguments="local:CopyTablesItem">item</mca:CSharpValue>
             </InArgument>
           </local:CopyTable.Item>
-          <local:CopyTable.JobContext>
-            <InArgument x:TypeArguments="jga:JobContext">
-              <mca:CSharpValue x:TypeArguments="jga:JobContext">JobContext</mca:CSharpValue>
+          <local:CopyTable.JobInfo>
+            <InArgument x:TypeArguments="jga:JobInfo">
+              <mca:CSharpValue x:TypeArguments="jga:JobInfo">JobInfo</mca:CSharpValue>
             </InArgument>
-          </local:CopyTable.JobContext>
+          </local:CopyTable.JobInfo>
           <local:CopyTable.Parameters>
             <InArgument x:TypeArguments="local:CopyTablesParameters">
               <mca:CSharpValue x:TypeArguments="local:CopyTablesParameters">Parameters</mca:CSharpValue>
@@ -103,11 +103,11 @@
                   <mca:CSharpValue x:TypeArguments="local:CopyTablesItem">item</mca:CSharpValue>
                 </InArgument>
               </local:DropTable.Item>
-              <local:DropTable.JobContext>
-                <InArgument x:TypeArguments="jga:JobContext">
-                  <mca:CSharpValue x:TypeArguments="jga:JobContext">JobContext</mca:CSharpValue>
+              <local:DropTable.JobInfo>
+                <InArgument x:TypeArguments="jga:JobInfo">
+                  <mca:CSharpValue x:TypeArguments="jga:JobInfo">JobInfo</mca:CSharpValue>
                 </InArgument>
-              </local:DropTable.JobContext>
+              </local:DropTable.JobInfo>
             </local:DropTable>
           </If.Then>
         </If>

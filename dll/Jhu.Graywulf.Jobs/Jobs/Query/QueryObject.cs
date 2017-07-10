@@ -10,14 +10,13 @@ using System.Runtime.Serialization;
 using System.IO;
 using System.Xml.Serialization;
 using Jhu.Graywulf.Tasks;
-using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.SqlParser;
-using Jhu.Graywulf.SqlCodeGen.SqlServer;
 using Jhu.Graywulf.RemoteService;
 
 namespace Jhu.Graywulf.Jobs.Query

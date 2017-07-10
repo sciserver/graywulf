@@ -196,7 +196,7 @@ namespace Jhu.Graywulf.Activities
         {
             if (data.ContainsKey(Constants.ActivityParameterJobContext))
             {
-                var cx = (JobContext)data[Constants.ActivityParameterJobContext];
+                var cx = (JobInfo)data[Constants.ActivityParameterJobContext];
                 e.UserGuid = cx.UserGuid;
                 e.JobGuid = cx.JobGuid;
             }

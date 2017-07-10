@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Scheduler
 {
-    public class ServerInstance : RegistryObject
+    internal class ServerInstance : RegistryObject
     {
         private Machine machine;
         private DateTime lastAssigned;

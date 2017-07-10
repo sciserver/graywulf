@@ -106,7 +106,7 @@ namespace Jhu.Graywulf.Scheduler
                 // Set default parameters to be passed to the job
                 // These will be passed around from activity to activity and
                 // can be used by the job tracker (logger)
-                var cx = new JobContext()
+                var cx = new JobInfo()
                 {
                     UserGuid = ji.UserGuidOwner,
                     JobGuid = ji.Guid

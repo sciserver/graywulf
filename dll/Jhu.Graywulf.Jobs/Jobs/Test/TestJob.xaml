@@ -11,7 +11,7 @@
  xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
-    <x:Property Name="JobContext" Type="InArgument(jga:JobContext)" />
+    <x:Property Name="JobInfo" Type="InArgument(jga:JobInfo)" />
     <x:Property Name="TestMethod" Type="InArgument(x:String)" />
     <x:Property Name="DelayPeriod" Type="InArgument(x:Int32)" />
     <x:Property Name="Result" Type="OutArgument(x:String)" />
@@ -64,7 +64,7 @@
       <Throw Exception="[New NotImplementedException()]" sap2010:WorkflowViewState.IdRef="Throw_1" />
     </Switch.Default>
     <Sequence x:Key="AtomicDelay" sap2010:WorkflowViewState.IdRef="Sequence_1">
-      <local:TestDelay Cancelable="False" DelayPeriod="[DelayPeriod]" sap2010:WorkflowViewState.IdRef="TestDelay_1" JobContext="[JobContext]" />
+      <local:TestDelay Cancelable="False" DelayPeriod="[DelayPeriod]" sap2010:WorkflowViewState.IdRef="TestDelay_1" JobInfo="[JobInfo]" />
       <Assign sap2010:WorkflowViewState.IdRef="Assign_1">
         <Assign.To>
           <OutArgument x:TypeArguments="x:String">[Result]</OutArgument>
@@ -75,7 +75,7 @@
       </Assign>
     </Sequence>
     <Sequence x:Key="CancelableDelay" sap2010:WorkflowViewState.IdRef="Sequence_2">
-      <local:TestDelay Cancelable="True" DelayPeriod="[DelayPeriod]" sap2010:WorkflowViewState.IdRef="TestDelay_2" JobContext="[JobContext]" />
+      <local:TestDelay Cancelable="True" DelayPeriod="[DelayPeriod]" sap2010:WorkflowViewState.IdRef="TestDelay_2" JobInfo="[JobInfo]" />
       <Assign sap2010:WorkflowViewState.IdRef="Assign_2">
         <Assign.To>
           <OutArgument x:TypeArguments="x:String">[Result]</OutArgument>
@@ -86,8 +86,8 @@
       </Assign>
     </Sequence>
     <Sequence x:Key="MultipleDelay" sap2010:WorkflowViewState.IdRef="Sequence_3">
-      <local:TestDelay Cancelable="True" DelayPeriod="[DelayPeriod]" sap2010:WorkflowViewState.IdRef="TestDelay_3" JobContext="[JobContext]" />
-      <local:TestDelay Cancelable="True" DelayPeriod="[DelayPeriod]" DisplayName="TestDelay2" sap2010:WorkflowViewState.IdRef="TestDelay_4" JobContext="[JobContext]" />
+      <local:TestDelay Cancelable="True" DelayPeriod="[DelayPeriod]" sap2010:WorkflowViewState.IdRef="TestDelay_3" JobInfo="[JobInfo]" />
+      <local:TestDelay Cancelable="True" DelayPeriod="[DelayPeriod]" DisplayName="TestDelay2" sap2010:WorkflowViewState.IdRef="TestDelay_4" JobInfo="[JobInfo]" />
       <Assign sap2010:WorkflowViewState.IdRef="Assign_3">
         <Assign.To>
           <OutArgument x:TypeArguments="x:String">[Result]</OutArgument>
@@ -98,42 +98,42 @@
       </Assign>
     </Sequence>
     <Throw x:Key="Exception" Exception="[New Exception(&quot;Test exception thrown.&quot;)]" sap2010:WorkflowViewState.IdRef="Throw_2" />
-    <local:TestAsyncException x:Key="AsyncException" sap2010:WorkflowViewState.IdRef="TestAsyncException_1" JobContext="[JobContext]" Message="From simple test" />
+    <local:TestAsyncException x:Key="AsyncException" sap2010:WorkflowViewState.IdRef="TestAsyncException_1" JobInfo="[JobInfo]" Message="From simple test" />
     <CancellationScope x:Key="AsyncExceptionWithRetry" sap2010:WorkflowViewState.IdRef="CancellationScope_1">
-      <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_1" JobContext="[JobContext]" MaxRetries="3">
+      <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_1" JobInfo="[JobInfo]" MaxRetries="3">
         <Sequence sap2010:WorkflowViewState.IdRef="Sequence_4">
-          <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_2" JobContext="[JobContext]" Message="From try" />
-          <local:TestDelay Cancelable="True" DelayPeriod="5000" sap2010:WorkflowViewState.IdRef="TestDelay_5" JobContext="[JobContext]" />
+          <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_2" JobInfo="[JobInfo]" Message="From try" />
+          <local:TestDelay Cancelable="True" DelayPeriod="5000" sap2010:WorkflowViewState.IdRef="TestDelay_5" JobInfo="[JobInfo]" />
         </Sequence>
       </jga:Retry>
     </CancellationScope>
     <CancellationScope x:Key="RetryWithFaultInFinally" sap2010:WorkflowViewState.IdRef="CancellationScope_2">
-      <jga:Retry sap2010:WorkflowViewState.IdRef="Retry_2" JobContext="[JobContext]" MaxRetries="3">
+      <jga:Retry sap2010:WorkflowViewState.IdRef="Retry_2" JobInfo="[JobInfo]" MaxRetries="3">
         <jga:Retry.Finally>
-          <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_3" JobContext="[JobContext]" Message="From finally" />
+          <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_3" JobInfo="[JobInfo]" Message="From finally" />
         </jga:Retry.Finally>
         <Sequence sap2010:WorkflowViewState.IdRef="Sequence_5">
-          <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_4" JobContext="[JobContext]" Message="From try" />
-          <local:TestDelay Cancelable="True" DelayPeriod="5000" sap2010:WorkflowViewState.IdRef="TestDelay_6" JobContext="[JobContext]" />
+          <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_4" JobInfo="[JobInfo]" Message="From try" />
+          <local:TestDelay Cancelable="True" DelayPeriod="5000" sap2010:WorkflowViewState.IdRef="TestDelay_6" JobInfo="[JobInfo]" />
         </Sequence>
       </jga:Retry>
       <CancellationScope.CancellationHandler>
-        <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_5" JobContext="[JobContext]" Message="From cancel" />
+        <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_5" JobInfo="[JobInfo]" Message="From cancel" />
       </CancellationScope.CancellationHandler>
     </CancellationScope>
     <CancellationScope x:Key="RetryWithFaultInCancel" sap2010:WorkflowViewState.IdRef="CancellationScope_3">
-      <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_3" JobContext="[JobContext]" MaxRetries="3">
+      <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_3" JobInfo="[JobInfo]" MaxRetries="3">
         <Sequence sap2010:WorkflowViewState.IdRef="Sequence_6">
-          <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_6" JobContext="[JobContext]" Message="From try" />
-          <local:TestDelay Cancelable="True" DelayPeriod="5000" sap2010:WorkflowViewState.IdRef="TestDelay_7" JobContext="[JobContext]" />
+          <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_6" JobInfo="[JobInfo]" Message="From try" />
+          <local:TestDelay Cancelable="True" DelayPeriod="5000" sap2010:WorkflowViewState.IdRef="TestDelay_7" JobInfo="[JobInfo]" />
         </Sequence>
       </jga:Retry>
       <CancellationScope.CancellationHandler>
-        <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_7" JobContext="[JobContext]" Message="From cancel" />
+        <local:TestAsyncException sap2010:WorkflowViewState.IdRef="TestAsyncException_7" JobInfo="[JobInfo]" Message="From cancel" />
       </CancellationScope.CancellationHandler>
     </CancellationScope>
     <Sequence x:Key="QueryDelay" sap2010:WorkflowViewState.IdRef="Sequence_7">
-      <local:TestQueryDelay DelayPeriod="[DelayPeriod]" DisplayName="QueryDelay" sap2010:WorkflowViewState.IdRef="TestQueryDelay_1" JobContext="[JobContext]" QueryTimeout="120" />
+      <local:TestQueryDelay DelayPeriod="[DelayPeriod]" DisplayName="QueryDelay" sap2010:WorkflowViewState.IdRef="TestQueryDelay_1" JobInfo="[JobInfo]" QueryTimeout="120" />
       <Assign sap2010:WorkflowViewState.IdRef="Assign_4">
         <Assign.To>
           <OutArgument x:TypeArguments="x:String">[Result]</OutArgument>
@@ -144,7 +144,7 @@
       </Assign>
     </Sequence>
     <Sequence x:Key="QueryTimeout" sap2010:WorkflowViewState.IdRef="Sequence_8">
-      <local:TestQueryDelay DelayPeriod="[DelayPeriod]" DisplayName="QueryTimeout" sap2010:WorkflowViewState.IdRef="TestQueryDelay_2" JobContext="[JobContext]" QueryTimeout="10" />
+      <local:TestQueryDelay DelayPeriod="[DelayPeriod]" DisplayName="QueryTimeout" sap2010:WorkflowViewState.IdRef="TestQueryDelay_2" JobInfo="[JobInfo]" QueryTimeout="10" />
       <Assign sap2010:WorkflowViewState.IdRef="Assign_5">
         <Assign.To>
           <OutArgument x:TypeArguments="x:String">[Result]</OutArgument>
@@ -154,7 +154,7 @@
         </Assign.Value>
       </Assign>
     </Sequence>
-    <jga:Retry x:Key="QueryDelayRetry" sap2010:WorkflowViewState.IdRef="Retry_4" JobContext="[JobContext]" MaxRetries="5">
+    <jga:Retry x:Key="QueryDelayRetry" sap2010:WorkflowViewState.IdRef="Retry_4" JobInfo="[JobInfo]" MaxRetries="5">
       <jga:Retry.Finally>
         <Assign sap2010:WorkflowViewState.IdRef="Assign_6">
           <Assign.To>
@@ -165,9 +165,9 @@
           </Assign.Value>
         </Assign>
       </jga:Retry.Finally>
-      <local:TestQueryDelay DelayPeriod="[DelayPeriod]" DisplayName="QueryDelayRetry" sap2010:WorkflowViewState.IdRef="TestQueryDelay_3" JobContext="[JobContext]" QueryTimeout="120" />
+      <local:TestQueryDelay DelayPeriod="[DelayPeriod]" DisplayName="QueryDelayRetry" sap2010:WorkflowViewState.IdRef="TestQueryDelay_3" JobInfo="[JobInfo]" QueryTimeout="120" />
     </jga:Retry>
-    <jga:Retry x:Key="QueryTimeoutRetry" sap2010:WorkflowViewState.IdRef="Retry_5" JobContext="[JobContext]" MaxRetries="5">
+    <jga:Retry x:Key="QueryTimeoutRetry" sap2010:WorkflowViewState.IdRef="Retry_5" JobInfo="[JobInfo]" MaxRetries="5">
       <jga:Retry.Finally>
         <Assign sap2010:WorkflowViewState.IdRef="Assign_7">
           <Assign.To>
@@ -178,9 +178,9 @@
           </Assign.Value>
         </Assign>
       </jga:Retry.Finally>
-      <local:TestQueryDelay DelayPeriod="[DelayPeriod]" DisplayName="QueryTimeoutRetry" sap2010:WorkflowViewState.IdRef="TestQueryDelay_4" JobContext="[JobContext]" QueryTimeout="10" />
+      <local:TestQueryDelay DelayPeriod="[DelayPeriod]" DisplayName="QueryTimeoutRetry" sap2010:WorkflowViewState.IdRef="TestQueryDelay_4" JobInfo="[JobInfo]" QueryTimeout="10" />
     </jga:Retry>
-    <local:TestAsyncTrackingRecord x:Key="AsyncTrackingRecord" JobContext="[JobContext]" Message="test" sap2010:WorkflowViewState.IdRef="TestAsyncTrackingRecord_1" />
+    <local:TestAsyncTrackingRecord x:Key="AsyncTrackingRecord" JobInfo="[JobInfo]" Message="test" sap2010:WorkflowViewState.IdRef="TestAsyncTrackingRecord_1" />
     <sads:DebugSymbol.Symbol>d11DOlxEYXRhXGRvYm9zXHByb2plY3Rcc2t5cXVlcnktYWxsLXYxLjNcZ3JheXd1bGZcZGxsXEpodS5HcmF5d3VsZi5Kb2JzXEpvYnNcVGVzdFxUZXN0Sm9iLnhhbWx5PgO5AQwCAQE+MT4/AgECQgVMEAMBlwFNBVcQAwGMAVgFYxACAXtkBWSKAQIBeWUFZaQBAgF1ZgVtGQIBZm4FexkCAU98BYYBGQIBPIcBBZEBEAIBMZIBBZwBEAIBJp0BBakBEQIBGKoBBbYBEQIBCrcBBbcBpwECAQZAB0BmAgEEQwdDkQEDAZwBRAdLEAMBmAFOB06QAQMBkQFPB1YQAwGNAVkHWZABAwGGAVoHWqkBAwGAAVsHYhACAXxkKGRdAgF6ZY8BZaEBAgF4ZXhlhgECAXZnB2wTAgFnbwd3EwIBVHkJeYwBAgFQfQeCARMCAUGEAQmEAYwBAgE9iAEHiAG0AQIBNokBB5ABEAIBMpMBB5MBtQECASuUAQebARACASedAXedAXoCARudAV2dAWsCARmoAQeoAbkBAgEgnwEJpgESAgEcqgF5qgF8AgENqgFfqgFtAgELtQEHtQG6AQIBEqwBCbMBEgIBDrcBYrcBaAIBCbcBS7cBWQIBB0AYQDkCAQVDI0MqAwGhAUM3Q0YDAZ8BQ4ABQ44BAwGdAUkySTQDAZsBRjNGOwMBmQFOI04pAwGWAU42TkUDAZQBTn9OjQEDAZIBVDJUNAMBkAFRM1E7AwGOAVkjWSkDAYsBWTZZRQMBiQFZf1mNAQMBhwFaI1opAwGFAVo2WkUDAYMBWpgBWqYBAwGBAWAyYDQCAX9dM107AgF9Z3RndwIBamdaZ2gCAWhoCWsUAgFrb2FvZAIBV29Hb1UCAVVzCXYUAgFccQtxjwECAVh5fHmJAQIBU3lleXMCAVF9dH13AgFEfVp9aAIBQn4JgQEUAgFFhAF8hAGJAQIBQIQBZYQBcwIBPogBrAGIAbEBAgE7iAEpiAE4AgE5iAGQAYgBngECATeOATKOATQCATWLATOLATsCATOTAa4BkwGyAQIBMJMBKZMBOAIBLpMBkgGTAaABAgEsmQEymQE0AgEqlgEzlgE7AgEoqAGxAagBtgECASWoASmoATgCASOoAZUBqAGjAQIBIaQBNKQBNgIBH6EBNaEBPQIBHbUBswG1AbcBAgEXtQEptQE4AgEVtQGXAbUBpQECAROxATSxATYCARGuATWuAT0CAQ9pC2mLAQIBcWoLaosBAgFsdAt0iwECAWJ1C3WLAQIBXXF+cYwBAgFbcWdxdQIBWX8Lf4sBAgFLgAELgAGLAQIBRml+aYgBAgF0aWdpdQIBcmonai0CAXBqOmpAAgFvanpqiAECAW10fnSIAQIBZXRndHUCAWN1J3UtAgFhdTp1QAIBYHV6dYgBAgFef35/iAECAU5/Z391AgFMgAEngAEtAgFKgAE6gAFAAgFJgAF6gAGIAQIBRw==</sads:DebugSymbol.Symbol>
   </Switch>
   <sap2010:WorkflowViewState.ViewStateManager>

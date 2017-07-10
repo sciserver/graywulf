@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Activities;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Schema;
 
@@ -12,7 +13,7 @@ namespace Jhu.Graywulf.Jobs.Query
     public class AssignServerInstance : CodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<JobContext> JobContext { get; set; }
+        public InArgument<JobInfo> JobInfo { get; set; }
 
         public OutArgument<Guid> EntityGuid { get; set; }
 

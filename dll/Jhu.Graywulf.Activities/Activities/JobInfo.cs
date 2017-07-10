@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Jhu.Graywulf.Activities
 {
     [Serializable]
-    public class JobContext : MarshalByRefObject, ICloneable
+    public class JobInfo : MarshalByRefObject, ICloneable
     {
         #region Private member variables
 
@@ -62,15 +62,14 @@ namespace Jhu.Graywulf.Activities
         }
 
         #endregion
-
         #region Constructors and initializers
 
-        public JobContext()
+        public JobInfo()
         {
             InitializeMembers(new StreamingContext());
         }
 
-        public JobContext(JobContext old)
+        public JobInfo(JobInfo old)
         {
             CopyMembers(old);
         }
@@ -87,7 +86,7 @@ namespace Jhu.Graywulf.Activities
             this.jobID = null;
         }
 
-        private void CopyMembers(JobContext old)
+        private void CopyMembers(JobInfo old)
         {
             this.clusterGuid = old.clusterGuid;
             this.domainGuid = old.domainGuid;
@@ -98,9 +97,9 @@ namespace Jhu.Graywulf.Activities
             this.jobID = old.jobID;
         }
         
-        public JobContext Clone()
+        public JobInfo Clone()
         {
-            return new JobContext(this);
+            return new JobInfo(this);
         }
 
         object ICloneable.Clone()

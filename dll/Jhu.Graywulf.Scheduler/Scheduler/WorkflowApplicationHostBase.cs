@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Activities;
 using System.Threading;
+using Jhu.Graywulf.Activities;
 
-namespace Jhu.Graywulf.Activities
+namespace Jhu.Graywulf.Scheduler
 {
     /// <summary>
     /// 

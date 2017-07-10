@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.Activities
     public class ReleaseEntity : CodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<JobContext> JobContext { get; set; }
+        public InArgument<JobInfo> JobInfo { get; set; }
 
         [RequiredArgument]
         public InArgument<Guid> EntityGuid { get; set; }

@@ -5,6 +5,6 @@ namespace Jhu.Graywulf.Activities
 {
     public interface IGraywulfActivity
     {
-        InArgument<JobContext> JobContext { get; set; }
+        InArgument<JobInfo> JobInfo { get; set; }
     }
 }

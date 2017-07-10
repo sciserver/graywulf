@@ -188,6 +188,7 @@ namespace Jhu.Graywulf.Registry
         }
 
         // TODO: delete
+        /*
         internal RegistryContext(IGraywulfActivity activity, CodeActivityContext activityContext)
         {
             InitializeMembers();
@@ -211,7 +212,7 @@ namespace Jhu.Graywulf.Registry
                 //this.activityContext = activityContext;
                 //this.activity = activity;
             }
-        }
+        }*/
 
         #endregion
         #region Initializer Functions

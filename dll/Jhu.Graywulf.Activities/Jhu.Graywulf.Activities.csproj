@@ -62,19 +62,14 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Activities\AsyncJobContext.cs" />
-    <Compile Include="Activities\JobContext.cs" />
     <Compile Include="Activities\GraywulfAsyncCodeActivity.cs" />
     <Compile Include="Activities\GraywulfTrackingParticipant.cs" />
     <Compile Include="Activities\IGraywulfActivity.cs" />
-    <Compile Include="Activities\IScheduler.cs" />
+    <Compile Include="Activities\JobInfo.cs" />
     <Compile Include="Activities\Retry.cs" />
     <Compile Include="Activities\RetryDesigner.xaml.cs">
       <DependentUpon>RetryDesigner.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Activities\SchedulerException.cs" />
-    <Compile Include="Activities\StandaloneWorkflowApplicationHost.cs" />
-    <Compile Include="Activities\WorkflowApplicationHostBase.cs" />
-    <Compile Include="Activities\WorkflowApplicationHostEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jhu.Graywulf.Scheduler
 {
-    public class DatabaseDefinition : RegistryObject
+    internal class DatabaseDefinition : RegistryObject
     {
         private Dictionary<string, Dictionary<Guid, DatabaseInstance>> databaseInstances;
 

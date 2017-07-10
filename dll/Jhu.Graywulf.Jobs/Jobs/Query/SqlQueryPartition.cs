@@ -9,7 +9,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Registry;
-using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.SqlParser;
@@ -279,7 +279,7 @@ namespace Jhu.Graywulf.Jobs.Query
             return source;
         }
 
-        public virtual void PrepareExecuteQuery(RegistryContext context, IScheduler scheduler, out SourceTableQuery source, out Table destination)
+        public virtual void PrepareExecuteQuery(RegistryContext context, Scheduler.IScheduler scheduler, out SourceTableQuery source, out Table destination)
         {
             InitializeQueryObject(context, scheduler, true);
 

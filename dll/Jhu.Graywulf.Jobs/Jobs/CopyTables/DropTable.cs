@@ -8,7 +8,7 @@ namespace Jhu.Graywulf.Jobs.CopyTables
     public class DropTable : CodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<JobContext> JobContext { get; set; }
+        public InArgument<JobInfo> JobInfo { get; set; }
 
         [RequiredArgument]
         public InArgument<CopyTablesItem> Item { get; set; }

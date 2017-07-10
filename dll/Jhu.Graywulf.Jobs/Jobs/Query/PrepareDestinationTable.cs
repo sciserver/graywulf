@@ -5,13 +5,14 @@ using System.Text;
 using System.Activities;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Scheduler;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
     public class PrepareDestinationTable : CodeActivity, IGraywulfActivity
     {
         [RequiredArgument]
-        public InArgument<JobContext> JobContext { get; set; }
+        public InArgument<JobInfo> JobInfo { get; set; }
 
         [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }

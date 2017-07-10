@@ -15,7 +15,7 @@
  xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
-    <x:Property Name="JobContext" Type="InArgument(jga:JobContext)" />
+    <x:Property Name="JobInfo" Type="InArgument(jga:JobInfo)" />
     <x:Property Name="Parameters" Type="InArgument(local:MirrorDatabaseParameters)" />
   </x:Members>
   <mva:VisualBasic.Settings>
@@ -86,7 +86,7 @@
       <Variable x:TypeArguments="scg:Queue(s:Guid)" Default="[Nothing]" Name="SourceDatabaseQueue" />
       <Variable x:TypeArguments="scg:Queue(s:Guid)" Default="[Nothing]" Name="DestinationDatabaseQueue" />
     </Sequence.Variables>
-    <local:FindSourcesAndDestinations EntityGuid="{x:Null}" DestinationDatabaseInstanceGuids="[Parameters.DestinationDatabaseInstanceGuids]" DestinationDatabaseQueue="[DestinationDatabaseQueue]" sap2010:WorkflowViewState.IdRef="FindSourcesAndDestinations_1" SourceDatabaseInstanceGuids="[Parameters.SourceDatabaseInstanceGuids]" SourceDatabaseQueue="[SourceDatabaseQueue]" JobContext="[JobContext]" />
+    <local:FindSourcesAndDestinations EntityGuid="{x:Null}" DestinationDatabaseInstanceGuids="[Parameters.DestinationDatabaseInstanceGuids]" DestinationDatabaseQueue="[DestinationDatabaseQueue]" sap2010:WorkflowViewState.IdRef="FindSourcesAndDestinations_1" SourceDatabaseInstanceGuids="[Parameters.SourceDatabaseInstanceGuids]" SourceDatabaseQueue="[SourceDatabaseQueue]" JobInfo="[JobInfo]" />
     <ParallelForEach x:TypeArguments="s:Guid" DisplayName="ParallelForEach DestinationDatabaseInstance" sap2010:WorkflowViewState.IdRef="ParallelForEach`1_2" Values="[DestinationDatabaseQueue]">
       <ActivityAction x:TypeArguments="s:Guid">
         <ActivityAction.Argument>
@@ -120,10 +120,10 @@
             <x:Reference>__ReferenceID1</x:Reference>
             <x:Reference>__ReferenceID2</x:Reference>
           </Flowchart>
-          <jga1:LockEntity DisplayName="LockSourceDatabase" EntityGuid="[SourceDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="LockEntity_1" JobContext="[JobContext]" />
-          <jga1:LockEntity DisplayName="LockDestinationDatabase" EntityGuid="[DestinationDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="LockEntity_2" JobContext="[JobContext]" />
-          <local:FindDatabaseInstanceFiles EntityGuid="{x:Null}" sap2010:WorkflowViewState.IdRef="FindDatabaseInstanceFiles_1" SourceDatabaseInstanceFileGuids="[SourceDatabaseInstanceFileGuids]" SourceDatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" JobContext="[JobContext]" />
-          <local:DetachDatabase EntityGuid="{x:Null}" DatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" DisplayName="DetachSourceDatabase" sap2010:WorkflowViewState.IdRef="DetachDatabase_1" JobContext="[JobContext]" />
+          <jga1:LockEntity DisplayName="LockSourceDatabase" EntityGuid="[SourceDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="LockEntity_1" JobInfo="[JobInfo]" />
+          <jga1:LockEntity DisplayName="LockDestinationDatabase" EntityGuid="[DestinationDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="LockEntity_2" JobInfo="[JobInfo]" />
+          <local:FindDatabaseInstanceFiles EntityGuid="{x:Null}" sap2010:WorkflowViewState.IdRef="FindDatabaseInstanceFiles_1" SourceDatabaseInstanceFileGuids="[SourceDatabaseInstanceFileGuids]" SourceDatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" JobInfo="[JobInfo]" />
+          <local:DetachDatabase EntityGuid="{x:Null}" DatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" DisplayName="DetachSourceDatabase" sap2010:WorkflowViewState.IdRef="DetachDatabase_1" JobInfo="[JobInfo]" />
           <ParallelForEach x:TypeArguments="s:Guid" DisplayName="ParallelForEach DiskVolume" sap2010:WorkflowViewState.IdRef="ParallelForEach`1_1" Values="[SourceDatabaseInstanceFileGuids.Keys]">
             <ActivityAction x:TypeArguments="s:Guid">
               <ActivityAction.Argument>
@@ -134,27 +134,27 @@
                   <ActivityAction.Argument>
                     <DelegateInArgument x:TypeArguments="s:Guid" Name="sourceFileGuid" />
                   </ActivityAction.Argument>
-                  <jga:Retry Finally="{x:Null}" JobContext="[JobContext]" sap2010:WorkflowViewState.IdRef="Retry_1" MaxRetries="3">
-                    <local:MirrorDatabaseFile EntityGuid="{x:Null}" EntityGuidFrom="{x:Null}" EntityGuidTo="{x:Null}" DestinationDatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" FileCopyDirection="[Jhu.Graywulf.Registry.FileCopyDirection.Push]" sap2010:WorkflowViewState.IdRef="MirrorDatabaseFile_1" SkipExistingFile="[Parameters.SkipExistingFiles]" SourceFileGuid="[sourceFileGuid]" JobContext="[JobContext]" />
+                  <jga:Retry Finally="{x:Null}" JobInfo="[JobInfo]" sap2010:WorkflowViewState.IdRef="Retry_1" MaxRetries="3">
+                    <local:MirrorDatabaseFile EntityGuid="{x:Null}" EntityGuidFrom="{x:Null}" EntityGuidTo="{x:Null}" DestinationDatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" FileCopyDirection="[Jhu.Graywulf.Registry.FileCopyDirection.Push]" sap2010:WorkflowViewState.IdRef="MirrorDatabaseFile_1" SkipExistingFile="[Parameters.SkipExistingFiles]" SourceFileGuid="[sourceFileGuid]" JobInfo="[JobInfo]" />
                   </jga:Retry>
                 </ActivityAction>
               </ForEach>
             </ActivityAction>
           </ParallelForEach>
-          <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_2" MaxRetries="5" JobContext="[JobContext]">
-            <local:AttachDatabase EntityGuid="{x:Null}" AttachReadOnly="[Parameters.AttachAsReadOnly]" DatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" DisplayName="AttachSourceDatabase" sap2010:WorkflowViewState.IdRef="AttachDatabase_1" JobContext="[JobContext]" />
+          <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_2" MaxRetries="5" JobInfo="[JobInfo]">
+            <local:AttachDatabase EntityGuid="{x:Null}" AttachReadOnly="[Parameters.AttachAsReadOnly]" DatabaseInstanceGuid="[SourceDatabaseInstanceGuid]" DisplayName="AttachSourceDatabase" sap2010:WorkflowViewState.IdRef="AttachDatabase_1" JobInfo="[JobInfo]" />
           </jga:Retry>
-          <jga1:ReleaseEntity DisplayName="ReleaseSourceDatabase" EntityGuid="[SourceDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="ReleaseEntity_1" JobContext="[JobContext]" />
+          <jga1:ReleaseEntity DisplayName="ReleaseSourceDatabase" EntityGuid="[SourceDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="ReleaseEntity_1" JobInfo="[JobInfo]" />
           <jga:EnqueueItem x:TypeArguments="s:Guid" DisplayName="EnqueueSourceDatabase" sap2010:WorkflowViewState.IdRef="EnqueueItem`1_1" InputQueue="[SourceDatabaseQueue]" Item="[SourceDatabaseInstanceGuid]" />
-          <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_3" MaxRetries="5" JobContext="[JobContext]" >
-            <local:AttachDatabase EntityGuid="{x:Null}" AttachReadOnly="[Parameters.AttachAsReadOnly]" DatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" DisplayName="AttachDestinationDatabase" sap2010:WorkflowViewState.IdRef="AttachDatabase_2" JobContext="[JobContext]" />
+          <jga:Retry Finally="{x:Null}" sap2010:WorkflowViewState.IdRef="Retry_3" MaxRetries="5" JobInfo="[JobInfo]" >
+            <local:AttachDatabase EntityGuid="{x:Null}" AttachReadOnly="[Parameters.AttachAsReadOnly]" DatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" DisplayName="AttachDestinationDatabase" sap2010:WorkflowViewState.IdRef="AttachDatabase_2" JobInfo="[JobInfo]" />
           </jga:Retry>
           <If Condition="[Parameters.RunCheckDb]" sap2010:WorkflowViewState.IdRef="If_1">
             <If.Then>
-              <local:RunCheckDb DatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" EntityGuid="[DestinationDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="RunCheckDb_1" JobContext="[JobContext]" />
+              <local:RunCheckDb DatabaseInstanceGuid="[DestinationDatabaseInstanceGuid]" EntityGuid="[DestinationDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="RunCheckDb_1" JobInfo="[JobInfo]" />
             </If.Then>
           </If>
-          <jga1:ReleaseEntity DisplayName="ReleaseDestinationDatabase" EntityGuid="[DestinationDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="ReleaseEntity_2" JobContext="[JobContext]" />
+          <jga1:ReleaseEntity DisplayName="ReleaseDestinationDatabase" EntityGuid="[DestinationDatabaseInstanceGuid]" sap2010:WorkflowViewState.IdRef="ReleaseEntity_2" JobInfo="[JobInfo]" />
           <If Condition="[Parameters.CascadedCopy]" sap2010:WorkflowViewState.IdRef="If_2">
             <If.Then>
               <jga:EnqueueItem x:TypeArguments="s:Guid" DisplayName="EnqueueDestinationDatabase" sap2010:WorkflowViewState.IdRef="EnqueueItem`1_2" InputQueue="[SourceDatabaseQueue]" Item="[DestinationDatabaseInstanceGuid]" />

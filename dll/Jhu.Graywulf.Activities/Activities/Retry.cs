@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Activities
         }
 
         [RequiredArgument]
-        public InArgument<JobContext> JobContext { get; set; }
+        public InArgument<JobInfo> JobInfo { get; set; }
 
         public Activity Try { get; set; }
         public Activity Finally { get; set; }
@@ -59,8 +59,8 @@ namespace Jhu.Graywulf.Activities
         {
             RuntimeArgument argument;
 
-            argument = new RuntimeArgument("JobContext", typeof(Jhu.Graywulf.Activities.JobContext), ArgumentDirection.In);
-            metadata.Bind(this.JobContext, argument);
+            argument = new RuntimeArgument("JobInfo", typeof(Jhu.Graywulf.Activities.JobInfo), ArgumentDirection.In);
+            metadata.Bind(this.JobInfo, argument);
             metadata.AddArgument(argument);
 
             if (this.Try != null)
