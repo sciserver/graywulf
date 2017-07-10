@@ -129,10 +129,6 @@
       <Project>{59BFB28B-3F97-4714-B8D7-A1B40F668831}</Project>
       <Name>Jhu.Graywulf.Registry</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Jhu.Graywulf.Scheduler\Jhu.Graywulf.Scheduler.csproj">
-      <Project>{94ab6a2e-6877-4fed-87e2-1f9f17622f43}</Project>
-      <Name>Jhu.Graywulf.Scheduler</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

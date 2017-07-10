@@ -114,10 +114,6 @@
       <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
       <Name>Jhu.Graywulf.RemoteService</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\exe\Jhu.Graywulf.Scheduler\Jhu.Graywulf.Scheduler.csproj">
-      <Project>{94AB6A2E-6877-4FED-87E2-1F9F17622F43}</Project>
-      <Name>Jhu.Graywulf.Scheduler</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="mscoree">
