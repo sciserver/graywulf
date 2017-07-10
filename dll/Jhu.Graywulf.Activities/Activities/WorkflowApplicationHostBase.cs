@@ -264,14 +264,14 @@ namespace Jhu.Graywulf.Activities
 
             if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                ProcessUnHandledException(e, workflow);
+                OnWorkflowUnHandledException(e, workflow);
             }
 
             // Force the workflow to execute the cancel logic
             return UnhandledExceptionAction.Cancel;
         }
 
-        protected virtual void ProcessUnHandledException(WorkflowApplicationUnhandledExceptionEventArgs e, WorkflowApplicationDetails workflow)
+        protected virtual void OnWorkflowUnHandledException(WorkflowApplicationUnhandledExceptionEventArgs e, WorkflowApplicationDetails workflow)
         {
             workflow.LastException = e.UnhandledException;
         }
@@ -287,12 +287,12 @@ namespace Jhu.Graywulf.Activities
             {
                 if (WorkflowEvent != null)
                 {
-                    ProcessCompletedWorkflow(e, workflow);
+                    OnWorkflowCompleted(e, workflow);
                 }
             }
         }
 
-        protected virtual void ProcessCompletedWorkflow(WorkflowApplicationCompletedEventArgs e, WorkflowApplicationDetails workflow)
+        protected virtual void OnWorkflowCompleted(WorkflowApplicationCompletedEventArgs e, WorkflowApplicationDetails workflow)
         {
             switch (e.CompletionState)
             {
@@ -324,12 +324,12 @@ namespace Jhu.Graywulf.Activities
 
             if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                ProcessUnloadedWorkflow(e, workflow);
+                OnWorkflowUnloaded(e, workflow);
                 FinishWorkflow(e.InstanceId);
             }
         }
 
-        protected virtual void ProcessUnloadedWorkflow(WorkflowApplicationEventArgs e, WorkflowApplicationDetails workflow)
+        protected virtual void OnWorkflowUnloaded(WorkflowApplicationEventArgs e, WorkflowApplicationDetails workflow)
         {
             // Nothing to do here
         }
@@ -340,12 +340,12 @@ namespace Jhu.Graywulf.Activities
 
             if (workflows.TryGetValue(e.InstanceId, out workflow))
             {
-                ProcessAbortedWorkflow(e, workflow);
+                OnWorkflowAborted(e, workflow);
                 FinishWorkflow(e.InstanceId);
             }
         }
 
-        protected virtual void ProcessAbortedWorkflow(WorkflowApplicationEventArgs e, WorkflowApplicationDetails workflow)
+        protected virtual void OnWorkflowAborted(WorkflowApplicationEventArgs e, WorkflowApplicationDetails workflow)
         {
             // Workflows are aborted when an exception is thrown during cancellation
             if (workflow.LastException != null)
@@ -365,9 +365,34 @@ namespace Jhu.Graywulf.Activities
 
         protected virtual void WorkflowApplication_WorkflowIdle(WorkflowApplicationIdleEventArgs e)
         {
+            WorkflowApplicationDetails workflow;
+
+            if (workflows.TryGetValue(e.InstanceId, out workflow))
+            {
+                OnWorkflowIdle(e, workflow);
+            }
+        }
+
+        protected virtual void OnWorkflowIdle(WorkflowApplicationEventArgs e, WorkflowApplicationDetails workflow)
+        {
         }
 
         protected virtual PersistableIdleAction WorkflowApplication_PersistableIdle(WorkflowApplicationIdleEventArgs e)
+        {
+            WorkflowApplicationDetails workflow;
+
+            if (workflows.TryGetValue(e.InstanceId, out workflow))
+            {
+                return OnWorkflowPersistableIdle(e, workflow);
+            }
+            else
+            {
+                // TODO: this shouldn't happen
+                return PersistableIdleAction.None;
+            }
+        }
+
+        protected virtual PersistableIdleAction OnWorkflowPersistableIdle(WorkflowApplicationIdleEventArgs e, WorkflowApplicationDetails workflow)
         {
             return PersistableIdleAction.Persist;
         }

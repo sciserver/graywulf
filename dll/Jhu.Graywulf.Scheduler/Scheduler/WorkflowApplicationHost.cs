@@ -165,7 +165,7 @@ namespace Jhu.Graywulf.Scheduler
             RunWorkflow(job.WorkflowInstanceId);
         }
 
-        private void SaveWorkflowParameters(Job job, IDictionary<string, object> outputs)
+        private void SaveJobParameters(Job job, IDictionary<string, object> outputs)
         {
             // Load job data from the registry
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
@@ -388,18 +388,21 @@ namespace Jhu.Graywulf.Scheduler
         #endregion
         #region Workflow host events
 
-        protected override void ProcessUnHandledException(WorkflowApplicationUnhandledExceptionEventArgs e, WorkflowApplicationHostBase.WorkflowApplicationDetails w)
+        protected override void OnWorkflowUnHandledException(WorkflowApplicationUnhandledExceptionEventArgs e, WorkflowApplicationHostBase.WorkflowApplicationDetails w)
         {
-            base.ProcessUnHandledException(e, w);
+            base.OnWorkflowUnHandledException(e, w);
 
             var workflow = (WorkflowApplicationDetails)w;
 
             workflow.Job.Status = JobStatus.Failed;
         }
 
-        protected override void ProcessCompletedWorkflow(WorkflowApplicationCompletedEventArgs e, WorkflowApplicationHostBase.WorkflowApplicationDetails w)
+        protected override void OnWorkflowCompleted(WorkflowApplicationCompletedEventArgs e, WorkflowApplicationHostBase.WorkflowApplicationDetails w)
         {
             var workflow = (WorkflowApplicationDetails)w;
+
+            // This is the point to save output parameters
+            SaveJobParameters(workflow.Job, e.Outputs);
 
             switch (e.CompletionState)
             {
@@ -452,9 +455,9 @@ namespace Jhu.Graywulf.Scheduler
             }
         }
 
-        protected override void ProcessUnloadedWorkflow(WorkflowApplicationEventArgs e, WorkflowApplicationHostBase.WorkflowApplicationDetails w)
+        protected override void OnWorkflowUnloaded(WorkflowApplicationEventArgs e, WorkflowApplicationHostBase.WorkflowApplicationDetails w)
         {
-            base.ProcessUnloadedWorkflow(e, w);
+            base.OnWorkflowUnloaded(e, w);
 
             var workflow = (WorkflowApplicationDetails)w;
 
