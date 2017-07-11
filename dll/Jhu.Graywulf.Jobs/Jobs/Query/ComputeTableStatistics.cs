@@ -24,13 +24,14 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var scheduler = activityContext.GetExtension<IScheduler>();
             var query = Query.Get(activityContext);
             var tableSource = TableSource.Get(activityContext);
             DatasetBase statisticsDataset = null;
 
-            using (RegistryContext context = query.CreateContext(this, activityContext))
+            using (RegistryContext context = query.CreateContext())
             {
-                query.InitializeQueryObject(context, activityContext.GetExtension<IScheduler>(), true);
+                query.InitializeQueryObject(context, scheduler, true);
                 statisticsDataset = query.GetStatisticsDataset(tableSource);
             }
 

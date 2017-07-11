@@ -21,6 +21,8 @@ namespace Jhu.Graywulf.Activities
             trackingProfile.ActivityDefinitionId = "*";
             trackingProfile.ImplementationVisibility = ImplementationVisibility.All;
 
+            new WorkflowInstanceQuery
+
             CustomTrackingQuery cq = new CustomTrackingQuery();
             cq.Name = "*";
             cq.ActivityName = "*";
@@ -67,12 +69,13 @@ namespace Jhu.Graywulf.Activities
 
             if (e != null)
             {
-                e.Source = EventSource.Workflow;
+                LoggingContext.Current.UpdateEvent(e);
+
+                e.Source |= EventSource.Workflow;
                 e.Severity = MapEventSeverity(record.Level);
                 e.DateTime = record.EventTime;
                 e.Order = record.RecordNumber;
                 
-                LoggingContext.Current.UpdateEvent(e);
                 Logger.Instance.WriteEvent(e);
             }
         }
@@ -96,7 +99,8 @@ namespace Jhu.Graywulf.Activities
             {
                 var e = Logger.Instance.CreateEvent(
                     EventSeverity.Status,
-                    null,
+                    EventSource.Workflow,
+                    record.Activity.Name + " " + record.State,
                     record.Activity.TypeName,
                     null,
                     null);
@@ -119,6 +123,7 @@ namespace Jhu.Graywulf.Activities
             {
                 var e = Logger.Instance.CreateEvent(
                     EventSeverity.Error,
+                    EventSource.Job,
                     null,
                     record.FaultSource.TypeName,
                     record.Fault,
@@ -143,8 +148,9 @@ namespace Jhu.Graywulf.Activities
                 case System.Diagnostics.TraceLevel.Error:
                     return Logging.EventSeverity.Error;
                 case System.Diagnostics.TraceLevel.Verbose:
+                    return Logging.EventSeverity.Debug;
                 case System.Diagnostics.TraceLevel.Info:
-                    return Logging.EventSeverity.Info;
+                    return Logging.EventSeverity.Operation;
                 case System.Diagnostics.TraceLevel.Off:
                     return Logging.EventSeverity.None;
                 case System.Diagnostics.TraceLevel.Warning:

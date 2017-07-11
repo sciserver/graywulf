@@ -818,6 +818,7 @@ namespace Jhu.Graywulf.Registry
             var method = new StackFrame(1, true).GetMethod();
 
             Logging.Logger.Instance.LogDebug(
+                Logging.EventSource.Registry,
                 String.Format("{0} {1}: {2}", method.Name, Constants.EntityNames_Singular[this.EntityType], this.Name),
                 method.DeclaringType.FullName + "." + method.Name,
                 new Dictionary<string, object>() { { Logging.Constants.UserDataEntityGuid, this.Guid } });
@@ -830,6 +831,7 @@ namespace Jhu.Graywulf.Registry
             var method = new StackFrame(1, true).GetMethod();
 
             Logging.Logger.Instance.LogDebug(
+                Logging.EventSource.Registry,
                 message,
                 method.DeclaringType.FullName + "." + method.Name,
                 new Dictionary<string, object>() { { Logging.Constants.UserDataEntityGuid, this.Guid } });

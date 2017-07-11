@@ -16,13 +16,16 @@ namespace Jhu.Graywulf.Registry
     /// Represents an object context that is used for managing database connection and transaction,
     /// SMTP server connection and workflow activity context.
     /// </summary>
-    public class RegistryContext : JobContext, IRegistryContextObject, IDisposable
+    public class RegistryContext : IRegistryContextObject, IDisposable
     {
         #region Member Variables
 
 #if DEBUG
         private int sqlSpId;
 #endif
+
+        private bool isValid;
+        private Guid contextGuid;
 
         // TODO: move these to entity search
         private bool showHidden;
@@ -41,10 +44,20 @@ namespace Jhu.Graywulf.Registry
         private EntityReference<Federation> federationReference;
         private EntityReference<User> userReference;
         private EntityReference<JobInstance> jobReference;
-        private string jobID;
 
         #endregion
         #region Member Access Properties
+
+        public bool IsValid
+        {
+            get { return isValid; }
+        }
+
+        public Guid ContextGuid
+        {
+            get { return contextGuid; }
+            set { contextGuid = value; }
+        }
 
         /// <summary>
         /// Gets or sets the value determining whether search functions will return entities
@@ -169,12 +182,6 @@ namespace Jhu.Graywulf.Registry
             get { return jobReference.Value; }
         }
 
-        public string JobID
-        {
-            get { return jobID; }
-            set { jobID = value; }
-        }
-
         #endregion
         #region Constructors
 
@@ -183,11 +190,8 @@ namespace Jhu.Graywulf.Registry
         /// initializes private members to their default values.
         /// </summary>
         internal RegistryContext(LoggingContext outerContext)
-            :base(outerContext)
         {
             InitializeMembers();
-
-            Push();
         }
 
         // TODO: delete
@@ -225,6 +229,9 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         private void InitializeMembers()
         {
+            this.isValid = true;
+            this.contextGuid = Guid.Empty;
+
             this.showHidden = false;
             this.showDeleted = false;
 
@@ -240,16 +247,33 @@ namespace Jhu.Graywulf.Registry
             this.federationReference = new EntityReference<Federation>(this);
             this.userReference = new EntityReference<User>(this);
             this.jobReference = new EntityReference<JobInstance>(this);
-            this.jobID = null;
+
+            InitializeFromOuterContext();
+        }
+
+        internal void InitializeFromOuterContext()
+        {
+            var identity = System.Threading.Thread.CurrentPrincipal?.Identity as AccessControl.GraywulfIdentity;
+
+            if (identity != null)
+            {
+                this.userReference.Guid = identity.UserReference.Guid;
+            }
+
+            var jobContext = JobContext.Current;
+
+            if (jobContext != null)
+            {
+                this.contextGuid = jobContext.WorkflowInstanceId;
+                this.jobReference.Guid = jobContext.JobGuid;
+            }
         }
 
         /// <summary>
         /// Disposes the context and commits the SQL transaction, closes the connection.
         /// </summary>
-        public override void Dispose()
+        public void Dispose()
         {
-            Pop();
-
             if (databaseTransaction != null)
             {
                 switch (transactionMode)
@@ -273,14 +297,14 @@ namespace Jhu.Graywulf.Registry
                 CloseConnection();
             }
 
-            base.Dispose();
+            isValid = false;
         }
 
         #endregion
 
         private void EnsureOpenConnection()
         {
-            if (!IsValid)
+            if (!isValid)
             {
                 throw new InvalidOperationException();
             }
@@ -306,7 +330,7 @@ namespace Jhu.Graywulf.Registry
             databaseConnection.Open();
 
 #if DEBUG
-            using (var cmd = new SqlCommand(String.Format("SELECT @@SPID --{0}", ContextGuid), databaseConnection))
+            using (var cmd = new SqlCommand(String.Format("SELECT @@SPID --{0}", contextGuid), databaseConnection))
             {
                 cmd.CommandType = CommandType.Text;
                 sqlSpId = (Int16)cmd.ExecuteScalar();
@@ -329,7 +353,7 @@ namespace Jhu.Graywulf.Registry
 
         private void EnsureOpenTransaction()
         {
-            if (!IsValid)
+            if (!isValid)
             {
                 throw new InvalidOperationException();
             }
@@ -376,7 +400,7 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         public void CommitTransaction()
         {
-            if (!IsValid)
+            if (!isValid)
             {
                 throw new InvalidOperationException();
             }
@@ -394,7 +418,7 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         public void RollbackTransaction()
         {
-            if (!IsValid)
+            if (!isValid)
             {
                 throw new InvalidOperationException();
             }
@@ -425,7 +449,7 @@ namespace Jhu.Graywulf.Registry
         /// <returns>An initialized SqlCommand object.</returns>
         public SqlCommand CreateTextCommand(string sql)
         {
-            if (!IsValid)
+            if (!isValid)
             {
                 throw new InvalidOperationException();
             }
@@ -445,7 +469,7 @@ namespace Jhu.Graywulf.Registry
         {
             // TODO: caching could be done here...
 
-            if (!IsValid)
+            if (!isValid)
             {
                 throw new InvalidOperationException();
             }
@@ -486,7 +510,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="priority">Deadlock priority of the transaction.</param>
         public void SetDeadlockPriority(DeadlockPriority priority)
         {
-            if (!IsValid)
+            if (!isValid)
             {
                 throw new InvalidOperationException();
             }
@@ -509,7 +533,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="priority">Numeric value of deadlock priority of the transaction.</param>
         public void SetDeadlockPriority(int priority)
         {
-            if (!IsValid)
+            if (!isValid)
             {
                 throw new InvalidOperationException();
             }

@@ -63,6 +63,16 @@ namespace Jhu.Graywulf.Test
 
         protected Task scheduler;
 
+        protected static void StartLogger()
+        {
+            Logging.Logger.Instance.Start(Logging.EventSource.Test, false);
+        }
+
+        protected static void StopLogger()
+        {
+            Logging.Logger.Instance.Stop();
+        }
+
         protected virtual SqlServerDataset CreateIOTestDataset()
         {
             return new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString);

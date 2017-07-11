@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
         {
             Guid databaseinstanceguid = SourceDatabaseInstanceGuid.Get(activityContext);
 
-            using (RegistryContext context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 DatabaseInstance di = new DatabaseInstance(context);
                 di.Guid = databaseinstanceguid;

@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
 
-            using (RegistryContext context = querypartition.Query.CreateContext(this, activityContext))
+            using (RegistryContext context = querypartition.Query.CreateContext())
             {
                 querypartition.InitializeQueryObject(context);
             }

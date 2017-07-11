@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
             // Initialize logger
-            Logging.Logger.Instance.Start(true);
+            Logging.Logger.Instance.Start(Logging.EventSource.CommandLineTool, true);
 
             List<Type> verbs = new List<Type>() { typeof(Mirror), typeof(Test) };
             Parameters par = null;

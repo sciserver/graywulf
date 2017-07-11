@@ -246,7 +246,7 @@ namespace Jhu.Graywulf.Registry
 
             isExisting = true;
 
-            LogDebug("Created");
+            LogDebug();
         }
 
         /// <summary>
@@ -291,7 +291,7 @@ namespace Jhu.Graywulf.Registry
                 }
             }
 
-            LogDebug("Modified");
+            LogDebug();
         }
 
         /// <summary>

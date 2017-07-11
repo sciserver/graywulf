@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             SqlQueryPartition querypartition = QueryPartition.Get(activityContext);
 
-            using (var context = querypartition.Query.CreateContext(this, activityContext))
+            using (var context = querypartition.Query.CreateContext())
             {
                 querypartition.PrepareCopyResultset(context);
             }

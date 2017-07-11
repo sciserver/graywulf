@@ -19,10 +19,23 @@ namespace Jhu.Graywulf.Logging
         #endregion
         #region Private member variables
 
+        private LoggerStatus status;
+        private EventSource eventSource;
         private List<LogWriterBase> writers;
 
         #endregion
         #region Properties
+
+        internal LoggerStatus Status
+        {
+            get { return status; }
+        }
+
+        public EventSource EventSource
+        {
+            get { return eventSource; }
+            set { eventSource = value; }
+        }
 
         #endregion
         #region Constructors and initializers
@@ -34,13 +47,22 @@ namespace Jhu.Graywulf.Logging
 
         private void InitializeMembers()
         {
+            this.eventSource = EventSource.None;
             this.writers = new List<LogWriterBase>();
         }
 
         #endregion
 
-        public void Start(bool attachConsole)
+        public void Start(EventSource eventSource, bool attachConsole)
         {
+            if (this.status != LoggerStatus.Stopped)
+            {
+                throw new InvalidOperationException();  // *** TODO
+            }
+
+            this.status = LoggerStatus.Started;
+            this.eventSource = eventSource;
+
             var f = new LogWriterFactory();
 
             foreach (var writer in f.GetLogWriters())
@@ -60,68 +82,85 @@ namespace Jhu.Graywulf.Logging
 
         public void Stop()
         {
+            if (this.status != LoggerStatus.Started)
+            {
+                throw new InvalidOperationException();  // *** TODO
+            }
+
             foreach (var writer in writers)
             {
                 writer.Stop();
             }
 
             writers.Clear();
+
+            this.status = LoggerStatus.Stopped;
         }
 
 
-        public Event LogDebug(string message = null, string operation = null, Dictionary<string, object> data = null)
+        public Event LogDebug(EventSource source, string message = null, string operation = null, Dictionary<string, object> data = null)
         {
-            var e = CreateEvent(EventSeverity.Debug, message, operation, null, data);
+            var e = CreateEvent(EventSeverity.Debug, source, message, operation, null, data);
             RecordEvent(e);
             return e;
         }
 
-        public Event LogInfo(string message = null, string operation = null, Dictionary<string, object> data = null)
+        public Event LogOperation(EventSource source, string message = null, string operation = null, Dictionary<string, object> data = null)
         {
-            var e = CreateEvent(EventSeverity.Info, message, operation, null, data);
+            var e = CreateEvent(EventSeverity.Operation, source, message, operation, null, data);
             RecordEvent(e);
             return e;
         }
 
-        public Event LogStatus(string message = null, string operation = null, Dictionary<string, object> data = null)
+        public Event LogStatus(EventSource source, string message = null, string operation = null, Dictionary<string, object> data = null)
         {
-            var e = CreateEvent(EventSeverity.Status, message, operation, null, data);
+            var e = CreateEvent(EventSeverity.Status, source, message, operation, null, data);
             RecordEvent(e);
             return e;
         }
 
-        public Event LogWarning(string message = null, string operation = null, Dictionary<string, object> data = null)
+        public Event LogWarning(EventSource source, string message = null, string operation = null, Dictionary<string, object> data = null)
         {
-            var e = CreateEvent(EventSeverity.Warning, message, operation, null, data);
+            var e = CreateEvent(EventSeverity.Warning, source, message, operation, null, data);
             RecordEvent(e);
             return e;
         }
 
-        public Event LogError(Exception ex, string message = null, string operation = null, Dictionary<string, object> data = null)
+        public Event LogError(EventSource source, Exception ex, string message = null, string operation = null, Dictionary<string, object> data = null)
         {
-            var e = CreateEvent(EventSeverity.Error, message, operation, ex, data);
+            var e = CreateEvent(EventSeverity.Error, source, message, operation, ex, data);
             RecordEvent(e);
             return e;
         }
 
-        public Event CreateEvent(EventSeverity severity, string message, string operation, Exception ex, Dictionary<string, object> data)
+        public Event CreateEvent(EventSeverity severity, EventSource source, string message, string operation, Exception ex, Dictionary<string, object> data)
         {
             var e = new Event();
-
-            // TODO: allow overwriting operation?
+            
             if (ex == null)
             {
                 e.Severity = severity;
+                e.Source |= source;
                 e.Message = message;
-                e.Operation = operation;
+
+                if (operation == null)
+                {
+                    var method = UnwindStack(2);
+                    e.Operation = method.DeclaringType.FullName + "." + method.Name;
+                }
+                else
+                {
+                    e.Operation = operation;
+                }
             }
             else
             {
                 ex = UnwrapException(ex);
 
                 e.Severity = Logging.EventSeverity.Error;
-                e.Message = GetExceptionMessage(ex);
-                e.Operation = GetExceptionOperation(ex);
+                e.Source |= source;
+                e.Message = message ?? GetExceptionMessage(ex);
+                e.Operation = operation ?? GetExceptionOperation(ex);
                 e.Exception = ex;
                 e.ExceptionType = GetExceptionType(ex);
                 e.ExceptionStackTrace = GetExceptionStackTrace(ex);
@@ -171,9 +210,21 @@ namespace Jhu.Graywulf.Logging
             }
         }
 
-        protected virtual string UnwindStack()
+        public MethodBase UnwindStack(int skip)
         {
-            var stack = new StackFrame();
+            var stack = new StackTrace(skip, true);
+
+            for (int i = 0; i < stack.FrameCount; i++)
+            {
+                var frame = stack.GetFrame(i);
+                var method = frame.GetMethod();
+
+                if (method.DeclaringType != typeof(Logger))
+                {
+                    return method;
+                }
+            }
+
             return null;
         }
 

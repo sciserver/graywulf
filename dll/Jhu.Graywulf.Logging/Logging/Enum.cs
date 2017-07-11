@@ -19,6 +19,7 @@ namespace Jhu.Graywulf.Logging
         WebAdmin = 128,
         WebService = 256,
         RemoteService = 512,
+        CommandLineTool = 1024,
 
         Test = 0x10000000,
         All = 0xFFFFFFFF,
@@ -29,8 +30,8 @@ namespace Jhu.Graywulf.Logging
     {
         None = 0,
         Debug = 1,      // debug messages
-        Info = 2,       // important into, no report to user
-        Status = 4,     // important status to report to user
+        Operation = 2,  // operation, such as web service method access
+        Status = 4,     // important status change of services etc.
         Warning = 8,    // 
         Error = 16,
         All = 0xFF,
@@ -70,5 +71,11 @@ namespace Jhu.Graywulf.Logging
         ExceptionType,
         Message,
         StackTrace,
+    }
+
+    enum LoggerStatus
+    {
+        Stopped,
+        Started
     }
 }

@@ -14,8 +14,6 @@ namespace Jhu.Graywulf.Scheduler
     /// </remarks>
     class AppDomainHost : MarshalByRefObject
     {
-        private Guid contextGuid;
-
         /// <summary>
         /// Last time the AppDomain was touched. Used to measure idle time.
         /// </summary>
@@ -66,17 +64,15 @@ namespace Jhu.Graywulf.Scheduler
 
         #region Constructors and initializers
 
-        public AppDomainHost(AppDomain ad, Guid contextGuid)
+        public AppDomainHost(AppDomain ad)
         {
             InitializeMembers();
 
-            this.contextGuid = contextGuid;
             this.appDomain = ad;
         }
 
         private void InitializeMembers()
         {
-            this.contextGuid = Guid.Empty;
             this.lastTimeActive = DateTime.MinValue;
             this.appDomain = null;
 

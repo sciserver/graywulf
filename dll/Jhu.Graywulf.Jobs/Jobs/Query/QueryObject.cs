@@ -595,7 +595,6 @@ namespace Jhu.Graywulf.Jobs.Query
                             LoadSystemDatabaseInstance(temporaryDatabaseInstanceReference, (GraywulfDataset)temporaryDataset, forceReinitialize);
                             LoadSystemDatabaseInstance(codeDatabaseInstanceReference, (GraywulfDataset)codeDataset, forceReinitialize);
 
-
                             break;
                         default:
                             throw new NotImplementedException();
@@ -774,14 +773,14 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="connectionMode"></param>
         /// <param name="transactionMode"></param>
         /// <returns></returns>
-        public Jhu.Graywulf.Registry.RegistryContext CreateContext(IJobActivity activity, System.Activities.CodeActivityContext activityContext)
+        public Jhu.Graywulf.Registry.RegistryContext CreateContext()
         {
             switch (executionMode)
             {
                 case Query.ExecutionMode.SingleServer:
                     return null;
                 case Query.ExecutionMode.Graywulf:
-                    return Jhu.Graywulf.Registry.ContextManager.Instance.CreateContext(activity, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit);
+                    return Jhu.Graywulf.Registry.ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit);
                 default:
                     throw new NotImplementedException();
             }

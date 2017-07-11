@@ -77,16 +77,6 @@ namespace Jhu.Graywulf.Scheduler
         private AutoResetEvent pollerStopEvent;
 
         /// <summary>
-        /// Supports logging, counts events
-        /// </summary>
-        private int eventOrder;
-
-        /// <summary>
-        /// Supports logging
-        /// </summary>
-        private Guid contextGuid;
-
-        /// <summary>
         /// Debug option to prevent loading the entire cluster config
         /// Used for faster test execution
         /// </summary>
@@ -152,9 +142,6 @@ namespace Jhu.Graywulf.Scheduler
 
             this.pollerStopRequested = false;
             this.pollerThread = null;
-
-            this.eventOrder = 0;
-            this.contextGuid = Guid.Empty;
 
             this.isLayouRequired = true;
             this.cluster = null;
@@ -303,14 +290,16 @@ namespace Jhu.Graywulf.Scheduler
 
             this.appDomains = new ConcurrentDictionary<int, AppDomainHost>();
             this.runningJobs = new ConcurrentDictionary<Guid, Job>();
-            this.eventOrder = 0;
-            this.contextGuid = Guid.NewGuid();
 
             // Initialize logger
-            Logger.Instance.Start(interactive);
+            Logger.Instance.Start(Logging.EventSource.Scheduler, interactive);
+
+            // Run sanity check
+            Scheduler.Configuration.RunSanityCheck();
 
             // Log starting event
             Logger.Instance.LogStatus(
+                Logging.EventSource.Scheduler,
                 "Graywulf Scheduler Service has started.",
                 null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
@@ -367,7 +356,9 @@ namespace Jhu.Graywulf.Scheduler
             StopAppDomains(timeout);
 
             // Log stop event
-            Logger.Instance.LogStatus("Graywulf Scheduler Service has stopped.",
+            Logger.Instance.LogStatus(
+                Logging.EventSource.Scheduler,
+                "Graywulf Scheduler Service has stopped.",
                 null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 
@@ -396,7 +387,9 @@ namespace Jhu.Graywulf.Scheduler
             StopAppDomains(timeout);
 
             // Log stop event
-            Logger.Instance.LogStatus("Graywulf Remote Service has been killed.",
+            Logger.Instance.LogStatus(
+                Logging.EventSource.Scheduler,
+                "Graywulf Remote Service has been killed.",
                 null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 
@@ -441,7 +434,7 @@ namespace Jhu.Graywulf.Scheduler
                 throw new InvalidOperationException(ExceptionMessages.PollerHasAlreadyStarted);
             }
 
-            LogDebug();
+            LogDebug("The job poller thread has been started.");
         }
 
         /// <summary>
@@ -463,7 +456,7 @@ namespace Jhu.Graywulf.Scheduler
                 throw new InvalidOperationException(ExceptionMessages.PollerHasNotStarted);
             }
 
-            LogDebug();
+            LogDebug("The job poller thread has been stopped.");
         }
 
         /// <summary>
@@ -607,8 +600,6 @@ namespace Jhu.Graywulf.Scheduler
 
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                context.ContextGuid = contextGuid;
-
                 foreach (var queue in Cluster.Queues.Values)
                 {
                     // The number of jobs to be requested from the queue is the
@@ -730,7 +721,6 @@ namespace Jhu.Graywulf.Scheduler
             {
                 // TODO: why need to set job guid here manually?
                 context.JobReference.Guid = job.Guid;
-                context.ContextGuid = contextGuid;
 
                 JobInstance ji = new JobInstance(context);
                 ji.Guid = job.Guid;
@@ -792,7 +782,6 @@ namespace Jhu.Graywulf.Scheduler
             {
                 // *** TODO: why set guid here manually?
                 context.JobReference.Guid = job.Guid;
-                context.ContextGuid = contextGuid;
 
                 var ji = new JobInstance(context);
                 ji.Guid = job.Guid;
@@ -822,7 +811,6 @@ namespace Jhu.Graywulf.Scheduler
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 context.JobReference.Guid = job.Guid;
-                context.ContextGuid = contextGuid;
 
                 var ji = new JobInstance(context);
                 ji.Guid = job.Guid;
@@ -857,7 +845,6 @@ namespace Jhu.Graywulf.Scheduler
                 using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
                 {
                     context.JobReference.Guid = job.Guid;
-                    context.ContextGuid = contextGuid;
 
                     JobInstance ji = new JobInstance(context);
                     ji.Guid = job.Guid;
@@ -936,7 +923,7 @@ namespace Jhu.Graywulf.Scheduler
             if (!appDomains.ContainsKey(ad.Id))
             {
                 // New app domain, create host
-                var adh = new AppDomainHost(ad, contextGuid);
+                var adh = new AppDomainHost(ad);
                 adh.WorkflowEvent += new EventHandler<WorkflowApplicationHostEventArgs>(AppDomainHost_WorkflowEvent);
                 adh.UnhandledException += AppDomainHost_UnhandledException;
 
@@ -1021,6 +1008,7 @@ namespace Jhu.Graywulf.Scheduler
             var method = new StackFrame(1, true).GetMethod();
 
             Logging.Logger.Instance.LogDebug(
+                Logging.EventSource.Scheduler,
                 null,
                 method.DeclaringType.FullName + "." + method.Name,
                 null);
@@ -1033,6 +1021,7 @@ namespace Jhu.Graywulf.Scheduler
             var method = new StackFrame(1, true).GetMethod();
 
             Logging.Logger.Instance.LogDebug(
+                Logging.EventSource.Scheduler,
                 message,
                 method.DeclaringType.FullName + "." + method.Name,
                 null);
@@ -1043,7 +1032,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             var method = new StackFrame(1, true).GetMethod();
 
-            Logging.Logger.Instance.LogError(ex);
+            Logging.Logger.Instance.LogError(Logging.EventSource.Scheduler, ex);
         }
 
         #endregion

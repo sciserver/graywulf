@@ -431,7 +431,7 @@ namespace Jhu.Graywulf.Scheduler
                         case JobStatus.Failed:
 
 #if BREAKDEBUG
-                                if (System.Diagnostics.Debugger != null)
+                                if (System.Diagnostics.Debugger.IsAttached)
                                 {
                                     System.Diagnostics.Debugger.Break();
                                 }

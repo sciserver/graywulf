@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Jhu.Graywulf.Activities
 {
     [Serializable]
-    public class JobInfo : MarshalByRefObject, ICloneable
+    public class JobInfo : MarshalByRefObject, IJobInfo, ICloneable
     {
         #region Private member variables
 

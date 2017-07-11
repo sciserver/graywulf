@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     query.InitializeQueryObject(null);
                     break;
                 case ExecutionMode.Graywulf:
-                    using (RegistryContext context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                    using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
                     {
                         query.InitializeQueryObject(context);
                         query.Validate();

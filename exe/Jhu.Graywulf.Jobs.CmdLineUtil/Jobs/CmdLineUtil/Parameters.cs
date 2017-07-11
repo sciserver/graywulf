@@ -62,7 +62,7 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
             var wfapp = par == null ? new WorkflowApplication(wf) : new WorkflowApplication(wf, par);
 
             // Turn on logging to console window
-            Logging.Logger.Instance.Start(true);
+            Logging.Logger.Instance.Start(Logging.EventSource.CommandLineTool, true);
             wfapp.Extensions.Add(new Jhu.Graywulf.Activities.JobTrackingParticipant());
 
             // Wire-up workflow runtime events

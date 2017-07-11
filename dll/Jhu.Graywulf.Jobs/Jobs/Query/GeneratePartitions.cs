@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     query.GeneratePartitions();
                     break;
                 case ExecutionMode.Graywulf:
-                    using (RegistryContext context = query.CreateContext(this, activityContext))
+                    using (RegistryContext context = query.CreateContext())
                     {
                         var scheduler = activityContext.GetExtension<IScheduler>();
 

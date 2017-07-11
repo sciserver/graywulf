@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     queryObject.InitializeQueryObject(null, null, true);
                     break;
                 case ExecutionMode.Graywulf:
-                    using (var context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                    using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
                     {
                         var scheduler = activityContext.GetExtension<IScheduler>();
 

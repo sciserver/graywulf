@@ -18,11 +18,11 @@ namespace Jhu.Graywulf.Jobs.Test
         {
             string message = activityContext.GetValue(Message);
 
-            Logging.Logger.Instance.LogStatus("Test event from async activitity initializer.");
+            Logging.Logger.Instance.LogStatus(Logging.EventSource.Test, "Test event from async activitity initializer.");
 
             return delegate (JobContext asyncContext)
             {
-                Logging.Logger.Instance.LogStatus("Test event from async activitity action.");
+                Logging.Logger.Instance.LogStatus(Logging.EventSource.Test, "Test event from async activitity action.");
             };
         }
     }

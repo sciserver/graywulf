@@ -20,6 +20,11 @@ namespace Jhu.Graywulf.Logging
             {
                 if (context == null)
                 {
+                    if (Logger.Instance.Status != LoggerStatus.Started)
+                    {
+                        throw new InvalidOperationException("The logger hasn't been started yet. Call Jhu.Graywulf.Logging.Instance.Start."); // *** TODO
+                    }
+
                     context = new LoggingContext();
                 }
 
@@ -38,7 +43,6 @@ namespace Jhu.Graywulf.Logging
         private bool isAsync;
         private Guid contextGuid;
         private Guid sessionGuid;
-        private EventSource eventSource;
         private List<Event> asyncEvents;
 
         /// <summary>
@@ -80,21 +84,21 @@ namespace Jhu.Graywulf.Logging
         #region Constructors and initializers
 
         protected LoggingContext()
-            : this(false)
+            : this(null, false)
         {
         }
 
         protected LoggingContext(bool isAsync)
+            :this(null, isAsync)
         {
-            InitializeMembers();
-
-            if (isAsync)
-            {
-                InitializeAsyncMode();
-            }
         }
 
         protected LoggingContext(LoggingContext outerContext)
+            : this(null, outerContext.isAsync)
+        {
+        }
+
+        protected LoggingContext(LoggingContext outerContext, bool isAsync)
         {
             if (outerContext != null)
             {
@@ -118,7 +122,6 @@ namespace Jhu.Graywulf.Logging
             this.isAsync = false;
             this.contextGuid = Guid.NewGuid();
             this.sessionGuid = Guid.Empty;
-            this.eventSource = EventSource.None;
             this.asyncEvents = null;
         }
 
@@ -135,7 +138,6 @@ namespace Jhu.Graywulf.Logging
             this.isAsync = outerContext.isAsync;
             this.contextGuid = Guid.NewGuid();
             this.sessionGuid = outerContext.sessionGuid;
-            this.eventSource = outerContext.eventSource;
             this.asyncEvents = null;
         }
 
@@ -160,7 +162,6 @@ namespace Jhu.Graywulf.Logging
         {
             e.ContextGuid = contextGuid;
             e.SessionGuid = sessionGuid;
-            e.Source = eventSource;
         }
 
         /// <summary>

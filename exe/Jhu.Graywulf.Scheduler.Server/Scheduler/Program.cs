@@ -5,6 +5,7 @@ using System.Text;
 using System.ServiceProcess;
 using System.Configuration;
 using System.Threading;
+using Jhu.Graywulf.Logging;
 
 namespace Jhu.Graywulf.Scheduler
 {
@@ -62,8 +63,6 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         internal static void StartDebug(object options)
         {
-            Scheduler.Configuration.RunSanityCheck();
-
             if (options != null)
             {
                 QueueManager.Instance.IsLayoutRequired = (bool)options;

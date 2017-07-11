@@ -130,18 +130,14 @@ namespace Jhu.Graywulf.Web.Services
             }
         }
 
-        internal Logging.Event OnError(Exception ex)
+        internal void OnError(Exception ex)
         {
-            var e = Logging.Logger.Instance.LogError(ex);
-
             if (registryContext != null)
             {
                 registryContext.RollbackTransaction();
                 registryContext.Dispose();
                 registryContext = null;
             }
-
-            return e;
         }
 
         #region User managemenet functions

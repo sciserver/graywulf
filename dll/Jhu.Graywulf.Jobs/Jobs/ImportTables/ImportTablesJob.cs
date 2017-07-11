@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
             var parameters = Parameters.Get(activityContext);
 
             // Make sure connection strings are cached
-            using (var context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 for (int i = 0; i < parameters.Destinations.Length; i++)
                 {

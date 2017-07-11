@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var queryPartition = query.Partitions[0];
             Table destinationTable;
 
-            using (RegistryContext context = query.CreateContext(this, activityContext))
+            using (RegistryContext context = query.CreateContext())
             {
                 queryPartition.InitializeQueryObject(context, null, true);
                 queryPartition.PrepareCreateDestinationTablePrimaryKey(context, activityContext.GetExtension<IScheduler>(), out destinationTable);

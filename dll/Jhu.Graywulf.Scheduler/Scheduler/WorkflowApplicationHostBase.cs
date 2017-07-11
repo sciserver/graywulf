@@ -79,7 +79,7 @@ namespace Jhu.Graywulf.Scheduler
             EnsureNotStopping();
 
             // Initialize logging
-            Logging.Logger.Instance.Start(iteractive);
+            Logging.Logger.Instance.Start(Logging.EventSource.Scheduler, iteractive);
             trackingParticipant = new JobTrackingParticipant();
         }
 
@@ -248,7 +248,7 @@ namespace Jhu.Graywulf.Scheduler
         {
 
 #if BREAKDEBUG
-            if (System.Diagnostics.Debugger != null)
+            if (System.Diagnostics.Debugger.IsAttached)
             {
                 System.Diagnostics.Debugger.Break();
             }

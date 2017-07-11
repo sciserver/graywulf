@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;BREAKDEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -69,6 +69,10 @@
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{abb4c403-720a-47e1-9485-cfaadd696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Logging\Jhu.Graywulf.Logging.csproj">
+      <Project>{fd98fb58-a3e5-4d32-b6d6-3e20609c4d09}</Project>
+      <Name>Jhu.Graywulf.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Registry\Jhu.Graywulf.Registry.csproj">
       <Project>{59bfb28b-3f97-4714-b8d7-a1b40f668831}</Project>

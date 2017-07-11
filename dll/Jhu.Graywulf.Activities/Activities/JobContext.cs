@@ -13,9 +13,27 @@ namespace Jhu.Graywulf.Activities
 {
     public class JobContext : LoggingContext
     {
+        #region Singleton access
+
+        public static new JobContext Current
+        {
+            get
+            {
+                return LoggingContext.Current as JobContext;
+            }
+        }
+
+        #endregion
         #region Private member variables
 
-        private JobInfo jobInfo;
+        private Guid clusterGuid;
+        private Guid domainGuid;
+        private Guid federationGuid;
+        private Guid jobGuid;
+        private Guid userGuid;
+        private string userName;
+        private string jobID;
+
         private IJobActivity activity;
         private Guid workflowInstanceId;
         private string activityInstanceId;
@@ -25,11 +43,48 @@ namespace Jhu.Graywulf.Activities
         #endregion
         #region Properties
 
-        public JobInfo JobInfo
+        public Guid ClusterGuid
         {
-            get { return jobInfo; }
+            get { return clusterGuid; }
+            set { clusterGuid = value; }
         }
-        
+
+        public Guid DomainGuid
+        {
+            get { return domainGuid; }
+            set { domainGuid = value; }
+        }
+
+        public Guid FederationGuid
+        {
+            get { return federationGuid; }
+            set { federationGuid = value; }
+        }
+
+        public Guid JobGuid
+        {
+            get { return jobGuid; }
+            set { jobGuid = value; }
+        }
+
+        public Guid UserGuid
+        {
+            get { return userGuid; }
+            set { userGuid = value; }
+        }
+
+        public string UserName
+        {
+            get { return userName; }
+            set { userName = value; }
+        }
+
+        public string JobID
+        {
+            get { return jobID; }
+            set { jobID = value; }
+        }
+
         public Guid WorkflowInstanceId
         {
             get { return workflowInstanceId; }
@@ -51,17 +106,17 @@ namespace Jhu.Graywulf.Activities
             get { return exception; }
             set { exception = value; }
         }
-        
+
         #endregion
 
         internal protected JobContext(LoggingContext outerContext, JobCodeActivity activity, CodeActivityContext activityContext)
-            : base(outerContext)
+            : base(outerContext, false)
         {
             CopyMembers(activity, activityContext);
         }
 
         internal protected JobContext(LoggingContext outerContext, JobAsyncCodeActivity activity, AsyncCodeActivityContext activityContext)
-            : base(outerContext)
+            : base(outerContext, true)
         {
             CopyMembers(activity, activityContext);
         }
@@ -73,7 +128,7 @@ namespace Jhu.Graywulf.Activities
         }
 
         internal protected JobContext(JobContext outerContext)
-            :base(outerContext)
+            : base(outerContext)
         {
             CopyMembers(outerContext);
         }
@@ -81,7 +136,14 @@ namespace Jhu.Graywulf.Activities
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            this.jobInfo = new JobInfo();
+            this.clusterGuid = Guid.Empty;
+            this.domainGuid = Guid.Empty;
+            this.federationGuid = Guid.Empty;
+            this.jobGuid = Guid.Empty;
+            this.userGuid = Guid.Empty;
+            this.userName = null;
+            this.jobID = null;
+
             this.activity = null;
             this.workflowInstanceId = Guid.Empty;
             this.activityInstanceId = null;
@@ -90,7 +152,16 @@ namespace Jhu.Graywulf.Activities
 
         private void CopyMembers(IJobActivity activity, CodeActivityContext activityContext)
         {
-            this.jobInfo = activityContext.GetValue(activity.JobInfo);
+            var jobInfo = activityContext.GetValue(activity.JobInfo);
+
+            this.clusterGuid = jobInfo.ClusterGuid;
+            this.domainGuid = jobInfo.DomainGuid;
+            this.federationGuid = jobInfo.FederationGuid;
+            this.jobGuid = jobInfo.JobGuid;
+            this.userGuid = jobInfo.UserGuid;
+            this.userName = jobInfo.UserName;
+            this.jobID = jobInfo.JobID;
+
             this.activity = activity;
             this.workflowInstanceId = activityContext.WorkflowInstanceId;
             this.activityInstanceId = activityContext.ActivityInstanceId;
@@ -99,7 +170,14 @@ namespace Jhu.Graywulf.Activities
 
         private void CopyMembers(JobContext outerContext)
         {
-            this.jobInfo = new JobInfo(outerContext.jobInfo);
+            this.clusterGuid = outerContext.clusterGuid;
+            this.domainGuid = outerContext.domainGuid;
+            this.federationGuid = outerContext.federationGuid;
+            this.jobGuid = outerContext.JobGuid;
+            this.userGuid = outerContext.userGuid;
+            this.userName = outerContext.userName;
+            this.jobID = outerContext.jobID;
+
             this.activity = outerContext.activity;
             this.workflowInstanceId = outerContext.workflowInstanceId;
             this.activityInstanceId = outerContext.activityInstanceId;
@@ -112,8 +190,8 @@ namespace Jhu.Graywulf.Activities
         {
             base.UpdateEvent(e);
 
-            e.UserGuid = jobInfo.UserGuid;
-            e.JobGuid = jobInfo.JobGuid;
+            e.UserGuid = this.userGuid;
+            e.JobGuid = this.jobGuid;
         }
 
         public override void RecordEvent(Event e)
@@ -136,15 +214,18 @@ namespace Jhu.Graywulf.Activities
 
         public override void FlushEvents()
         {
-            foreach (var e in AsyncEvents)
+            if (IsAsync && AsyncEvents != null)
             {
-                var record = new CustomTrackingRecord("asyncEvent");
-                record.Data[Constants.ActivityRecordDataItemEvent] = e;
+                foreach (var e in AsyncEvents)
+                {
+                    var record = new CustomTrackingRecord("asyncEvent");
+                    record.Data[Constants.ActivityRecordDataItemEvent] = e;
 
-                activityContext.Track(record);
+                    activityContext.Track(record);
+                }
+
+                AsyncEvents.Clear();
             }
-
-            AsyncEvents.Clear();
         }
 
         #endregion

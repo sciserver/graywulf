@@ -133,6 +133,8 @@ namespace Jhu.Graywulf.Registry
             return context;
         }
 
+        // TODO: delete
+        /*
         public RegistryContext CreateContext(IJobActivity activity, CodeActivityContext activityContext, ConnectionMode connectionMode, TransactionMode transactionMode)
         {
             /*var context = new RegistryContext(activity, activityContext)
@@ -145,10 +147,11 @@ namespace Jhu.Graywulf.Registry
             context.EnsureEntitiesLoaded();
 
             return context;
-            */
+            
 
             return null;
         }
+    */
 
         #endregion
     }

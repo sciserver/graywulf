@@ -57,10 +57,11 @@ namespace Jhu.Graywulf.RemoteService.Server
 
             // Initialize logger
             // TODO: add interactive mode, set source
-            Logger.Instance.Start(false);
+            Logger.Instance.Start(EventSource.RemoteService, false);
 
             // Log starting event
             Logger.Instance.LogStatus(
+                Logging.EventSource.RemoteService,
                 "Graywulf Remote Service has started.", 
                 null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
@@ -100,7 +101,9 @@ namespace Jhu.Graywulf.RemoteService.Server
             registeredServiceHosts.Clear();
             registeredEndpoints.Clear();
 
-            Logger.Instance.LogStatus("Graywulf Remote Service has stopped.", 
+            Logger.Instance.LogStatus(
+                Logging.EventSource.RemoteService,
+                "Graywulf Remote Service has stopped.", 
                 null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 

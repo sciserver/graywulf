@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Activities
         {
             var entityguid = EntityGuid.Get(activityContext);
 
-            using (var context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var ef = new EntityFactory(context);
 

@@ -110,7 +110,7 @@ namespace Jhu.Graywulf.Web.UI
         {
             // Initialize logger
             // TODO: how to do it with web apps??
-            Logger.Instance.Start(false);
+            Logger.Instance.Start(Logging.EventSource.Test, false);
 
             HostingEnvironment.RegisterVirtualPathProvider(virtualPathProvider);
             RegisterScripts();

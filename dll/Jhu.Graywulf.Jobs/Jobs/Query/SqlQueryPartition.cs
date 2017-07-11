@@ -8,6 +8,7 @@ using System.IO;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Serialization;
+using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.Schema;
@@ -516,7 +517,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     tempname = String.Format("skyquerytemp_{0}_{1}", id.ToString(), tableName);
                     break;
                 case Jobs.Query.ExecutionMode.Graywulf:
-                    tempname = String.Format("{0}_{1}_{2}_{3}", RegistryContext.User.Name, RegistryContext.JobID, id.ToString(), tableName);
+                    tempname = String.Format("{0}_{1}_{2}_{3}", RegistryContext.User.Name, JobContext.Current.JobID, id.ToString(), tableName);
                     break;
                 default:
                     throw new NotImplementedException();

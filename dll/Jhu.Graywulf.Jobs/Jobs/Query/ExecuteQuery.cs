@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Jobs.Query
             SourceTableQuery source;
             Table destination;
 
-            using (RegistryContext context = querypartition.Query.CreateContext(this, activityContext))
+            using (RegistryContext context = querypartition.Query.CreateContext())
             {
                 querypartition.PrepareExecuteQuery(context, activityContext.GetExtension<IScheduler>(), out source, out destination);
             }
