@@ -130,9 +130,9 @@ namespace Jhu.Graywulf.Web.Services
             }
         }
 
-        internal Logging.Event OnError(string operationName, Exception ex)
+        internal Logging.Event OnError(Exception ex)
         {
-            var e = LogError(operationName, ex);
+            var e = Logging.Logger.Instance.LogError(ex);
 
             if (registryContext != null)
             {
@@ -142,18 +142,6 @@ namespace Jhu.Graywulf.Web.Services
             }
 
             return e;
-        }
-
-        private Logging.Event LogError(string operationName, Exception ex)
-        {
-            var error = Logging.Logger.Instance.LogException(
-                AppRelativePath,
-                Logging.EventSource.WebService,
-                registryContext == null ? Guid.Empty : registryContext.UserReference.Guid,
-                registryContext == null ? Guid.Empty : registryContext.ContextGuid,
-                ex);
-
-            return error;
         }
 
         #region User managemenet functions

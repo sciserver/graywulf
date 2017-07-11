@@ -76,7 +76,7 @@ namespace Jhu.Graywulf.Registry
             // Update context
             RegistryContext.UserReference.Value = user;
 
-            RegistryContext.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.UserFactory.LoginUser", user.Guid));
+            user.LogDebug();
 
             return user;
         }

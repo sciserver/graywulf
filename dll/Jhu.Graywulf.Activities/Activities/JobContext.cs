@@ -3,47 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization;
 using System.Activities;
 using System.Activities.Tracking;
+using Jhu.Graywulf.Logging;
 using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Activities
 {
-    public class JobContext : IDisposable
+    public class JobContext : LoggingContext
     {
-        #region Singleton
-
-        [ThreadStatic]
-        private static JobContext context;
-
-        public static JobContext Current
-        {
-            get
-            {
-                return context;
-            }
-            internal set
-            {
-                context = value;
-            }
-        }
-
-        #endregion
         #region Private member variables
 
-        private JobAsyncCodeActivity activity;
-        private string activityInstanceId;
-        private Guid workflowInstanceId;
         private JobInfo jobInfo;
+        private IJobActivity activity;
+        private Guid workflowInstanceId;
+        private string activityInstanceId;
+        private CodeActivityContext activityContext;
         private Exception exception;
-        private List<CustomTrackingRecord> trackingRecords;
 
         #endregion
         #region Properties
 
-        internal JobAsyncCodeActivity Activity
+        public JobInfo JobInfo
         {
-            get { return activity; }
+            get { return jobInfo; }
+        }
+        
+        public Guid WorkflowInstanceId
+        {
+            get { return workflowInstanceId; }
         }
 
         public string ActivityInstanceId
@@ -51,14 +40,10 @@ namespace Jhu.Graywulf.Activities
             get { return ActivityInstanceId; }
         }
 
-        public Guid WorkflowInstanceId
+        internal CodeActivityContext ActivityContext
         {
-            get { return workflowInstanceId; }
-        }
-
-        public JobInfo JobInfo
-        {
-            get { return jobInfo; }
+            get { return activityContext; }
+            set { activityContext = value; }
         }
 
         internal Exception Exception
@@ -66,39 +51,119 @@ namespace Jhu.Graywulf.Activities
             get { return exception; }
             set { exception = value; }
         }
+        
+        #endregion
 
-        internal List<CustomTrackingRecord> TrackingRecords
+        internal protected JobContext(LoggingContext outerContext, JobCodeActivity activity, CodeActivityContext activityContext)
+            : base(outerContext)
         {
-            get { return trackingRecords; }
+            CopyMembers(activity, activityContext);
+        }
+
+        internal protected JobContext(LoggingContext outerContext, JobAsyncCodeActivity activity, AsyncCodeActivityContext activityContext)
+            : base(outerContext)
+        {
+            CopyMembers(activity, activityContext);
+        }
+
+        internal protected JobContext(LoggingContext outerContext)
+            : base(outerContext)
+        {
+            InitializeMembers(new StreamingContext());
+        }
+
+        internal protected JobContext(JobContext outerContext)
+            :base(outerContext)
+        {
+            CopyMembers(outerContext);
+        }
+
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
+        {
+            this.jobInfo = new JobInfo();
+            this.activity = null;
+            this.workflowInstanceId = Guid.Empty;
+            this.activityInstanceId = null;
+            this.activityContext = null;
+        }
+
+        private void CopyMembers(IJobActivity activity, CodeActivityContext activityContext)
+        {
+            this.jobInfo = activityContext.GetValue(activity.JobInfo);
+            this.activity = activity;
+            this.workflowInstanceId = activityContext.WorkflowInstanceId;
+            this.activityInstanceId = activityContext.ActivityInstanceId;
+            this.activityContext = activityContext;
+        }
+
+        private void CopyMembers(JobContext outerContext)
+        {
+            this.jobInfo = new JobInfo(outerContext.jobInfo);
+            this.activity = outerContext.activity;
+            this.workflowInstanceId = outerContext.workflowInstanceId;
+            this.activityInstanceId = outerContext.activityInstanceId;
+            this.activityContext = outerContext.activityContext;
+        }
+
+        #region Log event routing
+
+        public override void UpdateEvent(Event e)
+        {
+            base.UpdateEvent(e);
+
+            e.UserGuid = jobInfo.UserGuid;
+            e.JobGuid = jobInfo.JobGuid;
+        }
+
+        public override void RecordEvent(Event e)
+        {
+            if (activityContext != null && !IsAsync)
+            {
+                // This is a synchronous event called from a simple CodeActivity
+                // Route event through the workflow tracking infrastructure
+                var ctr = new CustomTrackingRecord("Graywulf log event");
+                ctr.Data.Add("Event", e);
+                activityContext.Track(ctr);
+            }
+            else
+            {
+                // This is an event occuring outside a workflow or within
+                // the async thread of an AsyncCodeActiviry
+                base.RecordEvent(e);
+            }
+        }
+
+        public override void FlushEvents()
+        {
+            foreach (var e in AsyncEvents)
+            {
+                var record = new CustomTrackingRecord("asyncEvent");
+                record.Data[Constants.ActivityRecordDataItemEvent] = e;
+
+                activityContext.Track(record);
+            }
+
+            AsyncEvents.Clear();
         }
 
         #endregion
-
-        internal JobContext(JobAsyncCodeActivity activity, AsyncCodeActivityContext activityContext)
-        {
-            this.activity = activity;
-            this.activityInstanceId = activityContext.ActivityInstanceId;
-            this.workflowInstanceId = activityContext.WorkflowInstanceId;
-
-            if (jobInfo != null)
-            {
-                this.jobInfo = activityContext.GetValue(activity.JobInfo);
-            }
-
-            this.trackingRecords = new List<CustomTrackingRecord>();
-        }
-
-        public void Dispose()
-        {
-        }
+        #region Async operation cancellation logic
 
         /// <summary>
         /// Registers a task that have to be canceled when the activity is canceled.
         /// </summary>
         /// <param name="cancelableTask"></param>
-        public void RegisterCancelable(ICancelableTask cancelableTask)
+        public virtual void RegisterCancelable(ICancelableTask cancelableTask)
         {
-            if (!activity.CancelableTasks.TryAdd(activity.GetUniqueActivityID(workflowInstanceId, activityInstanceId), cancelableTask))
+            if (activity == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var ac = (JobAsyncCodeActivity)activity;
+
+            if (!ac.CancelableTasks.TryAdd(ac.GetUniqueActivityID(workflowInstanceId, activityInstanceId), cancelableTask))
             {
                 throw new InvalidOperationException(ExceptionMessages.OnlyOneCancelable);
             }
@@ -108,12 +173,18 @@ namespace Jhu.Graywulf.Activities
         /// Unregisteres a task that no longer needs to be cancelable.
         /// </summary>
         /// <param name="cancelableTask"></param>
-        public void UnregisterCancelable(ICancelableTask cancelableTask)
+        public virtual void UnregisterCancelable(ICancelableTask cancelableTask)
         {
+            if (activity == null)
+            {
+                throw new InvalidOperationException();
+            }
+
             // TODO: apparently, this gets called more than once sometimes
+            var ac = (JobAsyncCodeActivity)activity;
 
             ICancelableTask finishedtask;
-            if (activity.CancelableTasks.TryRemove(activity.GetUniqueActivityID(workflowInstanceId, activityInstanceId), out finishedtask))
+            if (ac.CancelableTasks.TryRemove(ac.GetUniqueActivityID(workflowInstanceId, activityInstanceId), out finishedtask))
             {
                 if (finishedtask != cancelableTask)
                 {
@@ -122,9 +193,6 @@ namespace Jhu.Graywulf.Activities
             }
         }
 
-        public void Track(CustomTrackingRecord record)
-        {
-            trackingRecords.Add(record);
-        }
+        #endregion
     }
 }

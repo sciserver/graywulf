@@ -25,11 +25,11 @@ namespace Jhu.Graywulf.Logging
         private string server;
         private string client;
         private string message;
+        private Exception exception;
         private string exceptionType;
         private string exceptionStackTrace;
 
         private Dictionary<string, object> userData;
-        private Exception exception;
 
         #endregion
         #region Properties
@@ -118,6 +118,12 @@ namespace Jhu.Graywulf.Logging
             set { message = value; }
         }
 
+        public Exception Exception
+        {
+            get { return exception; }
+            internal set { exception = value; }
+        }
+
         public string ExceptionType
         {
             get { return exceptionType; }
@@ -135,12 +141,6 @@ namespace Jhu.Graywulf.Logging
             get { return userData; }
         }
 
-        public Exception Exception
-        {
-            get { return exception; }
-            set { SetException(value); }
-        }
-
         #endregion
         #region Constructors and initializers
 
@@ -152,25 +152,6 @@ namespace Jhu.Graywulf.Logging
         public Event(Event old)
         {
             CopyMembers(old);
-        }
-
-        // TODO ****
-        public Event(string operation, Guid entityGuid)
-        {
-            InitializeMembers();
-
-            this.operation = operation;
-
-            userData[Constants.UserDataEntityGuid] = entityGuid;
-        }
-
-        // TODO ***
-        public Event(string operation, Exception ex)
-        {
-            InitializeMembers();
-
-            this.operation = operation;
-            SetException(ex);
         }
 
         private void InitializeMembers()
@@ -189,11 +170,11 @@ namespace Jhu.Graywulf.Logging
             this.server = Environment.MachineName;
             this.client = null;
             this.message = null;
+            this.exception = null;
             this.exceptionType = null;
             this.exceptionStackTrace = null;
 
             this.userData = new Dictionary<string, object>();
-            this.exception = null;
         }
 
         private void CopyMembers(Event old)
@@ -212,11 +193,11 @@ namespace Jhu.Graywulf.Logging
             this.server = old.server;
             this.client = old.client;
             this.message = old.message;
+            this.exception = old.exception;
             this.exceptionType = old.exceptionType;
             this.exceptionStackTrace = old.exceptionStackTrace;
 
             this.userData = new Dictionary<string, object>(old.userData);
-            this.exception = old.exception;
         }
 
         public int LoadFromDataReader(SqlDataReader dr)
@@ -237,16 +218,16 @@ namespace Jhu.Graywulf.Logging
             this.server = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.client = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.message = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.exception = null;
             this.exceptionType = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.exceptionStackTrace = dr.IsDBNull(++o) ? null : dr.GetString(o);
-
-            this.exception = null;
 
             return o;
         }
 
         #endregion
 
+        /* TODO: delete
         public static Event CreateWebServiceOperationEvent(string operation)
         {
             var e = new Event()
@@ -293,106 +274,7 @@ namespace Jhu.Graywulf.Logging
             {
 
             }
-        }
-
-        private void SetException(Exception ex)
-        {
-            message = null;
-            server = null;
-            exceptionStackTrace = null;
-            exceptionType = null;
-
-            exception = ex;
-
-            if (ex != null)
-            {
-                message = GetExceptionMessage(ex);
-                exceptionStackTrace = GetExceptionStackTrace(ex);
-                exceptionType = GetExceptionType(ex);
-                server = GetExceptionSite(ex);
-                severity = Logging.EventSeverity.Error;
-            }
-        }
-
-        private string GetExceptionMessage(Exception ex)
-        {
-            if (ex is AggregateException)
-            {
-                return ex.InnerException.Message;
-            }
-            else
-            {
-                return ex.Message;
-            }
-        }
-
-        private string GetExceptionType(Exception ex)
-        {
-            if (ex is AggregateException)
-            {
-                return ex.InnerException.GetType().FullName;
-            }
-            else
-            {
-                return ex.GetType().FullName;
-            }
-        }
-
-        /// <summary>
-        /// Returns the stack trace from the exception and all inner exceptions
-        /// </summary>
-        /// <param name="ex"></param>
-        /// <returns></returns>
-        private string GetExceptionStackTrace(Exception ex)
-        {
-            var sb = new StringBuilder();
-            var e = ex;
-
-            while (e != null)
-            {
-                sb.AppendFormat("[{0}]", e.GetType().FullName);
-                sb.AppendLine();
-                sb.AppendLine(e.Message);
-                sb.AppendLine(e.StackTrace);
-                sb.AppendLine();
-
-                e = e.InnerException;
-            }
-
-            if (sb.Length == 0)
-            {
-                return null;
-            }
-            else
-            {
-                return sb.ToString();
-            }
-        }
-
-        private string GetExceptionSite(Exception ex)
-        {
-            // Unwrap one level
-            if (ex is AggregateException)
-            {
-                ex = ex.InnerException;
-            }
-
-            if (ex is SqlException)
-            {
-                var sqlex = (SqlException)ex;
-                return sqlex.Server;
-            }
-            else if (ex is System.ServiceModel.EndpointNotFoundException)
-            {
-                var smex = (System.ServiceModel.EndpointNotFoundException)ex;
-                return Environment.MachineName;
-
-                // TODO: figure out how to get site from EndpointNotFoundException
-            }
-            else
-            {
-                return Environment.MachineName;
-            }
-        }
+        } 
+        */
     }
 }

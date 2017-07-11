@@ -28,10 +28,10 @@ namespace Jhu.Graywulf.Logging
     public enum EventSeverity : byte
     {
         None = 0,
-        Debug = 1,
-        Info = 2,
-        Status = 4,
-        Warning = 8,
+        Debug = 1,      // debug messages
+        Info = 2,       // important into, no report to user
+        Status = 4,     // important status to report to user
+        Warning = 8,    // 
         Error = 16,
         All = 0xFF,
     }

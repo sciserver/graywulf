@@ -56,14 +56,14 @@ namespace Jhu.Graywulf.RemoteService.Server
             AppDomain.CurrentDomain.UnhandledException += Util.ServiceHelper.WriteErrorDump;
 
             // Initialize logger
-            // TODO: add interactive mode
+            // TODO: add interactive mode, set source
             Logger.Instance.Start(false);
 
             // Log starting event
-            var e = new Event("Jhu.Graywulf.RemoteService.Server.RemoteService.OnStart", Guid.Empty);
-            e.UserData.Add("MachineName", Environment.MachineName);
-            e.UserData.Add("UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName));
-            LogEvent(e);
+            Logger.Instance.LogStatus(
+                "Graywulf Remote Service has started.", 
+                null,
+                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 
             // In case the server has been just rebooted
             // wait for the Windows Process Activation Service (WAS)
@@ -100,11 +100,11 @@ namespace Jhu.Graywulf.RemoteService.Server
             registeredServiceHosts.Clear();
             registeredEndpoints.Clear();
 
-            // Log stop event
-            var e = new Event("Jhu.Graywulf.RemoteService.Server.RemoteService.OnStop", Guid.Empty);
-            e.UserData.Add("MachineName", Environment.MachineName);
-            e.UserData.Add("UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName));
-            LogEvent(e);
+            Logger.Instance.LogStatus("Graywulf Remote Service has stopped.", 
+                null,
+                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
+
+            Logger.Instance.Stop();            
         }
 
         #region Functions to support command-line execution
@@ -144,7 +144,9 @@ namespace Jhu.Graywulf.RemoteService.Server
         }
 
 
+        // TODO: delete
         // *** TODO: how to log if event order is not available (in context)
+        /*
         /// <summary>
         /// Logs scheduler events
         /// </summary>
@@ -161,5 +163,6 @@ namespace Jhu.Graywulf.RemoteService.Server
 
             Logger.Instance.LogEvent(e);
         }
+        */
     }
 }

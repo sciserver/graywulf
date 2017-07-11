@@ -134,13 +134,7 @@ namespace Jhu.Graywulf.Web.UI
 
         protected Logging.Event LogError(Exception ex)
         {
-            var error = Logging.Logger.Instance.LogException(
-                AppRelativeVirtualPath,
-                Logging.EventSource.WebUI,
-                registryContext == null ? Guid.Empty : registryContext.UserReference.Guid,
-                registryContext == null ? Guid.Empty : registryContext.ContextGuid,
-                ex);
-
+            var error = Logging.Logger.Instance.LogError(ex, null, AppRelativeVirtualPath, null);
             return error;
         }
 
@@ -167,7 +161,7 @@ namespace Jhu.Graywulf.Web.UI
                 registryContext.Dispose();
                 registryContext = null;
             }
-            
+
             base.OnError(e);
 
             Server.ClearError();

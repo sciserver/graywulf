@@ -69,10 +69,10 @@ namespace Jhu.Graywulf.Logging
         {
             textWriter.WriteLine("{0} {1:s} {2} {3}", e.Order, e.DateTime, e.Operation, e.ExecutionStatus);
 
-            if (e.Exception != null)
+            if (e.ExceptionType != null)
             {
-                textWriter.WriteLine("   {0}", e.Exception.GetType().FullName);
-                textWriter.WriteLine("   {0}", e.Exception.Message);
+                textWriter.WriteLine("   {0}", e.ExceptionType);
+                textWriter.WriteLine("   {0}", e.Message);
             }
         }
     }

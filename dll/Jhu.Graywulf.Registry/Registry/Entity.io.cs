@@ -4,10 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
-using System.IO;
-using System.Xml.Serialization;
 using System.Reflection;
-using System.Linq.Expressions;
+using System.Diagnostics;
 
 namespace Jhu.Graywulf.Registry
 {
@@ -248,7 +246,7 @@ namespace Jhu.Graywulf.Registry
 
             isExisting = true;
 
-            RegistryContext.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.Create", this.guid));
+            LogDebug("Created");
         }
 
         /// <summary>
@@ -293,7 +291,7 @@ namespace Jhu.Graywulf.Registry
                 }
             }
 
-            RegistryContext.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.Modify", this.guid));
+            LogDebug("Modified");
         }
 
         /// <summary>
@@ -413,7 +411,7 @@ namespace Jhu.Graywulf.Registry
                 this.userGuidDeleted = RegistryContext.UserReference.Guid;
             }
 
-            RegistryContext.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.Delete", this.guid));
+            LogDebug();
         }
 
         /// <summary>
@@ -443,16 +441,13 @@ namespace Jhu.Graywulf.Registry
 
                 if (retval < 0)
                 {
-                    Jhu.Graywulf.Logging.Event e = new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.CheckConcurrency", this.guid); ;
                     switch (retval)
                     {
                         case -1:
-                            e.Message = LogMessages.InvalidConcurrencyVersion;
-                            RegistryContext.LogEvent(e);
+                            LogDebug(String.Format("Invalid concurrency version of {0}: {1}", Constants.EntityNames_Singular[this.EntityType], this.GetFullyQualifiedName()));
                             throw new InvalidConcurrencyVersionException();
                         case -2:
-                            e.Message = LogMessages.LockingCollision;
-                            RegistryContext.LogEvent(e);
+                            LogDebug(String.Format("Locking collision on {0}: {1}", Constants.EntityNames_Singular[this.EntityType], this.GetFullyQualifiedName()));
                             throw new LockingCollisionException();
                     }
                 }
@@ -525,7 +520,7 @@ namespace Jhu.Graywulf.Registry
                     this.number = retval;
             }
 
-            RegistryContext.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.Move", this.guid));
+            LogDebug();
         }
 
         private string[] LoadAscendantNames()
@@ -627,7 +622,7 @@ namespace Jhu.Graywulf.Registry
                 this.concurrencyVersion = BitConverter.ToInt64((byte[])cmd.Parameters["@ConcurrencyVersion"].Value, 0);
             }
 
-            RegistryContext.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.ObtainLock", this.guid));
+            LogDebug();
         }
 
         /// <summary>
@@ -683,7 +678,7 @@ namespace Jhu.Graywulf.Registry
                 this.concurrencyVersion = BitConverter.ToInt64((byte[])cmd.Parameters["@ConcurrencyVersion"].Value, 0);
             }
 
-            RegistryContext.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.Entity.ReleaseLock", this.guid));
+            LogDebug();
         }
 
         #endregion

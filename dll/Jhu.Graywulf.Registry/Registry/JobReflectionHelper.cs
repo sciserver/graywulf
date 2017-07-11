@@ -60,7 +60,7 @@ namespace Jhu.Graywulf.Registry
         /// <returns></returns>
         public ParameterCollection GetParameters()
         {
-            var excluded = new HashSet<string>() { Jhu.Graywulf.Activities.Constants.ActivityParameterJobContext };
+            var excluded = new HashSet<string>() { Jhu.Graywulf.Activities.Constants.ActivityParameterJobInfo };
 
             var t = Type.GetType(workflowTypeName);
 

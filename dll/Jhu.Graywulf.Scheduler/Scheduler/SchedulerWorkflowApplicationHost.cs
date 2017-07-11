@@ -113,7 +113,7 @@ namespace Jhu.Graywulf.Scheduler
                     // **** TODO: set domain and federation here if necessary
                 };
 
-                pars.Add(Jhu.Graywulf.Activities.Constants.ActivityParameterJobContext, cx);
+                pars.Add(Jhu.Graywulf.Activities.Constants.ActivityParameterJobInfo, cx);
 
                 // Start the workflow
                 Guid wfguid = PrepareStartWorkflow(job, pars);

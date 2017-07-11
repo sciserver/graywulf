@@ -46,19 +46,25 @@ namespace Jhu.Graywulf.Activities
 
         protected sealed override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
         {
-            var asyncContext = new JobContext(this, activityContext);
+            var context = new JobContext(Logging.LoggingContext.Current, this, activityContext);
+
+            context.Push();
+
             var action = OnBeginExecute(activityContext);
+
+            context.Pop();
+
             var task = new AsyncActivityWorkerTask(Execute);
             activityContext.UserState = task;
 
-            return task.BeginInvoke(asyncContext, action, callback, state);
+            return task.BeginInvoke(context, action, callback, state);
         }
 
         protected abstract AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext);
 
         private JobContext Execute(JobContext context, AsyncActivityWorker action)
         {
-            JobContext.Current = context;
+            context.Push();
 
             try
             {
@@ -69,7 +75,7 @@ namespace Jhu.Graywulf.Activities
                 context.Exception = ex;
             }
 
-            JobContext.Current = null;
+            context.Pop();
 
             return context;
         }
@@ -77,21 +83,19 @@ namespace Jhu.Graywulf.Activities
         protected override void EndExecute(AsyncCodeActivityContext activityContext, IAsyncResult result)
         {
             var task = (AsyncActivityWorkerTask)activityContext.UserState;
-            var gwcx = task.EndInvoke(result);
-            var ex = gwcx.Exception;
+            var context = task.EndInvoke(result);
+            var ex = context.Exception;
+
+            context.Push();
 
             // Process tracking records from async call
-            foreach (var r in gwcx.TrackingRecords)
-            {
-                activityContext.Track(r);
-            }
-
-            gwcx.Dispose();
+            context.ActivityContext = activityContext;
+            context.FlushEvents();
 
             if (ex != null)
             {
                 if (ex is AggregateException &&
-                   ((AggregateException)gwcx.Exception).InnerException is OperationCanceledException)
+                   ((AggregateException)ex).InnerException is OperationCanceledException)
                 {
                     // This is a normal way of operation
                 }
@@ -100,6 +104,9 @@ namespace Jhu.Graywulf.Activities
                     throw ex;
                 }
             }
+
+            context.Pop();
+            context.Dispose();
         }
 
         /// <summary>

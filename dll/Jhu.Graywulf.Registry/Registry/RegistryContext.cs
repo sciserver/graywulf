@@ -16,7 +16,7 @@ namespace Jhu.Graywulf.Registry
     /// Represents an object context that is used for managing database connection and transaction,
     /// SMTP server connection and workflow activity context.
     /// </summary>
-    public class RegistryContext : LoggingContext, IRegistryContextObject, IDisposable
+    public class RegistryContext : JobContext, IRegistryContextObject, IDisposable
     {
         #region Member Variables
 
@@ -182,9 +182,12 @@ namespace Jhu.Graywulf.Registry
         /// Default constructor that creates a context object and
         /// initializes private members to their default values.
         /// </summary>
-        internal RegistryContext()
+        internal RegistryContext(LoggingContext outerContext)
+            :base(outerContext)
         {
             InitializeMembers();
+
+            Push();
         }
 
         // TODO: delete
@@ -238,6 +241,39 @@ namespace Jhu.Graywulf.Registry
             this.userReference = new EntityReference<User>(this);
             this.jobReference = new EntityReference<JobInstance>(this);
             this.jobID = null;
+        }
+
+        /// <summary>
+        /// Disposes the context and commits the SQL transaction, closes the connection.
+        /// </summary>
+        public override void Dispose()
+        {
+            Pop();
+
+            if (databaseTransaction != null)
+            {
+                switch (transactionMode)
+                {
+                    case TransactionMode.None:
+                        break;
+                    case TransactionMode.AutoCommit:
+                        CommitTransaction();
+                        break;
+                    case TransactionMode.DirtyRead:
+                    case TransactionMode.ManualCommit:
+                        RollbackTransaction();
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+
+            if (databaseConnection != null)
+            {
+                CloseConnection();
+            }
+
+            base.Dispose();
         }
 
         #endregion
@@ -484,84 +520,6 @@ namespace Jhu.Graywulf.Registry
             {
                 cmd.ExecuteNonQuery();
             }
-        }
-
-        #endregion
-        #region Logging Support Functions
-
-        // TODO: delete
-        /// <summary>
-        /// Writes an event into the log database.
-        /// </summary>
-        /// <param name="e"></param>
-        public void LogEvent(Event e)
-        {
-            /*
-            e.UserGuid = this.userReference.Guid;
-            e.JobGuid = this.jobReference.Guid;
-            e.ContextGuid = this.contextGuid;
-            e.Source = EventSource.Registry;
-            e.ExecutionStatus = ExecutionStatus.Closed;
-
-
-            // Logging is different inside activities
-            if (activityContext == null)
-            {
-                // Direct logging invoked from code running outside a workflow.
-                // Event will be written directly into the database.
-
-                e.Order = ++eventOrder;
-
-                Logger.Instance.LogEvent(e);
-            }
-            else
-            {
-                // Logging event sent by code running inside a workflow.
-                // In this case event will be routed to the workflow
-                // tracking service.
-
-                System.Activities.Tracking.CustomTrackingRecord r =
-                    new System.Activities.Tracking.CustomTrackingRecord("Jhu.Graywulf.Logging");
-
-                r.Data.Add("Jhu.Graywulf.Logging.Event", e);
-
-                activityContext.Track(r);
-            }
-            */
-        }
-
-        #endregion
-        #region IDisposable Interface Implementation
-
-        /// <summary>
-        /// Disposes the context and commits the SQL transaction, closes the connection.
-        /// </summary>
-        public override void Dispose()
-        {
-            if (databaseTransaction != null)
-            {
-                switch (transactionMode)
-                {
-                    case TransactionMode.None:
-                        break;
-                    case TransactionMode.AutoCommit:
-                        CommitTransaction();
-                        break;
-                    case TransactionMode.DirtyRead:
-                    case TransactionMode.ManualCommit:
-                        RollbackTransaction();
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
-            }
-
-            if (databaseConnection != null)
-            {
-                CloseConnection();
-            }
-
-            base.Dispose();
         }
 
         #endregion

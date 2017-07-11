@@ -108,8 +108,9 @@ namespace Jhu.Graywulf.Web.UI
 
         protected virtual void Application_Start(object sender, EventArgs e)
         {
-            // Start logger
-            Logger.Instance.Writers.Add(new SqlLogWriter());
+            // Initialize logger
+            // TODO: how to do it with web apps??
+            Logger.Instance.Start(false);
 
             HostingEnvironment.RegisterVirtualPathProvider(virtualPathProvider);
             RegisterScripts();

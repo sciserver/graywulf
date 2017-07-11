@@ -122,7 +122,7 @@ namespace Jhu.Graywulf.Registry
                 login.Create();
             }
 
-            this.RegistryContext.LogEvent(new Event("Jhu.Graywulf.Registry.ServerInstance.CreateLinkedServer", this.Guid));
+            LogDebug();
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace Jhu.Graywulf.Registry
             Server s = this.GetSmoServer();
             s.LinkedServers[remoteInstance.GetCompositeName()].Drop();
 
-            this.RegistryContext.LogEvent(new Event("Jhu.Graywulf.Registry.ServerInstance.DropLinkedServer", this.Guid));
+            LogDebug();
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace Jhu.Graywulf.Registry
             Server s = this.GetSmoServer();
             s.LinkedServers[name].Drop(true);
 
-            this.RegistryContext.LogEvent(new Event("Jhu.Graywulf.Registry.ServerInstance.CreateLinkedServer", this.Guid));
+            LogDebug();
         }
 
         /// <summary>

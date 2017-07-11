@@ -119,7 +119,7 @@ namespace Jhu.Graywulf.Registry
         /// <returns>A valid connection.</returns>
         public RegistryContext CreateContext(string connectionString, ConnectionMode connectionMode, TransactionMode transactionMode)
         {
-            var context = new RegistryContext()
+            var context = new RegistryContext(Logging.LoggingContext.Current)
             {
                 ConnectionString = connectionString,
                 ConnectionMode = connectionMode,

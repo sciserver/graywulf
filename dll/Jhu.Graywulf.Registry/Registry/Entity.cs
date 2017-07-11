@@ -9,6 +9,7 @@ using System.IO;
 using System.ComponentModel;
 using System.Xml;
 using System.Reflection;
+using System.Diagnostics;
 using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Registry
@@ -809,6 +810,30 @@ namespace Jhu.Graywulf.Registry
         {
             RunningState = RunningState.Stopped;
             Save();
+        }
+
+        public void LogDebug()
+        {
+#if DEBUG
+            var method = new StackFrame(1, true).GetMethod();
+
+            Logging.Logger.Instance.LogDebug(
+                String.Format("{0} {1}: {2}", method.Name, Constants.EntityNames_Singular[this.EntityType], this.Name),
+                method.DeclaringType.FullName + "." + method.Name,
+                new Dictionary<string, object>() { { Logging.Constants.UserDataEntityGuid, this.Guid } });
+#endif
+        }
+
+        public void LogDebug(string message)
+        {
+#if DEBUG
+            var method = new StackFrame(1, true).GetMethod();
+
+            Logging.Logger.Instance.LogDebug(
+                message,
+                method.DeclaringType.FullName + "." + method.Name,
+                new Dictionary<string, object>() { { Logging.Constants.UserDataEntityGuid, this.Guid } });
+#endif
         }
     }
 }

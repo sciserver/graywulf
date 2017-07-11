@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Activities;
 using Jhu.Graywulf.Registry;
@@ -184,6 +185,8 @@ namespace Jhu.Graywulf.Scheduler
         /// <returns></returns>
         internal Cluster LoadCluster(string clusterName)
         {
+            LogDebug(String.Format("Loading cluster config. Layout is {0}required.", isLayouRequired ? "" : "not "));
+
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 var ef = new EntityFactory(context);
@@ -280,7 +283,7 @@ namespace Jhu.Graywulf.Scheduler
                     }
                 }
 
-                LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.LoadCluster", Guid.Empty));
+                LogDebug("Cluster config loaded.");
 
                 return cluster;
             }
@@ -307,10 +310,10 @@ namespace Jhu.Graywulf.Scheduler
             Logger.Instance.Start(interactive);
 
             // Log starting event
-            Event e = new Event("Jhu.Graywulf.Scheduler.QueueManager.Start", Guid.Empty);
-            e.UserData.Add("MachineName", Environment.MachineName);
-            e.UserData.Add("UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName));
-            LogEvent(e);
+            Logger.Instance.LogStatus(
+                "Graywulf Scheduler Service has started.",
+                null,
+                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 
             // *** TODO: error handling, and repeat a couple of times, then shut down with exception
 
@@ -319,7 +322,7 @@ namespace Jhu.Graywulf.Scheduler
 
             new DelayedRetryLoop(5).Execute(
                 ProcessInterruptedJobs,
-                ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Start[ProcessInterruptedJobs]", ex)));
+                ex => LogError(ex));
 
             StartPoller();
         }
@@ -357,17 +360,16 @@ namespace Jhu.Graywulf.Scheduler
                 {
                     new DelayedRetryLoop(5).Execute(
                         () => { PersistJob(job); },
-                        ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Stop[PersistJob]", ex)));
+                        ex => LogError(ex));
                 }
             }
 
             StopAppDomains(timeout);
 
             // Log stop event
-            var e = new Event("Jhu.Graywulf.Scheduler.QueueManager.Stop", Guid.Empty);
-            e.UserData.Add("MachineName", Environment.MachineName);
-            e.UserData.Add("UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName));
-            LogEvent(e);
+            Logger.Instance.LogStatus("Graywulf Scheduler Service has stopped.",
+                null,
+                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 
             // Stop logger
             Logger.Instance.Stop();
@@ -387,17 +389,18 @@ namespace Jhu.Graywulf.Scheduler
             {
                 new DelayedRetryLoop(5).Execute(
                     () => { CancelOrTimeOutJob(job, false); },
-                    ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Kill[CancelOrTimeOutJob]", ex)));
+                    ex => LogError(ex));
             }
 
             // Wait for all jobs to complete
             StopAppDomains(timeout);
 
             // Log stop event
-            var e = new Event("Jhu.Graywulf.Scheduler.QueueManager.Kill", Guid.Empty);
-            e.UserData.Add("MachineName", Environment.MachineName);
-            e.UserData.Add("UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName));
-            LogEvent(e);
+            Logger.Instance.LogStatus("Graywulf Remote Service has been killed.",
+                null,
+                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
+
+            Logger.Instance.Stop();
         }
 
         private void StopAppDomains(TimeSpan timeout)
@@ -438,7 +441,7 @@ namespace Jhu.Graywulf.Scheduler
                 throw new InvalidOperationException(ExceptionMessages.PollerHasAlreadyStarted);
             }
 
-            LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.StartPoller", Guid.Empty));
+            LogDebug();
         }
 
         /// <summary>
@@ -460,7 +463,7 @@ namespace Jhu.Graywulf.Scheduler
                 throw new InvalidOperationException(ExceptionMessages.PollerHasNotStarted);
             }
 
-            LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.StopPoller", Guid.Empty));
+            LogDebug();
         }
 
         /// <summary>
@@ -499,15 +502,15 @@ namespace Jhu.Graywulf.Scheduler
 
             new DelayedRetryLoop(1).Execute(
                 ProcessTimedOutJobs,
-                ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Poll[ProcessTimedOutJobs]", ex)));
+                ex => LogError(ex));
 
             new DelayedRetryLoop(1).Execute(
                 PollNewJobs,
-                ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Poll[PollNewJobs]", ex)));
+                ex => LogError(ex));
 
             new DelayedRetryLoop(1).Execute(
                 PollCancellingJobs,
-                ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.Poll[PollCancellingJobs]", ex)));
+                ex => LogError(ex));
         }
 
         /// <summary>
@@ -523,7 +526,7 @@ namespace Jhu.Graywulf.Scheduler
                 {
                     new DelayedRetryLoop(5).Execute(
                     () => { CancelOrTimeOutJob(job, true); },
-                    ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.ProcessTimedOutJobs[CancelOrTimeOutJob]", ex)));
+                    ex => LogError(ex));
                 }
             }
         }
@@ -585,16 +588,12 @@ namespace Jhu.Graywulf.Scheduler
 
                 if (failed > 0)
                 {
-                    e = new Event("Jhu.Graywulf.Scheduler.QueueManager.ProcessInterruptedJobs[Executing]", Guid.Empty);
-                    e.Message = String.Format("Marked {0} jobs as failed.", failed);
-                    LogEvent(e);
+                    LogDebug(String.Format("Marked {0} jobs as failed.", failed));
                 }
 
                 if (started > 0)
                 {
-                    e = new Event("Jhu.Graywulf.Scheduler.QueueManager.ProcessInterruptedJobs[Starting]", Guid.Empty);
-                    e.Message = String.Format("Marked {0} jobs as scheduled.", started);
-                    LogEvent(e);
+                    LogDebug(String.Format("Marked {0} jobs as scheduled.", started));
                 }
             }
         }
@@ -677,7 +676,7 @@ namespace Jhu.Graywulf.Scheduler
             {
                 new DelayedRetryLoop(5).Execute(
                     () => { StartOrResumeJob(job); },
-                    ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.PollNewJobs[StartOrResumeJob]", ex)));
+                    ex => LogError(ex));
             }
         }
 
@@ -712,7 +711,7 @@ namespace Jhu.Graywulf.Scheduler
             {
                 new DelayedRetryLoop(5).Execute(
                     () => { CancelOrTimeOutJob(job, false); },
-                    ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.PollCancellingJobs[CancelOrTimeOutJob]", ex)));
+                    ex => LogError(ex));
             }
         }
 
@@ -938,8 +937,8 @@ namespace Jhu.Graywulf.Scheduler
             {
                 // New app domain, create host
                 var adh = new AppDomainHost(ad, contextGuid);
-                adh.WorkflowEvent += new EventHandler<WorkflowApplicationHostEventArgs>(adh_WorkflowEvent);
-                adh.UnhandledException += adh_UnhandledException;
+                adh.WorkflowEvent += new EventHandler<WorkflowApplicationHostEventArgs>(AppDomainHost_WorkflowEvent);
+                adh.UnhandledException += AppDomainHost_UnhandledException;
 
                 appDomains.TryAdd(ad.Id, adh);
 
@@ -999,41 +998,52 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void adh_WorkflowEvent(object sender, WorkflowApplicationHostEventArgs e)
+        void AppDomainHost_WorkflowEvent(object sender, WorkflowApplicationHostEventArgs e)
         {
             new DelayedRetryLoop(5).Execute(
                 () => FinishJob(e.InstanceId, e),
-                ex => LogEvent(new Event("Jhu.Graywulf.Scheduler.QueueManager.adh_WorkflowEvent[FinishJob]", ex)));
+                ex => LogError(ex));
         }
 
-        private void adh_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private void AppDomainHost_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             // TODO: terminate failing app domain
-
             var ex = e.ExceptionObject as Exception;
-            LogEvent(new Event("Jhu.Graywulf.Scheduler.WorkflowApplicationHost.UnhandledException", ex));
+            LogError(ex);
         }
 
         #endregion
         #region Logging functions
 
-        /// <summary>
-        /// Logs scheduler events
-        /// </summary>
-        /// <param name="e"></param>
-        private void LogEvent(Event e)
+        public void LogDebug()
         {
-            // TODO: add guids, etc.
+#if DEBUG
+            var method = new StackFrame(1, true).GetMethod();
 
-            e.UserGuid = Guid.Empty;
-            e.Source = EventSource.Scheduler;
-            e.ExecutionStatus = ExecutionStatus.Closed;
+            Logging.Logger.Instance.LogDebug(
+                null,
+                method.DeclaringType.FullName + "." + method.Name,
+                null);
+#endif
+        }
 
-            e.JobGuid = Guid.Empty;
-            e.ContextGuid = contextGuid;
-            e.Order = ++eventOrder;
+        public void LogDebug(string message)
+        {
+#if DEBUG
+            var method = new StackFrame(1, true).GetMethod();
 
-            Logger.Instance.LogEvent(e);
+            Logging.Logger.Instance.LogDebug(
+                message,
+                method.DeclaringType.FullName + "." + method.Name,
+                null);
+#endif
+        }
+
+        public void LogError(Exception ex)
+        {
+            var method = new StackFrame(1, true).GetMethod();
+
+            Logging.Logger.Instance.LogError(ex);
         }
 
         #endregion

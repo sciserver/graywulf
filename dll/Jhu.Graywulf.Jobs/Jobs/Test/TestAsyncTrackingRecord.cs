@@ -18,15 +18,11 @@ namespace Jhu.Graywulf.Jobs.Test
         {
             string message = activityContext.GetValue(Message);
 
-            var r = new CustomTrackingRecord("test");
-            r.Data.Add("message", message);
-            activityContext.Track(r);
+            Logging.Logger.Instance.LogStatus("Test event from async activitity initializer.");
 
             return delegate (JobContext asyncContext)
             {
-                var r2 = new CustomTrackingRecord("test");
-                r2.Data.Add("message", message);
-                asyncContext.Track(r);
+                Logging.Logger.Instance.LogStatus("Test event from async activitity action.");
             };
         }
     }

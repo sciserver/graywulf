@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Activities
             ActivityStateQuery aq = new ActivityStateQuery();
             aq.ActivityName = "*";
             aq.States.Add("*");
-            aq.Arguments.Add(Constants.ActivityParameterJobContext);
+            aq.Arguments.Add(Constants.ActivityParameterJobInfo);
             aq.Arguments.Add(Constants.ActivityParameterEntityGuid);
             aq.Arguments.Add(Constants.ActivityParameterEntityGuidFrom);
             aq.Arguments.Add(Constants.ActivityParameterEntityGuidTo);
@@ -62,46 +62,26 @@ namespace Jhu.Graywulf.Activities
             }
             else
             {
-                Console.WriteLine(record);
+                // Other records are not tracked
             }
 
             if (e != null)
             {
-                Jhu.Graywulf.Logging.Logger.Instance.LogEvent(e);
+                e.Source = EventSource.Workflow;
+                e.Severity = MapEventSeverity(record.Level);
+                e.DateTime = record.EventTime;
+                e.Order = record.RecordNumber;
+                
+                LoggingContext.Current.UpdateEvent(e);
+                Logger.Instance.WriteEvent(e);
             }
         }
 
-        private Event ProcessTrackingRecord(ActivityStateRecord record)
+        private Event ProcessTrackingRecord(CustomTrackingRecord record)
         {
-            // Only record events of IGraywulfActivity activities
-
-            if (record.Arguments.ContainsKey(Constants.ActivityParameterJobContext))
+            if (record.Data != null && record.Data.ContainsKey(Constants.ActivityRecordDataItemEvent))
             {
-
-                Event e = new Event();
-
-                e.ContextGuid = record.InstanceId;
-                e.DateTime = record.EventTime;
-                e.Order = record.RecordNumber;
-                e.Operation = record.Activity.Name;
-
-                e.Severity = MapEventSeverity(record.Level);
-
-                e.Source = EventSource.Workflow;
-
-                ExecutionStatus exst;
-                if (Enum.TryParse<ExecutionStatus>(record.State, true, out exst))
-                {
-                    e.ExecutionStatus = exst;
-                }
-                else
-                {
-                    e.ExecutionStatus = ExecutionStatus.Unknown;    //
-                }
-
-                SetEventProperties(e, record.Arguments);
-
-                return e;
+                return (Event)record.Data[Constants.ActivityRecordDataItemEvent];
             }
             else
             {
@@ -109,37 +89,21 @@ namespace Jhu.Graywulf.Activities
             }
         }
 
-        private Event ProcessTrackingRecord(CustomTrackingRecord record)
+        private Event ProcessTrackingRecord(ActivityStateRecord record)
         {
-            if (record.Data != null)
+            // Only record events of IGraywulfActivity activities
+            if (record.Arguments.ContainsKey(Constants.ActivityParameterJobInfo))
             {
-                var e = new Event();
+                var e = Logger.Instance.CreateEvent(
+                    EventSeverity.Status,
+                    null,
+                    record.Activity.TypeName,
+                    null,
+                    null);
 
-                e.ContextGuid = record.InstanceId;
-                e.DateTime = record.EventTime;
-                e.Order = record.RecordNumber;
-                e.Operation = record.Activity.Name;
+                e.ExecutionStatus = MapExecutionStatus(record.State);
 
-                e.Severity = MapEventSeverity(record.Level);
-
-                e.Source = EventSource.Workflow;
-
-                // *** TODO
-
-                if (record.Data.ContainsKey("ExecutionStatus"))
-                {
-                    /*switch (record.Data["ExecutionStatus"])
-                    {
-                    }
-
-                    e.ExecutionStatus = (ExecutionStatus)record.Data["ExecutionStatus"];*/
-                }
-                else
-                {
-                    e.ExecutionStatus = ExecutionStatus.Unknown;    //
-                }
-
-                SetEventProperties(e, record.Data);
+                SetEventDetails(e, record.Arguments);
 
                 return e;
             }
@@ -153,18 +117,16 @@ namespace Jhu.Graywulf.Activities
         {
             if (record.IsFaultSource)
             {
-                Event e = new Event();
+                var e = Logger.Instance.CreateEvent(
+                    EventSeverity.Error,
+                    null,
+                    record.FaultSource.TypeName,
+                    record.Fault,
+                    null);
 
-                e.ContextGuid = record.InstanceId;
-                e.DateTime = record.EventTime;
-                e.Order = record.RecordNumber;
-                e.Operation = record.FaultSource.Name;
-
-                e.Severity = MapEventSeverity(record.Level);
-                e.Source = EventSource.Workflow;
                 e.ExecutionStatus = ExecutionStatus.Faulted;
 
-                e.Exception = record.Fault;
+                // TODO: where to get context from?
 
                 return e;
             }
@@ -192,13 +154,26 @@ namespace Jhu.Graywulf.Activities
             }
         }
 
-        private void SetEventProperties(Event e, IDictionary<string,object> data)
+        private Logging.ExecutionStatus MapExecutionStatus(string state)
         {
-            if (data.ContainsKey(Constants.ActivityParameterJobContext))
+            ExecutionStatus exst;
+            if (Enum.TryParse<ExecutionStatus>(state, true, out exst))
             {
-                var cx = (JobInfo)data[Constants.ActivityParameterJobContext];
-                e.UserGuid = cx.UserGuid;
-                e.JobGuid = cx.JobGuid;
+                return exst;
+            }
+            else
+            {
+                return ExecutionStatus.Unknown;    //
+            }
+        }
+
+        private void SetEventDetails(Event e, IDictionary<string,object> data)
+        {
+            if (data.ContainsKey(Constants.ActivityParameterJobInfo))
+            {
+                var jobinfo = (JobInfo)data[Constants.ActivityParameterJobInfo];
+                e.UserGuid = jobinfo.UserGuid;
+                e.JobGuid = jobinfo.JobGuid;
             }
 
             // TODO Why don't we just copy everything?
@@ -216,12 +191,6 @@ namespace Jhu.Graywulf.Activities
             if (data.ContainsKey(Constants.ActivityParameterEntityGuidTo))
             {
                 e.UserData[Constants.ActivityParameterEntityGuidTo] = (Guid)data[Constants.ActivityParameterEntityGuidTo];
-            }
-
-            if (data.ContainsKey("Exception"))
-            {
-                e.Exception = (Exception)data["Exception"];
-                e.ExceptionType = e.Exception.GetType().FullName;
             }
         }
     }

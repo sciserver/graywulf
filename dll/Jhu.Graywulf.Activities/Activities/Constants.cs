@@ -8,9 +8,10 @@ namespace Jhu.Graywulf.Activities
 {
     public static class Constants
     {
-        public const string ActivityParameterJobContext = "JobInfo";
+        public const string ActivityParameterJobInfo = "JobInfo";
         public const string ActivityParameterEntityGuid = "EntityGuid";
         public const string ActivityParameterEntityGuidFrom = "EntityGuidFrom";
         public const string ActivityParameterEntityGuidTo = "EntityGuidTo";
+        public const string ActivityRecordDataItemEvent = "Event";
     }
 }
