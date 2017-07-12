@@ -81,6 +81,7 @@
     </Compile>
     <Compile Include="Scheduler\IScheduler.cs" />
     <Compile Include="Scheduler\Job.cs" />
+    <Compile Include="Scheduler\JobTrackingParticipant.cs" />
     <Compile Include="Scheduler\Machine.cs" />
     <Compile Include="Scheduler\MachineRole.cs" />
     <Compile Include="Scheduler\Queue.cs" />

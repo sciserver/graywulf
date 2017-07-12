@@ -12,6 +12,7 @@ namespace Jhu.Graywulf.Activities
         public const string ActivityParameterEntityGuid = "EntityGuid";
         public const string ActivityParameterEntityGuidFrom = "EntityGuidFrom";
         public const string ActivityParameterEntityGuidTo = "EntityGuidTo";
+
         public const string ActivityRecordDataItemEvent = "Event";
     }
 }

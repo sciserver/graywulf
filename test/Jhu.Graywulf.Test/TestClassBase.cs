@@ -65,7 +65,11 @@ namespace Jhu.Graywulf.Test
 
         protected static void StartLogger()
         {
-            Logging.Logger.Instance.Start(Logging.EventSource.Test, false);
+            // TODO: this check should not happen here
+            if (Logging.Logger.Instance.Status != Logging.LoggerStatus.Started)
+            {
+                Logging.Logger.Instance.Start(Logging.EventSource.Test, false);
+            }
         }
 
         protected static void StopLogger()

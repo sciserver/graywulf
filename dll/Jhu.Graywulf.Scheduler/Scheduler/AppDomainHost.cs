@@ -98,10 +98,9 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         public void Start(Scheduler scheduler, bool interactive)
         {
-            if (interactive)
-            {
-                Console.WriteLine("Staring new host in AppDomain: {0}", ID);
-            }
+            Logging.Logger.Instance.LogDebug(
+                Logging.EventSource.Scheduler,
+                String.Format("Staring new host in AppDomain: {0}", ID));
 
             lastTimeActive = DateTime.Now;
 
@@ -130,10 +129,9 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         public void Stop(TimeSpan timeout, bool interactive)
         {
-            if (interactive)
-            {
-                Console.WriteLine("Stopping AppDomain: {0}", ID);
-            }
+            Logging.Logger.Instance.LogDebug(
+                Logging.EventSource.Scheduler,
+                String.Format("Stopping AppDomain: {0}", ID));
 
             workflowHost.Stop(timeout);
             workflowHost = null;

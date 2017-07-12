@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Activities.Tracking;
 using Jhu.Graywulf.Logging;
+using Jhu.Graywulf.Activities;
 
-namespace Jhu.Graywulf.Activities
+namespace Jhu.Graywulf.Scheduler
 {
     public class JobTrackingParticipant : TrackingParticipant
     {
@@ -21,23 +22,21 @@ namespace Jhu.Graywulf.Activities
             trackingProfile.ActivityDefinitionId = "*";
             trackingProfile.ImplementationVisibility = ImplementationVisibility.All;
 
-            new WorkflowInstanceQuery
-
-            CustomTrackingQuery cq = new CustomTrackingQuery();
+            var cq = new CustomTrackingQuery();
             cq.Name = "*";
             cq.ActivityName = "*";
             trackingProfile.Queries.Add(cq);
 
-            ActivityStateQuery aq = new ActivityStateQuery();
+            var aq = new ActivityStateQuery();
             aq.ActivityName = "*";
             aq.States.Add("*");
-            aq.Arguments.Add(Constants.ActivityParameterJobInfo);
-            aq.Arguments.Add(Constants.ActivityParameterEntityGuid);
-            aq.Arguments.Add(Constants.ActivityParameterEntityGuidFrom);
-            aq.Arguments.Add(Constants.ActivityParameterEntityGuidTo);
+            aq.Arguments.Add(Activities.Constants.ActivityParameterJobInfo);
+            aq.Arguments.Add(Activities.Constants.ActivityParameterEntityGuid);
+            aq.Arguments.Add(Activities.Constants.ActivityParameterEntityGuidFrom);
+            aq.Arguments.Add(Activities.Constants.ActivityParameterEntityGuidTo);
             trackingProfile.Queries.Add(aq);
 
-            FaultPropagationQuery fq = new FaultPropagationQuery();
+            var fq = new FaultPropagationQuery();
             fq.FaultHandlerActivityName = "*";
             fq.FaultSourceActivityName = "*";
             trackingProfile.Queries.Add(fq);
@@ -82,9 +81,9 @@ namespace Jhu.Graywulf.Activities
 
         private Event ProcessTrackingRecord(CustomTrackingRecord record)
         {
-            if (record.Data != null && record.Data.ContainsKey(Constants.ActivityRecordDataItemEvent))
+            if (record.Data != null && record.Data.ContainsKey(Activities.Constants.ActivityRecordDataItemEvent))
             {
-                return (Event)record.Data[Constants.ActivityRecordDataItemEvent];
+                return (Event)record.Data[Activities.Constants.ActivityRecordDataItemEvent];
             }
             else
             {
@@ -95,12 +94,12 @@ namespace Jhu.Graywulf.Activities
         private Event ProcessTrackingRecord(ActivityStateRecord record)
         {
             // Only record events of IGraywulfActivity activities
-            if (record.Arguments.ContainsKey(Constants.ActivityParameterJobInfo))
+            if (record.Arguments.ContainsKey(Activities.Constants.ActivityParameterJobInfo))
             {
                 var e = Logger.Instance.CreateEvent(
                     EventSeverity.Status,
                     EventSource.Workflow,
-                    record.Activity.Name + " " + record.State,
+                    record.Activity.Name + " is " + record.State.ToLowerInvariant() + ".",
                     record.Activity.TypeName,
                     null,
                     null);
@@ -175,28 +174,28 @@ namespace Jhu.Graywulf.Activities
 
         private void SetEventDetails(Event e, IDictionary<string,object> data)
         {
-            if (data.ContainsKey(Constants.ActivityParameterJobInfo))
+            if (data.ContainsKey(Activities.Constants.ActivityParameterJobInfo))
             {
-                var jobinfo = (JobInfo)data[Constants.ActivityParameterJobInfo];
+                var jobinfo = (JobInfo)data[Activities.Constants.ActivityParameterJobInfo];
                 e.UserGuid = jobinfo.UserGuid;
                 e.JobGuid = jobinfo.JobGuid;
             }
 
             // TODO Why don't we just copy everything?
 
-            if (data.ContainsKey(Constants.ActivityParameterEntityGuid))
+            if (data.ContainsKey(Activities.Constants.ActivityParameterEntityGuid))
             {
-                e.UserData[Constants.ActivityParameterEntityGuid] = (Guid)data[Constants.ActivityParameterEntityGuid];
+                e.UserData[Activities.Constants.ActivityParameterEntityGuid] = (Guid)data[Activities.Constants.ActivityParameterEntityGuid];
             }
 
-            if (data.ContainsKey(Constants.ActivityParameterEntityGuidFrom))
+            if (data.ContainsKey(Activities.Constants.ActivityParameterEntityGuidFrom))
             {
-                e.UserData[Constants.ActivityParameterEntityGuidFrom] = (Guid)data[Constants.ActivityParameterEntityGuidFrom];
+                e.UserData[Activities.Constants.ActivityParameterEntityGuidFrom] = (Guid)data[Activities.Constants.ActivityParameterEntityGuidFrom];
             }
 
-            if (data.ContainsKey(Constants.ActivityParameterEntityGuidTo))
+            if (data.ContainsKey(Activities.Constants.ActivityParameterEntityGuidTo))
             {
-                e.UserData[Constants.ActivityParameterEntityGuidTo] = (Guid)data[Constants.ActivityParameterEntityGuidTo];
+                e.UserData[Activities.Constants.ActivityParameterEntityGuidTo] = (Guid)data[Activities.Constants.ActivityParameterEntityGuidTo];
             }
         }
     }

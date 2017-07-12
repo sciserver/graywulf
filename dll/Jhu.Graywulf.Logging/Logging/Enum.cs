@@ -5,6 +5,12 @@ using System.Text;
 
 namespace Jhu.Graywulf.Logging
 {
+    public enum LoggerStatus
+    {
+        Stopped,
+        Started
+    }
+
     [Flags]
     public enum EventSource : uint
     {
@@ -54,28 +60,22 @@ namespace Jhu.Graywulf.Logging
 
     public enum EventColumn
     {
-        EventId,
+        Id,
         UserGuid,
         JobGuid,
+        SessionGuid,
         ContextGuid,
-        ParentContextGuid,
-        EventSource,
-        EventSeverity,
-        EventDateTime,
-        EventOrder,
+        Source,
+        Severity,
+        DateTime,
+        Order,
         ExecutionStatus,
         Operation,
-        EntityGuid,
-        EntityGuidFrom,
-        EntityGuidTo,
-        ExceptionType,
+        Server,
+        Client,
         Message,
+        Exception,
+        ExceptionType,
         StackTrace,
-    }
-
-    enum LoggerStatus
-    {
-        Stopped,
-        Started
     }
 }

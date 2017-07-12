@@ -26,7 +26,7 @@ namespace Jhu.Graywulf.Logging
         #endregion
         #region Properties
 
-        internal LoggerStatus Status
+        public LoggerStatus Status
         {
             get { return status; }
         }
@@ -245,9 +245,7 @@ namespace Jhu.Graywulf.Logging
 
         protected virtual string GetExceptionOperation(Exception ex)
         {
-            MethodBase site = ex.TargetSite;
-            string methodName = site == null ? null : site.Name;
-            return methodName;
+            return ex.TargetSite == null ? "(unknown)" : ex.TargetSite.DeclaringType.FullName + "." + ex.TargetSite.Name;
         }
 
         protected virtual string GetExceptionType(Exception ex)

@@ -298,7 +298,7 @@ namespace Jhu.Graywulf.Scheduler
             Scheduler.Configuration.RunSanityCheck();
 
             // Log starting event
-            Logger.Instance.LogStatus(
+            Logger.Instance.LogOperation(
                 Logging.EventSource.Scheduler,
                 "Graywulf Scheduler Service has started.",
                 null,
@@ -356,7 +356,7 @@ namespace Jhu.Graywulf.Scheduler
             StopAppDomains(timeout);
 
             // Log stop event
-            Logger.Instance.LogStatus(
+            Logger.Instance.LogOperation(
                 Logging.EventSource.Scheduler,
                 "Graywulf Scheduler Service has stopped.",
                 null,
@@ -387,7 +387,7 @@ namespace Jhu.Graywulf.Scheduler
             StopAppDomains(timeout);
 
             // Log stop event
-            Logger.Instance.LogStatus(
+            Logger.Instance.LogOperation(
                 Logging.EventSource.Scheduler,
                 "Graywulf Remote Service has been killed.",
                 null,
@@ -434,7 +434,7 @@ namespace Jhu.Graywulf.Scheduler
                 throw new InvalidOperationException(ExceptionMessages.PollerHasAlreadyStarted);
             }
 
-            LogDebug("The job poller thread has been started.");
+            LogOperation("The job poller thread has been started.");
         }
 
         /// <summary>
@@ -456,7 +456,7 @@ namespace Jhu.Graywulf.Scheduler
                 throw new InvalidOperationException(ExceptionMessages.PollerHasNotStarted);
             }
 
-            LogDebug("The job poller thread has been stopped.");
+            LogOperation("The job poller thread has been stopped.");
         }
 
         /// <summary>
@@ -579,15 +579,9 @@ namespace Jhu.Graywulf.Scheduler
                     }
                 }
 
-                if (failed > 0)
-                {
-                    LogDebug(String.Format("Marked {0} jobs as failed.", failed));
-                }
-
-                if (started > 0)
-                {
-                    LogDebug(String.Format("Marked {0} jobs as scheduled.", started));
-                }
+                LogOperation(String.Format(
+                    "Processed interrupted jobs. Marked {0} jobs as failed and {1} jobs as scheduler.",
+                    failed, started));
             }
         }
 
@@ -741,19 +735,11 @@ namespace Jhu.Graywulf.Scheduler
             switch (job.Status)
             {
                 case JobStatus.Starting:
-                    if (interactive)
-                    {
-                        Console.WriteLine("Starting job: {0}", job.Guid);
-                    }
-
+                    LogJobOperation("Starting job {0}.", job);
                     job.WorkflowInstanceId = adh.PrepareStartJob(job);
                     break;
                 case JobStatus.Resuming:
-                    if (interactive)
-                    {
-                        Console.WriteLine("Resuming job: {0}", job.Guid);
-                    }
-
+                    LogJobOperation("Resuming job {0}.", job);
                     job.WorkflowInstanceId = adh.PrepareResumeJob(job);
                     break;
                 default:
@@ -787,20 +773,20 @@ namespace Jhu.Graywulf.Scheduler
                 ji.Guid = job.Guid;
                 ji.Load();
 
-                // Update registry
                 ji.JobExecutionStatus = JobExecutionState.Cancelling;
 
                 ji.Save();
             }
 
-            // Update job status
             if (timeout)
             {
+                LogJobStatus(String.Format("Job {0} is timing out.", job.JobID), job);
                 job.Status = JobStatus.TimedOut;
                 appDomains[job.AppDomainID].TimeOutJob(job);
             }
             else
             {
+                LogJobStatus(String.Format("Job {0} is cancelling.", job.JobID), job);
                 job.Status = JobStatus.Cancelled;
                 appDomains[job.AppDomainID].CancelJob(job);
             }
@@ -808,6 +794,8 @@ namespace Jhu.Graywulf.Scheduler
 
         private void PersistJob(Job job)
         {
+            
+
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 context.JobReference.Guid = job.Guid;
@@ -816,15 +804,13 @@ namespace Jhu.Graywulf.Scheduler
                 ji.Guid = job.Guid;
                 ji.Load();
 
-                // Update registry
                 ji.JobExecutionStatus = JobExecutionState.Persisting;
 
                 ji.Save();
             }
-
-            // Update job status
+            
+            LogJobStatus("Persisting job {0}.", job);
             job.Status = JobStatus.Persisted;
-
             appDomains[job.AppDomainID].PersistJob(job);
         }
 
@@ -854,18 +840,23 @@ namespace Jhu.Graywulf.Scheduler
                     switch (e.EventType)
                     {
                         case WorkflowEventType.Completed:
+                            LogJobOperation("Job {0} has completed.", job);
                             ji.JobExecutionStatus = JobExecutionState.Completed;
                             break;
                         case WorkflowEventType.Cancelled:
+                            LogJobOperation("Job {0} has been cancelled.", job);
                             ji.JobExecutionStatus = JobExecutionState.Cancelled;
                             break;
                         case WorkflowEventType.TimedOut:
+                            LogJobOperation("Job {0} has timed out.", job);
                             ji.JobExecutionStatus = JobExecutionState.TimedOut;
                             break;
                         case WorkflowEventType.Persisted:
+                            LogJobOperation("Job {0} has been persisted.", job);
                             ji.JobExecutionStatus = JobExecutionState.Persisted;
                             break;
                         case WorkflowEventType.Failed:
+                            LogJobOperation("Job {0} has failed.", job);
                             ji.JobExecutionStatus = JobExecutionState.Failed;
                             ji.ExceptionMessage = e.ExceptionMessage;
                             break;
@@ -880,11 +871,6 @@ namespace Jhu.Graywulf.Scheduler
 
                     // Do local bookkeeping
                     cluster.Queues[job.QueueGuid].Jobs.TryRemove(job.Guid, out job);
-
-                    if (interactive)
-                    {
-                        Console.WriteLine("Finishing job: {0}", ji.Guid);
-                    }
                 }
             }
         }
@@ -897,7 +883,7 @@ namespace Jhu.Graywulf.Scheduler
         /// a new context to access the registry.
         /// </remarks>
         /// <param name="workflowInstanceId"></param>
-        internal JobInfo GetJobContext(Guid workflowInstanceId)
+        internal JobInfo GetJobInto(Guid workflowInstanceId)
         {
             var job = runningJobs[workflowInstanceId];
             return new JobInfo(job);
@@ -1002,23 +988,10 @@ namespace Jhu.Graywulf.Scheduler
         #endregion
         #region Logging functions
 
-        public void LogDebug()
+        private void LogDebug(string message)
         {
 #if DEBUG
-            var method = new StackFrame(1, true).GetMethod();
-
-            Logging.Logger.Instance.LogDebug(
-                Logging.EventSource.Scheduler,
-                null,
-                method.DeclaringType.FullName + "." + method.Name,
-                null);
-#endif
-        }
-
-        public void LogDebug(string message)
-        {
-#if DEBUG
-            var method = new StackFrame(1, true).GetMethod();
+            var method = Logger.Instance.UnwindStack(1);
 
             Logging.Logger.Instance.LogDebug(
                 Logging.EventSource.Scheduler,
@@ -1028,9 +1001,58 @@ namespace Jhu.Graywulf.Scheduler
 #endif
         }
 
-        public void LogError(Exception ex)
+        private void LogJobStatus(string message, Job job)
         {
-            var method = new StackFrame(1, true).GetMethod();
+#if DEBUG
+            var method = Logger.Instance.UnwindStack(1);
+
+            var e = Logging.Logger.Instance.CreateEvent(
+                EventSeverity.Status,
+                EventSource.Scheduler,
+                String.Format(message, job.JobID),
+                method.DeclaringType.FullName + "." + method.Name,
+                null,
+                null);
+
+            e.UserGuid = job.UserGuid;
+            e.JobGuid = job.JobGuid;
+
+            Logging.Logger.Instance.WriteEvent(e);
+#endif
+        }
+
+        private void LogOperation(string message)
+        {
+            var method = Logger.Instance.UnwindStack(1);
+
+            Logging.Logger.Instance.LogOperation(
+                Logging.EventSource.Scheduler,
+                message,
+                method.DeclaringType.FullName + "." + method.Name,
+                null);
+        }
+
+        private void LogJobOperation(string message, Job job)
+        {
+            var method = Logger.Instance.UnwindStack(1);
+
+            var e = Logging.Logger.Instance.CreateEvent(
+                EventSeverity.Operation,
+                EventSource.Scheduler,
+                String.Format(message, job.JobID),
+                method.DeclaringType.FullName + "." + method.Name,
+                null,
+                null);
+
+            e.UserGuid = job.UserGuid;
+            e.JobGuid = job.JobGuid;
+
+            Logging.Logger.Instance.WriteEvent(e);
+        }
+
+        private void LogError(Exception ex)
+        {
+            var method = Logger.Instance.UnwindStack(1);
 
             Logging.Logger.Instance.LogError(Logging.EventSource.Scheduler, ex);
         }
