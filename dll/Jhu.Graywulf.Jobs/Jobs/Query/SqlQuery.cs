@@ -472,7 +472,7 @@ namespace Jhu.Graywulf.Jobs.Query
             switch (ExecutionMode)
             {
                 case Jobs.Query.ExecutionMode.SingleServer:
-                    tempname = String.Format("skyquerytemp_{0}", tableName);
+                    tempname = String.Format("temp_{0}", tableName);
                     break;
                 case Jobs.Query.ExecutionMode.Graywulf:
                     tempname = String.Format("{0}_{1}_{2}", RegistryContext.User.Name, JobContext.Current.JobID, tableName);

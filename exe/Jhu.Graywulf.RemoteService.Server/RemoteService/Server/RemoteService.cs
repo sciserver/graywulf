@@ -73,6 +73,11 @@ namespace Jhu.Graywulf.RemoteService.Server
                 Util.ServiceHelper.WaitForService("WAS", 1000, 500);
             }
 
+            StartImpl();
+        }
+
+        internal void StartImpl()
+        {
             // Initialize WCF service host to run the control service
             // TODO: the localhost setting needs to be tested!
             var fdqn = RemoteServiceHelper.GetFullyQualifiedDnsName();
@@ -90,6 +95,19 @@ namespace Jhu.Graywulf.RemoteService.Server
 
         protected override void OnStop()
         {
+            Stop();
+
+            Logger.Instance.LogStatus(
+                Logging.EventSource.RemoteService,
+                "Graywulf Remote Service has stopped.", 
+                null,
+                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
+
+            Logger.Instance.Stop();            
+        }
+
+        internal void StopImpl()
+        {
             controlServiceHost.Close();
             controlServiceHost = null;
 
@@ -100,14 +118,6 @@ namespace Jhu.Graywulf.RemoteService.Server
 
             registeredServiceHosts.Clear();
             registeredEndpoints.Clear();
-
-            Logger.Instance.LogStatus(
-                Logging.EventSource.RemoteService,
-                "Graywulf Remote Service has stopped.", 
-                null,
-                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
-
-            Logger.Instance.Stop();            
         }
 
         #region Functions to support command-line execution

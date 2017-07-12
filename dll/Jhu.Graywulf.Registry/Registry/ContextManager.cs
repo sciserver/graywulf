@@ -126,9 +126,29 @@ namespace Jhu.Graywulf.Registry
                 TransactionMode = transactionMode,
             };
 
-            context.ClusterReference.Name = clusterName;
-            context.DomainReference.Name = domainName;
-            context.FederationReference.Name = federationName;
+            var jobContext = JobContext.Current;
+
+            if (jobContext != null)
+            {
+                context.ClusterReference.Guid = jobContext.ClusterGuid;
+                context.DomainReference.Guid = jobContext.DomainGuid;
+                context.FederationReference.Guid = jobContext.FederationGuid;
+                context.UserReference.Guid = jobContext.UserGuid;
+                context.JobReference.Guid = jobContext.JobGuid;
+            }
+            else
+            {
+                context.ClusterReference.Name = clusterName;
+                context.DomainReference.Name = domainName;
+                context.FederationReference.Name = federationName;
+
+                var principal = System.Threading.Thread.CurrentPrincipal as Jhu.Graywulf.AccessControl.GraywulfPrincipal;
+
+                if (principal != null)
+                {
+                    context.UserReference.Guid = principal.Identity.UserReference.Guid;
+                }
+            }
 
             return context;
         }

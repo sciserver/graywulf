@@ -18,6 +18,7 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
+            StartLogger();
             InitializeJobTests();
         }
 
@@ -25,6 +26,7 @@ namespace Jhu.Graywulf.Test.Jobs.Query
         public static void CleanUp()
         {
             CleanupJobTests();
+            StopLogger();
         }
 
         [TestMethod]

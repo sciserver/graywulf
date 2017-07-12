@@ -1,11 +1,20 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using System.Configuration;
 
 namespace Jhu.Graywulf.Logging
 {
     public class FileLogWriter : StreamLogWriter
     {
+        public static FileLogWriterConfiguration Configuration
+        {
+            get
+            {
+                return (FileLogWriterConfiguration)ConfigurationManager.GetSection("jhu.graywulf/logging/file");
+            }
+        }
+
         private string path;
         private FileStream stream;
 

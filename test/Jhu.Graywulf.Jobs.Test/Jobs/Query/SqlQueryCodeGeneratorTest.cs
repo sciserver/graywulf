@@ -19,6 +19,18 @@ namespace Jhu.Graywulf.Jobs.Query
     [TestClass]
     public class SqlQueryCodeGeneratorTest : SqlQueryTestBase
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            StartLogger();
+        }
+
+        [ClassCleanup]
+        public static void CleanUp()
+        {
+            StopLogger();
+        }
+
         protected virtual SqlParser.SqlParser Parser
         {
             get { return new SqlParser.SqlParser(); }
@@ -225,6 +237,8 @@ namespace Jhu.Graywulf.Jobs.Query
         protected string GetStatisticsQuery(string sql)
         {
             var q = CreateQuery(sql);
+            q.ExecutionMode = ExecutionMode.SingleServer;
+
             var cg = new SqlQueryCodeGenerator(q);
             var ts = q.SelectStatement.EnumerateQuerySpecifications().First().EnumerateSourceTables(false).First();
 
@@ -250,7 +264,7 @@ FROM TEST:SDSSDR7PhotoObjAll
 WHERE ra > 2";
 
             var gt = @"SELECT ROW_NUMBER() OVER (ORDER BY [dec]) AS [rn], [dec] AS [key]
-INTO [Graywulf_Temp].[dbo].[test__stat_TEST_dbo_SDSSDR7PhotoObjAll]
+INTO [Graywulf_Temp].[dbo].[temp_stat_TEST_dbo_SDSSDR7PhotoObjAll]
 FROM [SkyNode_TEST].[dbo].[SDSSDR7PhotoObjAll]
 WHERE [SkyNode_TEST].[dbo].[SDSSDR7PhotoObjAll].[ra] > 2;";
 
@@ -268,7 +282,7 @@ INNER JOIN TEST:SDSSDR7PhotoObjAll b ON p.objID = b.objID
 WHERE p.ra > 2";
 
             var gt = @"SELECT ROW_NUMBER() OVER (ORDER BY [dec]) AS [rn], [dec] AS [key]
-INTO [Graywulf_Temp].[dbo].[test__stat_TEST_dbo_SDSSDR7PhotoObjAll_p]
+INTO [Graywulf_Temp].[dbo].[temp_stat_TEST_dbo_SDSSDR7PhotoObjAll_p]
 FROM [SkyNode_TEST].[dbo].[SDSSDR7PhotoObjAll] AS [p]
 WHERE [p].[ra] > 2;";
 

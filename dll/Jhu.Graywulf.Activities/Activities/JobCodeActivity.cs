@@ -12,11 +12,15 @@ namespace Jhu.Graywulf.Activities
         [RequiredArgument]
         public InArgument<JobInfo> JobInfo { get; set; }
 
-        protected sealed override void Execute(CodeActivityContext context)
+        protected sealed override void Execute(CodeActivityContext activityContext)
         {
-            // Set up job context here
+            var context = new JobContext(Logging.LoggingContext.Current, this, activityContext);
 
-            OnExecute(context);
+            context.Push();
+
+            OnExecute(activityContext);
+
+            context.Pop();
         }
 
         protected abstract void OnExecute(CodeActivityContext context);

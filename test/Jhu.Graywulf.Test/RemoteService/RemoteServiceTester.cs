@@ -10,8 +10,6 @@ namespace Jhu.Graywulf.RemoteService
 {
     public class RemoteServiceTester : ServiceTesterBase
     {
-        private Jhu.Graywulf.RemoteService.Server.RemoteService rs;
-
         public static RemoteServiceTester Instance
         {
             get { return CrossAppDomainSingleton<RemoteServiceTester>.Instance; }
@@ -23,23 +21,22 @@ namespace Jhu.Graywulf.RemoteService
 
         protected override void OnStart(object options)
         {
-            rs = new Jhu.Graywulf.RemoteService.Server.RemoteService();
-            rs.Start(null);
+            RemoteService.Server.Program.StartDebug();
         }
 
         protected override void OnStop()
         {
-            rs.Stop();
+            RemoteService.Server.Program.StopDebug();
         }
 
         public void DrainStop()
         {
-            rs.Stop();
+            RemoteService.Server.Program.StopDebug();
         }
 
         public void Kill()
         {
-            rs.Stop();
+            RemoteService.Server.Program.StopDebug();
         }
     }
 

@@ -132,15 +132,16 @@ namespace Jhu.Graywulf.Jobs.Query
                     if (ji.JobExecutionStatus == JobExecutionState.Failed)
                     {
                         // Load stack trace from
-                        using (var cn = new SqlConnection(Jhu.Graywulf.Logging.AppSettings.ConnectionString))
+                        using (var cn = new SqlConnection(Logging.SqlLogWriter.Configuration.ConnectionString))
                         {
                             cn.Open();
 
                             var lsql =
-@"SELECT TOP 1 ExceptionType, StackTrace, Site FROM Event 
-WHERE JobGuid = @jobGuid AND
-      ExceptionType IS NOT NULL
-ORDER BY EventID DESC";
+@"SELECT TOP 1 EventException.Type, StackTrace, Server
+FROM Event 
+INNER JOIN EventException ON EventID = ID
+WHERE JobGuid = @jobGuid
+ORDER BY ID DESC";
 
                             using (var cmd = new SqlCommand(lsql, cn))
                             {

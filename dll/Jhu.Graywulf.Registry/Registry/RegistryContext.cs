@@ -431,7 +431,7 @@ namespace Jhu.Graywulf.Registry
             }
         }
 
-        public void EnsureEntitiesLoaded()
+        public void EnsureContextEntitiesLoaded()
         {
             this.clusterReference.EnsureEntityLoaded();
             this.domainReference.EnsureEntityLoaded();

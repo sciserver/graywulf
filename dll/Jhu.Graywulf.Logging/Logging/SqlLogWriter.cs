@@ -4,11 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.Configuration;
 
 namespace Jhu.Graywulf.Logging
 {
     public class SqlLogWriter : LogWriterBase
     {
+        public static SqlLogWriterConfiguration Configuration
+        {
+            get
+            {
+                return (SqlLogWriterConfiguration)ConfigurationManager.GetSection("jhu.graywulf/logging/sql");
+            }
+        }
+
         #region Private member variables
 
         private bool skipExceptions;

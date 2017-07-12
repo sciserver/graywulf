@@ -106,14 +106,17 @@ namespace Jhu.Graywulf.Scheduler
                 // Set default parameters to be passed to the job
                 // These will be passed around from activity to activity and
                 // can be used by the job tracker (logger)
-                var cx = new JobInfo()
+                var jobinfo = new JobInfo()
                 {
+                    ClusterGuid = ji.JobDefinition.Federation.Domain.Cluster.Guid,
+                    DomainGuid = ji.JobDefinition.Federation.Domain.Guid,
+                    FederationGuid = ji.JobDefinition.Federation.Guid,
                     UserGuid = ji.UserGuidOwner,
-                    JobGuid = ji.Guid
-                    // **** TODO: set domain and federation here if necessary
+                    JobGuid = ji.Guid,
+                    JobID = ji.JobID,
                 };
 
-                pars.Add(Jhu.Graywulf.Activities.Constants.ActivityParameterJobInfo, cx);
+                pars.Add(Jhu.Graywulf.Activities.Constants.ActivityParameterJobInfo, jobinfo);
 
                 // Start the workflow
                 Guid wfguid = PrepareStartWorkflow(job, pars);

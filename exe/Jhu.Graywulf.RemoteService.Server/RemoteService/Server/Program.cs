@@ -40,5 +40,17 @@ namespace Jhu.Graywulf.RemoteService.Server
             service.Stop();
             service = null;
         }
+
+        public static void StartDebug()
+        {
+            service = new RemoteService();
+            service.StartImpl();
+        }
+
+        public static void StopDebug()
+        {
+            service.StopImpl();
+            service = null;
+        }
     }
 }

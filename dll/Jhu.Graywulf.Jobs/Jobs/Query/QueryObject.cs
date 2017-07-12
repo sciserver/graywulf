@@ -579,6 +579,11 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="forceReinitialize"></param>
         public virtual void InitializeQueryObject(RegistryContext context, IScheduler scheduler, bool forceReinitialize)
         {
+            if (context != null)
+            {
+                context.EnsureContextEntitiesLoaded();
+            }
+
             lock (syncRoot)
             {
                 if (context != null)
@@ -606,6 +611,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     this.scheduler = scheduler;
                 }
 
+                // TODO: try to take these out from lock
                 Parse(forceReinitialize);
                 Interpret(forceReinitialize);
             }
