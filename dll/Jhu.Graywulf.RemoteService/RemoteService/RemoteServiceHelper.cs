@@ -223,7 +223,9 @@ namespace Jhu.Graywulf.RemoteService
             var ep = RemoteServiceHelper.CreateEndpointUri(hostname, service.FullName);
             var tcp = RemoteServiceHelper.CreateNetTcpBinding();
 
+            
             host = new ServiceHost(service, ep);
+            host.Description.Behaviors.Add(new Logging.WcfLoggingBehavior());
 
             // Create endpoint
             endpoint = host.AddServiceEndpoint(contract, tcp, ep);
