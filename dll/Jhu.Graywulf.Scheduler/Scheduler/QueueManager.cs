@@ -1020,7 +1020,7 @@ namespace Jhu.Graywulf.Scheduler
 
         private void LogOperation(string message)
         {
-            var method = Logging.LoggingContext.Current.UnwindStack(1);
+            var method = Logging.LoggingContext.Current.UnwindStack(2);
 
             Logging.LoggingContext.Current.LogOperation(
                 Logging.EventSource.Scheduler,
@@ -1031,7 +1031,7 @@ namespace Jhu.Graywulf.Scheduler
 
         private void LogJobOperation(string message, Job job)
         {
-            var method = Logging.LoggingContext.Current.UnwindStack(1);
+            var method = Logging.LoggingContext.Current.UnwindStack(2);
 
             var e = Logging.LoggingContext.Current.CreateEvent(
                 EventSeverity.Operation,
