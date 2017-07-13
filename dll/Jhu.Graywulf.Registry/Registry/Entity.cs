@@ -817,7 +817,7 @@ namespace Jhu.Graywulf.Registry
 #if DEBUG
             var method = new StackFrame(1, true).GetMethod();
 
-            Logging.Logger.Instance.LogDebug(
+            Logging.LoggingContext.Current.LogDebug(
                 Logging.EventSource.Registry,
                 String.Format("{0} {1}: {2}", method.Name, Constants.EntityNames_Singular[this.EntityType], this.Name),
                 method.DeclaringType.FullName + "." + method.Name,
@@ -830,7 +830,7 @@ namespace Jhu.Graywulf.Registry
 #if DEBUG
             var method = new StackFrame(1, true).GetMethod();
 
-            Logging.Logger.Instance.LogDebug(
+            Logging.LoggingContext.Current.LogDebug(
                 Logging.EventSource.Registry,
                 message,
                 method.DeclaringType.FullName + "." + method.Name,

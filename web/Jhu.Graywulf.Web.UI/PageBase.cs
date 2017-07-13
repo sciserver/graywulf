@@ -135,7 +135,7 @@ namespace Jhu.Graywulf.Web.UI
         protected Logging.Event LogError(Exception ex)
         {
             // TODO: what if called from admin?
-            var error = Logging.Logger.Instance.LogError(Logging.EventSource.WebUI, ex, null, AppRelativeVirtualPath, null);
+            var error = Logging.LoggingContext.Current.LogError(Logging.EventSource.WebUI, ex, null, AppRelativeVirtualPath, null);
             return error;
         }
 

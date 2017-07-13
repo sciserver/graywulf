@@ -12,8 +12,8 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
-            // Initialize logger
-            Logging.Logger.Instance.Start(Logging.EventSource.CommandLineTool, true);
+            // Turn on logging to console window
+            Logging.LoggingContext.Current.StartLogger(Logging.EventSource.CommandLineTool, true);
 
             List<Type> verbs = new List<Type>() { typeof(Mirror), typeof(Test) };
             Parameters par = null;
@@ -35,6 +35,8 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
             {
                 par.Run();
             }
+
+            Logging.LoggingContext.Current.StopLogger();
         }
 
         private static void PrintHeader()

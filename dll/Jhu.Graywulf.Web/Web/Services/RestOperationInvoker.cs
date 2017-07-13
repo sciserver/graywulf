@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Web.Services
 
         public bool IsSynchronous
         {
-            get { return this.originalInvoker.IsSynchronous; }
+            get { return true; }
         }
 
         /// <summary>
@@ -37,13 +37,6 @@ namespace Jhu.Graywulf.Web.Services
 
         public object Invoke(object instance, object[] inputs, out object[] outputs)
         {
-            // *** TODOD
-            Logging.Logger.Instance.LogOperation(
-                Logging.EventSource.WebService,
-                null,
-                this.operationName,
-                null);
-
             object res = null;
             var svc = (RestServiceBase)instance;
 
@@ -62,12 +55,8 @@ namespace Jhu.Graywulf.Web.Services
                     System.Diagnostics.Debugger.Break();
                 }
 #endif
-                // Log event
-                var logevent = Logging.Logger.Instance.LogError(
-                    Logging.EventSource.WebService,
-                    ex,
-                    null,
-                    this.operationName);
+
+                var logevent = svc.LogError(ex);
 
                 // TODO: this won't catch exceptions from IEnumerator that occur
                 // in MoveNext, so they won't be logged.
@@ -75,9 +64,10 @@ namespace Jhu.Graywulf.Web.Services
 
                 // Wrap up exception into a RestOperationException which will convey it to
                 // the error handler implementation
-                throw new RestOperationException(ex, logevent.ID.ToString());
+                throw new RestOperationException(ex, logevent?.ID.ToString());
             }
 
+            svc.LogOperation();
             svc.OnAfterInvoke();
 
             return res;
@@ -85,12 +75,12 @@ namespace Jhu.Graywulf.Web.Services
 
         public IAsyncResult InvokeBegin(object instance, object[] inputs, AsyncCallback callback, object state)
         {
-            return this.originalInvoker.InvokeBegin(instance, inputs, callback, state);
+            throw new NotImplementedException();
         }
 
         public object InvokeEnd(object instance, out object[] outputs, IAsyncResult result)
         {
-            return this.originalInvoker.InvokeEnd(instance, out outputs, result);
+            throw new NotImplementedException();
         }
     }
 }

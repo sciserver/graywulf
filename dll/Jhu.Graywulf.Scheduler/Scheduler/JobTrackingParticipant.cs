@@ -75,7 +75,7 @@ namespace Jhu.Graywulf.Scheduler
                 e.DateTime = record.EventTime;
                 e.Order = record.RecordNumber;
                 
-                Logger.Instance.WriteEvent(e);
+                LoggingContext.Current.WriteEvent(e);
             }
         }
 
@@ -96,7 +96,7 @@ namespace Jhu.Graywulf.Scheduler
             // Only record events of IGraywulfActivity activities
             if (record.Arguments.ContainsKey(Activities.Constants.ActivityParameterJobInfo))
             {
-                var e = Logger.Instance.CreateEvent(
+                var e = Logging.LoggingContext.Current.CreateEvent(
                     EventSeverity.Status,
                     EventSource.Workflow,
                     record.Activity.Name + " is " + record.State.ToLowerInvariant() + ".",
@@ -120,7 +120,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             if (record.IsFaultSource)
             {
-                var e = Logger.Instance.CreateEvent(
+                var e = Logging.LoggingContext.Current.CreateEvent(
                     EventSeverity.Error,
                     EventSource.Job,
                     null,

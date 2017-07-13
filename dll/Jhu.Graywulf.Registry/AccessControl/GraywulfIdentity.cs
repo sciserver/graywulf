@@ -23,6 +23,7 @@ namespace Jhu.Graywulf.AccessControl
         private string authorityUri;
         private bool isMasterAuthority;
         private string identifier;
+        private string sessionId;
         private object evidence;
         private EntityReference<User> userReference;
 
@@ -87,6 +88,16 @@ namespace Jhu.Graywulf.AccessControl
         {
             get { return identifier; }
             set { identifier = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets a string (GUID) that can be used to
+        /// track the user session.
+        /// </summary>
+        public string SessionId
+        {
+            get { return sessionId; }
+            set { sessionId = value; }
         }
 
         /// <summary>

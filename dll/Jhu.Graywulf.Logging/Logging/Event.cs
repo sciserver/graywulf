@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
 using System.Data.SqlClient;
+using System.Security.Principal;
 
 namespace Jhu.Graywulf.Logging
 {
@@ -25,6 +23,7 @@ namespace Jhu.Graywulf.Logging
         private string server;
         private string client;
         private string message;
+        private IPrincipal principal;
         private Exception exception;
         private string exceptionType;
         private string exceptionStackTrace;
@@ -118,6 +117,12 @@ namespace Jhu.Graywulf.Logging
             set { message = value; }
         }
 
+        public IPrincipal Principal
+        {
+            get { return principal; }
+            set { principal = value; }
+        }
+
         public Exception Exception
         {
             get { return exception; }
@@ -170,6 +175,7 @@ namespace Jhu.Graywulf.Logging
             this.server = Environment.MachineName;
             this.client = null;
             this.message = null;
+            this.principal = null;
             this.exception = null;
             this.exceptionType = null;
             this.exceptionStackTrace = null;
@@ -193,6 +199,7 @@ namespace Jhu.Graywulf.Logging
             this.server = old.server;
             this.client = old.client;
             this.message = old.message;
+            this.principal = old.principal;
             this.exception = old.exception;
             this.exceptionType = old.exceptionType;
             this.exceptionStackTrace = old.exceptionStackTrace;
@@ -218,6 +225,7 @@ namespace Jhu.Graywulf.Logging
             this.server = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.client = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.message = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.principal = null;
             this.exception = null;
             this.exceptionType = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.exceptionStackTrace = dr.IsDBNull(++o) ? null : dr.GetString(o);
@@ -226,55 +234,5 @@ namespace Jhu.Graywulf.Logging
         }
 
         #endregion
-
-        /* TODO: delete
-        public static Event CreateWebServiceOperationEvent(string operation)
-        {
-            var e = new Event()
-            {
-            };
-
-            e.SetWebContext();
-            e.SetWcfContext();
-            e.SetWcfWebContext();
-
-            return e;
-        }
-
-        public static Event CreateWebServiceExceptionEvent(string operation, Exception ex)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void SetWebContext()
-        {
-            var context = System.Web.HttpContext.Current;
-
-            if (context != null)
-            {
-
-            }
-        }
-
-        private void SetWcfContext()
-        {
-            var context = System.ServiceModel.OperationContext.Current;
-            
-            if (context != null)
-            {
-                //context.IncomingMessageProperties
-            }
-        }
-
-        private void SetWcfWebContext()
-        {
-            var context = System.ServiceModel.Web.WebOperationContext.Current;
-
-            if (context != null)
-            {
-
-            }
-        } 
-        */
     }
 }

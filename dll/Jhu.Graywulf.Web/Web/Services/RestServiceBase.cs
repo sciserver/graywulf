@@ -116,6 +116,8 @@ namespace Jhu.Graywulf.Web.Services
 
         internal void OnBeforeInvoke()
         {
+            new Logging.WebLoggingContext(Logging.LoggingContext.Current).Push();
+            Logging.WebLoggingContext.Current.DefaultEventSource = Logging.EventSource.WebService;
         }
 
         /// <summary>
@@ -128,6 +130,8 @@ namespace Jhu.Graywulf.Web.Services
             {
                 registryContext.CommitTransaction();
             }
+
+            Logging.WebLoggingContext.Current.Pop();
         }
 
         internal void OnError(Exception ex)
@@ -161,6 +165,69 @@ namespace Jhu.Graywulf.Web.Services
         /// </summary>
         internal void OnUserSignedOut(GraywulfPrincipal principaly)
         {
+        }
+
+        #endregion
+        #region Logging
+
+        internal Logging.Event LogOperation()
+        {
+            var e = Logging.LoggingContext.Current.CreateEvent(
+                Logging.EventSeverity.Operation,
+                Logging.EventSource.WebService,
+                null,
+                null,
+                null,
+                null);
+
+            UpdateEvent(e);
+            Logging.LoggingContext.Current.WriteEvent(e);
+
+            return e;
+        }
+
+        internal Logging.Event LogError(Exception ex)
+        {
+            var e = Logging.LoggingContext.Current.CreateEvent(
+                Logging.EventSeverity.Error,
+                Logging.EventSource.WebService,
+                null,
+                null,
+                ex,
+                null);
+
+            UpdateEvent(e);
+            Logging.LoggingContext.Current.WriteEvent(e);
+
+            return e;
+        }
+
+        private void UpdateEvent(Logging.Event e)
+        {
+            string message = null;
+            string operation = null;
+
+            var context = System.ServiceModel.OperationContext.Current;
+
+            if (context != null)
+            {
+                if (context.IncomingMessageProperties.ContainsKey("HttpOperationName"))
+                {
+                    operation = context.Host.Description.ServiceType.FullName + "." +
+                        (string)context.IncomingMessageProperties["HttpOperationName"];
+                }
+
+                if (context.IncomingMessageProperties.ContainsKey(HttpRequestMessageProperty.Name))
+                {
+                    var req = (HttpRequestMessageProperty)context.IncomingMessageProperties["httpRequest"];
+
+                    message = req.Method.ToUpper() + " " +
+                        context.EndpointDispatcher.EndpointAddress.Uri.ToString();
+                }
+            }
+            
+            e.Message = message;
+            e.Operation = operation;
         }
 
         #endregion

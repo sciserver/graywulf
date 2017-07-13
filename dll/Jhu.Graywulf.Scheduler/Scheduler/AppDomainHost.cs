@@ -98,7 +98,7 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         public void Start(Scheduler scheduler, bool interactive)
         {
-            Logging.Logger.Instance.LogDebug(
+            Logging.LoggingContext.Current.LogDebug(
                 Logging.EventSource.Scheduler,
                 String.Format("Staring new host in AppDomain: {0}", ID));
 
@@ -129,7 +129,7 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         public void Stop(TimeSpan timeout, bool interactive)
         {
-            Logging.Logger.Instance.LogDebug(
+            Logging.LoggingContext.Current.LogDebug(
                 Logging.EventSource.Scheduler,
                 String.Format("Stopping AppDomain: {0}", ID));
 

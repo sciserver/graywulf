@@ -26,6 +26,8 @@ namespace Jhu.Graywulf.Activities
         #endregion
         #region Private member variables
 
+        private Guid contextGuid;
+        private Guid sessionGuid;
         private Guid clusterGuid;
         private Guid domainGuid;
         private Guid federationGuid;
@@ -42,6 +44,18 @@ namespace Jhu.Graywulf.Activities
 
         #endregion
         #region Properties
+
+        public Guid ContextGuid
+        {
+            get { return contextGuid; }
+            set { contextGuid = value; }
+        }
+
+        public Guid SessionGuid
+        {
+            get { return sessionGuid; }
+            set { sessionGuid = value; }
+        }
 
         public Guid ClusterGuid
         {
@@ -136,6 +150,8 @@ namespace Jhu.Graywulf.Activities
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
+            this.contextGuid = Guid.NewGuid();
+            this.sessionGuid = Guid.Empty;
             this.clusterGuid = Guid.Empty;
             this.domainGuid = Guid.Empty;
             this.federationGuid = Guid.Empty;
@@ -154,6 +170,8 @@ namespace Jhu.Graywulf.Activities
         {
             var jobInfo = activityContext.GetValue(activity.JobInfo);
 
+            this.contextGuid = Guid.NewGuid();
+            this.sessionGuid = Guid.Empty;
             this.clusterGuid = jobInfo.ClusterGuid;
             this.domainGuid = jobInfo.DomainGuid;
             this.federationGuid = jobInfo.FederationGuid;
@@ -170,6 +188,8 @@ namespace Jhu.Graywulf.Activities
 
         private void CopyMembers(JobContext outerContext)
         {
+            this.contextGuid = Guid.NewGuid();
+            this.sessionGuid = outerContext.sessionGuid;
             this.clusterGuid = outerContext.clusterGuid;
             this.domainGuid = outerContext.domainGuid;
             this.federationGuid = outerContext.federationGuid;
@@ -190,6 +210,8 @@ namespace Jhu.Graywulf.Activities
         {
             base.UpdateEvent(e);
 
+            e.SessionGuid = this.sessionGuid;
+            e.ContextGuid = this.contextGuid;
             e.UserGuid = this.userGuid;
             e.JobGuid = this.jobGuid;
         }

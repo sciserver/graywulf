@@ -292,13 +292,13 @@ namespace Jhu.Graywulf.Scheduler
             this.runningJobs = new ConcurrentDictionary<Guid, Job>();
 
             // Initialize logger
-            Logger.Instance.Start(Logging.EventSource.Scheduler, interactive);
+            LoggingContext.Current.StartLogger(Logging.EventSource.Scheduler, interactive);
 
             // Run sanity check
             Scheduler.Configuration.RunSanityCheck();
 
             // Log starting event
-            Logger.Instance.LogOperation(
+            Logging.LoggingContext.Current.LogOperation(
                 Logging.EventSource.Scheduler,
                 "Graywulf Scheduler Service has started.",
                 null,
@@ -356,14 +356,13 @@ namespace Jhu.Graywulf.Scheduler
             StopAppDomains(timeout);
 
             // Log stop event
-            Logger.Instance.LogOperation(
+            Logging.LoggingContext.Current.LogOperation(
                 Logging.EventSource.Scheduler,
                 "Graywulf Scheduler Service has stopped.",
                 null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 
-            // Stop logger
-            Logger.Instance.Stop();
+            Logging.LoggingContext.Current.StopLogger();
         }
 
         /// <summary>
@@ -387,13 +386,11 @@ namespace Jhu.Graywulf.Scheduler
             StopAppDomains(timeout);
 
             // Log stop event
-            Logger.Instance.LogOperation(
+            Logging.LoggingContext.Current.LogOperation(
                 Logging.EventSource.Scheduler,
                 "Graywulf Remote Service has been killed.",
                 null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
-
-            Logger.Instance.Stop();
         }
 
         private void StopAppDomains(TimeSpan timeout)
@@ -991,9 +988,9 @@ namespace Jhu.Graywulf.Scheduler
         private void LogDebug(string message)
         {
 #if DEBUG
-            var method = Logger.Instance.UnwindStack(1);
+            var method = Logging.LoggingContext.Current.UnwindStack(1);
 
-            Logging.Logger.Instance.LogDebug(
+            Logging.LoggingContext.Current.LogDebug(
                 Logging.EventSource.Scheduler,
                 message,
                 method.DeclaringType.FullName + "." + method.Name,
@@ -1004,9 +1001,9 @@ namespace Jhu.Graywulf.Scheduler
         private void LogJobStatus(string message, Job job)
         {
 #if DEBUG
-            var method = Logger.Instance.UnwindStack(1);
+            var method = Logging.LoggingContext.Current.UnwindStack(1);
 
-            var e = Logging.Logger.Instance.CreateEvent(
+            var e = Logging.LoggingContext.Current.CreateEvent(
                 EventSeverity.Status,
                 EventSource.Scheduler,
                 String.Format(message, job.JobID),
@@ -1017,15 +1014,15 @@ namespace Jhu.Graywulf.Scheduler
             e.UserGuid = job.UserGuid;
             e.JobGuid = job.JobGuid;
 
-            Logging.Logger.Instance.WriteEvent(e);
+            Logging.LoggingContext.Current.WriteEvent(e);
 #endif
         }
 
         private void LogOperation(string message)
         {
-            var method = Logger.Instance.UnwindStack(1);
+            var method = Logging.LoggingContext.Current.UnwindStack(1);
 
-            Logging.Logger.Instance.LogOperation(
+            Logging.LoggingContext.Current.LogOperation(
                 Logging.EventSource.Scheduler,
                 message,
                 method.DeclaringType.FullName + "." + method.Name,
@@ -1034,9 +1031,9 @@ namespace Jhu.Graywulf.Scheduler
 
         private void LogJobOperation(string message, Job job)
         {
-            var method = Logger.Instance.UnwindStack(1);
+            var method = Logging.LoggingContext.Current.UnwindStack(1);
 
-            var e = Logging.Logger.Instance.CreateEvent(
+            var e = Logging.LoggingContext.Current.CreateEvent(
                 EventSeverity.Operation,
                 EventSource.Scheduler,
                 String.Format(message, job.JobID),
@@ -1047,14 +1044,14 @@ namespace Jhu.Graywulf.Scheduler
             e.UserGuid = job.UserGuid;
             e.JobGuid = job.JobGuid;
 
-            Logging.Logger.Instance.WriteEvent(e);
+            Logging.LoggingContext.Current.WriteEvent(e);
         }
 
         private void LogError(Exception ex)
         {
-            var method = Logger.Instance.UnwindStack(1);
+            var method = Logging.LoggingContext.Current.UnwindStack(1);
 
-            Logging.Logger.Instance.LogError(Logging.EventSource.Scheduler, ex);
+            Logging.LoggingContext.Current.LogError(Logging.EventSource.Scheduler, ex);
         }
 
         #endregion

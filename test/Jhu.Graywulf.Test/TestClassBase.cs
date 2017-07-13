@@ -65,16 +65,12 @@ namespace Jhu.Graywulf.Test
 
         protected static void StartLogger()
         {
-            // TODO: this check should not happen here
-            if (Logging.Logger.Instance.Status != Logging.LoggerStatus.Started)
-            {
-                Logging.Logger.Instance.Start(Logging.EventSource.Test, false);
-            }
+            Logging.LoggingContext.Current.StartLogger(Logging.EventSource.Test, false);
         }
 
         protected static void StopLogger()
         {
-            Logging.Logger.Instance.Stop();
+            Logging.LoggingContext.Current.StopLogger();
         }
 
         protected virtual SqlServerDataset CreateIOTestDataset()

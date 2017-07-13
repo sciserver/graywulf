@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Logging\WebLoggingContext.cs" />
     <Compile Include="Util\CookieConverter.cs" />
     <Compile Include="Util\DocumentationFormatter.cs" />
     <Compile Include="Util\EmailSender.cs" />

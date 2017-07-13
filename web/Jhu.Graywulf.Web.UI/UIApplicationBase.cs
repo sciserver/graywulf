@@ -11,7 +11,7 @@ using Jhu.Graywulf.Web.UI.Controls;
 
 namespace Jhu.Graywulf.Web.UI
 {
-    public class UIApplicationBase : ApplicationBase
+    public class UIApplicationBase : ApplicationBase, IDisposable
     {
         private static List<Type> apps;
         private static List<Type> services;
@@ -56,15 +56,20 @@ namespace Jhu.Graywulf.Web.UI
         {
             virtualPathProvider = new EmbeddedVirtualPathProvider();
         }
-        
+
+        public override void Dispose()
+        {
+            base.Dispose();
+        }
+
         /// <summary>
         /// Gets an initialized registry context.
         /// </summary>
         public RegistryContext CreateRegistryContext()
         {
             var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.ManualCommit);
-
             var session = HttpContext.Current.Session;
+
             if (session != null)
             {
                 // TODO: user info in context might be correct already and no
@@ -108,9 +113,13 @@ namespace Jhu.Graywulf.Web.UI
 
         protected virtual void Application_Start(object sender, EventArgs e)
         {
-            // Initialize logger
-            // TODO: how to do it with web apps??
-            Logger.Instance.Start(Logging.EventSource.Test, false);
+            LoggingContext.Current.StartLogger(EventSource.WebUI, false);
+
+            Logging.LoggingContext.Current.LogOperation(
+                Logging.EventSource.WebUI,
+                String.Format("The web application at {0} has started.", VirtualPathUtility.ToAbsolute("~/")),
+                null,
+                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 
             HostingEnvironment.RegisterVirtualPathProvider(virtualPathProvider);
             RegisterScripts();
@@ -146,6 +155,13 @@ namespace Jhu.Graywulf.Web.UI
 
         protected virtual void Application_End(object sender, EventArgs e)
         {
+            Logging.LoggingContext.Current.LogOperation(
+                Logging.EventSource.WebUI,
+                String.Format("The web application at {0} has stopped.", VirtualPathUtility.ToAbsolute("~/")),
+                null,
+                null);
+
+            LoggingContext.Current.StopLogger();
         }
 
         protected virtual void RegisterScripts()

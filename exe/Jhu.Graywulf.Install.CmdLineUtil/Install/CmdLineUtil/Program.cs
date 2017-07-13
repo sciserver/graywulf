@@ -15,8 +15,8 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
             // Initialize logger
-            Logging.Logger.Instance.Start(Logging.EventSource.CommandLineTool, true);
-            
+            Logging.LoggingContext.Current.StartLogger(Logging.EventSource.CommandLineTool, true);
+
             List<Type> verbs = new List<Type>()
             {
                 typeof(CreateRegistry),
@@ -74,8 +74,7 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
                 }
             }
 
-            // Stop logger
-            Logging.Logger.Instance.Stop();
+            Logging.LoggingContext.Current.StopLogger();
 
             return 0;
         }

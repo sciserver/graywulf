@@ -79,7 +79,8 @@ namespace Jhu.Graywulf.Scheduler
             EnsureNotStopping();
 
             // Initialize logging
-            Logging.Logger.Instance.Start(Logging.EventSource.Scheduler, iteractive);
+            Logging.LoggingContext.Current.StartLogger(Logging.EventSource.Scheduler, true);
+
             trackingParticipant = new JobTrackingParticipant();
         }
 
@@ -97,7 +98,7 @@ namespace Jhu.Graywulf.Scheduler
             trackingParticipant = null;
             stopRequested = false;
 
-            Logging.Logger.Instance.Stop();
+            Logging.LoggingContext.Current.StopLogger();
         }
 
         /// <summary>

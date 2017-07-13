@@ -15,7 +15,17 @@ namespace Jhu.Graywulf.Logging
 
         public LogWriterBase[] GetLogWriters()
         {
-            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            Configuration config;
+
+            if (System.Web.HttpContext.Current != null)
+            {
+                config = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("~");
+            }
+            else
+            {
+                config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            }
+
             var group = config.GetSectionGroup(Constants.ConfigSectionGroupName);
             var res = new List<LogWriterBase>(group.Sections.Keys.Count);
 

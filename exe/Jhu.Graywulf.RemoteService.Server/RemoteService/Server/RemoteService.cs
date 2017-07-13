@@ -56,11 +56,11 @@ namespace Jhu.Graywulf.RemoteService.Server
             AppDomain.CurrentDomain.UnhandledException += Util.ServiceHelper.WriteErrorDump;
 
             // Initialize logger
-            // TODO: add interactive mode, set source
-            Logger.Instance.Start(EventSource.RemoteService, false);
+            // TODO: add interactive mode
+            Logging.LoggingContext.Current.StartLogger(Logging.EventSource.RemoteService, false);
 
             // Log starting event
-            Logger.Instance.LogStatus(
+            Logging.LoggingContext.Current.LogStatus(
                 Logging.EventSource.RemoteService,
                 "Graywulf Remote Service has started.", 
                 null,
@@ -97,13 +97,13 @@ namespace Jhu.Graywulf.RemoteService.Server
         {
             Stop();
 
-            Logger.Instance.LogStatus(
+            Logging.LoggingContext.Current.LogStatus(
                 Logging.EventSource.RemoteService,
                 "Graywulf Remote Service has stopped.", 
                 null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 
-            Logger.Instance.Stop();            
+            Logging.LoggingContext.Current.StopLogger();
         }
 
         internal void StopImpl()
