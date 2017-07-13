@@ -21,22 +21,22 @@ namespace Jhu.Graywulf.RemoteService
 
         protected override void OnStart(object options)
         {
-            RemoteService.Server.Program.StartDebug();
+            RemoteService.Server.Program.Start(null);
         }
 
         protected override void OnStop()
         {
-            RemoteService.Server.Program.StopDebug();
+            RemoteService.Server.Program.Stop();
         }
 
         public void DrainStop()
         {
-            RemoteService.Server.Program.StopDebug();
+            RemoteService.Server.Program.Stop();
         }
 
         public void Kill()
         {
-            RemoteService.Server.Program.StopDebug();
+            RemoteService.Server.Program.Stop();
         }
     }
 

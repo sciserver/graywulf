@@ -65,10 +65,21 @@ namespace Jhu.Graywulf.Tasks
         {
             var start = DateTime.Now;
 
+            Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Test, String.Format("Sleeping..."));
+
             while (!IsCanceled && (DateTime.Now - start).TotalMilliseconds < period)
             {
                 Thread.Sleep(1000);
             }
+
+            Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Test, String.Format("Finished."));
+        }
+
+        public override void Cancel()
+        {
+            base.Cancel();
+
+            Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Test, String.Format("Cancelled."));
         }
     }
 }

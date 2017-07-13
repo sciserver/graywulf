@@ -91,6 +91,10 @@
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.Logging\Jhu.Graywulf.Logging.csproj">
+      <Project>{fd98fb58-a3e5-4d32-b6d6-3e20609c4d09}</Project>
+      <Name>Jhu.Graywulf.Logging</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="post-build.ps1" />

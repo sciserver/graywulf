@@ -142,6 +142,8 @@ namespace Jhu.Graywulf.Web.Services
                 registryContext.Dispose();
                 registryContext = null;
             }
+
+            Logging.WebLoggingContext.Current.Pop();
         }
 
         #region User managemenet functions

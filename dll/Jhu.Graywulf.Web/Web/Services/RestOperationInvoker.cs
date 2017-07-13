@@ -46,6 +46,9 @@ namespace Jhu.Graywulf.Web.Services
             try
             {
                 res = this.originalInvoker.Invoke(instance, inputs, out outputs);
+
+                svc.LogOperation();
+                svc.OnAfterInvoke();
             }
             catch (Exception ex)
             {
@@ -66,9 +69,6 @@ namespace Jhu.Graywulf.Web.Services
                 // the error handler implementation
                 throw new RestOperationException(ex, logevent?.ID.ToString());
             }
-
-            svc.LogOperation();
-            svc.OnAfterInvoke();
 
             return res;
         }

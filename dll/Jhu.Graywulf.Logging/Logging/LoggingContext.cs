@@ -93,7 +93,7 @@ namespace Jhu.Graywulf.Logging
         {
         }
 
-        protected LoggingContext(LoggingContext outerContext)
+        public LoggingContext(LoggingContext outerContext)
             : this(null, outerContext.isAsync)
         {
         }

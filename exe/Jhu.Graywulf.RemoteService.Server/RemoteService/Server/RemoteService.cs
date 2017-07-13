@@ -16,7 +16,6 @@ namespace Jhu.Graywulf.RemoteService.Server
     public partial class RemoteService : ServiceBase
     {
         private static object syncRoot;
-        private static int eventOrder;
 
         private static ServiceHost controlServiceHost;
         private static ServiceEndpoint controlEndpoint;
@@ -62,7 +61,7 @@ namespace Jhu.Graywulf.RemoteService.Server
             // Log starting event
             Logging.LoggingContext.Current.LogStatus(
                 Logging.EventSource.RemoteService,
-                "Graywulf Remote Service has started.", 
+                "Graywulf Remote Service has started.",
                 null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 
@@ -73,11 +72,6 @@ namespace Jhu.Graywulf.RemoteService.Server
                 Util.ServiceHelper.WaitForService("WAS", 1000, 500);
             }
 
-            StartImpl();
-        }
-
-        internal void StartImpl()
-        {
             // Initialize WCF service host to run the control service
             // TODO: the localhost setting needs to be tested!
             var fdqn = RemoteServiceHelper.GetFullyQualifiedDnsName();
@@ -95,19 +89,6 @@ namespace Jhu.Graywulf.RemoteService.Server
 
         protected override void OnStop()
         {
-            Stop();
-
-            Logging.LoggingContext.Current.LogStatus(
-                Logging.EventSource.RemoteService,
-                "Graywulf Remote Service has stopped.", 
-                null,
-                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
-
-            Logging.LoggingContext.Current.StopLogger();
-        }
-
-        internal void StopImpl()
-        {
             controlServiceHost.Close();
             controlServiceHost = null;
 
@@ -118,6 +99,14 @@ namespace Jhu.Graywulf.RemoteService.Server
 
             registeredServiceHosts.Clear();
             registeredEndpoints.Clear();
+
+            Logging.LoggingContext.Current.LogStatus(
+                Logging.EventSource.RemoteService,
+                "Graywulf Remote Service has stopped.", 
+                null,
+                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
+
+            Logging.LoggingContext.Current.StopLogger();
         }
 
         #region Functions to support command-line execution
@@ -153,29 +142,21 @@ namespace Jhu.Graywulf.RemoteService.Server
                 registeredEndpoints.Add(contract.FullName, endpoint);
             }
 
+            LogDebug("New endpoint created for {0}.", contract.FullName);
+
             return uri;
         }
 
-
-        // TODO: delete
-        // *** TODO: how to log if event order is not available (in context)
-        /*
-        /// <summary>
-        /// Logs scheduler events
-        /// </summary>
-        /// <param name="e"></param>
-        static private void LogEvent(Event e)
+        public static void LogDebug(string message, params object[] args)
         {
-            e.UserGuid = Guid.Empty;
-            e.Source = EventSource.RemoteService;
-            e.ExecutionStatus = ExecutionStatus.Closed;
+            var context = WcfLoggingContext.Current;
+            var method = context.UnwindStack(1);
 
-            e.JobGuid = Guid.Empty;
-            e.ContextGuid = Guid.Empty;
-            e.Order = ++eventOrder;
-
-            Logger.Instance.LogEvent(e);
+            context.LogDebug(
+                EventSource.RemoteService,
+                String.Format(message, args),
+                method.DeclaringType.FullName + "." + method.Name,
+                null);
         }
-        */
     }
 }
