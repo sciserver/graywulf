@@ -65,6 +65,11 @@ namespace Jhu.Graywulf.RemoteService.Server
                 null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
 
+            OnStartImpl(args);
+        }
+
+        private void OnStartImpl(string[] args)
+        {
             // In case the server has been just rebooted
             // wait for the Windows Process Activation Service (WAS)
             if (Util.ServiceHelper.IsServiceInstalled("WAS"))
@@ -89,6 +94,19 @@ namespace Jhu.Graywulf.RemoteService.Server
 
         protected override void OnStop()
         {
+            OnStopImpl();
+
+            Logging.LoggingContext.Current.LogStatus(
+                Logging.EventSource.RemoteService,
+                "Graywulf Remote Service has stopped.", 
+                null,
+                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
+
+            Logging.LoggingContext.Current.StopLogger();
+        }
+
+        private void OnStopImpl()
+        {
             controlServiceHost.Close();
             controlServiceHost = null;
 
@@ -99,14 +117,6 @@ namespace Jhu.Graywulf.RemoteService.Server
 
             registeredServiceHosts.Clear();
             registeredEndpoints.Clear();
-
-            Logging.LoggingContext.Current.LogStatus(
-                Logging.EventSource.RemoteService,
-                "Graywulf Remote Service has stopped.", 
-                null,
-                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
-
-            Logging.LoggingContext.Current.StopLogger();
         }
 
         #region Functions to support command-line execution
@@ -119,6 +129,16 @@ namespace Jhu.Graywulf.RemoteService.Server
         public new void Stop()
         {
             OnStop();
+        }
+
+        public void StartDebug(string[] args)
+        {
+            OnStartImpl(args);
+        }
+
+        public void StopDebug()
+        {
+            OnStopImpl();
         }
 
         #endregion
