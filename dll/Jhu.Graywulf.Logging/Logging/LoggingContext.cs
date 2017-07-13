@@ -49,10 +49,18 @@ namespace Jhu.Graywulf.Logging
         #endregion
 
         private LoggingContext outerContext;
+        private Guid contextGuid;
         private bool isValid;
         private bool isAsync;
         private EventSource defaultEventSource;
+        private int eventOrder;
         private List<Event> asyncEvents;
+
+        public Guid ContextGuid
+        {
+            get { return contextGuid; }
+            set { contextGuid = value; }
+        }
 
         /// <summary>
         /// Gets the validity of the context.
@@ -118,9 +126,11 @@ namespace Jhu.Graywulf.Logging
         private void InitializeMembers()
         {
             this.outerContext = null;
+            this.contextGuid = Guid.NewGuid();
             this.isValid = true;
             this.isAsync = false;
             this.defaultEventSource = EventSource.None;
+            this.eventOrder = 0;
             this.asyncEvents = null;
         }
 
@@ -133,9 +143,11 @@ namespace Jhu.Graywulf.Logging
         private void CopyMembers(LoggingContext outerContext)
         {
             this.outerContext = outerContext;
+            this.contextGuid = Guid.NewGuid();
             this.isValid = true;
             this.isAsync = outerContext.isAsync;
             this.defaultEventSource = outerContext.defaultEventSource;
+            this.eventOrder = 0;
             this.asyncEvents = null;
         }
 
@@ -253,6 +265,7 @@ namespace Jhu.Graywulf.Logging
 
         public virtual void UpdateEvent(Event e)
         {
+            e.ContextGuid = this.contextGuid;
         }
 
         /// <summary>
@@ -261,6 +274,8 @@ namespace Jhu.Graywulf.Logging
         /// <param name="e"></param>
         public virtual void RecordEvent(Event e)
         {
+            e.Order = ++eventOrder;
+
             if (isAsync)
             {
                 asyncEvents.Add(e);
