@@ -42,11 +42,11 @@ namespace Jhu.Graywulf.Logging
         {
             new WcfLoggingContext(LoggingContext.Current).Push();
 
+            LogOperation();
+
             try
             {
-                var res = this.originalInvoker.Invoke(instance, inputs, out outputs);
-                LogOperation();
-                return res;
+                return this.originalInvoker.Invoke(instance, inputs, out outputs);
             }
             catch (Exception ex)
             {

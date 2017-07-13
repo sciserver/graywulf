@@ -39,15 +39,13 @@ namespace Jhu.Graywulf.Web.Services
         {
             object res = null;
             var svc = (RestServiceBase)instance;
-
+            
             svc.OnBeforeInvoke();
+            svc.LogOperation();
 
-            // Catch exceptions so that they can be logged.
             try
             {
-                res = this.originalInvoker.Invoke(instance, inputs, out outputs);
-
-                svc.LogOperation();
+                res = this.originalInvoker.Invoke(instance, inputs, out outputs);                
                 svc.OnAfterInvoke();
             }
             catch (Exception ex)
