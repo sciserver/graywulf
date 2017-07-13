@@ -71,7 +71,7 @@ namespace Jhu.Graywulf.Scheduler
                 LoggingContext.Current.UpdateEvent(e);
 
                 e.Source |= EventSource.Workflow;
-                e.Severity = MapEventSeverity(record.Level);
+                e.Severity = EventSeverity.Debug;   // MapEventSeverity(record.Level);
                 e.DateTime = record.EventTime;
                 e.Order = record.RecordNumber;
                 
