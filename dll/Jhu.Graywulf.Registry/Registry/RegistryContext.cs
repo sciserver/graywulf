@@ -25,7 +25,6 @@ namespace Jhu.Graywulf.Registry
 #endif
 
         private bool isValid;
-        private Guid contextGuid;
 
         // TODO: move these to entity search
         private bool showHidden;
@@ -52,13 +51,7 @@ namespace Jhu.Graywulf.Registry
         {
             get { return isValid; }
         }
-
-        public Guid ContextGuid
-        {
-            get { return contextGuid; }
-            set { contextGuid = value; }
-        }
-
+        
         /// <summary>
         /// Gets or sets the value determining whether search functions will return entities
         /// flagged as hidden.
@@ -230,7 +223,6 @@ namespace Jhu.Graywulf.Registry
         private void InitializeMembers()
         {
             this.isValid = true;
-            this.contextGuid = Guid.Empty;
 
             this.showHidden = false;
             this.showDeleted = false;
@@ -264,7 +256,6 @@ namespace Jhu.Graywulf.Registry
 
             if (jobContext != null)
             {
-                this.contextGuid = jobContext.WorkflowInstanceId;
                 this.jobReference.Guid = jobContext.JobGuid;
             }
         }
@@ -330,7 +321,7 @@ namespace Jhu.Graywulf.Registry
             databaseConnection.Open();
 
 #if DEBUG
-            using (var cmd = new SqlCommand(String.Format("SELECT @@SPID --{0}", contextGuid), databaseConnection))
+            using (var cmd = new SqlCommand(String.Format("SELECT @@SPID --{0}", LoggingContext.Current.ContextGuid), databaseConnection))
             {
                 cmd.CommandType = CommandType.Text;
                 sqlSpId = (Int16)cmd.ExecuteScalar();

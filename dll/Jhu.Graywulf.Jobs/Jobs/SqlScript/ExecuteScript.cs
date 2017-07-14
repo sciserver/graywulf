@@ -24,11 +24,13 @@ namespace Jhu.Graywulf.Jobs.SqlScript
 
         protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             var parameters = Parameters.Get(activityContext);
             var dataset = Dataset.Get(activityContext);
             var script = Script.Get(activityContext);
 
-            return delegate (JobContext asyncContext)
+            return delegate ()
             {
                 var cn = dataset.OpenConnection();
                 var cmd = cn.CreateCommand();
@@ -40,7 +42,7 @@ namespace Jhu.Graywulf.Jobs.SqlScript
 
                 var ccmd = new CancelableDbCommand(cmd);
 
-                asyncContext.RegisterCancelable(ccmd);
+                RegisterCancelable(workflowInstanceId, activityInstanceId, ccmd);
 
                 ccmd.ExecuteNonQuery();
 
@@ -49,7 +51,7 @@ namespace Jhu.Graywulf.Jobs.SqlScript
                     ccmd.Transaction.Commit();
                 }
 
-                asyncContext.UnregisterCancelable(ccmd);
+                UnregisterCancelable(workflowInstanceId, activityInstanceId, ccmd);
 
                 ccmd.Dispose();
             };

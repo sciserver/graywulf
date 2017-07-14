@@ -23,18 +23,20 @@ namespace Jhu.Graywulf.Jobs.Test
 
         protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             var period = DelayPeriod.Get(activityContext);
             var cancelable = Cancelable.Get(activityContext);
 
-            return delegate (JobContext asyncContext)
+            return delegate ()
             {
                 if (cancelable)
                 {
                     var delay = new CancelableDelay(period);
 
-                    asyncContext.RegisterCancelable(delay);
+                    RegisterCancelable(workflowInstanceId, activityInstanceId, delay);
                     delay.Execute();
-                    asyncContext.UnregisterCancelable(delay);
+                    UnregisterCancelable(workflowInstanceId, activityInstanceId, delay);
                 }
                 else
                 {

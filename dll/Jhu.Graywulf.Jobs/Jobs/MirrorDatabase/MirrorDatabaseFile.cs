@@ -29,6 +29,8 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
 
         protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             Guid sourcefileguid = SourceFileGuid.Get(activityContext);
             Guid destinationdatabaseinstanceguid = DestinationDatabaseInstanceGuid.Get(activityContext);
             FileCopyDirection filecopydirection = FileCopyDirection.Get(activityContext);
@@ -71,7 +73,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                 hostname = ssf.DatabaseInstanceFileGroup.DatabaseInstance.ServerInstance.Machine.HostName.ResolvedValue;
             }
 
-            return delegate (JobContext asyncContext)
+            return delegate ()
             {
                 if (!skipExistingFile ||
                     !File.Exists(destinationfilename) ||
@@ -84,9 +86,9 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                     fc.Overwrite = true;
                     fc.Method = FileCopyMethod.AsyncFileCopy;
 
-                    asyncContext.RegisterCancelable(fc);
+                    RegisterCancelable(workflowInstanceId, activityInstanceId, fc);
                     fc.Execute();
-                    asyncContext.UnregisterCancelable(fc);
+                    UnregisterCancelable(workflowInstanceId, activityInstanceId, fc);
                 }
             };
         }

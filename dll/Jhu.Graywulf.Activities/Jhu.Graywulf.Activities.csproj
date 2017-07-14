@@ -62,7 +62,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Activities\IJobActivity.cs" />
-    <Compile Include="Activities\IJobInfo.cs" />
     <Compile Include="Activities\JobAsyncCodeActivity.cs" />
     <Compile Include="Activities\JobCodeActivity.cs" />
     <Compile Include="Activities\JobContext.cs" />

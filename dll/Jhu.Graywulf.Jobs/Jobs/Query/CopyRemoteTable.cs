@@ -23,6 +23,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             SqlQueryPartition querypartition = (SqlQueryPartition)QueryPartition.Get(activityContext);
             TableReference remotetable = null;
             SourceTableQuery source;
@@ -33,11 +35,11 @@ namespace Jhu.Graywulf.Jobs.Query
                 querypartition.PrepareCopyRemoteTable(remotetable, out source);
             }
 
-            return delegate (JobContext asyncContext)
+            return delegate ()
             {
-                asyncContext.RegisterCancelable(querypartition);
+                RegisterCancelable(workflowInstanceId, activityInstanceId, querypartition);
                 querypartition.CopyRemoteTable(remotetable, source);
-                asyncContext.UnregisterCancelable(querypartition);
+                UnregisterCancelable(workflowInstanceId, activityInstanceId, querypartition);
             };
         }
     }

@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Jobs.Test
         {
             string message = activityContext.GetValue(Message);
 
-            return delegate (JobContext asyncContext)
+            return delegate ()
             {
                 throw new Exception(message);
             };

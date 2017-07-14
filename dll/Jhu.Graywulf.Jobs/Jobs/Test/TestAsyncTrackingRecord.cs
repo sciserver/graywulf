@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Jobs.Test
 
             Logging.LoggingContext.Current.LogStatus(Logging.EventSource.Test, "Test event from async activitity initializer.");
 
-            return delegate (JobContext asyncContext)
+            return delegate ()
             {
                 Logging.LoggingContext.Current.LogStatus(Logging.EventSource.Test, "Test event from async activitity action.");
             };

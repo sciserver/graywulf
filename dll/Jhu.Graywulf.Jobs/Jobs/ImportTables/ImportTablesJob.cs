@@ -19,6 +19,8 @@ namespace Jhu.Graywulf.Jobs.ImportTables
 
         protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             var parameters = Parameters.Get(activityContext);
 
             // Make sure connection strings are cached
@@ -35,12 +37,12 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                 }
             }
 
-            return delegate (JobContext asyncContext)
+            return delegate ()
             {
                 // Create table importer
                 var importer = parameters.GetInitializedTableImportTask();
 
-                asyncContext.RegisterCancelable(importer);
+                RegisterCancelable(workflowInstanceId, activityInstanceId, importer);
 
                 try
                 {
@@ -52,7 +54,7 @@ namespace Jhu.Graywulf.Jobs.ImportTables
                     importer.Close();
                 }
 
-                asyncContext.UnregisterCancelable(importer);
+                UnregisterCancelable(workflowInstanceId, activityInstanceId, importer);
             };
         }
     }

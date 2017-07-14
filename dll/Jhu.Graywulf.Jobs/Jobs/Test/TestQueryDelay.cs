@@ -23,10 +23,12 @@ namespace Jhu.Graywulf.Jobs.Test
 
         protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             var delay = DelayPeriod.Get(activityContext);
             var queryTimeout = QueryTimeout.Get(activityContext);
 
-            return delegate (JobContext asyncContext)
+            return delegate ()
             {
                 var sql = String.Format("WAITFOR DELAY '{0:mm\\:ss}'", TimeSpan.FromMilliseconds(delay));
 
@@ -38,7 +40,7 @@ namespace Jhu.Graywulf.Jobs.Test
                         cmd.CommandTimeout = queryTimeout;
 
                         var ccmd = new CancelableDbCommand(cmd);
-                        asyncContext.RegisterCancelable(ccmd);
+                        RegisterCancelable(workflowInstanceId, activityInstanceId, ccmd);
 
                         try
                         {
@@ -46,7 +48,7 @@ namespace Jhu.Graywulf.Jobs.Test
                         }
                         finally
                         {
-                            asyncContext.UnregisterCancelable(ccmd);
+                            UnregisterCancelable(workflowInstanceId, activityInstanceId, ccmd);
                         }
                     }
                 }

@@ -4,9 +4,13 @@ using System.Text;
 using System.Data.SqlClient;
 using System.Reflection;
 using System.Diagnostics;
+using System.Runtime.Serialization;
+using System.Activities;
+using System.Activities.Tracking;
 
 namespace Jhu.Graywulf.Logging
 {
+    [Serializable]
     public class LoggingContext : IDisposable
     {
         #region Singletons
@@ -49,18 +53,21 @@ namespace Jhu.Graywulf.Logging
         #endregion
 
         private LoggingContext outerContext;
-        private Guid contextGuid;
         private bool isValid;
         private bool isAsync;
         private EventSource defaultEventSource;
         private int eventOrder;
         private List<Event> asyncEvents;
+        private CodeActivityContext activityContext;
 
-        public Guid ContextGuid
-        {
-            get { return contextGuid; }
-            set { contextGuid = value; }
-        }
+        private Guid contextGuid;
+        private Guid jobGuid;
+        private string jobName;
+        private Guid userGuid;
+        private string userName;
+        private string taskName;
+
+        #region Properties
 
         /// <summary>
         /// Gets the validity of the context.
@@ -89,15 +96,59 @@ namespace Jhu.Graywulf.Logging
             get { return asyncEvents; }
         }
 
+        public CodeActivityContext ActivityContext
+        {
+            get { return activityContext; }
+            set { activityContext = value; }
+        }
+
+        public Guid ContextGuid
+        {
+            get { return contextGuid; }
+            set { contextGuid = value; }
+        }
+
+        public Guid JobGuid
+        {
+            get { return jobGuid; }
+            set { jobGuid = value; }
+        }
+
+        public string JobName
+        {
+            get { return jobName; }
+            set { jobName = value; }
+        }
+
+        public Guid UserGuid
+        {
+            get { return userGuid; }
+            set { userGuid = value; }
+        }
+
+        public string UserName
+        {
+            get { return userName; }
+            set { userName = value; }
+        }
+
+        public string TaskName
+        {
+            get { return taskName; }
+            set { taskName = value; }
+        }
+
+        #endregion
+
         #region Constructors and initializers
 
-        protected LoggingContext()
+        public LoggingContext()
             : this(null, false)
         {
         }
 
-        protected LoggingContext(bool isAsync)
-            :this(null, isAsync)
+        public LoggingContext(bool isAsync)
+            : this(null, isAsync)
         {
         }
 
@@ -106,7 +157,7 @@ namespace Jhu.Graywulf.Logging
         {
         }
 
-        protected LoggingContext(LoggingContext outerContext, bool isAsync)
+        public LoggingContext(LoggingContext outerContext, bool isAsync)
         {
             if (outerContext != null)
             {
@@ -114,7 +165,7 @@ namespace Jhu.Graywulf.Logging
             }
             else
             {
-                InitializeMembers();
+                InitializeMembers(new StreamingContext());
             }
 
             if (isAsync)
@@ -123,15 +174,23 @@ namespace Jhu.Graywulf.Logging
             }
         }
 
-        private void InitializeMembers()
+        [OnDeserializing]
+        private void InitializeMembers(StreamingContext context)
         {
             this.outerContext = null;
-            this.contextGuid = Guid.NewGuid();
             this.isValid = true;
             this.isAsync = false;
             this.defaultEventSource = EventSource.None;
             this.eventOrder = 0;
             this.asyncEvents = null;
+            this.activityContext = null;
+
+            this.contextGuid = Guid.NewGuid();
+            this.jobGuid = Guid.Empty;
+            this.jobName = null;
+            this.userGuid = Guid.Empty;
+            this.userName = null;
+            this.taskName = null;
         }
 
         private void InitializeAsyncMode()
@@ -143,12 +202,19 @@ namespace Jhu.Graywulf.Logging
         private void CopyMembers(LoggingContext outerContext)
         {
             this.outerContext = outerContext;
-            this.contextGuid = Guid.NewGuid();
             this.isValid = true;
             this.isAsync = outerContext.isAsync;
             this.defaultEventSource = outerContext.defaultEventSource;
             this.eventOrder = 0;
             this.asyncEvents = null;
+            this.activityContext = outerContext.activityContext;
+
+            this.contextGuid = Guid.NewGuid();
+            this.jobGuid = outerContext.jobGuid;
+            this.jobName = outerContext.jobName;
+            this.userGuid = outerContext.userGuid;
+            this.userName = outerContext.userName;
+            this.taskName = outerContext.taskName;
         }
 
         public virtual void Dispose()
@@ -265,18 +331,33 @@ namespace Jhu.Graywulf.Logging
 
         public virtual void UpdateEvent(Event e)
         {
+            e.UserGuid = this.userGuid;
+            e.UserName = this.userName;
+            e.TaskName = this.taskName;
+            e.JobGuid = this.jobGuid;
+            e.JobName = this.jobName;
             e.ContextGuid = this.contextGuid;
+
+            e.Principal = System.Threading.Thread.CurrentPrincipal;
         }
 
         /// <summary>
         /// Route the event through the pipeline, eventually generating a custom tracking record
         /// </summary>
         /// <param name="e"></param>
-        public virtual void RecordEvent(Event e)
+        public void RecordEvent(Event e)
         {
             e.Order = ++eventOrder;
 
-            if (isAsync)
+            if (activityContext != null && !IsAsync)
+            {
+                // This is a synchronous event called from a simple CodeActivity
+                // Route event through the workflow tracking infrastructure
+                var ctr = new CustomTrackingRecord("Graywulf log event");
+                ctr.Data.Add("Event", e);
+                activityContext.Track(ctr);
+            }
+            else if (isAsync)
             {
                 asyncEvents.Add(e);
             }
@@ -293,9 +374,22 @@ namespace Jhu.Graywulf.Logging
 
         public virtual void FlushEvents()
         {
-            foreach (var e in asyncEvents)
+            if (isAsync && asyncEvents != null)
             {
-                Logger.WriteEvent(e);
+                foreach (var e in asyncEvents)
+                {
+                    var record = new CustomTrackingRecord("asyncEvent");
+                    record.Data[Constants.ActivityRecordDataItemEvent] = e;
+
+                    activityContext.Track(record);
+                }
+            }
+            else
+            {
+                foreach (var e in asyncEvents)
+                {
+                    Logger.WriteEvent(e);
+                }
             }
 
             asyncEvents.Clear();

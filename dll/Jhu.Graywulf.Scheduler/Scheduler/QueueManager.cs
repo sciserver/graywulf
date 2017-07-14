@@ -545,9 +545,6 @@ namespace Jhu.Graywulf.Scheduler
 
                 foreach (var j in jf.FindJobInstances())
                 {
-                    // Locking must be handled
-                    context.ContextGuid = j.WorkflowInstanceId;
-
                     j.ReleaseLock(true);
 
                     if ((jf.JobExecutionStatus & JobExecutionState.Starting) != 0)

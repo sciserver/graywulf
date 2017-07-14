@@ -19,6 +19,8 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
         protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             var parameters = Parameters.Get(activityContext);
 
             // Make sure connection strings are cached
@@ -37,12 +39,12 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                 }
             }
 
-            return delegate (JobContext asyncContext)
+            return delegate()
             {
                 // Create table exporter
                 var exporter = parameters.GetInitializedTableExportTask();
 
-                asyncContext.RegisterCancelable(exporter);
+                RegisterCancelable(workflowInstanceId, activityInstanceId, exporter);
 
                 try
                 {
@@ -54,7 +56,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
                     exporter.Close();
                 }
 
-                asyncContext.UnregisterCancelable(exporter);
+                UnregisterCancelable(workflowInstanceId, activityInstanceId, exporter);
             };
         }
     }

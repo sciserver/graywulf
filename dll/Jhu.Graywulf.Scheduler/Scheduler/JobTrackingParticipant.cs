@@ -81,9 +81,9 @@ namespace Jhu.Graywulf.Scheduler
 
         private Event ProcessTrackingRecord(CustomTrackingRecord record)
         {
-            if (record.Data != null && record.Data.ContainsKey(Activities.Constants.ActivityRecordDataItemEvent))
+            if (record.Data != null && record.Data.ContainsKey(Logging.Constants.ActivityRecordDataItemEvent))
             {
-                return (Event)record.Data[Activities.Constants.ActivityRecordDataItemEvent];
+                return (Event)record.Data[Logging.Constants.ActivityRecordDataItemEvent];
             }
             else
             {

@@ -24,6 +24,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             var scheduler = activityContext.GetExtension<IScheduler>();
             var query = Query.Get(activityContext);
             var tableSource = TableSource.Get(activityContext);
@@ -35,11 +37,11 @@ namespace Jhu.Graywulf.Jobs.Query
                 statisticsDataset = query.GetStatisticsDataset(tableSource);
             }
 
-            return delegate(JobContext asyncContext)
+            return delegate()
             {
-                asyncContext.RegisterCancelable(query);
+                RegisterCancelable(workflowInstanceId, activityInstanceId, query);
                 query.ComputeTableStatistics(tableSource, statisticsDataset);
-                asyncContext.UnregisterCancelable(query);
+                UnregisterCancelable(workflowInstanceId, activityInstanceId, query);
             };
         }
     }

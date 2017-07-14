@@ -95,7 +95,10 @@ namespace Jhu.Graywulf.Logging
 
             cmd.Parameters.Add("@EventId", SqlDbType.BigInt).Direction = ParameterDirection.Output;
             cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier);
+            cmd.Parameters.Add("@UserName", SqlDbType.VarChar, 255);
+            cmd.Parameters.Add("@TaskName", SqlDbType.VarChar, 255);
             cmd.Parameters.Add("@JobGuid", SqlDbType.UniqueIdentifier);
+            cmd.Parameters.Add("@JobName", SqlDbType.VarChar, 255);
             cmd.Parameters.Add("@SessionGuid", SqlDbType.UniqueIdentifier);
             cmd.Parameters.Add("@ContextGuid", SqlDbType.UniqueIdentifier);
             cmd.Parameters.Add("@Source", SqlDbType.Int);
@@ -109,6 +112,7 @@ namespace Jhu.Graywulf.Logging
             cmd.Parameters.Add("@Message", SqlDbType.VarChar, 1024);
             cmd.Parameters.Add("@ExceptionType", SqlDbType.VarChar, 255);
             cmd.Parameters.Add("@ExceptionStackTrace", SqlDbType.VarChar);
+            cmd.Parameters.Add("@BookmarkGuid", SqlDbType.UniqueIdentifier);
 
             return cmd;
         }
@@ -135,10 +139,13 @@ namespace Jhu.Graywulf.Logging
 
         private void SetCreateEventCommandValues(SqlCommand cmd, Event e)
         {
-            cmd.Parameters["@UserGuid"].Value = e.UserGuid;
+            cmd.Parameters["@UserGuid"].Value = e.UserGuid == Guid.Empty ? (object)DBNull.Value : e.UserGuid;
+            cmd.Parameters["@UserName"].Value = e.UserName == null ? (object)DBNull.Value : (object)e.UserName;
+            cmd.Parameters["@TaskName"].Value = e.TaskName == null ? (object)DBNull.Value : (object)e.TaskName;
             cmd.Parameters["@JobGuid"].Value = e.JobGuid;
-            cmd.Parameters["@SessionGuid"].Value = e.SessionGuid;
-            cmd.Parameters["@ContextGuid"].Value = e.ContextGuid;
+            cmd.Parameters["@JobName"].Value = e.JobName == null ? (object)DBNull.Value : (object)e.JobName;
+            cmd.Parameters["@SessionGuid"].Value = e.SessionGuid == Guid.Empty ? (object)DBNull.Value : e.SessionGuid;
+            cmd.Parameters["@ContextGuid"].Value = e.ContextGuid == Guid.Empty ? (object)DBNull.Value : e.ContextGuid;
             cmd.Parameters["@Source"].Value = e.Source;
             cmd.Parameters["@Severity"].Value = e.Severity;
             cmd.Parameters["@DateTime"].Value = e.DateTime;
@@ -150,6 +157,7 @@ namespace Jhu.Graywulf.Logging
             cmd.Parameters["@Message"].Value = e.Message == null ? (object)DBNull.Value : (object)e.Message;
             cmd.Parameters["@ExceptionType"].Value = e.ExceptionType == null ? (object)DBNull.Value : (object)e.ExceptionType;
             cmd.Parameters["@ExceptionStackTrace"].Value = e.ExceptionStackTrace == null ? (object)DBNull.Value : (object)e.ExceptionStackTrace;
+            cmd.Parameters["@BookmarkGuid"].Value = e.BookmarkGuid == Guid.Empty ? (object)DBNull.Value : e.BookmarkGuid;
         }
 
         private void SetCreateEventDataCommandValues(SqlCommand cmd, long eventId, string key, object data)

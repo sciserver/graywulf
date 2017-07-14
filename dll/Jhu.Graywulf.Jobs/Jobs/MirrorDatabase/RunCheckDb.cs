@@ -20,6 +20,8 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
 
         protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             Guid databaseinstanceguid = DatabaseInstanceGuid.Get(activityContext);
             string connectionString;
 
@@ -33,7 +35,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                 connectionString = di.GetConnectionString().ConnectionString;
             }
 
-            return delegate (JobContext asyncContext)
+            return delegate ()
             {
                 using (var cn = new SqlConnection(connectionString))
                 {
@@ -44,9 +46,9 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                         cmd.CommandTimeout = 0;
 
                         var cc = new CancelableDbCommand(cmd);
-                        asyncContext.RegisterCancelable(cc);
+                        RegisterCancelable(workflowInstanceId, activityInstanceId, cc);
                         cc.ExecuteNonQuery();
-                        asyncContext.UnregisterCancelable(cc);
+                        UnregisterCancelable(workflowInstanceId, activityInstanceId, cc);
                     }
                 }
             };

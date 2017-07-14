@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Logging
             Guid userGuid = Guid.Empty;
             Guid sessionGuid = Guid.Empty;
 
-            var principal = System.Threading.Thread.CurrentPrincipal as Jhu.Graywulf.AccessControl.GraywulfPrincipal;
+            var principal = e.Principal as Jhu.Graywulf.AccessControl.GraywulfPrincipal;
 
             if (principal != null)
             {
@@ -48,7 +48,6 @@ namespace Jhu.Graywulf.Logging
 
             e.SessionGuid = sessionGuid;
             e.UserGuid = userGuid;
-            e.Principal = System.Threading.Thread.CurrentPrincipal;
         }
     }
 }

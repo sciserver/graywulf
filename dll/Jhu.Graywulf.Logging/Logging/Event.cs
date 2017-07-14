@@ -11,7 +11,10 @@ namespace Jhu.Graywulf.Logging
 
         private long id;
         private Guid userGuid;
+        private string userName;
+        private string taskName;
         private Guid jobGuid;
+        private string jobName;
         private Guid sessionGuid;
         private Guid contextGuid;
         private EventSource source;
@@ -23,12 +26,14 @@ namespace Jhu.Graywulf.Logging
         private string server;
         private string client;
         private string message;
-        private IPrincipal principal;
-        private Exception exception;
         private string exceptionType;
         private string exceptionStackTrace;
+        private Guid bookmarkGuid;
 
         private Dictionary<string, object> userData;
+
+        private Exception exception;
+        private IPrincipal principal;
 
         #endregion
         #region Properties
@@ -45,10 +50,28 @@ namespace Jhu.Graywulf.Logging
             set { userGuid = value; }
         }
 
+        public string UserName
+        {
+            get { return userName; }
+            set { userName = value; }
+        }
+
+        public string TaskName
+        {
+            get { return taskName; }
+            set { taskName = value; }
+        }
+
         public Guid JobGuid
         {
             get { return jobGuid; }
             set { jobGuid = value; }
+        }
+
+        public string JobName
+        {
+            get { return jobName; }
+            set { jobName = value; }
         }
 
         public Guid SessionGuid
@@ -117,18 +140,6 @@ namespace Jhu.Graywulf.Logging
             set { message = value; }
         }
 
-        public IPrincipal Principal
-        {
-            get { return principal; }
-            set { principal = value; }
-        }
-
-        public Exception Exception
-        {
-            get { return exception; }
-            internal set { exception = value; }
-        }
-
         public string ExceptionType
         {
             get { return exceptionType; }
@@ -141,9 +152,27 @@ namespace Jhu.Graywulf.Logging
             set { exceptionStackTrace = value; }
         }
 
+        public Guid BookmarkGuid
+        {
+            get { return bookmarkGuid; }
+            set { bookmarkGuid = value; }
+        }
+
         public Dictionary<string, object> UserData
         {
             get { return userData; }
+        }
+
+        public Exception Exception
+        {
+            get { return exception; }
+            internal set { exception = value; }
+        }
+
+        public IPrincipal Principal
+        {
+            get { return principal; }
+            set { principal = value; }
         }
 
         #endregion
@@ -163,7 +192,10 @@ namespace Jhu.Graywulf.Logging
         {
             this.id = 0;
             this.userGuid = Guid.Empty;
+            this.userName = null;
+            this.taskName = null;
             this.jobGuid = Guid.Empty;
+            this.jobName = null;
             this.sessionGuid = Guid.Empty;
             this.contextGuid = Guid.Empty;
             this.source = EventSource.None;
@@ -175,19 +207,24 @@ namespace Jhu.Graywulf.Logging
             this.server = Environment.MachineName;
             this.client = null;
             this.message = null;
-            this.principal = null;
-            this.exception = null;
             this.exceptionType = null;
             this.exceptionStackTrace = null;
+            this.bookmarkGuid = Guid.Empty;
 
             this.userData = new Dictionary<string, object>();
+
+            this.exception = null;
+            this.principal = null;
         }
 
         private void CopyMembers(Event old)
         {
             this.id = old.id;
             this.userGuid = old.userGuid;
+            this.userName = old.userName;
+            this.taskName = old.taskName;
             this.jobGuid = old.jobGuid;
+            this.jobName = old.jobName;
             this.sessionGuid = old.sessionGuid;
             this.contextGuid = old.contextGuid;
             this.source = old.source;
@@ -199,12 +236,14 @@ namespace Jhu.Graywulf.Logging
             this.server = old.server;
             this.client = old.client;
             this.message = old.message;
-            this.principal = old.principal;
-            this.exception = old.exception;
             this.exceptionType = old.exceptionType;
             this.exceptionStackTrace = old.exceptionStackTrace;
+            this.bookmarkGuid = old.bookmarkGuid;
 
             this.userData = new Dictionary<string, object>(old.userData);
+
+            this.exception = old.exception;
+            this.principal = old.principal;
         }
 
         public int LoadFromDataReader(SqlDataReader dr)
@@ -212,10 +251,13 @@ namespace Jhu.Graywulf.Logging
             int o = -1;
 
             this.id = dr.GetInt64(++o);
-            this.userGuid = dr.GetGuid(++o);
-            this.jobGuid = dr.GetGuid(++o);
-            this.sessionGuid = dr.GetGuid(++o);
-            this.contextGuid = dr.GetGuid(++o);
+            this.userGuid = dr.IsDBNull(++o) ? Guid.Empty : dr.GetGuid(o);
+            this.userName = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.taskName = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.jobGuid = dr.IsDBNull(++o) ? Guid.Empty : dr.GetGuid(o);
+            this.jobName = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.sessionGuid = dr.IsDBNull(++o) ? Guid.Empty : dr.GetGuid(o);
+            this.contextGuid = dr.IsDBNull(++o) ? Guid.Empty : dr.GetGuid(o);
             this.source = (EventSource)dr.GetInt32(++o);
             this.severity = (EventSeverity)dr.GetByte(++o);
             this.dateTime = dr.GetDateTime(++o);
@@ -225,10 +267,12 @@ namespace Jhu.Graywulf.Logging
             this.server = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.client = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.message = dr.IsDBNull(++o) ? null : dr.GetString(o);
-            this.principal = null;
-            this.exception = null;
             this.exceptionType = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.exceptionStackTrace = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.bookmarkGuid = dr.IsDBNull(++o) ? Guid.Empty : dr.GetGuid(o);
+
+            this.exception = null;
+            this.principal = null;
 
             return o;
         }

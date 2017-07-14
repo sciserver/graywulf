@@ -14,15 +14,17 @@ namespace Jhu.Graywulf.Jobs.CopyTables
 
         protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             var parameters = Parameters.Get(activityContext);
             var item = Item.Get(activityContext);
 
-            return delegate (JobContext asyncContext)
+            return delegate()
             {
                 var task = item.GetInitializedCopyTableTask(parameters);
-                asyncContext.RegisterCancelable(task);
+                RegisterCancelable(workflowInstanceId, activityInstanceId, task);
                 task.Execute();
-                asyncContext.UnregisterCancelable(task);
+                UnregisterCancelable(workflowInstanceId, activityInstanceId, task);
             };
         }
     }

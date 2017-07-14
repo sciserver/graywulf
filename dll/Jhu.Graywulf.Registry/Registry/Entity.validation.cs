@@ -20,7 +20,7 @@ namespace Jhu.Graywulf.Registry
         {
             get
             {
-                return (lockOwner != Guid.Empty && lockOwner != RegistryContext.ContextGuid);
+                return (lockOwner != Guid.Empty && lockOwner != RegistryContext.JobReference.Guid);
             }
         }
 

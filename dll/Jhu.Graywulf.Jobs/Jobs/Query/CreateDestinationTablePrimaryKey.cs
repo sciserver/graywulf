@@ -18,6 +18,8 @@ namespace Jhu.Graywulf.Jobs.Query
 
         protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             var query = Query.Get(activityContext);
             var queryPartition = query.Partitions[0];
             Table destinationTable;
@@ -28,11 +30,11 @@ namespace Jhu.Graywulf.Jobs.Query
                 queryPartition.PrepareCreateDestinationTablePrimaryKey(context, activityContext.GetExtension<IScheduler>(), out destinationTable);
             }
 
-            return delegate (JobContext asyncContext)
+            return delegate ()
             {
-                asyncContext.RegisterCancelable(queryPartition);
+                RegisterCancelable(workflowInstanceId, activityInstanceId, queryPartition);
                 queryPartition.CreateDestinationTablePrimaryKey(destinationTable);
-                asyncContext.UnregisterCancelable(queryPartition);
+                UnregisterCancelable(workflowInstanceId, activityInstanceId, queryPartition);
             };
         }
     }

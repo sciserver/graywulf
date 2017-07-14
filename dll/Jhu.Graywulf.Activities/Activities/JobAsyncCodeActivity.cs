@@ -5,14 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Activities;
 using System.Threading.Tasks;
+using Jhu.Graywulf.Logging;
 using Jhu.Graywulf.Tasks;
+
 
 namespace Jhu.Graywulf.Activities
 {
     public abstract class JobAsyncCodeActivity : AsyncCodeActivity, IJobActivity
     {
-        protected delegate void AsyncActivityWorker(JobContext asyncContext);
-        private delegate JobContext AsyncActivityWorkerTask(JobContext asyncContext, AsyncActivityWorker worker);
+        protected delegate void AsyncActivityWorker();
+        private delegate object[] AsyncActivityWorkerTask(JobContext jobContext, LoggingContext loggingContext,  AsyncActivityWorker worker);
 
         #region Private member variables
 
@@ -20,11 +22,6 @@ namespace Jhu.Graywulf.Activities
 
         #endregion
         #region Properties
-
-        internal ConcurrentDictionary<string, ICancelableTask> CancelableTasks
-        {
-            get { return cancelableTasks; }
-        }
 
         [RequiredArgument]
         public InArgument<JobInfo> JobInfo { get; set; }
@@ -46,51 +43,61 @@ namespace Jhu.Graywulf.Activities
 
         protected sealed override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
         {
-            var context = new JobContext(Logging.LoggingContext.Current, this, activityContext);
+            var jobContext = new JobContext(this, activityContext);
+            var loggingContext = new LoggingContext(LoggingContext.Current, true);
 
-            context.Push();
+            jobContext.UpdateLoggingContext(loggingContext);
+            jobContext.Push();
+            loggingContext.Push();
 
             var action = OnBeginExecute(activityContext);
 
-            context.Pop();
+            loggingContext.Pop();
+            jobContext.Pop();
 
             var task = new AsyncActivityWorkerTask(Execute);
             activityContext.UserState = task;
 
-            return task.BeginInvoke(context, action, callback, state);
+            return task.BeginInvoke(jobContext, loggingContext, action, callback, state);
         }
 
         protected abstract AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext);
 
-        private JobContext Execute(JobContext context, AsyncActivityWorker action)
+        private object[] Execute(JobContext jobContext, LoggingContext loggingContext, AsyncActivityWorker action)
         {
-            context.Push();
+            Exception exception = null;
+
+            jobContext.Push();
+            loggingContext.Push();
 
             try
             {
-                action(context);
+                action();
             }
             catch (Exception ex)
             {
-                context.Exception = ex;
+                exception = ex;
             }
 
-            context.Pop();
+            loggingContext.Pop();
+            jobContext.Pop();
 
-            return context;
+            return new object[] { jobContext, loggingContext, exception };
         }
 
         protected override void EndExecute(AsyncCodeActivityContext activityContext, IAsyncResult result)
         {
             var task = (AsyncActivityWorkerTask)activityContext.UserState;
-            var context = task.EndInvoke(result);
-            var ex = context.Exception;
+            var retpar = task.EndInvoke(result);
+            var jobContext = (JobContext)retpar[0];
+            var loggingContext = (LoggingContext)retpar[1];
+            var ex = (Exception)retpar[2];
 
-            context.Push();
+            loggingContext.Push();
 
             // Process tracking records from async call
-            context.ActivityContext = activityContext;
-            context.FlushEvents();
+            loggingContext.ActivityContext = activityContext;
+            loggingContext.FlushEvents();
 
             if (ex != null)
             {
@@ -105,39 +112,70 @@ namespace Jhu.Graywulf.Activities
                 }
             }
 
-            context.Pop();
-            context.Dispose();
+            loggingContext.Pop();
         }
 
         /// <summary>
         /// Cancels the execution of the activity.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="activityContext"></param>
         /// <remarks>
         /// This method cancels all registered running cancelable tasks before marking the
         /// activity canceled.
         /// </remarks>
-        protected override void Cancel(AsyncCodeActivityContext context)
+        protected override void Cancel(AsyncCodeActivityContext activityContext)
         {
             ICancelableTask canceledtask;
 
-            if (cancelableTasks.TryRemove(GetUniqueActivityID(context.WorkflowInstanceId, context.ActivityInstanceId), out canceledtask))
+            if (cancelableTasks.TryRemove(GetUniqueActivityID(activityContext.WorkflowInstanceId, activityContext.ActivityInstanceId), out canceledtask))
             {
                 canceledtask.Cancel();
             }
 
             // This is absolutely important here:
-            if (context.IsCancellationRequested)
+            if (activityContext.IsCancellationRequested)
             {
-                context.MarkCanceled();
+                activityContext.MarkCanceled();
             }
 
-            base.Cancel(context);
+            base.Cancel(activityContext);
         }
 
         internal string GetUniqueActivityID(Guid workflowInstanceGuid, string activityInstanceId)
         {
             return String.Format("{0}_{1}", workflowInstanceGuid.ToString(), activityInstanceId);
         }
+
+        #region Async operation cancellation logic
+
+        /// <summary>
+        /// Registers a task that have to be canceled when the activity is canceled.
+        /// </summary>
+        /// <param name="cancelableTask"></param>
+        protected virtual void RegisterCancelable(Guid workflowInstanceId, string activityInstanceId, ICancelableTask cancelableTask)
+        {
+            if (!cancelableTasks.TryAdd(GetUniqueActivityID(workflowInstanceId, activityInstanceId), cancelableTask))
+            {
+                throw new InvalidOperationException(ExceptionMessages.OnlyOneCancelable);
+            }
+        }
+
+        /// <summary>
+        /// Unregisteres a task that no longer needs to be cancelable.
+        /// </summary>
+        /// <param name="cancelableTask"></param>
+        protected virtual void UnregisterCancelable(Guid workflowInstanceId, string activityInstanceId, ICancelableTask cancelableTask)
+        {
+            ICancelableTask finishedtask;
+            if (cancelableTasks.TryRemove(GetUniqueActivityID(workflowInstanceId, activityInstanceId), out finishedtask))
+            {
+                if (finishedtask != cancelableTask)
+                {
+                    throw new InvalidOperationException(ExceptionMessages.ObjectsDoNotMatch);
+                }
+            }
+        }
+
+        #endregion
     }
 }

@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Jhu.Graywulf.Activities
 {
     [Serializable]
-    public class JobInfo : MarshalByRefObject, IJobInfo, ICloneable
+    public class JobInfo : MarshalByRefObject, ICloneable
     {
         #region Private member variables
 
@@ -12,9 +12,10 @@ namespace Jhu.Graywulf.Activities
         private Guid domainGuid;
         private Guid federationGuid;
         private Guid jobGuid;
+        private string jobID;
+        private string jobName;
         private Guid userGuid;
         private string userName;
-        private string jobID;
 
         #endregion
         #region Public properties
@@ -43,6 +44,18 @@ namespace Jhu.Graywulf.Activities
             set { jobGuid = value; }
         }
 
+        public string JobID
+        {
+            get { return jobID; }
+            set { jobID = value; }
+        }
+
+        public string JobName
+        {
+            get { return jobName; }
+            set { jobName = value; }
+        }
+
         public Guid UserGuid
         {
             get { return userGuid; }
@@ -53,12 +66,6 @@ namespace Jhu.Graywulf.Activities
         {
             get { return userName; }
             set { userName = value; }
-        }
-
-        public string JobID
-        {
-            get { return jobID; }
-            set { jobID = value; }
         }
 
         #endregion
@@ -81,9 +88,10 @@ namespace Jhu.Graywulf.Activities
             this.domainGuid = Guid.Empty;
             this.federationGuid = Guid.Empty;
             this.jobGuid = Guid.Empty;
+            this.JobID = null;
+            this.jobName = null;
             this.userGuid = Guid.Empty;
             this.userName = null;
-            this.jobID = null;
         }
 
         private void CopyMembers(JobInfo old)
@@ -92,9 +100,10 @@ namespace Jhu.Graywulf.Activities
             this.domainGuid = old.domainGuid;
             this.federationGuid = old.federationGuid;
             this.jobGuid = old.jobGuid;
+            this.JobID = old.JobID;
+            this.jobName = old.jobName;
             this.userGuid = old.userGuid;
             this.userName = old.userName;
-            this.jobID = old.jobID;
         }
         
         public JobInfo Clone()
@@ -108,5 +117,13 @@ namespace Jhu.Graywulf.Activities
         }
 
         #endregion
+
+        public void UpdateLoggingContext(Logging.LoggingContext context)
+        {
+            context.JobGuid = this.jobGuid;
+            context.JobName = this.jobName;
+            context.UserGuid = this.userGuid;
+            context.UserName = this.userName;
+        }
     }
 }

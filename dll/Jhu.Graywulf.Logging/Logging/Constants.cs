@@ -13,5 +13,7 @@ namespace Jhu.Graywulf.Logging
         public const string UserDataEntityGuid = "EntityGuid";
         public const string UserDataEntityGuidFrom = "EntityGuidFrom";
         public const string UserDataEntityGuidTo = "EntityGuidTo";
+
+        public const string ActivityRecordDataItemEvent = "Event";
     }
 }

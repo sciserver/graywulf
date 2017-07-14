@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Activities;
+using Jhu.Graywulf.Logging;
 
 namespace Jhu.Graywulf.Activities
 {
@@ -14,13 +15,14 @@ namespace Jhu.Graywulf.Activities
 
         protected sealed override void Execute(CodeActivityContext activityContext)
         {
-            var context = new JobContext(Logging.LoggingContext.Current, this, activityContext);
-
-            context.Push();
-
+            new JobContext(this, activityContext).Push();
+            new LoggingContext(LoggingContext.Current, true).Push();
+            JobContext.Current.UpdateLoggingContext(LoggingContext.Current);
+            
             OnExecute(activityContext);
 
-            context.Pop();
+            LoggingContext.Current.Pop();
+            JobContext.Current.Pop();
         }
 
         protected abstract void OnExecute(CodeActivityContext context);
