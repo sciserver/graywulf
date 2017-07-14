@@ -62,8 +62,8 @@ namespace Jhu.Graywulf.Logging
         [ConfigurationProperty("statusMask", DefaultValue = "*")]
         public string StatusMask
         {
-            get { return (string)base[propSeverityMask]; }
-            set { base[propSeverityMask] = value; }
+            get { return (string)base[propStatusMask]; }
+            set { base[propStatusMask] = value; }
         }
 
         #endregion
@@ -88,7 +88,7 @@ namespace Jhu.Graywulf.Logging
 
             if (value == "*")
             {
-                return (T)Enum.ToObject(typeof(T), (UInt32)0xFFFFFFFF);
+                return (T)Enum.ToObject(typeof(T), 0x7FFFFFFF);
             }
             else if (Enum.TryParse<T>(value, out res))
             {

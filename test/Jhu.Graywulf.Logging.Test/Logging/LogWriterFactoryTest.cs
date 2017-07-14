@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Logging
         {
             var f = new LogWriterFactory();
             var writers = f.GetLogWriters();
-            Assert.AreEqual(4, writers.Length);
+            Assert.AreEqual(5, writers.Length);
         }
     }
 }

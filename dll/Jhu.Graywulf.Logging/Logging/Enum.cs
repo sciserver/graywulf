@@ -28,7 +28,7 @@ namespace Jhu.Graywulf.Logging
         CommandLineTool = 1024,
 
         Test = 0x10000000,
-        All = 0xFFFFFFFF,
+        All = 0x7FFFFFFF,
     }
 
     [Flags]
