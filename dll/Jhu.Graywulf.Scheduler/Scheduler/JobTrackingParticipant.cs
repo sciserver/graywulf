@@ -177,8 +177,8 @@ namespace Jhu.Graywulf.Scheduler
             if (data.ContainsKey(Activities.Constants.ActivityParameterJobInfo))
             {
                 var jobinfo = (JobInfo)data[Activities.Constants.ActivityParameterJobInfo];
-                e.UserGuid = jobinfo.UserGuid;
-                e.JobGuid = jobinfo.JobGuid;
+
+                jobinfo.UpdateLoggingEvent(e);
             }
 
             // TODO Why don't we just copy everything?

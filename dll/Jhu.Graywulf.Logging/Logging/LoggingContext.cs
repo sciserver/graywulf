@@ -331,12 +331,12 @@ namespace Jhu.Graywulf.Logging
 
         public virtual void UpdateEvent(Event e)
         {
-            e.UserGuid = this.userGuid;
-            e.UserName = this.userName;
-            e.TaskName = this.taskName;
-            e.JobGuid = this.jobGuid;
-            e.JobName = this.jobName;
-            e.ContextGuid = this.contextGuid;
+            if (this.userGuid != Guid.Empty) e.UserGuid = this.userGuid;
+            if (this.userName != null) e.UserName = this.userName;
+            if (this.taskName != null) e.TaskName = this.taskName;
+            if (this.jobGuid != Guid.Empty) e.JobGuid = this.jobGuid;
+            if (this.jobName != null) e.JobName = this.jobName;
+            if (this.contextGuid != Guid.Empty) e.ContextGuid = this.contextGuid;
 
             e.Principal = System.Threading.Thread.CurrentPrincipal;
         }

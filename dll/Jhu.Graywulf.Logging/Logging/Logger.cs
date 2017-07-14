@@ -43,45 +43,41 @@ namespace Jhu.Graywulf.Logging
 
         public void Start(bool attachConsole)
         {
-            if (this.status != LoggerStatus.Stopped)
+            if (this.status != LoggerStatus.Started)
             {
-                throw new InvalidOperationException();  // *** TODO
-            }
+                this.status = LoggerStatus.Started;
 
-            this.status = LoggerStatus.Started;
+                var f = new LogWriterFactory();
 
-            var f = new LogWriterFactory();
-
-            foreach (var writer in f.GetLogWriters())
-            {
-                if (attachConsole && writer is ConsoleLogWriter ||
-                    !(writer is ConsoleLogWriter))
+                foreach (var writer in f.GetLogWriters())
                 {
-                    writers.Add(writer);
+                    if (attachConsole && writer is ConsoleLogWriter ||
+                        !(writer is ConsoleLogWriter))
+                    {
+                        writers.Add(writer);
+                    }
                 }
-            }
 
-            foreach (var writer in writers)
-            {
-                writer.Start();
+                foreach (var writer in writers)
+                {
+                    writer.Start();
+                }
             }
         }
 
         public void Stop()
         {
-            if (this.status != LoggerStatus.Started)
+            if (this.status != LoggerStatus.Stopped)
             {
-                throw new InvalidOperationException();  // *** TODO
+                foreach (var writer in writers)
+                {
+                    writer.Stop();
+                }
+
+                writers.Clear();
+
+                this.status = LoggerStatus.Stopped;
             }
-
-            foreach (var writer in writers)
-            {
-                writer.Stop();
-            }
-
-            writers.Clear();
-
-            this.status = LoggerStatus.Stopped;
         }
 
         /// <summary>

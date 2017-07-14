@@ -51,8 +51,6 @@ namespace Jhu.Graywulf.Logging
             var context = OperationContext.Current;
             string operation = null;
             string client = null;
-            Guid userGuid = Guid.Empty;
-            Guid sessionGuid = Guid.Empty;
 
             if (context != null)
             {
@@ -69,21 +67,8 @@ namespace Jhu.Graywulf.Logging
                 }
             }
 
-            /*
-            var principal = System.Threading.Thread.CurrentPrincipal as Jhu.Graywulf.AccessControl.GraywulfPrincipal;
-
-            if (principal != null)
-            {
-                userGuid = principal.Identity.UserReference.Guid;
-                Guid.TryParse(principal.Identity.SessionId, out sessionGuid);
-            }
-            */
-
-            e.SessionGuid = sessionGuid;
-            e.UserGuid = userGuid;
-            e.Principal = System.Threading.Thread.CurrentPrincipal;
-            e.Client = client;
-            e.Operation = operation;
+            if (client != null) e.Client = client;
+            if (operation != null) e.Operation = operation;
         }
     }
 }

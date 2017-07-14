@@ -132,10 +132,5 @@ namespace Jhu.Graywulf.Scheduler
             this.timeout = TimeSpan.Zero;
             this.status = JobStatus.Unknown;
         }
-
-        public override object InitializeLifetimeService()
-        {
-            return null;
-        }
     }
 }

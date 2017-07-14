@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Jhu.Graywulf.Activities
 {
     [Serializable]
-    public class JobInfo : MarshalByRefObject, ICloneable
+    public class JobInfo : ICloneable
     {
         #region Private member variables
 
@@ -124,6 +124,14 @@ namespace Jhu.Graywulf.Activities
             context.JobName = this.jobName;
             context.UserGuid = this.userGuid;
             context.UserName = this.userName;
+        }
+
+        public void UpdateLoggingEvent(Logging.Event e)
+        {
+            e.UserGuid = this.userGuid;
+            e.UserName = this.userName;
+            e.JobGuid = this.jobGuid;
+            e.JobName = this.jobName;
         }
     }
 }

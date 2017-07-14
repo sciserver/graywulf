@@ -4,12 +4,25 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.Test;
 
 namespace Jhu.Graywulf.Web.Security
 {
     [TestClass]
-    public class GraywulfIdentityProviderTest
+    public class GraywulfIdentityProviderTest : TestClassBase
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            StartLogger();
+        }
+
+        [ClassCleanup]
+        public static void CleanUp()
+        {
+            StopLogger();
+        }
+
         [TestMethod]
         public void ManipulateUserTest()
         {

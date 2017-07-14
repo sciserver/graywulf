@@ -101,8 +101,8 @@ namespace Jhu.Graywulf.Activities
 
             if (ex != null)
             {
-                if (ex is AggregateException &&
-                   ((AggregateException)ex).InnerException is OperationCanceledException)
+                if (ex is OperationCanceledException ||
+                    ex is AggregateException && ((AggregateException)ex).InnerException is OperationCanceledException)
                 {
                     // This is a normal way of operation
                 }

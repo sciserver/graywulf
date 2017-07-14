@@ -604,24 +604,26 @@ namespace Jhu.Graywulf.Scheduler
 
                     foreach (var ji in jis)
                     {
-                        var job = new Job()
-                        {
-                            Guid = ji.Guid,
-                            JobID = ji.JobID,
-                            QueueGuid = ji.ParentReference.Guid,
-                            WorkflowTypeName = ji.WorkflowTypeName,
-                            Timeout = ji.JobTimeout,
-                        };
-
                         var user = new User(context);
                         user.Guid = ji.UserGuidOwner;
                         user.Load();
 
-                        job.ClusterGuid = cluster.Guid;
-                        job.UserGuid = user.Guid;
-                        job.UserName = user.Name;
-                        job.DomainGuid = ji.JobDefinition.Federation.Domain.Guid;
-                        job.FederationGuid = ji.JobDefinition.Federation.Guid;
+                        var job = new Job()
+                        {
+                            Guid = ji.Guid,
+                            QueueGuid = ji.ParentReference.Guid,
+                            WorkflowTypeName = ji.WorkflowTypeName,
+                            Timeout = ji.JobTimeout,
+
+                            ClusterGuid = cluster.Guid,
+                            DomainGuid = ji.JobDefinition.Federation.Domain.Guid,
+                            FederationGuid = ji.JobDefinition.Federation.Guid,
+                            JobGuid = ji.Guid,
+                            JobID = ji.JobID,
+                            JobName = ji.Name,
+                            UserGuid = user.Guid,
+                            UserName = user.Name,
+                        };
 
                         if ((ji.JobExecutionStatus & JobExecutionState.Scheduled) != 0)
                         {
@@ -788,7 +790,7 @@ namespace Jhu.Graywulf.Scheduler
 
         private void PersistJob(Job job)
         {
-            
+
 
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
@@ -802,7 +804,7 @@ namespace Jhu.Graywulf.Scheduler
 
                 ji.Save();
             }
-            
+
             LogJobStatus("Persisting job {0}.", job);
             job.Status = JobStatus.Persisted;
             appDomains[job.AppDomainID].PersistJob(job);
@@ -985,7 +987,7 @@ namespace Jhu.Graywulf.Scheduler
         private void LogDebug(string message)
         {
 #if DEBUG
-            var method = Logging.LoggingContext.Current.UnwindStack(1);
+            var method = Logging.LoggingContext.Current.UnwindStack(2);
 
             Logging.LoggingContext.Current.LogDebug(
                 Logging.EventSource.Scheduler,
@@ -998,7 +1000,7 @@ namespace Jhu.Graywulf.Scheduler
         private void LogJobStatus(string message, Job job)
         {
 #if DEBUG
-            var method = Logging.LoggingContext.Current.UnwindStack(1);
+            var method = Logging.LoggingContext.Current.UnwindStack(2);
 
             var e = Logging.LoggingContext.Current.CreateEvent(
                 EventSeverity.Status,
@@ -1008,8 +1010,7 @@ namespace Jhu.Graywulf.Scheduler
                 null,
                 null);
 
-            e.UserGuid = job.UserGuid;
-            e.JobGuid = job.JobGuid;
+            job.UpdateLoggingEvent(e);
 
             Logging.LoggingContext.Current.WriteEvent(e);
 #endif
@@ -1038,15 +1039,14 @@ namespace Jhu.Graywulf.Scheduler
                 null,
                 null);
 
-            e.UserGuid = job.UserGuid;
-            e.JobGuid = job.JobGuid;
+            job.UpdateLoggingEvent(e);
 
             Logging.LoggingContext.Current.WriteEvent(e);
         }
 
         private void LogError(Exception ex)
         {
-            var method = Logging.LoggingContext.Current.UnwindStack(1);
+            var method = Logging.LoggingContext.Current.UnwindStack(2);
 
             Logging.LoggingContext.Current.LogError(Logging.EventSource.Scheduler, ex);
         }

@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Web.Services
                 }
             }
 
-            e.Client = client;
+            if (client != null) e.Client = client;
         }
     }
 }

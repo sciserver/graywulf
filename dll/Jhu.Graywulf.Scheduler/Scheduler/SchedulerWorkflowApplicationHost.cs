@@ -87,8 +87,6 @@ namespace Jhu.Graywulf.Scheduler
             // Load job data from the registry
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                // TODO: delete
-                // context.ContextGuid = contextGuid;
                 context.JobReference.Guid = job.Guid;
 
                 JobInstance ji = LoadJobInstance(context, job);
@@ -106,16 +104,7 @@ namespace Jhu.Graywulf.Scheduler
                 // Set default parameters to be passed to the job
                 // These will be passed around from activity to activity and
                 // can be used by the job tracker (logger)
-                var jobinfo = new JobInfo()
-                {
-                    ClusterGuid = ji.JobDefinition.Federation.Domain.Cluster.Guid,
-                    DomainGuid = ji.JobDefinition.Federation.Domain.Guid,
-                    FederationGuid = ji.JobDefinition.Federation.Guid,
-                    UserGuid = ji.UserGuidOwner,
-                    JobGuid = ji.Guid,
-                    JobID = ji.JobID,
-                };
-
+                var jobinfo = new JobInfo((JobInfo)job);
                 pars.Add(Jhu.Graywulf.Activities.Constants.ActivityParameterJobInfo, jobinfo);
 
                 // Start the workflow

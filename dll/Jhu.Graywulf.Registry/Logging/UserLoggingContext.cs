@@ -46,8 +46,8 @@ namespace Jhu.Graywulf.Logging
                 Guid.TryParse(principal.Identity.SessionId, out sessionGuid);
             }
 
-            e.SessionGuid = sessionGuid;
-            e.UserGuid = userGuid;
+            if (sessionGuid != Guid.Empty) e.SessionGuid = sessionGuid;
+            if (userGuid != Guid.Empty) e.UserGuid = userGuid;
         }
     }
 }

@@ -142,7 +142,7 @@ namespace Jhu.Graywulf.Logging
             cmd.Parameters["@UserGuid"].Value = e.UserGuid == Guid.Empty ? (object)DBNull.Value : e.UserGuid;
             cmd.Parameters["@UserName"].Value = e.UserName == null ? (object)DBNull.Value : (object)e.UserName;
             cmd.Parameters["@TaskName"].Value = e.TaskName == null ? (object)DBNull.Value : (object)e.TaskName;
-            cmd.Parameters["@JobGuid"].Value = e.JobGuid;
+            cmd.Parameters["@JobGuid"].Value = e.JobGuid == Guid.Empty ? (object)DBNull.Value : e.JobGuid;
             cmd.Parameters["@JobName"].Value = e.JobName == null ? (object)DBNull.Value : (object)e.JobName;
             cmd.Parameters["@SessionGuid"].Value = e.SessionGuid == Guid.Empty ? (object)DBNull.Value : e.SessionGuid;
             cmd.Parameters["@ContextGuid"].Value = e.ContextGuid == Guid.Empty ? (object)DBNull.Value : e.ContextGuid;

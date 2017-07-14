@@ -170,7 +170,7 @@ namespace Jhu.Graywulf.RemoteService.Server
         public static void LogDebug(string message, params object[] args)
         {
             var context = WcfLoggingContext.Current;
-            var method = context.UnwindStack(1);
+            var method = context.UnwindStack(2);
 
             context.LogDebug(
                 EventSource.RemoteService,
