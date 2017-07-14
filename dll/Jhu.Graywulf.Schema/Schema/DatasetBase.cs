@@ -6,6 +6,7 @@ using System.Text;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using Jhu.Graywulf.Components;
 
@@ -684,6 +685,26 @@ namespace Jhu.Graywulf.Schema
             }
         }
 
+        internal void RenameObject(DatabaseObject obj, string schemaName, string objectName)
+        {
+            LogOperation(
+                "Renaming {0} {1}.{2} to {3}.{4} in database {5}:{6}.", 
+                Constants.DatabaseObjectsName_Singular[obj.ObjectType],
+                obj.SchemaName, obj.ObjectName,
+                schemaName, objectName,
+                obj.DatasetName, obj.DatabaseName);
+
+            try
+            {
+                OnRenameObject(obj, schemaName, objectName);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                throw ex;
+            }
+        }
+
         /// <summary>
         /// When overloaded in derived classes, renames an object.
         /// </summary>
@@ -693,9 +714,48 @@ namespace Jhu.Graywulf.Schema
         /// <remarks>
         /// Only works with mutable datasets, ie. myDBs
         /// </remarks>
-        internal abstract void RenameObject(DatabaseObject obj, string schemaName, string objectName);
+        internal abstract void OnRenameObject(DatabaseObject obj, string schemaName, string objectName);
 
-        internal abstract void CreateTable(Table table, bool createPrimaryKey, bool createIndexes);
+        internal void CreateTable(Table table, bool createPrimaryKey, bool createIndexes)
+        {
+            var name = table.SchemaName + "." + table.ObjectName;
+
+            LogOperation(
+                "Creating table {0}.{1} in database {2}:{3}.",
+                table.SchemaName, table.ObjectName,
+                table.DatasetName, table.DatabaseName);
+
+            try
+            {
+                OnCreateTable(table, createPrimaryKey, createIndexes);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                throw ex;
+            }
+        }
+
+        internal abstract void OnCreateTable(Table table, bool createPrimaryKey, bool createIndexes);
+
+        internal void DropObject(DatabaseObject obj)
+        {
+            LogOperation(
+                "Dropping {0} {1}.{2} from database {3}:{4}.",
+                Constants.DatabaseObjectsName_Singular[obj.ObjectType],
+                obj.SchemaName, obj.ObjectName,
+                obj.DatasetName, obj.DatabaseName);
+
+            try
+            {
+                OnDropObject(obj);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                throw ex;
+            }
+        }
 
         /// <summary>
         /// When overloaded in derived classes, drops an object.
@@ -705,13 +765,69 @@ namespace Jhu.Graywulf.Schema
         /// <remarks>
         /// Only works with mutable datasets, ie. myDBs
         /// </remarks>
-        internal abstract void DropObject(DatabaseObject obj);
+        internal abstract void OnDropObject(DatabaseObject obj);
 
-        internal abstract void CreateIndex(Index index);
+        internal void CreateIndex(Index index)
+        {
+            LogOperation(
+                "Creating index {0} on {1}.{2} in database {3}:{4}.",
+                index.IndexName,
+                index.DatabaseObject.SchemaName, index.DatabaseObject.ObjectName,
+                index.DatabaseObject.DatasetName, index.DatabaseObject.DatabaseName);
 
-        internal abstract void DropIndex(Index index);
+            try
+            {
+                OnCreateIndex(index);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                throw ex;
+            }
+        }
 
-        internal abstract void TruncateTable(Table table);
+        internal abstract void OnCreateIndex(Index index);
+
+        internal void DropIndex(Index index)
+        {
+            LogOperation(
+                "Dropping index {0} on {1}.{2} in database {3}:{4}.",
+                index.IndexName,
+                index.DatabaseObject.SchemaName, index.DatabaseObject.ObjectName,
+                index.DatabaseObject.DatasetName, index.DatabaseObject.DatabaseName);
+
+            try
+            {
+                OnDropIndex(index);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                throw ex;
+            }
+        }
+
+        internal abstract void OnDropIndex(Index index);
+
+        internal void TruncateTable(Table table)
+        {
+            LogOperation(
+                "Truncating table {0}.{1} in database {2}:{3}.",
+                table.SchemaName, table.ObjectName,
+                table.DatasetName, table.DatabaseName);
+
+            try
+            {
+                OnTruncateTable(table);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                throw ex;
+            }
+        }
+
+        internal abstract void OnTruncateTable(Table table);
 
         #endregion
 
@@ -905,5 +1021,52 @@ namespace Jhu.Graywulf.Schema
             this.statistics.Clear();
             this.metadata.Clear();
         }
+
+        #region Logging
+
+        internal Logging.Event LogError(Exception ex)
+        {
+            var e = Logging.LoggingContext.Current.CreateEvent(
+                Logging.EventSeverity.Error,
+                Logging.EventSource.Schema,
+                null,
+                null,
+                ex,
+                null);
+
+            Logging.LoggingContext.Current.WriteEvent(e);
+
+            return e;
+        }
+
+        protected Logging.Event LogDebug(string message, params object[] args)
+        {
+#if DEBUG
+            var method = new StackFrame(1, true).GetMethod();
+
+            var e = Logging.LoggingContext.Current.LogDebug(
+                Logging.EventSource.Schema,
+                String.Format(message, args),
+                method.DeclaringType.FullName + "." + method.Name,
+                null);
+
+            return e;
+#endif
+        }
+
+        protected Logging.Event LogOperation(string message, params object[] args)
+        {
+            var method = new StackFrame(1, true).GetMethod();
+
+            var e = Logging.LoggingContext.Current.LogOperation(
+                Logging.EventSource.Schema,
+                String.Format(message, args),
+                method.DeclaringType.FullName + "." + method.Name,
+                null);
+
+            return e;
+        }
+
+        #endregion
     }
 }

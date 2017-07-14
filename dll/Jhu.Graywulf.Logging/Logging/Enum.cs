@@ -26,6 +26,7 @@ namespace Jhu.Graywulf.Logging
         WebService = 256,
         RemoteService = 512,
         CommandLineTool = 1024,
+        Schema = 2048,
 
         Test = 0x10000000,
         All = 0x7FFFFFFF,

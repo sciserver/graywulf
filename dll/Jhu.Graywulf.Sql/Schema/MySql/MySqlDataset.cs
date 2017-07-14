@@ -615,7 +615,7 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
             throw new NotImplementedException();
         }
 
-        internal override void RenameObject(DatabaseObject obj, string schemaName, string objectName)
+        internal override void OnRenameObject(DatabaseObject obj, string schemaName, string objectName)
         {
             throw new NotImplementedException();
 
@@ -645,7 +645,7 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
             */
         }
 
-        internal override void DropObject(DatabaseObject obj)
+        internal override void OnDropObject(DatabaseObject obj)
         {
             throw new NotImplementedException();
 
@@ -669,22 +669,22 @@ WHERE r.routine_schema LIKE @databaseName AND r.routine_name LIKE @objectName ;"
             }*/
         }
 
-        internal override void CreateTable(Table table, bool createPrimaryKey, bool createIndexes)
+        internal override void OnCreateTable(Table table, bool createPrimaryKey, bool createIndexes)
         {
             throw new NotImplementedException();
         }
 
-        internal override void CreateIndex(Index index)
+        internal override void OnCreateIndex(Index index)
         {
             throw new NotImplementedException();
         }
 
-        internal override void DropIndex(Index index)
+        internal override void OnDropIndex(Index index)
         {
             throw new NotImplementedException();
         }
 
-        internal override void TruncateTable(Table table)
+        internal override void OnTruncateTable(Table table)
         {
             throw new NotImplementedException();
         }

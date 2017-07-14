@@ -90,6 +90,11 @@ namespace Jhu.Graywulf.Logging
         /// <param name="e"></param>
         public void WriteEvent(Event e)
         {
+            if (this.status != LoggerStatus.Started)
+            {
+                throw new InvalidOperationException();  // *** TODO
+            }
+
             foreach (var writer in writers)
             {
                 writer.WriteEvent(e);
