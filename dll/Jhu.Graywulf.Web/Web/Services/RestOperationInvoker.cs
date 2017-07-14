@@ -37,16 +37,18 @@ namespace Jhu.Graywulf.Web.Services
 
         public object Invoke(object instance, object[] inputs, out object[] outputs)
         {
-            object res = null;
+            new RestLoggingContext(Logging.LoggingContext.Current).Push();
+            RestLoggingContext.Current.DefaultEventSource = Logging.EventSource.WebService;
+
             var svc = (RestServiceBase)instance;
-            
             svc.OnBeforeInvoke();
-            svc.LogOperation();
+            LogOperation();
 
             try
             {
-                res = this.originalInvoker.Invoke(instance, inputs, out outputs);                
+                var res = this.originalInvoker.Invoke(instance, inputs, out outputs);
                 svc.OnAfterInvoke();
+                return res;
             }
             catch (Exception ex)
             {
@@ -57,7 +59,7 @@ namespace Jhu.Graywulf.Web.Services
                 }
 #endif
 
-                var logevent = svc.LogError(ex);
+                var logevent = LogError(ex);
 
                 // TODO: this won't catch exceptions from IEnumerator that occur
                 // in MoveNext, so they won't be logged.
@@ -65,10 +67,12 @@ namespace Jhu.Graywulf.Web.Services
 
                 // Wrap up exception into a RestOperationException which will convey it to
                 // the error handler implementation
-                throw new RestOperationException(ex, logevent?.ID.ToString());
+                throw new RestOperationException(ex, logevent?.ID.ToString());      // *** TODO: use bookmark
             }
-
-            return res;
+            finally
+            {
+                RestLoggingContext.Current.Pop();
+            }
         }
 
         public IAsyncResult InvokeBegin(object instance, object[] inputs, AsyncCallback callback, object state)
@@ -80,5 +84,71 @@ namespace Jhu.Graywulf.Web.Services
         {
             throw new NotImplementedException();
         }
+
+        #region Logging
+
+        internal Logging.Event LogOperation()
+        {
+            var e = Logging.LoggingContext.Current.CreateEvent(
+                Logging.EventSeverity.Operation,
+                Logging.EventSource.WebService,
+                null,
+                null,
+                null,
+                null);
+
+            UpdateEvent(e);
+            Logging.LoggingContext.Current.WriteEvent(e);
+
+            return e;
+        }
+
+        internal Logging.Event LogError(Exception ex)
+        {
+            var e = Logging.LoggingContext.Current.CreateEvent(
+                Logging.EventSeverity.Error,
+                Logging.EventSource.WebService,
+                null,
+                null,
+                ex,
+                null);
+
+            UpdateEvent(e);
+            Logging.LoggingContext.Current.WriteEvent(e);
+
+            return e;
+        }
+
+        private void UpdateEvent(Logging.Event e)
+        {
+            string message = null;
+            string operation = null;
+
+            var context = System.ServiceModel.OperationContext.Current;
+
+            if (context != null)
+            {
+                if (context.IncomingMessageProperties.ContainsKey("HttpOperationName"))
+                {
+                    operation = context.Host.Description.ServiceType.FullName + "." +
+                        (string)context.IncomingMessageProperties["HttpOperationName"];
+                }
+
+                if (context.IncomingMessageProperties.ContainsKey(HttpRequestMessageProperty.Name))
+                {
+                    var req = (HttpRequestMessageProperty)context.IncomingMessageProperties["httpRequest"];
+
+                    message =
+                        req.Method.ToUpper() + " " +
+                        context.IncomingMessageProperties.Via.AbsolutePath +
+                        context.IncomingMessageProperties["HttpOperationName"];
+                }
+            }
+
+            e.Message = message;
+            e.Operation = operation;
+        }
+
+        #endregion
     }
 }

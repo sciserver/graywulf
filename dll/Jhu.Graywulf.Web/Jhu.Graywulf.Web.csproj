@@ -55,7 +55,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Logging\WebLoggingContext.cs" />
     <Compile Include="Util\CookieConverter.cs" />
     <Compile Include="Util\DocumentationFormatter.cs" />
     <Compile Include="Util\EmailSender.cs" />
@@ -106,6 +105,7 @@
     <Compile Include="Web\Services\RestError.cs" />
     <Compile Include="Web\Services\RestErrorHandler.cs" />
     <Compile Include="Web\Services\RestErrorResponse.cs" />
+    <Compile Include="Web\Services\RestLoggingContext.cs" />
     <Compile Include="Web\Services\RestMessageFormatter.cs" />
     <Compile Include="Web\Services\RestOperationBehavior.cs" />
     <Compile Include="Web\Services\RestOperationException.cs" />
@@ -131,6 +131,7 @@
     <Compile Include="Web\Services\TextResponseMessageFormatter.cs" />
     <Compile Include="Web\UI\ApplicationBase.cs" />
     <Compile Include="Web\UI\Constants.cs" />
+    <Compile Include="Web\UI\WebLoggingContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Web\Security\ExceptionMessages.resx">

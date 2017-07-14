@@ -1,31 +1,31 @@
 ﻿using System;
-using System.Web;
 using System.ServiceModel.Channels;
 using System.Runtime.Serialization;
+using Jhu.Graywulf.Logging;
 
-namespace Jhu.Graywulf.Logging
+namespace Jhu.Graywulf.Web.Services
 {
-    public class WebLoggingContext : LoggingContext
+    public class RestLoggingContext : UserLoggingContext
     {
         #region Singleton access
 
-        public static new WebLoggingContext Current
+        public static new RestLoggingContext Current
         {
             get
             {
-                return LoggingContext.Current as WebLoggingContext;
+                return LoggingContext.Current as RestLoggingContext;
             }
         }
 
         #endregion
 
-        public WebLoggingContext(LoggingContext outerContext)
+        public RestLoggingContext(LoggingContext outerContext)
             : base(outerContext)
         {
             InitializeMembers(new StreamingContext());
         }
 
-        public WebLoggingContext(WebLoggingContext outerContext)
+        public RestLoggingContext(RestLoggingContext outerContext)
             : base(outerContext)
         {
             CopyMembers(outerContext);
@@ -36,7 +36,7 @@ namespace Jhu.Graywulf.Logging
         {
         }
 
-        private void CopyMembers(WebLoggingContext outerContext)
+        private void CopyMembers(RestLoggingContext outerContext)
         {
         }
 
@@ -44,22 +44,7 @@ namespace Jhu.Graywulf.Logging
         {
             base.UpdateEvent(e);
 
-            Guid userGuid = Guid.Empty;
-            Guid sessionGuid = Guid.Empty;
             string client = null;
-
-            var webcontext = System.Web.HttpContext.Current;
-
-            if (webcontext != null)
-            {
-                var req = webcontext.Request;
-                client = req.ServerVariables["HTTP_X_FORWARDED_FOR"];
-
-                if (client == null)
-                {
-                    client = req.UserHostAddress;
-                }
-            }
 
             var wcfcontext = System.ServiceModel.OperationContext.Current;
 
@@ -82,17 +67,6 @@ namespace Jhu.Graywulf.Logging
                 }
             }
 
-            var principal = System.Threading.Thread.CurrentPrincipal as Jhu.Graywulf.AccessControl.GraywulfPrincipal;
-
-            if (principal != null)
-            {
-                userGuid = principal.Identity.UserReference.Guid;
-                Guid.TryParse(principal.Identity.SessionId, out sessionGuid);
-            }
-
-            e.SessionGuid = sessionGuid;
-            e.UserGuid = userGuid;
-            e.Principal = System.Threading.Thread.CurrentPrincipal;
             e.Client = client;
         }
     }
