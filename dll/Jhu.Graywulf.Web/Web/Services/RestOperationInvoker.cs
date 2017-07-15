@@ -113,7 +113,6 @@ namespace Jhu.Graywulf.Web.Services
                 ex,
                 null);
 
-            UpdateEvent(e);
             Logging.LoggingContext.Current.WriteEvent(e);
 
             return e;

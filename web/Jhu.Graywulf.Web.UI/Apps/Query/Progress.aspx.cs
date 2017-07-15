@@ -9,7 +9,7 @@ using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Query
 {
-    public partial class Progress : System.Web.UI.Page
+    public partial class Progress : PageBase
     {
         public static string GetUrl(Guid jobGuid)
         {

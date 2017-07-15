@@ -226,12 +226,14 @@ namespace Jhu.Graywulf.Logging
 
         public void Push()
         {
+            this.outerContext = LoggingContext.Current;
             LoggingContext.Current = this;
         }
 
         public void Pop()
         {
             LoggingContext.Current = this.outerContext;
+            this.outerContext = null;
         }
 
         public void StartLogger(EventSource defaultEventSource, bool attachConsole)

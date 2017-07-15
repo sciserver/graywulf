@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Common
 {
-    public partial class Error : System.Web.UI.Page
+    public partial class Error : PageBase
     {
         public static string GetUrl()
         {

@@ -60,6 +60,8 @@ namespace Jhu.Graywulf.Web.UI
             }
             
             e.Client = client;
+
+            //var error = Logging.LoggingContext.Current.LogError(Logging.EventSource.WebUI, ex, null, AppRelativeVirtualPath, null);
         }
     }
 }

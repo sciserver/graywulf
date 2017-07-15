@@ -12,8 +12,14 @@ namespace Jhu.Graywulf.Web.UI
 {
     public class PageBase : Page, IRegistryContextObject
     {
+        #region Private member variables
+
         private string overrideUrl;
         private RegistryContext registryContext;
+        private WebLoggingContext loggingContext;
+
+        #endregion
+        #region Properties
 
         /// <summary>
         /// Gets the original referer of the page, even after postbacks.
@@ -83,7 +89,18 @@ namespace Jhu.Graywulf.Web.UI
             set { throw new InvalidOperationException(); }
         }
 
-        #region Initializer functions
+        internal WebLoggingContext LoggingContext
+        {
+            get { return loggingContext; }
+        }
+
+        protected bool IsAuthenticatedUser(Guid userGuid)
+        {
+            return userGuid != ((GraywulfIdentity)User.Identity).UserReference.Guid;
+        }
+
+        #endregion
+        #region Constructors and initializers
 
         public PageBase()
         {
@@ -92,31 +109,100 @@ namespace Jhu.Graywulf.Web.UI
 
         private void InitializeMembers()
         {
-            overrideUrl = null;
+            this.overrideUrl = null;
+            this.registryContext = null;
+            this.loggingContext = new WebLoggingContext(Logging.LoggingContext.Current);
+        }
+
+        #endregion
+        #region Event hook handlers
+
+        protected override void OnPreInit(EventArgs e)
+        {
+            loggingContext.Push();
+
+            LogOperation();
+
+            base.OnPreInit(e);
+            loggingContext.Pop();
+        }
+
+        protected override void OnInit(EventArgs e)
+        {
+            loggingContext.Push();
+            base.OnInit(e);
+            loggingContext.Pop();
+        }
+
+        protected override void OnInitComplete(EventArgs e)
+        {
+            loggingContext.Push();
+            base.OnInitComplete(e);
+            loggingContext.Pop();
+        }
+
+        protected override void OnPreLoad(EventArgs e)
+        {
+            loggingContext.Push();
+            base.OnPreLoad(e);
+            loggingContext.Pop();
         }
 
         protected override void OnLoad(EventArgs e)
         {
+            loggingContext.Push();
+
             base.OnLoad(e);
 
             if (!IsPostBack && Request.UrlReferrer != null)
             {
                 OriginalReferer = Request.UrlReferrer.ToString();
             }
+
+            loggingContext.Pop();
+        }
+
+        protected override void OnLoadComplete(EventArgs e)
+        {
+            loggingContext.Push();
+            base.OnLoadComplete(e);
+            loggingContext.Pop();
         }
 
         protected override void OnPreRender(EventArgs e)
         {
+            loggingContext.Push();
+
             base.OnPreRender(e);
 
             if (!String.IsNullOrEmpty(overrideUrl))
             {
                 ScriptManager.RegisterClientScriptBlock(this, typeof(PageBase), "Jhu.Graywulf.Web.UI.PageBase.OverrideUrl", GetOverrideUrlScript(), true);
             }
+
+            loggingContext.Pop();
+        }
+
+        protected override void OnPreRenderComplete(EventArgs e)
+        {
+            loggingContext.Push();
+            base.OnPreRenderComplete(e);
+            loggingContext.Pop();
+        }
+
+        protected override void OnSaveStateComplete(EventArgs e)
+        {
+            loggingContext.Push();
+            base.OnSaveStateComplete(e);
+            loggingContext.Pop();
         }
 
         protected override void OnUnload(EventArgs e)
         {
+            loggingContext.Push();
+
+            base.OnUnload(e);
+
             if (registryContext != null)
             {
                 registryContext.CommitTransaction();
@@ -124,19 +210,8 @@ namespace Jhu.Graywulf.Web.UI
                 registryContext = null;
             }
 
-            base.OnUnload(e);
-        }
-
-        protected bool IsAuthenticatedUser(Guid userGuid)
-        {
-            return userGuid != ((GraywulfIdentity)User.Identity).UserReference.Guid;
-        }
-
-        protected Logging.Event LogError(Exception ex)
-        {
-            // TODO: what if called from admin?
-            var error = Logging.LoggingContext.Current.LogError(Logging.EventSource.WebUI, ex, null, AppRelativeVirtualPath, null);
-            return error;
+            loggingContext.Pop();
+            loggingContext.Dispose();
         }
 
         protected override void OnError(EventArgs e)
@@ -171,11 +246,15 @@ namespace Jhu.Graywulf.Web.UI
         }
 
         #endregion
+        #region Utility functions
 
         public Control FindControlRecursive(string id)
         {
             return Util.PageUtility.FindControlRecursive(this, id);
         }
+
+        #endregion
+        #region Browser address bar URL override
 
         public void OverrideUrl(string overrideUrl)
         {
@@ -192,5 +271,44 @@ namespace Jhu.Graywulf.Web.UI
 
             return String.Format(script, "", overrideUrl);
         }
+
+        #endregion
+        #region Logging
+
+        internal void LogOperation()
+        {
+            var message = Request.HttpMethod + " " + Request.Url.AbsolutePath;
+            var operation = this.GetType().BaseType.FullName;
+
+            var e = Logging.LoggingContext.Current.CreateEvent(
+                Logging.EventSeverity.Operation,
+                Logging.EventSource.WebUI,
+                message,
+                operation,
+                null,
+                null);
+
+            Logging.LoggingContext.Current.WriteEvent(e);
+        }
+
+        protected Logging.Event LogError(Exception ex)
+        {
+            var e = Logging.LoggingContext.Current.CreateEvent(
+                Logging.EventSeverity.Error,
+                Logging.EventSource.WebUI,
+                null,
+                null,
+                ex,
+                null);
+
+            // Create a bookmark and report to user
+            e.BookmarkGuid = Guid.NewGuid();
+
+            Logging.LoggingContext.Current.WriteEvent(e);
+
+            return e;
+        }
+
+        #endregion
     }
 }
