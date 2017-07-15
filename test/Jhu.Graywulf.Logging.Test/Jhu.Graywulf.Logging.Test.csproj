@@ -62,6 +62,7 @@
     <None Include="app.config" />
     <None Include="Base.config" />
     <None Include="build.config" />
+    <None Include="post-build.ps1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Logging\Jhu.Graywulf.Logging.csproj">
