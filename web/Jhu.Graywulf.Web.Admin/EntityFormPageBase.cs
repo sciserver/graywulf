@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Web.Admin
             get { return (Label)FindControlRecursive("Message"); }
         }
 
-        protected void Page_Load(object sender, EventArgs e)
+        protected virtual void Page_Load(object sender, EventArgs e)
         {
             LoadItem();
 

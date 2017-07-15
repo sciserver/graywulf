@@ -38,7 +38,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Common
                 height);
         }
 
-        protected override void OnLoad(EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
             Response.ContentType = MimeType;
             Response.Expires = -1;

@@ -18,11 +18,9 @@ namespace Jhu.Graywulf.Web.Admin.Controls
 {
     public partial class EntityProperties : UserControlBase
     {
-        protected override void OnPreRender(EventArgs e)
+        protected void Page_PreRender(object sender, EventArgs e)
         {
             UpdateForm();
-
-            base.OnPreRender(e);
         }
 
         public void UpdateForm()

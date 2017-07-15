@@ -69,10 +69,8 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             this.database = new Label();
         }
 
-        protected override void OnInit(EventArgs e)
+        protected void Page_Init(object sender, EventArgs e)
         {
-            base.OnInit(e);
-
             Controls.Add(usernameLabel);
             Controls.Add(username);
             Controls.Add(account);
@@ -81,10 +79,8 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             Controls.Add(database);
         }
 
-        protected override void OnLoad(EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
-            base.OnLoad(e);
-
             username.Text = Page.User.Identity.Name;
 
             icon.CssClass = CssClass;

@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Web.UI
 
         public new PageBase Page
         {
-            get { return ((PageBase)base.Page); }
+            get { return (PageBase)base.Page; }
         }
 
         protected virtual ScriptManager ScriptManager

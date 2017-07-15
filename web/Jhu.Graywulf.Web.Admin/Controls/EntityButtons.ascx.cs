@@ -35,7 +35,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             set { ViewState["DiscoverButtonVisible"] = value; }
         }
 
-        protected override void OnPreRender(EventArgs e)
+        protected void Page_PreRender(object sender, EventArgs e)
         {
             var item = ((IEntityForm)Page).Item;
 
@@ -82,8 +82,6 @@ namespace Jhu.Graywulf.Web.Admin.Controls
 
             // 
             DiscoverButton.Visible = DiscoverButtonVisible;
-
-            base.OnPreRender(e);
         }
 
         protected void Button_Command(object sender, CommandEventArgs e)

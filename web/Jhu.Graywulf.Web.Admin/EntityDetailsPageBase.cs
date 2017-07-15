@@ -31,13 +31,6 @@ namespace Jhu.Graywulf.Web.Admin
             get { return item; }
         }
 
-        protected override void OnPreRender(EventArgs e)
-        {
-            Page.DataBind();
-
-            base.OnPreRender(e);
-        }
-
         protected void Page_Load(object sender, EventArgs e)
         {
             CreateItem();
@@ -49,6 +42,11 @@ namespace Jhu.Graywulf.Web.Admin
             }
 
             InitLists();
+        }
+
+        protected virtual void Page_PreRender(object sender, EventArgs e)
+        {
+            Page.DataBind();
         }
 
         private void CreateItem()

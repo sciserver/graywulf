@@ -42,6 +42,8 @@ namespace Jhu.Graywulf.Web.Check
 
         protected override void OnInit(EventArgs e)
         {
+            // TODO: verify logging
+
             base.OnInit(e);
 
             checks = new CheckRoutineExecutor();
@@ -49,6 +51,8 @@ namespace Jhu.Graywulf.Web.Check
 
         protected override void OnLoad(EventArgs e)
         {
+            // TODO: verify logging
+
             base.OnLoad(e);
 
             RegisterChecks(checks.Routines);
@@ -75,6 +79,8 @@ namespace Jhu.Graywulf.Web.Check
 
         protected override void OnLoadComplete(EventArgs e)
         {
+            // TODO. verify logging
+
             var reportStatus = this.ReportStatus;
 
             Response.Buffer = reportStatus;

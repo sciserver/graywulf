@@ -98,11 +98,6 @@ namespace Jhu.Graywulf.Web.Controls
             this.Controls.Add(selectionCoords);
         }
 
-        protected override void OnInit(EventArgs e)
-        {
-            base.OnInit(e);
-        }
-
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -113,7 +108,7 @@ namespace Jhu.Graywulf.Web.Controls
             Page.Header.Controls.AddAt(0, link);
         }
 
-        protected override void OnPreRender(EventArgs e)
+        protected void Page_PreRender(object sender, EventArgs e)
         {
             if (!this.DesignMode)
             {
