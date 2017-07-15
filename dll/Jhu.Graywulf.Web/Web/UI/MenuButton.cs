@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Jhu.Graywulf.Web.UI.Controls
+namespace Jhu.Graywulf.Web.UI
 {
     public class MenuButton
     {

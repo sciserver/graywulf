@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
 
         public override void RegisterButtons(UIApplicationBase application)
         {
-            var button = new Controls.MenuButton()
+            var button = new MenuButton()
             {
                 Key = Name,
                 Text = "my data",

@@ -7,7 +7,6 @@ using Jhu.Graywulf.Logging;
 using Jhu.Graywulf.AccessControl;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Web.Services;
-using Jhu.Graywulf.Web.UI.Controls;
 
 namespace Jhu.Graywulf.Web.UI
 {
@@ -190,7 +189,7 @@ namespace Jhu.Graywulf.Web.UI
             var button = new MenuButton()
             {
                 Text = "Home",
-                NavigateUrl = Default.GetUrl()
+                NavigateUrl = Constants.PageUrlDefault,
             };
             RegisterMenuButton(button);
         }

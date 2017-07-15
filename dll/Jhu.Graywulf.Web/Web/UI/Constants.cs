@@ -30,5 +30,8 @@ namespace Jhu.Graywulf.Web.UI
         
         public const string SessionException = "Jhu.Graywulf.Web.Exception";
         public const string SessionExceptionEventID = "Jhu.Graywulf.Web.ExceptionEventID";
+
+        public const string PageUrlDefault = "~/Default.aspx";
+        public const string PageUrlError = "~/Apps/Common/Error.aspx";
     }
 }

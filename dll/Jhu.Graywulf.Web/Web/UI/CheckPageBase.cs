@@ -6,7 +6,7 @@ using Jhu.Graywulf.Check;
 
 namespace Jhu.Graywulf.Web.Check
 {
-    public class CheckPageBase : FederationPageBase
+    public class CheckPageBase : PageBase
     {
         private CheckRoutineExecutor checks;
 

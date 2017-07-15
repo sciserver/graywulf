@@ -15,9 +15,10 @@ namespace Jhu.Graywulf.Web.UI
         #region Private member variables
 
         private string overrideUrl;
-        private RegistryContext registryContext;
         private WebLoggingContext loggingContext;
-
+        private RegistryContext registryContext;
+        private FederationContext federationContext;
+        
         #endregion
         #region Properties
 
@@ -44,6 +45,11 @@ namespace Jhu.Graywulf.Web.UI
         public string ReturnUrl
         {
             get { return Request.QueryString[Constants.ReturnUrl] ?? ""; }
+        }
+
+        internal WebLoggingContext LoggingContext
+        {
+            get { return loggingContext; }
         }
 
         /// <summary>
@@ -89,9 +95,17 @@ namespace Jhu.Graywulf.Web.UI
             set { throw new InvalidOperationException(); }
         }
 
-        internal WebLoggingContext LoggingContext
+        public FederationContext FederationContext
         {
-            get { return loggingContext; }
+            get
+            {
+                if (federationContext == null)
+                {
+                    federationContext = new FederationContext(RegistryContext, RegistryUser);
+                }
+
+                return federationContext;
+            }
         }
 
         protected bool IsAuthenticatedUser(Guid userGuid)
@@ -242,7 +256,7 @@ namespace Jhu.Graywulf.Web.UI
 
             Server.ClearError();
 
-            Response.Redirect(Jhu.Graywulf.Web.UI.Apps.Common.Error.GetUrl(), false);
+            Response.Redirect(Constants.PageUrlError, false);
         }
 
         #endregion

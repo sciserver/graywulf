@@ -129,8 +129,15 @@
     <Compile Include="Web\Services\TextJsonXmlFormatAttribute.cs" />
     <Compile Include="Web\Services\TextResponseMessageBodyWriter.cs" />
     <Compile Include="Web\Services\TextResponseMessageFormatter.cs" />
+    <Compile Include="Web\UI\AppBase.cs" />
     <Compile Include="Web\UI\ApplicationBase.cs" />
+    <Compile Include="Web\UI\CheckPageBase.cs" />
     <Compile Include="Web\UI\Constants.cs" />
+    <Compile Include="Web\UI\MasterPageBase.cs" />
+    <Compile Include="Web\UI\MenuButton.cs" />
+    <Compile Include="Web\UI\PageBase.cs" />
+    <Compile Include="Web\UI\UIApplicationBase.cs" />
+    <Compile Include="Web\UI\UserControlBase.cs" />
     <Compile Include="Web\UI\WebLoggingContext.cs" />
   </ItemGroup>
   <ItemGroup>

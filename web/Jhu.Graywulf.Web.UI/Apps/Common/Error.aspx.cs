@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Common
     {
         public static string GetUrl()
         {
-            return "~/Apps/Common/Error.aspx";
+            return Jhu.Graywulf.Web.UI.Constants.PageUrlError;
         }
 
         protected void Page_Load(object sender, EventArgs e)

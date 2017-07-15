@@ -2,7 +2,6 @@
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.AccessControl;
 using Jhu.Graywulf.Check;
-using Jhu.Graywulf.Web.UI.Controls;
 
 namespace Jhu.Graywulf.Web.UI
 {
