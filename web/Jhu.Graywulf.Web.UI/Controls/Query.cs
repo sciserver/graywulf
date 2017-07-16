@@ -28,6 +28,12 @@ namespace Jhu.Graywulf.Web.UI.Controls
             set { ViewState["Text"] = value; }
         }
 
+        public Query()
+        {
+            base.Load += Page_Load;
+            base.PreRender += Page_PreRender;
+        }
+
         protected override void AddParsedSubObject(object obj)
         {
             if (this.HasControls())
