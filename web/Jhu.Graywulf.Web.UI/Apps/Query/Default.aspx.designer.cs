@@ -94,12 +94,12 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query {
         protected global::Jhu.Graywulf.Web.Controls.MessageBar messageBar;
         
         /// <summary>
-        /// Query control.
+        /// query control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Jhu.Graywulf.Web.Controls.CodeMirror Query;
+        protected global::Jhu.Graywulf.Web.Controls.CodeMirror query;
     }
 }

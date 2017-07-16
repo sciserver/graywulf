@@ -20,19 +20,20 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
         {
             if (!IsPostBack && HasQueryInSession())
             {
-                string query;
+                string queryString;
                 int[] selection;
                 bool selectedonly;
 
-                GetQueryFromSession(out query, out selection, out selectedonly);
+                GetQueryFromSession(out queryString, out selection, out selectedonly);
 
-                Query.Text = query;
-                Query.SelectionCoords = selection;
+                query.Text = queryString;
+                query.SelectionCoords = selection;
                 selectedOnly.Checked = selectedonly;
             }
-            else
+            
+            if (IsPostBack)
             {
-                SetQueryInSession(Query.Text, Query.SelectionCoords, selectedOnly.Checked);
+                SetQueryInSession(query.Text, query.SelectionCoords, selectedOnly.Checked);
             }
 
             HideMessage();
@@ -99,17 +100,18 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
         /// <returns></returns>
         private string GetQueryString()
         {
-            string query;
+            string queryString;
+
             if (selectedOnly.Checked)
             {
-                query = Query.SelectedText;
+                queryString = query.SelectedText;
             }
             else
             {
-                query = Query.Text;
+                queryString = query.Text;
             }
 
-            return query;
+            return queryString;
         }
 
         private void HandleException(Exception ex)
