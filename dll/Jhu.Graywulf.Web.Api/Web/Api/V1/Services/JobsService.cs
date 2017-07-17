@@ -251,13 +251,15 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        private void LogOperation(Job job, string message, params object[] args)
+        protected void LogOperation(Job job, string message, params object[] args)
         {
+            var method = Logging.LoggingContext.Current.UnwindStack(3);
+            var operation = method.DeclaringType.FullName + "." + method.Name;
             var e = Logging.LoggingContext.Current.CreateEvent(
                 Logging.EventSeverity.Operation,
                 Logging.EventSource.WebService,
                 String.Format(message, args),
-                null,
+                operation,
                 null,
                 null);
 
