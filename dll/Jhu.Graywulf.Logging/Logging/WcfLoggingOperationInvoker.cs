@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Logging
         {
             new WcfLoggingContext(LoggingContext.Current).Push();
 
-            LogOperation();
+            LogDebug();
 
             try
             {
@@ -68,10 +68,10 @@ namespace Jhu.Graywulf.Logging
             throw new NotImplementedException();
         }
 
-        private void LogOperation()
+        private void LogDebug()
         {
             var e = Logging.LoggingContext.Current.CreateEvent(
-                Logging.EventSeverity.Operation,
+                Logging.EventSeverity.Debug,
                 EventSource.RemoteService,
                 null,
                 null,
