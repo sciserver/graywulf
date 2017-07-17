@@ -47,6 +47,7 @@ namespace Jhu.Graywulf.Web.UI
             e.Source |= EventSource.WebUI;
 
             string request = null;
+            string taskname = null;
             string client = null;
 
             var context = System.Web.HttpContext.Current;
@@ -60,6 +61,11 @@ namespace Jhu.Graywulf.Web.UI
                     request = req.HttpMethod + " " + req.Url.AbsolutePath;
                 }
 
+                if (e.TaskName == null)
+                {
+                    taskname = req.QueryString["taskname"];
+                }
+
                 client = req.ServerVariables["HTTP_X_FORWARDED_FOR"];
 
                 if (client == null)
@@ -69,6 +75,7 @@ namespace Jhu.Graywulf.Web.UI
             }
 
             if (request != null) e.Request = request;
+            if (taskname != null) e.TaskName = taskname;
             if (client != null) e.Client = client;
         }
     }
