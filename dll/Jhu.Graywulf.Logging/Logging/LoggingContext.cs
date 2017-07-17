@@ -249,34 +249,42 @@ namespace Jhu.Graywulf.Logging
 
         public Event LogDebug(EventSource source, string message = null, string operation = null, Dictionary<string, object> data = null)
         {
-            var e = CreateEvent(EventSeverity.Debug, source, message, operation, null, data);
-            RecordEvent(e);
+            var e = RecordEventWithUnwindStack(EventSeverity.Debug, source, message, operation, null, data);
             return e;
         }
 
         public Event LogOperation(EventSource source, string message = null, string operation = null, Dictionary<string, object> data = null)
         {
-            var e = CreateEvent(EventSeverity.Operation, source, message, operation, null, data);
-            RecordEvent(e);
+            var e = RecordEventWithUnwindStack(EventSeverity.Operation, source, message, operation, null, data);
             return e;
         }
 
         public Event LogStatus(EventSource source, string message = null, string operation = null, Dictionary<string, object> data = null)
         {
-            var e = CreateEvent(EventSeverity.Status, source, message, operation, null, data);
-            RecordEvent(e);
+            var e = RecordEventWithUnwindStack(EventSeverity.Status, source, message, operation, null, data);
             return e;
         }
 
         public Event LogWarning(EventSource source, string message = null, string operation = null, Dictionary<string, object> data = null)
         {
-            var e = CreateEvent(EventSeverity.Warning, source, message, operation, null, data);
-            RecordEvent(e);
+            var e = RecordEventWithUnwindStack(EventSeverity.Warning, source, message, operation, null, data);
             return e;
         }
 
         public Event LogError(EventSource source, Exception ex, string message = null, string operation = null, Dictionary<string, object> data = null)
         {
+            var e = RecordEventWithUnwindStack(EventSeverity.Error, source, message, operation, ex, data);
+            return e;
+        }
+
+        private Event RecordEventWithUnwindStack(EventSeverity severity, EventSource source, string message, string operation, Exception ex, Dictionary<string, object> data)
+        {
+            if (operation == null)
+            {
+                var method = UnwindStack(2);
+                operation = method.DeclaringType.FullName + "." + method.Name;
+            }
+
             var e = CreateEvent(EventSeverity.Error, source, message, operation, ex, data);
             RecordEvent(e);
             return e;
@@ -291,16 +299,7 @@ namespace Jhu.Graywulf.Logging
                 e.Severity = severity;
                 e.Source |= source;
                 e.Message = message;
-
-                if (operation == null)
-                {
-                    var method = UnwindStack(2);
-                    e.Operation = method.DeclaringType.FullName + "." + method.Name;
-                }
-                else
-                {
-                    e.Operation = operation;
-                }
+                e.Operation = operation;
             }
             else
             {

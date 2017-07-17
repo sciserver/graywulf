@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Web.Services
                 }
 #endif
 
-                var logevent = LogError(ex);
+                var e = LogError(ex);
 
                 // TODO: this won't catch exceptions from IEnumerator that occur
                 // in MoveNext, so they won't be logged.
@@ -67,7 +67,7 @@ namespace Jhu.Graywulf.Web.Services
 
                 // Wrap up exception into a RestOperationException which will convey it to
                 // the error handler implementation
-                throw new RestOperationException(ex, logevent?.ID.ToString());      // *** TODO: use bookmark
+                throw new RestOperationException(ex, e.BookmarkGuid.ToString());
             }
             finally
             {
@@ -97,7 +97,6 @@ namespace Jhu.Graywulf.Web.Services
                 null,
                 null);
 
-            UpdateEvent(e);
             Logging.LoggingContext.Current.WriteEvent(e);
 
             return e;
@@ -117,37 +116,7 @@ namespace Jhu.Graywulf.Web.Services
 
             return e;
         }
-
-        private void UpdateEvent(Logging.Event e)
-        {
-            string message = null;
-            string operation = null;
-
-            var context = System.ServiceModel.OperationContext.Current;
-
-            if (context != null)
-            {
-                if (context.IncomingMessageProperties.ContainsKey("HttpOperationName"))
-                {
-                    operation = context.Host.Description.ServiceType.FullName + "." +
-                        (string)context.IncomingMessageProperties["HttpOperationName"];
-                }
-
-                if (context.IncomingMessageProperties.ContainsKey(HttpRequestMessageProperty.Name))
-                {
-                    var req = (HttpRequestMessageProperty)context.IncomingMessageProperties["httpRequest"];
-
-                    message =
-                        req.Method.ToUpper() + " " +
-                        context.IncomingMessageProperties.Via.AbsolutePath +
-                        context.IncomingMessageProperties["HttpOperationName"];
-                }
-            }
-
-            e.Message = message;
-            e.Operation = operation;
-        }
-
+        
         #endregion
     }
 }

@@ -25,6 +25,7 @@ namespace Jhu.Graywulf.Logging
         private string operation;
         private string server;
         private string client;
+        private string request;
         private string message;
         private string exceptionType;
         private string exceptionStackTrace;
@@ -134,6 +135,12 @@ namespace Jhu.Graywulf.Logging
             set { client = value; }
         }
 
+        public string Request
+        {
+            get { return request; }
+            set { request = value; }
+        }
+
         public string Message
         {
             get { return message; }
@@ -207,6 +214,7 @@ namespace Jhu.Graywulf.Logging
             this.server = Environment.MachineName;
             this.client = null;
             this.message = null;
+            this.request = null;
             this.exceptionType = null;
             this.exceptionStackTrace = null;
             this.bookmarkGuid = Guid.Empty;
@@ -235,6 +243,7 @@ namespace Jhu.Graywulf.Logging
             this.operation = old.operation;
             this.server = old.server;
             this.client = old.client;
+            this.request = old.request;
             this.message = old.message;
             this.exceptionType = old.exceptionType;
             this.exceptionStackTrace = old.exceptionStackTrace;
@@ -266,6 +275,7 @@ namespace Jhu.Graywulf.Logging
             this.operation = dr.GetString(++o);
             this.server = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.client = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.request = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.message = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.exceptionType = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.exceptionStackTrace = dr.IsDBNull(++o) ? null : dr.GetString(o);

@@ -44,22 +44,40 @@ namespace Jhu.Graywulf.Web.Services
         {
             base.UpdateEvent(e);
 
+            string request = null;
+            string operation = null;
             string client = null;
 
-            var wcfcontext = System.ServiceModel.OperationContext.Current;
+            var context = System.ServiceModel.OperationContext.Current;
 
-            if (wcfcontext != null)
+            if (context != null)
             {
-                if (wcfcontext.IncomingMessageProperties.ContainsKey(HttpRequestMessageProperty.Name))
+                if (e.Operation == null && context.IncomingMessageProperties.ContainsKey("HttpOperationName"))
                 {
-                    var req = (HttpRequestMessageProperty)wcfcontext.IncomingMessageProperties["httpRequest"];
+                    operation = context.Host.Description.ServiceType.FullName + "." +
+                        (string)context.IncomingMessageProperties["HttpOperationName"];
+                }
+
+                if (e.Request == null && context.IncomingMessageProperties.ContainsKey(HttpRequestMessageProperty.Name))
+                {
+                    var req = (HttpRequestMessageProperty)context.IncomingMessageProperties["httpRequest"];
+
+                    request =
+                        req.Method.ToUpper() + " " +
+                        context.IncomingMessageProperties.Via.AbsolutePath +
+                        context.IncomingMessageProperties["HttpOperationName"];
+                }
+
+                if (e.Client == null && context.IncomingMessageProperties.ContainsKey(HttpRequestMessageProperty.Name))
+                {
+                    var req = (HttpRequestMessageProperty)context.IncomingMessageProperties["httpRequest"];
                     client = req.Headers["X-Forwarded-For"];
 
                     if (client == null)
                     {
-                        if (wcfcontext.IncomingMessageProperties.ContainsKey(RemoteEndpointMessageProperty.Name))
+                        if (context.IncomingMessageProperties.ContainsKey(RemoteEndpointMessageProperty.Name))
                         {
-                            var ep = (RemoteEndpointMessageProperty)wcfcontext.IncomingMessageProperties[RemoteEndpointMessageProperty.Name];
+                            var ep = (RemoteEndpointMessageProperty)context.IncomingMessageProperties[RemoteEndpointMessageProperty.Name];
 
                             client = ep.Address;
                         }
@@ -67,6 +85,8 @@ namespace Jhu.Graywulf.Web.Services
                 }
             }
 
+            if (request != null) e.Request = request;
+            if (operation != null) e.Operation = operation;
             if (client != null) e.Client = client;
         }
     }

@@ -44,13 +44,20 @@ namespace Jhu.Graywulf.Web.UI
         {
             base.UpdateEvent(e);
 
+            string request = null;
             string client = null;
 
-            var webcontext = System.Web.HttpContext.Current;
+            var context = System.Web.HttpContext.Current;
 
-            if (webcontext != null)
+            if (context != null)
             {
-                var req = webcontext.Request;
+                var req = context.Request;
+
+                if (e.Request == null)
+                {
+                    request = req.HttpMethod + " " + req.Url.AbsolutePath;
+                }
+
                 client = req.ServerVariables["HTTP_X_FORWARDED_FOR"];
 
                 if (client == null)
@@ -58,10 +65,9 @@ namespace Jhu.Graywulf.Web.UI
                     client = req.UserHostAddress;
                 }
             }
-            
-            e.Client = client;
 
-            //var error = Logging.LoggingContext.Current.LogError(Logging.EventSource.WebUI, ex, null, AppRelativeVirtualPath, null);
+            if (request != null) e.Request = request;
+            if (client != null) e.Client = client;
         }
     }
 }

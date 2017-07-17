@@ -28,7 +28,6 @@ namespace Jhu.Graywulf.Logging
 
         public WcfLoggingOperationInvoker(string operationName, IOperationInvoker originalInvoker)
         {
-            this.eventSource = EventSource.RemoteService;   // TODO
             this.operationName = operationName;
             this.originalInvoker = originalInvoker;
         }
@@ -73,7 +72,7 @@ namespace Jhu.Graywulf.Logging
         {
             var e = Logging.LoggingContext.Current.CreateEvent(
                 Logging.EventSeverity.Operation,
-                eventSource,
+                EventSource.RemoteService,
                 null,
                 null,
                 null,
@@ -86,7 +85,7 @@ namespace Jhu.Graywulf.Logging
         {
             var e = LoggingContext.Current.CreateEvent(
                 EventSeverity.Error,
-                eventSource,
+                EventSource.RemoteService,
                 null,
                 null,
                 ex,

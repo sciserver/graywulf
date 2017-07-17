@@ -291,13 +291,11 @@ namespace Jhu.Graywulf.Web.UI
 
         internal void LogOperation()
         {
-            var message = Request.HttpMethod + " " + Request.Url.AbsolutePath;
             var operation = this.GetType().BaseType.FullName;
-
             var e = Logging.LoggingContext.Current.CreateEvent(
                 Logging.EventSeverity.Operation,
                 Logging.EventSource.WebUI,
-                message,
+                null,
                 operation,
                 null,
                 null);

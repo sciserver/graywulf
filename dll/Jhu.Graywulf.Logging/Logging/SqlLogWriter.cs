@@ -109,6 +109,7 @@ namespace Jhu.Graywulf.Logging
             cmd.Parameters.Add("@Operation", SqlDbType.VarChar, 255);
             cmd.Parameters.Add("@Server", SqlDbType.VarChar, 255);
             cmd.Parameters.Add("@Client", SqlDbType.VarChar, 255);
+            cmd.Parameters.Add("@Request", SqlDbType.VarChar, 1024);
             cmd.Parameters.Add("@Message", SqlDbType.VarChar, 1024);
             cmd.Parameters.Add("@ExceptionType", SqlDbType.VarChar, 255);
             cmd.Parameters.Add("@ExceptionStackTrace", SqlDbType.VarChar);
@@ -154,6 +155,7 @@ namespace Jhu.Graywulf.Logging
             cmd.Parameters["@Operation"].Value = e.Operation;
             cmd.Parameters["@Server"].Value = e.Server == null ? (object)DBNull.Value : (object)e.Server;
             cmd.Parameters["@Client"].Value = e.Client == null ? (object)DBNull.Value : (object)e.Client;
+            cmd.Parameters["@Request"].Value = e.Request == null ? (object)DBNull.Value : (object)e.Request;
             cmd.Parameters["@Message"].Value = e.Message == null ? (object)DBNull.Value : (object)e.Message;
             cmd.Parameters["@ExceptionType"].Value = e.ExceptionType == null ? (object)DBNull.Value : (object)e.ExceptionType;
             cmd.Parameters["@ExceptionStackTrace"].Value = e.ExceptionStackTrace == null ? (object)DBNull.Value : (object)e.ExceptionStackTrace;
