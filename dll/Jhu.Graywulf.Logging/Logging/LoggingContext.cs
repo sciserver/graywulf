@@ -285,7 +285,7 @@ namespace Jhu.Graywulf.Logging
                 operation = method.DeclaringType.FullName + "." + method.Name;
             }
 
-            var e = CreateEvent(EventSeverity.Error, source, message, operation, ex, data);
+            var e = CreateEvent(severity, source, message, operation, ex, data);
             RecordEvent(e);
             return e;
         }
@@ -332,6 +332,8 @@ namespace Jhu.Graywulf.Logging
 
         public virtual void UpdateEvent(Event e)
         {
+            e.Source |= DefaultEventSource;
+
             if (this.userGuid != Guid.Empty) e.UserGuid = this.userGuid;
             if (this.userName != null) e.UserName = this.userName;
             if (this.taskName != null) e.TaskName = this.taskName;

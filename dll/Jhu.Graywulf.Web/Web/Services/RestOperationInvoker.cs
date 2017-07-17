@@ -42,7 +42,7 @@ namespace Jhu.Graywulf.Web.Services
 
             var svc = (RestServiceBase)instance;
             svc.OnBeforeInvoke();
-            LogOperation();
+            LogDebug();
 
             try
             {
@@ -87,10 +87,10 @@ namespace Jhu.Graywulf.Web.Services
 
         #region Logging
 
-        internal Logging.Event LogOperation()
+        internal Logging.Event LogDebug()
         {
             var e = Logging.LoggingContext.Current.CreateEvent(
-                Logging.EventSeverity.Operation,
+                Logging.EventSeverity.Debug,
                 Logging.EventSource.WebService,
                 null,
                 null,

@@ -44,6 +44,8 @@ namespace Jhu.Graywulf.Web.UI
         {
             base.UpdateEvent(e);
 
+            e.Source |= EventSource.WebUI;
+
             string request = null;
             string client = null;
 

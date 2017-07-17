@@ -146,11 +146,11 @@ namespace Jhu.Graywulf.Web.Api.V1
             return par;
         }
 
-        public override void Schedule(FederationContext context)
+        protected internal override void Schedule(FederationContext context, string queueName)
         {
             var p = CreateParameters(context);
             var ef = CopyTablesJobFactory.Create(context.RegistryContext);
-            var job = ef.ScheduleAsJob(p, GetQueueName(context), TimeSpan.Zero, Comments);
+            var job = ef.ScheduleAsJob(p, queueName, TimeSpan.Zero, Comments);
 
             job.Save();
 

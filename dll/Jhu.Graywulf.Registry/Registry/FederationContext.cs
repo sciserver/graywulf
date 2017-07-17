@@ -9,7 +9,7 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Registry
 {
-    public class FederationContext
+    public class FederationContext : IDisposable
     {
         #region Private member variables
 
@@ -92,6 +92,10 @@ namespace Jhu.Graywulf.Registry
             this.registryUser = null;
 
             this.schemaManager = null;
+        }
+
+        public void Dispose()
+        {
         }
 
         #endregion

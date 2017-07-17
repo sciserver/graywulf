@@ -57,7 +57,22 @@ namespace Jhu.Graywulf.Web.Services
         {
             var cf = new ChannelFactory<T>(webHttpBinding, endpoint);
             cf.Endpoint.Behaviors.Add(restClientBehavior);
-            return cf.CreateChannel();
+            try
+            {
+                var channel = cf.CreateChannel();
+                return channel;
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                if (System.Diagnostics.Debugger.IsAttached)
+                {
+                    System.Diagnostics.Debugger.Break();
+                }
+#endif
+
+                throw ex;
+            }
         }
 
         private WebHttpBinding CreateWebHttpBinding(Uri proxy)

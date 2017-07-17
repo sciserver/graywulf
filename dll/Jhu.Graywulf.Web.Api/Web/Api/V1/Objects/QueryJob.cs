@@ -51,13 +51,12 @@ namespace Jhu.Graywulf.Web.Api.V1
             InitializeMembers();
         }
 
-        public QueryJob(string query, JobQueue queue)
+        public QueryJob(string query)
             : this()
         {
             InitializeMembers();
 
             this.query = query;
-            this.Queue = queue;
         }
 
         public static new QueryJob FromJobInstance(JobInstance jobInstance)
@@ -188,7 +187,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override void Schedule(FederationContext context)
+        protected internal override void Schedule(FederationContext context, string queueName)
         {
             // Create the query object from the query test
             var query = CreateQuery(context);
@@ -199,7 +198,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             // Schedule as a job
             var qf = QueryFactory.Create(context.Federation);
 
-            this.JobInstance = qf.ScheduleAsJob(this.Name, query, GetQueueName(context), TimeSpan.Zero, Comments);
+            this.JobInstance = qf.ScheduleAsJob(this.Name, query, queueName, TimeSpan.Zero, Comments);
             this.JobInstance.Save();
 
             // Save dependencies

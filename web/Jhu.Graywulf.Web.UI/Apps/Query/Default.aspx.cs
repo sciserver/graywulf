@@ -61,7 +61,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
         {
             try
             {
-                var q = CreateQueryJob(GetQueryString(), JobQueue.Quick);
+                var q = CreateQueryJob(GetQueryString(),JobQueue.Quick);
                 if (q != null)
                 {
                     var ji = ScheduleQuery(q);
@@ -78,7 +78,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
         {
             try
             {
-                var q = CreateQueryJob(GetQueryString(), JobQueue.Long);
+                var q = CreateQueryJob(GetQueryString(),JobQueue.Long);
 
                 if (q != null)
                 {

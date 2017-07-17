@@ -48,6 +48,8 @@ namespace Jhu.Graywulf.Logging
         {
             base.UpdateEvent(e);
 
+            e.Source |= EventSource.RemoteService;
+
             var context = OperationContext.Current;
             string operation = null;
             string client = null;

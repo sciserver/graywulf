@@ -17,6 +17,7 @@ namespace Jhu.Graywulf.Web.Services
 {
     public abstract class RestServiceBase : IDisposable
     {
+        private bool ownsContext;
         private RegistryContext registryContext;
         private FederationContext federationContext;
 
@@ -80,11 +81,25 @@ namespace Jhu.Graywulf.Web.Services
 
         protected RestServiceBase()
         {
+            this.ownsContext = true;
+        }
+
+        protected RestServiceBase(FederationContext federationContext)
+        {
+            this.ownsContext = false;
+            this.registryContext = federationContext.RegistryContext;
+            this.federationContext = federationContext;
         }
 
         public virtual void Dispose()
         {
-            if (registryContext != null)
+            if (ownsContext && federationContext != null)
+            {
+                federationContext.Dispose();
+                federationContext = null;
+            }
+
+            if (ownsContext && registryContext != null)
             {
                 registryContext.Dispose();
                 registryContext = null;

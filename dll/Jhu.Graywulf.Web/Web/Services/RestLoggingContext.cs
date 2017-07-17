@@ -44,6 +44,8 @@ namespace Jhu.Graywulf.Web.Services
         {
             base.UpdateEvent(e);
 
+            e.Source |= EventSource.WebService;
+
             string request = null;
             string operation = null;
             string client = null;
@@ -64,8 +66,7 @@ namespace Jhu.Graywulf.Web.Services
 
                     request =
                         req.Method.ToUpper() + " " +
-                        context.IncomingMessageProperties.Via.AbsolutePath +
-                        context.IncomingMessageProperties["HttpOperationName"];
+                        context.IncomingMessageProperties.Via.AbsolutePath;
                 }
 
                 if (e.Client == null && context.IncomingMessageProperties.ContainsKey(HttpRequestMessageProperty.Name))

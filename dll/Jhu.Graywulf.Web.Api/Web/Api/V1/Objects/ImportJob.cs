@@ -182,12 +182,12 @@ namespace Jhu.Graywulf.Web.Api.V1
             return par;
         }
 
-        public override void Schedule(FederationContext context)
+        protected internal override void Schedule(FederationContext context, string queueName)
         {
             var p = CreateParameters(context);
 
             var ff = ImportTablesJobFactory.Create(context.Federation);
-            var job = ff.ScheduleAsJob(p, GetQueueName(context), TimeSpan.Zero, Comments);
+            var job = ff.ScheduleAsJob(p, queueName, TimeSpan.Zero, Comments);
 
             job.Save();
 

@@ -135,7 +135,7 @@ namespace Jhu.Graywulf.Web.UI
         {
             loggingContext.Push();
 
-            LogOperation();
+            LogDebug();
 
             base.OnPreInit(e);
             loggingContext.Pop();
@@ -173,6 +173,20 @@ namespace Jhu.Graywulf.Web.UI
                 OriginalReferer = Request.UrlReferrer.ToString();
             }
 
+            loggingContext.Pop();
+        }
+
+        protected override void RaisePostBackEvent(IPostBackEventHandler sourceControl, string eventArgument)
+        {
+            loggingContext.Push();
+            base.RaisePostBackEvent(sourceControl, eventArgument);
+            loggingContext.Pop();
+        }
+
+        public override void Validate()
+        {
+            loggingContext.Push();
+            base.Validate();
             loggingContext.Pop();
         }
 
@@ -289,11 +303,11 @@ namespace Jhu.Graywulf.Web.UI
         #endregion
         #region Logging
 
-        internal void LogOperation()
+        internal void LogDebug()
         {
             var operation = this.GetType().BaseType.FullName;
             var e = Logging.LoggingContext.Current.CreateEvent(
-                Logging.EventSeverity.Operation,
+                Logging.EventSeverity.Debug,
                 Logging.EventSource.WebUI,
                 null,
                 operation,

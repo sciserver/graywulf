@@ -88,7 +88,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                     }
                 };
 
-                var response = client.SubmitJob("quick", request);
+                var response = client.SubmitJob(JobQueue.Quick.ToString(), request);
 
                 // Try to get newly scheduled job
                 var nj = client.GetJob(response.QueryJob.Guid.ToString());
@@ -113,7 +113,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                     }
                 };
 
-                response = client.SubmitJob("quick", request);
+                response = client.SubmitJob(JobQueue.Quick.ToString(), request);
 
                 var nj2 = client.GetJob(response.QueryJob.Guid.ToString());
 
@@ -148,7 +148,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                     ExportJob = job
                 };
 
-                var response = client.SubmitJob("quick", request);
+                var response = client.SubmitJob(JobQueue.Quick.ToString(), request);
 
                 // Try to get newly scheduled job
                 var nj = client.GetJob(response.ExportJob.Guid.ToString());
@@ -178,7 +178,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                     ImportJob = job
                 };
 
-                var response = client.SubmitJob("quick", request);
+                var response = client.SubmitJob(JobQueue.Quick.ToString(), request);
 
                 // Try to get newly scheduled job
                 var nj = client.GetJob(response.ImportJob.Guid.ToString());
@@ -205,7 +205,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                     QueryJob = job
                 };
 
-                var response = client.SubmitJob("quick", request);
+                var response = client.SubmitJob(JobQueue.Quick.ToString(), request);
 
                 // Try to get newly scheduled job
                 var nj = client.GetJob(response.QueryJob.Guid.ToString());
