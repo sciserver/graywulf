@@ -133,12 +133,12 @@ namespace Jhu.Graywulf.RemoteService.Server
 
         public void StartDebug(string[] args)
         {
-            OnStartImpl(args);
+            OnStart(args);
         }
 
         public void StopDebug()
         {
-            OnStopImpl();
+            OnStop();
         }
 
         #endregion

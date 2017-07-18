@@ -253,7 +253,7 @@ namespace Jhu.Graywulf.Web.Api.V1
 
         protected void LogOperation(Job job, string message, params object[] args)
         {
-            var method = Logging.LoggingContext.Current.UnwindStack(3);
+            var method = Logging.LoggingContext.Current.UnwindStack(2);
             var operation = method.DeclaringType.FullName + "." + method.Name;
             var e = Logging.LoggingContext.Current.CreateEvent(
                 Logging.EventSeverity.Operation,
