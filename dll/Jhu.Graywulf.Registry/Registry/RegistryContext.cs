@@ -186,34 +186,7 @@ namespace Jhu.Graywulf.Registry
         {
             InitializeMembers();
         }
-
-        // TODO: delete
-        /*
-        internal RegistryContext(IGraywulfActivity activity, CodeActivityContext activityContext)
-        {
-            InitializeMembers();
-
-            // Get job info from the scheduler
-            var scheduler = activityContext.GetExtension<IScheduler>();
-
-            if (scheduler != null)
-            {
-                var cx = scheduler.GetJobContext(activityContext.WorkflowInstanceId);
-
-                this.clusterReference.Guid = cx.ClusterGuid;
-                this.domainReference.Guid = cx.DomainGuid;
-                this.federationReference.Guid = cx.FederationGuid;
-                this.userReference.Guid = cx.UserGuid;
-                this.jobReference.Guid = cx.JobGuid;
-                this.jobID = cx.JobID;
-
-                this.ContextGuid = activityContext.WorkflowInstanceId;
-
-                //this.activityContext = activityContext;
-                //this.activity = activity;
-            }
-        }*/
-
+        
         #endregion
         #region Initializer Functions
 

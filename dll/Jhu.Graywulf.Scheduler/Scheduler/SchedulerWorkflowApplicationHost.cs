@@ -132,8 +132,6 @@ namespace Jhu.Graywulf.Scheduler
 
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                // TODO: delete
-                // context.ContextGuid = contextGuid;
                 context.JobReference.Guid = job.Guid;
 
                 JobInstance ji = LoadJobInstance(context, job);
@@ -162,8 +160,6 @@ namespace Jhu.Graywulf.Scheduler
             // Load job data from the registry
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                // TODO: delete
-                // context.ContextGuid = contextGuid;
                 context.JobReference.Guid = job.Guid;
 
                 JobInstance ji = LoadJobInstance(context, job);
@@ -200,7 +196,6 @@ namespace Jhu.Graywulf.Scheduler
             JobInstance ji;
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                // TODO: delete
                 // context.ContextGuid = contextGuid;
                 context.JobReference.Guid = job.Guid;
 
@@ -226,8 +221,6 @@ namespace Jhu.Graywulf.Scheduler
             JobInstance ji;
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                // TODO: delete
-                // context.ContextGuid = contextGuid;
                 context.JobReference.Guid = job.Guid;
 
                 ji = LoadJobInstance(context, job);
@@ -247,8 +240,6 @@ namespace Jhu.Graywulf.Scheduler
             JobInstance ji;
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                // TODO: delete
-                // context.ContextGuid = contextGuid;
                 context.JobReference.Guid = job.Guid;
 
                 ji = LoadJobInstance(context, job);

@@ -109,9 +109,6 @@ namespace Jhu.Graywulf.Scheduler
                 typeof(Jhu.Graywulf.Scheduler.SchedulerWorkflowApplicationHost).Assembly.FullName,
                 typeof(Jhu.Graywulf.Scheduler.SchedulerWorkflowApplicationHost).FullName);
 
-            // TODO: delete
-            // workflowHost.ContextGuid = contextGuid;
-
             // Now create a reference to the event handler and cache it in
             // workflowEventHandler. This is necessary to keep the delegate alive because
             // workflowHost is a proxy class and events are marshaled accross AppDomain 
