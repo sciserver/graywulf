@@ -35,13 +35,35 @@ namespace Jhu.Graywulf.Logging
             this.stream = null;
         }
 
-        public override void Start()
+        private void OpenFile()
         {
             stream = File.Open(path, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
-            Open(stream);
         }
 
-        public override void Stop()
+        private void CloseFile()
+        {
+            Close();
+        }
+
+        protected override void OnStart()
+        {
+        }
+
+        protected override void OnBatchStart()
+        {
+            if (!IsOpen)
+            {
+                OpenFile();
+                Open(stream);
+            }
+        }
+
+        protected override void OnBatchEnd()
+        {
+            // do nothing here, don't close file too frequently
+        }
+
+        protected override void OnStop()
         {
             Close();
         }
@@ -61,6 +83,11 @@ namespace Jhu.Graywulf.Logging
                     m.ReleaseMutex();
                 }
             }
+        }
+
+        protected override void OnUnhandledExpcetion(Exception ex)
+        {
+            Close();
         }
     }
 }

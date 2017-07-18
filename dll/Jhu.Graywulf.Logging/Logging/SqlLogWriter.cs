@@ -23,15 +23,10 @@ namespace Jhu.Graywulf.Logging
         private bool skipExceptions;
         private string connectionString;
 
-        /// <summary>
-        /// Holds an object pool for database commands to create an event
-        /// </summary>
-        private Components.ObjectPool<SqlCommand> createEventCommandPool;
-
-        /// <summary>
-        /// Holds an object pool for database commands to create event data
-        /// </summary>
-        private Components.ObjectPool<SqlCommand> createEventDataCommandPool;
+        private SqlConnection connection;
+        private SqlTransaction transaction;
+        private SqlCommand createEventCommand;
+        private SqlCommand createEventDataCommand;
 
         #endregion
         #region Properties
@@ -51,7 +46,10 @@ namespace Jhu.Graywulf.Logging
         public string ConnectionString
         {
             get { return connectionString; }
-            set { connectionString = value; }
+            set
+            {
+                SetConnectionString(value);
+            }
         }
 
         #endregion
@@ -65,19 +63,88 @@ namespace Jhu.Graywulf.Logging
         private void InitializeMembers()
         {
             this.skipExceptions = true;
-            this.connectionString = AppSettings.ConnectionString;
-            createEventCommandPool = new Components.ObjectPool<SqlCommand>(CreateCreateEventCommand);
-            createEventDataCommandPool = new Components.ObjectPool<SqlCommand>(CreateCreateEventDataCommand);
+            this.connectionString = null;
+            this.connection = null;
+            this.transaction = null;
+            this.createEventCommand = null;
+            this.createEventDataCommand = null;
         }
 
         #endregion
 
-        public override void Start()
+        protected override void OnStart()
         {
+            createEventCommand = CreateCreateEventCommand();
+            createEventDataCommand = CreateCreateEventDataCommand();
         }
 
-        public override void Stop()
+        protected override void OnBatchStart()
         {
+            connection = new SqlConnection(connectionString);
+            connection.Open();
+            transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
+        }
+
+        protected override void OnBatchEnd()
+        {
+            transaction.Commit();
+            transaction.Dispose();
+            transaction = null;
+
+            connection.Dispose();
+            connection = null;
+        }
+
+        protected override void OnStop()
+        {
+            createEventCommand.Dispose();
+            createEventDataCommand.Dispose();
+        }
+
+        protected override void OnWriteEvent(Event e)
+        {
+            try
+            {
+                // --- write event
+                SetCreateEventCommandValues(e);
+                e.ID = ExecuteCreateEventCommand();
+
+                // --- write data
+                foreach (string key in e.UserData.Keys)
+                {
+                    SetCreateEventDataCommandValues(e.ID, key, e.UserData[key]);
+                    ExecuteCreateEventDataCommand();
+                }
+            }
+            catch (SqlException)
+            {
+                if (!skipExceptions)
+                {
+                    throw;
+                }
+            }
+        }
+
+        protected override void OnUnhandledExpcetion(Exception ex)
+        {
+            if (transaction != null)
+            {
+                transaction.Dispose();
+                transaction = null;
+            }
+
+            if (connection != null)
+            {
+                connection.Dispose();
+                connection = null;
+            }
+        }
+
+        private void SetConnectionString(string connectionString)
+        {
+            var csb = new SqlConnectionStringBuilder(connectionString);
+            csb.Enlist = false;
+            this.connectionString = csb.ConnectionString;
         }
 
         /// <summary>
@@ -138,85 +205,52 @@ namespace Jhu.Graywulf.Logging
             return cmd;
         }
 
-        private void SetCreateEventCommandValues(SqlCommand cmd, Event e)
+        private void SetCreateEventCommandValues(Event e)
         {
-            cmd.Parameters["@UserGuid"].Value = e.UserGuid == Guid.Empty ? (object)DBNull.Value : e.UserGuid;
-            cmd.Parameters["@UserName"].Value = e.UserName == null ? (object)DBNull.Value : (object)e.UserName;
-            cmd.Parameters["@TaskName"].Value = e.TaskName == null ? (object)DBNull.Value : (object)e.TaskName;
-            cmd.Parameters["@JobGuid"].Value = e.JobGuid == Guid.Empty ? (object)DBNull.Value : e.JobGuid;
-            cmd.Parameters["@JobName"].Value = e.JobName == null ? (object)DBNull.Value : (object)e.JobName;
-            cmd.Parameters["@SessionGuid"].Value = e.SessionGuid == Guid.Empty ? (object)DBNull.Value : e.SessionGuid;
-            cmd.Parameters["@ContextGuid"].Value = e.ContextGuid == Guid.Empty ? (object)DBNull.Value : e.ContextGuid;
-            cmd.Parameters["@Source"].Value = e.Source;
-            cmd.Parameters["@Severity"].Value = e.Severity;
-            cmd.Parameters["@DateTime"].Value = e.DateTime;
-            cmd.Parameters["@Order"].Value = e.Order;
-            cmd.Parameters["@ExecutionStatus"].Value = e.ExecutionStatus;
-            cmd.Parameters["@Operation"].Value = e.Operation;
-            cmd.Parameters["@Server"].Value = e.Server == null ? (object)DBNull.Value : (object)e.Server;
-            cmd.Parameters["@Client"].Value = e.Client == null ? (object)DBNull.Value : (object)e.Client;
-            cmd.Parameters["@Request"].Value = e.Request == null ? (object)DBNull.Value : (object)e.Request;
-            cmd.Parameters["@Message"].Value = e.Message == null ? (object)DBNull.Value : (object)e.Message;
-            cmd.Parameters["@ExceptionType"].Value = e.ExceptionType == null ? (object)DBNull.Value : (object)e.ExceptionType;
-            cmd.Parameters["@ExceptionStackTrace"].Value = e.ExceptionStackTrace == null ? (object)DBNull.Value : (object)e.ExceptionStackTrace;
-            cmd.Parameters["@BookmarkGuid"].Value = e.BookmarkGuid == Guid.Empty ? (object)DBNull.Value : e.BookmarkGuid;
+            createEventCommand.Parameters["@UserGuid"].Value = e.UserGuid == Guid.Empty ? (object)DBNull.Value : e.UserGuid;
+            createEventCommand.Parameters["@UserName"].Value = e.UserName == null ? (object)DBNull.Value : (object)e.UserName;
+            createEventCommand.Parameters["@TaskName"].Value = e.TaskName == null ? (object)DBNull.Value : (object)e.TaskName;
+            createEventCommand.Parameters["@JobGuid"].Value = e.JobGuid == Guid.Empty ? (object)DBNull.Value : e.JobGuid;
+            createEventCommand.Parameters["@JobName"].Value = e.JobName == null ? (object)DBNull.Value : (object)e.JobName;
+            createEventCommand.Parameters["@SessionGuid"].Value = e.SessionGuid == Guid.Empty ? (object)DBNull.Value : e.SessionGuid;
+            createEventCommand.Parameters["@ContextGuid"].Value = e.ContextGuid == Guid.Empty ? (object)DBNull.Value : e.ContextGuid;
+            createEventCommand.Parameters["@Source"].Value = e.Source;
+            createEventCommand.Parameters["@Severity"].Value = e.Severity;
+            createEventCommand.Parameters["@DateTime"].Value = e.DateTime;
+            createEventCommand.Parameters["@Order"].Value = e.Order;
+            createEventCommand.Parameters["@ExecutionStatus"].Value = e.ExecutionStatus;
+            createEventCommand.Parameters["@Operation"].Value = e.Operation;
+            createEventCommand.Parameters["@Server"].Value = e.Server == null ? (object)DBNull.Value : (object)e.Server;
+            createEventCommand.Parameters["@Client"].Value = e.Client == null ? (object)DBNull.Value : (object)e.Client;
+            createEventCommand.Parameters["@Request"].Value = e.Request == null ? (object)DBNull.Value : (object)e.Request;
+            createEventCommand.Parameters["@Message"].Value = e.Message == null ? (object)DBNull.Value : (object)e.Message;
+            createEventCommand.Parameters["@ExceptionType"].Value = e.ExceptionType == null ? (object)DBNull.Value : (object)e.ExceptionType;
+            createEventCommand.Parameters["@ExceptionStackTrace"].Value = e.ExceptionStackTrace == null ? (object)DBNull.Value : (object)e.ExceptionStackTrace;
+            createEventCommand.Parameters["@BookmarkGuid"].Value = e.BookmarkGuid == Guid.Empty ? (object)DBNull.Value : e.BookmarkGuid;
+
+            createEventCommand.Connection = connection;
+            createEventCommand.Transaction = transaction;
         }
 
-        private void SetCreateEventDataCommandValues(SqlCommand cmd, long eventId, string key, object data)
+        private long ExecuteCreateEventCommand()
         {
-            cmd.Parameters["@EventId"].Value = eventId;
-            cmd.Parameters["@Key"].Value = key;
-            cmd.Parameters["@Data"].Value = data;
+            createEventCommand.ExecuteNonQuery();
+            return Convert.ToInt64(createEventCommand.Parameters["@EventId"].Value);
         }
 
-        protected override void OnWriteEvent(Event e)
+        private void SetCreateEventDataCommandValues(long eventId, string key, object data)
         {
-            try
-            {
-                using (SqlConnection cn = new SqlConnection(connectionString))
-                {
-                    cn.Open();
-                    using (SqlTransaction tn = cn.BeginTransaction())
-                    {
-                        // --- write event
-                        using (var cmd = createEventCommandPool.Take())
-                        {
-                            SetCreateEventCommandValues(cmd.Value, e);
+            createEventDataCommand.Parameters["@EventId"].Value = eventId;
+            createEventDataCommand.Parameters["@Key"].Value = key;
+            createEventDataCommand.Parameters["@Data"].Value = data;
 
-                            cmd.Value.Connection = cn;
-                            cmd.Value.Transaction = tn;
+            createEventDataCommand.Connection = connection;
+            createEventDataCommand.Transaction = transaction;
+        }
 
-                            cmd.Value.ExecuteNonQuery();
-                            e.ID = Convert.ToInt64(cmd.Value.Parameters["@EventId"].Value);
-                        }
-
-                        // --- write data
-                        if (e.UserData.Count > 0)
-                        {
-                            using (var cmd = createEventDataCommandPool.Take())
-                            {
-                                cmd.Value.Connection = cn;
-                                cmd.Value.Transaction = tn;
-
-                                foreach (string key in e.UserData.Keys)
-                                {
-                                    SetCreateEventDataCommandValues(cmd.Value, e.ID, key, e.UserData[key]);
-                                    cmd.Value.ExecuteNonQuery();
-                                }
-                            }
-                        }
-
-                        tn.Commit();
-                    }
-                }
-            }
-            catch (SqlException)
-            {
-                if (!skipExceptions)
-                {
-                    throw;
-                }
-            }
+        private void ExecuteCreateEventDataCommand()
+        {
+            createEventDataCommand.ExecuteNonQuery();
         }
     }
 }

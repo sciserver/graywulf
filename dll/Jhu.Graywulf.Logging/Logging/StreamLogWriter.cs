@@ -14,6 +14,11 @@ namespace Jhu.Graywulf.Logging
         private TextWriter textWriter;
         private bool ownsTextWriter;
 
+        protected bool IsOpen
+        {
+            get { return stream != null; }
+        }
+
         public StreamLogWriter()
         {
             InitializeMembers();

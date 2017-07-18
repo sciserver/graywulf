@@ -8,11 +8,27 @@ namespace Jhu.Graywulf.Logging
 {
     public class TestLogWriter : LogWriterBase
     {
-        public override void Start()
+        protected override void OnStart()
         {
         }
 
-        public override void Stop()
+        protected override void OnBatchStart()
+        {
+        }
+
+        protected override void OnBatchEnd()
+        {
+        }
+
+        protected override void OnStop()
+        {
+        }
+
+        protected override void OnUnhandledExpcetion(Exception ex)
+        {
+        }
+
+        protected override void OnWriteEvent(Event e)
         {
         }
     }

@@ -8,6 +8,7 @@ namespace Jhu.Graywulf.Components
     public delegate void AsyncQueueCallback<T>(T item);
 
     public class AsyncQueue<T> : IDisposable
+        where T: new()
     {
         #region Private member variables
 
@@ -37,7 +38,7 @@ namespace Jhu.Graywulf.Components
         public event EventHandler OnBatchStart;
         public event EventHandler<AsyncQueueItemProcessingEventArgs<T>> OnItemProcessing;
         public event EventHandler OnBatchEnd;
-        public event EventHandler<AsyncQueueUnhandledExceptionEventArgs> OnUnhandledException;
+        public event EventHandler<AsyncQueueUnhandledExceptionEventArgs<T>> OnUnhandledException;
 
         #endregion
         #region Constructors and initializers
@@ -133,7 +134,7 @@ namespace Jhu.Graywulf.Components
                         }
                         catch (Exception ex)
                         {
-                            if (ProcessUnhandledException(ex))
+                            if (ProcessUnhandledException(AsyncQueueUnhandledExceptionLocation.BatchStart, ex, default(T)))
                             {
                                 abortRequested = true;
                                 break;
@@ -150,7 +151,7 @@ namespace Jhu.Graywulf.Components
                     }
                     catch (Exception ex)
                     {
-                        if (ProcessUnhandledException(ex))
+                        if (ProcessUnhandledException(AsyncQueueUnhandledExceptionLocation.ItemProcessing, ex, item))
                         {
                             abortRequested = true;
                             break;
@@ -171,7 +172,7 @@ namespace Jhu.Graywulf.Components
                     }
                     catch (Exception ex)
                     {
-                        if (ProcessUnhandledException(ex))
+                        if (ProcessUnhandledException(AsyncQueueUnhandledExceptionLocation.BatchEnd, ex, default(T)))
                         {
                             abortRequested = true;
                             break;
@@ -185,11 +186,11 @@ namespace Jhu.Graywulf.Components
             }
         }
 
-        private bool ProcessUnhandledException(Exception ex)
+        private bool ProcessUnhandledException(AsyncQueueUnhandledExceptionLocation location, Exception ex, T item)
         {
             if (OnUnhandledException != null)
             {
-                var e = new AsyncQueueUnhandledExceptionEventArgs(ex);
+                var e = new AsyncQueueUnhandledExceptionEventArgs<T>(location, ex, item);
                 OnUnhandledException(this, e);
 
                 return e.Abort;

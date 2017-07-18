@@ -17,14 +17,27 @@ namespace Jhu.Graywulf.Logging
             }
         }
 
-        public override void Start()
+        protected override void OnStart()
         {
             Open(Console.Out);
         }
 
-        public override void Stop()
+        protected override void OnBatchStart()
+        {
+        }
+
+        protected override void OnBatchEnd()
+        {
+        }
+
+        protected override void OnStop()
         {
             Close();
+        }
+
+        protected override void OnUnhandledExpcetion(Exception ex)
+        {
+            throw ex;
         }
     }
 }

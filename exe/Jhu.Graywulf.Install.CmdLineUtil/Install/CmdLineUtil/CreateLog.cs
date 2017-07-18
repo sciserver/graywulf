@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Install.CmdLineUtil
     {
         protected override string OnGetConnectionString()
         {
-            return Jhu.Graywulf.Logging.AppSettings.ConnectionString;
+            return Jhu.Graywulf.Logging.SqlLogWriter.Configuration.ConnectionString;
         }
 
         public override void Run()

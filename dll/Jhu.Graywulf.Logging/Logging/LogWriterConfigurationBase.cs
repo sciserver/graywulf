@@ -16,6 +16,9 @@ namespace Jhu.Graywulf.Logging
         private static readonly ConfigurationProperty propIsEnabled = new ConfigurationProperty(
             "enabled", typeof(bool), false, ConfigurationPropertyOptions.None);
 
+        private static readonly ConfigurationProperty propIsAsync = new ConfigurationProperty(
+            "isAsync", typeof(bool), true, ConfigurationPropertyOptions.None);
+
         private static readonly ConfigurationProperty propSourceMask = new ConfigurationProperty(
             "sourceMask", typeof(string), "*", ConfigurationPropertyOptions.None);
 
@@ -30,6 +33,7 @@ namespace Jhu.Graywulf.Logging
             properties = new ConfigurationPropertyCollection();
 
             properties.Add(propIsEnabled);
+            properties.Add(propIsAsync);
             properties.Add(propSourceMask);
             properties.Add(propSeverityMask);
             properties.Add(propStatusMask);
@@ -43,6 +47,13 @@ namespace Jhu.Graywulf.Logging
         {
             get { return (bool)base[propIsEnabled]; }
             set { base[propIsEnabled] = value; }
+        }
+
+        [ConfigurationProperty("isAsync", DefaultValue = false)]
+        public bool IsAsync
+        {
+            get { return (bool)base[propIsAsync]; }
+            set { base[propIsAsync] = value; }
         }
 
         [ConfigurationProperty("sourceMask", DefaultValue = "*")]
@@ -72,6 +83,7 @@ namespace Jhu.Graywulf.Logging
         {
             var writer = OnCreateLogWriter();
 
+            writer.IsAsync = IsAsync;
             writer.SourceMask = ParseMask<EventSource>(SourceMask);
             writer.SeverityMask = ParseMask<EventSeverity>(SeverityMask);
             writer.StatusMask = ParseMask<ExecutionStatus>(StatusMask);

@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Components
             }
         }
 
-        private void Queue_OnUnhandledException(object sender, AsyncQueueUnhandledExceptionEventArgs e)
+        private void Queue_OnUnhandledException(object sender, AsyncQueueUnhandledExceptionEventArgs<int> e)
         {
             unhandledExceptionCalled++;
         }

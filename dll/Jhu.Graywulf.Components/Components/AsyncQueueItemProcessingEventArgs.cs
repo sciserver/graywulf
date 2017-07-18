@@ -13,7 +13,6 @@ namespace Jhu.Graywulf.Components
         public T Item
         {
             get { return item; }
-            set { item = value; }
         }
 
         public AsyncQueueItemProcessingEventArgs(T item)
