@@ -491,5 +491,10 @@ namespace Jhu.Graywulf.Logging
                 return Environment.MachineName;
             }
         }
+
+        public IEnumerable<Check.CheckRoutineBase> GetCheckRoutines()
+        {
+            return logger.GetCheckRoutines();
+        }
     }
 }

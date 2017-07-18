@@ -96,5 +96,18 @@ namespace Jhu.Graywulf.Logging
                 writer.WriteEvent(e);
             }
         }
+
+        public IEnumerable<Check.CheckRoutineBase> GetCheckRoutines()
+        {
+            var res = new List<Check.CheckRoutineBase>();
+
+            foreach (var writer in writers)
+            {
+                res.Add(new Check.LogWriterCheck(writer));
+                res.AddRange(writer.GetCheckRoutines());
+            }
+
+            return res;
+        }
     }
 }

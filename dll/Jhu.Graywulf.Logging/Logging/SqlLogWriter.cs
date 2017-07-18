@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using Jhu.Graywulf.Check;
 
 namespace Jhu.Graywulf.Logging
 {
@@ -251,6 +252,11 @@ namespace Jhu.Graywulf.Logging
         private void ExecuteCreateEventDataCommand()
         {
             createEventDataCommand.ExecuteNonQuery();
+        }
+
+        public override IEnumerable<CheckRoutineBase> GetCheckRoutines()
+        {
+            yield return new Check.DatabaseCheck(Configuration.ConnectionString);
         }
     }
 }

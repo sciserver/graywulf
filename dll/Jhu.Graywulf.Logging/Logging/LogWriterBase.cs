@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Logging
@@ -166,5 +167,10 @@ namespace Jhu.Graywulf.Logging
         protected abstract void OnWriteEvent(Event e);
 
         protected abstract void OnUnhandledExpcetion(Exception ex);
+
+        public virtual IEnumerable<Check.CheckRoutineBase> GetCheckRoutines()
+        {
+            yield break;
+        }
     }
 }

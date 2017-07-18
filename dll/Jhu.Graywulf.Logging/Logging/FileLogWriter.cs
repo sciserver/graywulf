@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Configuration;
@@ -88,6 +89,11 @@ namespace Jhu.Graywulf.Logging
         protected override void OnUnhandledExpcetion(Exception ex)
         {
             Close();
+        }
+
+        public override IEnumerable<Check.CheckRoutineBase> GetCheckRoutines()
+        {
+            yield return new Check.FileAccessCheck(Configuration.Path);
         }
     }
 }
