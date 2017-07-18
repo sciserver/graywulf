@@ -61,6 +61,7 @@
     <Compile Include="CommandLineParser\GetParameters.cs" />
     <Compile Include="CommandLineParser\Program.cs" />
     <Compile Include="CommandLineParser\RunParameters.cs" />
+    <Compile Include="Components\AsyncQueueTest.cs" />
     <Compile Include="Components\CacheTest.cs" />
     <Compile Include="Components\LazyDictionaryTest.cs" />
     <Compile Include="Components\ObjectPoolTest.cs" />

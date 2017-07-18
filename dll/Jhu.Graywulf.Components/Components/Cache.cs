@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.Components
 
         private IEqualityComparer<TKey> comparer;
         private ConcurrentDictionary<TKey, CacheItem<TValue>> cache;
-        protected Timer collectionTimer;
+        private Timer collectionTimer;
 
         private TimeSpan defaultLifetime;
         private bool autoExtendLifetime;
