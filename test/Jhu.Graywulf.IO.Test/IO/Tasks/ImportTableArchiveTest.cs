@@ -20,6 +20,18 @@ namespace Jhu.Graywulf.IO.Tasks
             MultipleFiles,
         }
 
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            StartLogger();
+        }
+
+        [ClassCleanup]
+        public static void Cleanup()
+        {
+            StopLogger();
+        }
+
         private IImportTableArchive GetImportTableArchiveTask(string path, string tableNamePattern, bool remote, bool generateIdentityColumn)
         {
             var ds = IOTestDataset;

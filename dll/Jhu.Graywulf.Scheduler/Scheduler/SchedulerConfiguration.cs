@@ -29,6 +29,9 @@ namespace Jhu.Graywulf.Scheduler
         private static readonly ConfigurationProperty propCancelTimeout = new ConfigurationProperty(
             "cancelTimeout", typeof(TimeSpan), new TimeSpan(0, 1, 30), ConfigurationPropertyOptions.None);
 
+        private static readonly ConfigurationProperty propPersistenceConnectionString = new ConfigurationProperty(
+            "persistenceConnectionString", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
+
         private static readonly ConfigurationProperty propPersistTimeout = new ConfigurationProperty(
             "persistTimeout", typeof(TimeSpan), new TimeSpan(0, 1, 30), ConfigurationPropertyOptions.None);
 
@@ -73,6 +76,13 @@ namespace Jhu.Graywulf.Scheduler
             set { base[propCancelTimeout] = value; }
         }
 
+        [ConfigurationProperty("persistenceConnectionString")]
+        public string PersistenceConnectionString
+        {
+            get { return (string)base[propPersistenceConnectionString]; }
+            set { base[propPersistenceConnectionString] = value; }
+        }
+
         [ConfigurationProperty("persistTimeout")]
         public TimeSpan PersistTimeout
         {
@@ -81,11 +91,6 @@ namespace Jhu.Graywulf.Scheduler
         }
 
         // --
-
-        public string PersistenceConnectionString
-        {
-            get { return ConfigurationManager.ConnectionStrings["Jhu.Graywulf.Activities.Persistence"].ConnectionString; }
-        }
 
         public void RunSanityCheck()
         {

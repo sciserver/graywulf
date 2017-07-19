@@ -14,6 +14,9 @@ namespace Jhu.Graywulf.Registry
 
         private static ConfigurationPropertyCollection properties;
 
+        private static readonly ConfigurationProperty propConnectionString = new ConfigurationProperty(
+            "connectionString", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
+
         private static readonly ConfigurationProperty propClusterName = new ConfigurationProperty(
             "clusterName", typeof(string), null, ConfigurationPropertyOptions.None);
 
@@ -27,12 +30,20 @@ namespace Jhu.Graywulf.Registry
         {
             properties = new ConfigurationPropertyCollection();
 
+            properties.Add(propConnectionString);
             properties.Add(propClusterName);
             properties.Add(propDomainName);
             properties.Add(propFederationName);
         }
 
         #endregion
+
+        [ConfigurationProperty("connectionString")]
+        public string ConnectionString
+        {
+            get { return (string)base[propConnectionString]; }
+            set { base[propConnectionString] = value; }
+        }
 
         [ConfigurationProperty("clusterName")]
         public string ClusterName
@@ -53,11 +64,6 @@ namespace Jhu.Graywulf.Registry
         {
             get { return (string)base[propFederationName]; }
             set { base[propFederationName] = value; }
-        }
-
-        public string ConnectionString
-        {
-            get { return ConfigurationManager.ConnectionStrings["Jhu.Graywulf.Registry"].ConnectionString; }
         }
     }
 }
