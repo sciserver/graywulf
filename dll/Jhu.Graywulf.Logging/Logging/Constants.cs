@@ -15,5 +15,7 @@ namespace Jhu.Graywulf.Logging
         public const string UserDataEntityGuidTo = "EntityGuidTo";
 
         public const string ActivityRecordDataItemEvent = "Event";
+
+        public const int LogWriterAsyncCapacity = 100;
     }
 }

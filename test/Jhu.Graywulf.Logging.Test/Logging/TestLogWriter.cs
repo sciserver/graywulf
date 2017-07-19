@@ -12,22 +12,10 @@ namespace Jhu.Graywulf.Logging
         {
         }
 
-        protected override void OnBatchStart()
-        {
-        }
-
-        protected override void OnBatchEnd()
-        {
-        }
-
         protected override void OnStop()
         {
         }
-
-        protected override void OnUnhandledExpcetion(Exception ex)
-        {
-        }
-
+        
         protected override void OnWriteEvent(Event e)
         {
         }

@@ -22,22 +22,9 @@ namespace Jhu.Graywulf.Logging
             Open(Console.Out);
         }
 
-        protected override void OnBatchStart()
-        {
-        }
-
-        protected override void OnBatchEnd()
-        {
-        }
-
         protected override void OnStop()
         {
             Close();
-        }
-
-        protected override void OnUnhandledExpcetion(Exception ex)
-        {
-            throw ex;
         }
     }
 }

@@ -114,6 +114,16 @@ namespace Jhu.Graywulf.Test
         {
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
+                var sql = @"UPDATE JobInstance
+SET JobExecutionStatus = 64
+WHERE DateFinished IS NULL";
+
+                var cmd = context.CreateTextCommand(sql);
+                cmd.ExecuteNonQuery();
+            }
+
+            /*using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            {
                 var ef = new EntityFactory(context);
                 var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
 
@@ -128,7 +138,7 @@ namespace Jhu.Graywulf.Test
                         job.Cancel();
                     }
                 }
-            }
+            }*/
         }
 
         protected SqlServerDataset GetTestUserMyDB()

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
 using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Logging
@@ -9,7 +12,10 @@ namespace Jhu.Graywulf.Logging
         #region Private member variables
 
         private bool isExecuting;
-        private AsyncQueue<Event> queue;
+        private BlockingCollection<Event> queue;
+        private CancellationTokenSource stopRequestSource;
+        private CancellationToken stopRequestToken;
+        private Task worker;
 
         private bool isAsync;
         private object syncRoot;
@@ -56,6 +62,8 @@ namespace Jhu.Graywulf.Logging
         {
             this.isExecuting = false;
             this.queue = null;
+            this.stopRequestSource = null;
+            this.worker = null;
 
             this.isAsync = true;
             this.syncRoot = new object();
@@ -73,60 +81,29 @@ namespace Jhu.Graywulf.Logging
         }
 
         #endregion
-        
-        private void Queue_OnBatchStart(object sender, EventArgs e)
-        {
-            OnBatchStart();
-        }
-
-        private void Queue_OnBatchEnd(object sender, EventArgs e)
-        {
-            OnBatchEnd();
-        }
-
-        private void Queue_OnItemProcessing(object sender, AsyncQueueItemProcessingEventArgs<Event> e)
-        {
-            OnWriteEvent(e.Item);
-        }
-
-        private void Queue_OnUnhandledException(object sender, AsyncQueueUnhandledExceptionEventArgs<Event> e)
-        {
-            OnUnhandledExpcetion(e.Exception);
-        }
 
         public void Start()
         {
-            isExecuting = true;
+            OnStart();
 
             if (isAsync)
             {
-                queue = new AsyncQueue<Event>();
-                queue.OnBatchStart += Queue_OnBatchStart;
-                queue.OnBatchEnd += Queue_OnBatchEnd;
-                queue.OnItemProcessing += Queue_OnItemProcessing;
-                queue.OnUnhandledException += Queue_OnUnhandledException;
-
-                queue.Start();
+                queue = new BlockingCollection<Event>(Constants.LogWriterAsyncCapacity);
+                stopRequestSource = new CancellationTokenSource();
+                stopRequestToken = stopRequestSource.Token;
+                worker = new Task(Worker);
+                worker.Start();
             }
 
-            OnStart();
-
-            if (!IsAsync)
-            {
-                OnBatchStart();
-            }
+            isExecuting = true;
         }
 
         public void Stop()
         {
             if (isAsync)
             {
-                queue.Dispose();
-                queue = null;
-            }
-            else
-            {
-                OnBatchEnd();
+                stopRequestSource.Cancel();
+                worker.Wait();
             }
 
             OnStop();
@@ -134,25 +111,44 @@ namespace Jhu.Graywulf.Logging
             isExecuting = false;
         }
 
+        private void Worker()
+        {
+            Event e;
+
+            while (true)
+            {
+                try
+                {
+                    e = queue.Take(stopRequestToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+
+                OnWriteEvent(e);
+            }
+        }
+
         protected abstract void OnStart();
 
         protected abstract void OnStop();
 
-        protected abstract void OnBatchStart();
-
-        protected abstract void OnBatchEnd();
-
         public void WriteEvent(Event e)
         {
-            // Enforce mask
+            if (isAsync && !isExecuting)
+            {
+                throw new InvalidOperationException();
+            }
 
+            // Enforce mask
             if ((e.Source & this.SourceMask) != 0 &&
                 (e.Severity & this.SeverityMask) != 0 &&
                 (e.ExecutionStatus & this.StatusMask) != 0)
             {
                 if (isAsync)
                 {
-                    queue.Enqueue(e);
+                    queue.Add(e);
                 }
                 else
                 {
@@ -163,10 +159,8 @@ namespace Jhu.Graywulf.Logging
                 }
             }
         }
-
+        
         protected abstract void OnWriteEvent(Event e);
-
-        protected abstract void OnUnhandledExpcetion(Exception ex);
 
         public virtual IEnumerable<Check.CheckRoutineBase> GetCheckRoutines()
         {

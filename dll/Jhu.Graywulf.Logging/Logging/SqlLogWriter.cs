@@ -24,8 +24,6 @@ namespace Jhu.Graywulf.Logging
         private bool skipExceptions;
         private string connectionString;
 
-        private SqlConnection connection;
-        private SqlTransaction transaction;
         private SqlCommand createEventCommand;
         private SqlCommand createEventDataCommand;
 
@@ -65,10 +63,6 @@ namespace Jhu.Graywulf.Logging
         {
             this.skipExceptions = true;
             this.connectionString = null;
-            this.connection = null;
-            this.transaction = null;
-            this.createEventCommand = null;
-            this.createEventDataCommand = null;
         }
 
         #endregion
@@ -77,23 +71,6 @@ namespace Jhu.Graywulf.Logging
         {
             createEventCommand = CreateCreateEventCommand();
             createEventDataCommand = CreateCreateEventDataCommand();
-        }
-
-        protected override void OnBatchStart()
-        {
-            connection = new SqlConnection(connectionString);
-            connection.Open();
-            transaction = connection.BeginTransaction(IsolationLevel.ReadUncommitted);
-        }
-
-        protected override void OnBatchEnd()
-        {
-            transaction.Commit();
-            transaction.Dispose();
-            transaction = null;
-
-            connection.Dispose();
-            connection = null;
         }
 
         protected override void OnStop()
@@ -106,15 +83,29 @@ namespace Jhu.Graywulf.Logging
         {
             try
             {
-                // --- write event
-                SetCreateEventCommandValues(e);
-                e.ID = ExecuteCreateEventCommand();
-
-                // --- write data
-                foreach (string key in e.UserData.Keys)
+                using (var cn = new SqlConnection(connectionString))
                 {
-                    SetCreateEventDataCommandValues(e.ID, key, e.UserData[key]);
-                    ExecuteCreateEventDataCommand();
+                    cn.Open();
+                    using (var tn = cn.BeginTransaction(IsolationLevel.ReadUncommitted))
+                    {
+                        // --- write event
+                        SetCreateEventCommandValues(e);
+                        createEventCommand.Connection = cn;
+                        createEventCommand.Transaction = tn;
+                        createEventCommand.ExecuteNonQuery();
+                        e.ID = Convert.ToInt64(createEventCommand.Parameters["@EventId"].Value);
+
+                        // --- write data
+                        foreach (string key in e.UserData.Keys)
+                        {
+                            SetCreateEventDataCommandValues(e.ID, key, e.UserData[key]);
+                            createEventDataCommand.Connection = cn;
+                            createEventDataCommand.Transaction = tn;
+                            createEventDataCommand.ExecuteNonQuery();
+                        }
+
+                        tn.Commit();
+                    }
                 }
             }
             catch (SqlException)
@@ -123,21 +114,6 @@ namespace Jhu.Graywulf.Logging
                 {
                     throw;
                 }
-            }
-        }
-
-        protected override void OnUnhandledExpcetion(Exception ex)
-        {
-            if (transaction != null)
-            {
-                transaction.Dispose();
-                transaction = null;
-            }
-
-            if (connection != null)
-            {
-                connection.Dispose();
-                connection = null;
             }
         }
 
@@ -228,15 +204,6 @@ namespace Jhu.Graywulf.Logging
             createEventCommand.Parameters["@ExceptionType"].Value = e.ExceptionType == null ? (object)DBNull.Value : (object)e.ExceptionType;
             createEventCommand.Parameters["@ExceptionStackTrace"].Value = e.ExceptionStackTrace == null ? (object)DBNull.Value : (object)e.ExceptionStackTrace;
             createEventCommand.Parameters["@BookmarkGuid"].Value = e.BookmarkGuid == Guid.Empty ? (object)DBNull.Value : e.BookmarkGuid;
-
-            createEventCommand.Connection = connection;
-            createEventCommand.Transaction = transaction;
-        }
-
-        private long ExecuteCreateEventCommand()
-        {
-            createEventCommand.ExecuteNonQuery();
-            return Convert.ToInt64(createEventCommand.Parameters["@EventId"].Value);
         }
 
         private void SetCreateEventDataCommandValues(long eventId, string key, object data)
@@ -244,14 +211,6 @@ namespace Jhu.Graywulf.Logging
             createEventDataCommand.Parameters["@EventId"].Value = eventId;
             createEventDataCommand.Parameters["@Key"].Value = key;
             createEventDataCommand.Parameters["@Data"].Value = data;
-
-            createEventDataCommand.Connection = connection;
-            createEventDataCommand.Transaction = transaction;
-        }
-
-        private void ExecuteCreateEventDataCommand()
-        {
-            createEventDataCommand.ExecuteNonQuery();
         }
 
         public override IEnumerable<CheckRoutineBase> GetCheckRoutines()

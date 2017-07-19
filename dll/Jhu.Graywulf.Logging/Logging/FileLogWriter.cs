@@ -40,28 +40,11 @@ namespace Jhu.Graywulf.Logging
         {
             stream = File.Open(path, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
         }
-
-        private void CloseFile()
-        {
-            Close();
-        }
-
+        
         protected override void OnStart()
         {
-        }
-
-        protected override void OnBatchStart()
-        {
-            if (!IsOpen)
-            {
                 OpenFile();
                 Open(stream);
-            }
-        }
-
-        protected override void OnBatchEnd()
-        {
-            // do nothing here, don't close file too frequently
         }
 
         protected override void OnStop()
@@ -85,12 +68,7 @@ namespace Jhu.Graywulf.Logging
                 }
             }
         }
-
-        protected override void OnUnhandledExpcetion(Exception ex)
-        {
-            Close();
-        }
-
+        
         public override IEnumerable<Check.CheckRoutineBase> GetCheckRoutines()
         {
             yield return new Check.FileAccessCheck(Configuration.Path);
