@@ -14,6 +14,7 @@ namespace Jhu.Graywulf.Web.UI
     {
         private static List<Type> apps;
         private static List<Type> services;
+        private static List<MenuButton> dropdownButtons;
         private static List<MenuButton> menuButtons;
         private static List<MenuButton> footerButtons;
         private EmbeddedVirtualPathProvider virtualPathProvider;
@@ -26,6 +27,11 @@ namespace Jhu.Graywulf.Web.UI
         public List<Type> Services
         {
             get { return services; }
+        }
+
+        public List<MenuButton> DropdownButtons
+        {
+            get { return dropdownButtons; }
         }
 
         public List<MenuButton> MenuButtons
@@ -47,6 +53,7 @@ namespace Jhu.Graywulf.Web.UI
         {
             apps = new List<Type>();
             services = new List<Type>();
+            dropdownButtons = new List<MenuButton>();
             menuButtons = new List<MenuButton>();
             footerButtons = new List<MenuButton>();
         }
@@ -206,6 +213,11 @@ namespace Jhu.Graywulf.Web.UI
             var app = (AppBase)Activator.CreateInstance(type);
             app.RegisterVirtualPaths(this, this.virtualPathProvider);
             app.RegisterButtons(this);
+        }
+
+        public void RegisterDropdownButton(MenuButton button)
+        {
+            dropdownButtons.Add(button);
         }
 
         public void RegisterMenuButton(MenuButton button)

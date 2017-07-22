@@ -490,6 +490,9 @@
     </Compile>
     <Compile Include="Controls\CaptchaImage.cs" />
     <Compile Include="Controls\CaptchaValidator.cs" />
+    <Compile Include="Controls\Dropdown.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Controls\ExpressionPropertyField.cs" />
     <Compile Include="Controls\Footer.cs">
       <SubType>ASPXCodeBehind</SubType>

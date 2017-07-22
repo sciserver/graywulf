@@ -16,6 +16,11 @@
     font-family: Calibri, Arial, Helvetica, Sans-Serif;
 }
 
+.headerFont() {
+    font-family: 'Arial Rounded MT Bold', Calibri, Arial, Helvetica, Sans-Serif;
+    font-size: 16px;
+}
+
 .menuFont() {
     font-size: 14px;
     font-weight: bold;
@@ -41,22 +46,21 @@
 
 /* Fonts */
 
-body, li, p
-{
+body, li, p {
     .textFont();
 }
-h3
-{
+
+h3 {
     .font();
     font-size: 24px;
 }
-a
-{
+
+a {
     color: @colorMenuHover;
     text-decoration: none;
 }
-a:hover
-{
+
+a:hover {
     text-decoration: underline;
 }
 
@@ -141,16 +145,16 @@ div.LayoutContent {
 
 div.LayoutProgress {
     border: 1px solid #000000;
-    position:fixed;
-    left:50%;
-    top:50%;
+    position: fixed;
+    left: 50%;
+    top: 50%;
     width: 450px;
     margin-left: -150px;
     margin-top: -100px;
     padding: 50px;
-    background-color:white;
+    background-color: white;
     text-align: center;
-    display:block;
+    display: block;
     z-index: 100;
 }
 
@@ -162,6 +166,50 @@ div.LayoutProgress {
     position: absolute;
     left: 22px;
     top: 22px;
+}
+
+/* Header */
+
+.gw-header-dropdown {
+    line-height: 1;
+}
+
+.gw-header-dropdown button {
+    .headerFont();
+    padding: 0px;
+    border: 0px;
+    border-radius: 0px;
+    background: @colorDarkest;
+}
+
+.gw-header-dropdown button:hover,
+.gw-header-dropdown button:focus {
+    color: @colorWhite;
+}
+
+.gw-header-dropdown button .glyphicon {
+    margin-left: 4px;
+    font-size: 12px;
+}
+
+.gw-header-dropdown ul {
+    margin: 0px;
+    color: @colorWhite;
+    background: @colorDarkest;
+    border-radius: 0px;
+    margin-left: -8px;
+    min-width: 260px;
+}
+
+.gw-header-dropdown ul li a {
+    .headerFont();
+    color: @colorWhite;
+    padding-top: 0px;
+}
+
+.gw-header-dropdown ul li a:hover {
+    color: @colorWhite;
+    background: @colorDarker;
 }
 
 /* Menu and toolbar */
@@ -375,7 +423,7 @@ div.gw-list-row span input {
 }
 
 img.gw-list-row img {
-    margin-right: @gutter
+    margin-right: @gutter;
 }
 
 span.gw-details-button {
