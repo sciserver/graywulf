@@ -146,7 +146,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Auth
             {
                 SaveForm();
 
-                if (user.Guid == Guid.Empty)
+                if (!user.IsExisting)
                 {
                     CreateUser();
 

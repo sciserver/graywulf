@@ -56,6 +56,7 @@ namespace Jhu.Graywulf.Web.Admin
         {
             item = new T();
             item.RegistryContext = RegistryContext;
+
             if (Request.QueryString["guid"] != null)
             {
                 item.Guid = new Guid(Request.QueryString["guid"]);
@@ -66,7 +67,7 @@ namespace Jhu.Graywulf.Web.Admin
                 item.ParentReference.Guid = new Guid(Request.QueryString["parentGuid"]);
             }
 
-            OnItemLoaded(item.Guid == Guid.Empty && !IsPostBack);
+            OnItemLoaded(!item.IsExisting && !IsPostBack);
         }
 
         protected virtual void OnUpdateForm()
@@ -111,7 +112,7 @@ namespace Jhu.Graywulf.Web.Admin
 
                 try
                 {
-                    bool newentity = item.Guid == Guid.Empty;
+                    bool newentity = !item.IsExisting;
 
                     if (ViewState["ForceOverwrite"] != null)
                     {

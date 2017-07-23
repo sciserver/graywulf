@@ -88,9 +88,7 @@ namespace Jhu.Graywulf.Registry
         }
         
         /// <summary>
-        /// Globally unique identifier of the entity, acts like the primary key in the database. When creating
-        /// a new entity has to have the values of <c>Guid.Empty</c>. A new Guid is generated when the entity
-        /// is first time saved to the database calling the <see cred="Save" /> method.
+        /// Globally unique identifier of the entity, acts like the primary key in the database.
         /// </summary>
         [XmlIgnore]
         public Guid Guid
@@ -508,7 +506,7 @@ namespace Jhu.Graywulf.Registry
             this.isExisting = false;
             this.isDeserializing = false;
 
-            this.guid = Guid.Empty;
+            this.guid = Guid.NewGuid();
             this.concurrencyVersion = 0;
             this.parentReference = new EntityReference<Entity>(this);
             this.entityTypeInternal = EntityType.Unknown;

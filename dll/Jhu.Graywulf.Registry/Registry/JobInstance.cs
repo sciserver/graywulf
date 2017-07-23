@@ -500,7 +500,7 @@ namespace Jhu.Graywulf.Registry
                 JobInstance newjob = new JobInstance(this);
 
                 // Reset properties
-                newjob.Guid = Guid.Empty;
+                newjob.Guid = Guid.NewGuid();
                 newjob.Name = JobInstanceFactory.GenerateRecurringJobID(RegistryContext, Name);
                 newjob.dateStarted = DateTime.MinValue;
                 newjob.dateFinished = DateTime.MinValue;

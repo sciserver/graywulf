@@ -127,7 +127,7 @@ namespace Jhu.Graywulf.Registry
 
         private void LoadEntityReferences()
         {
-            if (Guid != Guid.Empty && EntityType != EntityType.Unknown && entityReferences.Count > 0)
+            if (IsExisting && EntityType != EntityType.Unknown && entityReferences.Count > 0)
             {
                 var sql = "spFindEntityReference";
 
@@ -206,9 +206,6 @@ namespace Jhu.Graywulf.Registry
         /// </remarks>
         protected virtual void Create()
         {
-            // Generate a new Guid for the entity
-            guid = Guid.NewGuid();
-
             // --- Create record in the Entities table ---
 
             string sql = "spCreateEntity";
@@ -555,7 +552,7 @@ namespace Jhu.Graywulf.Registry
 
             var e = (Entity)this.Clone();
 
-            e.Guid = Guid.Empty;
+            e.Guid = Guid.NewGuid();
 
             if (prefixName)
             {
