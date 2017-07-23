@@ -81,7 +81,7 @@ function dockContents(idx, element) {
                 for (var j = 0; j < classList.length; j++) {
                     if (classList[j].startsWith("dock-")) {
                         var dockType = classList[j].substring(5);
-                        if (dockType != "container") {
+                        if (dockType != "container" && dockType != "scroll") {
                             vv.dockType = dockType;
                         }
                     }
@@ -136,10 +136,13 @@ function dockContents(idx, element) {
                 break;
             case "hcenter":
                 vv.css({ "left": left });
+                break;
             case "vcenter":
                 vv.css({ "top": top });
+                break;
             case "center":
                 vv.css({ "left": left, "top": top });
+                break;
         }
     }
 }
