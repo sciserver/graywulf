@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Registry
             }
             else
             {
-                sql = "SELECT * FROM Entity INNER JOIN {0} ON EntityGuid = Guid";
+                sql = "SELECT * FROM Entity INNER JOIN [{0}] ON EntityGuid = Guid";
                 sql = String.Format(sql, entityType.ToString());
             }
 
