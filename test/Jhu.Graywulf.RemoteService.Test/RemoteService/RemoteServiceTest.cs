@@ -15,6 +15,24 @@ namespace Jhu.Graywulf.RemoteService
     [TestClass]
     public class RemoteServiceTest
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            using (RemoteServiceTester.Instance.GetToken())
+            {
+                RemoteServiceTester.Instance.EnsureRunning();
+            }
+        }
+
+        [ClassCleanup]
+        public static void CleanUp()
+        {
+            using (RemoteServiceTester.Instance.GetToken())
+            {
+                RemoteServiceTester.Instance.Stop();
+            }
+        }
+
         // TODO: these tests now run in in-proc mode because authentication against localhost is problematic
 
         private const bool allowInProc = false;

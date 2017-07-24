@@ -14,6 +14,18 @@ namespace Jhu.Graywulf.IO.Tasks
     [TestClass]
     public class ImportTableTest : TestClassBase
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            StartLogger();
+        }
+
+        [ClassCleanup]
+        public static void Cleanup()
+        {
+            StopLogger();
+        }
+
         protected virtual FileFormatFactory CreateFileFormatFactory()
         {
             return FileFormatFactory.Create(null);

@@ -34,7 +34,7 @@ namespace Jhu.Graywulf.Web.Admin
         {
             using (var context = CreateRegistryContext())
             {
-                RegistryUser.Context = context;
+                RegistryUser.RegistryContext = context;
                 Session[Constants.SessionClusterGuid] = RegistryUser.Domain.Cluster.Guid;
                 Session[Constants.SessionDomainGuid] = RegistryUser.Domain.Guid;
             }

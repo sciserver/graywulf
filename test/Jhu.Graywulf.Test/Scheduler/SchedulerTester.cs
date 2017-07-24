@@ -18,9 +18,9 @@ namespace Jhu.Graywulf.Scheduler
         {
         }
 
-        protected override void OnStart()
+        protected override void OnStart(object options)
         {
-            Jhu.Graywulf.Scheduler.Program.StartDebug();
+            Jhu.Graywulf.Scheduler.Program.StartDebug(options);
         }
 
         protected override void OnStop()

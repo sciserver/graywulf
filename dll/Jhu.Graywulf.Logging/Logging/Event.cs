@@ -1,39 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
 using System.Data.SqlClient;
+using System.Security.Principal;
 
 namespace Jhu.Graywulf.Logging
 {
     public class Event
     {
-        private long eventId;
+        #region Private member variables
+
+        private long id;
         private Guid userGuid;
+        private string userName;
+        private string taskName;
         private Guid jobGuid;
+        private string jobName;
+        private Guid sessionGuid;
         private Guid contextGuid;
-        private EventSource eventSource;
-        private EventSeverity eventSeverity;
-        private DateTime eventDateTime;
-        private long eventOrder;
+        private EventSource source;
+        private EventSeverity severity;
+        private DateTime dateTime;
+        private long order;
         private ExecutionStatus executionStatus;
         private string operation;
-        private Guid entityGuid;
-        private Guid entityGuidFrom;
-        private Guid entityGuidTo;
-        private string exceptionType;
-        private string site;
+        private string server;
+        private string client;
+        private string request;
         private string message;
-        private string stackTrace;
+        private string exceptionType;
+        private string exceptionStackTrace;
+        private Guid bookmarkGuid;
 
         private Dictionary<string, object> userData;
-        private Exception exception;
 
-        public long EventId
+        private Exception exception;
+        private IPrincipal principal;
+
+        #endregion
+        #region Properties
+
+        public long ID
         {
-            get { return eventId; }
-            set { eventId = value; }
+            get { return id; }
+            set { id = value; }
         }
 
         public Guid UserGuid
@@ -42,10 +51,34 @@ namespace Jhu.Graywulf.Logging
             set { userGuid = value; }
         }
 
+        public string UserName
+        {
+            get { return userName; }
+            set { userName = value; }
+        }
+
+        public string TaskName
+        {
+            get { return taskName; }
+            set { taskName = value; }
+        }
+
         public Guid JobGuid
         {
             get { return jobGuid; }
             set { jobGuid = value; }
+        }
+
+        public string JobName
+        {
+            get { return jobName; }
+            set { jobName = value; }
+        }
+
+        public Guid SessionGuid
+        {
+            get { return sessionGuid; }
+            set { sessionGuid = value; }
         }
 
         public Guid ContextGuid
@@ -54,28 +87,28 @@ namespace Jhu.Graywulf.Logging
             set { contextGuid = value; }
         }
 
-        public EventSource EventSource
+        public EventSource Source
         {
-            get { return eventSource; }
-            set { eventSource = value; }
+            get { return source; }
+            set { source = value; }
         }
 
-        public EventSeverity EventSeverity
+        public EventSeverity Severity
         {
-            get { return eventSeverity; }
-            set { eventSeverity = value; }
+            get { return severity; }
+            set { severity = value; }
         }
 
-        public DateTime EventDateTime
+        public DateTime DateTime
         {
-            get { return eventDateTime; }
-            set { eventDateTime = value; }
+            get { return dateTime; }
+            set { dateTime = value; }
         }
 
-        public long EventOrder
+        public long Order
         {
-            get { return eventOrder; }
-            set { eventOrder = value; }
+            get { return order; }
+            set { order = value; }
         }
 
         public ExecutionStatus ExecutionStatus
@@ -90,34 +123,22 @@ namespace Jhu.Graywulf.Logging
             set { operation = value; }
         }
 
-        public Guid EntityGuid
+        public string Server
         {
-            get { return entityGuid; }
-            set { entityGuid = value; }
+            get { return server; }
+            set { server = value; }
         }
 
-        public Guid EntityGuidFrom
+        public string Client
         {
-            get { return entityGuidFrom; }
-            set { entityGuidFrom = value; }
+            get { return client; }
+            set { client = value; }
         }
 
-        public Guid EntityGuidTo
+        public string Request
         {
-            get { return entityGuidTo; }
-            set { entityGuidTo = value; }
-        }
-
-        public string ExceptionType
-        {
-            get { return exceptionType; }
-            set { exceptionType = value; }
-        }
-
-        public string Site
-        {
-            get { return site; }
-            set { site = value; }
+            get { return request; }
+            set { request = value; }
         }
 
         public string Message
@@ -126,10 +147,22 @@ namespace Jhu.Graywulf.Logging
             set { message = value; }
         }
 
-        public string StackTrace
+        public string ExceptionType
         {
-            get { return stackTrace; }
-            set { stackTrace = value; }
+            get { return exceptionType; }
+            set { exceptionType = value; }
+        }
+
+        public string ExceptionStackTrace
+        {
+            get { return exceptionStackTrace; }
+            set { exceptionStackTrace = value; }
+        }
+
+        public Guid BookmarkGuid
+        {
+            get { return bookmarkGuid; }
+            set { bookmarkGuid = value; }
         }
 
         public Dictionary<string, object> UserData
@@ -140,8 +173,17 @@ namespace Jhu.Graywulf.Logging
         public Exception Exception
         {
             get { return exception; }
-            set { SetException(value); }
+            internal set { exception = value; }
         }
+
+        public IPrincipal Principal
+        {
+            get { return principal; }
+            set { principal = value; }
+        }
+
+        #endregion
+        #region Constructors and initializers
 
         public Event()
         {
@@ -153,194 +195,98 @@ namespace Jhu.Graywulf.Logging
             CopyMembers(old);
         }
 
-        public Event(string operation, Guid entityGuid)
-        {
-            InitializeMembers();
-
-            this.operation = operation;
-            this.entityGuid = entityGuid;
-        }
-
-        public Event(string operation, Exception ex)
-        {
-            InitializeMembers();
-
-            this.operation = operation;
-            SetException(ex);
-        }
-
         private void InitializeMembers()
         {
-            this.eventId = 0;
+            this.id = 0;
             this.userGuid = Guid.Empty;
+            this.userName = null;
+            this.taskName = null;
             this.jobGuid = Guid.Empty;
+            this.jobName = null;
+            this.sessionGuid = Guid.Empty;
             this.contextGuid = Guid.Empty;
-            this.eventSource = EventSource.None;
-            this.eventSeverity = EventSeverity.Status;
-            this.eventDateTime = DateTime.Now;
-            this.eventOrder = 0;
+            this.source = EventSource.None;
+            this.severity = EventSeverity.None;
+            this.dateTime = DateTime.Now;
+            this.order = 0;
             this.executionStatus = ExecutionStatus.Executing;
             this.operation = string.Empty;
-            this.entityGuid = Guid.Empty;
-            this.entityGuidFrom = Guid.Empty;
-            this.entityGuidTo = Guid.Empty;
-            this.exceptionType = null;
-            this.site = Environment.MachineName;
+            this.server = Environment.MachineName;
+            this.client = null;
             this.message = null;
-            this.stackTrace = null;
+            this.request = null;
+            this.exceptionType = null;
+            this.exceptionStackTrace = null;
+            this.bookmarkGuid = Guid.Empty;
 
             this.userData = new Dictionary<string, object>();
+
             this.exception = null;
+            this.principal = null;
         }
 
         private void CopyMembers(Event old)
         {
-            this.eventId = old.eventId;
+            this.id = old.id;
             this.userGuid = old.userGuid;
+            this.userName = old.userName;
+            this.taskName = old.taskName;
             this.jobGuid = old.jobGuid;
+            this.jobName = old.jobName;
+            this.sessionGuid = old.sessionGuid;
             this.contextGuid = old.contextGuid;
-            this.eventSource = old.eventSource;
-            this.eventSeverity = old.eventSeverity;
-            this.eventDateTime = old.eventDateTime;
-            this.eventOrder = old.eventOrder;
+            this.source = old.source;
+            this.severity = old.severity;
+            this.dateTime = old.dateTime;
+            this.order = old.order;
             this.executionStatus = old.executionStatus;
             this.operation = old.operation;
-            this.entityGuid = old.entityGuid;
-            this.entityGuidFrom = old.entityGuidFrom;
-            this.entityGuidTo = old.entityGuidTo;
-            this.exceptionType = old.exceptionType;
-            this.site = old.site;
+            this.server = old.server;
+            this.client = old.client;
+            this.request = old.request;
             this.message = old.message;
-            this.stackTrace = old.stackTrace;
+            this.exceptionType = old.exceptionType;
+            this.exceptionStackTrace = old.exceptionStackTrace;
+            this.bookmarkGuid = old.bookmarkGuid;
 
             this.userData = new Dictionary<string, object>(old.userData);
+
             this.exception = old.exception;
+            this.principal = old.principal;
         }
 
         public int LoadFromDataReader(SqlDataReader dr)
         {
             int o = -1;
 
-            this.eventId = dr.GetInt64(++o);
-            this.userGuid = dr.GetGuid(++o);
-            this.jobGuid = dr.GetGuid(++o);
-            this.contextGuid = dr.GetGuid(++o);
-            this.eventSource = (EventSource)dr.GetInt32(++o);
-            this.eventSeverity = (EventSeverity)dr.GetInt32(++o);
-            this.eventDateTime = dr.GetDateTime(++o);
-            this.eventOrder = dr.GetInt64(++o);
-            this.executionStatus = (ExecutionStatus)dr.GetInt32(++o);
+            this.id = dr.GetInt64(++o);
+            this.userGuid = dr.IsDBNull(++o) ? Guid.Empty : dr.GetGuid(o);
+            this.userName = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.taskName = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.jobGuid = dr.IsDBNull(++o) ? Guid.Empty : dr.GetGuid(o);
+            this.jobName = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.sessionGuid = dr.IsDBNull(++o) ? Guid.Empty : dr.GetGuid(o);
+            this.contextGuid = dr.IsDBNull(++o) ? Guid.Empty : dr.GetGuid(o);
+            this.source = (EventSource)dr.GetInt32(++o);
+            this.severity = (EventSeverity)dr.GetByte(++o);
+            this.dateTime = dr.GetDateTime(++o);
+            this.order = dr.GetInt64(++o);
+            this.executionStatus = (ExecutionStatus)dr.GetByte(++o);
             this.operation = dr.GetString(++o);
-            this.entityGuid = dr.GetGuid(++o);
-            this.entityGuidFrom = dr.GetGuid(++o);
-            this.entityGuidTo = dr.GetGuid(++o);
-            this.exceptionType = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.server = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.client = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.request = dr.IsDBNull(++o) ? null : dr.GetString(o);
             this.message = dr.IsDBNull(++o) ? null : dr.GetString(o);
-            this.site = dr.IsDBNull(++o) ? null : dr.GetString(o);
-            this.stackTrace = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.exceptionType = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.exceptionStackTrace = dr.IsDBNull(++o) ? null : dr.GetString(o);
+            this.bookmarkGuid = dr.IsDBNull(++o) ? Guid.Empty : dr.GetGuid(o);
+
             this.exception = null;
+            this.principal = null;
 
             return o;
         }
 
-        private void SetException(Exception ex)
-        {
-            message = null;
-            site = null;
-            stackTrace = null;
-            exceptionType = null;
-
-            exception = ex;
-
-            if (ex != null)
-            {
-                message = GetMessage(ex);
-                stackTrace = GetStackTrace(ex);
-                exceptionType = GetType(ex);
-                site = GetSite(ex);
-                eventSeverity = Logging.EventSeverity.Error;
-            }
-        }
-
-        private string GetMessage(Exception ex)
-        {
-            if (ex is AggregateException)
-            {
-                return ex.InnerException.Message;
-            }
-            else
-            {
-                return ex.Message;
-            }
-        }
-
-        private string GetType(Exception ex)
-        {
-            if (ex is AggregateException)
-            {
-                return ex.InnerException.GetType().FullName;
-            }
-            else
-            {
-                return ex.GetType().FullName;
-            }
-        }
-
-        /// <summary>
-        /// Returns the stack trace from the exception and all inner exceptions
-        /// </summary>
-        /// <param name="ex"></param>
-        /// <returns></returns>
-        private string GetStackTrace(Exception ex)
-        {
-            var sb = new StringBuilder();
-            var e = ex;
-
-            while (e != null)
-            {
-                sb.AppendFormat("[{0}]", e.GetType().FullName);
-                sb.AppendLine();
-                sb.AppendLine(e.Message);
-                sb.AppendLine(e.StackTrace);
-                sb.AppendLine();
-
-                e = e.InnerException;
-            }
-
-            if (sb.Length == 0)
-            {
-                return null;
-            }
-            else
-            {
-                return sb.ToString();
-            }
-        }
-
-        private string GetSite(Exception ex)
-        {
-            // Unwrap one level
-            if (ex is AggregateException)
-            {
-                ex = ex.InnerException;
-            }
-
-            if (ex is SqlException)
-            {
-                var sqlex = (SqlException)ex;
-                return sqlex.Server;
-            }
-            else if (ex is System.ServiceModel.EndpointNotFoundException)
-            {
-                var smex = (System.ServiceModel.EndpointNotFoundException)ex;
-                return Environment.MachineName;
-
-                // TODO: figure out how to get site from EndpointNotFoundException
-            }
-            else
-            {
-                return Environment.MachineName;
-            }
-        }
+        #endregion
     }
 }

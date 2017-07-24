@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Install
         /// </summary>
         /// <param name="domain"></param>
         public FederationInstaller(Domain domain)
-            : base(domain.Context)
+            : base(domain.RegistryContext)
         {
             InitializeMembers();
 
@@ -54,7 +54,7 @@ namespace Jhu.Graywulf.Install
         /// </summary>
         /// <param name="federation"></param>
         public FederationInstaller(Federation federation)
-            : base(federation.Context)
+            : base(federation.RegistryContext)
         {
             InitializeMembers();
 

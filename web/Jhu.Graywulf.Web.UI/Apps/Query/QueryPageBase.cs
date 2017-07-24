@@ -16,9 +16,11 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
         /// <returns></returns>
         protected QueryJob CreateQueryJob(string sql, JobQueue queue)
         {
-            var queryJob = new QueryJob(sql, queue);
+            var queryJob = new QueryJob(sql)
+            {
+                Queue = queue
+            };
             var query = queryJob.CreateQuery(FederationContext);
-
             query.Verify();
 
             return queryJob;
@@ -32,7 +34,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Query
         /// <returns></returns>
         protected JobInstance ScheduleQuery(QueryJob queryJob)
         {
-            queryJob.Schedule(FederationContext);
+            new JobsService(FederationContext).SubmitJob(queryJob);
             return queryJob.JobInstance;
         }
     }

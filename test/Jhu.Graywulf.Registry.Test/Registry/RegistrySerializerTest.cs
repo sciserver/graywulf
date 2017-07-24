@@ -7,12 +7,25 @@ using System.Xml.Serialization;
 using System.Data;
 using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Jhu.Graywulf.Test;
 
 namespace Jhu.Graywulf.Registry
 {
     [TestClass]
-    public class RegistrySerializerTest
+    public class RegistrySerializerTest : TestClassBase
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            StartLogger();
+        }
+
+        [ClassCleanup]
+        public static void Cleanup()
+        {
+            StopLogger();
+        }
+
         private void SaveRegistry(string filename)
         {
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))

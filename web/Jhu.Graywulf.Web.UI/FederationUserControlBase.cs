@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Web.UI
             get { return (FederationPageBase)base.Page; }
         }
 
-        public new Context RegistryContext
+        public new RegistryContext RegistryContext
         {
             get { return ((FederationPageBase)base.Page).RegistryContext; }
     }

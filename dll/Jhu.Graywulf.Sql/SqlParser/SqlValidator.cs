@@ -97,13 +97,6 @@ namespace Jhu.Graywulf.SqlParser
 
         protected void ValidateColumnExpression(QuerySpecification qs, ColumnExpression ce)
         {
-            // TODO: delete
-            // eliminate star queries
-            /*if (ce.ColumnReference.IsStar)
-            {
-                throw CreateException(ExceptionMessages.StarColumnNotAllowed, null, null, ce);
-            }*/
-
             foreach (ColumnIdentifier ci in ce.EnumerateDescendantsRecursive<ColumnIdentifier>(null))
             {
                 ValidateColumnIdentifier(qs, ci);

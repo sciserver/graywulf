@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Activities
 {
     [Designer(typeof(RetryDesigner))]
     [ContentProperty("Try")]
-    public class Retry : NativeActivity, IGraywulfActivity
+    public class Retry : NativeActivity, IJobActivity
     {
         [DataContract]
         class RetryState
@@ -40,11 +40,8 @@ namespace Jhu.Graywulf.Activities
             }
         }
 
-
         [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
+        public InArgument<JobInfo> JobInfo { get; set; }
 
         public Activity Try { get; set; }
         public Activity Finally { get; set; }
@@ -62,12 +59,8 @@ namespace Jhu.Graywulf.Activities
         {
             RuntimeArgument argument;
 
-            argument = new RuntimeArgument("JobGuid", typeof(Guid), ArgumentDirection.In);
-            metadata.Bind(this.JobGuid, argument);
-            metadata.AddArgument(argument);
-
-            argument = new RuntimeArgument("UserGuid", typeof(Guid), ArgumentDirection.In);
-            metadata.Bind(this.UserGuid, argument);
+            argument = new RuntimeArgument("JobInfo", typeof(Jhu.Graywulf.Activities.JobInfo), ArgumentDirection.In);
+            metadata.Bind(this.JobInfo, argument);
             metadata.AddArgument(argument);
 
             if (this.Try != null)

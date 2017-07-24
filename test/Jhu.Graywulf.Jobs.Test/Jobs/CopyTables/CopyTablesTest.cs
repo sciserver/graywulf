@@ -19,6 +19,18 @@ namespace Jhu.Graywulf.Jobs.CopyTables
     [TestClass]
     public class CopyTablesTest : TestClassBase
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            StartLogger();
+        }
+
+        [ClassCleanup]
+        public static void CleanUp()
+        {
+            StopLogger();
+        }
+
         protected Guid ScheduleCopyTablesJob(string sourceTableName, string destinationTableName, bool dropSourceTable, QueueType queueType)
         {
             var queue = GetQueueName(queueType);

@@ -111,14 +111,14 @@ namespace Jhu.Graywulf
             }
         }
 
-        public void Start()
+        public void Start(object options)
         {
             lock (syncRoot)
             {
                 if (!IsRunning)
                 {
                     isRunning = true;
-                    OnStart();
+                    OnStart(options);
                 }
                 else
                 {
@@ -145,17 +145,22 @@ namespace Jhu.Graywulf
 
         public void EnsureRunning()
         {
+            EnsureRunning(null);
+        }
+
+        public void EnsureRunning(object options)
+        {
             lock (syncRoot)
             {
                 if (!IsRunning)
                 {
                     isRunning = true;
-                    OnStart();
+                    OnStart(options);
                 }
             }
         }
 
-        protected abstract void OnStart();
+        protected abstract void OnStart(object options);
 
         protected abstract void OnStop();
     }

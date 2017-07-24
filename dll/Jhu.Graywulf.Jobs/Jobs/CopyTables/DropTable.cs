@@ -5,18 +5,12 @@ using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.CopyTables
 {
-    public class DropTable : CodeActivity, IGraywulfActivity
+    public class DropTable : JobCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
-
         [RequiredArgument]
         public InArgument<CopyTablesItem> Item { get; set; }
 
-        protected override void Execute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             var item = Item.Get(activityContext);
             var ds = item.Source.Dataset;

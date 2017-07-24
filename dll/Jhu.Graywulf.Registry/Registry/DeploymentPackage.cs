@@ -81,7 +81,7 @@ namespace Jhu.Graywulf.Registry
         /// Constructor for creating a new <b>Deployment Package</b> object and setting object context.
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
-        public DeploymentPackage(Context context)
+        public DeploymentPackage(RegistryContext context)
             : base(context)
         {
             InitializeMembers();
@@ -93,7 +93,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity in the entity hierarchy.</param>
         public DeploymentPackage(DatabaseDefinition parent)
-            : base(parent.Context, parent)
+            : base(parent.RegistryContext, parent)
         {
             InitializeMembers();
         }

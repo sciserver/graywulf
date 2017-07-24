@@ -207,7 +207,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Docs
 
         }
 
-        protected override void OnPreRender(EventArgs e)
+        protected void Page_PreRender(object sender, EventArgs e)
         {
             if (!this.DesignMode)
             {
@@ -223,8 +223,6 @@ namespace Jhu.Graywulf.Web.UI.Apps.Docs
                     throw new InvalidOperationException("You must have a ScriptManager on the Page.");
                 }
             }
-
-            base.OnPreRender(e);
         }
 
         public IEnumerable<ScriptDescriptor> GetScriptDescriptors()

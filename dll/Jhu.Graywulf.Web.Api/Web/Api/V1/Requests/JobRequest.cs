@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Web.Api.V1
     [Description("Represents a job of a specific type.")]
     public class JobRequest
     {
-        [DataMember(Name = "queryJob", EmitDefaultValue=false)]
+        [DataMember(Name = "queryJob", EmitDefaultValue = false)]
         [DefaultValue(null)]
         [Description("Conveys a query job.")]
         public QueryJob QueryJob { get; set; }
@@ -65,6 +65,34 @@ namespace Jhu.Graywulf.Web.Api.V1
             else
             {
                 throw new ArgumentNullException();  // TODO
+            }
+        }
+
+        public void SetValue(Job job)
+        {
+            if (job is QueryJob)
+            {
+                QueryJob = (QueryJob)job;
+            }
+            else if (job is ExportJob)
+            {
+                ExportJob = (ExportJob)job;
+            }
+            else if (job is ImportJob)
+            {
+                ImportJob = (ImportJob)job;
+            }
+            else if (job is CopyJob)
+            {
+                CopyJob = (CopyJob)job;
+            }
+            else if (job is SqlScriptJob)
+            {
+                SqlScriptJob = (SqlScriptJob)job;
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
         }
     }

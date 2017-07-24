@@ -51,8 +51,7 @@ namespace Jhu.Graywulf.Web.Admin.User
                 var uu = new UserFactory(RegistryContext);
                 user = uu.LoginUser(domain, Username.Text, Password.Text);
 
-                RegistryContext.UserGuid = user.Guid;
-                RegistryContext.UserName = user.Name;
+                RegistryContext.UserReference.Value = user;
 
                 args.IsValid = true;
             }

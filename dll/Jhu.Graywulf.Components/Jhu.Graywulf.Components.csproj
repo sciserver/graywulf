@@ -37,8 +37,10 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
@@ -52,6 +54,7 @@
     <Compile Include="Check\CheckCategory.cs" />
     <Compile Include="Check\CheckRoutineBase.cs" />
     <Compile Include="Check\CheckRoutineExecutor.cs" />
+    <Compile Include="Check\FileAccessCheck.cs" />
     <Compile Include="Check\SqlServerCheck.cs" />
     <Compile Include="Check\DatabaseCheck.cs" />
     <Compile Include="Check\TypeCheck.cs" />
@@ -89,12 +92,19 @@
     <Compile Include="Components\ObjectPoolItem.cs" />
     <Compile Include="Components\Parameter.cs" />
     <Compile Include="Components\ParameterCollection.cs" />
+    <Compile Include="Components\ServiceBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\ServiceInstallerBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\AssemblyReflector.cs" />
     <Compile Include="Util\Cloner.cs" />
     <Compile Include="Util\DeepCloner.cs" />
     <Compile Include="Util\EmailFormatter.cs" />
     <Compile Include="Util\MediaTypeComparer.cs" />
+    <Compile Include="Util\ServiceHelper.cs" />
     <Compile Include="Util\SqlScriptSplitter.cs" />
     <Compile Include="Util\TypeNameFormatter.cs" />
     <Compile Include="Util\UriConverter.cs" />

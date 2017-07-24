@@ -13,54 +13,46 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Test
 {
-    public class TestQueryDelay : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class TestQueryDelay : JobAsyncCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
-
         [RequiredArgument]
         public InArgument<int> DelayPeriod { get; set; }
 
         [RequiredArgument]
         public InArgument<int> QueryTimeout { get; set; }
 
-        protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
+        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             var delay = DelayPeriod.Get(activityContext);
             var queryTimeout = QueryTimeout.Get(activityContext);
 
-            Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
-            string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, delay, queryTimeout), callback, state);
-        }
-
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, int period, int queryTimeout)
-        {
-            var sql = String.Format("WAITFOR DELAY '{0:mm\\:ss}'", TimeSpan.FromMilliseconds(period));
-
-            using (var cn = new SqlConnection("Data Source=localhost;Integrated Security=true"))
+            return delegate ()
             {
-                cn.Open();
-                using (var cmd = new SqlCommand(sql, cn))
+                var sql = String.Format("WAITFOR DELAY '{0:mm\\:ss}'", TimeSpan.FromMilliseconds(delay));
+
+                using (var cn = new SqlConnection("Data Source=localhost;Integrated Security=true"))
                 {
-                    cmd.CommandTimeout = queryTimeout;
-
-                    var ccmd = new CancelableDbCommand(cmd);
-                    RegisterCancelable(workflowInstanceGuid, activityInstanceId, ccmd);
-
-                    try
+                    cn.Open();
+                    using (var cmd = new SqlCommand(sql, cn))
                     {
-                        ccmd.ExecuteNonQuery();
-                    }
-                    finally
-                    {
-                        UnregisterCancelable(workflowInstanceGuid, activityInstanceId, ccmd);
+                        cmd.CommandTimeout = queryTimeout;
+
+                        var ccmd = new CancelableDbCommand(cmd);
+                        RegisterCancelable(workflowInstanceId, activityInstanceId, ccmd);
+
+                        try
+                        {
+                            ccmd.ExecuteNonQuery();
+                        }
+                        finally
+                        {
+                            UnregisterCancelable(workflowInstanceId, activityInstanceId, ccmd);
+                        }
                     }
                 }
-            }
+            };
         }
-
     }
 }

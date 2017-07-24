@@ -61,9 +61,7 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
             var wf = (Activity)Activator.CreateInstance(wftype);
             var wfapp = par == null ? new WorkflowApplication(wf) : new WorkflowApplication(wf, par);
 
-            // Turn on logging to console window
-            Jhu.Graywulf.Logging.Logger.Instance.Writers.Add(new Jhu.Graywulf.Logging.StreamLogWriter(Console.Out));
-            wfapp.Extensions.Add(new Jhu.Graywulf.Activities.GraywulfTrackingParticipant());
+            wfapp.Extensions.Add(new Jhu.Graywulf.Scheduler.JobTrackingParticipant());
 
             // Wire-up workflow runtime events
             wfapp.OnUnhandledException = wfapp_OnUnhandledException;
@@ -101,7 +99,7 @@ namespace Jhu.Graywulf.Jobs.CmdLineUtil
             cluster.LoadDomains(false);
             var domain = cluster.Domains[Registry.Constants.SystemDomainName];
 
-            var uu = new UserFactory(cluster.Context);
+            var uu = new UserFactory(cluster.RegistryContext);
             uu.LoginUser(domain, userName, password);
         }
     }

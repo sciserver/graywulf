@@ -5,57 +5,109 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace Jhu.Graywulf.Logging
 {
-    public class Logger
+    class Logger
     {
-        public static readonly Logger Instance = new Logger();
+        #region Private member variables
 
-        private List<LogWriter> writers;
+        private LoggerStatus status;
+        private List<LogWriterBase> writers;
 
-        public List<LogWriter> Writers
+        #endregion
+        #region Properties
+
+        public LoggerStatus Status
         {
-            get { return writers; }
+            get { return status; }
         }
 
-        public Logger()
+        #endregion
+        #region Constructors and initializers
+
+        internal Logger()
         {
             InitializeMembers();
         }
 
         private void InitializeMembers()
         {
-            this.writers = new List<LogWriter>();
+            this.status = LoggerStatus.Stopped;
+            this.writers = new List<LogWriterBase>();
         }
 
-        public void LogEvent(Event e)
+        #endregion
+
+        public void Start(bool attachConsole)
         {
-            lock (this)
+            if (this.status != LoggerStatus.Started)
             {
-                foreach (LogWriter writer in writers)
+                this.status = LoggerStatus.Started;
+
+                var f = new LogWriterFactory();
+
+                foreach (var writer in f.GetLogWriters())
                 {
-                    if ((writer.EventSourceMask & e.EventSource) > 0)
+                    if (attachConsole && writer is ConsoleLogWriter ||
+                        !(writer is ConsoleLogWriter))
                     {
-                        writer.WriteEvent(e);
+                        writers.Add(writer);
                     }
+                }
+
+                foreach (var writer in writers)
+                {
+                    writer.Start();
                 }
             }
         }
 
-        public Event LogException(string operation, EventSource source, Guid userGuid, Guid contextGuid, Exception ex)
+        public void Stop()
         {
-            var errorEvent = new Logging.Event(operation, Guid.Empty)
+            if (this.status != LoggerStatus.Stopped)
             {
-                Exception = ex,
-                UserGuid = userGuid,
-                ContextGuid = contextGuid,
-                EventSource = source,
-            };
+                foreach (var writer in writers)
+                {
+                    writer.Stop();
+                }
 
-            Logging.Logger.Instance.LogEvent(errorEvent);
+                writers.Clear();
 
-            return errorEvent;
+                this.status = LoggerStatus.Stopped;
+            }
+        }
+
+        /// <summary>
+        /// Write a single event directly to the writers
+        /// </summary>
+        /// <param name="e"></param>
+        public void WriteEvent(Event e)
+        {
+            if (this.status != LoggerStatus.Started)
+            {
+                throw new InvalidOperationException();  // *** TODO
+            }
+
+            foreach (var writer in writers)
+            {
+                writer.WriteEvent(e);
+            }
+        }
+
+        public IEnumerable<Check.CheckRoutineBase> GetCheckRoutines()
+        {
+            var res = new List<Check.CheckRoutineBase>();
+
+            foreach (var writer in writers)
+            {
+                res.Add(new Check.LogWriterCheck(writer));
+                res.AddRange(writer.GetCheckRoutines());
+            }
+
+            return res;
         }
     }
 }

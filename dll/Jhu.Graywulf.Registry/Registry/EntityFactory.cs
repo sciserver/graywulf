@@ -79,7 +79,7 @@ namespace Jhu.Graywulf.Registry
         /// Creates an object with a valid context.
         /// </summary>
         /// <param name="context">A valid context object.</param>
-        public EntityFactory(Context context)
+        public EntityFactory(RegistryContext context)
             : base(context)
         {
             
@@ -116,11 +116,11 @@ ORDER BY rn
 
             sql = String.Format(sql, type);
 
-            using (var cmd = Context.CreateTextCommand(sql))
+            using (var cmd = RegistryContext.CreateTextCommand(sql))
             {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
-                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
+                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
+                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
                 cmd.Parameters.Add("@From", SqlDbType.Int).Value = DBNull.Value;
                 cmd.Parameters.Add("@Max", SqlDbType.Int).Value = DBNull.Value;
 
@@ -129,7 +129,7 @@ ORDER BY rn
                     while (dr.Read())
                     {
                         ItemType item = new ItemType();
-                        item.Context = Context;
+                        item.RegistryContext = RegistryContext;
                         item.LoadFromDataReader(dr);
                         yield return item;
                     }
@@ -159,11 +159,11 @@ ORDER BY Number
 
             sql = String.Format(sql, childrentype);
 
-            using (var cmd = Context.CreateTextCommand(sql))
+            using (var cmd = RegistryContext.CreateTextCommand(sql))
             {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
-                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
+                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
+                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
                 cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = parent.Guid;
 
                 using (var dr = cmd.ExecuteReader())
@@ -171,7 +171,7 @@ ORDER BY Number
                     while (dr.Read())
                     {
                         T item = new T();
-                        item.Context = Context;
+                        item.RegistryContext = RegistryContext;
                         item.Parent = parent;
                         item.LoadFromDataReader(dr);
                         yield return item;
@@ -185,11 +185,11 @@ ORDER BY Number
         {
             var sql = @"spFindReferencingEntity";
 
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
+            using (var cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
-                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
+                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
+                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
                 cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = e.Guid;
 
                 using (var dr = cmd.ExecuteReader())
@@ -197,7 +197,7 @@ ORDER BY Number
                     while (dr.Read())
                     {
                         Entity item = new Entity();
-                        item.Context = Context;
+                        item.RegistryContext = RegistryContext;
                         item.LoadFromDataReader(dr);
                         yield return item;
                     }
@@ -229,11 +229,11 @@ ORDER BY Number";
             var childrentype = new ItemType().EntityType;
             sql = String.Format(sql, childrentype);
 
-            using (var cmd = Context.CreateTextCommand(sql))
+            using (var cmd = RegistryContext.CreateTextCommand(sql))
             {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
-                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
+                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
+                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
                 cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parent.Guid;
                 cmd.Parameters.Add("@EntityGuidTo", SqlDbType.UniqueIdentifier).Value = to.Guid;
                 cmd.Parameters.Add("@ReferenceType", SqlDbType.Int).Value = referenceType.HasValue ? (object)referenceType.Value : DBNull.Value;
@@ -243,7 +243,7 @@ ORDER BY Number";
                     while (dr.Read())
                     {
                         ItemType item = new ItemType();
-                        item.Context = Context;
+                        item.RegistryContext = RegistryContext;
                         item.Parent = parent;
                         item.LoadFromDataReader(dr);
                         yield return item;
@@ -280,7 +280,7 @@ ORDER BY Number";
         /// <returns></returns>
         public Entity LoadEntity(Guid guid)
         {
-            Entity e = new Entity(Context);
+            Entity e = new Entity(RegistryContext);
             e.Guid = guid;
             e.Load();
 
@@ -301,7 +301,7 @@ ORDER BY Number";
         {
             if (typeof(T) == typeof(Entity))
             {
-                var e = new Entity(Context);
+                var e = new Entity(RegistryContext);
                 e.Guid = guid;
                 e.Load();
 
@@ -310,7 +310,7 @@ ORDER BY Number";
             else
             {
                 var e = new T();
-                e.Context = Context;
+                e.RegistryContext = RegistryContext;
                 e.Guid = guid;
                 e.Load();
 
@@ -370,7 +370,7 @@ ORDER BY Number";
             // Create the strongly typed class and load the entity again
             var classtype = Type.GetType(classname);
 
-            var e = (Entity)classtype.GetConstructor(new Type[] { typeof(Context) }).Invoke(new object[] { Context });
+            var e = (Entity)classtype.GetConstructor(new Type[] { typeof(RegistryContext) }).Invoke(new object[] { RegistryContext });
             e.Guid = guid;
             e.Load();
 
@@ -390,9 +390,9 @@ ORDER BY Number";
                 npdt.Rows.Add(i, nameParts[i]);
             }
 
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
+            using (var cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
                 cmd.Parameters.Add("@EntityType", SqlDbType.Int).Value = entityType == EntityType.Unknown ? (object)DBNull.Value : entityType;
                 cmd.Parameters.Add("@NameParts", SqlDbType.Structured).Value = npdt;
 
@@ -403,7 +403,7 @@ ORDER BY Number";
                         throw Error.EntityNotFound(String.Join(Constants.EntityNameSeparator.ToString(), nameParts));
                     }
 
-                    var e = new Entity(Context);
+                    var e = new Entity(RegistryContext);
                     e.LoadFromDataReader(dr);
 
                     return LoadStronglyTypedEntity(e.EntityType, e.Guid);
@@ -415,9 +415,9 @@ ORDER BY Number";
         {
             var sql = @"spCheckEntityDuplicate";
 
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
+            using (var cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
                 cmd.Parameters.Add("@Guid", SqlDbType.UniqueIdentifier).Value = entityGuid == Guid.Empty ? (object)DBNull.Value : entityGuid;
                 cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = parentEntityGuid;
                 cmd.Parameters.Add("@Name", SqlDbType.NVarChar, 128).Value = name.Trim();

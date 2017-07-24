@@ -207,7 +207,7 @@ namespace Jhu.Graywulf.Scheduler
 
                 using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
                 {
-                    ji.Context = context;
+                    ji.RegistryContext = context;
                     ji.Cancel();
                 }
 
@@ -326,7 +326,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             // TODO: this workflow fails too quickly to get persisted.
             // needs more testing but it's not a major issue
-            
+
             using (SchedulerTester.Instance.GetExclusiveToken())
             {
                 SchedulerTester.Instance.EnsureRunning();
@@ -348,6 +348,24 @@ namespace Jhu.Graywulf.Scheduler
                 job = LoadJob(guid);
 
                 Assert.AreEqual(JobExecutionState.Failed, job.JobExecutionStatus);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Scheduler")]
+        public void AsyncTrackingRecordTest()
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                SchedulerTester.Instance.EnsureRunning(false);
+
+                var guid = ScheduleTestJob(JobType.AsyncTrackingRecord, QueueType.Long);
+
+                WaitJobComplete(guid, TimeSpan.FromSeconds(30));
+
+                var job = LoadJob(guid);
+
+                Assert.AreEqual(JobExecutionState.Completed, job.JobExecutionStatus);
             }
         }
     }

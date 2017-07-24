@@ -8,21 +8,16 @@ using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class CheckDestinationTable : CodeActivity, IGraywulfActivity
+    public class CheckDestinationTable : JobCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
-
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
 
-        protected override void Execute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             SqlQuery query = Query.Get(activityContext);
 
-            using (Context context = query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (RegistryContext context = query.CreateContext())
             {
                 query.InitializeQueryObject(context);
                 query.Destination.CheckTableExistence();

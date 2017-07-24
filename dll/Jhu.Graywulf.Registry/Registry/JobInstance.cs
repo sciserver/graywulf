@@ -280,7 +280,7 @@ namespace Jhu.Graywulf.Registry
         /// Constructor for creating a new <b>Database Definition</b> object and setting object context.
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
-        public JobInstance(Context context)
+        public JobInstance(RegistryContext context)
             : base(context)
         {
             InitializeMembers(new StreamingContext());
@@ -292,7 +292,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity in the entity hierarchy.</param>
         public JobInstance(QueueInstance parent)
-            : base(parent.Context, parent)
+            : base(parent.RegistryContext, parent)
         {
             InitializeMembers(new StreamingContext());
         }
@@ -500,8 +500,8 @@ namespace Jhu.Graywulf.Registry
                 JobInstance newjob = new JobInstance(this);
 
                 // Reset properties
-                newjob.Guid = Guid.Empty;
-                newjob.Name = JobInstanceFactory.GenerateRecurringJobID(Context, Name);
+                newjob.Guid = Guid.NewGuid();
+                newjob.Name = JobInstanceFactory.GenerateRecurringJobID(RegistryContext, Name);
                 newjob.dateStarted = DateTime.MinValue;
                 newjob.dateFinished = DateTime.MinValue;
                 newjob.JobExecutionStatus = JobExecutionState.Scheduled;

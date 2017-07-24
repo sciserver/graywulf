@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Registry
         /// has a valid context
         /// </summary>
         [NonSerialized]
-        protected IContextObject referencingObject;
+        protected IRegistryContextObject referencingObject;
 
         /// <summary>
         /// Guid of the referenced entity
@@ -55,7 +55,7 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Member Access Properties
 
-        public IContextObject ReferencingObject
+        public IRegistryContextObject ReferencingObject
         {
             get { return referencingObject; }
             set { referencingObject = value; }
@@ -194,7 +194,7 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Constructors and initializers
 
-        public EntityReference(IContextObject referencingObject)
+        public EntityReference(IRegistryContextObject referencingObject)
         {
             InitializeMembers(new StreamingContext());
 
@@ -217,7 +217,7 @@ namespace Jhu.Graywulf.Registry
         /// <b>ReferencedEntity</b> class passes as parameter.
         /// </summary>
         /// <param name="old">The original object to copy from.</param>
-        public EntityReference(IContextObject referencingObject, EntityReference<T> old)
+        public EntityReference(IRegistryContextObject referencingObject, EntityReference<T> old)
         {
             CopyMembers(old);
 
@@ -276,15 +276,15 @@ namespace Jhu.Graywulf.Registry
             {
                 // Get a fresh context from the referencing object
 
-                Context context = null;
+                RegistryContext context = null;
 
-                if (referencingObject != null && referencingObject.Context != null)
+                if (referencingObject != null && referencingObject.RegistryContext != null)
                 {
-                    context = referencingObject.Context;
+                    context = referencingObject.RegistryContext;
                 }
-                else if (value != null && value.Context != null)
+                else if (value != null && value.RegistryContext != null)
                 {
-                    context = this.value.Context;
+                    context = this.value.RegistryContext;
                 }
 
                 // Load or update entity
@@ -313,7 +313,7 @@ namespace Jhu.Graywulf.Registry
                 else
                 {
                     // Update context
-                    this.value.Context = context;
+                    this.value.RegistryContext = context;
                 }
             }
         }

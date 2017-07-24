@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Registry
         /// Constructor for creating a new <b>Cluster</b> object and setting object context.
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
-        public Cluster(Context context)
+        public Cluster(RegistryContext context)
             : base(context)
         {
             InitializeMembers();

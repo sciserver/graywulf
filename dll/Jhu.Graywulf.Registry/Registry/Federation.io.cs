@@ -45,11 +45,11 @@ WHERE
 	(@ShowDeleted = 1 OR die.Deleted = 0)
 ";
 
-            using (var cmd = Context.CreateTextCommand(sql))
+            using (var cmd = RegistryContext.CreateTextCommand(sql))
             {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
-                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
+                cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
+                cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
                 cmd.Parameters.Add("@FederationGuid", SqlDbType.UniqueIdentifier).Value = this.Guid;
 
                 using (var dr = cmd.ExecuteReader())
@@ -57,7 +57,7 @@ WHERE
                     while (dr.Read())
                     {
                         var di = new DatabaseInstance();
-                        di.Context = Context;
+                        di.RegistryContext = RegistryContext;
                         di.LoadFromDataReader(dr);
                         yield return di;
                     }

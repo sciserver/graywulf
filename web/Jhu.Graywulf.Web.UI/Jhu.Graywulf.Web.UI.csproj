@@ -75,7 +75,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppBase.cs" />
     <Compile Include="Apps\Api\App.cs" />
     <Compile Include="Apps\Api\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -489,11 +488,11 @@
     <Compile Include="Check.aspx.designer.cs">
       <DependentUpon>Check.aspx</DependentUpon>
     </Compile>
-    <Compile Include="CheckPageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Controls\CaptchaImage.cs" />
     <Compile Include="Controls\CaptchaValidator.cs" />
+    <Compile Include="Controls\Dropdown.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Controls\ExpressionPropertyField.cs" />
     <Compile Include="Controls\Footer.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -508,23 +507,8 @@
     <Compile Include="Controls\Menu.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Controls\MenuButton.cs" />
     <Compile Include="Controls\Query.cs" />
     <Compile Include="Controls\UserStatus.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="DomainApplicationBase.cs" />
-    <Compile Include="FederationApplicationBase.cs" />
-    <Compile Include="FederationPageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="FederationUserControlBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MasterPageBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PageBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Default.aspx.cs">
@@ -534,16 +518,19 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="DomainApplicationBase.cs" />
+    <Compile Include="FederationApplicationBase.cs" />
+    <Compile Include="FederationPageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="FederationUserControlBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UIApplicationBase.cs" />
-    <Compile Include="UserControlBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Util\QueryEditorUtil.cs" />
-    <Compile Include="WebConfigHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Api\V1\Manage.svc" />
@@ -654,10 +641,6 @@
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.AccessControl\Jhu.Graywulf.AccessControl.csproj">
       <Project>{da689d40-edcd-433d-8d9b-4e96829f8c6a}</Project>
       <Name>Jhu.Graywulf.AccessControl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
-      <Project>{57392DA3-E280-48EE-80C8-64E09FD8AFB5}</Project>
-      <Name>Jhu.Graywulf.Activities</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>

@@ -9,7 +9,7 @@ namespace Jhu.Graywulf.Jobs.SqlScript
     {
         #region Static members
 
-        public static SqlScriptJobFactory Create(Context context)
+        public static SqlScriptJobFactory Create(RegistryContext context)
         {
             return new SqlScriptJobFactory(context);
         }
@@ -23,7 +23,7 @@ namespace Jhu.Graywulf.Jobs.SqlScript
             InitializeMembers(new StreamingContext());
         }
 
-        protected SqlScriptJobFactory(Context context)
+        protected SqlScriptJobFactory(RegistryContext context)
             : base(context)
         {
             InitializeMembers(new StreamingContext());
@@ -54,7 +54,7 @@ namespace Jhu.Graywulf.Jobs.SqlScript
 
         private string GetJobDefinitionName()
         {
-            return EntityFactory.CombineName(EntityType.JobDefinition, Context.Cluster.Name, Context.Domain.Name, Context.Federation.Name, typeof(SqlScriptJob).Name);
+            return EntityFactory.CombineName(EntityType.JobDefinition, RegistryContext.Cluster.Name, RegistryContext.Domain.Name, RegistryContext.Federation.Name, typeof(SqlScriptJob).Name);
         }
     }
 }

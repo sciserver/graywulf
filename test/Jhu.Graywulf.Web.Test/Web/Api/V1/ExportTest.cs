@@ -84,7 +84,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                             ExportJob = job
                         };
 
-                        var response = client.SubmitJob("quick", request);
+                        var response = client.SubmitJob(JobQueue.Quick.ToString(), request);
 
                         // Try to get newly scheduled job
                         var nj = client.GetJob(response.ExportJob.Guid.ToString());

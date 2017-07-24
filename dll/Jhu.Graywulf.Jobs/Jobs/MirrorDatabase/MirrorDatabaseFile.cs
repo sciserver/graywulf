@@ -12,13 +12,8 @@ using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.MirrorDatabase
 {
-    public class MirrorDatabaseFile : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class MirrorDatabaseFile : JobAsyncCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
-
         public OutArgument<Guid> EntityGuid { get; set; }
         public OutArgument<Guid> EntityGuidFrom { get; set; }
         public OutArgument<Guid> EntityGuidTo { get; set; }
@@ -32,8 +27,10 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
         [RequiredArgument]
         public InArgument<bool> SkipExistingFile { get; set; }
 
-        protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
+        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             Guid sourcefileguid = SourceFileGuid.Get(activityContext);
             Guid destinationdatabaseinstanceguid = DestinationDatabaseInstanceGuid.Get(activityContext);
             FileCopyDirection filecopydirection = FileCopyDirection.Get(activityContext);
@@ -43,7 +40,7 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
             string hostname;
 
             // Load files
-            using (Context context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 // Load destination database instance
                 DatabaseInstance di = new DatabaseInstance(context);
@@ -76,30 +73,24 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                 hostname = ssf.DatabaseInstanceFileGroup.DatabaseInstance.ServerInstance.Machine.HostName.ResolvedValue;
             }
 
-            Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
-            string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, hostname, sourcefilename, destinationfilename, skipExistingFile), callback, state);
-        }
-
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, string hostName, string sourceFilename, string destinationFilename, bool skipExistingFile)
-        {
-            if (!skipExistingFile ||
-                !File.Exists(destinationFilename) ||
-                new FileInfo(sourceFilename).Length != new FileInfo(destinationFilename).Length)
+            return delegate ()
             {
+                if (!skipExistingFile ||
+                    !File.Exists(destinationfilename) ||
+                    new FileInfo(sourcefilename).Length != new FileInfo(destinationfilename).Length)
+                {
+                    var fc = RemoteServiceHelper.CreateObject<ICopyFile>(hostname, true);
 
-                var fc = RemoteServiceHelper.CreateObject<ICopyFile>(hostName, true);
+                    fc.Source = sourcefilename;
+                    fc.Destination = destinationfilename;
+                    fc.Overwrite = true;
+                    fc.Method = FileCopyMethod.AsyncFileCopy;
 
-                fc.Source = sourceFilename;
-                fc.Destination = destinationFilename;
-                fc.Overwrite = true;
-                fc.Method = FileCopyMethod.AsyncFileCopy;
-
-                RegisterCancelable(workflowInstanceGuid, activityInstanceId, fc);
-                fc.Execute();
-                UnregisterCancelable(workflowInstanceGuid, activityInstanceId, fc);
-
-            }
+                    RegisterCancelable(workflowInstanceId, activityInstanceId, fc);
+                    fc.Execute();
+                    UnregisterCancelable(workflowInstanceId, activityInstanceId, fc);
+                }
+            };
         }
     }
 }

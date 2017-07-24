@@ -22,8 +22,10 @@ namespace Jhu.Graywulf.Web.UI
             checks.Add(new IdentityCheck());
 
             // Test registry and log databases
-            checks.Add(new DatabaseCheck(Jhu.Graywulf.Registry.ContextManager.Configuration.ConnectionString));
-            checks.Add(new DatabaseCheck(Jhu.Graywulf.Logging.AppSettings.ConnectionString));
+            checks.AddRange(Logging.LoggingContext.Current.GetCheckRoutines());
+
+            // TODO: add logging checks
+            //checks.Add(new DatabaseCheck(Jhu.Graywulf.Logging.AppSettings.ConnectionString));
 
             // Test SMTP and target email addresses
             checks.Add(new EmailCheck(RegistryContext.Domain.ShortTitle, RegistryContext.Domain.Email, RegistryContext.Domain.Email));

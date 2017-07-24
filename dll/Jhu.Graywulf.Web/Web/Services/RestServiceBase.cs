@@ -17,7 +17,8 @@ namespace Jhu.Graywulf.Web.Services
 {
     public abstract class RestServiceBase : IDisposable
     {
-        private Context registryContext;
+        private bool ownsContext;
+        private RegistryContext registryContext;
         private FederationContext federationContext;
 
         protected string AppRelativePath
@@ -39,7 +40,7 @@ namespace Jhu.Graywulf.Web.Services
                 if (Thread.CurrentPrincipal is GraywulfPrincipal)
                 {
                     var identity = (GraywulfIdentity)Thread.CurrentPrincipal.Identity;
-                    identity.User.Context = RegistryContext;
+                    identity.User.RegistryContext = RegistryContext;
                     return identity.User;
                 }
                 else
@@ -52,7 +53,7 @@ namespace Jhu.Graywulf.Web.Services
         /// <summary>
         /// Gets an initialized  registry context.
         /// </summary>
-        protected Context RegistryContext
+        protected RegistryContext RegistryContext
         {
             get
             {
@@ -80,11 +81,25 @@ namespace Jhu.Graywulf.Web.Services
 
         protected RestServiceBase()
         {
+            this.ownsContext = true;
+        }
+
+        protected RestServiceBase(FederationContext federationContext)
+        {
+            this.ownsContext = false;
+            this.registryContext = federationContext.RegistryContext;
+            this.federationContext = federationContext;
         }
 
         public virtual void Dispose()
         {
-            if (registryContext != null)
+            if (ownsContext && federationContext != null)
+            {
+                federationContext.Dispose();
+                federationContext = null;
+            }
+
+            if (ownsContext && registryContext != null)
             {
                 registryContext.Dispose();
                 registryContext = null;
@@ -101,16 +116,14 @@ namespace Jhu.Graywulf.Web.Services
         /// <summary>
         /// Gets an initialized registry context.
         /// </summary>
-        public Context CreateRegistryContext()
+        public RegistryContext CreateRegistryContext()
         {
             var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.ManualCommit);
 
             if (Thread.CurrentPrincipal is GraywulfPrincipal)
             {
                 var identity = (GraywulfIdentity)Thread.CurrentPrincipal.Identity;
-
-                context.UserGuid = identity.UserReference.Guid;
-                context.UserName = identity.UserReference.Name;
+                context.UserReference.Value = identity.User;
             }
 
             return context;
@@ -132,30 +145,14 @@ namespace Jhu.Graywulf.Web.Services
             }
         }
 
-        internal Logging.Event OnError(string operationName, Exception ex)
+        internal void OnError(Exception ex)
         {
-            var e = LogError(operationName, ex);
-
             if (registryContext != null)
             {
                 registryContext.RollbackTransaction();
                 registryContext.Dispose();
                 registryContext = null;
             }
-
-            return e;
-        }
-
-        private Logging.Event LogError(string operationName, Exception ex)
-        {
-            var error = Logging.Logger.Instance.LogException(
-                AppRelativePath,
-                Logging.EventSource.WebService,
-                registryContext == null ? Guid.Empty : registryContext.UserGuid,
-                registryContext == null ? Guid.Empty : registryContext.ContextGuid,
-                ex);
-
-            return error;
         }
 
         #region User managemenet functions
@@ -177,6 +174,9 @@ namespace Jhu.Graywulf.Web.Services
         /// <summary>
         /// Called when a user sings out
         /// </summary>
+        /// <remarks>
+        /// We cannot detect this since there's no session
+        /// </remarks>
         internal void OnUserSignedOut(GraywulfPrincipal principaly)
         {
         }

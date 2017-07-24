@@ -28,6 +28,12 @@ namespace Jhu.Graywulf.Web.UI.Controls
             set { ViewState["Text"] = value; }
         }
 
+        public Query()
+        {
+            base.Load += Page_Load;
+            base.PreRender += Page_PreRender;
+        }
+
         protected override void AddParsedSubObject(object obj)
         {
             if (this.HasControls())
@@ -58,26 +64,22 @@ namespace Jhu.Graywulf.Web.UI.Controls
             }
         }
 
-        protected override void OnLoad(EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
             edit = new LinkButton();
             edit.Text = "Try this query";
             edit.Click += new EventHandler(edit_Click);
 
             this.Controls.Add(edit);
-
-            base.OnLoad(e);
         }
 
-        protected override void OnPreRender(EventArgs e)
+        protected void Page_PreRender(object sender, EventArgs e)
         {
             ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "core", VirtualPathUtility.ToAbsolute("~/Scripts/SyntaxHighlighter/scripts/shCore.js"));
             ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "autoloader", VirtualPathUtility.ToAbsolute("~/Scripts/SyntaxHighlighter/scripts/shAutoLoader.js"));
             ScriptManager.RegisterClientScriptInclude(this, this.GetType(), "brushsql", VirtualPathUtility.ToAbsolute("~/Scripts/SyntaxHighlighter/scripts/shBrushSql.js"));
 
             ScriptManager.RegisterStartupScript(this, this.GetType(), "all", "SyntaxHighlighter.all();", true);
-
-            base.OnPreRender(e);
         }
 
         void edit_Click(object sender, EventArgs e)

@@ -304,21 +304,10 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             // Here we make the assumption that the queue is named the same as
             // the queue definition
-            var jobFactory = new JobFactory(jobInstance.Context);
+            var jobFactory = new JobFactory(jobInstance.RegistryContext);
             var qi = jobFactory.GetQueueInstance(jobInstance.ParentReference.Guid);
 
-            switch (qi.Name)
-            {
-                case Jhu.Graywulf.Registry.Constants.QuickQueueDefinitionName:
-                    this.queue = JobQueue.Quick;
-                    break;
-                case Jhu.Graywulf.Registry.Constants.LongQueueDefinitionName:
-                    this.queue = JobQueue.Long;
-                    break;
-                default:
-                    this.queue = JobQueue.Unknown;
-                    break;
-            }
+            
 
             // Load job dependencies, if requested
             if (jobInstance.Dependencies != null && jobInstance.Dependencies.Count > 0)
@@ -337,9 +326,8 @@ namespace Jhu.Graywulf.Web.Api.V1
             throw new NotImplementedException();
         }
 
-        public virtual void Schedule(FederationContext context)
+        internal protected virtual void Schedule(FederationContext context, string queueName)
         {
-            throw new NotImplementedException();
         }
 
         protected virtual void SaveDependencies()
@@ -354,31 +342,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
         }
 
-        protected string GetQueueName(FederationContext context)
-        {
-            string queuename = null;
-
-            switch (Queue)
-            {
-                case JobQueue.Quick:
-                    queuename = Jhu.Graywulf.Registry.Constants.QuickQueueName;
-                    break;
-                case JobQueue.Long:
-                    queuename = Jhu.Graywulf.Registry.Constants.LongQueueName;
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            queuename = EntityFactory.CombineName(
-                EntityType.QueueInstance,
-                context.Federation.ControllerMachineRole.GetFullyQualifiedName(),
-                queuename);
-
-            return queuename;
-        }
-
-        public static V1.FileFormat GetFileFormat(Context context, Uri uri)
+        public static V1.FileFormat GetFileFormat(RegistryContext context, Uri uri)
         {
             var ff = FileFormatFactory.Create(context.Federation.FileFormatFactory);
             string filename, extension;

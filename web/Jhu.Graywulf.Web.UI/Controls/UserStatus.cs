@@ -12,7 +12,7 @@ using Jhu.Graywulf.Web.Security;
 namespace Jhu.Graywulf.Web.UI.Controls
 {
     [Themeable(true)]
-    public class UserStatus : UserControlBase
+    public class UserStatus : UserControl
     {
         private Image icon;
         private Label usernameLabel;

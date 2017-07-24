@@ -25,7 +25,7 @@
                     <div style="width: 8px; height: 22px;"></div>
                 </td>
                 <td class="HeadlineLogo">
-                    <asp:Label ID="Caption" runat="server" Text="WebUI"></asp:Label>
+                    <asp:ContentPlaceHolder runat="server" ID="logo" />
                 </td>
                 <td class="HeadlineUser">
                     <asp:ContentPlaceHolder runat="server" ID="userStatus" />

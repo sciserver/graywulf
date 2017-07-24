@@ -65,10 +65,8 @@ namespace Jhu.Graywulf.Web.Admin.Controls
         {
         }
 
-        protected override void OnInit(EventArgs e)
+        protected void Page_Init(object sender, EventArgs e)
         {
-            base.OnInit(e);
-
             this.parentEntityReference = new EntityReference<Entity>(((PageBase)Page).RegistryContext);
             this.selectedEntityReference = new EntityReference<Entity>(((PageBase)Page).RegistryContext);
             this.childEntityTypes = null;

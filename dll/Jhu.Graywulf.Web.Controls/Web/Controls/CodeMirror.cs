@@ -96,24 +96,20 @@ namespace Jhu.Graywulf.Web.Controls
             this.Controls.Add(text);
             this.Controls.Add(selectedText);
             this.Controls.Add(selectionCoords);
+
+            Load += Page_Load;
+            PreRender += Page_PreRender;
         }
 
-        protected override void OnInit(EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
-            base.OnInit(e);
-        }
-
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-
             var link = new HtmlLink();
             link.Href = "~/Scripts/CodeMirror/lib/codemirror.css";
             link.Attributes["rel"] = "stylesheet";
             Page.Header.Controls.AddAt(0, link);
         }
 
-        protected override void OnPreRender(EventArgs e)
+        protected void Page_PreRender(object sender, EventArgs e)
         {
             if (!this.DesignMode)
             {
@@ -135,8 +131,6 @@ $find('{0}${1}').onBeforeSubmit.call($find('{0}${1}'));
                     throw new ApplicationException("You must have a ScriptManager on the Page.");
                 }
             }
-
-            base.OnPreRender(e);
         }
 
         protected override void Render(HtmlTextWriter writer)

@@ -36,9 +36,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Activities" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,19 +49,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Logging\AppSettings.cs" />
+    <Compile Include="Check\LogWriterCheck.cs" />
+    <Compile Include="Logging\ConsoleLogWriter.cs" />
+    <Compile Include="Logging\ConsoleLogWriterConfiguration.cs" />
+    <Compile Include="Logging\Constants.cs" />
     <Compile Include="Logging\Enum.cs" />
     <Compile Include="Logging\Event.cs" />
     <Compile Include="Logging\EventFilter.cs" />
+    <Compile Include="Logging\FileLogWriterConfiguration.cs" />
     <Compile Include="Logging\FileLogWriter.cs" />
+    <Compile Include="Logging\LoggingContext.cs" />
     <Compile Include="Logging\Logger.cs" />
-    <Compile Include="Logging\LogWriter.cs" />
+    <Compile Include="Logging\LogWriterBase.cs" />
+    <Compile Include="Logging\LogWriterConfigurationBase.cs" />
+    <Compile Include="Logging\LogWriterFactory.cs" />
+    <Compile Include="Logging\SqlLogWriterConfiguration.cs" />
     <Compile Include="Logging\SqlLogWriter.cs" />
     <Compile Include="Logging\StreamLogWriter.cs" />
+    <Compile Include="Logging\WcfLoggingBehavior.cs" />
+    <Compile Include="Logging\WcfLoggingContext.cs" />
+    <Compile Include="Logging\WcfLoggingOperationInvoker.cs" />
     <Compile Include="Logging\WebEventFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Jhu.Graywulf.AccessControl\Jhu.Graywulf.AccessControl.csproj">
+      <Project>{da689d40-edcd-433d-8d9b-4e96829f8c6a}</Project>
+      <Name>Jhu.Graywulf.AccessControl</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
       <Project>{ABB4C403-720A-47E1-9485-CFAADD696656}</Project>
       <Name>Jhu.Graywulf.Components</Name>

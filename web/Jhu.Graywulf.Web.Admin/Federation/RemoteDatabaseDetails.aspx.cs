@@ -16,11 +16,6 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 {
     public partial class RemoteDatabaseDetails : EntityDetailsPageBase<RemoteDatabase>
     {
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-        }
-
         protected override void UpdateForm()
         {
             base.UpdateForm();

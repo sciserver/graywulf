@@ -8,13 +8,8 @@ using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Jobs.MirrorDatabase
 {
-    public class FindDatabaseInstanceFiles : CodeActivity, IGraywulfActivity
+    public class FindDatabaseInstanceFiles : JobCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
-
         public OutArgument<Guid> EntityGuid { get; set; }
 
         [RequiredArgument]
@@ -22,11 +17,11 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
         [RequiredArgument]
         public OutArgument<Dictionary<Guid, List<Guid>>> SourceDatabaseInstanceFileGuids { get; set; }
 
-        protected override void Execute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             Guid databaseinstanceguid = SourceDatabaseInstanceGuid.Get(activityContext);
 
-            using (Context context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 DatabaseInstance di = new DatabaseInstance(context);
                 di.Guid = databaseinstanceguid;
@@ -53,18 +48,6 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                         guids[f.DiskVolume.Guid].Add(f.Guid);
                     }
                 }
-
-                // Append logfiles
-                /* *** TODO: delete
-                foreach (DatabaseInstanceFile f in di.Files.Values)
-                {
-                    if (!guids.ContainsKey(f.DiskVolume.Guid))
-                    {
-                        guids.Add(f.DiskVolume.Guid, new List<Guid>());
-                    }
-
-                    guids[f.DiskVolume.Guid].Add(f.Guid);
-                }*/
 
                 SourceDatabaseInstanceFileGuids.Set(activityContext, guids);
             }

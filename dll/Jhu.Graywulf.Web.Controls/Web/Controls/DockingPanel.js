@@ -76,41 +76,35 @@ function dockContents(idx, element) {
             vv.edgeCache = vv.edge();
             vv.css({ "position": "absolute" });
 
-            if (vv.hasClass("dock-top")) {
-                vv.dockType = "top";
-            } else if (vv.hasClass("dock-bottom")) {
-                vv.dockType = "bottom";
-            } else if (vv.hasClass("dock-left")) {
-                vv.dockType = "left";
-            } else if (vv.hasClass("dock-right")) {
-                vv.dockType = "right";
-            } else if (vv.hasClass("dock-fill")) {
-                vv.dockType = "fill";
-            } else if (vv.hasClass("dock-hcenter")) {
-                vv.dockType = "hcenter";
-            } else if (vv.hasClass("dock-vcenter")) {
-                vv.dockType = "vcenter";
-            } else if (vv.hasClass("dock-center")) {
-                vv.dockType = "center";
+            if ($(vv).attr("class")) {
+                var classList = $(vv).attr("class").split(/\s+/);
+                for (var j = 0; j < classList.length; j++) {
+                    if (classList[j].startsWith("dock-")) {
+                        var dockType = classList[j].substring(5);
+                        if (dockType != "container" && dockType != "scroll") {
+                            vv.dockType = dockType;
+                        }
+                    }
+                }
             }
         }
 
         var width = 0;
         var height = 0;
 
-        if (vv.dockType == "top" || vv.dockType == "bottom" || vv.dockType == "fill") {
+        if (vv.dockType == "top" || vv.dockType == "bottom" || vv.dockType == "fill" || vv.dockType == "hfill") {
             width = right - left - vv.edgeCache.left - vv.edgeCache.right;
         }
 
-        if (vv.dockType == "left" || vv.dockType == "right" || vv.dockType == "fill") {
+        if (vv.dockType == "left" || vv.dockType == "right" || vv.dockType == "fill" || vv.dockType == "vfill") {
             height = bottom - top - vv.edgeCache.top - vv.edgeCache.bottom;
         }
 
-        if (vv.dockType == "hcenter" || vv.dockType == "center") {
+        if (vv.dockType == "hcenter" || vv.dockType == "center" || vv.dockType == "vfill") {
             left = (right - left - vv.width()) / 2;
         }
 
-        if (vv.dockType == "vcenter" || vv.dockType == "center") {
+        if (vv.dockType == "vcenter" || vv.dockType == "center" || vv.dockType == "hfill") {
             top = (bottom - top - vv.height()) / 2.5;
         }
 
@@ -131,18 +125,28 @@ function dockContents(idx, element) {
                 right -= vv.outerWidth(true);
                 vv.css({ "top": top, "left": right, "height": height });
                 break;
+            case "vfill":
+                vv.css({ "top": top, "left": left, "height": height });
+                break;
+            case "hfill":
+                vv.css({ "top": top, "left": left, "width": width });
+                break;
             case "fill":
                 vv.css({ "top": top, "left": left, "width": width, "height": height });
                 break;
             case "hcenter":
                 vv.css({ "left": left });
+                break;
             case "vcenter":
                 vv.css({ "top": top });
+                break;
             case "center":
                 vv.css({ "left": left, "top": top });
+                break;
         }
     }
 }
+
 
 function pageLoad() {
     resizePanels();
@@ -154,4 +158,3 @@ $(document).ready(function () {
         $(".dock-container").each(dockContents);
     });
 });
-

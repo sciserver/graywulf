@@ -13,28 +13,19 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Test
 {
-    public class TestAsyncException : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class TestAsyncException : JobAsyncCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
-
         [RequiredArgument]
         public InArgument<string> Message { get; set; }
 
-        protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
+        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
-            Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
-            string activityInstanceId = activityContext.ActivityInstanceId;
             string message = activityContext.GetValue(Message);
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, message), callback, state);
-        }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, string message)
-        {
-            throw new Exception(message);
+            return delegate ()
+            {
+                throw new Exception(message);
+            };
         }
     }
 }

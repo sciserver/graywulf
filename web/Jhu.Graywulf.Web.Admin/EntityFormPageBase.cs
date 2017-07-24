@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.Web.Admin
             get { return (Label)FindControlRecursive("Message"); }
         }
 
-        protected void Page_Load(object sender, EventArgs e)
+        protected virtual void Page_Load(object sender, EventArgs e)
         {
             LoadItem();
 
@@ -55,7 +55,8 @@ namespace Jhu.Graywulf.Web.Admin
         private void LoadItem()
         {
             item = new T();
-            item.Context = RegistryContext;
+            item.RegistryContext = RegistryContext;
+
             if (Request.QueryString["guid"] != null)
             {
                 item.Guid = new Guid(Request.QueryString["guid"]);
@@ -66,7 +67,7 @@ namespace Jhu.Graywulf.Web.Admin
                 item.ParentReference.Guid = new Guid(Request.QueryString["parentGuid"]);
             }
 
-            OnItemLoaded(item.Guid == Guid.Empty && !IsPostBack);
+            OnItemLoaded(!item.IsExisting && !IsPostBack);
         }
 
         protected virtual void OnUpdateForm()
@@ -107,11 +108,11 @@ namespace Jhu.Graywulf.Web.Admin
                 OnSaveForm();
 
                 item.ConcurrencyVersion = (long)ViewState["ConcurrencyVersion"];
-                item.Context = RegistryContext;
+                item.RegistryContext = RegistryContext;
 
                 try
                 {
-                    bool newentity = item.Guid == Guid.Empty;
+                    bool newentity = !item.IsExisting;
 
                     if (ViewState["ForceOverwrite"] != null)
                     {

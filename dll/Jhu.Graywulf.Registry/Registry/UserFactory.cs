@@ -12,7 +12,7 @@ namespace Jhu.Graywulf.Registry
         /// Creates an object with a valid context.
         /// </summary>
         /// <param name="context">A valid context object.</param>
-        public UserFactory(Context context)
+        public UserFactory(RegistryContext context)
             : base(context)
         {
         }
@@ -26,12 +26,12 @@ namespace Jhu.Graywulf.Registry
         /// <param name="password"></param>
         public User LoginUser(Domain domain, string nameOrEmail, string password)
         {
-            var user = new User(Context);
+            var user = new User(RegistryContext);
 
             // Load user from the database
             string sql = "spLoginUser";
 
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
+            using (var cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = domain.Guid;
                 cmd.Parameters.Add("@NameOrEmail", SqlDbType.NVarChar, 50).Value = nameOrEmail;
@@ -74,10 +74,9 @@ namespace Jhu.Graywulf.Registry
             }
 
             // Update context
-            Context.UserGuid = user.Guid;
-            Context.UserName = user.Name;
+            RegistryContext.UserReference.Value = user;
 
-            Context.LogEvent(new Jhu.Graywulf.Logging.Event("Jhu.Graywulf.Registry.UserFactory.LoginUser", user.Guid));
+            user.LogDebug();
 
             return user;
         }
@@ -86,7 +85,7 @@ namespace Jhu.Graywulf.Registry
         {
             var sql = @"spCheckUserEmailDuplicate";
 
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
+            using (var cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 cmd.Parameters.Add("@ParentGuid", SqlDbType.UniqueIdentifier).Value = domain.Guid;                
                 cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 128).Value = email.Trim();
@@ -105,11 +104,11 @@ namespace Jhu.Graywulf.Registry
 
         private User FindUserByEmailInternal(Entity parent, string email)
         {
-            var user = new User(Context);
+            var user = new User(RegistryContext);
 
             string sql = "spFindUser_byDomainEmail";
 
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
+            using (var cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 cmd.Parameters.Add("@DomainGuid", SqlDbType.UniqueIdentifier).Value = parent.Guid;
                 cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 128).Value = email.Trim();
@@ -146,7 +145,7 @@ namespace Jhu.Graywulf.Registry
             {
                 var sql = "spFindUser_byDomainActivationCode";
 
-                using (var cmd = Context.CreateStoredProcedureCommand(sql))
+                using (var cmd = RegistryContext.CreateStoredProcedureCommand(sql))
                 {
                     cmd.Parameters.Add("@DomainGuid", SqlDbType.UniqueIdentifier).Value = parent.Guid;
                     cmd.Parameters.Add("@ActivationCode", SqlDbType.NVarChar, 50).Value = code;
@@ -155,7 +154,7 @@ namespace Jhu.Graywulf.Registry
                     {
                         if (dr.Read())
                         {
-                            user = new User(Context);
+                            user = new User(RegistryContext);
                             user.LoadFromDataReader(dr);
                         }
 
@@ -169,29 +168,29 @@ namespace Jhu.Graywulf.Registry
 
         public User LoadUser(Guid guid)
         {
-            var ef = new EntityFactory(Context);
+            var ef = new EntityFactory(RegistryContext);
             return ef.LoadEntity<User>(guid);
         }
 
         public User LoadUser(string name)
         {
-            var ef = new EntityFactory(Context);
+            var ef = new EntityFactory(RegistryContext);
             return ef.LoadEntity<User>(name);
         }
 
         public User FindUserByName(Domain domain, string name)
         {
-            var ef = new EntityFactory(Context);
+            var ef = new EntityFactory(RegistryContext);
             return ef.LoadEntity<User>(domain.GetFullyQualifiedName(), name);
         }
 
         public User FindUserByIdentity(Domain domain, string protocol, string authority, string identifier)
         {
-            var user = new User(Context);
+            var user = new User(RegistryContext);
 
             var sql = "spFindUser_byIdentity";
 
-            using (var cmd = Context.CreateStoredProcedureCommand(sql))
+            using (var cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 cmd.Parameters.Add("@DomainGuid", SqlDbType.UniqueIdentifier).Value = domain.Guid;
                 cmd.Parameters.Add("@Protocol", SqlDbType.NVarChar, 25).Value = protocol;

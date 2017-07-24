@@ -44,7 +44,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             {
                 if (entityFactory == null)
                 {
-                    entityFactory = new EntityFactory(Context);
+                    entityFactory = new EntityFactory(RegistryContext);
                 }
 
                 return entityFactory;
@@ -57,19 +57,11 @@ namespace Jhu.Graywulf.Web.Api.V1
             {
                 if (jobInstanceFactory == null)
                 {
-                    // Use user guid from context (only returns jobs of particular user)
-                    jobInstanceFactory = new JobInstanceFactory(Context);
-                    jobInstanceFactory.UserGuid = Context.UserGuid;
+                    jobInstanceFactory = new JobInstanceFactory(RegistryContext);
                 }
 
                 return jobInstanceFactory;
             }
-        }
-
-        public Guid UserGuid
-        {
-            get { return JobInstanceFactory.UserGuid; }
-            set { JobInstanceFactory.UserGuid = value; }
         }
 
         public HashSet<Guid> QueueInstanceGuids
@@ -90,7 +82,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         #endregion
         #region Constructors and initializers
 
-        public JobFactory(Context context)
+        public JobFactory(RegistryContext context)
             : base(context)
         {
             InitializeMembers();
@@ -123,9 +115,9 @@ namespace Jhu.Graywulf.Web.Api.V1
             queueInstancesByGuid = new ConcurrentDictionary<Guid, QueueInstance>();
             queueInstancesByName = new ConcurrentDictionary<string, QueueInstance>(Entity.StringComparer);
 
-            Context.Federation.ControllerMachineRole.LoadQueueInstances(true);
+            RegistryContext.Federation.ControllerMachineRole.LoadQueueInstances(true);
 
-            foreach (var q in Context.Federation.ControllerMachineRole.QueueInstances.Values)
+            foreach (var q in RegistryContext.Federation.ControllerMachineRole.QueueInstances.Values)
             {
                 if (!q.System && !q.Hidden)
                 {
@@ -171,7 +163,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                 jobDefinitionsByName[jobtype] = new ConcurrentDictionary<string, JobDefinition>();
             }
 
-            var ef = new EntityFactory(Context);
+            var ef = new EntityFactory(RegistryContext);
             var f = ef.LoadEntity<Federation>(Jhu.Graywulf.Registry.ContextManager.Configuration.FederationName);
 
             f.LoadJobDefinitions(true);

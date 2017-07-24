@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.Web.Admin.Controls
     {
         protected EntityGroup entityGroupMask;
 
-        protected override void OnLoad(EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
             entityGroupMask = EntityGroup.Unknown;
             string dir = Request.AppRelativeCurrentExecutionFilePath;
@@ -64,8 +64,6 @@ namespace Jhu.Graywulf.Web.Admin.Controls
 
             p.Controls.AddAt(0, new LiteralControl("►&nbsp;&nbsp;&nbsp;"));
             this.Controls.Add(p);
-
-            base.OnLoad(e);
         }
     }
 }

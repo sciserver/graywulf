@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Web.UI
     {
         public static string GetUrl()
         {
-            return "~/Default.aspx";
+            return Constants.PageUrlDefault;
         }
 
         protected void Page_Load(object sender, EventArgs e)

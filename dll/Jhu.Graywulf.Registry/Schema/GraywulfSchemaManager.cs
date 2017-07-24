@@ -77,7 +77,7 @@ namespace Jhu.Graywulf.Schema
             if (ds is GraywulfDataset)
             {
                 var gwds = (GraywulfDataset)ds;
-                gwds.Context = federationContext.RegistryContext;
+                gwds.RegistryContext = federationContext.RegistryContext;
             }
 
             base.OnDatasetAdded(datasetName, ds);
@@ -146,7 +146,7 @@ namespace Jhu.Graywulf.Schema
                 throw new SchemaException(String.Format(ExceptionMessages.AccessDeniedToDataset, dd.Name));
             }
 
-            GraywulfDataset ds = new GraywulfDataset(dd.Context);
+            GraywulfDataset ds = new GraywulfDataset(dd.RegistryContext);
             ds.Name = dd.Name;
             ds.DatabaseDefinitionReference.Value = dd;
             ds.IsCacheable = true;

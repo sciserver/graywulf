@@ -10,14 +10,13 @@ using System.Runtime.Serialization;
 using System.IO;
 using System.Xml.Serialization;
 using Jhu.Graywulf.Tasks;
-using Jhu.Graywulf.IO;
 using Jhu.Graywulf.IO.Tasks;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.Schema.SqlServer;
 using Jhu.Graywulf.SqlParser;
-using Jhu.Graywulf.SqlCodeGen.SqlServer;
 using Jhu.Graywulf.RemoteService;
 
 namespace Jhu.Graywulf.Jobs.Query
@@ -32,7 +31,7 @@ namespace Jhu.Graywulf.Jobs.Query
     /// </remarks>
     [Serializable]
     [DataContract(Namespace = "")]
-    public abstract class QueryObject : CancelableCollection, IContextObject, ICancelableTask, ICloneable
+    public abstract class QueryObject : CancelableCollection, IRegistryContextObject, ICancelableTask, ICloneable
     {
         #region Property storage member variables
 
@@ -101,7 +100,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Cache for registry context
         /// </summary>
         [NonSerialized]
-        private Context context;
+        private RegistryContext context;
 
         /// <summary>
         /// Cache for the scheduler interface
@@ -276,7 +275,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Gets or sets the registry context
         /// </summary>
         [IgnoreDataMember]
-        public Context Context
+        public RegistryContext RegistryContext
         {
             get { return context; }
             set
@@ -446,7 +445,7 @@ namespace Jhu.Graywulf.Jobs.Query
             InitializeMembers(new StreamingContext());
         }
 
-        public QueryObject(Context context)
+        public QueryObject(RegistryContext context)
         {
             InitializeMembers(new StreamingContext());
 
@@ -557,7 +556,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// Initializes the query object by loading registry objects, if necessary.
         /// </summary>
         /// <param name="context"></param>
-        public void InitializeQueryObject(Context context)
+        public void InitializeQueryObject(RegistryContext context)
         {
             InitializeQueryObject(context, null, true);
         }
@@ -567,7 +566,7 @@ namespace Jhu.Graywulf.Jobs.Query
         /// </summary>
         /// <param name="context"></param>
         /// <param name="scheduler"></param>
-        public void InitializeQueryObject(Context context, IScheduler scheduler)
+        public void InitializeQueryObject(RegistryContext context, IScheduler scheduler)
         {
             InitializeQueryObject(context, scheduler, false);
         }
@@ -578,8 +577,13 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="context"></param>
         /// <param name="scheduler"></param>
         /// <param name="forceReinitialize"></param>
-        public virtual void InitializeQueryObject(Context context, IScheduler scheduler, bool forceReinitialize)
+        public virtual void InitializeQueryObject(RegistryContext context, IScheduler scheduler, bool forceReinitialize)
         {
+            if (context != null)
+            {
+                context.EnsureContextEntitiesLoaded();
+            }
+
             lock (syncRoot)
             {
                 if (context != null)
@@ -596,7 +600,6 @@ namespace Jhu.Graywulf.Jobs.Query
                             LoadSystemDatabaseInstance(temporaryDatabaseInstanceReference, (GraywulfDataset)temporaryDataset, forceReinitialize);
                             LoadSystemDatabaseInstance(codeDatabaseInstanceReference, (GraywulfDataset)codeDataset, forceReinitialize);
 
-
                             break;
                         default:
                             throw new NotImplementedException();
@@ -608,6 +611,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     this.scheduler = scheduler;
                 }
 
+                // TODO: try to take these out from lock
                 Parse(forceReinitialize);
                 Interpret(forceReinitialize);
             }
@@ -775,20 +779,20 @@ namespace Jhu.Graywulf.Jobs.Query
         /// <param name="connectionMode"></param>
         /// <param name="transactionMode"></param>
         /// <returns></returns>
-        public Jhu.Graywulf.Registry.Context CreateContext(IGraywulfActivity activity, System.Activities.CodeActivityContext activityContext, Jhu.Graywulf.Registry.ConnectionMode connectionMode, Jhu.Graywulf.Registry.TransactionMode transactionMode)
+        public Jhu.Graywulf.Registry.RegistryContext CreateContext()
         {
             switch (executionMode)
             {
                 case Query.ExecutionMode.SingleServer:
                     return null;
                 case Query.ExecutionMode.Graywulf:
-                    return Jhu.Graywulf.Registry.ContextManager.Instance.CreateContext(activity, activityContext, connectionMode, transactionMode);
+                    return Jhu.Graywulf.Registry.ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit);
                 default:
                     throw new NotImplementedException();
             }
         }
 
-        protected virtual void UpdateContext(Context context)
+        protected virtual void UpdateContext(RegistryContext context)
         {
             this.context = context;
         }
@@ -810,7 +814,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     // Initialize temporary database
                     if (temporaryDataset == null || forceReinitialize)
                     {
-                        var tempds = new GraywulfDataset(Context)
+                        var tempds = new GraywulfDataset(RegistryContext)
                         {
                             Name = Registry.Constants.TempDbName,
                             IsOnLinkedServer = false,
@@ -824,7 +828,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     // Initialize code database
                     if (codeDataset == null || forceReinitialize)
                     {
-                        var codeds = new GraywulfDataset(Context)
+                        var codeds = new GraywulfDataset(RegistryContext)
                         {
                             Name = Registry.Constants.CodeDbName,
                             IsOnLinkedServer = false,
@@ -890,13 +894,13 @@ namespace Jhu.Graywulf.Jobs.Query
         {
             if (!AssignedServerInstanceReference.IsEmpty && (databaseInstance.IsEmpty || forceReinitialize))
             {
-                dataset.Context = Context;
+                dataset.RegistryContext = RegistryContext;
                 var dd = dataset.DatabaseVersionReference.Value.DatabaseDefinition;
 
                 dd.LoadDatabaseInstances(false);
                 foreach (var di in dd.DatabaseInstances.Values)
                 {
-                    di.Context = Context;
+                    di.RegistryContext = RegistryContext;
                 }
 
                 // Find database instance that is on the same machine
@@ -988,7 +992,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 throw new Exception("No server found with requested database.");  // *** TODO
             }
 
-            var si = new ServerInstance(Context);
+            var si = new ServerInstance(RegistryContext);
             si.Guid = siguid;
             si.Load();
 
@@ -1033,7 +1037,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 throw new Exception("No server found with requested database.");  // *** TODO
             }
 
-            var si = new ServerInstance(Context);
+            var si = new ServerInstance(RegistryContext);
             si.Guid = siguid;
             si.Load();
 
@@ -1082,7 +1086,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var si = new ServerInstance[siguid.Length];
             for (int i = 0; i < siguid.Length; i++)
             {
-                si[i] = new ServerInstance(Context);
+                si[i] = new ServerInstance(RegistryContext);
                 si[i].Guid = siguid[i];
                 si[i].Load();
             }
@@ -1116,7 +1120,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var di = new DatabaseInstance[diguid.Length];
             for (int i = 0; i < diguid.Length; i++)
             {
-                di[i] = new DatabaseInstance(Context);
+                di[i] = new DatabaseInstance(RegistryContext);
                 di[i].Guid = diguid[i];
                 di[i].Load();
             }
@@ -1150,7 +1154,7 @@ namespace Jhu.Graywulf.Jobs.Query
             var di = new DatabaseInstance[diguid.Length];
             for (int i = 0; i < diguid.Length; i++)
             {
-                di[i] = new DatabaseInstance(Context);
+                di[i] = new DatabaseInstance(RegistryContext);
                 di[i].Guid = diguid[i];
                 di[i].Load();
             }

@@ -99,7 +99,7 @@ namespace Jhu.Graywulf.Registry
         /// Constructor for creating a new object and setting object context.
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
-        public JobInstanceDependency(Context context)
+        public JobInstanceDependency(RegistryContext context)
             : base(context)
         {
             InitializeMembers(new StreamingContext());
@@ -111,7 +111,7 @@ namespace Jhu.Graywulf.Registry
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity in the entity hierarchy.</param>
         public JobInstanceDependency(JobInstance parent)
-            : base(parent.Context, parent)
+            : base(parent.RegistryContext, parent)
         {
             InitializeMembers(new StreamingContext());
         }

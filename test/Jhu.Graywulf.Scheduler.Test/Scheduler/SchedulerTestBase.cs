@@ -13,6 +13,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             using (SchedulerTester.Instance.GetExclusiveToken())
             {
+                StartLogger();
                 PurgeTestJobs();
             }
         }
@@ -27,6 +28,7 @@ namespace Jhu.Graywulf.Scheduler
                 }
 
                 PurgeTestJobs();
+                StopLogger();
             }
         }
     }

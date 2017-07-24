@@ -11,26 +11,23 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.MirrorDatabase
 {
-    public class RunCheckDb : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class RunCheckDb : JobAsyncCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
-
         public OutArgument<Guid> EntityGuid { get; set; }
 
         [RequiredArgument]
         public InArgument<Guid> DatabaseInstanceGuid { get; set; }
 
-        protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
+        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             Guid databaseinstanceguid = DatabaseInstanceGuid.Get(activityContext);
             string connectionString;
 
             EntityGuid.Set(activityContext, databaseinstanceguid);
 
-            using (Context context = ContextManager.Instance.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 DatabaseInstance di = new DatabaseInstance(context);
                 di.Guid = databaseinstanceguid;
@@ -38,27 +35,23 @@ namespace Jhu.Graywulf.Jobs.MirrorDatabase
                 connectionString = di.GetConnectionString().ConnectionString;
             }
 
-            Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
-            string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, connectionString), callback, state);
-        }
-
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, string connectionString)
-        {
-            using (var cn = new SqlConnection(connectionString))
+            return delegate ()
             {
-                cn.Open();
-
-                using (var cmd = new SqlCommand("DBCC CHECKDB", cn))
+                using (var cn = new SqlConnection(connectionString))
                 {
-                    cmd.CommandTimeout = 0;
+                    cn.Open();
 
-                    var cc = new CancelableDbCommand(cmd);
-                    RegisterCancelable(workflowInstanceGuid, activityInstanceId, cc);
-                    cc.ExecuteNonQuery();
-                    UnregisterCancelable(workflowInstanceGuid, activityInstanceId, cc);
+                    using (var cmd = new SqlCommand("DBCC CHECKDB", cn))
+                    {
+                        cmd.CommandTimeout = 0;
+
+                        var cc = new CancelableDbCommand(cmd);
+                        RegisterCancelable(workflowInstanceId, activityInstanceId, cc);
+                        cc.ExecuteNonQuery();
+                        UnregisterCancelable(workflowInstanceId, activityInstanceId, cc);
+                    }
                 }
-            }
+            };
         }
     }
 }

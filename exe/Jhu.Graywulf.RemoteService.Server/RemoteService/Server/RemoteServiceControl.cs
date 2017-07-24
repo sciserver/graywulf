@@ -7,6 +7,7 @@ using System.Threading;
 using System.Security;
 using System.Security.Principal;
 using Jhu.Graywulf.RemoteService;
+using Jhu.Graywulf.Logging;
 
 namespace Jhu.Graywulf.RemoteService.Server
 {
@@ -17,13 +18,18 @@ namespace Jhu.Graywulf.RemoteService.Server
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.Single,
         IncludeExceptionDetailInFaults = true)]
+    [WcfLoggingBehavior]
     class RemoteServiceControl : IRemoteServiceControl
     {
         [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
         [LimitedAccessOperation]
         public string Hello()
         {
-            return GetType().Assembly.FullName;
+            var res = GetType().Assembly.FullName;
+
+            RemoteService.LogDebug("Hello called on {0}", res);
+
+            return res;
         }
 
         [OperationBehavior(Impersonation = ImpersonationOption.Required)]
@@ -36,6 +42,8 @@ namespace Jhu.Graywulf.RemoteService.Server
             name = id.Name;
             isAuthenticated = id.IsAuthenticated;
             authenticationType = id.AuthenticationType;
+
+            RemoteService.LogDebug("Client is {0} and {1}authenticated", name, isAuthenticated ? "" : "not ");
         }
 
         [OperationBehavior(Impersonation = ImpersonationOption.NotAllowed)]
@@ -46,6 +54,8 @@ namespace Jhu.Graywulf.RemoteService.Server
             name = id.Name;
             isAuthenticated = id.IsAuthenticated;
             authenticationType = id.AuthenticationType;
+
+            RemoteService.LogDebug("Server is {0} and {1}authenticated", name, isAuthenticated ? "" : "not ");
         }
 
         [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]

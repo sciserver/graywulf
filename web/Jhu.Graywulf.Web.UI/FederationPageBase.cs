@@ -18,21 +18,6 @@ namespace Jhu.Graywulf.Web.UI
     {
         private const string SessionLastQueryJobGuidKey = "Jhu.Graywulf.Web.UI.LastQueryJobGuid";
 
-        private FederationContext federationContext;
-
-        public FederationContext FederationContext
-        {
-            get
-            {
-                if (federationContext == null)
-                {
-                    federationContext = new FederationContext(RegistryContext, RegistryUser);
-                }
-
-                return federationContext;
-            }
-        }
-
         // ---
 
         protected bool HasQueryInSession()

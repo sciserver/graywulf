@@ -15,7 +15,7 @@ namespace Jhu.Graywulf.Install
         protected abstract bool IsSystem { get; }
 
         protected JobInstallerBase(Federation federation)
-            :base(federation.Context)
+            :base(federation.RegistryContext)
         {
             this.federation = federation;
 

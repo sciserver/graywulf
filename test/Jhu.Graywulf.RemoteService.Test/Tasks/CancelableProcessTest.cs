@@ -11,6 +11,7 @@ using Jhu.Graywulf.RemoteService;
 
 namespace Jhu.Graywulf.Tasks
 {
+    // TODO: move to tasks
     [TestClass]
     public class CancelableProcessTest : Jhu.Graywulf.Test.TestClassBase
     {

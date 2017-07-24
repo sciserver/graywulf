@@ -160,18 +160,5 @@ namespace Jhu.Graywulf.Schema
             dr[SchemaTableOptionalColumn.IsReadOnly] = true;
             dr[SchemaTableOptionalColumn.ProviderSpecificDataType] = this.DataType.TypeName;
         }
-
-        /* TODO: delete
-        public void CopyFromSchemaTableRow(DataRow dr)
-        {
-            this.ID = (int)dr[SchemaTableColumn.ColumnOrdinal];
-            this.Name = (string)dr[SchemaTableColumn.ColumnName];
-            this.IsIdentity = dr[SchemaTableColumn.IsUnique] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.IsUnique];  //
-            this.IsKey = dr[SchemaTableColumn.IsKey] == DBNull.Value ? false : (bool)dr[SchemaTableColumn.IsKey];  //
-            this.IsHidden = dr[SchemaTableOptionalColumn.IsHidden] == DBNull.Value ? false : (bool)dr[SchemaTableOptionalColumn.IsHidden];
-
-            this.DataType = DataType.Create(dr);
-        }
-         * */
     }
 }

@@ -28,6 +28,10 @@ namespace Jhu.Graywulf.Web.UI.Controls
 
                 Controls.Add(b);
             }
+
+            Controls.Add(new Literal() { Text = " | " });
+            Controls.Add(new Literal() { Text = " version: " });
+            Controls.Add(new Literal() { Text = (string)Application[Web.UI.Constants.ApplicationVersion] });
         }
     }
 }

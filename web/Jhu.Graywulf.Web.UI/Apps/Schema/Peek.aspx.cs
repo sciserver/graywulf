@@ -39,7 +39,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                 if (!ds.DatabaseDefinitionReference.IsEmpty)
                 {
                     var dd = ds.DatabaseDefinitionReference.Value;
-                    dd.Context = RegistryContext;
+                    dd.RegistryContext = RegistryContext;
 
                     var di = dd.GetRandomDatabaseInstance(Registry.Constants.ProdDatabaseVersionName);
                     var cstr = di.GetConnectionString();

@@ -9,18 +9,18 @@ using Jhu.Graywulf.Schema;
 
 namespace Jhu.Graywulf.Registry
 {
-    public class FederationContext
+    public class FederationContext : IDisposable
     {
         #region Private member variables
 
-        private Context registryContext;
+        private RegistryContext registryContext;
         private User registryUser;
         private GraywulfSchemaManager schemaManager;
 
         #endregion
         #region Properties
 
-        public Context RegistryContext
+        public RegistryContext RegistryContext
         {
             get { return registryContext; }
         }
@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Constructors and initializers
 
-        public FederationContext(Context registryContext, User registryUser)
+        public FederationContext(RegistryContext registryContext, User registryUser)
         {
             this.registryContext = registryContext;
             this.registryUser = registryUser;
@@ -92,6 +92,10 @@ namespace Jhu.Graywulf.Registry
             this.registryUser = null;
 
             this.schemaManager = null;
+        }
+
+        public void Dispose()
+        {
         }
 
         #endregion

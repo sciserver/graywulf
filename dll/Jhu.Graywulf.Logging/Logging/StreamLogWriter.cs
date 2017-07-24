@@ -7,35 +7,77 @@ using System.IO;
 
 namespace Jhu.Graywulf.Logging
 {
-    public class StreamLogWriter : LogWriter
+    public abstract class StreamLogWriter : LogWriterBase
     {
-        Stream stream;
-        TextWriter textWriter;
+        private Stream stream;
+        private bool ownsStream;
+        private TextWriter textWriter;
+        private bool ownsTextWriter;
+
+        protected bool IsOpen
+        {
+            get { return stream != null; }
+        }
 
         public StreamLogWriter()
-            : base()
         {
+            InitializeMembers();
         }
 
-        public StreamLogWriter(Stream stream)
-        {
-            this.stream = stream;
-            this.textWriter = new StreamWriter(stream);
-        }
-
-        public StreamLogWriter(TextWriter textWriter)
+        private void InitializeMembers()
         {
             this.stream = null;
-            this.textWriter = textWriter;
+            this.ownsStream = false;
+            this.textWriter = null;
+            this.ownsTextWriter = false;
         }
 
-        public override void WriteEvent(Event e)
+        public override void Dispose()
         {
-            textWriter.WriteLine("{0} : {1} : {2} : {3}", e.EventOrder,  e.EventDateTime, e.Operation, e.ExecutionStatus);
-            if (e.Exception != null)
+            Close();
+        }
+
+        public void Open(Stream stream)
+        {
+            this.stream = stream;
+            this.ownsStream = false;
+            this.textWriter = new StreamWriter(stream);
+            this.ownsTextWriter = true;
+        }
+
+        public void Open(TextWriter textWriter)
+        {
+            this.stream = null;
+            this.ownsStream = false;
+            this.textWriter = textWriter;
+            this.ownsTextWriter = false;
+        }
+
+        public void Close()
+        {
+            if (textWriter != null && ownsTextWriter)
             {
-                textWriter.WriteLine("   {0}", e.Exception.GetType().FullName);
-                textWriter.WriteLine("   {0}", e.Exception.Message);
+                textWriter.Close();
+                textWriter.Dispose();
+                textWriter = null;
+            }
+
+            if (stream != null && ownsStream)
+            {
+                stream.Close();
+                stream.Dispose();
+                stream = null;
+            }
+        }
+
+        protected override void OnWriteEvent(Event e)
+        {
+            textWriter.WriteLine("{0} {1:s} {2} {3}", e.Order, e.DateTime, e.Operation, e.ExecutionStatus);
+
+            if (e.ExceptionType != null)
+            {
+                textWriter.WriteLine("   {0}", e.ExceptionType);
+                textWriter.WriteLine("   {0}", e.Message);
             }
         }
     }

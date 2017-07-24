@@ -20,6 +20,8 @@ namespace Jhu.Graywulf.Web.Api.V1
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
+            Logging.LoggingContext.Current.StartLogger(Logging.EventSource.Test, false);
+
             using (SchedulerTester.Instance.GetExclusiveToken())
             {
                 PurgeTestJobs();
@@ -46,6 +48,8 @@ namespace Jhu.Graywulf.Web.Api.V1
 
                 PurgeTestJobs();
             }
+
+            Logging.LoggingContext.Current.StopLogger();
         }
 
         protected virtual void ImportFileHelper(string uri, bool generateIdentityColumn)
@@ -89,7 +93,7 @@ namespace Jhu.Graywulf.Web.Api.V1
                             ImportJob = job
                         };
 
-                        var response = client.SubmitJob("quick", request);
+                        var response = client.SubmitJob(JobQueue.Quick.ToString(), request);
                         
                         // Try to get newly scheduled job
                         var nj = client.GetJob(response.ImportJob.Guid.ToString());

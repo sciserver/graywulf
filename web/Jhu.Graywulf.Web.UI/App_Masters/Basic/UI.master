@@ -4,6 +4,9 @@
 <asp:Content runat="server" ContentPlaceHolderID="head">
     <asp:ContentPlaceHolder runat="server" ID="head" />
 </asp:Content>
+<asp:Content runat="server" ContentPlaceHolderID="logo">
+    <jgwuc:Dropdown runat="server" ID="logo" />
+</asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="userStatus">
     <jgwuc:UserStatus ID="UserStatus" runat="server" />
 </asp:Content>

@@ -5,23 +5,19 @@ using System.Text;
 using System.Activities;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.SqlParser;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class GeneratePartitions : CodeActivity, IGraywulfActivity
+    public class GeneratePartitions : JobCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
-
         public OutArgument<Guid> EntityGuid { get; set; }
 
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
 
-        protected override void Execute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             SqlQuery query = Query.Get(activityContext);
 
@@ -32,7 +28,7 @@ namespace Jhu.Graywulf.Jobs.Query
                     query.GeneratePartitions();
                     break;
                 case ExecutionMode.Graywulf:
-                    using (Context context = query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                    using (RegistryContext context = query.CreateContext())
                     {
                         var scheduler = activityContext.GetExtension<IScheduler>();
 

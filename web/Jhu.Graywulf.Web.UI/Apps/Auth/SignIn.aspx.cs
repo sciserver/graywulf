@@ -276,8 +276,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Auth
 
                 if (user.IsActivated)
                 {
-                    RegistryContext.UserGuid = user.Guid;
-                    RegistryContext.UserName = user.Name;
+                    RegistryContext.UserReference.Value = user;
 
                     // If there's any temporary identifier set, associate with the user
                     if (TemporaryPrincipal != null)

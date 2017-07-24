@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Registry
         /// Creates a new instance with a context set.
         /// </summary>
         /// <param name="context">A valid context.</param>
-        public JobInstanceFactory(Context context)
+        public JobInstanceFactory(RegistryContext context)
             : base(context)
         {
             InitializeMembers();
@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Registry
         {
             string sql = "spFindJobInstance_byDetails";
 
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
+            using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 AppendCommandParameters(cmd, -1, -1);
 
@@ -98,7 +98,7 @@ namespace Jhu.Graywulf.Registry
         {
             string sql = "spFindJobInstance_byDetails";
 
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
+            using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
                 AppendCommandParameters(cmd, from, max);
 
@@ -106,7 +106,7 @@ namespace Jhu.Graywulf.Registry
                 {
                     while (dr.Read())
                     {
-                        JobInstance job = new JobInstance(Context);
+                        JobInstance job = new JobInstance(RegistryContext);
                         job.LoadFromDataReader(dr);
 
                         yield return job;
@@ -118,9 +118,9 @@ namespace Jhu.Graywulf.Registry
 
         private void AppendCommandParameters(SqlCommand cmd, int from, int max)
         {
-            cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
-            cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = Context.ShowHidden;
-            cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = Context.ShowDeleted;
+            cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
+            cmd.Parameters.Add("@ShowHidden", SqlDbType.Bit).Value = RegistryContext.ShowHidden;
+            cmd.Parameters.Add("@ShowDeleted", SqlDbType.Bit).Value = RegistryContext.ShowDeleted;
             cmd.Parameters.Add("@From", SqlDbType.Int).Value = from == -1 ? DBNull.Value : (object)from;
             cmd.Parameters.Add("@Max", SqlDbType.Int).Value = max == -1 ? DBNull.Value : (object)max;
             cmd.Parameters.Add("@RowCount", SqlDbType.Int).Direction = ParameterDirection.Output;
@@ -145,9 +145,9 @@ namespace Jhu.Graywulf.Registry
 
             string sql = "spFindJobInstance_Next";
 
-            using (SqlCommand cmd = Context.CreateStoredProcedureCommand(sql))
+            using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
             {
-                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = Context.UserGuid;
+                cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
                 cmd.Parameters.Add("@QueueInstanceGuid", SqlDbType.UniqueIdentifier).Value = queueInstanceGuid;
                 cmd.Parameters.Add("@LastUserGuid", SqlDbType.UniqueIdentifier).Value = lastUserGuid;
                 cmd.Parameters.Add("@MaxJobs", SqlDbType.Int).Value = max;
@@ -156,7 +156,7 @@ namespace Jhu.Graywulf.Registry
                 {
                     while (dr.Read())
                     {
-                        JobInstance j = new JobInstance(Context);
+                        JobInstance j = new JobInstance(RegistryContext);
                         j.LoadFromDataReader(dr);
 
                         res.Add(j);
@@ -183,12 +183,12 @@ namespace Jhu.Graywulf.Registry
             return String.Format("{0:yyMMddHHmmssff}{1:000}", now, rnd);
         }
 
-        public static string GenerateUniqueJobID(Context context)
+        public static string GenerateUniqueJobID(RegistryContext context)
         {
-            return String.Format("{0}_{1}", EntityFactory.GetName(context.UserName), GenerateUniqueJobID());
+            return String.Format("{0}_{1}", EntityFactory.GetName(context.User.Name), GenerateUniqueJobID());
         }
 
-        public static string GenerateRecurringJobID(Context context, string oldName)
+        public static string GenerateRecurringJobID(RegistryContext context, string oldName)
         {
             // TODO: This is an ad-hoc solution, make it more robust
             // Take old name, but remove date part
@@ -202,7 +202,7 @@ namespace Jhu.Graywulf.Registry
             }
             else if (i == 0)
             {
-                newname = context.UserName;
+                newname = context.User.Name;
             }
             else
             {

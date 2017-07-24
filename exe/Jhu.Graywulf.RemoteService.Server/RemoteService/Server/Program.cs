@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ServiceProcess;
 
 namespace Jhu.Graywulf.RemoteService.Server
@@ -11,7 +8,7 @@ namespace Jhu.Graywulf.RemoteService.Server
         private static RemoteService service;
 
         static void Main(string[] args)
-        {           
+        {
             if (Environment.UserInteractive)
             {
                 // Run in command-prompt
@@ -41,6 +38,18 @@ namespace Jhu.Graywulf.RemoteService.Server
         public static void Stop()
         {
             service.Stop();
+            service = null;
+        }
+
+        public static void StartDebug(string[] args)
+        {
+            service = new RemoteService();
+            service.StartDebug(args);
+        }
+
+        public static void StopDebug()
+        {
+            service.StopDebug();
             service = null;
         }
     }

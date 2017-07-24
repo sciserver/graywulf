@@ -29,20 +29,15 @@ namespace Jhu.Graywulf.Registry
         }
 
         /// <summary>
-        /// Singleton object of <see cref="ContextManager"/> to be used for creating new <see cref="Context"/> objects.
+        /// Singleton object of <see cref="ContextManager"/> to be used for creating new <see cref="RegistryContext"/> objects.
         /// </summary>
         public static readonly ContextManager Instance = new ContextManager();  // Singleton
 
         #endregion
         #region Member Variables
 
-        private object syncRoot = new object();
-
         private string connectionString;
         private string smtpString;
-
-        private Guid userGuid;
-        private string userName;
 
         private string clusterName;
         private string domainName;
@@ -96,9 +91,6 @@ namespace Jhu.Graywulf.Registry
                 this.connectionString = config.ConnectionString;
                 this.smtpString = string.Empty;
 
-                this.userGuid = Guid.Empty;
-                this.userName = null;
-
                 this.clusterName = config.ClusterName;
                 this.domainName = config.DomainName;
                 this.federationName = config.FederationName;
@@ -108,12 +100,12 @@ namespace Jhu.Graywulf.Registry
         #endregion
         #region Context Creation Functions
 
-        public Context CreateContext()
+        public RegistryContext CreateContext()
         {
             return CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit);
         }
 
-        public Context CreateContext(ConnectionMode connectionMode, TransactionMode transactionMode)
+        public RegistryContext CreateContext(ConnectionMode connectionMode, TransactionMode transactionMode)
         {
             return CreateContext(this.connectionString, connectionMode, transactionMode);
         }
@@ -125,33 +117,38 @@ namespace Jhu.Graywulf.Registry
         /// <param name="beginTransaction">True if a transaction is required.</param>
         /// <param name="openSmtp">True if an SMTP connection should be opened.</param>
         /// <returns>A valid connection.</returns>
-        public Context CreateContext(string connectionString, ConnectionMode connectionMode, TransactionMode transactionMode)
+        public RegistryContext CreateContext(string connectionString, ConnectionMode connectionMode, TransactionMode transactionMode)
         {
-            var context = new Context()
-            {
-                ConnectionString = connectionString,
-                ConnectionMode = connectionMode,
-                TransactionMode = transactionMode,
-
-                UserGuid = userGuid,
-                UserName = userName,
-            };
-
-            context.ClusterReference.Name = clusterName;
-            context.DomainReference.Name = domainName;
-            context.FederationReference.Name = federationName;
-
-            return context;
-        }
-
-        public Context CreateContext(IGraywulfActivity activity, CodeActivityContext activityContext, ConnectionMode connectionMode, TransactionMode transactionMode)
-        {
-            var context = new Context(activity, activityContext)
+            var context = new RegistryContext(Logging.LoggingContext.Current)
             {
                 ConnectionString = connectionString,
                 ConnectionMode = connectionMode,
                 TransactionMode = transactionMode,
             };
+
+            var jobContext = JobContext.Current;
+
+            if (jobContext != null)
+            {
+                context.ClusterReference.Guid = jobContext.ClusterGuid;
+                context.DomainReference.Guid = jobContext.DomainGuid;
+                context.FederationReference.Guid = jobContext.FederationGuid;
+                context.UserReference.Guid = jobContext.UserGuid;
+                context.JobReference.Guid = jobContext.JobGuid;
+            }
+            else
+            {
+                context.ClusterReference.Name = clusterName;
+                context.DomainReference.Name = domainName;
+                context.FederationReference.Name = federationName;
+
+                var principal = System.Threading.Thread.CurrentPrincipal as Jhu.Graywulf.AccessControl.GraywulfPrincipal;
+
+                if (principal != null)
+                {
+                    context.UserReference.Guid = principal.Identity.UserReference.Guid;
+                }
+            }
 
             return context;
         }

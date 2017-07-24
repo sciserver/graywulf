@@ -9,11 +9,11 @@ namespace Jhu.Graywulf.Registry
     /// <summary>
     /// Acts as the base class of all object requiring a context.
     /// </summary>
-    public abstract class ContextObject : IContextObject
+    public abstract class ContextObject : IRegistryContextObject
     {
         #region Member Variables
 
-        private Context context;
+        private RegistryContext context;
 
         #endregion
         #region Member Access Properties
@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Registry
         /// Gets or sets the context of the object.
         /// </summary>
         [XmlIgnore]
-        public Context Context
+        public RegistryContext RegistryContext
         {
             get { return context; }
             set { context = value; }
@@ -44,7 +44,7 @@ namespace Jhu.Graywulf.Registry
         /// Constructor that creates an objects with a context set.
         /// </summary>
         /// <param name="context"></param>
-        public ContextObject(Context context)
+        public ContextObject(RegistryContext context)
         {
             this.context = context;
         }

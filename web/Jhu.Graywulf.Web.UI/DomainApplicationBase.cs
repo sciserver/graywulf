@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
-using System.Web;
-using System.Web.Hosting;
-using System.IO;
-using Jhu.Graywulf.Registry;
+using System.Reflection;
 
 namespace Jhu.Graywulf.Web.UI
 {
@@ -42,6 +35,10 @@ namespace Jhu.Graywulf.Web.UI
                 Application[Web.UI.Constants.ApplicationShortTitle] = domain.ShortTitle;
                 Application[Web.UI.Constants.ApplicationLongTitle] = domain.LongTitle;
                 Application[Web.UI.Constants.ApplicationCopyright] = domain.Copyright;
+
+                var a = Assembly.GetAssembly(typeof(Jhu.Graywulf.Web.UI.Constants));
+                var v = a.GetName().Version.ToString();
+                Application[Web.UI.Constants.ApplicationVersion] = v;
             }
         }
     }

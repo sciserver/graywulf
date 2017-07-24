@@ -154,10 +154,10 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             }
         }
 
-        protected override void OnInit(EventArgs e)
-        {
-            base.OnInit(e);
+        
 
+        protected void Page_Init(object sender, EventArgs e)
+        {
             var sf = new SelectionField();
             sf.ItemStyle.CssClass = "GridViewIcon";
             InternalGridView.Columns.Add(sf);
@@ -187,16 +187,11 @@ namespace Jhu.Graywulf.Web.Admin.Controls
             }
         }
 
-        protected override void OnLoad(EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
-            base.OnLoad(e);
-
-            if (!IsPostBack)
+            if (parentEntity != null)
             {
-                if (create.Visible && parentEntity != null)
-                {
-                    create.OnClientClick = Util.UrlFormatter.GetClientRedirect(parentEntity.GetNewChildFormUrl(childrenType));
-                }
+                create.OnClientClick = Util.UrlFormatter.GetClientRedirect(parentEntity.GetNewChildFormUrl(childrenType));
             }
         }
 

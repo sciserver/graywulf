@@ -92,7 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
-      <Project>{57392DA3-E280-48EE-80C8-64E09FD8AFB5}</Project>
+      <Project>{57392da3-e280-48ee-80c8-64e09fd8afb5}</Project>
       <Name>Jhu.Graywulf.Activities</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">
@@ -118,6 +118,10 @@
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.RemoteService\Jhu.Graywulf.RemoteService.csproj">
       <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
       <Name>Jhu.Graywulf.RemoteService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.Scheduler\Jhu.Graywulf.Scheduler.csproj">
+      <Project>{94ab6a2e-6877-4fed-87e2-1f9f17622f43}</Project>
+      <Name>Jhu.Graywulf.Scheduler</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

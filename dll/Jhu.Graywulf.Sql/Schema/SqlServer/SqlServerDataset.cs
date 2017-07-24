@@ -1528,7 +1528,7 @@ WHERE s.name = @schemaName AND o.name = @objectName
 
         #endregion
 
-        internal override void RenameObject(DatabaseObject databaseObject, string schemaName, string objectName)
+        internal override void OnRenameObject(DatabaseObject databaseObject, string schemaName, string objectName)
         {
             EnsureMutable(databaseObject);
             EnsureSchemaValid(schemaName);
@@ -1582,7 +1582,7 @@ WHERE s.name = @schemaName AND o.name = @objectName
             }
         }
 
-        internal override void DropObject(DatabaseObject databaseObject)
+        internal override void OnDropObject(DatabaseObject databaseObject)
         {
             EnsureMutable(databaseObject);
 
@@ -1603,7 +1603,7 @@ END",
             }
         }
 
-        internal override void CreateTable(Table table, bool createPrimaryKey, bool createIndexes)
+        internal override void OnCreateTable(Table table, bool createPrimaryKey, bool createIndexes)
         {
             EnsureMutable(table);
 
@@ -1626,7 +1626,7 @@ END",
         /// <remarks>
         /// Do not use this function to build large indices.
         /// </remarks>
-        internal override void CreateIndex(Index index)
+        internal override void OnCreateIndex(Index index)
         {
             EnsureMutable(index);
 
@@ -1651,7 +1651,7 @@ END",
             }
         }
 
-        internal override void DropIndex(Index index)
+        internal override void OnDropIndex(Index index)
         {
             EnsureMutable(index);
 
@@ -1676,7 +1676,7 @@ END",
             }
         }
 
-        internal override void TruncateTable(Table table)
+        internal override void OnTruncateTable(Table table)
         {
             EnsureMutable(table);
 

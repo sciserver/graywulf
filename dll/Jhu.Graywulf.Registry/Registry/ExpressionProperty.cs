@@ -164,10 +164,7 @@ namespace Jhu.Graywulf.Registry
 
                 if (StringComparer.InvariantCultureIgnoreCase.Compare(key, "username") == 0)
                 {
-                    // Get last part of username
-                    var i = entity.Context.UserName.LastIndexOf(Constants.EntityNameSeparator);
-                    var name = entity.Context.UserName.Substring(i + 1);
-
+                    var name = entity.RegistryContext.User.Name;
                     res = res.Replace(m.Value, name);
                 }
             }

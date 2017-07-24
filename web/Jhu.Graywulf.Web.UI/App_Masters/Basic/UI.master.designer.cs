@@ -22,6 +22,15 @@ namespace Jhu.Graywulf.Web.UI.Masters {
         protected global::System.Web.UI.WebControls.ContentPlaceHolder head;
         
         /// <summary>
+        /// logo control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Jhu.Graywulf.Web.UI.Controls.Dropdown logo;
+        
+        /// <summary>
         /// UserStatus control.
         /// </summary>
         /// <remarks>

@@ -14,6 +14,7 @@ namespace Jhu.Graywulf.Web.UI
         public const string ApplicationShortTitle = "Jhu.Graywulf.Web.ShortTitle";
         public const string ApplicationLongTitle = "Jhu.Graywulf.Web.LongTitle";
         public const string ApplicationCopyright = "Jhu.Graywulf.Web.Copyright";
+        public const string ApplicationVersion = "Jhu.Graywulf.Web.Version";
 
         public const string ApplicationFormDataCache = "Jhu.Graywulf.Web.FormDataCache";
 
@@ -29,5 +30,8 @@ namespace Jhu.Graywulf.Web.UI
         
         public const string SessionException = "Jhu.Graywulf.Web.Exception";
         public const string SessionExceptionEventID = "Jhu.Graywulf.Web.ExceptionEventID";
+
+        public const string PageUrlDefault = "~/Default.aspx";
+        public const string PageUrlError = "~/Apps/Common/Error.aspx";
     }
 }

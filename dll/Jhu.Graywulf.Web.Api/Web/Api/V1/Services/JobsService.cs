@@ -84,6 +84,11 @@ namespace Jhu.Graywulf.Web.Api.V1
             InitializeMembers();
         }
 
+        public JobsService(FederationContext federationContext)
+            : base(federationContext)
+        {
+        }
+
         private void InitializeMembers()
         {
         }
@@ -164,8 +169,14 @@ namespace Jhu.Graywulf.Web.Api.V1
         public JobResponse GetJob(string guid)
         {
             var jobFactory = new JobFactory(RegistryContext);
-
             return new JobResponse(jobFactory.GetJob(new Guid(guid)));
+        }
+
+        public JobResponse SubmitJob(Job job)
+        {
+            var req = new JobRequest();
+            req.SetValue(job);
+            return OnSubmitJob(job);
         }
 
         [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
@@ -175,21 +186,87 @@ namespace Jhu.Graywulf.Web.Api.V1
 
             // TODO: do some more scrubbing of the submitted job object here
             // if necessary, prior to scheduling it as a real job
-
             job.Queue = Util.EnumFormatter.FromXmlString<JobQueue>(queue);
-            
-            job.Schedule(FederationContext);
+
+            return OnSubmitJob(job);
+        }
+
+        private JobResponse OnSubmitJob(Job job)
+        {
+            job.Schedule(FederationContext, GetJobQueueName(job.Queue));
+
+            LogOperation(job, "Scheduled new {0} {1} in queue {2}.", job.GetType().Name, job.Name, job.Queue);
 
             return new JobResponse(job);
         }
+
 
         [PrincipalPermission(SecurityAction.Demand, Authenticated = true)]
         public JobResponse CancelJob(string guid)
         {
             // Load job
+            var g = new Guid(guid);
             var jobFactory = new JobFactory(RegistryContext);
+            var job = jobFactory.CancelJob(g);
 
-            return new JobResponse(jobFactory.CancelJob(new Guid(guid)));
+            LogOperation(job, "Cancelled {0} {1}", job.GetType().Name, job.Name);
+
+            return new JobResponse(job);
+        }
+
+        protected string GetJobQueueName(JobQueue queue)
+        {
+            string queuename = null;
+
+            switch (queue)
+            {
+                case JobQueue.Quick:
+                    queuename = Jhu.Graywulf.Registry.Constants.QuickQueueName;
+                    break;
+                case JobQueue.Long:
+                    queuename = Jhu.Graywulf.Registry.Constants.LongQueueName;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            queuename = EntityFactory.CombineName(
+                EntityType.QueueInstance,
+                FederationContext.Federation.ControllerMachineRole.GetFullyQualifiedName(),
+                queuename);
+
+            return queuename;
+        }
+
+        protected JobQueue GetJobQueue(QueueInstance queueInstance)
+        {
+            switch (queueInstance.Name)
+            {
+                case Jhu.Graywulf.Registry.Constants.QuickQueueDefinitionName:
+                    return JobQueue.Quick;
+                case Jhu.Graywulf.Registry.Constants.LongQueueDefinitionName:
+                    return JobQueue.Long;
+                default:
+                    return JobQueue.Unknown;
+            }
+        }
+
+        protected void LogOperation(Job job, string message, params object[] args)
+        {
+            var method = Logging.LoggingContext.Current.UnwindStack(2);
+            var operation = method.DeclaringType.FullName + "." + method.Name;
+            var e = Logging.LoggingContext.Current.CreateEvent(
+                Logging.EventSeverity.Operation,
+                Logging.EventSource.WebService,
+                String.Format(message, args),
+                operation,
+                null,
+                null);
+
+            e.JobGuid = job.Guid;
+            e.JobName = job.Name;
+
+            Logging.LoggingContext.Current.RecordEvent(e);
         }
     }
 }

@@ -5,6 +5,12 @@ using System.Text;
 
 namespace Jhu.Graywulf.Logging
 {
+    public enum LoggerStatus
+    {
+        Stopped,
+        Started
+    }
+
     [Flags]
     public enum EventSource : uint
     {
@@ -19,52 +25,58 @@ namespace Jhu.Graywulf.Logging
         WebAdmin = 128,
         WebService = 256,
         RemoteService = 512,
-        All = 0xFFFFFFFF,
+        CommandLineTool = 1024,
+        Schema = 2048,
+
+        Test = 0x10000000,
+        All = 0x7FFFFFFF,
     }
 
     [Flags]
-    public enum EventSeverity : uint
+    public enum EventSeverity : byte
     {
         None = 0,
-        Status = 1,
-        Warning = 2,
-        Error = 4,
-        All = 0xFFFFFFFF,
+        Debug = 1,      // debug messages
+        Operation = 2,  // operation, such as web service method access
+        Status = 4,     // important status change of services etc.
+        Warning = 8,    // 
+        Error = 16,
+        All = 0xFF,
     }
 
-    // Must conform to ActivityExecutionStatus in the WF foundation
-    public enum ExecutionStatus : int
+    [Flags]
+    public enum ExecutionStatus : byte
     {
-        Unknown = -1,
+        Unknown = 0,
 
-        Initialized = 0,
-        Executing = 1,
-        Canceled = 2,
-        Closed = 3,
-        Compensating = 4,
-        Faulted = 5,
+        Initialized = 1,
+        Executing = 2,
+        Canceled = 4,
+        Closed = 8,
+        Compensating = 16,
+        Faulted = 32,
 
-        // ....
+        All = 0xFF,
     }
 
     public enum EventColumn
     {
-        EventId,
+        Id,
         UserGuid,
         JobGuid,
+        SessionGuid,
         ContextGuid,
-        ParentContextGuid,
-        EventSource,
-        EventSeverity,
-        EventDateTime,
-        EventOrder,
+        Source,
+        Severity,
+        DateTime,
+        Order,
         ExecutionStatus,
         Operation,
-        EntityGuid,
-        EntityGuidFrom,
-        EntityGuidTo,
-        ExceptionType,
+        Server,
+        Client,
         Message,
+        Exception,
+        ExceptionType,
         StackTrace,
     }
 }

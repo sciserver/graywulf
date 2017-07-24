@@ -13,41 +13,34 @@ using Jhu.Graywulf.IO.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class CopyRemoteTable : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class CopyRemoteTable : JobAsyncCodeActivity, IJobActivity
     {
         [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
-
-        [RequiredArgument]
         public InArgument<SqlQueryPartition> QueryPartition { get; set; }
+
         [RequiredArgument]
         public InArgument<string> RemoteTable { get; set; }
 
-        protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
+        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             SqlQueryPartition querypartition = (SqlQueryPartition)QueryPartition.Get(activityContext);
-            
             TableReference remotetable = null;
             SourceTableQuery source;
 
-            using (Context context = querypartition.Query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
-            {       
+            using (RegistryContext context = querypartition.Query.CreateContext())
+            {
                 remotetable = querypartition.RemoteTableReferences[RemoteTable.Get(activityContext)];
                 querypartition.PrepareCopyRemoteTable(remotetable, out source);
             }
 
-            Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
-            string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, querypartition, remotetable, source), callback, state);
-        }
-
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlQueryPartition querypartition, TableReference remotetable, SourceTableQuery source)
-        {
-            RegisterCancelable(workflowInstanceGuid, activityInstanceId, querypartition);
-            querypartition.CopyRemoteTable(remotetable, source);
-            UnregisterCancelable(workflowInstanceGuid, activityInstanceId, querypartition);
+            return delegate ()
+            {
+                RegisterCancelable(workflowInstanceId, activityInstanceId, querypartition);
+                querypartition.CopyRemoteTable(remotetable, source);
+                UnregisterCancelable(workflowInstanceId, activityInstanceId, querypartition);
+            };
         }
     }
 }

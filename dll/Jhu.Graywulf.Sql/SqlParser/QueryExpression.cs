@@ -75,14 +75,6 @@ namespace Jhu.Graywulf.SqlParser
 
         public override void Interpret()
         {
-            // TODO: delete
-            // Subqueries already initialize this
-            /*
-            if (this.tableReference == null)
-            {
-                this.tableReference = new TableReference(this);
-            }*/
-
             base.Interpret();
 
             this.tableReference = new TableReference(this);

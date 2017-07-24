@@ -14,13 +14,13 @@ namespace Jhu.Graywulf.Web.Security
     {
         #region Constructors and initializers
 
-        public GraywulfIdentityProvider(Context context)
+        public GraywulfIdentityProvider(RegistryContext context)
             : base(context)
         {
         }
 
         public GraywulfIdentityProvider(Domain domain)
-            : base(domain.Context)
+            : base(domain.RegistryContext)
         {
         }
 
@@ -96,7 +96,7 @@ namespace Jhu.Graywulf.Web.Security
             principal.Identity.UserReference.Value = user;
 
             // Cache name for later, make sure it has a valid context
-            principal.Identity.UserReference.Value.Context = Context;
+            principal.Identity.UserReference.Value.RegistryContext = Context;
             principal.Identity.UserReference.Value.GetFullyQualifiedName();
 
             // At this point the user is loaded from the registry,
@@ -175,7 +175,7 @@ namespace Jhu.Graywulf.Web.Security
         {
             // TODO: figure out how to create user roles here
 
-            user.Context = Context;
+            user.RegistryContext = Context;
             user.ParentReference.Value = Context.Domain;
 
             if (password != null)
@@ -217,7 +217,7 @@ namespace Jhu.Graywulf.Web.Security
 
         public override void DeleteUser(User user)
         {
-            user.Context = Context;
+            user.RegistryContext = Context;
             user.Delete();
         }
 
@@ -256,14 +256,14 @@ namespace Jhu.Graywulf.Web.Security
 
         public override void ActivateUser(User user)
         {
-            user.Context = Context;
+            user.RegistryContext = Context;
             user.Activate();
             user.Save();
         }
 
         public override void DeactivateUser(User user)
         {
-            user.Context = Context;
+            user.RegistryContext = Context;
             user.Deactivate();
             user.Save();
         }
@@ -336,7 +336,7 @@ namespace Jhu.Graywulf.Web.Security
         {
             var user = principal.Identity.User;
 
-            user.Context = Context;
+            user.RegistryContext = Context;
             user.LoadUserGroupMemberships(true);
 
             foreach (var ugm in user.UserGroupMemberships.Values)

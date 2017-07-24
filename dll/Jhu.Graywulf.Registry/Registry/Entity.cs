@@ -9,6 +9,7 @@ using System.IO;
 using System.ComponentModel;
 using System.Xml;
 using System.Reflection;
+using System.Diagnostics;
 using Jhu.Graywulf.Components;
 
 namespace Jhu.Graywulf.Registry
@@ -87,9 +88,7 @@ namespace Jhu.Graywulf.Registry
         }
         
         /// <summary>
-        /// Globally unique identifier of the entity, acts like the primary key in the database. When creating
-        /// a new entity has to have the values of <c>Guid.Empty</c>. A new Guid is generated when the entity
-        /// is first time saved to the database calling the <see cred="Save" /> method.
+        /// Globally unique identifier of the entity, acts like the primary key in the database.
         /// </summary>
         [XmlIgnore]
         public Guid Guid
@@ -464,7 +463,7 @@ namespace Jhu.Graywulf.Registry
         /// Override this in derived classes and pass the object context to it.
         /// </remarks>
         /// <param name="context">An object context class containing session information.</param>
-        public Entity(Context context)
+        public Entity(RegistryContext context)
             : base(context)
         {
             InitializeMembers(new StreamingContext());
@@ -475,7 +474,7 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         /// <param name="context">An object context class containing session information.</param>
         /// <param name="parent">The parent entity in the entity hierarchy.</param>
-        protected Entity(Context context, Entity parent)
+        protected Entity(RegistryContext context, Entity parent)
             : base(context)
         {
             InitializeMembers(new StreamingContext());
@@ -507,7 +506,7 @@ namespace Jhu.Graywulf.Registry
             this.isExisting = false;
             this.isDeserializing = false;
 
-            this.guid = Guid.Empty;
+            this.guid = Guid.NewGuid();
             this.concurrencyVersion = 0;
             this.parentReference = new EntityReference<Entity>(this);
             this.entityTypeInternal = EntityType.Unknown;
@@ -783,7 +782,7 @@ namespace Jhu.Graywulf.Registry
 
         public MethodInfo GetOperation(Operation op)
         {
-            var method = GetType().GetMethod(op.ToString());
+            var method = GetType().GetMethod(op.ToString(), new Type[0]);
             return method;
         }
 
@@ -809,6 +808,32 @@ namespace Jhu.Graywulf.Registry
         {
             RunningState = RunningState.Stopped;
             Save();
+        }
+
+        public void LogDebug()
+        {
+#if DEBUG
+            var method = new StackFrame(1, true).GetMethod();
+
+            Logging.LoggingContext.Current.LogDebug(
+                Logging.EventSource.Registry,
+                String.Format("{0} {1}: {2}", method.Name, Constants.EntityNames_Singular[this.EntityType], this.Name),
+                method.DeclaringType.FullName + "." + method.Name,
+                new Dictionary<string, object>() { { Logging.Constants.UserDataEntityGuid, this.Guid } });
+#endif
+        }
+
+        public void LogDebug(string message)
+        {
+#if DEBUG
+            var method = new StackFrame(1, true).GetMethod();
+
+            Logging.LoggingContext.Current.LogDebug(
+                Logging.EventSource.Registry,
+                message,
+                method.DeclaringType.FullName + "." + method.Name,
+                new Dictionary<string, object>() { { Logging.Constants.UserDataEntityGuid, this.Guid } });
+#endif
         }
     }
 }

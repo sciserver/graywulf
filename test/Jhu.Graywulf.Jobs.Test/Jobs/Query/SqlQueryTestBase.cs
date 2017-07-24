@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Jobs.Query
             return UserDatabaseFactory.Create(context);
         }
 
-        protected virtual QueryFactory CreateQueryFactory(Context context)
+        protected virtual QueryFactory CreateQueryFactory(RegistryContext context)
         {
             var qf = QueryFactory.Create(typeof(SqlQueryFactory).AssemblyQualifiedName, context);
             return qf;
@@ -41,9 +41,9 @@ namespace Jhu.Graywulf.Jobs.Query
 
         private SqlQuery CreateQuery(QueryFactory qf, string query)
         {
-            var user = SignInTestUser(qf.Context);
+            var user = SignInTestUser(qf.RegistryContext);
 
-            var udf = CreateUserDatabaseFactory(new FederationContext(qf.Context, user));
+            var udf = CreateUserDatabaseFactory(new FederationContext(qf.RegistryContext, user));
             var mydb = udf.GetUserDatabases(user)[Registry.Constants.UserDbName];
             var mysi = udf.GetUserDatabaseServerInstances(user)[Registry.Constants.UserDbName];
 
@@ -59,7 +59,7 @@ namespace Jhu.Graywulf.Jobs.Query
                 Options = TableInitializationOptions.Create | TableInitializationOptions.Drop
             };
 
-            q.InitializeQueryObject(qf.Context);
+            q.InitializeQueryObject(qf.RegistryContext);
 
             return q;
         }
@@ -132,15 +132,16 @@ namespace Jhu.Graywulf.Jobs.Query
                     if (ji.JobExecutionStatus == JobExecutionState.Failed)
                     {
                         // Load stack trace from
-                        using (var cn = new SqlConnection(Jhu.Graywulf.Logging.AppSettings.ConnectionString))
+                        using (var cn = new SqlConnection(Logging.SqlLogWriter.Configuration.ConnectionString))
                         {
                             cn.Open();
 
                             var lsql =
-@"SELECT TOP 1 ExceptionType, StackTrace, Site FROM Event 
-WHERE JobGuid = @jobGuid AND
-      ExceptionType IS NOT NULL
-ORDER BY EventID DESC";
+@"SELECT TOP 1 EventException.Type, StackTrace, Server
+FROM Event 
+INNER JOIN EventException ON EventID = ID
+WHERE JobGuid = @jobGuid
+ORDER BY ID DESC";
 
                             using (var cmd = new SqlCommand(lsql, cn))
                             {
@@ -162,7 +163,14 @@ ORDER BY EventID DESC";
                         }
                     }
 
-                    Assert.AreEqual(expectedOutcome, ji.JobExecutionStatus);
+                    if (ji.JobExecutionStatus == JobExecutionState.Failed)
+                    {
+                        throw new Exception(ji.ExceptionMessage);
+                    }
+                    else
+                    {
+                        Assert.AreEqual(expectedOutcome, ji.JobExecutionStatus);
+                    }
                 }
             }
         }

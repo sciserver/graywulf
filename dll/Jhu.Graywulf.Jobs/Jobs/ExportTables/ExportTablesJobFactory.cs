@@ -33,7 +33,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             }
 
             var factory = (ExportTablesJobFactory)Activator.CreateInstance(type, true);
-            factory.Context = federation.Context;
+            factory.RegistryContext = federation.RegistryContext;
 
             return factory;
         }
@@ -47,7 +47,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
             InitializeMembers(new StreamingContext());
         }
 
-        protected ExportTablesJobFactory(Context context)
+        protected ExportTablesJobFactory(RegistryContext context)
             : base(context)
         {
             InitializeMembers(new StreamingContext());
@@ -137,7 +137,7 @@ namespace Jhu.Graywulf.Jobs.ExportTables
 
         public ExportTablesJobSettings GetJobDefinitionSettings()
         {
-            var ef = new EntityFactory(Context);
+            var ef = new EntityFactory(RegistryContext);
             var jd = ef.LoadEntity<JobDefinition>(GetJobDefinitionName());
             return new ExportTablesJobSettings(jd.Settings);
         }

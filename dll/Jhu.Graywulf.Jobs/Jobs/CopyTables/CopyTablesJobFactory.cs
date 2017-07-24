@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.Jobs.CopyTables
     {
         #region Static members
 
-        public static CopyTablesJobFactory Create(Context context)
+        public static CopyTablesJobFactory Create(RegistryContext context)
         {
             return new CopyTablesJobFactory(context);
         }
@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.Jobs.CopyTables
             InitializeMembers(new StreamingContext());
         }
 
-        protected CopyTablesJobFactory(Context context)
+        protected CopyTablesJobFactory(RegistryContext context)
             : base(context)
         {
             InitializeMembers(new StreamingContext());
@@ -58,7 +58,7 @@ namespace Jhu.Graywulf.Jobs.CopyTables
 
         private string GetJobDefinitionName()
         {
-            return EntityFactory.CombineName(EntityType.JobDefinition, Context.Cluster.Name, Context.Domain.Name, Context.Federation.Name, typeof(CopyTablesJob).Name);
+            return EntityFactory.CombineName(EntityType.JobDefinition, RegistryContext.Cluster.Name, RegistryContext.Domain.Name, RegistryContext.Federation.Name, typeof(CopyTablesJob).Name);
         }
     }
 }

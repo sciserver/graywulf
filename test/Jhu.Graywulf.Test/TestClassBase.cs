@@ -19,32 +19,8 @@ namespace Jhu.Graywulf.Test
 {
     public abstract class TestClassBase
     {
-        // Well-known test constants and settings
-
-        /*
-         * Test prerequisites in Graywulf Registry:
-         * Users: test, test-admin, test-writer, test-reader
-         * Groups: testgroup
-         * Roles: footprint-admin, footprint-writer, footprint-reader
-         * test-* users in testgroup with role footprint-*
-         * */
-
-        protected const string TestUser = "test";
-        protected const string OtherUser = "other";
-        protected const string TestGroup = "testgroup";
-        protected const string GroupAdminUser = "test-admin";
-        protected const string GroupWriterUser = "test-writer";
-        protected const string GroupReaderUser = "test-reader";
-
         private Random rnd = new Random();
-        private TestContext testContext;
         private SqlServerDataset ioTestDataset;
-
-        public TestContext TestContext
-        {
-            get { return testContext; }
-            set { testContext = value; }
-        }
 
         protected SqlServerDataset IOTestDataset
         {
@@ -58,7 +34,6 @@ namespace Jhu.Graywulf.Test
                 return ioTestDataset;
             }
         }
-        
 
         #region Scheduler functions
 
@@ -83,24 +58,33 @@ namespace Jhu.Graywulf.Test
             QueryTimeout,
             QueryDelayRetry,
             QueryTimeoutRetry,
+            AsyncTrackingRecord,
         }
 
         protected Task scheduler;
+
+        protected static void StartLogger()
+        {
+            Logging.LoggingContext.Current.StartLogger(Logging.EventSource.Test, false);
+        }
+
+        protected static void StopLogger()
+        {
+            Logging.LoggingContext.Current.StopLogger();
+        }
 
         protected virtual SqlServerDataset CreateIOTestDataset()
         {
             return new SqlServerDataset(Jhu.Graywulf.Test.Constants.TestDatasetName, Jhu.Graywulf.Test.AppSettings.IOTestConnectionString);
         }
 
-        protected User SignInTestUser(Context context)
+        protected User SignInTestUser(RegistryContext context)
         {
             var ip = IdentityProvider.Create(context.Domain);
             ip.VerifyPassword(new AuthenticationRequest("test", "almafa"));
 
             var user = ip.GetUserByUserName("test");
-
-            context.UserGuid = user.Guid;
-            context.UserName = user.Name;
+            context.UserReference.Value = user;
 
             return user;
         }
@@ -130,11 +114,20 @@ namespace Jhu.Graywulf.Test
         {
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
+                var sql = @"UPDATE JobInstance
+SET JobExecutionStatus = 64
+WHERE DateFinished IS NULL";
+
+                var cmd = context.CreateTextCommand(sql);
+                cmd.ExecuteNonQuery();
+            }
+
+            /*using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            {
                 var ef = new EntityFactory(context);
                 var jd = ef.LoadEntity<JobDefinition>(Registry.ContextManager.Configuration.ClusterName, Registry.Constants.SystemDomainName, Registry.Constants.SystemFederationName, typeof(Jhu.Graywulf.Jobs.Test.TestJob).Name);
 
                 var jf = new JobInstanceFactory(context);
-                jf.UserGuid = Guid.Empty;
                 jf.JobDefinitionGuids.Add(jd.Guid);
                 jf.JobExecutionStatus = JobExecutionState.Scheduled | JobExecutionState.Executing;
 
@@ -145,7 +138,7 @@ namespace Jhu.Graywulf.Test
                         job.Cancel();
                     }
                 }
-            }
+            }*/
         }
 
         protected SqlServerDataset GetTestUserMyDB()
@@ -328,32 +321,39 @@ namespace Jhu.Graywulf.Test
             }
         }
 
-        private static string GetSolutionPath()
+        /// <summary>
+        /// Find the outmost directory with a solution file
+        /// </summary>
+        /// <returns></returns>
+        protected string GetSolutionDir()
         {
             var dir = Environment.CurrentDirectory;
+            string best = null;
 
-            while (true)
+            while (dir != null)
             {
-                if (Directory.GetFiles(dir, "*.sln").Length != 0)
+                var files = Directory.GetFiles(dir, "*.sln");
+
+                if (files != null && files.Length > 0)
                 {
-                    return dir;
+                    best = dir;
                 }
-                else
-                {
-                    dir = Directory.GetParent(dir).FullName;
-                }
+
+                dir = Directory.GetParent(dir)?.FullName;
             }
+
+            return best;
         }
 
-        public static string GetTestFilePath(string filename)
+        protected string GetTestFilePath(string filename)
         {
-            var sln = GetSolutionPath();
+            var sln = GetSolutionDir();
             return Path.Combine(sln, filename);
         }
 
-        public static string GetTestFilePath(params string[] filename)
+        protected string GetTestFilePath(params string[] filename)
         {
-            var sln = GetSolutionPath();
+            var sln = GetSolutionDir();
             return Path.Combine(sln, Path.Combine(filename));
         }
 

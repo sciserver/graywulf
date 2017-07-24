@@ -72,9 +72,12 @@
     <Compile Include="Install\JobInstallerBase.cs" />
     <Compile Include="Install\InstallerBase.cs" />
     <Compile Include="Install\UserDatabaseInstanceInstaller.cs" />
+    <Compile Include="Logging\UserLoggingContext.cs" />
     <Compile Include="Registry\Check\EntityCheck.cs" />
     <Compile Include="Registry\EntitySearch.cs" />
+    <Compile Include="Registry\IRegistryContextObject.cs" />
     <Compile Include="Registry\Registry.cs" />
+    <Compile Include="Registry\RegistryContext.cs" />
     <Compile Include="Registry\RegistrySerializer.cs" />
     <Compile Include="Registry\RegistryDeserializer.cs" />
     <Compile Include="Registry\ServerInstanceDiskGroup.io.cs" />
@@ -84,7 +87,6 @@
     <Compile Include="Registry\Error.cs" />
     <Compile Include="Registry\FederationContext.cs" />
     <Compile Include="Registry\JobInstanceDependency.cs" />
-    <Compile Include="Registry\IContextObject.cs" />
     <Compile Include="Registry\DiskGroup.io.cs" />
     <Compile Include="Registry\RegistryConfiguration.cs" />
     <Compile Include="Registry\UserRole.cs" />
@@ -95,7 +97,6 @@
     <Compile Include="Registry\Constants.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Registry\Context.cs" />
     <Compile Include="Registry\ContextManager.cs" />
     <Compile Include="Registry\ContextObject.cs" />
     <Compile Include="Registry\DatabaseDefinition.cs" />
@@ -246,7 +247,7 @@
       <Name>Jhu.Graywulf.AccessControl</Name>
     </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
-      <Project>{57392DA3-E280-48EE-80C8-64E09FD8AFB5}</Project>
+      <Project>{57392da3-e280-48ee-80c8-64e09fd8afb5}</Project>
       <Name>Jhu.Graywulf.Activities</Name>
     </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Components\Jhu.Graywulf.Components.csproj">

@@ -8,46 +8,41 @@ using System.Data;
 using System.Data.SqlClient;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.Activities;
+using Jhu.Graywulf.Scheduler;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.SqlParser;
 
 namespace Jhu.Graywulf.Jobs.Query
 {
-    public class ComputeTableStatistics : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class ComputeTableStatistics : JobAsyncCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
-
         [RequiredArgument]
         public InArgument<SqlQuery> Query { get; set; }
 
         [RequiredArgument]
         public InArgument<ITableSource> TableSource { get; set; }
 
-        protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
+        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
+            var scheduler = activityContext.GetExtension<IScheduler>();
             var query = Query.Get(activityContext);
             var tableSource = TableSource.Get(activityContext);
             DatasetBase statisticsDataset = null;
 
-            using (Context context = query.CreateContext(this, activityContext, ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (RegistryContext context = query.CreateContext())
             {
-                query.InitializeQueryObject(context, activityContext.GetExtension<IScheduler>(), true);
+                query.InitializeQueryObject(context, scheduler, true);
                 statisticsDataset = query.GetStatisticsDataset(tableSource);
             }
 
-            Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
-            string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, query, tableSource, statisticsDataset), callback, state);
-        }
-
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, SqlQuery query, ITableSource tableSource, DatasetBase statisticsDataset)
-        {
-            RegisterCancelable(workflowInstanceGuid, activityInstanceId, query);
-            query.ComputeTableStatistics(tableSource, statisticsDataset);
-            UnregisterCancelable(workflowInstanceGuid, activityInstanceId, query);
+            return delegate()
+            {
+                RegisterCancelable(workflowInstanceId, activityInstanceId, query);
+                query.ComputeTableStatistics(tableSource, statisticsDataset);
+                UnregisterCancelable(workflowInstanceId, activityInstanceId, query);
+            };
         }
     }
 }

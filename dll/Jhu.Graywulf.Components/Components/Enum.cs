@@ -13,4 +13,11 @@ namespace Jhu.Graywulf.Components
         Out = 2,
         InOut = In | Out
     }
+
+    public enum AsyncQueueUnhandledExceptionLocation
+    {
+        BatchStart,
+        BatchEnd,
+        ItemProcessing
+    }
 }

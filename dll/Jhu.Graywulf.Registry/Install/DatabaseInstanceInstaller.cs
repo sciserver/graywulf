@@ -11,7 +11,7 @@ namespace Jhu.Graywulf.Install
         private DatabaseDefinition databaseDefinition;
 
         public DatabaseInstanceInstaller(DatabaseDefinition databaseDefinition)
-            :base(databaseDefinition.Context)
+            :base(databaseDefinition.RegistryContext)
         {
             this.databaseDefinition = databaseDefinition;
         }

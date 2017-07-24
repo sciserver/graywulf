@@ -74,7 +74,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.MyDB
                 job.Destination.Table = sourceTable.Table.TableName;
             }
 
-            job.Schedule(FederationContext);
+            new JobsService(FederationContext).SubmitJob(job);
         }
     }
 }

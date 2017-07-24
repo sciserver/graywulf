@@ -52,6 +52,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\Constants.cs" />
     <Compile Include="Activities\DequeueItem.cs" />
     <Compile Include="Activities\EnqueueItem.cs" />
     <Compile Include="Activities\Enum.cs" />
@@ -60,17 +61,15 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Activities\GraywulfAsyncCodeActivity.cs" />
-    <Compile Include="Activities\GraywulfTrackingParticipant.cs" />
-    <Compile Include="Activities\HostEventArgs.cs" />
-    <Compile Include="Activities\IGraywulfActivity.cs" />
-    <Compile Include="Activities\IScheduler.cs" />
+    <Compile Include="Activities\IJobActivity.cs" />
+    <Compile Include="Activities\JobAsyncCodeActivity.cs" />
+    <Compile Include="Activities\JobCodeActivity.cs" />
+    <Compile Include="Activities\JobContext.cs" />
+    <Compile Include="Activities\JobInfo.cs" />
     <Compile Include="Activities\Retry.cs" />
     <Compile Include="Activities\RetryDesigner.xaml.cs">
       <DependentUpon>RetryDesigner.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Activities\SchedulerException.cs" />
-    <Compile Include="Activities\WorkflowApplicationHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

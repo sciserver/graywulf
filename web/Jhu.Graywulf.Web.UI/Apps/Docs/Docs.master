@@ -3,11 +3,20 @@
 
 <%@ Register Src="~/Apps/Docs/Toolbar.ascx" TagPrefix="uc1" TagName="Toolbar" %>
 
+<asp:Content runat="server" ContentPlaceHolderID="head">
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+    </script>
+</asp:Content>
 <asp:Content runat="server" ContentPlaceHolderID="toolbar">
     <uc1:Toolbar runat="server" ID="Toolbar" />
 </asp:Content>
 <asp:Content ID="Content3" ContentPlaceHolderID="middle" runat="server">
-    <div class="dock-fill" style="overflow: auto; margin-left: 100px; margin-right: 100px;">
+    <div class="dock-fill" style="overflow: auto;">
+        <div style="max-width: 720px; margin-left: auto; margin-right: auto;">
         <asp:ContentPlaceHolder runat="server" ID="Text" />
+        </div>
     </div>
 </asp:Content>

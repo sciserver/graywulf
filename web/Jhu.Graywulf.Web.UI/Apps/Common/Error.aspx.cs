@@ -7,11 +7,11 @@ using System.Web.UI.WebControls;
 
 namespace Jhu.Graywulf.Web.UI.Apps.Common
 {
-    public partial class Error : System.Web.UI.Page
+    public partial class Error : PageBase
     {
         public static string GetUrl()
         {
-            return "~/Apps/Common/Error.aspx";
+            return Jhu.Graywulf.Web.UI.Constants.PageUrlError;
         }
 
         protected void Page_Load(object sender, EventArgs e)

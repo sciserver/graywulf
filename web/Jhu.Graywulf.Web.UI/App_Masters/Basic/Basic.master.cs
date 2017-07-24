@@ -24,7 +24,6 @@ namespace Jhu.Graywulf.Web.UI.Masters
             Scripts.ScriptLibrary.Register(ScriptManager, new Scripts.DockingPanel());
 
             Page.Title = (string)Page.Application[Constants.ApplicationLongTitle];
-            Caption.Text = (string)Page.Application[Constants.ApplicationDomainName] + " :: " + (string)Page.Application[Constants.ApplicationShortTitle];
         }
 
         protected void ScriptManager_AsyncPostBackError(object sender, AsyncPostBackErrorEventArgs e)

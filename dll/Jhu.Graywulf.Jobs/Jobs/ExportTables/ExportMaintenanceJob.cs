@@ -13,20 +13,15 @@ using Jhu.Graywulf.Activities;
 
 namespace Jhu.Graywulf.Jobs.ExportTables
 {
-    public class ExportMaintenanceJob : CodeActivity, IGraywulfActivity
+    public class ExportMaintenanceJob : JobCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
-
         /// <summary>
         /// Age (in days) of exported data to be deleted
         /// </summary>
         [RequiredArgument]
         public InArgument<int> Age { get; set; }
 
-        protected override void Execute(CodeActivityContext activityContext)
+        protected override void OnExecute(CodeActivityContext activityContext)
         {
             int age = Age.Get(activityContext);
 

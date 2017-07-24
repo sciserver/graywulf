@@ -16,6 +16,18 @@ namespace Jhu.Graywulf.Schema.SqlServer.Test
     [TestClass]
     public class SqlServerDatasetTest : SqlServerTestBase
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
+        {
+            StartLogger();
+        }
+
+        [ClassCleanup]
+        public static void CleanUp()
+        {
+            StopLogger();
+        }
+
         #region Dataset tests
 
         [TestMethod]

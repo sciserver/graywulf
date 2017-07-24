@@ -13,51 +13,43 @@ using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.Jobs.Test
 {
-    public class TestDelay : GraywulfAsyncCodeActivity, IGraywulfActivity
+    public class TestDelay : JobAsyncCodeActivity, IJobActivity
     {
-        [RequiredArgument]
-        public InArgument<Guid> JobGuid { get; set; }
-        [RequiredArgument]
-        public InArgument<Guid> UserGuid { get; set; }
-
         [RequiredArgument]
         public InArgument<int> DelayPeriod { get; set; }
 
         [RequiredArgument]
         public InArgument<bool> Cancelable { get; set; }
 
-        protected override IAsyncResult BeginExecute(AsyncCodeActivityContext activityContext, AsyncCallback callback, object state)
+        protected override AsyncActivityWorker OnBeginExecute(AsyncCodeActivityContext activityContext)
         {
+            var workflowInstanceId = activityContext.WorkflowInstanceId;
+            var activityInstanceId = activityContext.ActivityInstanceId;
             var period = DelayPeriod.Get(activityContext);
             var cancelable = Cancelable.Get(activityContext);
-            
-            Guid workflowInstanceGuid = activityContext.WorkflowInstanceId;
-            string activityInstanceId = activityContext.ActivityInstanceId;
-            return EnqueueAsync(_ => OnAsyncExecute(workflowInstanceGuid, activityInstanceId, period, cancelable), callback, state);
-        }
 
-        private void OnAsyncExecute(Guid workflowInstanceGuid, string activityInstanceId, int period, bool cancelable)
-        {
-            if (cancelable)
+            return delegate ()
             {
-                var delay = new CancelableDelay(period);
-
-                RegisterCancelable(workflowInstanceGuid, activityInstanceId, delay);
-                delay.Execute();
-                UnregisterCancelable(workflowInstanceGuid, activityInstanceId, delay);
-            }
-            else
-            {
-                // This would idle
-                //Thread.Sleep(period);
-
-                // This doesn't idle
-                var start = DateTime.Now;
-                while ((DateTime.Now - start).TotalMilliseconds < period)
+                if (cancelable)
                 {
-                }
-            }
-        }
+                    var delay = new CancelableDelay(period);
 
+                    RegisterCancelable(workflowInstanceId, activityInstanceId, delay);
+                    delay.Execute();
+                    UnregisterCancelable(workflowInstanceId, activityInstanceId, delay);
+                }
+                else
+                {
+                    // This would idle
+                    //Thread.Sleep(period);
+
+                    // This doesn't idle
+                    var start = DateTime.Now;
+                    while ((DateTime.Now - start).TotalMilliseconds < period)
+                    {
+                    }
+                }
+            };
+        }
     }
 }

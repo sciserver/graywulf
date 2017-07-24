@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Logging
 
         private void InitializeMembers()
         {
-            this.connectionString = AppSettings.ConnectionString;
+            this.connectionString = SqlLogWriter.Configuration.ConnectionString;
 
             this.filter = new EventFilter();
             this.orderColumns = null;

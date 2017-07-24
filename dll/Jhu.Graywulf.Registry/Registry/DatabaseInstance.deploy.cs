@@ -60,14 +60,14 @@ namespace Jhu.Graywulf.Registry
 
             // Create the empty database with filegroups and files
             dto.Create();
-            this.Context.LogEvent(new Event("Jhu.Graywulf.Registry.DatabaseInstance.Deploy[Create database]", this.Guid));
+            LogDebug(String.Format("Created database {0} on {1}.", DatabaseName, ServerInstance.GetCompositeName()));
 
             // Change deployment state to deployed
             this.DeploymentState = DeploymentState.Deployed;
             this.RunningState = RunningState.Attached;
             this.Save();
 
-            this.Context.LogEvent(new Event("Jhu.Graywulf.Registry.DatabaseInstance.Deploy[Done]", this.Guid));
+            LogDebug();
         }
 
         /// <summary>
@@ -93,7 +93,8 @@ namespace Jhu.Graywulf.Registry
                     smo::Database d = this.GetSmoDatabase();
                     d.Parent.KillDatabase(d.Name);
 
-                    this.Context.LogEvent(new Event("Jhu.Graywulf.Registry.DatabaseInstance.Undeploy[Drop database]", this.Guid));
+                    LogDebug(String.Format("Dropped database {0} on {1}.", DatabaseName, ServerInstance.GetCompositeName()));
+
                     break;
                 case RunningState.Detached:
                     // Database not attached, simply delete files
@@ -106,7 +107,9 @@ namespace Jhu.Graywulf.Registry
                             File.Delete(f.GetFullLocalFilename());
                         }
                     }
-                    this.Context.LogEvent(new Event("Jhu.Graywulf.Registry.DatabaseInstance.Undeploy[Delete files]", this.Guid));
+
+                    LogDebug(String.Format("Deleted database files for {0} on {1}.", DatabaseName, ServerInstance.GetCompositeName()));
+
                     break;
                 default:
                     throw new NotImplementedException();
@@ -118,7 +121,7 @@ namespace Jhu.Graywulf.Registry
             this.RunningState = (int)RunningState.Unknown;
             this.Save();
 
-            this.Context.LogEvent(new Event("Jhu.Graywulf.Registry.DatabaseInstance.Undeploy[Done]", this.Guid));
+            LogDebug();
         }
 
         public void Detach()
@@ -164,7 +167,7 @@ namespace Jhu.Graywulf.Registry
                 }
             }
 
-            this.Context.LogEvent(new Event("Jhu.Graywulf.Registry.DatabaseInstance.Detach", this.Guid));
+            LogDebug();
         }
 
         private static void ResetFilePermission(string filename)
@@ -216,7 +219,7 @@ namespace Jhu.Graywulf.Registry
             this.RunningState = RunningState.Attached;
             this.Save();
 
-            this.Context.LogEvent(new Event("Jhu.Graywulf.Registry.DatabaseInstance.Attach", this.Guid));
+            LogDebug();
         }
 
         /// <summary>
@@ -328,7 +331,7 @@ namespace Jhu.Graywulf.Registry
                 fg.DeploymentState = DeploymentState.Deployed; fg.Save();
             }
 
-            this.Context.LogEvent(new Event("Jhu.Graywulf.Registry.DatabaseInstance.CreateFileGroups", this.Guid));
+            LogDebug();
         }
 
         public void Allocate()

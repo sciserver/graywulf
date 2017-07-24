@@ -38,14 +38,14 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
             RefreshParametersTable();
         }
 
-        protected override void OnLoad(EventArgs e)
+        protected override void Page_Load(object sender, EventArgs e)
         {
+            base.Page_Load(sender, e);
+
             if (IsPostBack)
             {
                 RefreshParametersTable();
             }
-
-            base.OnLoad(e);
         }
 
         protected override void OnSaveForm()
@@ -72,7 +72,7 @@ namespace Jhu.Graywulf.Web.Admin.Jobs
         {
             JobDefinition.Items.Add(new ListItem("(select job definition)", Guid.Empty.ToString()));
 
-            Item.Context = RegistryContext;
+            Item.RegistryContext = RegistryContext;
             IEnumerable<JobDefinition> list = null;
 
 

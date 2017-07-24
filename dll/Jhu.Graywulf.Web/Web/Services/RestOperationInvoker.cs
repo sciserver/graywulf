@@ -22,7 +22,7 @@ namespace Jhu.Graywulf.Web.Services
 
         public bool IsSynchronous
         {
-            get { return this.originalInvoker.IsSynchronous; }
+            get { return true; }
         }
 
         /// <summary>
@@ -37,46 +37,86 @@ namespace Jhu.Graywulf.Web.Services
 
         public object Invoke(object instance, object[] inputs, out object[] outputs)
         {
-            object res = null;
+            new RestLoggingContext(Logging.LoggingContext.Current).Push();
+            RestLoggingContext.Current.DefaultEventSource = Logging.EventSource.WebService;
+
             var svc = (RestServiceBase)instance;
-
             svc.OnBeforeInvoke();
+            LogDebug();
 
-            // Catch exceptions so that they can be logged.
             try
             {
-                res = this.originalInvoker.Invoke(instance, inputs, out outputs);
+                var res = this.originalInvoker.Invoke(instance, inputs, out outputs);
+                svc.OnAfterInvoke();
+                return res;
             }
             catch (Exception ex)
             {
 #if BREAKDEBUG
-                if (System.Diagnostics.Debugger.IsAttached)
+                if (System.Diagnostics.Debugger != null)
                 {
                     System.Diagnostics.Debugger.Break();
                 }
 #endif
+
+                var e = LogError(ex);
+
                 // TODO: this won't catch exceptions from IEnumerator that occur
                 // in MoveNext, so they won't be logged.
-                var logevent = svc.OnError(operationName, ex);
+                svc.OnError(ex);
 
                 // Wrap up exception into a RestOperationException which will convey it to
                 // the error handler implementation
-                throw new RestOperationException(ex, logevent.EventId.ToString());
+                throw new RestOperationException(ex, e.BookmarkGuid.ToString());
             }
-
-            svc.OnAfterInvoke();
-
-            return res;
+            finally
+            {
+                RestLoggingContext.Current.Pop();
+            }
         }
 
         public IAsyncResult InvokeBegin(object instance, object[] inputs, AsyncCallback callback, object state)
         {
-            return this.originalInvoker.InvokeBegin(instance, inputs, callback, state);
+            throw new NotImplementedException();
         }
 
         public object InvokeEnd(object instance, out object[] outputs, IAsyncResult result)
         {
-            return this.originalInvoker.InvokeEnd(instance, out outputs, result);
+            throw new NotImplementedException();
         }
+
+        #region Logging
+
+        internal Logging.Event LogDebug()
+        {
+            var e = Logging.LoggingContext.Current.CreateEvent(
+                Logging.EventSeverity.Debug,
+                Logging.EventSource.WebService,
+                null,
+                null,
+                null,
+                null);
+
+            Logging.LoggingContext.Current.WriteEvent(e);
+
+            return e;
+        }
+
+        internal Logging.Event LogError(Exception ex)
+        {
+            var e = Logging.LoggingContext.Current.CreateEvent(
+                Logging.EventSeverity.Error,
+                Logging.EventSource.WebService,
+                null,
+                null,
+                ex,
+                null);
+
+            Logging.LoggingContext.Current.WriteEvent(e);
+
+            return e;
+        }
+        
+        #endregion
     }
 }

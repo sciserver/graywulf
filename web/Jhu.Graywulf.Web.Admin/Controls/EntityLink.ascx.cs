@@ -15,7 +15,7 @@ using Jhu.Graywulf.Web.UI;
 
 namespace Jhu.Graywulf.Web.Admin.Controls
 {
-    public partial class EntityLink : UserControlBase, IContextObject
+    public partial class EntityLink : UserControlBase, IRegistryContextObject
     {
         private EntityReference<Entity> entityReference;
         private string expression;
