@@ -19,6 +19,13 @@ namespace Jhu.Graywulf.Test
 {
     public abstract class TestClassBase
     {
+        protected const string TestUser = "test";
+        protected const string OtherUser = "testother";
+        protected const string TestGroup = "test";
+        protected const string GroupAdminUser = "testadmin";
+        protected const string GroupWriterUser = "testwriter";
+        protected const string GroupReaderUser = "testreader";
+
         private Random rnd = new Random();
         private SqlServerDataset ioTestDataset;
 
@@ -325,7 +332,7 @@ WHERE DateFinished IS NULL";
         /// Find the outmost directory with a solution file
         /// </summary>
         /// <returns></returns>
-        protected string GetSolutionDir()
+        protected static string GetSolutionDir()
         {
             var dir = Environment.CurrentDirectory;
             string best = null;
@@ -345,7 +352,7 @@ WHERE DateFinished IS NULL";
             return best;
         }
 
-        protected string GetTestFilePath(string filename)
+        protected static string GetTestFilePath(string filename)
         {
             var sln = GetSolutionDir();
             return Path.Combine(sln, filename);
