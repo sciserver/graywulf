@@ -81,7 +81,7 @@ namespace Jhu.Graywulf.Web.Services
                 // is returned to the client nicely packed.
 
 #if BREAKDEBUG
-                if (System.Diagnostics.Debugger != null)
+                if (System.Diagnostics.Debugger.IsAttached)
                 {
                     System.Diagnostics.Debugger.Break();
                 }

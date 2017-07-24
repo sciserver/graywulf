@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Web.Services
             catch (Exception ex)
             {
 #if BREAKDEBUG
-                if (System.Diagnostics.Debugger != null)
+                if (System.Diagnostics.Debugger.IsAttached)
                 {
                     System.Diagnostics.Debugger.Break();
                 }
