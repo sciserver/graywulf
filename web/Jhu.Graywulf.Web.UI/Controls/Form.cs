@@ -21,6 +21,12 @@ namespace Jhu.Graywulf.Web.UI.Controls
         private ITemplate buttonsTemplate;
         private Control buttonsContainer;
 
+        public bool IsModal
+        {
+            get { return (bool)(ViewState["IsModal"] ?? false); }
+            set { ViewState["IsModal"] = value; }
+        }
+
         [Themeable(true)]
         public string Text
         {
@@ -92,14 +98,28 @@ namespace Jhu.Graywulf.Web.UI.Controls
             iconcell.Controls.Add(formIcon);
             formcell.Controls.Add(formContainer);
 
-            formDiv.CssClass = "FormFrame dock-center dock-scroll";
-            table.CssClass = "Form";
-            titlecell.CssClass = "FormHeadline";
-            titlecell.ColumnSpan = 2;
-            iconcell.CssClass = "FormIcon";
-            formcell.CssClass = "Form";
+            formDiv.ClientIDMode = ClientIDMode.Static;
+            formDiv.ID = this.ID;
 
-            buttoncell.CssClass = "FormButton";
+            if (IsModal)
+            {
+                formDiv.CssClass += "modal ";
+                formDiv.Attributes.Add("role", "dialog");
+            }
+
+            formDiv.CssClass += "dock-center dock-scroll gw-form";
+
+            if (!String.IsNullOrEmpty(CssClass))
+            {
+                formDiv.CssClass += " " + CssClass;
+            }
+
+            titlecell.CssClass = "gw-form-title";
+            titlecell.ColumnSpan = 2;
+            iconcell.CssClass = "gw-form-icon";
+            formcell.CssClass = "gw-form";
+
+            buttoncell.CssClass = "gw-form-buttons";
             buttoncell.ColumnSpan = 2;
 
             buttoncell.Controls.Add(buttonsContainer);
