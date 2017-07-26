@@ -39,15 +39,17 @@ namespace Jhu.Graywulf.Web.Services
         {
             new RestLoggingContext(Logging.LoggingContext.Current).Push();
             RestLoggingContext.Current.DefaultEventSource = Logging.EventSource.WebService;
-
-            var svc = (RestServiceBase)instance;
-            svc.OnBeforeInvoke();
             LogDebug();
 
+            var svc = (RestServiceBase)instance;
+            var context = new RestOperationContext();
+            OperationContext.Current.Extensions.Add(context);
+            
             try
             {
+                svc.OnBeforeInvoke(context);    
                 var res = this.originalInvoker.Invoke(instance, inputs, out outputs);
-                svc.OnAfterInvoke();
+                svc.OnAfterInvoke(context);
                 return res;
             }
             catch (Exception ex)
@@ -63,7 +65,7 @@ namespace Jhu.Graywulf.Web.Services
 
                 // TODO: this won't catch exceptions from IEnumerator that occur
                 // in MoveNext, so they won't be logged.
-                svc.OnError(ex);
+                svc.OnError(context, ex);
 
                 // Wrap up exception into a RestOperationException which will convey it to
                 // the error handler implementation
@@ -71,6 +73,8 @@ namespace Jhu.Graywulf.Web.Services
             }
             finally
             {
+                OperationContext.Current.Extensions.Remove(context);
+                context.Dispose();
                 RestLoggingContext.Current.Pop();
             }
         }

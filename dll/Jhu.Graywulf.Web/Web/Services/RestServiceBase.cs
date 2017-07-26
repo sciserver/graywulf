@@ -1,68 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Threading;
-using System.Web;
 using System.ServiceModel.Web;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
+using System.Web;
 using Jhu.Graywulf.Web.Security;
-using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.AccessControl;
-using Jhu.Graywulf.Web.UI;
+using Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Web.Services
 {
     public abstract class RestServiceBase : IDisposable
     {
-        private bool ownsContext;
         private RegistryContext registryContext;
         private FederationContext federationContext;
 
-        protected string AppRelativePath
-        {
-            get
-            {
-                return VirtualPathUtility.ToAppRelative(
-                    System.ServiceModel.OperationContext.Current.RequestContext.RequestMessage.Headers.To.PathAndQuery);
-            }
-        }
-
-        /// <summary>
-        /// Gets the authenticated Graywulf user
-        /// </summary>
-        protected User RegistryUser
-        {
-            get
-            {
-                if (Thread.CurrentPrincipal is GraywulfPrincipal)
-                {
-                    var identity = (GraywulfIdentity)Thread.CurrentPrincipal.Identity;
-                    identity.User.RegistryContext = RegistryContext;
-                    return identity.User;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets an initialized  registry context.
-        /// </summary>
         protected RegistryContext RegistryContext
         {
             get
             {
-                if (registryContext == null)
+                if (registryContext != null)
                 {
-                    registryContext = CreateRegistryContext();
+                    return registryContext;
                 }
-
-                return registryContext;
+                else if (RestOperationContext.Current != null)
+                {
+                    return RestOperationContext.Current.RegistryContext;
+                }
+                else
+                {
+                    throw new InvalidOperationException("Registry context is not available");
+                }
             }
         }
 
@@ -70,40 +42,35 @@ namespace Jhu.Graywulf.Web.Services
         {
             get
             {
-                if (federationContext == null)
+                if (federationContext != null)
                 {
-                    federationContext = new FederationContext(RegistryContext, RegistryUser);
+                    return federationContext;
                 }
-
-                return federationContext;
+                else if (RestOperationContext.Current != null)
+                {
+                    return RestOperationContext.Current.FederationContext;
+                }
+                else
+                {
+                    throw new InvalidOperationException("Federation context is not available");
+                }
             }
         }
-
+        
         protected RestServiceBase()
         {
-            this.ownsContext = true;
+            this.registryContext = null;
+            this.federationContext = null;
         }
 
         protected RestServiceBase(FederationContext federationContext)
         {
-            this.ownsContext = false;
             this.registryContext = federationContext.RegistryContext;
             this.federationContext = federationContext;
         }
 
         public virtual void Dispose()
         {
-            if (ownsContext && federationContext != null)
-            {
-                federationContext.Dispose();
-                federationContext = null;
-            }
-
-            if (ownsContext && registryContext != null)
-            {
-                registryContext.Dispose();
-                registryContext = null;
-            }
         }
 
         /// <summary>
@@ -113,48 +80,27 @@ namespace Jhu.Graywulf.Web.Services
         {
         }
 
+        #region Request lifecycle hooks
+
         /// <summary>
-        /// Gets an initialized registry context.
+        /// Called by the infrastructure before each service operation
         /// </summary>
-        public RegistryContext CreateRegistryContext()
-        {
-            var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, Registry.TransactionMode.ManualCommit);
-
-            if (Thread.CurrentPrincipal is GraywulfPrincipal)
-            {
-                var identity = (GraywulfIdentity)Thread.CurrentPrincipal.Identity;
-                context.UserReference.Value = identity.User;
-            }
-
-            return context;
-        }
-
-        internal void OnBeforeInvoke()
+        internal protected virtual void OnBeforeInvoke(RestOperationContext context)
         {
         }
 
         /// <summary>
         /// Called by the infrastucture after each service operation
         /// </summary>
-        /// <param name="invoker"></param>
-        internal void OnAfterInvoke()
+        internal protected virtual void OnAfterInvoke(RestOperationContext context)
         {
-            if (registryContext != null && registryContext.DatabaseTransaction != null)
-            {
-                registryContext.CommitTransaction();
-            }
         }
 
-        internal void OnError(Exception ex)
+        internal protected void OnError(RestOperationContext context, Exception ex)
         {
-            if (registryContext != null)
-            {
-                registryContext.RollbackTransaction();
-                registryContext.Dispose();
-                registryContext = null;
-            }
         }
 
+        #endregion
         #region User managemenet functions
 
         /// <summary>
@@ -162,6 +108,7 @@ namespace Jhu.Graywulf.Web.Services
         /// </summary>
         internal void OnUserArrived(GraywulfPrincipal principal)
         {
+            /*
             using (var context = CreateRegistryContext())
             {
                 // Check if user database (MYDB) exists, and create it if necessary
@@ -169,6 +116,7 @@ namespace Jhu.Graywulf.Web.Services
                 //var udii = new UserDatabaseInstanceInstaller(context);
                 //udii.EnsureUserDatabaseInstanceExists(principal.Identity.User, context.Federation.MyDBDatabaseVersion);
             }
+            */
         }
 
         /// <summary>
