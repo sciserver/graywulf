@@ -12,7 +12,6 @@ namespace Jhu.Graywulf.Web.UI.Controls
     [ParseChildren(true), Themeable(true)]
     public class Form : WebControl
     {
-        private Panel formDiv;
         private Label formTitle;
         private Image formIcon;
 
@@ -74,7 +73,6 @@ namespace Jhu.Graywulf.Web.UI.Controls
 
         private void CreateLayout()
         {
-            formDiv = new Panel();
             var table = new Table();
             var titlerow = new TableRow();
             var titlecell = new TableCell();
@@ -87,8 +85,7 @@ namespace Jhu.Graywulf.Web.UI.Controls
             this.formContainer = new Control();
             this.buttonsContainer = new Control();
 
-            this.Controls.Add(formDiv);
-            formDiv.Controls.Add(table);
+            this.Controls.Add(table);
             table.Rows.AddRange(new[] { titlerow, formrow, buttonrow });
             titlerow.Cells.AddRange(new[] { titlecell });
             formrow.Cells.AddRange(new[] { iconcell, formcell });
@@ -97,22 +94,6 @@ namespace Jhu.Graywulf.Web.UI.Controls
             titlecell.Controls.Add(formTitle);
             iconcell.Controls.Add(formIcon);
             formcell.Controls.Add(formContainer);
-
-            formDiv.ClientIDMode = ClientIDMode.Static;
-            formDiv.ID = this.ID;
-
-            if (IsModal)
-            {
-                formDiv.CssClass += "modal ";
-                formDiv.Attributes.Add("role", "dialog");
-            }
-
-            formDiv.CssClass += "dock-center dock-scroll gw-form";
-
-            if (!String.IsNullOrEmpty(CssClass))
-            {
-                formDiv.CssClass += " " + CssClass;
-            }
 
             titlecell.CssClass = "gw-form-title";
             titlecell.ColumnSpan = 2;
@@ -123,8 +104,6 @@ namespace Jhu.Graywulf.Web.UI.Controls
             buttoncell.ColumnSpan = 2;
 
             buttoncell.Controls.Add(buttonsContainer);
-
-            Controls.Add(formDiv);
         }
 
         private void ClearContent()
@@ -162,7 +141,29 @@ namespace Jhu.Graywulf.Web.UI.Controls
 
         protected override void Render(HtmlTextWriter writer)
         {
-            formDiv.RenderControl(writer);
+            var css = "";
+
+            if (IsModal)
+            {
+                css += "modal ";
+                writer.AddAttribute("role", "dialog");
+            }
+
+            css += "dock-center dock-scroll gw-form";
+
+            if (!String.IsNullOrEmpty(CssClass))
+            {
+                css += " " + CssClass;
+            }
+
+            writer.AddAttribute("class", css);
+            writer.AddAttribute("id", this.ClientID);
+
+            writer.RenderBeginTag(HtmlTextWriterTag.Div);
+
+            base.RenderContents(writer);
+
+            writer.RenderEndTag();
         }
     }
 }

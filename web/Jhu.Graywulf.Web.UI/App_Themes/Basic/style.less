@@ -338,8 +338,8 @@ div.toolbar .dropdown ul li a {
 
 div.toolbar .dropdown ul li a:hover {
     background-color: @colorToolbarHover;
-    background-image: unset;
-    filter: unset;
+    background-image: none;
+    filter: none;
     color: @colorWhite;
 }
 
@@ -524,8 +524,8 @@ div.gw-form {
     border: 1px solid @colorDark;
     box-shadow: 0px 12px 6px -6px #c0c0c0;
     padding: @gutter;
-    right: unset;
-    bottom: unset;
+    right: auto;
+    bottom: auto;
 }
 
 div.gw-form > table {
@@ -613,7 +613,8 @@ td.gw-form-buttons {
     height: 64px;
 }
 
-td.gw-form-buttons input[type=button] {
+td.gw-form-buttons input[type=button],
+td.gw-form-buttons input[type=submit] {
     .font();
     font-weight: bold;
     font-size: 14px;
