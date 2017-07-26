@@ -89,6 +89,21 @@ namespace Jhu.Graywulf.Web.Services
             }
         }
 
+        public System.Security.Principal.IPrincipal Principal
+        {
+            get
+            {
+                if (System.Threading.Thread.CurrentPrincipal is Jhu.Graywulf.AccessControl.Principal)
+                {
+                    return (Jhu.Graywulf.AccessControl.Principal)System.Threading.Thread.CurrentPrincipal;
+                }
+                else
+                {
+                    return Jhu.Graywulf.AccessControl.Principal.Guest;
+                }
+            }
+        }
+
         public IRestSessionState Session
         {
             get
