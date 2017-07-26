@@ -324,7 +324,10 @@ div.toolbar .dropdown ul {
 }
 
 div.toolbar .dropdown ul li {
+    .menuFont();
     padding: 0px;
+    color: @colorBlack;
+    text-align: left;
 }
 
 div.toolbar .dropdown ul li a {
@@ -341,6 +344,10 @@ div.toolbar .dropdown ul li a:hover {
     background-image: none;
     filter: none;
     color: @colorWhite;
+}
+
+div.toolbar .dropdown ul li input {
+    margin: @gutter;
 }
 
 /*#endregion */
