@@ -3,14 +3,17 @@
     var __pathParts = __pathParts__;
     var __queryParts = __queryParts__;
     var __data = __bodyParameter__;
+    var __dataType = __returnType__;
     var __url = this.__createUrl(__pathParts, __queryParts);
-    var __request = null;
-    if (__data) {
-        __request = {
-            contentType: "application/json",
-            data: JSON.stringify(__data)
-        }
+    var __request = {
+        dataType: __dataType
     };
+
+    if (__data) {
+        __request.contentType = "application/json";
+        __request.data = JSON.stringify(__data);
+    };
+
     this.__callService(__url, "__httpMethod__", __request,
         function (result, status, xhr) {
             if (on_success) on_success(result);
@@ -23,4 +26,3 @@
             }
         });
 };
-

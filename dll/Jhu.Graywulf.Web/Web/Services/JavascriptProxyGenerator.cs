@@ -45,6 +45,7 @@ namespace Jhu.Graywulf.Web.Services
             script.Replace("__methodName__", GetMethodName(method));
             script.Replace("__parameterList__", parameterList);
             script.Replace("__bodyParameter__", bodyParameter?.Name ?? "null");
+            script.Replace("__returnType__", method.ReturnType == typeof(void) ? "\"text\"" : "\"json\"");
             script.Replace("__pathParts__", pathParts);
             script.Replace("__queryParts__", queryParts);
             script.Replace("__httpMethod__", httpMethod);

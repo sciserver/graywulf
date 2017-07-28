@@ -24,10 +24,11 @@ __serviceName__Service.prototype.__createUrl = function (pathParts, queryParts) 
     return finalUrl;
 }
 
-__serviceName__Service.prototype.__callService = function (url, type, params, success) {
+__serviceName__Service.prototype.__callService = function (url, httpMethod, params, on_success, on_error) {
     var mimeType = "text/html";
     var contentType = "application/json";
-    var dataType = "application/json";
+    var accept = "application/json";
+    var dataType = "json";
 
     if (params) {
         $.each(params, function (key, value) {
@@ -38,6 +39,12 @@ __serviceName__Service.prototype.__callService = function (url, type, params, su
                     break;
                 case "contentType":
                     contentType = value;
+                    break;
+                case "accept":
+                    accept = value;
+                    break;
+                case "dataType":
+                    dataType = value;
                     break;
                 case "headers":
                     $.ajaxSetup({ headers: value });
@@ -51,15 +58,15 @@ __serviceName__Service.prototype.__callService = function (url, type, params, su
 
     $.ajax({
         url: url,
-        type: type,
+        type: httpMethod,
         mimeType: mimeType,
         contentType: contentType,
-        dataType: "json",
+        dataType: dataType,
         headers: {
-            Accept: dataType,
+            Accept: accept,
         },
-        success: success,
-        error: this.error
+        success: on_success,
+        error: on_error
     });
 }
 
