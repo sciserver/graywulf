@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Threading;
-using System.ServiceModel.Web;
+using System.IO;
+using System.Net;
 using System.ServiceModel;
-using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
-using System.ServiceModel.Dispatcher;
-using System.Web;
-using Jhu.Graywulf.Web.Security;
-using Jhu.Graywulf.AccessControl;
+using System.ServiceModel.Web;
 using Jhu.Graywulf.Registry;
+using Jhu.Graywulf.AccessControl;
 
 namespace Jhu.Graywulf.Web.Services
 {
@@ -73,13 +68,6 @@ namespace Jhu.Graywulf.Web.Services
         {
         }
 
-        /// <summary>
-        /// Dummy function to handle requests to OPTIONS
-        /// </summary>
-        public void HandleHttpOptionsRequest()
-        {
-        }
-
         #region Request lifecycle hooks
 
         /// <summary>
@@ -127,6 +115,39 @@ namespace Jhu.Graywulf.Web.Services
         /// </remarks>
         internal void OnUserSignedOut(GraywulfPrincipal principaly)
         {
+        }
+
+        #endregion
+        #region Predefined operations
+
+        /// <summary>
+        /// Dummy function to handle requests to OPTIONS
+        /// </summary>
+        public void HandleHttpOptionsRequest()
+        {
+        }
+
+        public Stream GenerateProxy(string lang)
+        {
+            // TODO: add support for other languages
+            var context = WebOperationContext.Current;
+            var response = context.OutgoingResponse;
+
+
+            var service = OperationContext.Current.Host.Description;
+            var endpoint = (WebHttpEndpoint)service.Endpoints[0];
+            var contractType = endpoint.Contract.ContractType;
+            var serviceUrl = endpoint.ListenUri.AbsoluteUri;
+
+            var cg = new JavascriptProxyGenerator(contractType, serviceUrl);
+            response.Headers[HttpResponseHeader.ContentType] = cg.MimeType;
+            response.Headers[HttpResponseHeader.CacheControl] = "public";
+            response.Headers["Content-Disposition"] = "attachment;filename=\"" + cg.Filename + "\"";
+
+            var ms = new MemoryStream();
+            cg.Execute(ms);
+            ms.Seek(0, SeekOrigin.Begin);
+            return ms;
         }
 
         #endregion
