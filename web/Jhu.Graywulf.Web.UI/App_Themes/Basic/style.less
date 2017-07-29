@@ -594,7 +594,7 @@ td.gw-form-field input[type="radio"] {
     margin-right: 4px;
 }
 
-td.gw-form-field input,
+td.gw-form-field input[type="text"],
 td.gw-form-field select,
 td.gw-form-field textarea,
 td.gw-form-field div {
@@ -604,8 +604,13 @@ td.gw-form-field div {
     width: 200px;
 }
 
+td.gw-form-field textarea
+{
+    width: 100%;
+}
+
 td.gw-form-field .narrow {
-    width: 120px;
+    width: 120px !important;
 }
 
 td.gw-form-buttons {
