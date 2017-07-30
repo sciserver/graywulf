@@ -87,7 +87,7 @@ namespace Jhu.Graywulf.Entities
         {
             if (reader == null)
             {
-                reader = command.ExecuteReader(CommandBehavior.SequentialAccess);
+                reader = command.ExecuteReader();
             }
 
             var res = this.reader.Read();
