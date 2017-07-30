@@ -116,7 +116,7 @@ namespace Jhu.Graywulf.Web.Api.V1
             }
             else
             {
-                user = User.Guest;
+                user = Api.V1.User.Guest;
             }
 
             var userResp = new UserResponse(user);

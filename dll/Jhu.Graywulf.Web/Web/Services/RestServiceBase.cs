@@ -4,6 +4,7 @@ using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.ServiceModel.Web;
+using System.Security.Principal;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.AccessControl;
 
@@ -11,8 +12,20 @@ namespace Jhu.Graywulf.Web.Services
 {
     public abstract class RestServiceBase : IDisposable
     {
+        private IRestSessionState session;
+        private IPrincipal user;
         private RegistryContext registryContext;
         private FederationContext federationContext;
+
+        protected IRestSessionState Session
+        {
+            get { return session; }
+        }
+
+        protected IPrincipal User
+        {
+            get { return user; }
+        }
 
         protected RegistryContext RegistryContext
         {
@@ -54,6 +67,8 @@ namespace Jhu.Graywulf.Web.Services
         
         protected RestServiceBase()
         {
+            this.session = null;
+            this.user = null;
             this.registryContext = null;
             this.federationContext = null;
         }
@@ -75,6 +90,8 @@ namespace Jhu.Graywulf.Web.Services
         /// </summary>
         internal protected virtual void OnBeforeInvoke(RestOperationContext context)
         {
+            session = context.Session;
+            user = context.Principal;
         }
 
         /// <summary>
@@ -82,6 +99,8 @@ namespace Jhu.Graywulf.Web.Services
         /// </summary>
         internal protected virtual void OnAfterInvoke(RestOperationContext context)
         {
+            session = null;
+            user = null;
         }
 
         internal protected void OnError(RestOperationContext context, Exception ex)
