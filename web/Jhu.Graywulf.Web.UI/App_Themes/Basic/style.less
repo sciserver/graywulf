@@ -572,7 +572,7 @@ td.gw-form ul, td.gw-form p {
     margin-bottom: 6px;
 }
 
-td.gw-form > table {
+td.gw-form > table, table.gw-form {
     width: 100%;
 }
 
@@ -590,8 +590,9 @@ td.gw-form-field {
 
 td.gw-form-field input[type="checkbox"],
 td.gw-form-field input[type="radio"] {
-    margin-top: 8px;
-    margin-right: 4px;
+    margin-top: 0px;
+    margin-left: @gutter;
+    margin-right: @gutter;
 }
 
 td.gw-form-field input[type="text"],
@@ -604,13 +605,23 @@ td.gw-form-field div {
     width: 200px;
 }
 
-td.gw-form-field textarea
-{
+td.gw-form-field textarea {
     width: 100%;
 }
 
 td.gw-form-field .narrow {
     width: 120px !important;
+}
+
+td.gw-form-field .wide {
+    width: 100% !important;
+}
+
+p.gw-form-details {
+    border-top: 1px solid #C0C0C0;
+    text-align: right;
+    margin-top: 16px;
+    margin-bottom: 16px;
 }
 
 td.gw-form-buttons {
@@ -633,6 +644,28 @@ td.gw-form-buttons input[type=submit] {
     border: 2px solid #C0C0C0;
     height: 26px;
     width: 120px;
+}
+
+/*#endregion */
+/*#region tabs */
+
+ul.gw-tabs {
+    margin: 0px !important;
+}
+
+ul.gw-tabs li a {
+    .font();
+    padding: @gutter;
+    border: 1px solid #C0C0C0;
+    border-radius: 0px;
+}
+
+div.tab-content {
+    border-left: 1px solid #C0C0C0;
+    border-right: 1px solid #C0C0C0;
+    border-bottom: 1px solid #C0C0C0;
+    border-radius: 0px;
+    padding: @gutter;
 }
 
 /*#endregion */
