@@ -9,7 +9,7 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 
-namespace Jhu.Graywulf.RemoteService
+namespace Jhu.Graywulf.ServiceModel
 {
     /// <summary>
     /// Implements a custom invoker that performs simple role-based authorization
@@ -18,11 +18,13 @@ namespace Jhu.Graywulf.RemoteService
     class LimitedAccessOperationInvoker : IOperationInvoker
     {
         private string operationName;
+        private string operationCategory;
         private IOperationInvoker originalInvoker;
 
-        public LimitedAccessOperationInvoker(string operationName, IOperationInvoker originalInvoker)
+        public LimitedAccessOperationInvoker(string operationName, string operationCategory, IOperationInvoker originalInvoker)
         {
             this.operationName = operationName;
+            this.operationCategory = operationCategory;
             this.originalInvoker = originalInvoker;
         }
 
@@ -44,7 +46,7 @@ namespace Jhu.Graywulf.RemoteService
         public object Invoke(object instance, object[] inputs, out object[] outputs)
         {
             EnsureRoleAccess();
-            
+
             return this.originalInvoker.Invoke(instance, inputs, out outputs);
         }
 
@@ -61,18 +63,31 @@ namespace Jhu.Graywulf.RemoteService
         /// <summary>
         /// Authorizes the user only if they belong to a specified user group.
         /// </summary>
-        public static void EnsureRoleAccess()
+        public void EnsureRoleAccess()
         {
             // Access automatically granted for non-remoting scenarios.
             // OperationContext.Current is null if the object is created locally.
             // Otherwise check if the user is authenticated and the identity is equal to the specified
             // user (group) name or member of the given group (role).
 
-            if (OperationContext.Current != null &&
-                StringComparer.InvariantCultureIgnoreCase.Compare(Thread.CurrentPrincipal.Identity.Name, RemoteServiceBase.Configuration.UserGroup) != 0 &&
-                !Thread.CurrentPrincipal.IsInRole(RemoteServiceBase.Configuration.UserGroup))
+            var context = OperationContext.Current;
+
+            if (context != null)
             {
-                throw new SecurityException("Access denied.");  // TODO
+                var access = context.Host.Extensions.Find<LimitedAccessServiceExtension>();
+
+                if (access.UserList[operationCategory].Contains(Thread.CurrentPrincipal.Identity.Name))
+                {
+                    return;
+                }
+
+                foreach (var role in access.RoleList[operationCategory])
+                {
+                    if (Thread.CurrentPrincipal.IsInRole(role))
+                    {
+                        return;
+                    }
+                }
             }
         }
     }

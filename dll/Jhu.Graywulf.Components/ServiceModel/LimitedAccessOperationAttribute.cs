@@ -5,7 +5,7 @@ using System.Text;
 using System.ServiceModel.Description;
 using System.Runtime.Serialization;
 
-namespace Jhu.Graywulf.RemoteService
+namespace Jhu.Graywulf.ServiceModel
 {
     /// <summary>
     /// Implements an operation behaviour that limits access to the decorated
@@ -13,6 +13,19 @@ namespace Jhu.Graywulf.RemoteService
     /// </summary>
     public class LimitedAccessOperationAttribute : Attribute, IOperationBehavior
     {
+        public string operationCategory;
+
+        public string OperationCategory
+        {
+            get { return operationCategory; }
+            set { operationCategory = value; }
+        }
+
+        public LimitedAccessOperationAttribute(string operationCategory)
+        {
+            this.operationCategory = operationCategory;
+        }
+
         public void AddBindingParameters(OperationDescription operationDescription, System.ServiceModel.Channels.BindingParameterCollection bindingParameters)
         {
         }
@@ -24,10 +37,7 @@ namespace Jhu.Graywulf.RemoteService
         public void ApplyDispatchBehavior(OperationDescription operationDescription, System.ServiceModel.Dispatcher.DispatchOperation dispatchOperation)
         {
             // Wrap original invoker into custom invoker
-            dispatchOperation.Invoker =
-                new LimitedAccessOperationInvoker(
-                    operationDescription.Name,
-                    dispatchOperation.Invoker);
+            dispatchOperation.Invoker = new LimitedAccessOperationInvoker(operationCategory, operationDescription.Name, dispatchOperation.Invoker);
         }
 
         public void Validate(OperationDescription operationDescription)
