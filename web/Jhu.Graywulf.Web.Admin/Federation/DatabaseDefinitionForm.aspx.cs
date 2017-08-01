@@ -55,9 +55,8 @@ namespace Jhu.Graywulf.Web.Admin.Federation
         {
             if (newentity)
             {
-                var sv = new ServerVersion(RegistryContext);
-                sv.Guid = new Guid(ServerVersion.SelectedValue);
-                sv.Load();
+                var ef = new EntityFactory(RegistryContext);
+                var sv = ef.LoadEntity<ServerVersion>(new Guid(ServerVersion.SelectedValue));
 
                 var ddi = new DatabaseDefinitionInstaller(Item);
                 ddi.GenerateDefaultChildren(sv, Registry.Constants.ProdDatabaseVersionName);

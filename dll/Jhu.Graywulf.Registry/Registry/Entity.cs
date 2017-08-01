@@ -86,7 +86,7 @@ namespace Jhu.Graywulf.Registry
             get { return isDeserializing; }
             set { isDeserializing = value; }
         }
-        
+
         /// <summary>
         /// Globally unique identifier of the entity, acts like the primary key in the database.
         /// </summary>
@@ -723,6 +723,11 @@ namespace Jhu.Graywulf.Registry
 
         #endregion
 
+        public bool IsFullyQualifiedNameLoaded()
+        {
+            return fullyQualifiedName != null;
+        }
+
         /// <summary>
         /// Computes the fully qualified name of the entity.
         /// </summary>
@@ -759,6 +764,11 @@ namespace Jhu.Graywulf.Registry
                 else if (EntityType == EntityType.Cluster)
                 {
                     fullyQualifiedName = EntityFactory.CombineName(EntityType.Cluster, name);
+                }
+
+                if (IsExisting)
+                {
+                    RegistryContext.EntityCache.Add(this);
                 }
             }
 

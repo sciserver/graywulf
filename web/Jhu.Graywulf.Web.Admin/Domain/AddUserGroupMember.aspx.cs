@@ -28,9 +28,8 @@ namespace Jhu.Graywulf.Web.Admin.Domain
 
         private void LoadItem()
         {
-            user = new Registry.User(RegistryContext);
-            user.Guid = new Guid(Request.QueryString["guid"]);
-            user.Load();
+            var ef = new EntityFactory(RegistryContext);
+            user = ef.LoadEntity<Registry.User>(new Guid(Request.QueryString["guid"]));
         }
 
         private void UpdateForm()

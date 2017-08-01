@@ -35,9 +35,8 @@ namespace Jhu.Graywulf.Web.Admin.Layout
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            item = new DatabaseDefinition(RegistryContext);
-            item.Guid = new Guid(Request.QueryString["guid"]);
-            item.Load();
+            var ef = new EntityFactory(RegistryContext);
+            item = ef.LoadEntity<DatabaseDefinition>(new Guid(Request.QueryString["guid"]));
 
             item.LoadDatabaseVersions(false);
             databaseVersions = new List<DatabaseVersion>(item.DatabaseVersions.Values);
@@ -47,12 +46,9 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             }
 
             // Load currently selected database version
-            databaseVersion = new DatabaseVersion(RegistryContext);
-            databaseVersion.Guid = new Guid(databaseVersionList.SelectedValue);
-            databaseVersion.Load();
+            databaseVersion = ef.LoadEntity<DatabaseVersion>(new Guid(databaseVersionList.SelectedValue));
 
             // Load server instances
-            EntityFactory ef = new EntityFactory(RegistryContext);
             serverInstances = new List<ServerInstance>(ef.FindAll<ServerInstance>()
                 .Where(i => i.ServerVersionReference.Guid == databaseVersion.ServerVersionReference.Guid)
                 .OrderBy(i => i.Machine.Number)
@@ -162,9 +158,8 @@ namespace Jhu.Graywulf.Web.Admin.Layout
             double sizefactor = double.Parse(SizeFactor.Text);
             string postfix = String.Empty;
 
-            DatabaseVersion databaseVersion = new DatabaseVersion(RegistryContext);
-            databaseVersion.Guid = new Guid(databaseVersionList.SelectedValue);
-            databaseVersion.Load();
+            var ef = new EntityFactory(RegistryContext);
+            var databaseVersion = ef.LoadEntity<DatabaseVersion>(new Guid(databaseVersionList.SelectedValue));
 
             databaseVersion.DatabaseDefinition.LoadDatabaseInstances(false);
 

@@ -105,8 +105,11 @@ namespace Jhu.Graywulf.Registry
         /// The value of the <see cref="Guid" /> property and the object context must be set.
         /// The <see cref="RegistryContext" /> property must have a value of a valid object context with open database connection.
         /// </remarks>
-        public void Load()
+        private void Load()
         {
+            // TODO: instead of using this, entities should be loaded using
+            // the EntityFactory class which also adds caching support.
+
             var sql = DBHelpers[this.GetType()].SelectQuery;
 
             using (var cmd = RegistryContext.CreateTextCommand(sql))
@@ -243,6 +246,8 @@ namespace Jhu.Graywulf.Registry
 
             isExisting = true;
 
+            RegistryContext.EntityCache.Add(this);
+
             LogDebug();
         }
 
@@ -287,6 +292,8 @@ namespace Jhu.Graywulf.Registry
                     cmd.ExecuteNonQuery();
                 }
             }
+
+            // TODO: what to do with the cache if the name has changed?
 
             LogDebug();
         }

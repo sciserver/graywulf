@@ -28,9 +28,8 @@ namespace Jhu.Graywulf.Web.Admin.Federation
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            item = new DatabaseDefinition(RegistryContext);
-            item.Guid = new Guid(Request.QueryString["guid"]);
-            item.Load();
+            var ef = new EntityFactory(RegistryContext);
+            item = ef.LoadEntity<DatabaseDefinition>(new Guid(Request.QueryString["guid"]));
 
             if (!IsPostBack)
             {

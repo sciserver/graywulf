@@ -38,6 +38,8 @@ namespace Jhu.Graywulf.Registry
         private SqlConnection databaseConnection;
         private SqlTransaction databaseTransaction;
 
+        private EntityCache entityCache;
+
         private EntityReference<Cluster> clusterReference;
         private EntityReference<Domain> domainReference;
         private EntityReference<Federation> federationReference;
@@ -94,6 +96,11 @@ namespace Jhu.Graywulf.Registry
         {
             get { return this; }
             set { throw new InvalidOperationException(); }
+        }
+
+        internal EntityCache EntityCache
+        {
+            get { return entityCache; }
         }
 
         /// <summary>
@@ -207,6 +214,8 @@ namespace Jhu.Graywulf.Registry
             this.databaseConnection = null;
             this.databaseTransaction = null;
 
+            this.entityCache = new EntityCache();
+
             this.clusterReference = new EntityReference<Cluster>(this);
             this.domainReference = new EntityReference<Domain>(this);
             this.federationReference = new EntityReference<Federation>(this);
@@ -260,6 +269,9 @@ namespace Jhu.Graywulf.Registry
             {
                 CloseConnection();
             }
+
+            this.entityCache.Dispose();
+            this.entityCache = null;
 
             isValid = false;
         }

@@ -256,10 +256,8 @@ namespace Jhu.Graywulf.Scheduler
 
         private JobInstance LoadJobInstance(RegistryContext context, Job job)
         {
-            var ji = new JobInstance(context);
-            ji.Guid = job.Guid;
-            ji.Load();
-
+            var ef = new EntityFactory(context);
+            var ji = ef.LoadEntity<JobInstance>(job.Guid);
             return ji;
         }
 

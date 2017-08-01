@@ -508,6 +508,16 @@ END
 GO
 
 
+CREATE PROC spGetEntityGuid_byName
+	@UserGuid uniqueidentifier,
+	@EntityType int,
+	@NameParts NamePartList READONLY
+AS
+	SELECT dbo.fGetEntityGuid_byName(@EntityType, @NameParts)
+
+GO
+
+
 CREATE PROC spFindEntity_byName
 	@UserGuid uniqueidentifier,
 	@EntityType int,

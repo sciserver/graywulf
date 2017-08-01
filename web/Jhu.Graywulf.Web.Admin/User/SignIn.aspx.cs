@@ -41,9 +41,8 @@ namespace Jhu.Graywulf.Web.Admin.User
             // Attempt to log in with supplied credentials
             try
             {
-                var cluster = new Registry.Cluster(RegistryContext);
-                cluster.Guid = new Guid(ClusterList.SelectedValue);
-                cluster.Load();
+                var ef = new EntityFactory(RegistryContext);
+                var cluster = ef.LoadEntity<Registry.Cluster>(new Guid(ClusterList.SelectedValue));
 
                 cluster.LoadDomains(false);
                 var domain = cluster.Domains[Registry.Constants.SystemDomainName];

@@ -29,9 +29,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Jobs
 
         private void LoadJob()
         {
-            jobInstance = new JobInstance(RegistryContext);
-            jobInstance.Guid = JobGuid;
-            jobInstance.Load();
+            var ef = new EntityFactory(RegistryContext);
+            jobInstance = ef.LoadEntity<JobInstance>(JobGuid);
             
             // Check user ID
             if (IsAuthenticatedUser(jobInstance.UserGuidOwner))

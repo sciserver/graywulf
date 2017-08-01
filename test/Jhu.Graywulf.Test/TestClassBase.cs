@@ -199,10 +199,8 @@ WHERE DateFinished IS NULL";
         {
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.DirtyRead))
             {
-                var job = new JobInstance(context);
-                job.Guid = guid;
-                job.Load();
-
+                var ef = new EntityFactory(context);
+                var job = ef.LoadEntity<JobInstance>(guid);
                 return job;
             }
         }
@@ -211,10 +209,8 @@ WHERE DateFinished IS NULL";
         {
             using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
-                var job = new JobInstance(context);
-                job.Guid = guid;
-                job.Load();
-
+                var ef = new EntityFactory(context);
+                var job = ef.LoadEntity<JobInstance>(guid);
                 job.Cancel();
             }
         }

@@ -604,9 +604,8 @@ namespace Jhu.Graywulf.Scheduler
 
                     foreach (var ji in jis)
                     {
-                        var user = new User(context);
-                        user.Guid = ji.UserGuidOwner;
-                        user.Load();
+                        var ef = new EntityFactory(context);
+                        var user = ef.LoadEntity<User>(ji.UserGuidOwner);
 
                         var job = new Job()
                         {
@@ -712,9 +711,8 @@ namespace Jhu.Graywulf.Scheduler
                 // TODO: why need to set job guid here manually?
                 context.JobReference.Guid = job.Guid;
 
-                JobInstance ji = new JobInstance(context);
-                ji.Guid = job.Guid;
-                ji.Load();
+                var ef = new EntityFactory(context);
+                var ji = ef.LoadEntity<JobInstance>(job.Guid);
 
                 // Lock the job, so noone else can pick it up
                 ji.DateStarted = DateTime.Now;
@@ -765,9 +763,8 @@ namespace Jhu.Graywulf.Scheduler
                 // *** TODO: why set guid here manually?
                 context.JobReference.Guid = job.Guid;
 
-                var ji = new JobInstance(context);
-                ji.Guid = job.Guid;
-                ji.Load();
+                var ef = new EntityFactory(context);
+                var ji = ef.LoadEntity<JobInstance>(job.Guid);
 
                 ji.JobExecutionStatus = JobExecutionState.Cancelling;
 
@@ -794,11 +791,11 @@ namespace Jhu.Graywulf.Scheduler
 
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
+                // *** TODO: why do we have to set jobguid here explicitly?
                 context.JobReference.Guid = job.Guid;
 
-                var ji = new JobInstance(context);
-                ji.Guid = job.Guid;
-                ji.Load();
+                var ef = new EntityFactory(context);
+                var ji = ef.LoadEntity<JobInstance>(job.Guid);
 
                 ji.JobExecutionStatus = JobExecutionState.Persisting;
 
@@ -826,11 +823,11 @@ namespace Jhu.Graywulf.Scheduler
             {
                 using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
                 {
+                    // *** TODO why do we need to set the job guid here explicitly?
                     context.JobReference.Guid = job.Guid;
 
-                    JobInstance ji = new JobInstance(context);
-                    ji.Guid = job.Guid;
-                    ji.Load();
+                    var ef = new EntityFactory(context);
+                    var ji = ef.LoadEntity<JobInstance>(job.Guid);
 
                     // Update execution status, error message and finish time
                     switch (e.EventType)

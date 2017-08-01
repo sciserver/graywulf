@@ -992,9 +992,8 @@ namespace Jhu.Graywulf.Jobs.Query
                 throw new Exception("No server found with requested database.");  // *** TODO
             }
 
-            var si = new ServerInstance(RegistryContext);
-            si.Guid = siguid;
-            si.Load();
+            var ef = new EntityFactory(RegistryContext);
+            var si = ef.LoadEntity<ServerInstance>(siguid);
 
             return si;
         }
@@ -1037,9 +1036,8 @@ namespace Jhu.Graywulf.Jobs.Query
                 throw new Exception("No server found with requested database.");  // *** TODO
             }
 
-            var si = new ServerInstance(RegistryContext);
-            si.Guid = siguid;
-            si.Load();
+            var ef = new EntityFactory(RegistryContext);
+            var si = ef.LoadEntity<ServerInstance>(siguid);
 
             return si;
         }
@@ -1083,12 +1081,11 @@ namespace Jhu.Graywulf.Jobs.Query
                 throw new Exception("No server found with requested database.");  // *** TODO
             }
 
+            var ef = new EntityFactory(RegistryContext);
             var si = new ServerInstance[siguid.Length];
             for (int i = 0; i < siguid.Length; i++)
             {
-                si[i] = new ServerInstance(RegistryContext);
-                si[i].Guid = siguid[i];
-                si[i].Load();
+                si[i] = ef.LoadEntity<ServerInstance>(siguid[i]);
             }
 
             return si;
@@ -1117,12 +1114,11 @@ namespace Jhu.Graywulf.Jobs.Query
                 throw new Exception("No instance of the requested database found.");  // *** TODO
             }
 
+            var ef = new EntityFactory(RegistryContext);
             var di = new DatabaseInstance[diguid.Length];
             for (int i = 0; i < diguid.Length; i++)
             {
-                di[i] = new DatabaseInstance(RegistryContext);
-                di[i].Guid = diguid[i];
-                di[i].Load();
+                di[i] = ef.LoadEntity<DatabaseInstance>(diguid[i]);
             }
 
             return di;
@@ -1151,12 +1147,11 @@ namespace Jhu.Graywulf.Jobs.Query
                 throw new Exception("No instance of the requested database found.");  // *** TODO
             }
 
+            var ef = new EntityFactory(RegistryContext);
             var di = new DatabaseInstance[diguid.Length];
             for (int i = 0; i < diguid.Length; i++)
             {
-                di[i] = new DatabaseInstance(RegistryContext);
-                di[i].Guid = diguid[i];
-                di[i].Load();
+                di[i] = ef.LoadEntity<DatabaseInstance>(diguid[i]);
             }
 
             return di;

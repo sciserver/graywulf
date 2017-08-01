@@ -44,11 +44,12 @@ namespace Jhu.Graywulf.Web.Admin.Log
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            var ef = new EntityFactory(((PageBase)Page).RegistryContext);
+
             if (filter.UserGuid != Guid.Empty)
             {
-                user = new Registry.User(((PageBase)Page).RegistryContext);
-                user.Guid = filter.UserGuid;
-                user.Load();
+                
+                user = ef.LoadEntity<Registry.User>(filter.UserGuid);
 
                 linkUser.EntityReference.Value = user;
                 linkUser.Visible = true;
@@ -60,9 +61,7 @@ namespace Jhu.Graywulf.Web.Admin.Log
 
             if (filter.JobGuid != Guid.Empty)
             {
-                job = new JobInstance(((PageBase)Page).RegistryContext);
-                job.Guid = filter.JobGuid;
-                job.Load();
+                job = ef.LoadEntity<JobInstance>(filter.JobGuid);
 
                 linkJob.EntityReference.Value = job;
                 linkJob.Visible = true;
@@ -74,9 +73,7 @@ namespace Jhu.Graywulf.Web.Admin.Log
 
             if (filter.EntityGuid != Guid.Empty)
             {
-                entity = new Entity(((PageBase)Page).RegistryContext);
-                entity.Guid = filter.EntityGuid;
-                entity.Load();
+                entity = ef.LoadEntity(filter.EntityGuid);
 
                 linkEntity.EntityReference.Value = entity;
                 linkEntity.Visible = true;

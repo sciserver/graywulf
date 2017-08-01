@@ -31,13 +31,10 @@ namespace Jhu.Graywulf.Registry
                 throw new Exception("Already a member of ..."); // TODO ***
             }
 
-            var group = new UserGroup(RegistryContext);
-            group.Guid = userGroupGuid;
-            group.Load();
+            var ef = new EntityFactory(RegistryContext);
 
-            var role = new UserRole(RegistryContext);
-            role.Guid = userRoleGuid;
-            role.Load();
+            var group = ef.LoadEntity<UserGroup>(userGroupGuid);
+            var role = ef.LoadEntity<UserRole>(userRoleGuid);
 
             var ugm = new UserGroupMembership(this)
             {

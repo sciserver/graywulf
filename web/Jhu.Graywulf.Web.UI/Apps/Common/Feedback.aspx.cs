@@ -160,6 +160,7 @@ namespace Jhu.Graywulf.Web.UI.Apps.Common
             Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Email]", Email.Text);
             Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Subject]", Subject.Text);
             Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Comments]", Comments.Text);
+            Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$Copyright]", RegistryContext.Federation.Copyright);
 
             if (mode == Mode.Error && Session[Constants.SessionException] != null)
             {
@@ -169,9 +170,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Common
             }
             else if (mode == Mode.JobError)
             {
-                var job = new JobInstance(RegistryContext);
-                job.Guid = jobGuid;
-                job.Load();
+                var ef = new EntityFactory(RegistryContext);
+                var job = ef.LoadEntity<JobInstance>(jobGuid);
 
                 Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$ErrorMessage]", job.ExceptionMessage);
                 Util.EmailTemplateUtility.ReplaceEmailToken(ref body, "[$JobGUID]", job.Guid.ToString());
