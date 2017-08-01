@@ -19,6 +19,8 @@ namespace Jhu.Graywulf.Scheduler
 
         protected override void OnStart(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += Util.ServiceHelper.WriteErrorDump;
+
             QueueManager.Instance.Start(Registry.ContextManager.Configuration.ClusterName, false);
         }
 
