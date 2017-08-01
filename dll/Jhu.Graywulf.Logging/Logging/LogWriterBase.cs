@@ -148,7 +148,10 @@ namespace Jhu.Graywulf.Logging
             {
                 if (isAsync)
                 {
-                    queue.Add(e);
+                    if (!queue.TryAdd(e, Constants.LogWriterAsyncTimeout))
+                    {
+                        throw Error.AsyncTimeout(this);
+                    }
                 }
                 else
                 {
