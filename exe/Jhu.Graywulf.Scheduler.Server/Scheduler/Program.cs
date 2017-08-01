@@ -20,7 +20,8 @@ namespace Jhu.Graywulf.Scheduler
             Scheduler.Configuration.RunSanityCheck();
 
             // Switch between interactive (command-line) and service modes.
-            if (Environment.UserInteractive)
+            if (Environment.UserInteractive ||
+                (args != null && args.Length > 0 && args[0] == "-cmd"))
             {
                 Console.WriteLine("Graywulf scheduler is starting...");
 

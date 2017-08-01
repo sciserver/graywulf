@@ -9,7 +9,8 @@ namespace Jhu.Graywulf.RemoteService.Server
 
         static void Main(string[] args)
         {
-            if (Environment.UserInteractive)
+            if (Environment.UserInteractive || 
+                (args!= null && args.Length > 0 && args[0] == "-cmd"))
             {
                 // Run in command-prompt
 
