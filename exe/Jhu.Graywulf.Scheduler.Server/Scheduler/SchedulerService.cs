@@ -19,13 +19,16 @@ namespace Jhu.Graywulf.Scheduler
 
         protected override void OnStart(string[] args)
         {
-            AppDomain.CurrentDomain.UnhandledException += Util.ServiceHelper.WriteErrorDump;
+            AppDomain.CurrentDomain.UnhandledException += Util.ServiceControl.WriteErrorDump;
 
+            // Initialize WCF service host to run the control service
+            // It will start the logger
             QueueManager.Instance.Start(Registry.ContextManager.Configuration.ClusterName, false);
         }
 
         protected override void OnStop()
         {
+            // The queue manager will also stop the logger
             QueueManager.Instance.Stop(TimeSpan.FromHours(1.5));
         }
 

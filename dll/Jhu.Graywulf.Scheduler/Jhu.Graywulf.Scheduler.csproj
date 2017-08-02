@@ -72,6 +72,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheduler\AppDomainHost.cs" />
     <Compile Include="Scheduler\Cluster.cs" />
+    <Compile Include="Scheduler\Constants.cs" />
     <Compile Include="Scheduler\DatabaseDefinition.cs" />
     <Compile Include="Scheduler\DatabaseInstance.cs" />
     <Compile Include="Scheduler\Enum.cs" />
@@ -80,7 +81,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="Scheduler\IJob.cs" />
+    <Compile Include="Scheduler\IQueue.cs" />
+    <Compile Include="Scheduler\IRegistryObject.cs" />
     <Compile Include="Scheduler\IScheduler.cs" />
+    <Compile Include="Scheduler\ISchedulerControl.cs" />
     <Compile Include="Scheduler\Job.cs" />
     <Compile Include="Scheduler\JobTrackingParticipant.cs" />
     <Compile Include="Scheduler\Machine.cs" />
@@ -124,6 +129,10 @@
     <ProjectReference Include="..\Jhu.Graywulf.Activities\Jhu.Graywulf.Activities.csproj">
       <Project>{57392da3-e280-48ee-80c8-64e09fd8afb5}</Project>
       <Name>Jhu.Graywulf.Activities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jhu.Graywulf.ServiceModel\Jhu.Graywulf.ServiceModel.csproj">
+      <Project>{aa744162-dfa0-46bc-be03-20d50dd77806}</Project>
+      <Name>Jhu.Graywulf.ServiceModel</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

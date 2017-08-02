@@ -55,6 +55,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheduler\JobTimeoutTest.cs" />
+    <Compile Include="Scheduler\SchedulerControlTest.cs" />
     <Compile Include="Scheduler\SchedulerTest.cs" />
     <Compile Include="Scheduler\SchedulerTestBase.cs" />
   </ItemGroup>
@@ -86,6 +87,10 @@
     <ProjectReference Include="..\..\dll\Jhu.Graywulf.Scheduler\Jhu.Graywulf.Scheduler.csproj">
       <Project>{94ab6a2e-6877-4fed-87e2-1f9f17622f43}</Project>
       <Name>Jhu.Graywulf.Scheduler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.ServiceModel\Jhu.Graywulf.ServiceModel.csproj">
+      <Project>{aa744162-dfa0-46bc-be03-20d50dd77806}</Project>
+      <Name>Jhu.Graywulf.ServiceModel</Name>
     </ProjectReference>
     <ProjectReference Include="..\Jhu.Graywulf.Test\Jhu.Graywulf.Test.csproj">
       <Project>{EA6164BA-B283-46C2-874B-348D6BAD41AD}</Project>
