@@ -7,8 +7,13 @@ using Jhu.Graywulf.ServiceModel;
 
 namespace Jhu.Graywulf.RemoteService
 {
-    public class RemoteServiceConfiguration : ServiceConfiguration
+    public class RemoteServiceConfiguration : ConfigurationSection, ITcpEndpointConfiguration
     {
-        
+        [ConfigurationProperty("endpoint")]
+        public TcpEndpointConfiguration Endpoint
+        {
+            get { return (TcpEndpointConfiguration)base["endpoint"]; }
+            set { base["endpoint"] = value; }
+        }
     }
 }

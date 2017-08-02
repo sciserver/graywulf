@@ -7,7 +7,7 @@ using System.Configuration;
 
 namespace Jhu.Graywulf.ServiceModel
 {
-    public class ServiceConfiguration : ConfigurationSection
+    public class TcpEndpointConfiguration : ConfigurationElement
     {
         public class LimitedAccessRole : ConfigurationElement
         {
@@ -70,11 +70,11 @@ namespace Jhu.Graywulf.ServiceModel
             set { base["tcpPort"] = value; }
         }
 
-        [ConfigurationProperty("endpointSpn")]
-        public string EndpointSpn
+        [ConfigurationProperty("servicePrincipalName")]
+        public string ServicePrincipalName
         {
-            get { return (string)base["endpointSpn"]; }
-            set { base["endpointSpn"] = value; }
+            get { return (string)base["servicePrincipalName"]; }
+            set { base["servicePrincipalName"] = value; }
         }
 
         [ConfigurationProperty("accessRoles")]

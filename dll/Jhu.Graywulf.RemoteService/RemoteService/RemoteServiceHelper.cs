@@ -31,7 +31,7 @@ namespace Jhu.Graywulf.RemoteService
         {
             var fdqn = DnsHelper.GetFullyQualifiedDnsName(host);
             var tcp = CreateNetTcpBinding();
-            var ep = CreateEndpointAddress(fdqn, RemoteServiceBase.Configuration.TcpPort, "Control", RemoteServiceBase.Configuration.EndpointSpn);
+            var ep = CreateEndpointAddress(fdqn, RemoteServiceBase.Configuration.Endpoint.TcpPort, "Control", RemoteServiceBase.Configuration.Endpoint.ServicePrincipalName);
 
             return CreateChannel<IRemoteServiceControl>(tcp, ep);
         }
@@ -63,7 +63,7 @@ namespace Jhu.Graywulf.RemoteService
                 var sc = GetControlObject(fdqn);
                 var uri = sc.GetServiceEndpointUri(typeof(T).AssemblyQualifiedName);
                 var tcp = CreateNetTcpBinding();
-                var ep = CreateEndpointAddress(uri, RemoteServiceBase.Configuration.EndpointSpn);
+                var ep = CreateEndpointAddress(uri, RemoteServiceBase.Configuration.Endpoint.ServicePrincipalName);
                 return CreateChannel<T>(tcp, ep);
             }
         }

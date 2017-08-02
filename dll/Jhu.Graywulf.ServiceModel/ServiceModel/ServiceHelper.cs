@@ -18,7 +18,7 @@ namespace Jhu.Graywulf.ServiceModel
         private string hostName;
         private string serviceName;
         private string configSection;
-        private ServiceConfiguration configuration;
+        private ITcpEndpointConfiguration configuration;
         private ServiceHost host;
         private ServiceEndpoint endpoint;
 
@@ -95,9 +95,9 @@ namespace Jhu.Graywulf.ServiceModel
         /// <returns></returns>
         public void CreateService()
         {
-            configuration = (ServiceConfiguration)ConfigurationManager.GetSection(configSection);
+            configuration = (ITcpEndpointConfiguration)ConfigurationManager.GetSection(configSection);
             
-            var ep = CreateEndpointUri(hostName, configuration.TcpPort, serviceName);
+            var ep = CreateEndpointUri(hostName, configuration.Endpoint.TcpPort, serviceName);
             var tcp = CreateNetTcpBinding();
 
             host = new ServiceHost(serviceType, ep);

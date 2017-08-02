@@ -107,7 +107,7 @@ namespace Jhu.Graywulf.RemoteService
                     new Uri(String.Format(
                         "net.tcp://{0}:{1}/{2}",
                         DnsHelper.GetFullyQualifiedDnsName(Jhu.Graywulf.Test.Constants.Localhost),
-                        RemoteServiceBase.Configuration.TcpPort,
+                        RemoteServiceBase.Configuration.Endpoint.TcpPort,
                         typeof(CancelableDelay).FullName)),
                     uri);
 
