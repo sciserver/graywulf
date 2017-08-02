@@ -10,27 +10,27 @@ using Jhu.Graywulf.Logging;
 
 namespace Jhu.Graywulf.ServiceModel
 {
-    public class WcfLoggingContext : LoggingContext
+    public class ServiceLoggingContext : LoggingContext
     {
         #region Singleton access
 
-        public static new WcfLoggingContext Current
+        public static new ServiceLoggingContext Current
         {
             get
             {
-                return LoggingContext.Current as WcfLoggingContext;
+                return LoggingContext.Current as ServiceLoggingContext;
             }
         }
 
         #endregion
 
-        public WcfLoggingContext(LoggingContext outerContext)
+        public ServiceLoggingContext(LoggingContext outerContext)
             : base(outerContext)
         {
             InitializeMembers(new StreamingContext());
         }
 
-        public WcfLoggingContext(WcfLoggingContext outerContext)
+        public ServiceLoggingContext(ServiceLoggingContext outerContext)
             : base(outerContext)
         {
             CopyMembers(outerContext);
@@ -41,7 +41,7 @@ namespace Jhu.Graywulf.ServiceModel
         {
         }
 
-        private void CopyMembers(WcfLoggingContext outerContext)
+        private void CopyMembers(ServiceLoggingContext outerContext)
         {
         }
 

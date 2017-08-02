@@ -24,7 +24,7 @@ namespace Jhu.Graywulf.RemoteService
         {
             get
             {
-                return (RemoteServiceConfiguration)ConfigurationManager.GetSection("jhu.graywulf/remoteService");
+                return (RemoteServiceConfiguration)ConfigurationManager.GetSection("jhu.graywulf/remoteService/endpoint");
             }
         }
 

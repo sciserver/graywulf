@@ -6,7 +6,7 @@ using System.ServiceModel.Dispatcher;
 
 namespace Jhu.Graywulf.ServiceModel
 {
-    public class WcfLoggingBehavior : Attribute, IServiceBehavior, IOperationBehavior
+    public class ServiceLoggingBehavior : Attribute, IServiceBehavior, IOperationBehavior
     {
         #region IServiceBehavior implementation
 
@@ -21,7 +21,7 @@ namespace Jhu.Graywulf.ServiceModel
         public void ApplyDispatchBehavior(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
         {
             // Automatically add WcfLoggingBehavior to all operations
-            var logging = new WcfLoggingBehavior();
+            var logging = new ServiceLoggingBehavior();
 
             foreach (var ep in serviceDescription.Endpoints)
             {
@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.ServiceModel
         public void ApplyDispatchBehavior(OperationDescription operationDescription, DispatchOperation dispatchOperation)
         {
 
-            dispatchOperation.Invoker = new WcfLoggingOperationInvoker(operationDescription.Name, dispatchOperation.Invoker);
+            dispatchOperation.Invoker = new ServiceLoggingOperationInvoker(operationDescription.Name, dispatchOperation.Invoker);
         }
 
         public void Validate(OperationDescription operationDescription)

@@ -19,7 +19,7 @@ namespace Jhu.Graywulf.RemoteService.Server
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.Single,
         IncludeExceptionDetailInFaults = true)]
-    [WcfLoggingBehavior]
+    [ServiceLoggingBehavior]
     class RemoteServiceControl : IRemoteServiceControl
     {
         [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]

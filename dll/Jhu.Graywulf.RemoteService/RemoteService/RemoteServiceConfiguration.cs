@@ -15,15 +15,11 @@ namespace Jhu.Graywulf.RemoteService
         private static readonly ConfigurationProperty propTcpPort = new ConfigurationProperty(
             "tcpPort", typeof(int), null, ConfigurationPropertyOptions.IsRequired);
 
-        private static readonly ConfigurationProperty propUserGroup = new ConfigurationProperty(
-            "userGroup", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
-
         static RemoteServiceConfiguration()
         {
             properties = new ConfigurationPropertyCollection();
 
             properties.Add(propTcpPort);
-            properties.Add(propUserGroup);
         }
 
         #endregion
@@ -34,13 +30,6 @@ namespace Jhu.Graywulf.RemoteService
         {
             get { return (int)base[propTcpPort]; }
             set { base[propTcpPort] = value; }
-        }
-
-        [ConfigurationProperty("userGroup")]
-        public string UserGroup
-        {
-            get { return (string)base[propUserGroup]; }
-            set { base[propUserGroup] = value; }
         }
 
         #endregion

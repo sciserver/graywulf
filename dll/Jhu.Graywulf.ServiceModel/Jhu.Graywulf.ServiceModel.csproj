@@ -32,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
@@ -47,19 +48,25 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceModel\LimitedAccessOperationAttribute.cs" />
     <Compile Include="ServiceModel\LimitedAccessOperationInvoker.cs" />
+    <Compile Include="ServiceModel\LimitedAccessServiceBehavior.cs" />
     <Compile Include="ServiceModel\LimitedAccessServiceExtension.cs" />
-    <Compile Include="ServiceModel\LoggingBehavior.cs" />
-    <Compile Include="ServiceModel\LoggingContext.cs" />
-    <Compile Include="ServiceModel\LoggingOperationInvoker.cs" />
+    <Compile Include="ServiceModel\LimitedAccessConfiguration.cs" />
     <Compile Include="ServiceModel\NetDataContractAttribute.cs" />
     <Compile Include="ServiceModel\NetDataContractSerializerOperationBehavior.cs" />
     <Compile Include="ServiceModel\ServiceHelper.cs" />
+    <Compile Include="ServiceModel\ServiceLoggingBehavior.cs" />
+    <Compile Include="ServiceModel\ServiceLoggingContext.cs" />
+    <Compile Include="ServiceModel\ServiceLoggingOperationInvoker.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jhu.Graywulf.Logging\Jhu.Graywulf.Logging.csproj">
       <Project>{fd98fb58-a3e5-4d32-b6d6-3e20609c4d09}</Project>
       <Name>Jhu.Graywulf.Logging</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="post-build.ps1" />
+    <None Include="pre-build.ps1" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -249,10 +249,7 @@ namespace Jhu.Graywulf.RemoteService
 
         public static void TurnOnAccessControl(ServiceHost host)
         {
-            var access = new LimitedAccessServiceExtension();
-            access.AddUser(Constants.Default, RemoteServiceBase.Configuration.UserGroup);
-            access.AddRole(Constants.Default, RemoteServiceBase.Configuration.UserGroup);
-            host.Extensions.Add(access);
+            ServiceHelper.TurnOnAccessControl(host, "jhu.graywulf/remoteService/access");
         }
 
         /// <summary>

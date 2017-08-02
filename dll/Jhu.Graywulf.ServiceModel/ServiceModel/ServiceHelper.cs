@@ -50,13 +50,28 @@ namespace Jhu.Graywulf.ServiceModel
 
         public static void TurnOnLogging(ServiceHost host)
         {
-            var logging = host.Description.Behaviors.Find<WcfLoggingBehavior>();
+            var logging = host.Description.Behaviors.Find<ServiceLoggingBehavior>();
 
             if (logging == null)
             {
-                logging = new WcfLoggingBehavior();
+                logging = new ServiceLoggingBehavior();
                 host.Description.Behaviors.Add(logging);
             }
+        }
+
+        public static void TurnOnAccessControl(ServiceHost host, string configSection)
+        {
+            var access = host.Description.Behaviors.Find<LimitedAccessServiceBehavior>();
+
+            if (access != null)
+            {
+                host.Description.Behaviors.Remove(access);
+            }
+
+            access = new LimitedAccessServiceBehavior();
+            access.ConfigSection = configSection;
+
+            host.Description.Behaviors.Add(access);
         }
     }
 }

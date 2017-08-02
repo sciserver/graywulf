@@ -10,7 +10,7 @@ namespace Jhu.Graywulf.RemoteService
 {
     [ServiceContract]
     [RemoteService]
-    [WcfLoggingBehavior]
+    [ServiceLoggingBehavior]
     public interface IRemoteServiceControl
     {
         /// <summary>

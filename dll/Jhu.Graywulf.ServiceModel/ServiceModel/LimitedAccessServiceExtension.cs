@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
 using System.ServiceModel;
 
 namespace Jhu.Graywulf.ServiceModel
 {
-    public class LimitedAccessServiceExtension : IExtension<ServiceHostBase>
+    class LimitedAccessServiceExtension : IExtension<ServiceHostBase>
     {
         // TODO: this class now has to be populated manually
         // implement a config section to do it from config file
 
         private static readonly StringComparer Comparer = StringComparer.InvariantCultureIgnoreCase;
 
-        private Dictionary<string, HashSet<string>> roleList;
+        private Dictionary<string, HashSet<string>> groupList;
         private Dictionary<string, HashSet<string>> userList;
 
-        internal Dictionary<string, HashSet<string>> RoleList
+        internal Dictionary<string, HashSet<string>> GroupList
         {
-            get { return roleList; }
+            get { return groupList; }
         }
 
         internal Dictionary<string, HashSet<string>> UserList
@@ -29,30 +30,54 @@ namespace Jhu.Graywulf.ServiceModel
 
         public LimitedAccessServiceExtension()
         {
-            this.roleList = new Dictionary<string, HashSet<string>>(Comparer);
+            this.groupList = new Dictionary<string, HashSet<string>>(Comparer);
             this.userList = new Dictionary<string, HashSet<string>>(Comparer);
         }
 
-        public void AddRole(string category, string name)
+        public void Init(string configSection)
         {
-            Add(roleList, category, name);
-        }
+            var config = (LimitedAccessConfiguration)ConfigurationManager.GetSection(configSection);
 
-        public void AddUser(string category, string name)
-        {
-            Add(userList, category, name);
-        }
-
-        private void Add(Dictionary<string, HashSet<string>> list, string category, string name)
-        {
-            if (!list.ContainsKey(category))
+            foreach (LimitedAccessConfiguration.LimitedAccessRole category in config.Roles)
             {
-                list.Add(category, new HashSet<string>(Comparer));
+                AddList(groupList, category.Name, category.Groups);
+                AddList(userList, category.Name, category.Users);
+            }
+        }
+
+        public void AddGroup(string role, string name)
+        {
+            Add(groupList, role, name);
+        }
+
+        public void AddUser(string role, string name)
+        {
+            Add(userList, role, name);
+        }
+
+        private void Add(Dictionary<string, HashSet<string>> list, string role, string name)
+        {
+            if (!list.ContainsKey(role))
+            {
+                list.Add(role, new HashSet<string>(Comparer));
             }
 
-            if (!list[category].Contains(name))
+            if (!list[role].Contains(name))
             {
-                list[category].Add(name);
+                list[role].Add(name);
+            }
+        }
+
+        private void AddList(Dictionary<string, HashSet<string>> list, string role,  string entries)
+        {
+            if (entries != null)
+            {
+                var parts = entries.Split(',');
+
+                for (int i = 0; i < parts.Length; i++)
+                {
+                    Add(list, role, parts[i].Trim());
+                }
             }
         }
 

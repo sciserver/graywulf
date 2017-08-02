@@ -10,7 +10,7 @@ using Jhu.Graywulf.Logging;
 
 namespace Jhu.Graywulf.ServiceModel
 {
-    class WcfLoggingOperationInvoker : IOperationInvoker
+    class ServiceLoggingOperationInvoker : IOperationInvoker
     {
         private EventSource eventSource;
         private string operationName;
@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.ServiceModel
             get { return true; }
         }
 
-        public WcfLoggingOperationInvoker(string operationName, IOperationInvoker originalInvoker)
+        public ServiceLoggingOperationInvoker(string operationName, IOperationInvoker originalInvoker)
         {
             this.operationName = operationName;
             this.originalInvoker = originalInvoker;
@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.ServiceModel
 
         public object Invoke(object instance, object[] inputs, out object[] outputs)
         {
-            new WcfLoggingContext(LoggingContext.Current).Push();
+            new ServiceLoggingContext(LoggingContext.Current).Push();
 
             LogDebug();
 
@@ -79,7 +79,7 @@ namespace Jhu.Graywulf.ServiceModel
                 null,
                 null);
 
-            WcfLoggingContext.Current.RecordEvent(e);
+            ServiceLoggingContext.Current.RecordEvent(e);
         }
 
         private void LogError(Exception ex)
@@ -92,7 +92,7 @@ namespace Jhu.Graywulf.ServiceModel
                 ex,
                 null);
 
-            WcfLoggingContext.Current.RecordEvent(e);
+            ServiceLoggingContext.Current.RecordEvent(e);
         }
     }
 }

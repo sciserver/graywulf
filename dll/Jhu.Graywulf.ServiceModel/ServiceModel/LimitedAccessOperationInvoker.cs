@@ -18,13 +18,13 @@ namespace Jhu.Graywulf.ServiceModel
     class LimitedAccessOperationInvoker : IOperationInvoker
     {
         private string operationName;
-        private string operationCategory;
+        private string requiredRole;
         private IOperationInvoker originalInvoker;
 
-        public LimitedAccessOperationInvoker(string operationName, string operationCategory, IOperationInvoker originalInvoker)
+        public LimitedAccessOperationInvoker(string operationName, string requiredRole, IOperationInvoker originalInvoker)
         {
             this.operationName = operationName;
-            this.operationCategory = operationCategory;
+            this.requiredRole = requiredRole;
             this.originalInvoker = originalInvoker;
         }
 
@@ -76,12 +76,12 @@ namespace Jhu.Graywulf.ServiceModel
             {
                 var access = context.Host.Extensions.Find<LimitedAccessServiceExtension>();
 
-                if (access.UserList[operationCategory].Contains(Thread.CurrentPrincipal.Identity.Name))
+                if (access.UserList[requiredRole].Contains(Thread.CurrentPrincipal.Identity.Name))
                 {
                     return;
                 }
 
-                foreach (var role in access.RoleList[operationCategory])
+                foreach (var role in access.GroupList[requiredRole])
                 {
                     if (Thread.CurrentPrincipal.IsInRole(role))
                     {
