@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Configuration;
 using System.ServiceModel;
 using System.ServiceModel.Description;
+using System.Security.Principal;
 
 namespace Jhu.Graywulf.ServiceModel
 {
@@ -17,8 +18,7 @@ namespace Jhu.Graywulf.ServiceModel
         private Type serviceType;
         private string hostName;
         private string serviceName;
-        private string configSection;
-        private ITcpEndpointConfiguration configuration;
+        private TcpEndpointConfiguration configuration;
         private ServiceHost host;
         private ServiceEndpoint endpoint;
 
@@ -46,20 +46,36 @@ namespace Jhu.Graywulf.ServiceModel
             set { serviceName = value; }
         }
 
-        public string ConfigSection
+        public TcpEndpointConfiguration Configuration
         {
-            get { return configSection; }
-            set { configSection = value; }
+            get { return configuration; }
+            set { configuration = value; }
         }
 
         public ServiceHost Host
         {
-            get { return host; }
+            get
+            {
+                if (host == null)
+                {
+                    throw new InvalidOperationException("Service has not been created yet");
+                }
+
+                return host;
+            }
         }
 
         public ServiceEndpoint Endpoint
         {
-            get { return endpoint; }
+            get
+            {
+                if (endpoint == null)
+                {
+                    throw new InvalidOperationException("Service has not been created yet");
+                }
+
+                return endpoint;
+            }
         }
 
         public ServiceHelper()
@@ -67,14 +83,14 @@ namespace Jhu.Graywulf.ServiceModel
             InitializeMembers();
         }
 
-        public ServiceHelper(Type contractType, Type serviceType, string serviceName, string configSection)
+        public ServiceHelper(Type contractType, Type serviceType, string serviceName, TcpEndpointConfiguration configuration)
         {
             InitializeMembers();
 
             this.contractType = contractType;
             this.serviceType = serviceType;
             this.serviceName = serviceName;
-            this.configSection = configSection;
+            this.configuration = configuration;
         }
 
         private void InitializeMembers()
@@ -83,7 +99,6 @@ namespace Jhu.Graywulf.ServiceModel
             this.serviceType = null;
             this.hostName = DnsHelper.LocalhostFqdn;    // This determines how other machines will address the server
             this.serviceName = null;
-            this.configSection = null;
             this.configuration = null;
             this.host = null;
             this.endpoint = null;
@@ -95,9 +110,7 @@ namespace Jhu.Graywulf.ServiceModel
         /// <returns></returns>
         public void CreateService()
         {
-            configuration = (ITcpEndpointConfiguration)ConfigurationManager.GetSection(configSection);
-            
-            var ep = CreateEndpointUri(hostName, configuration.Endpoint.TcpPort, serviceName);
+            var ep = CreateEndpointUri(hostName, configuration.TcpPort, serviceName);
             var tcp = CreateNetTcpBinding();
 
             host = new ServiceHost(serviceType, ep);
@@ -115,7 +128,7 @@ namespace Jhu.Graywulf.ServiceModel
             TurnOnUnthrottling();
             TurnOnLogging();
             TurnOnAccessControl();
-            
+
             host.Open();
         }
 
@@ -153,10 +166,10 @@ namespace Jhu.Graywulf.ServiceModel
         /// <param name="host"></param>
         /// <param name="service"></param>
         /// <returns></returns>
-        public static EndpointAddress CreateEndpointAddress(string hostName, int tcpPort, string serviceName, string endpointSpn)
+        public static EndpointAddress CreateEndpointAddress(string hostName, string serviceName, TcpEndpointConfiguration configuration)
         {
-            var uri = CreateEndpointUri(hostName, tcpPort, serviceName);
-            return CreateEndpointAddress(uri, endpointSpn);
+            var uri = CreateEndpointUri(hostName, configuration.TcpPort, serviceName);
+            return CreateEndpointAddress(uri, configuration.ServicePrincipalName);
         }
 
         /// <summary>
@@ -189,6 +202,33 @@ namespace Jhu.Graywulf.ServiceModel
         public static Uri CreateEndpointUri(string hostName, int tcpPort, string serviceName)
         {
             return new Uri(String.Format("net.tcp://{0}:{1}/{2}", hostName, tcpPort, serviceName));
+        }
+
+        /// <summary>
+        /// Creates a channel of type T to the given endpoint via the given binding.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="tcp"></param>
+        /// <param name="endpoint"></param>
+        /// <returns></returns>
+        public static T CreateChannel<T>(string host, string serviceName, TcpEndpointConfiguration configuration)
+        {
+            var fdqn = DnsHelper.GetFullyQualifiedDnsName(host);
+            var ep = CreateEndpointAddress(fdqn, "Control", configuration);
+
+            return CreateChannel<T>(ep);
+        }
+
+        public static T CreateChannel<T>(EndpointAddress endpoint)
+        {
+            var tcp = CreateNetTcpBinding();
+            var cf = new ChannelFactory<T>(tcp, endpoint);
+
+            // Ensure delegation
+            cf.Credentials.Windows.ClientCredential = System.Net.CredentialCache.DefaultNetworkCredentials;
+            cf.Credentials.Windows.AllowedImpersonationLevel = TokenImpersonationLevel.Impersonation;
+
+            return cf.CreateChannel();
         }
 
         private void TurnOnDetailedDebugInfo()
@@ -242,16 +282,14 @@ namespace Jhu.Graywulf.ServiceModel
 
         private void TurnOnAccessControl()
         {
-            var access = host.Description.Behaviors.Find<LimitedAccessServiceBehavior>();
+            var access = host.Extensions.Find<LimitedAccessServiceExtension>();
 
-            if (access != null)
+            if (access == null)
             {
-                host.Description.Behaviors.Remove(access);
+                access = new LimitedAccessServiceExtension();
+                access.Init(configuration);
+                host.Extensions.Add(access);
             }
-
-            access = new LimitedAccessServiceBehavior();
-            access.ConfigSection = configSection;
-            host.Description.Behaviors.Add(access);
         }
     }
 }

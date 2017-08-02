@@ -84,7 +84,7 @@ namespace Jhu.Graywulf.RemoteService.Server
                 ContractType = typeof(IRemoteServiceControl),
                 ServiceType = typeof(RemoteServiceControl),
                 ServiceName = "Control",
-                ConfigSection = "jhu.graywulf/remoteService"
+                Configuration = RemoteServiceBase.Configuration.Endpoint
             };
             helper.CreateService();
 
@@ -156,7 +156,7 @@ namespace Jhu.Graywulf.RemoteService.Server
                 ContractType = contract,
                 ServiceType = service,
                 ServiceName = service.FullName,
-                ConfigSection = "jhu.graywulf/remoteService"
+                Configuration = RemoteServiceBase.Configuration.Endpoint
             };
             helper.CreateService();
 

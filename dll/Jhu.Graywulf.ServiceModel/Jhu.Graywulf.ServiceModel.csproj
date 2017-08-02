@@ -50,10 +50,8 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceModel\DnsHelper.cs" />
-    <Compile Include="ServiceModel\ITcpEndpointConfiguration.cs" />
     <Compile Include="ServiceModel\LimitedAccessOperationAttribute.cs" />
     <Compile Include="ServiceModel\LimitedAccessOperationInvoker.cs" />
-    <Compile Include="ServiceModel\LimitedAccessServiceBehavior.cs" />
     <Compile Include="ServiceModel\LimitedAccessServiceExtension.cs" />
     <Compile Include="ServiceModel\NetDataContractAttribute.cs" />
     <Compile Include="ServiceModel\NetDataContractSerializerOperationBehavior.cs" />

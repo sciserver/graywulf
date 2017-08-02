@@ -34,11 +34,9 @@ namespace Jhu.Graywulf.ServiceModel
             this.userList = new Dictionary<string, HashSet<string>>(Comparer);
         }
 
-        public void Init(string configSection)
+        public void Init(TcpEndpointConfiguration config)
         {
-            var config = (ITcpEndpointConfiguration)ConfigurationManager.GetSection(configSection);
-
-            foreach (TcpEndpointConfiguration.LimitedAccessRole category in config.Endpoint.AccessRoles)
+            foreach (TcpEndpointConfiguration.LimitedAccessRole category in config.AccessRoles)
             {
                 AddList(groupList, category.Name, category.Groups);
                 AddList(userList, category.Name, category.Users);

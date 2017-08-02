@@ -29,11 +29,7 @@ namespace Jhu.Graywulf.RemoteService
         /// <returns></returns>
         public static IRemoteServiceControl GetControlObject(string host)
         {
-            var fdqn = DnsHelper.GetFullyQualifiedDnsName(host);
-            var tcp = CreateNetTcpBinding();
-            var ep = CreateEndpointAddress(fdqn, RemoteServiceBase.Configuration.Endpoint.TcpPort, "Control", RemoteServiceBase.Configuration.Endpoint.ServicePrincipalName);
-
-            return CreateChannel<IRemoteServiceControl>(tcp, ep);
+            return CreateChannel<IRemoteServiceControl>(host, "Control", RemoteServiceBase.Configuration.Endpoint);
         }
 
         /// <summary>
@@ -62,28 +58,9 @@ namespace Jhu.Graywulf.RemoteService
                 // Get the uri to the requested service from the remote server
                 var sc = GetControlObject(fdqn);
                 var uri = sc.GetServiceEndpointUri(typeof(T).AssemblyQualifiedName);
-                var tcp = CreateNetTcpBinding();
                 var ep = CreateEndpointAddress(uri, RemoteServiceBase.Configuration.Endpoint.ServicePrincipalName);
-                return CreateChannel<T>(tcp, ep);
+                return CreateChannel<T>(ep);
             }
-        }
-
-        /// <summary>
-        /// Creates a channel of type T to the given endpoint via the given binding.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="tcp"></param>
-        /// <param name="endpoint"></param>
-        /// <returns></returns>
-        private static T CreateChannel<T>(NetTcpBinding tcp, EndpointAddress endpoint)
-        {
-            var cf = new ChannelFactory<T>(tcp, endpoint);
-
-            // Ensure delegation
-            cf.Credentials.Windows.ClientCredential = System.Net.CredentialCache.DefaultNetworkCredentials;
-            cf.Credentials.Windows.AllowedImpersonationLevel = TokenImpersonationLevel.Impersonation;
-
-            return cf.CreateChannel();
         }
 
         #endregion

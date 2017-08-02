@@ -10,21 +10,12 @@ namespace Jhu.Graywulf.Scheduler
     /// <summary>
     /// Represents a job queue
     /// </summary>
-    internal class Queue
+    internal class Queue : RegistryObject, IQueue
     {
-        private Guid guid;
         private int maxOutstandingJobs;
         private ConcurrentDictionary<Guid, Job> jobs;
         private TimeSpan timeout;
         private Guid lastUserGuid;
-
-        /// <summary>
-        /// Unique ID of the queue, equals to QueueInstance.Guid
-        /// </summary>
-        public Guid Guid
-        {
-            get { return guid; }
-        }
 
         /// <summary>
         /// Gets the maximum jobs that can be executed in parallel from
@@ -61,30 +52,26 @@ namespace Jhu.Graywulf.Scheduler
             set { lastUserGuid = value; }
         }
 
-        public Queue()
+        int IQueue.JobCount
+        {
+            get { return jobs.Count; }
+        }
+
+        public Queue(QueueInstance qi) :
+            base (qi)
         {
             InitializeMembers();
+
+            this.maxOutstandingJobs = qi.MaxOutstandingJobs;
+            this.timeout = TimeSpan.FromSeconds(qi.Timeout);
         }
 
         private void InitializeMembers()
         {
-            this.guid = Guid.Empty;
             this.maxOutstandingJobs = -1;
             this.jobs = new ConcurrentDictionary<Guid, Job>();
             this.timeout = TimeSpan.Zero;
             this.lastUserGuid = Guid.Empty;
-        }
-
-        /// <summary>
-        /// Updates the queue information based on the values
-        /// read from the registry.
-        /// </summary>
-        /// <param name="q"></param>
-        public void Update(QueueInstance q)
-        {
-            this.guid = q.Guid;
-            this.maxOutstandingJobs = q.MaxOutstandingJobs;
-            this.timeout = TimeSpan.FromSeconds(q.Timeout);
         }
     }
 }

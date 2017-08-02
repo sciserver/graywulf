@@ -7,7 +7,7 @@ using Jhu.Graywulf.ServiceModel;
 
 namespace Jhu.Graywulf.RemoteService
 {
-    public class RemoteServiceConfiguration : ConfigurationSection, ITcpEndpointConfiguration
+    public class RemoteServiceConfiguration : ConfigurationSection
     {
         [ConfigurationProperty("endpoint")]
         public TcpEndpointConfiguration Endpoint

@@ -15,11 +15,13 @@ namespace Jhu.Graywulf.Scheduler
     /// </summary>
     public class Scheduler : MarshalByRefObject, IScheduler
     {
+        public const string ConfigurationSection = "jhu.graywulf/scheduler";
+
         public static SchedulerConfiguration Configuration
         {
             get
             {
-                return (SchedulerConfiguration)ConfigurationManager.GetSection("jhu.graywulf/scheduler");
+                return (SchedulerConfiguration)ConfigurationManager.GetSection(ConfigurationSection);
             }
         }
 

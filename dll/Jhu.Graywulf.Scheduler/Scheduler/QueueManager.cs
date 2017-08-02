@@ -29,16 +29,13 @@ namespace Jhu.Graywulf.Scheduler
         public static QueueManager Instance = new QueueManager();
 
         #endregion
-        #region Property storage
+        #region Private member varibles
 
         /// <summary>
         /// If true, process is running in interactive mode, otherwise
         /// it's a Windows service
         /// </summary>
-        private bool interactive;
-
-        #endregion
-        #region Private member varibles
+        private bool interactive;        
 
         /// <summary>
         /// Used for synchronization when app domains are managed
@@ -92,6 +89,8 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         private Scheduler scheduler;
 
+        private System.ServiceModel.ServiceHost controlServiceHost;
+
         #endregion
         #region Properties
 
@@ -101,6 +100,11 @@ namespace Jhu.Graywulf.Scheduler
         public bool Interactive
         {
             get { return interactive; }
+        }
+
+        internal ConcurrentDictionary<Guid, Job> RunningJobs
+        {
+            get { return runningJobs; }
         }
 
         /// <summary>
@@ -194,8 +198,7 @@ namespace Jhu.Graywulf.Scheduler
 
                     foreach (var qi in mr.QueueInstances.Values)
                     {
-                        var q = new Queue();
-                        q.Update(qi);
+                        var q = new Queue(qi);
                         cluster.Queues.Add(qi.Guid, q);
                     }
 
@@ -220,8 +223,7 @@ namespace Jhu.Graywulf.Scheduler
 
                         foreach (var qi in mm.QueueInstances.Values)
                         {
-                            var q = new Queue();
-                            q.Update(qi);
+                            var q = new Queue(qi);
                             cluster.Queues.Add(qi.Guid, q);
                         }
                     }
@@ -303,11 +305,12 @@ namespace Jhu.Graywulf.Scheduler
                 "Graywulf Scheduler Service has started.",
                 null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
-
+            
             // *** TODO: error handling, and repeat a couple of times, then shut down with exception
 
             InitializeCluster(clusterName);
             InitializeScheduler();
+            StartControlService();
 
             new DelayedRetryLoop(5).Execute(
                 ProcessInterruptedJobs,
@@ -354,6 +357,7 @@ namespace Jhu.Graywulf.Scheduler
             }
 
             StopAppDomains(timeout);
+            StopControlService();
 
             // Log stop event
             Logging.LoggingContext.Current.LogOperation(
@@ -407,6 +411,35 @@ namespace Jhu.Graywulf.Scheduler
                     Components.AppDomainManager.Instance.UnloadAppDomain(id);
                 });
             }
+        }
+
+        private void StartControlService()
+        {
+            // In case the server has been just rebooted
+            // wait for the Windows Process Activation Service (WAS)
+            if (Util.ServiceControl.IsServiceInstalled("WAS"))
+            {
+                Util.ServiceControl.WaitForService("WAS", 1000, 500);
+            }
+
+            // Initialize WCF service host to run the control service
+            var helper = new ServiceModel.ServiceHelper()
+            {
+                ContractType = typeof(ISchedulerControl),
+                ServiceType = typeof(SchedulerControl),
+                ServiceName = "Control",
+                Configuration = Scheduler.Configuration.Endpoint,
+            };
+
+            helper.CreateService();
+
+            controlServiceHost = helper.Host;
+        }
+
+        private void StopControlService()
+        {
+            controlServiceHost.Close();
+            controlServiceHost = null;
         }
 
         #endregion
