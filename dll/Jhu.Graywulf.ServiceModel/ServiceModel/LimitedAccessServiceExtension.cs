@@ -36,9 +36,9 @@ namespace Jhu.Graywulf.ServiceModel
 
         public void Init(string configSection)
         {
-            var config = (LimitedAccessConfiguration)ConfigurationManager.GetSection(configSection);
+            var config = (ServiceConfiguration)ConfigurationManager.GetSection(configSection);
 
-            foreach (LimitedAccessConfiguration.LimitedAccessRole category in config.Roles)
+            foreach (ServiceConfiguration.LimitedAccessRole category in config.AccessRoles)
             {
                 AddList(groupList, category.Name, category.Groups);
                 AddList(userList, category.Name, category.Users);

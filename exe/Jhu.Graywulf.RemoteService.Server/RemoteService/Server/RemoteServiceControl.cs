@@ -22,14 +22,12 @@ namespace Jhu.Graywulf.RemoteService.Server
     [ServiceLoggingBehavior]
     class RemoteServiceControl : IRemoteServiceControl
     {
-        [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
         [LimitedAccessOperation(Constants.Default)]
         public string Hello()
         {
             var res = GetType().Assembly.FullName;
-
             RemoteService.LogDebug("Hello called on {0}", res);
-
             return res;
         }
 
@@ -59,7 +57,7 @@ namespace Jhu.Graywulf.RemoteService.Server
             RemoteService.LogDebug("Server is {0} and {1}authenticated", name, isAuthenticated ? "" : "not ");
         }
 
-        [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
         [LimitedAccessOperation(Constants.Default)]
         public Uri GetServiceEndpointUri(string contractType)
         {
@@ -79,7 +77,7 @@ namespace Jhu.Graywulf.RemoteService.Server
             }
         }
 
-        [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
         [LimitedAccessOperation(Constants.Default)]
         public string[] QueryRegisteredServices()
         {

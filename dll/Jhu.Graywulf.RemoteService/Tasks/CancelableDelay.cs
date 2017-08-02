@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.ServiceModel;
+using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Tasks;
 
@@ -37,10 +38,10 @@ namespace Jhu.Graywulf.Tasks
 
         public int Period
         {
-            [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return period; }
 
-            [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { period = value; }
         }
 

@@ -7,7 +7,7 @@ using System.Configuration;
 
 namespace Jhu.Graywulf.ServiceModel
 {
-    class LimitedAccessConfiguration : ConfigurationSection
+    public class ServiceConfiguration : ConfigurationSection
     {
         public class LimitedAccessRole : ConfigurationElement
         {
@@ -63,10 +63,24 @@ namespace Jhu.Graywulf.ServiceModel
             }
         }
 
-        [ConfigurationProperty("roles")]
-        public LimitedAccessRoleCollection Roles
+        [ConfigurationProperty("tcpPort")]
+        public int TcpPort
         {
-            get { return ((LimitedAccessRoleCollection)(base["roles"])); }
+            get { return (int)base["tcpPort"]; }
+            set { base["tcpPort"] = value; }
+        }
+
+        [ConfigurationProperty("endpointSpn")]
+        public string EndpointSpn
+        {
+            get { return (string)base["endpointSpn"]; }
+            set { base["endpointSpn"] = value; }
+        }
+
+        [ConfigurationProperty("accessRoles")]
+        public LimitedAccessRoleCollection AccessRoles
+        {
+            get { return ((LimitedAccessRoleCollection)(base["accessRoles"])); }
         }
     }
 }

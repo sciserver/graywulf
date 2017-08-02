@@ -9,14 +9,14 @@ namespace Jhu.Graywulf.Util
         [TestMethod]
         public void WaitForServiceTest()
         {
-            ServiceHelper.WaitForService("WAS", 1000, 5);
+            ServiceControl.WaitForService("WAS", 1000, 5);
         }
 
         [TestMethod]
         [ExpectedException(typeof(System.ServiceProcess.TimeoutException))]
         public void WaitForStoppedServiceTest()
         {
-            ServiceHelper.WaitForService("TapiSrv", 1000, 5);
+            ServiceControl.WaitForService("TapiSrv", 1000, 5);
         }
     }
 }

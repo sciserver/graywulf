@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.IO;
 using System.ServiceModel;
+using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Tasks;
 
@@ -75,10 +76,10 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         public string Source
         {
-            [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return source; }
 
-            [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { source = value; }
         }
 
@@ -87,10 +88,10 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         public string Destination
         {
-            [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return destination; }
 
-            [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { destination = value; }
         }
 
@@ -99,19 +100,19 @@ namespace Jhu.Graywulf.IO.Tasks
         /// </summary>
         public bool Overwrite
         {
-            [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return overwrite; }
 
-            [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { overwrite = value; }
         }
 
         public FileCopyMethod Method
         {
-            [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             get { return method; }
 
-            [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
+            [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
             set { method = value; }
         }
 

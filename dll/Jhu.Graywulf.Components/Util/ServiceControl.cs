@@ -6,7 +6,7 @@ using System.ServiceProcess;
 
 namespace Jhu.Graywulf.Util
 {
-    public static class ServiceHelper
+    public static class ServiceControl
     {
         public static bool IsServiceInstalled(string service)
         {
