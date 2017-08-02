@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ServiceModel;
+using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
-using Jhu.Graywulf.Tasks;
 
 namespace Jhu.Graywulf.IO.Tasks
 {

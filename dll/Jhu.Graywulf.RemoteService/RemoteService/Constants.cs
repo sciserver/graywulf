@@ -8,5 +8,6 @@ namespace Jhu.Graywulf.RemoteService
     public static class Constants
     {
         public const string Namespace = "http://graywulf.jhu.edu/";
+        public const string Default = "Default";
     }
 }

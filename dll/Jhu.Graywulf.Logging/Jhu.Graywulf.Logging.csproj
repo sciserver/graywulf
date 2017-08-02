@@ -40,7 +40,6 @@
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceModel" />
-    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -73,9 +72,6 @@
     <Compile Include="Logging\SqlLogWriterConfiguration.cs" />
     <Compile Include="Logging\SqlLogWriter.cs" />
     <Compile Include="Logging\StreamLogWriter.cs" />
-    <Compile Include="Logging\WcfLoggingBehavior.cs" />
-    <Compile Include="Logging\WcfLoggingContext.cs" />
-    <Compile Include="Logging\WcfLoggingOperationInvoker.cs" />
     <Compile Include="Logging\WebEventFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

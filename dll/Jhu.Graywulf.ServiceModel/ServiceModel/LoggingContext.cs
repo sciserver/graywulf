@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using Jhu.Graywulf.Logging;
 
-namespace Jhu.Graywulf.Logging
+namespace Jhu.Graywulf.ServiceModel
 {
     public class WcfLoggingContext : LoggingContext
     {

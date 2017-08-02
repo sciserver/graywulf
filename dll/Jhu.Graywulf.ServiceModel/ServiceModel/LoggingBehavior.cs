@@ -4,7 +4,7 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 
-namespace Jhu.Graywulf.Logging
+namespace Jhu.Graywulf.ServiceModel
 {
     public class WcfLoggingBehavior : Attribute, IServiceBehavior, IOperationBehavior
     {

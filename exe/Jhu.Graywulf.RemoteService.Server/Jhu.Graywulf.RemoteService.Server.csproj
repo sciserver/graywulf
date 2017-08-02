@@ -123,6 +123,10 @@
       <Project>{5460DB30-CFD9-4EDB-A1E8-161A7CC505C5}</Project>
       <Name>Jhu.Graywulf.RemoteService</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\dll\Jhu.Graywulf.ServiceModel\Jhu.Graywulf.ServiceModel.csproj">
+      <Project>{aa744162-dfa0-46bc-be03-20d50dd77806}</Project>
+      <Name>Jhu.Graywulf.ServiceModel</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="RemoteService\Server\RemoteService.resx">

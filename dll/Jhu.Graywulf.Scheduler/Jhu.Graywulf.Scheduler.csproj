@@ -60,6 +60,7 @@
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.DurableInstancing" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -89,6 +90,7 @@
     <Compile Include="Scheduler\RegistryObject.cs" />
     <Compile Include="Scheduler\Scheduler.cs" />
     <Compile Include="Scheduler\SchedulerConfiguration.cs" />
+    <Compile Include="Scheduler\SchedulerControl.cs" />
     <Compile Include="Scheduler\SchedulerException.cs" />
     <Compile Include="Scheduler\SchedulerWorkflowApplicationHost.cs" />
     <Compile Include="Scheduler\ServerInstance.cs" />

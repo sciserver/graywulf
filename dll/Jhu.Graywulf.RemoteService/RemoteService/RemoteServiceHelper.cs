@@ -11,6 +11,7 @@ using System.ServiceModel.Description;
 using System.Security;
 using System.Security.Principal;
 using System.Management;
+using Jhu.Graywulf.ServiceModel;
 
 namespace Jhu.Graywulf.RemoteService
 {
@@ -223,65 +224,35 @@ namespace Jhu.Graywulf.RemoteService
             var ep = RemoteServiceHelper.CreateEndpointUri(hostname, service.FullName);
             var tcp = RemoteServiceHelper.CreateNetTcpBinding();
 
-            
             host = new ServiceHost(service, ep);
-            host.Description.Behaviors.Add(new Logging.WcfLoggingBehavior());
 
             // Create endpoint
             endpoint = host.AddServiceEndpoint(contract, tcp, ep);
 
             // Turn on detailed debug info
 #if DEBUG
-            TurnOnDetailedDebugInfo(host);
+            ServiceHelper.TurnOnDetailedDebugInfo(host);
 #endif
 
             // Turn on impersonation
             // TODO: not used, requires setting up SPNs in domain
             // TurnOnInpersonations(host);
 
-            TurnOnUnthrottling(host);
+            ServiceHelper.TurnOnUnthrottling(host);
+            ServiceHelper.TurnOnLogging(host);
+            TurnOnAccessControl(host);
 
             host.Open();
 
             return endpoint.Address.Uri;
         }
 
-        private static void TurnOnDetailedDebugInfo(ServiceHost host)
+        public static void TurnOnAccessControl(ServiceHost host)
         {
-            var sdb = host.Description.Behaviors.Find<ServiceDebugBehavior>();
-            if (sdb == null)
-            {
-                sdb = new ServiceDebugBehavior();
-                host.Description.Behaviors.Add(sdb);
-            }
-            sdb.IncludeExceptionDetailInFaults = true;
-        }
-
-        private static void TurnOnInpersonation(ServiceHost host)
-        {
-            var sab = host.Description.Behaviors.Find<ServiceAuthorizationBehavior>();
-            if (sab == null)
-            {
-                sab = new ServiceAuthorizationBehavior();
-                host.Description.Behaviors.Add(sab);
-            }
-            sab.ImpersonateCallerForAllOperations = true;
-        }
-
-        private static void TurnOnUnthrottling(ServiceHost host)
-        {
-            // Unthrottle service to increase throughput
-            // Service is behind a firewall, no DOS attacks will happen
-            // TODO: copy these settings to the control endpoint
-            var tb = host.Description.Behaviors.Find<ServiceThrottlingBehavior>();
-            if (tb == null)
-            {
-                tb = new ServiceThrottlingBehavior();
-                host.Description.Behaviors.Add(tb);
-            }
-            tb.MaxConcurrentCalls = 1024;
-            tb.MaxConcurrentInstances = Int32.MaxValue;
-            tb.MaxConcurrentSessions = 1024;
+            var access = new LimitedAccessServiceExtension();
+            access.AddUser(Constants.Default, RemoteServiceBase.Configuration.UserGroup);
+            access.AddRole(Constants.Default, RemoteServiceBase.Configuration.UserGroup);
+            host.Extensions.Add(access);
         }
 
         /// <summary>

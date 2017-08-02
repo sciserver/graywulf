@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.ServiceModel
         public void ApplyDispatchBehavior(OperationDescription operationDescription, System.ServiceModel.Dispatcher.DispatchOperation dispatchOperation)
         {
             // Wrap original invoker into custom invoker
-            dispatchOperation.Invoker = new LimitedAccessOperationInvoker(operationCategory, operationDescription.Name, dispatchOperation.Invoker);
+            dispatchOperation.Invoker = new LimitedAccessOperationInvoker(operationDescription.Name, operationCategory, dispatchOperation.Invoker);
         }
 
         public void Validate(OperationDescription operationDescription)

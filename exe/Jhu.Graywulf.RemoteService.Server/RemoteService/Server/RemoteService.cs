@@ -9,6 +9,7 @@ using System.Text;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using Jhu.Graywulf.Logging;
+using Jhu.Graywulf.ServiceModel;
 
 namespace Jhu.Graywulf.RemoteService.Server
 {
@@ -83,11 +84,11 @@ namespace Jhu.Graywulf.RemoteService.Server
             var tcp = RemoteServiceHelper.CreateNetTcpBinding();
             var ep = RemoteServiceHelper.CreateEndpointUri(fdqn, "Control");
 
-            controlServiceHost = new ServiceHost(
-                typeof(RemoteServiceControl), ep);
+            controlServiceHost = new ServiceHost(typeof(RemoteServiceControl), ep);
+            ServiceHelper.TurnOnLogging(controlServiceHost);
+            RemoteServiceHelper.TurnOnAccessControl(controlServiceHost);
 
-            controlEndpoint = controlServiceHost.AddServiceEndpoint(
-                typeof(IRemoteServiceControl), tcp, ep);
+            controlEndpoint = controlServiceHost.AddServiceEndpoint(typeof(IRemoteServiceControl), tcp, ep);
 
             controlServiceHost.Open();
         }

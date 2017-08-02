@@ -5,7 +5,7 @@ using System.Text;
 using System.ServiceModel.Description;
 using System.Runtime.Serialization;
 
-namespace Jhu.Graywulf.RemoteService
+namespace Jhu.Graywulf.ServiceModel
 {
 
     /// <summary>

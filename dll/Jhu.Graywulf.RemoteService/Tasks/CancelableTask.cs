@@ -7,6 +7,7 @@ using System.Data;
 using System.Xml.Serialization;
 using System.ServiceModel;
 using Jhu.Graywulf.RemoteService;
+using Jhu.Graywulf.ServiceModel;
 
 namespace Jhu.Graywulf.Tasks
 {

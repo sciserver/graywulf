@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ServiceModel;
-using Jhu.Graywulf.Logging;
+using Jhu.Graywulf.ServiceModel;
 
 namespace Jhu.Graywulf.RemoteService
 {

@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.Threading;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Tasks;
+using Jhu.Graywulf.ServiceModel;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Schema;
 using Jhu.Graywulf.SqlCodeGen.SqlServer;

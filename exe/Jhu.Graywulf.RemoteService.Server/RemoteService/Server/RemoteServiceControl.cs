@@ -8,6 +8,7 @@ using System.Security;
 using System.Security.Principal;
 using Jhu.Graywulf.RemoteService;
 using Jhu.Graywulf.Logging;
+using Jhu.Graywulf.ServiceModel;
 
 namespace Jhu.Graywulf.RemoteService.Server
 {
@@ -22,7 +23,7 @@ namespace Jhu.Graywulf.RemoteService.Server
     class RemoteServiceControl : IRemoteServiceControl
     {
         [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation]
+        [LimitedAccessOperation(Constants.Default)]
         public string Hello()
         {
             var res = GetType().Assembly.FullName;
@@ -33,7 +34,7 @@ namespace Jhu.Graywulf.RemoteService.Server
         }
 
         [OperationBehavior(Impersonation = ImpersonationOption.Required)]
-        [LimitedAccessOperation]
+        [LimitedAccessOperation(Constants.Default)]
         public void WhoAmI(out string name, out bool isAuthenticated, out string authenticationType)
         {
             // Switch to windows principal
@@ -59,7 +60,7 @@ namespace Jhu.Graywulf.RemoteService.Server
         }
 
         [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation]
+        [LimitedAccessOperation(Constants.Default)]
         public Uri GetServiceEndpointUri(string contractType)
         {
             var contract = Type.GetType(contractType);
@@ -79,7 +80,7 @@ namespace Jhu.Graywulf.RemoteService.Server
         }
 
         [OperationBehavior(Impersonation = RemoteServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation]
+        [LimitedAccessOperation(Constants.Default)]
         public string[] QueryRegisteredServices()
         {
             // TODO: remove synchronization if possible

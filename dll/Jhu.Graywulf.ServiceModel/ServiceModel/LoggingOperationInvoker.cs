@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
+using Jhu.Graywulf.Logging;
 
-namespace Jhu.Graywulf.Logging
+namespace Jhu.Graywulf.ServiceModel
 {
     class WcfLoggingOperationInvoker : IOperationInvoker
     {
