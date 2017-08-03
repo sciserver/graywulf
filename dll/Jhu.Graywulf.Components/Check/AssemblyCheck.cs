@@ -61,12 +61,22 @@ namespace Jhu.Graywulf.Check
             output.WriteLine("Testing assembly: {0}", assembly.FullName);
             output.WriteLine("Discovering references...");
 
+            bool error = false;
             var references = new Dictionary<string, AssemblyName>();
 
-            VerifyReferencedAssemblies(output, assembly);
+            AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += AppDomain_ReflectionOnlyAssemblyResolve;
+
+            VerifyReferencedAssemblies(output, assembly, ref error);
+
+            AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= AppDomain_ReflectionOnlyAssemblyResolve;
+
+            if (error)
+            {
+                throw new Exception("Error resolving referenced assemblies.");
+            }
         }
 
-        private void VerifyReferencedAssemblies(TextWriter output, Assembly a)
+        private void VerifyReferencedAssemblies(TextWriter output, Assembly a, ref bool error)
         {
             if (references == null)
             {
@@ -91,7 +101,9 @@ namespace Jhu.Graywulf.Check
                         if (File.Exists(path))
                         {
                             output.WriteLine("   Assembly found: {0}", path);
-                            aa = Assembly.ReflectionOnlyLoadFrom(path);
+
+                            // Load as bytes to prevent locking the file
+                            aa = Assembly.ReflectionOnlyLoad(System.IO.File.ReadAllBytes(path));
                         }
                         else
                         {
@@ -104,15 +116,22 @@ namespace Jhu.Graywulf.Check
 
                         if (aan != null)
                         {
-                            var eq = Components.AssemblyNameComparer.Instance.Compare(aa.GetName(), an) == 0;
+                            var eq = Components.AssemblyNameComparer.Instance.Compare(aan, an);
 
-                            if (eq)
+                            if (eq == 0)
                             {
                                 output.WriteLine("   <font color=\"green\">OK:</font> Referenced and available assembly versions match.");
                             }
+                            else if (eq < 0)
+                            {
+                                error = true;
+                                output.WriteLine("   <font color=\"red\">Error:</font> Referenced and available versions don't match!");
+                                output.WriteLine("   Referenced: {0}, Found: {1}", an.Version, aan.Version);
+                            }
                             else
                             {
-                                output.WriteLine("   <font color=\"red\">Error:</font> Referenced and available versions don't match!");
+                                output.WriteLine("   <font color=\"blue\">Warning:</font> Available assembly is newer than the referenced version!");
+                                output.WriteLine("   Referenced: {0}, Found: {1}", an.Version, aan.Version);
                             }
                         }
 
@@ -131,25 +150,45 @@ namespace Jhu.Graywulf.Check
                                 {
                                     output.WriteLine("   Git commit hash: {0}", m.Groups[1].Value);
                                 }
-                                else
-                                {
-                                    output.WriteLine("   Git commit hash not found");
-                                }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
+                        error = true;
                         output.WriteLine("   <font color=\"red\">Error:</font> {0}", ex.Message);
+                    }
+                    finally
+                    {
+
                     }
 
                     // Call recursively
                     if (aa != null)
                     {
-                        VerifyReferencedAssemblies(output, aa);
+                        VerifyReferencedAssemblies(output, aa, ref error);
                     }
                 }
             }
+        }
+
+        private Assembly AppDomain_ReflectionOnlyAssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            Assembly aa;
+            var an = new AssemblyName(args.Name);
+            var path = Path.Combine(BaseDir, an.Name + ".dll");
+
+            if (File.Exists(path))
+            {
+                // Load as bytes to prevent locking the file
+                aa = Assembly.ReflectionOnlyLoad(System.IO.File.ReadAllBytes(path));
+            }
+            else
+            {
+                aa = Assembly.ReflectionOnlyLoad(an.FullName);
+            }
+
+            return aa;
         }
     }
 }
