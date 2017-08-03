@@ -93,6 +93,7 @@
     <Compile Include="Scheduler\Queue.cs" />
     <Compile Include="Scheduler\QueueManager.cs" />
     <Compile Include="Scheduler\RegistryObject.cs" />
+    <Compile Include="Scheduler\SchedulerCheck.cs" />
     <Compile Include="Scheduler\Scheduler.cs" />
     <Compile Include="Scheduler\SchedulerConfiguration.cs" />
     <Compile Include="Scheduler\SchedulerControl.cs" />
