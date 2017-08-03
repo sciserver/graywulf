@@ -109,7 +109,9 @@ namespace Jhu.Graywulf.Web.UI
             {
                 var host = m.HostName.ResolvedValue;
 
-                if (!hosts.Contains(host))
+                if (m.DeploymentState == Registry.DeploymentState.Deployed &&
+                    m.RunningState == Registry.RunningState.Running &&
+                    !hosts.Contains(host))
                 {
                     hosts.Add(host);
                 }

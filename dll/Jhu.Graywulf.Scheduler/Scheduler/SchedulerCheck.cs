@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.Scheduler
             
             output.WriteLine("Testing scheduler service on {0}...", host);
 
-            var sc = ServiceHelper.CreateChannel<ISchedulerControl>(DnsHelper.Localhost, "Control", Scheduler.Configuration.Endpoint);
+            var sc = ServiceHelper.CreateChannel<ISchedulerControl>(host, "Control", Scheduler.Configuration.Endpoint);
 
             sc.WhoAmI(out name, out isAuthenticated, out authenticationType);
             output.WriteLine("Client user: {0} ({1})", name, authenticationType);
