@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Check
                 Logging.EventSeverity.Operation,
                 Logging.EventSource.WebUI,
                 message,
-                null,
+                GetType().FullName,
                 null,
                 null);
 
