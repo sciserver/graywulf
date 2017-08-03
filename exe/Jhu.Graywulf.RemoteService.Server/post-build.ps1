@@ -6,3 +6,8 @@ if ( -not (test-path "$SolutionDir$OutDir\eseutil.exe") ) {
   cp "$ProjectDir..\..\util\eseutil.exe" "$SolutionDir$OutDir"
   cp "$ProjectDir..\..\util\ese.dll" "$SolutionDir$OutDir"
 }
+
+# Copy plugins
+$source = "$SolutionDir\plugins\$ConfigurationName\*"
+$target = "$ProjectDir$OutDir"
+cp $source $target

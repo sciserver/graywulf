@@ -25,9 +25,6 @@ namespace Jhu.Graywulf.Web.UI
             // Test registry and log databases
             checks.AddRange(Logging.LoggingContext.Current.GetCheckRoutines());
 
-            // TODO: add logging checks
-            //checks.Add(new DatabaseCheck(Jhu.Graywulf.Logging.AppSettings.ConnectionString));
-
             // Test SMTP and target email addresses
             checks.Add(new EmailCheck(RegistryContext.Domain.ShortTitle, RegistryContext.Domain.Email, RegistryContext.Domain.Email));
             checks.Add(new EmailCheck(RegistryContext.Federation.ShortTitle, RegistryContext.Federation.Email, RegistryContext.Federation.Email));
@@ -75,9 +72,7 @@ namespace Jhu.Graywulf.Web.UI
         private void RegisterDllChecks(List<CheckRoutineBase> checks)
         {
             var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin");
-            dir = Path.Combine(dir, Jhu.Graywulf.Components.AppDomainManager.Configuration.AssemblyPath);
-
-            var webassembly = Assembly.GetAssembly(this.GetType());
+            var webassembly = this.GetType().BaseType.Assembly;
             var check = new AssemblyCheck(dir, webassembly);
 
             checks.Add(check);

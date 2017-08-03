@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Check\AssemblyCheck.cs" />
+    <Compile Include="Check\AssemblyCheckHelper.cs" />
     <Compile Include="Check\CheckCategory.cs" />
     <Compile Include="Check\CheckRoutineBase.cs" />
     <Compile Include="Check\CheckRoutineExecutor.cs" />
