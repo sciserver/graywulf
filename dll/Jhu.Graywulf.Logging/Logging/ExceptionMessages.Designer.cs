@@ -68,5 +68,14 @@ namespace Jhu.Graywulf.Logging {
                 return ResourceManager.GetString("AsyncTimeout", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The operation field cannot be null.
+        /// </summary>
+        internal static string OperationNull {
+            get {
+                return ResourceManager.GetString("OperationNull", resourceCulture);
+            }
+        }
     }
 }

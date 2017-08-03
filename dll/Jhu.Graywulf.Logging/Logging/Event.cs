@@ -288,5 +288,13 @@ namespace Jhu.Graywulf.Logging
         }
 
         #endregion
+
+        internal void Validate()
+        {
+            if (this.operation == null)
+            {
+                throw Error.OperationNull();
+            }
+        }
     }
 }
