@@ -12,5 +12,10 @@ namespace Jhu.Graywulf.Logging
         {
             return new LoggingException(String.Format(ExceptionMessages.AsyncTimeout, writer.GetType().FullName));
         }
+
+        public static LoggingException OperationNull()
+        {
+            return new LoggingException(ExceptionMessages.OperationNull);
+        }
     }
 }

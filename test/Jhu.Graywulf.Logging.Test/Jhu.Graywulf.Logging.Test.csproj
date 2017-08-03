@@ -55,6 +55,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Logging\ConsoleLogWriterTest.cs" />
+    <Compile Include="Logging\LoggerTest.cs" />
     <Compile Include="Logging\SqlLogWriterTest.cs" />
     <Compile Include="Logging\FileLogWriterTest.cs" />
     <Compile Include="Logging\LogWriterFactoryTest.cs" />

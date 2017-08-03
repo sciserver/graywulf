@@ -15,7 +15,8 @@ namespace Jhu.Graywulf.Logging
         private BlockingCollection<Event> queue;
         private CancellationTokenSource stopRequestSource;
         private CancellationToken stopRequestToken;
-        private Task worker;
+        private ManualResetEvent workerWaitHandle;
+        private Thread worker;
 
         private bool isAsync;
         private object syncRoot;
@@ -91,7 +92,12 @@ namespace Jhu.Graywulf.Logging
                 queue = new BlockingCollection<Event>(Constants.LogWriterAsyncCapacity);
                 stopRequestSource = new CancellationTokenSource();
                 stopRequestToken = stopRequestSource.Token;
-                worker = new Task(Worker);
+
+                // Create new background thread
+                // Do not use thead pool here because we want more control
+                workerWaitHandle = new ManualResetEvent(false);
+                var start = new ThreadStart(Worker);
+                worker = new Thread(start);
                 worker.Start();
             }
 
@@ -103,7 +109,7 @@ namespace Jhu.Graywulf.Logging
             if (isAsync)
             {
                 stopRequestSource.Cancel();
-                worker.Wait();
+                workerWaitHandle.WaitOne();
             }
 
             OnStop();
@@ -113,6 +119,8 @@ namespace Jhu.Graywulf.Logging
 
         private void Worker()
         {
+            Thread.CurrentThread.Name = String.Format("Log writer thread for {0}", this.GetType().FullName);
+
             Event e;
 
             while (true)
@@ -126,8 +134,21 @@ namespace Jhu.Graywulf.Logging
                     break;
                 }
 
-                OnWriteEvent(e);
+                try
+                {
+                    OnWriteEvent(e);
+                }
+                catch (Exception ex)
+                {
+                    // If the exception happens in the log writer, just put it back into the queue.
+                    // If the error is permanent, it will fill the queue anyway and the error
+                    // will eventually be reported.
+                    queue.Add(e);
+                    LoggingContext.Current.LogError(EventSource.Logger, ex);
+                }
             }
+
+            workerWaitHandle.Set();
         }
 
         protected abstract void OnStart();
