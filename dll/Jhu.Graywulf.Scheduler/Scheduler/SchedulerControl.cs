@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ServiceModel;
+using System.Security.Principal;
 
 namespace Jhu.Graywulf.Scheduler
 {
@@ -11,7 +13,33 @@ namespace Jhu.Graywulf.Scheduler
         public string Hello()
         {
             var res = GetType().Assembly.FullName;
+            QueueManager.Instance.LogDebug("Hello called on {0}", res);
             return res;
+        }
+
+        [OperationBehavior(Impersonation = ImpersonationOption.Required)]
+        public void WhoAmI(out string name, out bool isAuthenticated, out string authenticationType)
+        {
+            // Switch to windows principal
+            var id = WindowsIdentity.GetCurrent();
+
+            name = id.Name;
+            isAuthenticated = id.IsAuthenticated;
+            authenticationType = id.AuthenticationType;
+
+            QueueManager.Instance.LogDebug("Client is {0} and {1}authenticated", name, isAuthenticated ? "" : "not ");
+        }
+
+        [OperationBehavior(Impersonation = ImpersonationOption.NotAllowed)]
+        public void WhoAreYou(out string name, out bool isAuthenticated, out string authenticationType)
+        {
+            var id = WindowsIdentity.GetCurrent();
+
+            name = id.Name;
+            isAuthenticated = id.IsAuthenticated;
+            authenticationType = id.AuthenticationType;
+
+            QueueManager.Instance.LogDebug("Server is {0} and {1}authenticated", name, isAuthenticated ? "" : "not ");
         }
 
         public IQueue[] GetQueues()

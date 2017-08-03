@@ -37,7 +37,7 @@ namespace Jhu.Graywulf.RemoteService
         }
         
         [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation(Constants.Default)]
+        [LimitedAccessOperation(Constants.DefaultRole)]
         public override void Execute()
         {
             // Modify remote service to do check access when called from service only
@@ -46,7 +46,7 @@ namespace Jhu.Graywulf.RemoteService
         }
 
         [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation(Constants.Default)]
+        [LimitedAccessOperation(Constants.DefaultRole)]
         public override void BeginExecute()
         {
             base.BeginExecute();

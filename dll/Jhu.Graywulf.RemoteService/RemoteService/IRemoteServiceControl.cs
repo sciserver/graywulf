@@ -17,7 +17,7 @@ namespace Jhu.Graywulf.RemoteService
         /// </summary>
         /// <returns></returns>
         [OperationContract]
-        [LimitedAccessOperation(Constants.Default)]
+        [LimitedAccessOperation(Constants.DefaultRole)]
         string Hello();
 
         /// <summary>
@@ -27,6 +27,7 @@ namespace Jhu.Graywulf.RemoteService
         /// <param name="isAuthenticated"></param>
         /// <param name="authenticationType"></param>
         [OperationContract]
+        [LimitedAccessOperation(Constants.DefaultRole)]
         void WhoAmI(out string name, out bool isAuthenticated, out string authenticationType);
 
         [OperationContract]
@@ -39,6 +40,7 @@ namespace Jhu.Graywulf.RemoteService
         /// <param name="serviceType"></param>
         /// <returns></returns>
         [OperationContract]
+        [LimitedAccessOperation(Constants.DefaultRole)]
         Uri GetServiceEndpointUri(string contractType);
 
         /// <summary>
@@ -46,6 +48,7 @@ namespace Jhu.Graywulf.RemoteService
         /// </summary>
         /// <returns></returns>
         [OperationContract]
+        [LimitedAccessOperation(Constants.DefaultRole)]
         string[] QueryRegisteredServices();
     }
 }

@@ -21,6 +21,19 @@ namespace Jhu.Graywulf.Scheduler
         [LimitedAccessOperation(Constants.DefaultRole)]
         string Hello();
 
+        /// <summary>
+        /// Returns info about the user under which the server operations run.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="isAuthenticated"></param>
+        /// <param name="authenticationType"></param>
+        [OperationContract]
+        [LimitedAccessOperation(Constants.DefaultRole)]
+        void WhoAmI(out string name, out bool isAuthenticated, out string authenticationType);
+
+        [OperationContract]
+        void WhoAreYou(out string name, out bool isAuthenticated, out string authenticationType);
+
         [OperationContract]
         [LimitedAccessOperation(Constants.DefaultRole)]
         IQueue[] GetQueues();

@@ -19,11 +19,8 @@ namespace Jhu.Graywulf.RemoteService.Server
     [ServiceBehavior(
         InstanceContextMode = InstanceContextMode.Single,
         IncludeExceptionDetailInFaults = true)]
-    [ServiceLoggingBehavior]
     class RemoteServiceControl : IRemoteServiceControl
     {
-        [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation(Constants.Default)]
         public string Hello()
         {
             var res = GetType().Assembly.FullName;
@@ -32,7 +29,6 @@ namespace Jhu.Graywulf.RemoteService.Server
         }
 
         [OperationBehavior(Impersonation = ImpersonationOption.Required)]
-        [LimitedAccessOperation(Constants.Default)]
         public void WhoAmI(out string name, out bool isAuthenticated, out string authenticationType)
         {
             // Switch to windows principal
@@ -58,7 +54,6 @@ namespace Jhu.Graywulf.RemoteService.Server
         }
 
         [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation(Constants.Default)]
         public Uri GetServiceEndpointUri(string contractType)
         {
             var contract = Type.GetType(contractType);
@@ -78,7 +73,6 @@ namespace Jhu.Graywulf.RemoteService.Server
         }
 
         [OperationBehavior(Impersonation = ServiceHelper.DefaultImpersonation)]
-        [LimitedAccessOperation(Constants.Default)]
         public string[] QueryRegisteredServices()
         {
             // TODO: remove synchronization if possible

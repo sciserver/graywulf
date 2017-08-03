@@ -1014,14 +1014,14 @@ namespace Jhu.Graywulf.Scheduler
         #endregion
         #region Logging functions
 
-        private void LogDebug(string message)
+        internal void LogDebug(string message, params string[] args)
         {
 #if DEBUG
             var method = Logging.LoggingContext.Current.UnwindStack(2);
 
             Logging.LoggingContext.Current.LogDebug(
                 Logging.EventSource.Scheduler,
-                message,
+                String.Format(message, args),
                 method.DeclaringType.FullName + "." + method.Name,
                 null);
 #endif
