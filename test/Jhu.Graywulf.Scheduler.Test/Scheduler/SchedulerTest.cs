@@ -42,6 +42,20 @@ namespace Jhu.Graywulf.Scheduler
 
         [TestMethod]
         [TestCategory("Scheduler")]
+        public void StartStopWithLoadLayoutTest()
+        {
+            using (SchedulerTester.Instance.GetExclusiveToken())
+            {
+                PurgeTestJobs();
+
+                SchedulerTester.Instance.EnsureRunning(true);
+                Thread.Sleep(new TimeSpan(0, 0, 20));
+                SchedulerTester.Instance.DrainStop();
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Scheduler")]
         public void SimpleJobTest()
         {
             using (SchedulerTester.Instance.GetToken())
