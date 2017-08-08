@@ -87,6 +87,7 @@
     <Compile Include="Scheduler\IScheduler.cs" />
     <Compile Include="Scheduler\ISchedulerControl.cs" />
     <Compile Include="Scheduler\Job.cs" />
+    <Compile Include="Scheduler\JobWorkflowEvent.cs" />
     <Compile Include="Scheduler\JobTrackingParticipant.cs" />
     <Compile Include="Scheduler\Machine.cs" />
     <Compile Include="Scheduler\MachineRole.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Scheduler\SchedulerConfiguration.cs" />
     <Compile Include="Scheduler\SchedulerControl.cs" />
     <Compile Include="Scheduler\SchedulerException.cs" />
+    <Compile Include="Scheduler\SchedulerDebugOptions.cs" />
     <Compile Include="Scheduler\SchedulerWorkflowApplicationHost.cs" />
     <Compile Include="Scheduler\ServerInstance.cs" />
     <Compile Include="Scheduler\StandaloneWorkflowApplicationHost.cs" />

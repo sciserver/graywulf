@@ -70,9 +70,8 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         public override void Stop(TimeSpan timeout)
         {
-            base.Stop(timeout);
-            
             workflowInstanceStore = null;
+            base.Stop(timeout);
         }
 
         /// <summary>
@@ -82,8 +81,6 @@ namespace Jhu.Graywulf.Scheduler
         /// <returns></returns>
         public Guid PrepareStartJob(Job job)
         {
-            EnsureNotStopping();
-
             // Load job data from the registry
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
@@ -128,8 +125,6 @@ namespace Jhu.Graywulf.Scheduler
         /// <returns></returns>
         public Guid PrepareResumeJob(Job job)
         {
-            EnsureNotStopping();
-
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
                 context.JobReference.Guid = job.Guid;
@@ -191,8 +186,6 @@ namespace Jhu.Graywulf.Scheduler
         /// </remarks>
         public Guid CancelJob(Job job)
         {
-            EnsureNotStopping();
-
             JobInstance ji;
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
@@ -216,8 +209,6 @@ namespace Jhu.Graywulf.Scheduler
         /// <returns></returns>
         public Guid TimeOutJob(Job job)
         {
-            EnsureNotStopping();
-
             JobInstance ji;
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
@@ -235,8 +226,6 @@ namespace Jhu.Graywulf.Scheduler
 
         public Guid PersistJob(Job job)
         {
-            EnsureNotStopping();
-
             JobInstance ji;
             using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
             {
@@ -422,7 +411,7 @@ namespace Jhu.Graywulf.Scheduler
                                 new WorkflowApplicationHostEventArgs(
                                     WorkflowEventType.Failed,
                                     e.InstanceId,
-                                    GetExceptionMessage(workflow.LastException)));
+                                    workflow.LastException));
                             break;
                         default:
                             throw new NotImplementedException();

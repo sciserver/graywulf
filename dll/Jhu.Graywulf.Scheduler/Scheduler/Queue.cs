@@ -13,7 +13,7 @@ namespace Jhu.Graywulf.Scheduler
     internal class Queue : RegistryObject, IQueue
     {
         private int maxOutstandingJobs;
-        private ConcurrentDictionary<Guid, Job> jobs;
+        private Dictionary<Guid, Job> jobs;
         private TimeSpan timeout;
         private Guid lastUserGuid;
 
@@ -30,7 +30,7 @@ namespace Jhu.Graywulf.Scheduler
         /// Jobs associated with the queue and already loaded by
         /// the poller.
         /// </summary>
-        public ConcurrentDictionary<Guid, Job> Jobs
+        public Dictionary<Guid, Job> Jobs
         {
             get { return jobs; }
         }
@@ -69,7 +69,7 @@ namespace Jhu.Graywulf.Scheduler
         private void InitializeMembers()
         {
             this.maxOutstandingJobs = -1;
-            this.jobs = new ConcurrentDictionary<Guid, Job>();
+            this.jobs = new Dictionary<Guid, Job>();
             this.timeout = TimeSpan.Zero;
             this.lastUserGuid = Guid.Empty;
         }

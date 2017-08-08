@@ -11,6 +11,8 @@ namespace Jhu.Graywulf.Scheduler
 {
     public class Program
     {
+        private static QueueManager[] debugInstances;
+
         /// <summary>
         /// Program entry point
         /// </summary>
@@ -29,6 +31,9 @@ namespace Jhu.Graywulf.Scheduler
 #if BREAKDEBUG
                 Console.WriteLine("Warning: built with BREAKDEBUG flag enabled.");
 #endif
+
+                // Initialize logger
+                LoggingContext.Current.StartLogger(Logging.EventSource.Scheduler, true);
 
                 QueueManager.Instance.Start(Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName, true);
 
@@ -51,6 +56,9 @@ namespace Jhu.Graywulf.Scheduler
                 }
 
                 Console.WriteLine("                                       done.");
+
+                // Initialize logger
+                LoggingContext.Current.StopLogger();
             }
             else
             {
@@ -62,14 +70,29 @@ namespace Jhu.Graywulf.Scheduler
         /// <summary>
         /// Stars the scheduler in debug mode, used for testing.
         /// </summary>
-        internal static void StartDebug(object options)
+        internal static void StartDebug(SchedulerDebugOptions options)
         {
-            if (options != null)
+            // Initialize logger
+            LoggingContext.Current.StartLogger(Logging.EventSource.Scheduler, true);
+
+            if (options == null)
             {
-                QueueManager.Instance.IsLayoutRequired = (bool)options;
+                debugInstances = new QueueManager[1];
+                debugInstances[0] = QueueManager.Instance;
+                QueueManager.Instance.Start(Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName, true);
             }
-            
-            QueueManager.Instance.Start(Jhu.Graywulf.Registry.ContextManager.Configuration.ClusterName, true);
+            else
+            {
+                debugInstances = new QueueManager[options.InstanceCount];
+
+                for (int i = 0; i < debugInstances.Length; i++)
+                {
+                    debugInstances[i] = new QueueManager();
+                    debugInstances[i].IsControlServiceEnabled = false;
+                    debugInstances[i].IsLayoutRequired = options.IsLayoutRequired;
+                    debugInstances[i].Start(Registry.ContextManager.Configuration.ClusterName, true);
+                }
+            }
         }
 
         /// <summary>
@@ -77,7 +100,13 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         internal static void StopDebug()
         {
-            QueueManager.Instance.Stop(TimeSpan.FromHours(1.5));
+            for (int i = 0; i < debugInstances.Length; i++)
+            {
+                debugInstances[i].Stop(TimeSpan.FromHours(1.5));
+            }
+
+            // Stop logger
+            LoggingContext.Current.StopLogger();
         }
 
         /// <summary>
@@ -85,7 +114,13 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         internal static void DrainStopDebug()
         {
-            QueueManager.Instance.DrainStop(TimeSpan.FromMinutes(1.5));
+            for (int i = 0; i < debugInstances.Length; i++)
+            {
+                debugInstances[i].DrainStop(Constants.DrainStopTimeout);
+            }
+
+            // Stop logger
+            LoggingContext.Current.StopLogger();
         }
 
         /// <summary>
@@ -93,7 +128,13 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         internal static void KillDebug()
         {
-            QueueManager.Instance.Kill(TimeSpan.FromSeconds(20));
+            for (int i = 0; i < debugInstances.Length; i++)
+            {
+                debugInstances[i].Kill(TimeSpan.FromSeconds(20));
+            }
+
+            // Stop logger
+            LoggingContext.Current.StopLogger();
         }
     }
 }

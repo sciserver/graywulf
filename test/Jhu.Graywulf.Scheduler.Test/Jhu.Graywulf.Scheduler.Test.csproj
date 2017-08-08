@@ -54,9 +54,12 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scheduler\ConcurrentInstancesTest.cs" />
+    <Compile Include="Scheduler\FullSchedulerTest.cs" />
+    <Compile Include="Scheduler\InterruptSchedulerTest.cs" />
     <Compile Include="Scheduler\JobTimeoutTest.cs" />
+    <Compile Include="Scheduler\SimpleSchedulerTest.cs" />
     <Compile Include="Scheduler\SchedulerControlTest.cs" />
-    <Compile Include="Scheduler\SchedulerTest.cs" />
     <Compile Include="Scheduler\SchedulerTestBase.cs" />
   </ItemGroup>
   <ItemGroup>

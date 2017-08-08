@@ -44,21 +44,23 @@ namespace Jhu.Graywulf.Scheduler
 
         public IQueue[] GetQueues()
         {
+            // TODO synchronize!!!
             return QueueManager.Instance.Cluster.Queues.Values
                 .Select(q => (IQueue)q).ToArray();
         }
 
         public IJob[] GetJobs(Guid queueGuid)
         {
+            // TODO synchronize!!!
             return QueueManager.Instance.Cluster.Queues[queueGuid].Jobs.Values
-                .Select(j => (IJob)j).ToArray();
+            .Select(j => (IJob)j).ToArray();
         }
 
         public IJob GetJob(Guid jobGuid)
         {
             return (IJob)QueueManager.Instance.RunningJobs[jobGuid];
         }
-        
+
         public void StartJob(Guid guid)
         {
             throw new NotImplementedException();
@@ -71,6 +73,7 @@ namespace Jhu.Graywulf.Scheduler
 
         public void ReloadCluster()
         {
+            throw new NotImplementedException();
         }
     }
 }

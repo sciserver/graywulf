@@ -21,6 +21,7 @@ namespace Jhu.Graywulf.Test
     {
         private Random rnd = new Random();
         private SqlServerDataset ioTestDataset;
+        private User testUser;
 
         protected SqlServerDataset IOTestDataset
         {
@@ -83,10 +84,10 @@ namespace Jhu.Graywulf.Test
             var ip = IdentityProvider.Create(context.Domain);
             ip.VerifyPassword(new AuthenticationRequest("test", "almafa"));
 
-            var user = ip.GetUserByUserName("test");
-            context.UserReference.Value = user;
+            testUser = ip.GetUserByUserName("test");
 
-            return user;
+            context.UserReference.Value = testUser;
+            return testUser;
         }
 
         protected static void InitializeJobTests()
@@ -224,7 +225,9 @@ WHERE DateFinished IS NULL";
         {
             var start = DateTime.Now;
 
-            while ((DateTime.Now - start) < timeout)
+            // Wait for job until timeout or indefinitely when debugging
+            while ((DateTime.Now - start) < timeout ||
+                System.Diagnostics.Debugger.IsAttached)
             {
                 Thread.Sleep(pollingInterval);
 

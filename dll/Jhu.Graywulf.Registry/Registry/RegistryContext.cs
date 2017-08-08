@@ -383,7 +383,15 @@ namespace Jhu.Graywulf.Registry
 
             if (databaseTransaction != null)
             {
-                databaseTransaction.Commit();
+                try
+                {
+                    databaseTransaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+
                 databaseTransaction.Dispose();
                 databaseTransaction = null;
             }

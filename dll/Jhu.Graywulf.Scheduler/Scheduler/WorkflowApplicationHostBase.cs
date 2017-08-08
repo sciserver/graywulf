@@ -23,8 +23,6 @@ namespace Jhu.Graywulf.Scheduler
 
         #region Private variables
 
-        private bool stopRequested;
-
         /// <summary>
         /// Holds the workflows hosted in the app domain
         /// </summary>
@@ -53,7 +51,6 @@ namespace Jhu.Graywulf.Scheduler
 
         private void InitializeMembers()
         {
-            this.stopRequested = false;
             this.workflows = new ConcurrentDictionary<Guid, WorkflowApplicationDetails>();
             this.trackingParticipant = null;
         }
@@ -65,19 +62,9 @@ namespace Jhu.Graywulf.Scheduler
         }
 
         #endregion
-
-        protected void EnsureNotStopping()
-        {
-            if (stopRequested)
-            {
-                throw new InvalidOperationException();
-            }
-        }
-
+        
         public virtual void Start(bool iteractive)
         {
-            EnsureNotStopping();
-
             // Initialize logging
             Logging.LoggingContext.Current.StartLogger(Logging.EventSource.Scheduler, true);
 
@@ -86,18 +73,13 @@ namespace Jhu.Graywulf.Scheduler
 
         public virtual void Stop(TimeSpan timeout)
         {
-            EnsureNotStopping();
-            stopRequested = true;
-
             // Wait until all workflows complete
             while (!workflows.IsEmpty)
             {
-                Thread.Sleep(100);  // TODO: use constant
+                Thread.Sleep(Constants.WorkflowPollingInterval);
             }
 
             trackingParticipant = null;
-            stopRequested = false;
-
             Logging.LoggingContext.Current.StopLogger();
         }
 
@@ -154,8 +136,6 @@ namespace Jhu.Graywulf.Scheduler
 
         public void RunWorkflow(Guid instanceId)
         {
-            EnsureNotStopping();
-
             WorkflowApplicationDetails workflow;
 
             if (workflows.TryGetValue(instanceId, out workflow))
@@ -225,12 +205,15 @@ namespace Jhu.Graywulf.Scheduler
         {
             WorkflowApplicationDetails workflow;
 
-            if (workflows.TryGetValue(instanceId, out workflow))
+            if (workflows.TryRemove(instanceId, out workflow))
             {
                 OnWorkflowFinishing(workflow);
-                workflows.TryRemove(instanceId, out workflow);
             }
-
+            else
+            {
+                throw new InvalidOperationException();
+            }
+            
             return instanceId;
         }
 
@@ -309,7 +292,7 @@ namespace Jhu.Graywulf.Scheduler
                     }
                     else
                     {
-                        OnWorkflowEvent(new WorkflowApplicationHostEventArgs(WorkflowEventType.Failed, e.InstanceId, workflow.LastException.Message));
+                        OnWorkflowEvent(new WorkflowApplicationHostEventArgs(WorkflowEventType.Failed, e.InstanceId, workflow.LastException));
                     }
                     break;
                 case ActivityInstanceState.Faulted:
@@ -349,20 +332,23 @@ namespace Jhu.Graywulf.Scheduler
 
         protected virtual void OnWorkflowAborted(WorkflowApplicationEventArgs e, WorkflowApplicationDetails workflow)
         {
+            // TODO: delete
             // Workflows are aborted when an exception is thrown during cancellation
-            if (workflow.LastException != null)
-            {
-                WorkflowEvent(
-                    this,
-                    new WorkflowApplicationHostEventArgs(
-                        WorkflowEventType.Failed,
-                        e.InstanceId,
-                        GetExceptionMessage(workflow.LastException)));
-            }
-            else
-            {
-                WorkflowEvent(this, new WorkflowApplicationHostEventArgs(WorkflowEventType.Failed, e.InstanceId));
-            }
+            //if (workflow.LastException != null)
+            //{
+            //    WorkflowEvent(
+            //        this,
+            //        new WorkflowApplicationHostEventArgs(
+            //            WorkflowEventType.Failed,
+            //            e.InstanceId,
+            //            workflow.LastException));
+            //}
+            //else
+            //{
+                
+            //}
+
+            WorkflowEvent(this, new WorkflowApplicationHostEventArgs(WorkflowEventType.Failed, e.InstanceId, workflow.LastException));
         }
 
         protected virtual void WorkflowApplication_WorkflowIdle(WorkflowApplicationIdleEventArgs e)
@@ -397,18 +383,6 @@ namespace Jhu.Graywulf.Scheduler
         protected virtual PersistableIdleAction OnWorkflowPersistableIdle(WorkflowApplicationIdleEventArgs e, WorkflowApplicationDetails workflow)
         {
             return PersistableIdleAction.Persist;
-        }
-
-        protected string GetExceptionMessage(Exception exception)
-        {
-            if (exception is AggregateException)
-            {
-                return exception.InnerException.Message;
-            }
-            else
-            {
-                return exception.Message;
-            }
         }
 
         #endregion

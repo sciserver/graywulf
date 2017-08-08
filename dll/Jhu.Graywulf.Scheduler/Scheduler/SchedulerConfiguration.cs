@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Configuration;
-using System.Runtime.Serialization;
-using System.Data;
+using System.ComponentModel;
 using System.Data.SqlClient;
 using Jhu.Graywulf.Registry;
 using Jhu.Graywulf.ServiceModel;
@@ -15,6 +14,7 @@ namespace Jhu.Graywulf.Scheduler
     public class SchedulerConfiguration : ConfigurationSection
     {
         [ConfigurationProperty("pollingInterval")]
+        [DefaultValue("00:00:03")]
         public TimeSpan PollingInterval
         {
             get { return (TimeSpan)base["pollingInterval"]; }
@@ -22,20 +22,15 @@ namespace Jhu.Graywulf.Scheduler
         }
 
         [ConfigurationProperty("appDomainIdle")]
+        [DefaultValue("00:20:00")]
         public TimeSpan AppDomainIdle
         {
             get { return (TimeSpan)base["appDomainIdle"]; }
             set { base["appDomainIdle"] = value; }
         }
-
-        [ConfigurationProperty("appDomainShutdownTimeout")]
-        public TimeSpan AppDomainShutdownTimeout
-        {
-            get { return (TimeSpan)base["appDomainShutdownTimeout"]; }
-            set { base["appDomainShutdownTimeout"] = value; }
-        }
-
+        
         [ConfigurationProperty("cancelTimeout")]
+        [DefaultValue("00:02:00")]
         public TimeSpan CancelTimeout
         {
             get { return (TimeSpan)base["cancelTimeout"]; }
@@ -50,6 +45,7 @@ namespace Jhu.Graywulf.Scheduler
         }
 
         [ConfigurationProperty("persistTimeout")]
+        [DefaultValue("00:02:00")]
         public TimeSpan PersistTimeout
         {
             get { return (TimeSpan)base["persistTimeout"]; }
