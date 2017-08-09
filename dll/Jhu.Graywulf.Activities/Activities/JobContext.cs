@@ -49,6 +49,11 @@ namespace Jhu.Graywulf.Activities
         {
             InitializeMembers(new StreamingContext());
         }
+
+        public JobContext(JobInfo job)
+            :base(job)
+        {
+        }
         
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)

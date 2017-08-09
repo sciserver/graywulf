@@ -25,6 +25,7 @@ namespace Jhu.Graywulf.Registry
 #endif
 
         private bool isValid;
+        private Guid lockOwner;
 
         // TODO: move these to entity search
         private bool showHidden;
@@ -53,7 +54,13 @@ namespace Jhu.Graywulf.Registry
         {
             get { return isValid; }
         }
-        
+
+        public Guid LockOwner
+        {
+            get { return lockOwner; }
+            set { lockOwner = value; }
+        }
+
         /// <summary>
         /// Gets or sets the value determining whether search functions will return entities
         /// flagged as hidden.
@@ -166,7 +173,7 @@ namespace Jhu.Graywulf.Registry
 
         public User User
         {
-            get { return userReference.Value;  }
+            get { return userReference.Value; }
         }
 
         public EntityReference<JobInstance> JobReference
@@ -193,7 +200,7 @@ namespace Jhu.Graywulf.Registry
         {
             InitializeMembers();
         }
-        
+
         #endregion
         #region Initializer Functions
 
@@ -203,6 +210,7 @@ namespace Jhu.Graywulf.Registry
         private void InitializeMembers()
         {
             this.isValid = true;
+            this.lockOwner = Guid.Empty;
 
             this.showHidden = false;
             this.showDeleted = false;
@@ -383,15 +391,7 @@ namespace Jhu.Graywulf.Registry
 
             if (databaseTransaction != null)
             {
-                try
-                {
-                    databaseTransaction.Commit();
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-
+                databaseTransaction.Commit();
                 databaseTransaction.Dispose();
                 databaseTransaction = null;
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Activities;
 using System.Activities.DurableInstancing;
+using System.Runtime.DurableInstancing;
 using System.Threading;
 using Jhu.Graywulf.Components;
 using Jhu.Graywulf.Registry;
@@ -28,6 +29,8 @@ namespace Jhu.Graywulf.Scheduler
 
         #region Private variables
 
+        private Guid guid;
+
         /// <summary>
         /// Reference to the scheduler
         /// </summary>
@@ -37,6 +40,16 @@ namespace Jhu.Graywulf.Scheduler
         /// Persistence participant, same for all WorkflowApplications
         /// </summary>
         private SqlWorkflowInstanceStore workflowInstanceStore;
+        private InstanceHandle workflowInstanceHandle;
+
+        #endregion
+        #region Properties
+
+        public Guid Guid
+        {
+            get { return guid; }
+            set { guid = value; }
+        }
 
         #endregion
 
@@ -50,43 +63,66 @@ namespace Jhu.Graywulf.Scheduler
             this.workflowInstanceStore = null;
         }
 
+        private RegistryContext CreateRegistryContext()
+        {
+            var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit);
+            context.LockOwner = this.guid;
+            return context;
+        }
+
         /// <summary>
         /// Starts a new Workflowhost
         /// </summary>
-        public void Start(Scheduler scheduler, bool interactive)
+        public void Start(Guid guid, Scheduler scheduler, bool interactive)
         {
             Start(interactive);
-            
-            // Store a reference to the scheduler and tracker
+
+            this.guid = guid;
             this.scheduler = scheduler;
 
             // Initialize persistence participant
             workflowInstanceStore = new SqlWorkflowInstanceStore(Scheduler.Configuration.PersistenceConnectionString);
+            workflowInstanceStore.InstanceCompletionAction = InstanceCompletionAction.DeleteAll;
+            // Create the instance store owner
+            workflowInstanceHandle = workflowInstanceStore.CreateInstanceHandle();
+            var view = workflowInstanceStore.Execute(workflowInstanceHandle, new CreateWorkflowOwnerCommand(), TimeSpan.FromSeconds(30));
+            workflowInstanceStore.DefaultInstanceOwner = view.InstanceOwner;
+            
         }
 
         /// <summary>
         /// Drain-stops the workflow host by waiting for the
         /// workflows complete
         /// </summary>
-        public override void Stop(TimeSpan timeout)
+        public override bool TryStop()
         {
-            workflowInstanceStore = null;
-            base.Stop(timeout);
+            if (base.TryStop())
+            {
+                //var deleteOwnerCmd = new DeleteWorkflowOwnerCommand();
+                //workflowInstanceStore.Execute(workflowInstanceHandle, deleteOwnerCmd, TimeSpan.FromSeconds(30));
+                workflowInstanceStore.DefaultInstanceOwner = null;
+                workflowInstanceHandle.Free();
+                workflowInstanceStore = null;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
         /// Sets up a new workflow and starts the new job
         /// </summary>
-        /// <param name="jobGuid"></param>
-        /// <returns></returns>
         public Guid PrepareStartJob(Job job)
         {
-            // Load job data from the registry
-            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
-            {
-                context.JobReference.Guid = job.Guid;
+            new JobContext(job).Push();
 
-                JobInstance ji = LoadJobInstance(context, job);
+            Guid wfguid;
+
+            using (var context = CreateRegistryContext())
+            {
+                var ji = LoadJobInstance(context, job);
 
                 // Deserialize parameters
                 Dictionary<string, object> pars = new Dictionary<string, object>();
@@ -105,7 +141,7 @@ namespace Jhu.Graywulf.Scheduler
                 pars.Add(Jhu.Graywulf.Activities.Constants.ActivityParameterJobInfo, jobinfo);
 
                 // Start the workflow
-                Guid wfguid = PrepareStartWorkflow(job, pars);
+                wfguid = PrepareStartWorkflow(job, pars);
 
                 // Update registry
                 ji.DateStarted = DateTime.Now;
@@ -114,8 +150,12 @@ namespace Jhu.Graywulf.Scheduler
 
                 ji.Save();
 
-                return wfguid;
+                context.CommitTransaction();
             }
+
+            JobContext.Current.Pop();
+
+            return wfguid;
         }
 
         /// <summary>
@@ -125,24 +165,31 @@ namespace Jhu.Graywulf.Scheduler
         /// <returns></returns>
         public Guid PrepareResumeJob(Job job)
         {
-            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
-            {
-                context.JobReference.Guid = job.Guid;
+            new JobContext(job).Push();
 
+            Guid wfguid;
+
+            using (var context = CreateRegistryContext())
+            {
                 JobInstance ji = LoadJobInstance(context, job);
 
                 // Load assembly and create workflow instance
                 Type wftype = Type.GetType(ji.WorkflowTypeName);
 
                 // Resume the workflow
-                Guid wfguid = PrepareResumeWorkflow(job, ji.WorkflowInstanceId);
+                wfguid = PrepareResumeWorkflow(job, ji.WorkflowInstanceId);
 
                 // Update registry
+                ji.WorkflowInstanceId = wfguid;
                 ji.JobExecutionStatus = JobExecutionState.Executing;
                 ji.Save();
 
-                return wfguid;
+                context.CommitTransaction();
             }
+
+            JobContext.Current.Pop();
+
+            return wfguid;
         }
 
         public void RunJob(Job job)
@@ -152,11 +199,11 @@ namespace Jhu.Graywulf.Scheduler
 
         private void SaveJobParameters(Job job, IDictionary<string, object> outputs)
         {
-            // Load job data from the registry
-            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
-            {
-                context.JobReference.Guid = job.Guid;
+            new JobContext(job).Push();
 
+            // Load job data from the registry
+            using (var context = CreateRegistryContext())
+            {
                 JobInstance ji = LoadJobInstance(context, job);
 
                 foreach (var name in outputs.Keys)
@@ -175,7 +222,11 @@ namespace Jhu.Graywulf.Scheduler
                 }
 
                 ji.Save();
+
+                context.CommitTransaction();
             }
+
+            JobContext.Current.Pop();
         }
 
         /// <summary>
@@ -186,20 +237,28 @@ namespace Jhu.Graywulf.Scheduler
         /// </remarks>
         public Guid CancelJob(Job job)
         {
-            JobInstance ji;
-            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
-            {
-                // context.ContextGuid = contextGuid;
-                context.JobReference.Guid = job.Guid;
+            new JobContext(job).Push();
 
-                ji = LoadJobInstance(context, job);
+            Guid wfguid;
+
+            using (var context = CreateRegistryContext())
+            {
+                var ji = LoadJobInstance(context, job);
 
                 // Update registry
                 ji.JobExecutionStatus = JobExecutionState.Cancelling;
                 ji.Save();
+
+                wfguid = ji.WorkflowInstanceId;
+
+                context.CommitTransaction();
             }
 
-            return CancelWorkflow(ji.WorkflowInstanceId, Scheduler.Configuration.CancelTimeout);
+            CancelWorkflow(wfguid, Scheduler.Configuration.CancelTimeout);
+
+            JobContext.Current.Pop();
+
+            return wfguid;
         }
 
         /// <summary>
@@ -209,38 +268,56 @@ namespace Jhu.Graywulf.Scheduler
         /// <returns></returns>
         public Guid TimeOutJob(Job job)
         {
-            JobInstance ji;
-            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
-            {
-                context.JobReference.Guid = job.Guid;
+            new JobContext(job).Push();
 
-                ji = LoadJobInstance(context, job);
+            Guid wfguid;
+            
+            using (var context = CreateRegistryContext())
+            {
+                var ji = LoadJobInstance(context, job);
 
                 // Update registry
                 ji.JobExecutionStatus = JobExecutionState.Cancelling;
                 ji.Save();
+
+                wfguid = ji.WorkflowInstanceId;
+
+                context.CommitTransaction();
             }
 
-            return TimeOutWorkflow(ji.WorkflowInstanceId, Scheduler.Configuration.CancelTimeout);
+            TimeOutWorkflow(wfguid, Scheduler.Configuration.CancelTimeout);
+
+            JobContext.Current.Pop();
+
+            return wfguid;
         }
 
         public Guid PersistJob(Job job)
         {
-            JobInstance ji;
-            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
-            {
-                context.JobReference.Guid = job.Guid;
+            new JobContext(job).Push();
 
-                ji = LoadJobInstance(context, job);
+            Guid wfguid;
+
+            using (var context = CreateRegistryContext())
+            {
+                var ji = LoadJobInstance(context, job);
 
                 // Update registry
                 ji.JobExecutionStatus = JobExecutionState.Persisting;
                 ji.Save();
+
+                wfguid = ji.WorkflowInstanceId;
+
+                context.CommitTransaction();
             }
 
             // For some reason, unloading happens synchronously so to avoid deadlock with
             // the previous registry update, this has to be called outside the context
-            return PersistWorkflow(ji.WorkflowInstanceId);
+            PersistWorkflow(wfguid);
+
+            JobContext.Current.Pop();
+
+            return wfguid;
         }
 
         private JobInstance LoadJobInstance(RegistryContext context, Job job)
@@ -324,7 +401,7 @@ namespace Jhu.Graywulf.Scheduler
                 WorkflowApplication = wfapp,
             };
 
-            RegisterWorkflow(wfapp, workflow);
+            BookkeepWorkflow(wfapp, workflow);
         }
 
         protected override void OnWorkflowCancelling(WorkflowApplicationHostBase.WorkflowApplicationDetails w)

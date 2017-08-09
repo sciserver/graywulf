@@ -7,7 +7,7 @@ using Jhu.Graywulf.Test;
 
 namespace Jhu.Graywulf.Scheduler
 {
-    public abstract class SchedulerTestBase: TestClassBase
+    public abstract class SchedulerTestBase : TestClassBase
     {
         protected ServiceTesterToken token;
 
@@ -48,8 +48,21 @@ namespace Jhu.Graywulf.Scheduler
 
         public virtual void TestCleanup()
         {
-            SchedulerTester.Instance.DrainStop();
-            token.Dispose();
+            try
+            {
+                if (SchedulerTester.Instance.IsRunning)
+                {
+                    SchedulerTester.Instance.DrainStop();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                token.Dispose();
+            }
         }
     }
 }

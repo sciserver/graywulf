@@ -89,7 +89,7 @@ namespace Jhu.Graywulf.Components
         #endregion
         #region Constructors and initializers
 
-        private AppDomainManager()
+        public AppDomainManager()
         {
             InitializeMembers();
         }

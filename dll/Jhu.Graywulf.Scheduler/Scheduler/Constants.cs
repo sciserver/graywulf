@@ -12,7 +12,5 @@ namespace Jhu.Graywulf.Scheduler
 
         public static readonly TimeSpan DrainStopTimeout = TimeSpan.FromSeconds(120);
         public static readonly TimeSpan UnloadAppDomainTimeout = TimeSpan.FromSeconds(30);
-
-        public static readonly TimeSpan WorkflowPollingInterval = TimeSpan.FromMilliseconds(100);
     }
 }

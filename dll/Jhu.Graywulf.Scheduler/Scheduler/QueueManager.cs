@@ -33,6 +33,8 @@ namespace Jhu.Graywulf.Scheduler
 
         private object syncRoot = new object();
 
+        private Guid guid = Guid.NewGuid();
+
         /// <summary>
         /// If true, process is running in interactive mode, otherwise
         /// it's a Windows service
@@ -63,6 +65,11 @@ namespace Jhu.Graywulf.Scheduler
         /// Needs synchronization
         /// </remarks>
         private Queue<JobWorkflowEvent> jobWorkflowEvents;
+
+        /// <summary>
+        /// Keeps track of app domains created for job execution
+        /// </summary>
+        private Components.AppDomainManager appDomainManager;
 
         /// <summary>
         /// AppDomains stored by their IDs.
@@ -163,6 +170,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             this.interactive = true;
 
+            this.appDomainManager = null;
             this.appDomains = null;
             this.runningJobsByWorkflowInstanceId = null;
             this.runningJobsByGuid = null;
@@ -183,6 +191,14 @@ namespace Jhu.Graywulf.Scheduler
         }
 
         #endregion
+
+        private RegistryContext CreateRegistryContext()
+        {
+            var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.ManualCommit);
+            context.LockOwner = this.guid;
+            return context;
+        }
+
         #region Cluster configuration caching functions
 
         /// <summary>
@@ -203,7 +219,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             LogDebug(String.Format("Loading cluster config. Layout is {0}required.", isLayouRequired ? "" : "not "));
 
-            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = CreateRegistryContext())
             {
                 var ef = new EntityFactory(context);
                 var c = ef.LoadEntity<Jhu.Graywulf.Registry.Cluster>(clusterName);
@@ -299,6 +315,8 @@ namespace Jhu.Graywulf.Scheduler
 
                 LogDebug("Cluster config loaded.");
 
+                context.CommitTransaction();
+
                 return cluster;
             }
         }
@@ -315,6 +333,7 @@ namespace Jhu.Graywulf.Scheduler
             // Initialize Queue Manager
             this.interactive = interactive;
 
+            appDomainManager = new Components.AppDomainManager();
             appDomains = new Dictionary<int, AppDomainHost>();
             runningJobsByWorkflowInstanceId = new Dictionary<Guid, Job>();
             runningJobsByGuid = new Dictionary<Guid, Job>();
@@ -341,6 +360,21 @@ namespace Jhu.Graywulf.Scheduler
         }
 
         /// <summary>
+        /// Waits for all jobs to complete and stops the scheduler.
+        /// </summary>
+        /// <param name="timeout"></param>
+        public void DrainStop(TimeSpan timeout)
+        {
+            var res = Stop(timeout, false, false);
+
+            Logging.LoggingContext.Current.LogOperation(
+                Logging.EventSource.Scheduler,
+                String.Format("The Graywulf Scheduler Service has stopped with{0} timeout.", res ? "out" : ""),
+                null,
+                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
+        }
+
+        /// <summary>
         /// Persists all jobs and stops the scheduler.
         /// </summary>
         /// <remarks>
@@ -348,38 +382,11 @@ namespace Jhu.Graywulf.Scheduler
         /// </remarks>
         public void Stop(TimeSpan timeout)
         {
-            Stop(timeout, true);
-        }
+            var res = Stop(timeout, false, true);
 
-        /// <summary>
-        /// Waits for all jobs to complete and stops the scheduler.
-        /// </summary>
-        /// <param name="timeout"></param>
-        public void DrainStop(TimeSpan timeout)
-        {
-            Stop(timeout, false);
-        }
-
-        private void Stop(TimeSpan timeout, bool requestPersist)
-        {
-            StopControlService();
-            StopPoller();
-
-            if (requestPersist)
-            {
-                foreach (var job in runningJobsByWorkflowInstanceId.Values)
-                {
-                    PersistJob(job);
-                }
-            }
-
-            StopAppDomains(timeout);
-            ProcessFinishedJobs();
-
-            // Log stop event
             Logging.LoggingContext.Current.LogOperation(
                 Logging.EventSource.Scheduler,
-                "Graywulf Scheduler Service has stopped.",
+                String.Format("The Graywulf Scheduler Service has stopped.", res ? "out" : ""),
                 null,
                 new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
         }
@@ -389,23 +396,61 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         public void Kill(TimeSpan timeout)
         {
+            var res = Stop(timeout, true, false);
+
+            Logging.LoggingContext.Current.LogOperation(
+                Logging.EventSource.Scheduler,
+                String.Format("The Graywulf Scheduler Service has been killed.", res ? "out" : ""),
+                null,
+                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
+        }
+
+        private bool Stop(TimeSpan timeout, bool requestCancel, bool requestPersist)
+        {
+            if (requestCancel && requestPersist)
+            {
+                throw new ArgumentException("Both arguments cannot be true.");
+            }
+
             StopControlService();
             StopPoller();
 
-            foreach (var job in runningJobsByWorkflowInstanceId.Values)
+            if (requestCancel)
             {
-                CancelOrTimeOutJob(job, false);
+                foreach (var job in runningJobsByWorkflowInstanceId.Values)
+                {
+                    CancelOrTimeOutJob(job, false);
+                }
             }
 
-            StopAppDomains(timeout);
-            ProcessFinishedJobs();
+            if (requestPersist)
+            {
+                foreach (var job in runningJobsByWorkflowInstanceId.Values)
+                {
+                    PersistJob(job);
+                }
+            }
 
-            // Log stop event
-            Logging.LoggingContext.Current.LogOperation(
-                Logging.EventSource.Scheduler,
-                "Graywulf Remote Service has been killed.",
-                null,
-                new Dictionary<string, object>() { { "UserAccount", String.Format("{0}\\{1}", Environment.UserDomainName, Environment.UserName) } });
+            // Wait for the jobs to complete
+
+            var start = DateTime.Now;
+
+            while (!StopAppDomains())
+            {
+                if ((DateTime.Now - start) > timeout)
+                {
+                    return false;
+                }
+
+                ProcessTimedOutJobs();
+                PollAndCancelJobs();
+                ProcessFinishedJobs();
+                UnloadOldAppDomains(Constants.UnloadAppDomainTimeout);
+
+                Thread.Sleep(Scheduler.Configuration.PollingInterval);
+            }
+
+            return true;
         }
 
         private void StartControlService()
@@ -560,7 +605,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             // TODO: where to handle errors?
 
-            using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+            using (var context = CreateRegistryContext())
             {
                 int failed = 0;
                 int started = 0;
@@ -604,6 +649,8 @@ namespace Jhu.Graywulf.Scheduler
                         j.RescheduleIfRecurring();
                     }
                 }
+
+                context.CommitTransaction();
 
                 LogOperation(String.Format(
                     "Processed interrupted jobs. Marked {0} jobs as failed and {1} jobs as scheduler.",
@@ -657,7 +704,7 @@ namespace Jhu.Graywulf.Scheduler
             {
                 List<Job> res = new List<Job>();
 
-                using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                using (var context = CreateRegistryContext())
                 {
                     // The number of jobs to be requested from the queue is the
                     // number of maximum outstanding jobs minus the number of
@@ -666,10 +713,7 @@ namespace Jhu.Graywulf.Scheduler
                     var maxjobs = queue.MaxOutstandingJobs - queue.Jobs.Count;
 
                     var jf = new JobInstanceFactory(context);
-                    var jis = jf.FindNextJobInstances(
-                        queue.Guid,
-                        queue.LastUserGuid,
-                        maxjobs);
+                    var jis = jf.FindNextJobInstances(queue.Guid, queue.LastUserGuid, maxjobs);
 
                     foreach (var ji in jis)
                     {
@@ -693,6 +737,8 @@ namespace Jhu.Graywulf.Scheduler
                             UserName = user.Name,
                         };
 
+                        // Update job status. Lock is already obtained by the poller stored procedure
+
                         if ((ji.JobExecutionStatus & JobExecutionState.Scheduled) != 0)
                         {
                             job.Status = JobStatus.Starting;
@@ -714,6 +760,8 @@ namespace Jhu.Graywulf.Scheduler
                         ji.Save();
                         res.Add(job);
                     }
+
+                    context.CommitTransaction();
                 }
 
                 return res;
@@ -747,11 +795,9 @@ namespace Jhu.Graywulf.Scheduler
             {
                 List<Job> res = new List<Job>();
 
-                using (var context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                using (var context = CreateRegistryContext())
                 {
                     var jf = new JobInstanceFactory(context);
-
-
                     jf.UserGuid = Guid.Empty;
                     jf.QueueInstanceGuids.Clear();
                     jf.QueueInstanceGuids.Add(queue.Guid);
@@ -774,6 +820,8 @@ namespace Jhu.Graywulf.Scheduler
                             }
                         }
                     }
+
+                    context.CommitTransaction();
                 }
 
                 return res;
@@ -800,9 +848,11 @@ namespace Jhu.Graywulf.Scheduler
 
         private void ProcessFinishedJob(JobWorkflowEvent e)
         {
+            new JobContext(e.Job).Push();
+
             try
             {
-                using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                using (var context = CreateRegistryContext())
                 {
                     var job = e.Job;
 
@@ -844,18 +894,28 @@ namespace Jhu.Graywulf.Scheduler
 
                     ji.ReleaseLock(false);
                     ji.RescheduleIfRecurring();
+
+                    context.CommitTransaction();
                 }
             }
             catch (Exception ex)
             {
-                // TODO: remove failed job
+                // TODO: This can be caused by a SQL error only, add retry logic
                 LogError(ex);
+            }
+            finally
+            {
+                JobContext.Current.Pop();
             }
         }
 
         protected string GetExceptionMessage(Exception exception)
         {
-            if (exception is AggregateException)
+            if (exception == null)
+            {
+                return null;
+            }
+            else if (exception is AggregateException)
             {
                 return exception.InnerException.Message;
             }
@@ -874,29 +934,36 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="job"></param>
         private void StartOrResumeJob(Job job)
         {
+            new JobContext(job).Push();
+
             try
             {
-                using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                using (var context = CreateRegistryContext())
                 {
                     // TODO: why need to set job guid here manually?
                     context.JobReference.Guid = job.Guid;
 
                     var ef = new EntityFactory(context);
                     var ji = ef.LoadEntity<JobInstance>(job.Guid);
-
-                    // Lock the job, so noone else can pick it up
                     ji.DateStarted = DateTime.Now;
-                    ji.ObtainLock();
-
                     ji.Save();
+
+                    context.CommitTransaction();
                 }
             }
             catch (Exception ex)
             {
                 LogError(ex);
+                FailJob(job, ex);
                 return;
                 // TODO: remove failing job
             }
+            finally
+            {
+                JobContext.Current.Pop();
+            }
+
+            new JobContext(job).Push();
 
             // Schedule job in the appropriate app domain
             var adh = GetOrCreateAppDomainHost(job);
@@ -926,13 +993,17 @@ namespace Jhu.Graywulf.Scheduler
             adh.RunJob(job);
 
             BookkeepAddJob(job);
+
+            JobContext.Current.Pop();
         }
 
         private void CancelOrTimeOutJob(Job job, bool timeout)
         {
+            new JobContext(job).Push();
+
             try
             {
-                using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                using (var context = CreateRegistryContext())
                 {
                     // *** TODO: why set guid here manually?
                     context.JobReference.Guid = job.Guid;
@@ -941,16 +1012,24 @@ namespace Jhu.Graywulf.Scheduler
                     var ji = ef.LoadEntity<JobInstance>(job.Guid);
 
                     ji.JobExecutionStatus = JobExecutionState.Cancelling;
-
                     ji.Save();
+
+                    context.CommitTransaction();
                 }
             }
             catch (Exception ex)
             {
                 LogError(ex);
+                FailJob(job, ex);
                 return;
                 // TODO: remove failing job
             }
+            finally
+            {
+                JobContext.Current.Pop();
+            }
+
+            new JobContext(job).Push();
 
             if (timeout)
             {
@@ -964,13 +1043,17 @@ namespace Jhu.Graywulf.Scheduler
                 job.Status = JobStatus.Cancelled;
                 appDomains[job.AppDomainID].CancelJob(job);
             }
+
+            JobContext.Current.Pop();
         }
 
         private void PersistJob(Job job)
         {
+            new JobContext(job).Push();
+
             try
             {
-                using (RegistryContext context = ContextManager.Instance.CreateContext(ConnectionMode.AutoOpen, TransactionMode.AutoCommit))
+                using (var context = CreateRegistryContext())
                 {
                     // *** TODO: why do we have to set jobguid here explicitly?
                     context.JobReference.Guid = job.Guid;
@@ -981,18 +1064,29 @@ namespace Jhu.Graywulf.Scheduler
                     ji.JobExecutionStatus = JobExecutionState.Persisting;
 
                     ji.Save();
+
+                    context.CommitTransaction();
                 }
             }
             catch (Exception ex)
             {
                 LogError(ex);
+                FailJob(job, ex);
                 return;
                 // TODO: remove failed job
             }
+            finally
+            {
+                JobContext.Current.Pop();
+            }
+
+            new JobContext(job).Push();
 
             LogJobStatus("Persisting job {0}.", job);
             appDomains[job.AppDomainID].PersistJob(job);
             job.Status = JobStatus.Persisted;
+
+            JobContext.Current.Pop();
         }
 
         /// <summary>
@@ -1067,7 +1161,7 @@ namespace Jhu.Graywulf.Scheduler
         private AppDomainHost GetOrCreateAppDomainHost(Job job)
         {
             System.AppDomain ad;
-            var isnew = Components.AppDomainManager.Instance.GetAppDomainForType(job.WorkflowTypeName, true, out ad);
+            var isnew = appDomainManager.GetAppDomainForType(job.WorkflowTypeName, true, out ad);
             int id = ad.Id;
 
             if (isnew || !appDomains.ContainsKey(id))
@@ -1078,7 +1172,7 @@ namespace Jhu.Graywulf.Scheduler
 
                 adh.WorkflowEvent += AppDomainHost_WorkflowEvent;
                 adh.UnhandledException += AppDomainHost_UnhandledException;
-                adh.Start(Scheduler, interactive);
+                adh.Start(this.guid, Scheduler, interactive);
 
                 return adh;
             }
@@ -1089,7 +1183,7 @@ namespace Jhu.Graywulf.Scheduler
             }
         }
 
-        private void StopAppDomains(TimeSpan timeout)
+        private bool StopAppDomains()
         {
             // No synchronization here, because it is called from stop or kill
             // at which point the poller thread has been stopped already.
@@ -1099,9 +1193,17 @@ namespace Jhu.Graywulf.Scheduler
             foreach (var id in appDomains.Keys)
             {
                 var adh = appDomains[id];
-                adh.Stop(timeout, interactive);
-                adh.Unload();
+                if (adh.TryStop())
+                {
+                    appDomainManager.UnloadAppDomain(id);
+                }
+                else
+                {
+                    return false;
+                }
             }
+
+            return true;
         }
 
         /// <summary>
@@ -1118,8 +1220,12 @@ namespace Jhu.Graywulf.Scheduler
 
             foreach (var adh in adhs)
             {
-                adh.Stop(timeout, interactive);
-                adh.Unload();
+                if (!adh.TryStop())
+                {
+                    throw new InvalidOperationException();
+                }
+
+                appDomainManager.UnloadAppDomain(adh.ID);
                 appDomains.Remove(adh.ID);
             }
         }

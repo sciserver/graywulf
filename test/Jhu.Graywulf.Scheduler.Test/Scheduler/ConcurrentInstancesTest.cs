@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Scheduler
         [TestInitialize]
         public void TestInitialize()
         {
-            TestInitialize(true, 2);
+            TestInitialize(false, 2);
         }
 
         [TestCleanup]
@@ -56,6 +56,7 @@ namespace Jhu.Graywulf.Scheduler
             }
 
             WaitJobComplete(guids[guids.Length - 1], TimeSpan.FromSeconds(5));
+            SchedulerTester.Instance.DrainStop();
 
             for (int i = 0; i < guids.Length; i++)
             {

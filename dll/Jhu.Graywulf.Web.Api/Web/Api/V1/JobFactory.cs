@@ -279,9 +279,7 @@ namespace Jhu.Graywulf.Web.Api.V1
         public Job CancelJob(Guid guid)
         {
             var ji = EntityFactory.LoadEntity<JobInstance>(guid);
-
             ji.Cancel();
-
             return CreateJobFromInstance(ji);
         }
 

@@ -108,7 +108,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <summary>
         /// Starts a new AppDomain to accept workflow execution requests.
         /// </summary>
-        public void Start(Scheduler scheduler, bool interactive)
+        public void Start(Guid guid, Scheduler scheduler, bool interactive)
         {
             QueueManager.Instance.LogDebug("Staring new host in AppDomain: {0}", ID);
 
@@ -134,30 +134,32 @@ namespace Jhu.Graywulf.Scheduler
             workflowHost.WorkflowEvent += workflowEventHandler;
 
             // Start the new workflow host inside the new AppDomain
-            workflowHost.Start(scheduler, interactive);
+            workflowHost.Start(guid, scheduler, interactive);
         }
         
         /// <summary>
         /// Drain-stops the workflows hosted inside the app domain
         /// and unloads the AppDomain itself.
         /// </summary>
-        public void Stop(TimeSpan timeout, bool interactive)
+        public bool TryStop()
         {
-            Logging.LoggingContext.Current.LogDebug(
-                Logging.EventSource.Scheduler,
-                String.Format("Stopping AppDomain: {0}", ID));
+            if (workflowHost.TryStop())
+            {
+                Logging.LoggingContext.Current.LogDebug(
+                    Logging.EventSource.Scheduler,
+                    String.Format("Stopping AppDomain: {0}", ID));
 
-            workflowHost.Stop(timeout);
-            workflowHost.WorkflowEvent -= workflowEventHandler;
-            workflowEventHandler = null;
-            workflowHost = null;
+                workflowHost.WorkflowEvent -= workflowEventHandler;
+                workflowEventHandler = null;
+                workflowHost = null;
 
-            appDomain.UnhandledException -= AppDomain_UnhandledException;
-        }
-
-        public void Unload()
-        {
-            Components.AppDomainManager.Instance.UnloadAppDomain(this.id);
+                appDomain.UnhandledException -= AppDomain_UnhandledException;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         #endregion
