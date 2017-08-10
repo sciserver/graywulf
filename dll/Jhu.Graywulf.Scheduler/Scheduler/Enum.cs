@@ -44,6 +44,7 @@ namespace Jhu.Graywulf.Scheduler
         Resuming,
         Executing,
         TimedOut,
+        Persisting,
         Persisted,
         Failed,
         Cancelled,

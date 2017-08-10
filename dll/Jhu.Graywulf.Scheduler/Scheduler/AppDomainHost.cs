@@ -105,18 +105,24 @@ namespace Jhu.Graywulf.Scheduler
         #endregion
         #region Host operations
 
+        private void Touch()
+        {
+            lastTimeActive = DateTime.Now;
+        }
+
         /// <summary>
         /// Starts a new AppDomain to accept workflow execution requests.
         /// </summary>
         public void Start(Guid guid, Scheduler scheduler, bool interactive)
         {
+            Touch();
+
             QueueManager.Instance.LogDebug("Staring new host in AppDomain: {0}", ID);
 
             appDomain.UnhandledException += AppDomain_UnhandledException;
 
             runningJobsByGuid = new Dictionary<Guid, Job>();
-            lastTimeActive = DateTime.Now;
-
+            
             // Create the new WorkflowHost inside the new AppDomain and unwrap the proxy
             workflowHost = (SchedulerWorkflowApplicationHost)appDomain.CreateInstanceAndUnwrap(
                 typeof(Jhu.Graywulf.Scheduler.SchedulerWorkflowApplicationHost).Assembly.FullName,
@@ -143,7 +149,7 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         public bool TryStop()
         {
-            if (workflowHost.TryStop())
+            if (runningJobsByGuid.Count == 0 && workflowHost.TryStop())
             {
                 Logging.LoggingContext.Current.LogDebug(
                     Logging.EventSource.Scheduler,
@@ -172,7 +178,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <returns></returns>
         public Guid PrepareStartJob(Job job)
         {
-            lastTimeActive = DateTime.Now;
+            Touch();
             return workflowHost.PrepareStartJob(job);
         }
 
@@ -184,13 +190,13 @@ namespace Jhu.Graywulf.Scheduler
         /// <returns></returns>
         public Guid PrepareResumeJob(Job job)
         {
-            lastTimeActive = DateTime.Now;
+            Touch();
             return workflowHost.PrepareResumeJob(job);
         }
 
         public void RunJob(Job job)
         {
-            lastTimeActive = DateTime.Now;
+            Touch();
             workflowHost.RunJob(job);
         }
 
@@ -201,7 +207,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="workflowInstanceId"></param>
         public void CancelJob(Job job)
         {
-            lastTimeActive = DateTime.Now;
+            Touch();
             workflowHost.CancelJob(job);
         }
 
@@ -211,7 +217,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="job"></param>
         public void TimeOutJob(Job job)
         {
-            lastTimeActive = DateTime.Now;
+            Touch();
             workflowHost.TimeOutJob(job);
         }
 
@@ -221,7 +227,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="jobGuid"></param>
         public void PersistJob(Job job)
         {
-            lastTimeActive = DateTime.Now;
+            Touch();
             workflowHost.PersistJob(job);
         }
 
@@ -235,7 +241,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="e"></param>
         void WorkflowHost_WorkflowEvent(object sender, WorkflowApplicationHostEventArgs e)
         {
-            lastTimeActive = DateTime.Now;
+            Touch();
             WorkflowEvent(this, e);
         }
 

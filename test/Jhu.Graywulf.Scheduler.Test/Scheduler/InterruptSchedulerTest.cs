@@ -27,7 +27,7 @@ namespace Jhu.Graywulf.Scheduler
         [TestInitialize]
         public void TestInitialize()
         {
-            TestInitialize(true, 1);
+            TestInitialize(false, 2);
         }
 
         [TestCleanup]
@@ -147,6 +147,9 @@ namespace Jhu.Graywulf.Scheduler
             // needs more testing but it's not a major issue
             var guid = ScheduleTestJob(JobType.AsyncExceptionWithRetry, QueueType.Long);
             WaitJobStarted(guid, TimeSpan.FromSeconds(10));
+
+            // Leave enough time to run
+            Thread.Sleep(new TimeSpan(0, 0, 10));
 
             SchedulerTester.Instance.Stop();
 

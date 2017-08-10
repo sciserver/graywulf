@@ -137,11 +137,10 @@ namespace Jhu.Graywulf.Scheduler
             var guid = ScheduleTestJob(new TimeSpan(0, 0, 10), JobType.QueryTimeoutRetry, QueueType.Quick, new TimeSpan(0, 0, 50));
 
             WaitJobStarted(guid, TimeSpan.FromSeconds(10));
-
             WaitJobComplete(guid, TimeSpan.FromSeconds(10));
 
             var ji = LoadJob(guid);
-            Assert.AreEqual(JobExecutionState.Failed, ji.JobExecutionStatus);
+            Assert.AreEqual(JobExecutionState.TimedOut, ji.JobExecutionStatus);
         }
     }
 }
