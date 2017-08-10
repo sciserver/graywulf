@@ -400,6 +400,11 @@ namespace Jhu.Graywulf.Logging
 
         public MethodBase UnwindStack(int skip)
         {
+            return UnwindStack(skip + 1, typeof(LoggingContext));
+        }
+
+        public MethodBase UnwindStack(int skip, Type skipType)
+        {
             var stack = new StackTrace(skip, true);
 
             for (int i = 0; i < stack.FrameCount; i++)
@@ -407,7 +412,7 @@ namespace Jhu.Graywulf.Logging
                 var frame = stack.GetFrame(i);
                 var method = frame.GetMethod();
 
-                if (!typeof(LoggingContext).IsAssignableFrom(method.DeclaringType))
+                if (!skipType.IsAssignableFrom(method.DeclaringType))
                 {
                     return method;
                 }

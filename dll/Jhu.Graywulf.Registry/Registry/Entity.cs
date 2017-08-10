@@ -823,20 +823,17 @@ namespace Jhu.Graywulf.Registry
         public void LogDebug()
         {
 #if DEBUG
+            
             var method = new StackFrame(1, true).GetMethod();
-
-            Logging.LoggingContext.Current.LogDebug(
-                Logging.EventSource.Registry,
-                String.Format("{0} {1}: {2}", method.Name, Constants.EntityNames_Singular[this.EntityType], this.Name),
-                method.DeclaringType.FullName + "." + method.Name,
-                new Dictionary<string, object>() { { Logging.Constants.UserDataEntityGuid, this.Guid } });
+            var message = String.Format("{0} {1}: {2}", method.Name, Constants.EntityNames_Singular[this.EntityType], this.Name);
+            LogDebug(message);
 #endif
         }
 
         public void LogDebug(string message)
         {
 #if DEBUG
-            var method = new StackFrame(1, true).GetMethod();
+            var method = Logging.LoggingContext.Current.UnwindStack(1, typeof(Entity));
 
             Logging.LoggingContext.Current.LogDebug(
                 Logging.EventSource.Registry,
