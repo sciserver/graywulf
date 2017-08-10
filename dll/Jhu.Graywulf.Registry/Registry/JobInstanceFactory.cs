@@ -164,7 +164,7 @@ namespace Jhu.Graywulf.Registry
                 rnd = random.Next(1000);
             }
 
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
 
             return String.Format("{0:yyMMddHHmmssff}{1:000}", now, rnd);
         }

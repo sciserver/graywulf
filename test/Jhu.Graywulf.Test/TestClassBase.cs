@@ -187,7 +187,7 @@ WHERE DateFinished IS NULL";
 
                 lock (rnd)
                 {
-                    job.Name = String.Format("{0}_{1}_{2}", "test", DateTime.Now.ToString("yyMMddHHmmssff"), rnd.Next(1000));
+                    job.Name = String.Format("{0}_{1}_{2}", "test", DateTime.UtcNow.ToString("yyMMddHHmmssff"), rnd.Next(1000));
                 }
 
                 job.Save();

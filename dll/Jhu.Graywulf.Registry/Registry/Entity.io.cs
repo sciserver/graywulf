@@ -266,7 +266,7 @@ namespace Jhu.Graywulf.Registry
             if (!forceOverwrite) CheckConcurrency();
 
             // --- Modify record in the Entities table ---
-            this.dateModified = DateTime.Now;
+            this.dateModified = DateTime.UtcNow;
 
             string sql = "spModifyEntity";
 
@@ -411,7 +411,7 @@ namespace Jhu.Graywulf.Registry
 
                 this.concurrencyVersion = BitConverter.ToInt64((byte[])cmd.Parameters["@ConcurrencyVersion"].Value, 0);
                 this.deleted = true;
-                this.dateDeleted = DateTime.Now;
+                this.dateDeleted = DateTime.UtcNow;
                 this.userGuidDeleted = RegistryContext.UserReference.Guid;
             }
 

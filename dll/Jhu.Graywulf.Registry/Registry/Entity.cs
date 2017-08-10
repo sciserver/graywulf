@@ -501,7 +501,7 @@ namespace Jhu.Graywulf.Registry
         [OnDeserializing]
         private void InitializeMembers(StreamingContext context)
         {
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
 
             this.isExisting = false;
             this.isDeserializing = false;

@@ -473,7 +473,7 @@ namespace Jhu.Graywulf.Registry
         private void MarkCancelled()
         {
             JobExecutionStatus = JobExecutionState.Cancelled;
-            DateFinished = DateTime.Now;
+            DateFinished = DateTime.UtcNow;
 
             Save();
         }

@@ -45,6 +45,8 @@ namespace Jhu.Graywulf.Util
 
         public static string FancyFormat(DateTime value)
         {
+            // TODO: assume UTC but display local time?
+
             if (value == DateTime.MinValue)
             {
                 return "";

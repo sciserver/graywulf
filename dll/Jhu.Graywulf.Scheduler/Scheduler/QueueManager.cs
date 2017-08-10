@@ -912,7 +912,7 @@ namespace Jhu.Graywulf.Scheduler
                     }
 
                     // Update registry
-                    ji.DateFinished = DateTime.Now;
+                    ji.DateFinished = DateTime.UtcNow;
                     ji.Save();
 
                     ji.ReleaseLock(false);
@@ -982,7 +982,7 @@ namespace Jhu.Graywulf.Scheduler
 
                 // Timeout is reset for resumed jobs
                 job.Status = JobStatus.Starting;
-                job.TimeStarted = DateTime.Now;
+                job.TimeStarted = DateTime.UtcNow;
 
                 // Do bookkeeping before attempting to start job as the start operation itself
                 // might generate async events.

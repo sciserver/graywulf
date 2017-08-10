@@ -152,7 +152,7 @@ namespace Jhu.Graywulf.Scheduler
                 wfguid = PrepareStartWorkflow(job, pars);
 
                 // Update registry
-                ji.DateStarted = DateTime.Now;
+                ji.DateStarted = DateTime.UtcNow;
                 ji.WorkflowInstanceId = wfguid;
                 ji.JobExecutionStatus = JobExecutionState.Executing;
                 ji.Save();
