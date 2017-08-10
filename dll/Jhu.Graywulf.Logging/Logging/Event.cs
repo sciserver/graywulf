@@ -207,7 +207,7 @@ namespace Jhu.Graywulf.Logging
             this.contextGuid = Guid.Empty;
             this.source = EventSource.None;
             this.severity = EventSeverity.None;
-            this.dateTime = DateTime.Now;
+            this.dateTime = DateTime.UtcNow;
             this.order = 0;
             this.executionStatus = ExecutionStatus.Executing;
             this.operation = string.Empty;
