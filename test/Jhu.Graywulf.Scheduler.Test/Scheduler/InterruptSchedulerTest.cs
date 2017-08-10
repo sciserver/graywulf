@@ -71,10 +71,23 @@ namespace Jhu.Graywulf.Scheduler
             SchedulerTester.Instance.Kill();
             WaitJobComplete(guid, TimeSpan.FromSeconds(10));
             var ji = LoadJob(guid);
-            // This will complete because cancellation is not possible
+
             Assert.AreEqual(JobExecutionState.Cancelled, ji.JobExecutionStatus);
         }
 
+        [TestMethod]
+        [TestCategory("Scheduler")]
+        public void AbortJobsTest()
+        {
+            // Long job with atomic delay, jobs must be aborted for scheduler to quit
+            var guid = ScheduleTestJob(new TimeSpan(0, 10, 0), JobType.AtomicDelay, QueueType.Long, new TimeSpan(0, 10, 0));
+            WaitJobStarted(guid, TimeSpan.FromSeconds(10));
+            SchedulerTester.Instance.Stop();
+            WaitJobComplete(guid, TimeSpan.FromSeconds(10));
+            var ji = LoadJob(guid);
+            
+            Assert.AreEqual(JobExecutionState.Failed, ji.JobExecutionStatus);
+        }
 
         [TestMethod]
         [TestCategory("Scheduler")]

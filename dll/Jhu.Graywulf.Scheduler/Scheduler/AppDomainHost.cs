@@ -53,7 +53,7 @@ namespace Jhu.Graywulf.Scheduler
         /// when events are marshaled accross AppDomain boundaries.
         /// </remarks>
         private EventHandler<WorkflowApplicationHostEventArgs> workflowEventHandler;
-        
+
         /// <summary>
         /// Gets the unique ID of the AppDomain.
         /// </summary>
@@ -122,7 +122,7 @@ namespace Jhu.Graywulf.Scheduler
             appDomain.UnhandledException += AppDomain_UnhandledException;
 
             runningJobsByGuid = new Dictionary<Guid, Job>();
-            
+
             // Create the new WorkflowHost inside the new AppDomain and unwrap the proxy
             workflowHost = (SchedulerWorkflowApplicationHost)appDomain.CreateInstanceAndUnwrap(
                 typeof(Jhu.Graywulf.Scheduler.SchedulerWorkflowApplicationHost).Assembly.FullName,
@@ -142,7 +142,7 @@ namespace Jhu.Graywulf.Scheduler
             // Start the new workflow host inside the new AppDomain
             workflowHost.Start(guid, scheduler, interactive);
         }
-        
+
         /// <summary>
         /// Drain-stops the workflows hosted inside the app domain
         /// and unloads the AppDomain itself.
@@ -158,7 +158,6 @@ namespace Jhu.Graywulf.Scheduler
                 workflowHost.WorkflowEvent -= workflowEventHandler;
                 workflowEventHandler = null;
                 workflowHost = null;
-
                 appDomain.UnhandledException -= AppDomain_UnhandledException;
                 return true;
             }
@@ -168,6 +167,15 @@ namespace Jhu.Graywulf.Scheduler
             }
         }
 
+        public void Abort()
+        {
+            Logging.LoggingContext.Current.LogDebug(
+                    Logging.EventSource.Scheduler,
+                    String.Format("Aborting AppDomain: {0}", ID));
+
+            workflowHost.Abort();
+        }
+        
         #endregion
         #region Job operations
 
@@ -251,10 +259,5 @@ namespace Jhu.Graywulf.Scheduler
         }
 
         #endregion
-
-        private string GetFriendlyName()
-        {
-            return String.Format("Jhu.Graywulf.Scheduler_{0:yyyyMMdd_HHmmss}", DateTime.Now);
-        }
     }
 }

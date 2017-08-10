@@ -82,6 +82,14 @@ namespace Jhu.Graywulf.Scheduler
 
             // Initialize persistence participant
             workflowInstanceStore = new SqlWorkflowInstanceStore(Scheduler.Configuration.PersistenceConnectionString);
+
+            // When debugging, lock leases must be extended, otherwise the persistence service will throw
+            // all kinds of weird exceptions
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                workflowInstanceStore.HostLockRenewalPeriod = TimeSpan.FromMinutes(5);
+            }
+
             workflowInstanceStore.InstanceCompletionAction = InstanceCompletionAction.DeleteAll;
             // Create the instance store owner
             workflowInstanceHandle = workflowInstanceStore.CreateInstanceHandle();
@@ -313,6 +321,34 @@ namespace Jhu.Graywulf.Scheduler
             // For some reason, unloading happens synchronously so to avoid deadlock with
             // the previous registry update, this has to be called outside the context
             PersistWorkflow(wfguid);
+
+            JobContext.Current.Pop();
+
+            return wfguid;
+        }
+
+        public Guid AbortJob(Job job)
+        {
+            new JobContext(job).Push();
+
+            Guid wfguid;
+
+            using (var context = CreateRegistryContext())
+            {
+                var ji = LoadJobInstance(context, job);
+
+                // Update registry
+                ji.JobExecutionStatus = JobExecutionState.Aborting;
+                ji.Save();
+
+                wfguid = ji.WorkflowInstanceId;
+
+                context.CommitTransaction();
+            }
+
+            // For some reason, unloading happens synchronously so to avoid deadlock with
+            // the previous registry update, this has to be called outside the context
+            AbortWorkflow(wfguid);
 
             JobContext.Current.Pop();
 

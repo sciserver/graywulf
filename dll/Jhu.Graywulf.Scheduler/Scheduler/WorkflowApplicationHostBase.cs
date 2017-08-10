@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Activities;
+using System.Linq;
 using System.Threading;
 using Jhu.Graywulf.Activities;
 
@@ -86,6 +87,14 @@ namespace Jhu.Graywulf.Scheduler
             }
         }
 
+        public virtual void Abort()
+        {
+            foreach (var w in workflows.Values.ToArray())
+            {
+                w.WorkflowApplication.Abort();
+            }
+        }
+        
         /// <summary>
         /// Initializes a WorkflowApplication for the job
         /// </summary>
@@ -205,6 +214,24 @@ namespace Jhu.Graywulf.Scheduler
 
         protected virtual void OnWorkflowPersisting(WorkflowApplicationDetails workflow)
         {
+        }
+
+        protected Guid AbortWorkflow(Guid instanceId)
+        {
+            WorkflowApplicationDetails workflow;
+
+            if (workflows.TryGetValue(instanceId, out workflow))
+            {
+                OnWorkflowAborting(workflow);
+                workflow.WorkflowApplication.Abort();
+            }
+
+            return instanceId;
+        }
+
+        protected virtual void OnWorkflowAborting(WorkflowApplicationDetails workflow)
+        {
+
         }
 
         /// <summary>

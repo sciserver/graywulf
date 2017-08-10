@@ -102,7 +102,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             for (int i = 0; i < debugInstances.Length; i++)
             {
-                debugInstances[i].Stop(TimeSpan.FromHours(1.5));
+                debugInstances[i].Stop(TimeSpan.FromMinutes(2));
             }
 
             // Stop logger
@@ -130,7 +130,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             for (int i = 0; i < debugInstances.Length; i++)
             {
-                debugInstances[i].Kill(TimeSpan.FromSeconds(20));
+                debugInstances[i].Kill(TimeSpan.FromMinutes(2));
             }
 
             // Stop logger

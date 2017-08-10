@@ -78,6 +78,8 @@ namespace Jhu.Graywulf.Registry
         /// </summary>
         Resumed = 4096,
 
+        Aborting = 8192,
+
         AllPending = Scheduled | Starting | Executing | Persisting | Persisted | CancelRequested | Cancelling | Resumed,
         All = 0xFFFF
     }

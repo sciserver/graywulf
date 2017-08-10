@@ -438,14 +438,31 @@ namespace Jhu.Graywulf.Scheduler
             }
 
             // Wait for the jobs to complete
+            // Jobs should either cancel or persist within this timeframe. It they don't,
+            // they will be explicitly aborted.
+            bool abort = TryStop(timeout);          
 
+            if (abort)
+            {
+                AbortAppDomains();
+                // Wait again so that aborted events can happen and scheduler spins down.
+                TryStop(timeout);
+            }
+
+            return abort;
+        }
+
+        private bool TryStop(TimeSpan timeout)
+        {
             var start = DateTime.Now;
+            bool abort = false;
 
             while (!StopAppDomains() || jobWorkflowEvents.Count > 0)
             {
                 if ((DateTime.Now - start) > timeout)
                 {
-                    return false;
+                    abort = true;
+                    break;
                 }
 
                 ProcessTimedOutJobs();
@@ -456,7 +473,7 @@ namespace Jhu.Graywulf.Scheduler
                 Thread.Sleep(Scheduler.Configuration.PollingInterval);
             }
 
-            return true;
+            return abort;
         }
 
         private void StartControlService()
@@ -1218,6 +1235,17 @@ namespace Jhu.Graywulf.Scheduler
             }
 
             return true;
+        }
+
+        private void AbortAppDomains()
+        {
+            foreach (var id in appDomains.Keys.ToArray())
+            {
+                var adh = appDomains[id];
+                adh.Abort();
+                appDomainManager.UnloadAppDomain(id);
+                appDomains.Remove(adh.ID);
+            }
         }
 
         /// <summary>
