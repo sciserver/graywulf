@@ -365,6 +365,8 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="timeout"></param>
         public void DrainStop(TimeSpan timeout)
         {
+            Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Scheduler, "A drain stop operation has been requested.");
+
             var res = Stop(timeout, false, false);
 
             Logging.LoggingContext.Current.LogOperation(
@@ -382,6 +384,8 @@ namespace Jhu.Graywulf.Scheduler
         /// </remarks>
         public void Stop(TimeSpan timeout)
         {
+            Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Scheduler, "A stop operation has been requested.");
+
             var res = Stop(timeout, false, true);
 
             Logging.LoggingContext.Current.LogOperation(
@@ -396,6 +400,8 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         public void Kill(TimeSpan timeout)
         {
+            Logging.LoggingContext.Current.LogDebug(Logging.EventSource.Scheduler, "A kill operation has been requested.");
+
             var res = Stop(timeout, true, false);
 
             Logging.LoggingContext.Current.LogOperation(
@@ -435,7 +441,7 @@ namespace Jhu.Graywulf.Scheduler
 
             var start = DateTime.Now;
 
-            while (!StopAppDomains())
+            while (!StopAppDomains() || jobWorkflowEvents.Count > 0)
             {
                 if ((DateTime.Now - start) > timeout)
                 {
@@ -882,7 +888,7 @@ namespace Jhu.Graywulf.Scheduler
                             ji.JobExecutionStatus = JobExecutionState.Persisted;
                             break;
                         case WorkflowEventType.Failed:
-                            LogJobOperation("Job {0} has failed.", job);
+                            LogJobError("Job {0} has failed.", job, e.WorkflowException);
                             ji.JobExecutionStatus = JobExecutionState.Failed;
                             ji.ExceptionMessage = GetExceptionMessage(e.WorkflowException);
                             break;
@@ -938,71 +944,56 @@ namespace Jhu.Graywulf.Scheduler
 
             try
             {
-                using (var context = CreateRegistryContext())
+                // Schedule job in the appropriate app domain
+                var adh = GetOrCreateAppDomainHost(job);
+
+                // Check if job is a new instance or previously persisted and
+                // has to be resumed
+                switch (job.Status)
                 {
-                    // TODO: why need to set job guid here manually?
-                    context.JobReference.Guid = job.Guid;
-
-                    var ef = new EntityFactory(context);
-                    var ji = ef.LoadEntity<JobInstance>(job.Guid);
-                    ji.DateStarted = DateTime.Now;
-                    ji.Save();
-
-                    context.CommitTransaction();
+                    case JobStatus.Starting:
+                        LogJobOperation("Starting job {0}.", job);
+                        job.WorkflowInstanceId = adh.PrepareStartJob(job);
+                        break;
+                    case JobStatus.Resuming:
+                        LogJobOperation("Resuming job {0}.", job);
+                        job.WorkflowInstanceId = adh.PrepareResumeJob(job);
+                        break;
+                    default:
+                        throw new NotImplementedException();
                 }
+
+                // Timeout is reset for resumed jobs
+                job.Status = JobStatus.Starting;
+                job.TimeStarted = DateTime.Now;
+
+                // Do bookkeeping before attempting to start job as the start operation itself
+                // might generate async events.
+                BookkeepAddJob(job);
+
+                // Send job for execution in the designated AppDomain
+                adh.RunJob(job);
+
+                // Update job status
+                job.Status = JobStatus.Executing;
             }
             catch (Exception ex)
             {
                 LogError(ex);
                 FailJob(job, ex);
-                return;
-                // TODO: remove failing job
             }
             finally
             {
                 JobContext.Current.Pop();
             }
-
-            new JobContext(job).Push();
-
-            // Schedule job in the appropriate app domain
-            var adh = GetOrCreateAppDomainHost(job);
-
-            // Check if job is a new instance or previously persisted and
-            // has to be resumed
-            switch (job.Status)
-            {
-                case JobStatus.Starting:
-                    LogJobOperation("Starting job {0}.", job);
-                    job.WorkflowInstanceId = adh.PrepareStartJob(job);
-                    break;
-                case JobStatus.Resuming:
-                    LogJobOperation("Resuming job {0}.", job);
-                    job.WorkflowInstanceId = adh.PrepareResumeJob(job);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            // Update job status
-            job.TimeStarted = DateTime.Now;
-            job.Status = JobStatus.Executing;
-            job.AppDomainID = adh.ID;
-
-            // Send job for execution in the designated AppDomain
-            adh.RunJob(job);
-
-            BookkeepAddJob(job);
-
-            JobContext.Current.Pop();
         }
 
         private void CancelOrTimeOutJob(Job job, bool timeout)
         {
-            new JobContext(job).Push();
-
             try
             {
+                new JobContext(job).Push();
+
                 using (var context = CreateRegistryContext())
                 {
                     // *** TODO: why set guid here manually?
@@ -1029,22 +1020,32 @@ namespace Jhu.Graywulf.Scheduler
                 JobContext.Current.Pop();
             }
 
-            new JobContext(job).Push();
-
-            if (timeout)
+            try
             {
-                LogJobStatus(String.Format("Job {0} is timing out.", job.JobID), job);
-                job.Status = JobStatus.TimedOut;
-                appDomains[job.AppDomainID].TimeOutJob(job);
-            }
-            else
-            {
-                LogJobStatus(String.Format("Job {0} is cancelling.", job.JobID), job);
-                job.Status = JobStatus.Cancelled;
-                appDomains[job.AppDomainID].CancelJob(job);
-            }
+                new JobContext(job).Push();
 
-            JobContext.Current.Pop();
+                if (timeout)
+                {
+                    LogJobStatus(String.Format("Job {0} is timing out.", job.JobName), job);
+                    job.Status = JobStatus.TimedOut;
+                    appDomains[job.AppDomainID].TimeOutJob(job);
+                }
+                else
+                {
+                    LogJobStatus(String.Format("Job {0} is cancelling.", job.JobName), job);
+                    job.Status = JobStatus.Cancelled;
+                    appDomains[job.AppDomainID].CancelJob(job);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                FailJob(job, ex);
+            }
+            finally
+            {
+                JobContext.Current.Pop();
+            }
         }
 
         private void PersistJob(Job job)
@@ -1073,7 +1074,6 @@ namespace Jhu.Graywulf.Scheduler
                 LogError(ex);
                 FailJob(job, ex);
                 return;
-                // TODO: remove failed job
             }
             finally
             {
@@ -1082,11 +1082,21 @@ namespace Jhu.Graywulf.Scheduler
 
             new JobContext(job).Push();
 
-            LogJobStatus("Persisting job {0}.", job);
-            appDomains[job.AppDomainID].PersistJob(job);
-            job.Status = JobStatus.Persisted;
-
-            JobContext.Current.Pop();
+            try
+            {
+                LogJobStatus("Persisting job {0}.", job);
+                appDomains[job.AppDomainID].PersistJob(job);
+                job.Status = JobStatus.Persisted;
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                FailJob(job, ex);
+            }
+            finally
+            {
+                JobContext.Current.Pop();
+            }
         }
 
         /// <summary>
@@ -1161,26 +1171,29 @@ namespace Jhu.Graywulf.Scheduler
         private AppDomainHost GetOrCreateAppDomainHost(Job job)
         {
             System.AppDomain ad;
+            AppDomainHost adh;
+
             var isnew = appDomainManager.GetAppDomainForType(job.WorkflowTypeName, true, out ad);
             int id = ad.Id;
 
             if (isnew || !appDomains.ContainsKey(id))
             {
                 // New app domain, wire up event handlers and create host
-                var adh = new AppDomainHost(ad);
+                adh = new AppDomainHost(ad);
                 appDomains.Add(ad.Id, adh);
 
                 adh.WorkflowEvent += AppDomainHost_WorkflowEvent;
                 adh.UnhandledException += AppDomainHost_UnhandledException;
                 adh.Start(this.guid, Scheduler, interactive);
-
-                return adh;
             }
             else
             {
                 // Old app domain, return existing host
-                return appDomains[id];
+                adh = appDomains[id];
             }
+
+            job.AppDomainID = adh.ID;
+            return adh;
         }
 
         private bool StopAppDomains()
@@ -1190,12 +1203,13 @@ namespace Jhu.Graywulf.Scheduler
 
             // We can also be sure that all jobs have stopped at this point
 
-            foreach (var id in appDomains.Keys)
+            foreach (var id in appDomains.Keys.ToArray())
             {
                 var adh = appDomains[id];
                 if (adh.TryStop())
                 {
                     appDomainManager.UnloadAppDomain(id);
+                    appDomains.Remove(adh.ID);
                 }
                 else
                 {
@@ -1277,7 +1291,7 @@ namespace Jhu.Graywulf.Scheduler
             var e = Logging.LoggingContext.Current.CreateEvent(
                 EventSeverity.Status,
                 EventSource.Scheduler,
-                String.Format(message, job.JobID),
+                String.Format(message, job.JobName),
                 method.DeclaringType.FullName + "." + method.Name,
                 null,
                 null);
@@ -1302,7 +1316,7 @@ namespace Jhu.Graywulf.Scheduler
             var e = Logging.LoggingContext.Current.CreateEvent(
                 EventSeverity.Operation,
                 EventSource.Scheduler,
-                String.Format(message, job.JobID),
+                String.Format(message, job.JobName),
                 method.DeclaringType.FullName + "." + method.Name,
                 null,
                 null);
@@ -1310,8 +1324,29 @@ namespace Jhu.Graywulf.Scheduler
             Logging.LoggingContext.Current.WriteEvent(e);
         }
 
+        private void LogJobError(string message, Job job, Exception ex)
+        {
+            var method = Logging.LoggingContext.Current.UnwindStack(2);
+            var e = Logging.LoggingContext.Current.CreateEvent(
+                EventSeverity.Operation,
+                EventSource.Scheduler,
+                String.Format(message, job.JobName),
+                method.DeclaringType.FullName + "." + method.Name,
+                ex,
+                null);
+            job.UpdateLoggingEvent(e);
+            Logging.LoggingContext.Current.WriteEvent(e);
+        }
+
         private void LogError(Exception ex)
         {
+#if BREAKDEBUG
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                System.Diagnostics.Debugger.Break();
+            }
+#endif
+
             var method = Logging.LoggingContext.Current.UnwindStack(2);
             Logging.LoggingContext.Current.LogError(Logging.EventSource.Scheduler, ex);
         }

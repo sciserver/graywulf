@@ -87,7 +87,7 @@ namespace Jhu.Graywulf.Scheduler
             workflowInstanceHandle = workflowInstanceStore.CreateInstanceHandle();
             var view = workflowInstanceStore.Execute(workflowInstanceHandle, new CreateWorkflowOwnerCommand(), TimeSpan.FromSeconds(30));
             workflowInstanceStore.DefaultInstanceOwner = view.InstanceOwner;
-            
+
         }
 
         /// <summary>
@@ -147,7 +147,6 @@ namespace Jhu.Graywulf.Scheduler
                 ji.DateStarted = DateTime.Now;
                 ji.WorkflowInstanceId = wfguid;
                 ji.JobExecutionStatus = JobExecutionState.Executing;
-
                 ji.Save();
 
                 context.CommitTransaction();
@@ -271,7 +270,7 @@ namespace Jhu.Graywulf.Scheduler
             new JobContext(job).Push();
 
             Guid wfguid;
-            
+
             using (var context = CreateRegistryContext())
             {
                 var ji = LoadJobInstance(context, job);
@@ -367,7 +366,7 @@ namespace Jhu.Graywulf.Scheduler
             var wftype = GetWorkflowType(job);
             var wfapp = CreateWorkflowApplication(wftype, par);
 
-            RegisterWorkflow(job, wfapp);
+            BookkeepWorkflow(job, wfapp);
             return wfapp.Id;
         }
 
@@ -384,16 +383,16 @@ namespace Jhu.Graywulf.Scheduler
             var wfapp = CreateWorkflowApplication(wftype, null);
 
             wfapp.Load(instanceId);
-            RegisterWorkflow(job, wfapp);
+            BookkeepWorkflow(job, wfapp);
 
             return wfapp.Id;
         }
-        
+
         /// <summary>
         /// Do bookkeeping required when a workflow starts
         /// </summary>
         /// <param name="wfapp"></param>
-        private void RegisterWorkflow(Job job, WorkflowApplication wfapp)
+        private void BookkeepWorkflow(Job job, WorkflowApplication wfapp)
         {
             var workflow = new WorkflowApplicationDetails()
             {
@@ -427,8 +426,18 @@ namespace Jhu.Graywulf.Scheduler
             base.OnWorkflowPersisting(w);
 
             var workflow = (WorkflowApplicationDetails)w;
+            workflow.Job.Status = JobStatus.Persisting;
 
-            workflow.Job.Status = JobStatus.Persisted;
+            /* TODO: this often throws the following:
+             * An exception of type 'System.Runtime.DurableInstancing.InstanceOwnerException' 
+             * occurred in System.ServiceModel.Internals.dll but was not handled in user code
+               Additional information: The execution of an InstancePersistenceCommand was interrupted 
+               because the instance owner registration for owner ID 'd4fd92a7-1350-44a5-9dee-87c47f8c40b4' 
+               has become invalid. This error indicates that the in-memory copy of all instances locked by 
+               this owner have become stale and should be discarded, along with the InstanceHandles. 
+               Typically, this error is best handled by restarting the host.
+            */
+
             workflow.WorkflowApplication.Unload(Scheduler.Configuration.PersistTimeout);
         }
 
@@ -457,7 +466,7 @@ namespace Jhu.Graywulf.Scheduler
                     // Completed successfully
                     OnWorkflowEvent(
                         new WorkflowApplicationHostEventArgs(
-                            WorkflowEventType.Completed, 
+                            WorkflowEventType.Completed,
                             e.InstanceId));
                     break;
                 case ActivityInstanceState.Canceled:
@@ -466,22 +475,22 @@ namespace Jhu.Graywulf.Scheduler
                         case JobStatus.Cancelled:
                             OnWorkflowEvent(
                                 new WorkflowApplicationHostEventArgs(
-                                    WorkflowEventType.Cancelled, 
+                                    WorkflowEventType.Cancelled,
                                     e.InstanceId));
                             break;
                         case JobStatus.TimedOut:
                             OnWorkflowEvent(
                                 new WorkflowApplicationHostEventArgs(
-                                    WorkflowEventType.TimedOut, 
+                                    WorkflowEventType.TimedOut,
                                     e.InstanceId));
                             break;
                         case JobStatus.Failed:
 
 #if BREAKDEBUG
-                                if (System.Diagnostics.Debugger.IsAttached)
-                                {
-                                    System.Diagnostics.Debugger.Break();
-                                }
+                            if (System.Diagnostics.Debugger.IsAttached)
+                            {
+                                System.Diagnostics.Debugger.Break();
+                            }
 #endif
 
                             OnWorkflowEvent(
@@ -491,6 +500,7 @@ namespace Jhu.Graywulf.Scheduler
                                     workflow.LastException));
                             break;
                         default:
+                            // TODO: what about persisting and persisted stages?
                             throw new NotImplementedException();
                     }
                     break;
@@ -510,7 +520,8 @@ namespace Jhu.Graywulf.Scheduler
 
             switch (workflow.Job.Status)
             {
-                case JobStatus.Persisted:
+                case JobStatus.Persisting:
+                    workflow.Job.Status = JobStatus.Persisted;
                     OnWorkflowEvent(new WorkflowApplicationHostEventArgs(WorkflowEventType.Persisted, e.InstanceId));
                     break;
                 default:
