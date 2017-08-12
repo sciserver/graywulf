@@ -21,16 +21,14 @@ namespace Jhu.Graywulf.Web.Security
             this.Context = context;
         }
 
-        public override void Execute(System.IO.TextWriter output)
+        protected override IEnumerable<CheckRoutineStatus> OnExecute()
         {
-            output.WriteLine("Checking authentication module.");
-
+            yield return ReportInfo("Checking authentication module.");
             var af = AuthenticationFactory.Create(Context.Domain);
-
-            output.WriteLine("Authentication module: {0}", af.GetType().FullName);
+            yield return ReportSuccess("Authentication module: {0}", af.GetType().FullName);
         }
 
-        public override IEnumerable<Graywulf.Check.CheckRoutineBase> GetCheckRoutines()
+        protected override IEnumerable<Graywulf.Check.CheckRoutineBase> OnGetCheckRoutines()
         {
             var af = AuthenticationFactory.Create(Context.Domain);
             return af.GetCheckRoutines();

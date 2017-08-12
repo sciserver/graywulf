@@ -37,23 +37,25 @@ namespace Jhu.Graywulf.RemoteService
             this.host = null;
         }
 
-        public override void Execute(TextWriter output)
+        protected override IEnumerable<CheckRoutineStatus> OnExecute()
         {
             string name;
             bool isAuthenticated;
             string authenticationType;
-            
-            output.WriteLine("Testing remoting server on {0}...", host);
+
+            yield return ReportInfo("Testing remoting server on {0}...", host);
             var sc = RemoteServiceHelper.GetControlObject(host);
 
             sc.WhoAmI(out name, out isAuthenticated, out authenticationType);
-            output.WriteLine("Client user: {0} ({1})", name, authenticationType);
+            yield return ReportInfo("Client user: {0} ({1})", name, authenticationType);
 
             sc.WhoAreYou(out name, out isAuthenticated, out authenticationType);
-            output.WriteLine("Service user: {0} ({1})", name, authenticationType);
+            yield return ReportInfo("Service user: {0} ({1})", name, authenticationType);
+
+            yield return ReportSuccess("OK");
         }
 
-        public override IEnumerable<CheckRoutineBase> GetCheckRoutines()
+        protected override IEnumerable<CheckRoutineBase> OnGetCheckRoutines()
         {
             yield break;
         }

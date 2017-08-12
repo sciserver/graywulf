@@ -29,16 +29,16 @@ namespace Jhu.Graywulf.Check
             this.Path = path;
         }
 
-        public override void Execute(TextWriter output)
+        protected override IEnumerable<CheckRoutineStatus> OnExecute()
         {
-            output.WriteLine(
+            yield return ReportInfo(
                 "Testing file access to {0} with modes {1}, {2}, {3}.",
                 Path, FileMode, FileAccess, FileShare);
 
             var f = new FileStream(Path, FileMode, FileAccess, FileShare);
             f.Dispose();
 
-            output.WriteLine("File {0} opened successfully.", Path);
+            yield return ReportSuccess("File {0} opened successfully.", Path);
         }
     }
 }

@@ -56,6 +56,141 @@ namespace Jhu.Graywulf.Check
             this.handleExceptions = true;
         }
 
+        public void Execute()
+        {
+        }
+
+        public void Execute(TextWriter writer)
+        {
+            succeeded = 0;
+            failed = 0;
+
+            if (writer != null)
+            {
+                WriteHeader(writer);
+            }
+
+            int i = 0;
+            while (i < routines.Count)
+            {
+                var r = routines[i];
+                r.HandleExceptions = this.handleExceptions;
+
+                if ((r.Category & filter) != 0)
+                {
+                    // Iterate over status messages
+                    bool error = false;
+                    foreach (var status in r.Execute())
+                    {
+                        if (writer != null)
+                        {
+                            switch (status.Result)
+                            {
+                                case CheckResult.Info:
+                                    WriteInfo(writer, status);
+                                    break;
+                                case CheckResult.Success:
+                                    WriteSuccess(writer, status);
+                                    break;
+                                case CheckResult.Warning:
+                                    WriteWarning(writer, status);
+                                    break;
+                                case CheckResult.Error:
+                                    WriteError(writer, status);
+                                    break;
+                                default:
+                                    throw new NotImplementedException();
+                            }
+                        }
+
+                        error |= status.Result == CheckResult.Error;
+                    }
+
+                    if (writer != null)
+                    {
+                        WriteSeparator(writer);
+                    }
+
+                    if (error)
+                    {
+                        failed++;
+                    }
+                    else
+                    {
+                        // Schedule additional tests
+                        int k = i + 1;
+                        foreach (var rr in r.GetCheckRoutines())
+                        {
+                            routines.Insert(k, rr);
+                            k++;
+                        }
+
+                        succeeded++;
+                    }
+                }
+
+                i++;
+            }
+
+            if (writer != null)
+            {
+                WriteFooter(writer);
+            }
+        }
+
+        private void WriteHeader(TextWriter writer)
+        {
+            writer.WriteLine("<pre>");
+        }
+
+        private void WriteInfo(TextWriter writer, CheckRoutineStatus status)
+        {
+            writer.WriteLine(status.Message);
+        }
+
+        private void WriteSuccess(TextWriter writer, CheckRoutineStatus status)
+        {
+            writer.Write("<font color=\"green\">Success: </font>");
+            writer.WriteLine(status.Message);
+        }
+
+        private void WriteWarning(TextWriter writer, CheckRoutineStatus status)
+        {
+            writer.Write("<font color=\"blue\">Warning: </font>");
+            writer.WriteLine(status.Message);
+        }
+
+        private void WriteError(TextWriter writer, CheckRoutineStatus status)
+        {
+            writer.Write("<font color=\"red\">Error: </font>");
+            writer.WriteLine(status.Message);
+
+            var ex = status.Error;
+            while (ex != null)
+            {
+                writer.WriteLine(ex.Message);
+                ex = ex.InnerException;
+            }
+        }
+
+        private void WriteSeparator(TextWriter writer)
+        {
+            writer.WriteLine();
+        }
+
+        private void WriteFooter(TextWriter writer)
+        {
+            writer.WriteLine();
+            writer.WriteLine("Execution of {0} tests completed. {1} succeeded, {2} failed.",
+                succeeded + failed,
+                succeeded,
+                failed);
+
+            writer.WriteLine("</pre>");
+        }
+
+        /*
+         * TODO: delete
         public void Execute(TextWriter output)
         {
             output.WriteLine("<pre>");
@@ -72,13 +207,16 @@ namespace Jhu.Graywulf.Check
                         output.WriteLine();
                         output.WriteLine("Test {0}:", succeeded + failed + 1);
 
-                        r.Execute(output);
+                        foreach (var status in r.Execute())
+                        {
+                            r.Execute(output);
+                        }
 
                         output.WriteLine("<font color=\"green\">Success</font>");
 
                         // Schedule additional tests
                         int k = i + 1;
-                        foreach (var rr in r.GetCheckRoutines())
+                        foreach (var rr in r.OnGetCheckRoutines())
                         {
                             routines.Insert(k, rr);
                             k++;
@@ -120,5 +258,6 @@ namespace Jhu.Graywulf.Check
 
             output.WriteLine("</pre>");
         }
+        */
     }
 }

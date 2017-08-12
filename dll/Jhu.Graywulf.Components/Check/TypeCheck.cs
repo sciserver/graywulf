@@ -22,11 +22,11 @@ namespace Jhu.Graywulf.Check
             this.typename = typename;
         }
 
-        public override void Execute(System.IO.TextWriter output)
+        protected override IEnumerable<CheckRoutineStatus> OnExecute()
         {
-            output.WriteLine("Creating plugin type {0}", typename);
-
+            yield return ReportInfo("Creating plugin type {0}", typename);
             var t = Type.GetType(typename);
+            yield return ReportSuccess("Plugin type {0} created.", typename);
         }
     }
 }

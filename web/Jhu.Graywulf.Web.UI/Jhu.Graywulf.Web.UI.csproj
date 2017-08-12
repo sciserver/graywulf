@@ -141,6 +141,13 @@
     <Compile Include="Apps\Common\Error.aspx.designer.cs">
       <DependentUpon>Error.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Apps\Common\Status.aspx.cs">
+      <DependentUpon>Status.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Apps\Common\Status.aspx.designer.cs">
+      <DependentUpon>Status.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Apps\Common\Feedback.aspx.cs">
       <DependentUpon>Feedback.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -548,6 +555,7 @@
     <Content Include="Apps\Auth\User.aspx" />
     <Content Include="Apps\Common\Captcha.aspx" />
     <Content Include="Apps\Common\Error.aspx" />
+    <Content Include="Apps\Common\Status.aspx" />
     <Content Include="Apps\Common\Feedback.aspx" />
     <Content Include="Apps\Docs\Default.aspx" />
     <Content Include="Apps\Docs\Toolbar.js" />

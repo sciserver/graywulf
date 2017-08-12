@@ -39,10 +39,10 @@ namespace Jhu.Graywulf.Web.Check
             this.ExpectedStatus = HttpStatusCode.OK;
         }
 
-        public override void Execute(TextWriter output)
+        protected override IEnumerable<CheckRoutineStatus> OnExecute()
         {
-            output.WriteLine(
-                "Testing URL {0} expecting HTTP status {1}",
+            yield return ReportInfo(
+                "Testing URL {0}; expecting HTTP status {1}",
                 Uri,
                 (int)ExpectedStatus);
 
@@ -66,7 +66,7 @@ namespace Jhu.Graywulf.Web.Check
                 }
             }
 
-            output.WriteLine("Page retrieved successfully.");
+            yield return ReportSuccess("Page retrieved successfully.");
         }
     }
 }

@@ -13,14 +13,15 @@ namespace Jhu.Graywulf.Web.Check
             get { return CheckCategory.Iis; }
         }
 
-        public override void Execute(System.IO.TextWriter output)
+        protected override IEnumerable<CheckRoutineStatus> OnExecute()
         {
-            output.WriteLine("Web server version is IIS{0}", Util.IIS.MajorVersion);
-            output.WriteLine(".Net framework version is {0}", Environment.Version.ToString());
-            output.WriteLine("Executing tests under the account {0}\\{1} on {2}",
+            yield return ReportInfo("Web server version is IIS{0}", Util.IIS.MajorVersion);
+            yield return ReportInfo(".Net framework version is {0}", Environment.Version.ToString());
+            yield return ReportInfo("Executing tests under the account {0}\\{1} on {2}",
                 Environment.UserDomainName,
                 Environment.UserName,
                 Environment.MachineName);
+            yield return ReportSuccess("OK");
         }
     }
 }

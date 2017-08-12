@@ -53,10 +53,10 @@ namespace Jhu.Graywulf.Check
             this.assembly = null;
         }
 
-        public override void Execute(TextWriter output)
+        protected override IEnumerable<CheckRoutineStatus> OnExecute()
         {
-            output.WriteLine("Testing assembly: {0}", assembly.FullName);
-            output.WriteLine("Discovering references...");
+            yield return ReportInfo("Testing assembly: {0}", assembly.FullName);
+            yield return ReportInfo("Discovering references...");
 
             string messages;
 
@@ -82,13 +82,17 @@ namespace Jhu.Graywulf.Check
                 null);
 
             var error = ah.Execute(assembly.FullName, baseDir, out messages);
-            output.Write(messages);
+            yield return ReportInfo(messages);
 
             AppDomain.Unload(ad);
-            
+
             if (error)
             {
-                throw new Exception("Error resolving referenced assemblies.");
+                yield return ReportError("Error resolving referenced assemblies.");
+            }
+            else
+            {
+                yield return ReportSuccess("Referenced assemblies resolved successfully.");
             }
         }
     }
