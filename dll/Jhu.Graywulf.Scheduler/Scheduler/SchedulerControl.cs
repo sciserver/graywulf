@@ -42,38 +42,39 @@ namespace Jhu.Graywulf.Scheduler
             QueueManager.Instance.LogDebug("Server is {0} and {1}authenticated", name, isAuthenticated ? "" : "not ");
         }
 
-        public IQueue[] GetQueues()
+        public Queue[] GetQueues()
         {
-            // TODO synchronize!!!
-            return QueueManager.Instance.Cluster.Queues.Values
-                .Select(q => (IQueue)q).ToArray();
+            return QueueManager.Instance.GetQueues();
         }
 
-        public IJob[] GetJobs(Guid queueGuid)
+        public Job[] GetJobs(Guid queueGuid)
         {
-            // TODO synchronize!!!
-            return QueueManager.Instance.Cluster.Queues[queueGuid].Jobs.Values
-            .Select(j => (IJob)j).ToArray();
+            return QueueManager.Instance.GetJobs(queueGuid);
         }
 
-        public IJob GetJob(Guid jobGuid)
+        public Job GetJob(Guid jobGuid)
         {
-            return (IJob)QueueManager.Instance.RunningJobs[jobGuid];
+            return QueueManager.Instance.GetJob(jobGuid);
         }
 
-        public void StartJob(Guid guid)
+        public void StartJob(Guid jobGuid)
         {
-            throw new NotImplementedException();
+            QueueManager.Instance.InjectStartJob(jobGuid);
         }
 
-        public void CancelJob(Guid guid)
+        public void CancelJob(Guid jobGuid)
         {
-            throw new NotImplementedException();
+            QueueManager.Instance.InjectCancelJob(jobGuid);
         }
 
         public void ReloadCluster()
         {
-            throw new NotImplementedException();
+            QueueManager.Instance.ReloadCluster();
+        }
+
+        public void FlushSchema()
+        {
+            QueueManager.Instance.FlushSchema();
         }
     }
 }

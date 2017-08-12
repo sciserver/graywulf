@@ -31,8 +31,9 @@ namespace Jhu.Graywulf.Scheduler
         #endregion
         #region Private member varibles
 
-        private object syncRoot = new object();
-
+        private object clusterSyncRoot = new object();
+        private object jobsSyncRoot = new object();
+        private object pollSyncRoot = new object();
         private Guid guid = Guid.NewGuid();
 
         /// <summary>
@@ -85,9 +86,14 @@ namespace Jhu.Graywulf.Scheduler
         private Thread pollerThread;
 
         /// <summary>
+        /// If ture, the poller is running
+        /// </summary>
+        private bool isPollerRunning;
+
+        /// <summary>
         /// If true, requests the poller to stop
         /// </summary>
-        private bool pollerStopRequested;
+        private bool isPollerStopRequested;
 
         /// <summary>
         /// Used by the poller thread to signal to end of polling
@@ -176,7 +182,8 @@ namespace Jhu.Graywulf.Scheduler
             this.runningJobsByGuid = null;
             this.jobWorkflowEvents = null;
 
-            this.pollerStopRequested = false;
+            this.isPollerStopRequested = false;
+            this.isPollerRunning = false;
             this.pollerThread = null;
 
             this.isLayouRequired = true;
@@ -440,7 +447,7 @@ namespace Jhu.Graywulf.Scheduler
             // Wait for the jobs to complete
             // Jobs should either cancel or persist within this timeframe. It they don't,
             // they will be explicitly aborted.
-            bool abort = TryStop(timeout);          
+            bool abort = TryStop(timeout);
 
             if (abort)
             {
@@ -522,7 +529,7 @@ namespace Jhu.Graywulf.Scheduler
             if (pollerThread == null)
             {
                 pollerStopEvent = new AutoResetEvent(false);
-                pollerStopRequested = false;
+                isPollerStopRequested = false;
 
                 pollerThread = new Thread(new ThreadStart(Poller));
                 pollerThread.Name = "Graywulf Scheduler Poller";
@@ -551,7 +558,7 @@ namespace Jhu.Graywulf.Scheduler
 
             if (pollerThread != null)
             {
-                pollerStopRequested = true;
+                isPollerStopRequested = true;
                 pollerStopEvent.WaitOne();
                 pollerThread = null;
             }
@@ -564,38 +571,45 @@ namespace Jhu.Graywulf.Scheduler
         /// </summary>
         private void Poller()
         {
-            while (!pollerStopRequested)
+            isPollerRunning = true;
+
+            while (!isPollerStopRequested)
             {
-                /*
-                // Polling might fail, but wrap it into retry logic so it keeps trying
-                // on errors. This is to prevent the scheduler from stopping when the
-                // connection to the database is lost intermittently.
-                var pollRetry = new DelayedRetryLoop()
+                try
                 {
-                    InitialDelay = 1000,
-                    MaxDelay = 30000,
-                    DelayMultiplier = 1.5,
-                    MaxRetries = -1
-                };
+                    lock (pollSyncRoot)
+                    {
+                        ProcessTimedOutJobs();
+                        PollAndStartJobs();
+                        PollAndCancelJobs();
 
-                pollRetry.Execute(Poll);*/
+                        // Figure out how to do this async so that quick jobs
+                        // report results quickly
+                        ProcessFinishedJobs();
+                    }
 
-                ProcessTimedOutJobs();
-                PollAndStartJobs();
-                PollAndCancelJobs();
-                ProcessFinishedJobs();
-                UnloadOldAppDomains(Constants.UnloadAppDomainTimeout);
+                    // TODO: this should be executed only every 5 mins or so
+                    UnloadOldAppDomains(Constants.UnloadAppDomainTimeout);
+                    // TODO: reload cluster
+                }
+                catch (Exception ex)
+                {
+                    // TODO: this shouldn't happen here
+                    LogError(ex);
+                }
 
                 Thread.Sleep(Scheduler.Configuration.PollingInterval);
             }
 
             // Signal the completion event
             pollerStopEvent.Set();
+
+            isPollerRunning = false;
         }
 
         private void BookkeepAddJob(Job job)
         {
-            lock (syncRoot)
+            lock (jobsSyncRoot)
             {
                 runningJobsByWorkflowInstanceId.Add(job.WorkflowInstanceId, job);
                 runningJobsByGuid.Add(job.Guid, job);
@@ -611,7 +625,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             // TODO: can this happen multiple times?
 
-            lock (syncRoot)
+            lock (jobsSyncRoot)
             {
                 runningJobsByGuid.Remove(job.Guid);
                 runningJobsByWorkflowInstanceId.Remove(job.WorkflowInstanceId);
@@ -688,7 +702,7 @@ namespace Jhu.Graywulf.Scheduler
         {
             Job[] jobs;
 
-            lock (syncRoot)
+            lock (jobsSyncRoot)
             {
                 var q = from j in runningJobsByWorkflowInstanceId.Values
                         where j.IsTimedOut(Cluster.Queues[j.QueueGuid].Timeout)
@@ -736,51 +750,11 @@ namespace Jhu.Graywulf.Scheduler
                     var maxjobs = queue.MaxOutstandingJobs - queue.Jobs.Count;
 
                     var jf = new JobInstanceFactory(context);
-                    var jis = jf.FindNextJobInstances(queue.Guid, queue.LastUserGuid, maxjobs);
+                    var jis = jf.FindAndLockNextJobInstances(queue.Guid, queue.LastUserGuid, maxjobs);
 
                     foreach (var ji in jis)
                     {
-                        var ef = new EntityFactory(context);
-                        var user = ef.LoadEntity<User>(ji.UserGuidOwner);
-
-                        var job = new Job()
-                        {
-                            Guid = ji.Guid,
-                            QueueGuid = ji.ParentReference.Guid,
-                            WorkflowTypeName = ji.WorkflowTypeName,
-                            Timeout = ji.JobTimeout,
-
-                            ClusterGuid = cluster.Guid,
-                            DomainGuid = ji.JobDefinition.Federation.Domain.Guid,
-                            FederationGuid = ji.JobDefinition.Federation.Guid,
-                            JobGuid = ji.Guid,
-                            JobID = ji.JobID,
-                            JobName = ji.Name,
-                            UserGuid = user.Guid,
-                            UserName = user.Name,
-                        };
-
-                        // Update job status. Lock is already obtained by the poller stored procedure
-
-                        if ((ji.JobExecutionStatus & JobExecutionState.Scheduled) != 0)
-                        {
-                            job.Status = JobStatus.Starting;
-                            ji.JobExecutionStatus = JobExecutionState.Starting;
-                        }
-                        else if ((ji.JobExecutionStatus & JobExecutionState.Persisted) != 0)
-                        {
-                            // Save cancel requested flag here
-                            ji.JobExecutionStatus ^= JobExecutionState.Persisted;
-                            ji.JobExecutionStatus |= JobExecutionState.Starting;
-
-                            job.Status = JobStatus.Resuming;
-                        }
-                        else
-                        {
-                            throw new NotImplementedException();
-                        }
-
-                        ji.Save();
+                        var job = LoadFromJobInstance(ji);
                         res.Add(job);
                     }
 
@@ -794,6 +768,80 @@ namespace Jhu.Graywulf.Scheduler
                 LogError(ex);
                 return null;
             }
+        }
+
+        private Job LoadFromJobInstance(JobInstance ji)
+        {
+            var ef = new EntityFactory(ji.RegistryContext);
+            var user = ef.LoadEntity<User>(ji.UserGuidOwner);
+
+            var job = new Job()
+            {
+                Guid = ji.Guid,
+                QueueGuid = ji.ParentReference.Guid,
+                WorkflowTypeName = ji.WorkflowTypeName,
+                Timeout = ji.JobTimeout,
+
+                ClusterGuid = cluster.Guid,
+                DomainGuid = ji.JobDefinition.Federation.Domain.Guid,
+                FederationGuid = ji.JobDefinition.Federation.Guid,
+                JobGuid = ji.Guid,
+                JobID = ji.JobID,
+                JobName = ji.Name,
+                UserGuid = user.Guid,
+                UserName = user.Name,
+            };
+
+            // Update job status. Lock is already obtained by the poller stored procedure
+            if ((ji.JobExecutionStatus & JobExecutionState.Scheduled) != 0)
+            {
+                job.Status = JobStatus.Starting;
+                ji.JobExecutionStatus = JobExecutionState.Starting;
+            }
+            else if ((ji.JobExecutionStatus & JobExecutionState.Persisted) != 0)
+            {
+                // Save cancel requested flag here
+                ji.JobExecutionStatus ^= JobExecutionState.Persisted;
+                ji.JobExecutionStatus |= JobExecutionState.Starting;
+
+                job.Status = JobStatus.Resuming;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            ji.Save();
+
+            return job;
+        }
+
+        private Job LoadJobInstance(Guid guid)
+        {
+            Job job = null;
+
+            try
+            {
+                using (var context = CreateRegistryContext())
+                {
+                    var jf = new JobInstanceFactory(context);
+                    var ji = jf.FindAndLockJobInstance(guid);
+
+                    if (ji != null)
+                    {
+                        job = LoadFromJobInstance(ji);
+                    }
+
+                    context.CommitTransaction();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                return null;
+            }
+
+            return job;
         }
 
         private void PollAndCancelJobs()
@@ -830,7 +878,7 @@ namespace Jhu.Graywulf.Scheduler
                     {
                         Job job;
 
-                        lock (syncRoot)
+                        lock (jobsSyncRoot)
                         {
                             if (runningJobsByGuid.TryGetValue(ji.Guid, out job))
                             {
@@ -858,7 +906,7 @@ namespace Jhu.Graywulf.Scheduler
 
         private void ProcessFinishedJobs()
         {
-            lock (syncRoot)
+            lock (jobsSyncRoot)
             {
                 while (jobWorkflowEvents.Count > 0)
                 {
@@ -909,6 +957,8 @@ namespace Jhu.Graywulf.Scheduler
                             ji.JobExecutionStatus = JobExecutionState.Failed;
                             ji.ExceptionMessage = GetExceptionMessage(e.WorkflowException);
                             break;
+                        default:
+                            throw new NotImplementedException();
                     }
 
                     // Update registry
@@ -955,9 +1005,19 @@ namespace Jhu.Graywulf.Scheduler
         /// Starts a single job
         /// </summary>
         /// <param name="job"></param>
-        private void StartOrResumeJob(Job job)
+        private bool StartOrResumeJob(Job job)
         {
             new JobContext(job).Push();
+
+            // To support direct job injection and polling concurrently,
+            // silently bypass jobs that are already running
+            lock (jobsSyncRoot)
+            {
+                if (runningJobsByGuid.ContainsKey(job.JobGuid))
+                {
+                    return false;
+                }
+            }
 
             try
             {
@@ -993,11 +1053,14 @@ namespace Jhu.Graywulf.Scheduler
 
                 // Update job status
                 job.Status = JobStatus.Executing;
+
+                return true;
             }
             catch (Exception ex)
             {
                 LogError(ex);
                 FailJob(job, ex);
+                return false;
             }
             finally
             {
@@ -1005,12 +1068,37 @@ namespace Jhu.Graywulf.Scheduler
             }
         }
 
-        private void CancelOrTimeOutJob(Job job, bool timeout)
+        internal bool InjectStartJob(Guid guid)
         {
+            // Only allow job injection when the poller is in running state
+            if (!isPollerRunning || isPollerStopRequested)
+            {
+                throw new InvalidOperationException();
+            }
+
+            lock (pollSyncRoot)
+            {
+                var job = LoadJobInstance(guid);
+                return StartOrResumeJob(job);
+            }
+        }
+
+        private bool CancelOrTimeOutJob(Job job, bool timeout)
+        {
+            new JobContext(job).Push();
+
+            // To support direct job injection and polling concurrently,
+            // silently bypass jobs that are already running
+            lock (jobsSyncRoot)
+            {
+                if (!runningJobsByGuid.ContainsKey(job.JobGuid))
+                {
+                    return false;
+                }
+            }
+
             try
             {
-                new JobContext(job).Push();
-
                 using (var context = CreateRegistryContext())
                 {
                     // *** TODO: why set guid here manually?
@@ -1029,8 +1117,7 @@ namespace Jhu.Graywulf.Scheduler
             {
                 LogError(ex);
                 FailJob(job, ex);
-                return;
-                // TODO: remove failing job
+                return false;
             }
             finally
             {
@@ -1053,15 +1140,43 @@ namespace Jhu.Graywulf.Scheduler
                     job.Status = JobStatus.Cancelled;
                     appDomains[job.AppDomainID].CancelJob(job);
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
                 LogError(ex);
                 FailJob(job, ex);
+                return false;
             }
             finally
             {
                 JobContext.Current.Pop();
+            }
+        }
+
+        public bool InjectCancelJob(Guid guid)
+        {
+            // Only allow job injection when the poller is in running state
+            if (!isPollerRunning || isPollerStopRequested)
+            {
+                throw new InvalidOperationException();
+            }
+
+            lock (pollSyncRoot)
+            {
+                Job job;
+
+                lock (jobsSyncRoot)
+                {
+                    if (!runningJobsByGuid.ContainsKey(guid))
+                    {
+                        return false;
+                    }
+                    job = runningJobsByGuid[guid];
+                }
+
+                return CancelOrTimeOutJob(job, false);
             }
         }
 
@@ -1127,7 +1242,7 @@ namespace Jhu.Graywulf.Scheduler
             // one event that mark the job as finished. For now, we do the bookeeping
             // only once and remove the job from running jobs at the very first event
 
-            lock (syncRoot)
+            lock (jobsSyncRoot)
             {
                 var evn = new JobWorkflowEvent()
                 {
@@ -1146,7 +1261,7 @@ namespace Jhu.Graywulf.Scheduler
         /// <param name="job"></param>
         private void FailJob(Job job, Exception ex)
         {
-            lock (syncRoot)
+            lock (jobsSyncRoot)
             {
                 var evn = new JobWorkflowEvent()
                 {
@@ -1295,6 +1410,47 @@ namespace Jhu.Graywulf.Scheduler
             }
 
             // TODO: figure out how to unit-test this
+        }
+
+        #endregion
+        #region Control service entry points
+
+        internal Queue[] GetQueues()
+        {
+            lock (clusterSyncRoot)
+            {
+                var queues = cluster.Queues.Values.ToArray();
+                return queues;
+            }
+        }
+
+        internal Job[] GetJobs(Guid queueGuid)
+        {
+            lock (jobsSyncRoot)
+            {
+                var jobs = cluster.Queues[queueGuid].Jobs.Values.ToArray();
+                return jobs;
+            }
+        }
+
+        internal Job GetJob(Guid jobGuid)
+        {
+            lock (jobsSyncRoot)
+            {
+                return runningJobsByGuid[jobGuid];
+            }
+        }
+
+        public void ReloadCluster()
+        {
+
+            throw new NotImplementedException();
+        }
+
+        public void FlushSchema()
+        {
+            // This is tricky because all app domains need to be flushed
+            throw new NotImplementedException();
         }
 
         #endregion

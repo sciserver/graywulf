@@ -133,7 +133,7 @@
       </CancellationScope.CancellationHandler>
     </CancellationScope>
     <Sequence x:Key="QueryDelay" sap2010:WorkflowViewState.IdRef="Sequence_7">
-      <local:TestQueryDelay DelayPeriod="[DelayPeriod]" DisplayName="QueryDelay" sap2010:WorkflowViewState.IdRef="TestQueryDelay_1" JobInfo="[JobInfo]" QueryTimeout="120" />
+      <local:TestQueryDelay DelayPeriod="[DelayPeriod]" DisplayName="QueryDelay" sap2010:WorkflowViewState.IdRef="TestQueryDelay_1" JobInfo="[JobInfo]" QueryTimeout="240" />
       <Assign sap2010:WorkflowViewState.IdRef="Assign_4">
         <Assign.To>
           <OutArgument x:TypeArguments="x:String">[Result]</OutArgument>
@@ -254,7 +254,7 @@
       <sap2010:ViewStateData Id="CancellationScope_3" sap:VirtualizedContainerService.HintSize="272,543" />
       <sap2010:ViewStateData Id="TestQueryDelay_1" sap:VirtualizedContainerService.HintSize="242,22" />
       <sap2010:ViewStateData Id="Assign_4" sap:VirtualizedContainerService.HintSize="242,60" />
-      <sap2010:ViewStateData Id="Sequence_7" sap:VirtualizedContainerService.HintSize="264,243">
+      <sap2010:ViewStateData Id="Sequence_7" sap:VirtualizedContainerService.HintSize="264,246">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -272,13 +272,13 @@
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="Assign_6" sap:VirtualizedContainerService.HintSize="242,60" />
       <sap2010:ViewStateData Id="TestQueryDelay_3" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="Retry_4" sap:VirtualizedContainerService.HintSize="256,170" />
+      <sap2010:ViewStateData Id="Retry_4" sap:VirtualizedContainerService.HintSize="256,173" />
       <sap2010:ViewStateData Id="Assign_7" sap:VirtualizedContainerService.HintSize="242,60" />
       <sap2010:ViewStateData Id="TestQueryDelay_4" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="Retry_5" sap:VirtualizedContainerService.HintSize="256,170" />
       <sap2010:ViewStateData Id="TestAsyncTrackingRecord_1" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="Switch`1_1" sap:VirtualizedContainerService.HintSize="476,984" />
-      <sap2010:ViewStateData Id="Jhu.Graywulf.Jobs.Test.TestJob_1" sap:VirtualizedContainerService.HintSize="516,1064" />
+      <sap2010:ViewStateData Id="Switch`1_1" sap:VirtualizedContainerService.HintSize="476,694" />
+      <sap2010:ViewStateData Id="Jhu.Graywulf.Jobs.Test.TestJob_1" sap:VirtualizedContainerService.HintSize="516,774" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

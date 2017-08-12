@@ -6,7 +6,8 @@ using gw = Jhu.Graywulf.Registry;
 
 namespace Jhu.Graywulf.Scheduler
 {
-    internal class RegistryObject
+    [Serializable]
+    public class RegistryObject
     {
         private Guid guid;
         private string name;

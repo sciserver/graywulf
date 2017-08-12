@@ -98,22 +98,10 @@ namespace Jhu.Graywulf.Registry
         {
             string sql = "spFindJobInstance_byDetails";
 
-            using (SqlCommand cmd = RegistryContext.CreateStoredProcedureCommand(sql))
-            {
-                AppendCommandParameters(cmd, from, max);
+            var cmd = RegistryContext.CreateStoredProcedureCommand(sql);
+            AppendCommandParameters(cmd, from, max);
 
-                using (SqlDataReader dr = cmd.ExecuteReader())
-                {
-                    while (dr.Read())
-                    {
-                        JobInstance job = new JobInstance(RegistryContext);
-                        job.LoadFromDataReader(dr);
-
-                        yield return job;
-                    }
-                    dr.Close();
-                }
-            }
+            return new EntityCommandEnumerator<JobInstance>(RegistryContext, cmd, true);
         }
 
         private void AppendCommandParameters(SqlCommand cmd, int from, int max)
@@ -139,7 +127,7 @@ namespace Jhu.Graywulf.Registry
         /// This function takes the user the last scheduled job was associated with to
         /// implement a round-robin scheduling.
         /// </remarks>
-        public IEnumerable<JobInstance> FindNextJobInstances(Guid queueInstanceGuid, Guid lastUserGuid, int max)
+        public IEnumerable<JobInstance> FindAndLockNextJobInstances(Guid queueInstanceGuid, Guid lastUserGuid, int max)
         {
             string sql = "spFindJobInstance_Next";
 
@@ -151,6 +139,18 @@ namespace Jhu.Graywulf.Registry
             cmd.Parameters.Add("@MaxJobs", SqlDbType.Int).Value = max;
 
             return new EntityCommandEnumerator<JobInstance>(RegistryContext, cmd, true);
+        }
+
+        public JobInstance FindAndLockJobInstance(Guid guid)
+        {
+            string sql = "spGetJobInstance";
+
+            var cmd = RegistryContext.CreateStoredProcedureCommand(sql);
+            cmd.Parameters.Add("@UserGuid", SqlDbType.UniqueIdentifier).Value = RegistryContext.UserReference.Guid;
+            cmd.Parameters.Add("@LockOwner", SqlDbType.UniqueIdentifier).Value = RegistryContext.LockOwner;
+            cmd.Parameters.Add("@JobInstanceGuid", SqlDbType.UniqueIdentifier).Value = guid;
+
+            return new EntityCommandEnumerator<JobInstance>(RegistryContext, cmd, true).FirstOrDefault();
         }
 
         #endregion

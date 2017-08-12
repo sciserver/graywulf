@@ -81,9 +81,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
-    <Compile Include="Scheduler\IJob.cs" />
-    <Compile Include="Scheduler\IQueue.cs" />
-    <Compile Include="Scheduler\IRegistryObject.cs" />
     <Compile Include="Scheduler\IScheduler.cs" />
     <Compile Include="Scheduler\ISchedulerControl.cs" />
     <Compile Include="Scheduler\Job.cs" />

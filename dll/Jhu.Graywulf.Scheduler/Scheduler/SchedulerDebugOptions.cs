@@ -14,5 +14,6 @@ namespace Jhu.Graywulf.Scheduler
     {
         public int InstanceCount { get; set; } = 1;
         public bool IsLayoutRequired { get; set; } = true;
+        public bool IsControlServiceEnabled { get; set; } = true;
     }
 }

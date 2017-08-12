@@ -14,7 +14,7 @@ namespace Jhu.Graywulf.Scheduler
     public class SchedulerConfiguration : ConfigurationSection
     {
         [ConfigurationProperty("pollingInterval")]
-        [DefaultValue("00:00:03")]
+        [DefaultValue("00:00:05")]
         public TimeSpan PollingInterval
         {
             get { return (TimeSpan)base["pollingInterval"]; }

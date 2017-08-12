@@ -36,15 +36,15 @@ namespace Jhu.Graywulf.Scheduler
 
         [OperationContract]
         [LimitedAccessOperation(Constants.DefaultRole)]
-        IQueue[] GetQueues();
+        Queue[] GetQueues();
 
         [OperationContract]
         [LimitedAccessOperation(Constants.DefaultRole)]
-        IJob[] GetJobs(Guid queueGuid);
+        Job[] GetJobs(Guid queueGuid);
 
         [OperationContract]
         [LimitedAccessOperation(Constants.DefaultRole)]
-        IJob GetJob(Guid jobGuid);
+        Job GetJob(Guid jobGuid);
               
         [OperationContract]
         [LimitedAccessOperation(Constants.DefaultRole)]
@@ -57,5 +57,9 @@ namespace Jhu.Graywulf.Scheduler
         [OperationContract]
         [LimitedAccessOperation(Constants.DefaultRole)]
         void ReloadCluster();
+
+        [OperationContract]
+        [LimitedAccessOperation(Constants.DefaultRole)]
+        void FlushSchema();
     }
 }

@@ -10,7 +10,8 @@ namespace Jhu.Graywulf.Scheduler
     /// <summary>
     /// Represents a job queue
     /// </summary>
-    internal class Queue : RegistryObject, IQueue
+    [Serializable]
+    public class Queue : RegistryObject
     {
         private int maxOutstandingJobs;
         private Dictionary<Guid, Job> jobs;
@@ -51,12 +52,7 @@ namespace Jhu.Graywulf.Scheduler
             get { return lastUserGuid; }
             set { lastUserGuid = value; }
         }
-
-        int IQueue.JobCount
-        {
-            get { return jobs.Count; }
-        }
-
+        
         public Queue(QueueInstance qi) :
             base (qi)
         {

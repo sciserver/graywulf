@@ -40,6 +40,7 @@ namespace Jhu.Graywulf.Scheduler
             PurgeTestJobs();
             var options = new SchedulerDebugOptions()
             {
+                IsControlServiceEnabled = true,
                 IsLayoutRequired = layout,
                 InstanceCount = instances
             };
