@@ -53,31 +53,75 @@ namespace Jhu.Graywulf.Util
             }
             else
             {
-                var elapsed = DateTime.Now - value;
-
-                if (elapsed.TotalSeconds < 5)
+                DateTime now;
+                if (value.Kind == DateTimeKind.Local)
                 {
-                    return "now";
-                }
-                else if (elapsed.TotalMinutes < 1)
-                {
-                    return String.Format("{0:D2} seconds ago", elapsed.Seconds);
-                }
-                else if (elapsed.TotalHours < 1)
-                {
-                    return String.Format("{0}:{1:D2} minutes ago", elapsed.Minutes, elapsed.Seconds);
-                }
-                else if (elapsed.TotalDays < 1)
-                {
-                    return String.Format("today, {0:HH:mm:ss}", value);
-                }
-                else if (elapsed.TotalDays < 2)
-                {
-                    return String.Format("yesterday, {0:HH:mm:ss}", value);
+                    now = DateTime.Now;
                 }
                 else
                 {
-                    return String.Format("{0:yy-MM-dd HH:mm:ss}", value);
+                    now = DateTime.UtcNow;
+                }
+
+                TimeSpan elapsed = now - value;
+                
+                if (elapsed.TotalSeconds > 0)
+                {
+                    // Past
+                    if (elapsed.TotalSeconds < 5)
+                    {
+                        return "now";
+                    }
+                    else if (elapsed.TotalMinutes < 1)
+                    {
+                        return String.Format("{0:D2} seconds ago", elapsed.Seconds);
+                    }
+                    else if (elapsed.TotalHours < 1)
+                    {
+                        return String.Format("{0}:{1:D2} minutes ago", elapsed.Minutes, elapsed.Seconds);
+                    }
+                    else if (value.Date == now.Date)
+                    {
+                        return String.Format("today, {0:HH:mm:ss}", value);
+                    }
+                    else if (value.Date == now.Date.AddDays(-1))
+                    {
+                        return String.Format("yesterday, {0:HH:mm:ss}", value);
+                    }
+                    else
+                    {
+                        return String.Format("{0:yy-MM-dd HH:mm:ss}", value);
+                    }
+                }
+                else
+                {
+                    elapsed = elapsed.Duration();
+
+                    // Future
+                    if (elapsed.TotalSeconds < 5)
+                    {
+                        return "now";
+                    }
+                    else if (elapsed.TotalMinutes < 1)
+                    {
+                        return String.Format("{0:D2} seconds from now", elapsed.Seconds);
+                    }
+                    else if (elapsed.TotalHours < 1)
+                    {
+                        return String.Format("{0}:{1:D2} minutes from now", elapsed.Minutes, elapsed.Seconds);
+                    }
+                    else if (value.Date == now.Date)
+                    {
+                        return String.Format("today, {0:HH:mm:ss}", value);
+                    }
+                    else if (value.Date == now.Date.AddDays(1))
+                    {
+                        return String.Format("tomorrow, {0:HH:mm:ss}", value);
+                    }
+                    else
+                    {
+                        return String.Format("{0:yy-MM-dd HH:mm:ss}", value);
+                    }
                 }
             }
         }

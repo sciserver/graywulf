@@ -462,8 +462,8 @@ WHERE o.type IN ({0}) AND
                             databaseObject.SchemaName = dr.GetString(0);
                             databaseObject.ObjectName = dr.GetString(1);
                             databaseObject.ObjectType = Constants.SqlServerObjectTypeIds[dr.GetString(2).Trim()];
-                            databaseObject.Metadata.DateCreated = dr.GetDateTime(3);
-                            databaseObject.Metadata.DateModified = dr.GetDateTime(3);
+                            databaseObject.Metadata.DateCreated = dr.GetDateTime(3).ToUniversalTime();
+                            databaseObject.Metadata.DateModified = dr.GetDateTime(4).ToUniversalTime();
 
                             q++;
                         }
@@ -571,8 +571,8 @@ WHERE o.type IN ({0})
                                 ObjectType = Constants.SqlServerObjectTypeIds[dr.GetString(2).Trim()],
                             };
 
-                            obj.Metadata.DateCreated = dr.GetDateTime(3);
-                            obj.Metadata.DateModified = dr.GetDateTime(4);
+                            obj.Metadata.DateCreated = dr.GetDateTime(3).ToUniversalTime();
+                            obj.Metadata.DateModified = dr.GetDateTime(4).ToUniversalTime();
 
                             yield return new KeyValuePair<string, T>(GetObjectUniqueKey(obj), obj);
                         }
@@ -1068,8 +1068,8 @@ WHERE o.type IN ({0}) AND
                         while (dr.Read())
                         {
                             metadata.System = dr.GetBoolean(0);
-                            metadata.DateCreated = dr.GetDateTime(1);
-                            metadata.DateModified = dr.GetDateTime(2);
+                            metadata.DateCreated = dr.GetDateTime(1).ToUniversalTime();
+                            metadata.DateModified = dr.GetDateTime(2).ToUniversalTime();
                         }
                     }
                 }
@@ -1415,7 +1415,7 @@ WHERE name = @name";
                     {
                         while (dr.Read())
                         {
-                            metadata.DateCreated = dr.GetDateTime(0);
+                            metadata.DateCreated = dr.GetDateTime(0).ToUniversalTime();
                         }
                     }
                 }
