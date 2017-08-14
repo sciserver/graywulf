@@ -280,7 +280,8 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
 
             if (!String.IsNullOrWhiteSpace(objid))
             {
-                ShowDatabaseObjectView(ParseDatabaseObject(objid), SelectedView);
+                var dbobj = ParseDatabaseObject(objid);
+                ShowDatabaseObjectView(dbobj, SelectedView);
             }
             else if (SelectedDataset != null && SelectedObjectType != DatabaseObjectType.Unknown)
             {
@@ -644,7 +645,14 @@ namespace Jhu.Graywulf.Web.UI.Apps.Schema
                     }
                     break;
                 default:
-                    view = SchemaView.DatabaseObject;
+                    if (String.IsNullOrEmpty(dbobj.Metadata.Summary))
+                    {
+                        view = SchemaView.Columns;
+                    }
+                    else
+                    {
+                        view = SchemaView.DatabaseObject;
+                    }
                     break;
             }
 
