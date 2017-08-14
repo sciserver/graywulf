@@ -1041,7 +1041,7 @@ ORDER BY p.parameter_id";
                 LoadDatabaseObjectProperties(databaseObject, meta);
                 LoadDatabaseObjectExtendedProperties(databaseObject, meta);
             }
-            
+
             return meta;
         }
 
@@ -1339,7 +1339,7 @@ ORDER BY c.name, p.name";
         {
             var sql = @"
 -- Raw data space in 8K pages
-SELECT SUM(CASE f.growth WHEN 0 THEN f.size ELSE f.max_size END)
+SELECT SUM(f.size) --SUM(CASE f.growth WHEN 0 THEN f.size ELSE f.max_size END)
 FROM sys.database_files f
 WHERE f.type = 0
 
@@ -1348,7 +1348,7 @@ SELECT SUM(a.total_pages), SUM(a.used_pages), SUM(a.data_pages)
 FROM sys.allocation_units a
 
 -- Log space
-SELECT SUM(CASE f.growth WHEN 0 THEN f.size ELSE f.max_size END)
+SELECT SUM(f.size) --SUM(CASE f.growth WHEN 0 THEN f.size ELSE f.max_size END)
 FROM sys.database_files f
 WHERE f.type = 1
 ";
@@ -1374,6 +1374,13 @@ WHERE f.type = 1
                         dr.NextResult();
                         dr.Read();
                         stats.LogSpace = dr.IsDBNull(0) ? 0L : (long)dr.GetInt32(0) * 0x2000;    // 8K pages
+
+                        if (stats.LogSpace == 2199023255552L)
+                        {
+                            // In this special case the log file can grow to a maximum of 2TB
+                            https://docs.microsoft.com/en-us/sql/relational-databases/system-catalog-views/sys-database-files-transact-sql
+                            stats.LogSpace = -1;
+                        }
 
                         return stats;
                     }
