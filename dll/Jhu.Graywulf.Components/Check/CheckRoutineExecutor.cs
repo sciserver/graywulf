@@ -58,6 +58,7 @@ namespace Jhu.Graywulf.Check
 
         public void Execute()
         {
+            Execute(null);
         }
 
         public void Execute(TextWriter writer)
@@ -113,6 +114,7 @@ namespace Jhu.Graywulf.Check
 
                     if (error)
                     {
+                        r.Result = CheckResult.Error;
                         failed++;
                     }
                     else
@@ -125,6 +127,7 @@ namespace Jhu.Graywulf.Check
                             k++;
                         }
 
+                        r.Result = CheckResult.Success;
                         succeeded++;
                     }
                 }
@@ -188,76 +191,5 @@ namespace Jhu.Graywulf.Check
 
             writer.WriteLine("</pre>");
         }
-
-        /*
-         * TODO: delete
-        public void Execute(TextWriter output)
-        {
-            output.WriteLine("<pre>");
-
-            int i = 0;
-            while (i < routines.Count)
-            {
-                var r = routines[i];
-
-                if ((r.Category & filter) != 0)
-                {
-                    try
-                    {
-                        output.WriteLine();
-                        output.WriteLine("Test {0}:", succeeded + failed + 1);
-
-                        foreach (var status in r.Execute())
-                        {
-                            r.Execute(output);
-                        }
-
-                        output.WriteLine("<font color=\"green\">Success</font>");
-
-                        // Schedule additional tests
-                        int k = i + 1;
-                        foreach (var rr in r.OnGetCheckRoutines())
-                        {
-                            routines.Insert(k, rr);
-                            k++;
-                        }
-
-                        succeeded++;
-                    }
-                    catch (Exception ex)
-                    {
-#if BREAKDEBUG
-                    System.Diagnostics.Debugger.Break();
-#endif
-
-                        output.Write("<font color=\"red\">Error:</font> ");
-                        while (ex != null)
-                        {
-                            output.WriteLine(ex.Message);
-                            ex = ex.InnerException;
-                        }
-                        output.WriteLine("---");
-
-                        failed++;
-
-                        if (!handleExceptions)
-                        {
-                            throw;
-                        }
-                    }
-                }
-
-                i++;
-            }
-
-            output.WriteLine();
-            output.WriteLine("Execution of {0} tests completed. {1} succeeded, {2} failed.",
-                succeeded + failed,
-                succeeded,
-                failed);
-
-            output.WriteLine("</pre>");
-        }
-        */
     }
 }

@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Scheduler
 
         private ISchedulerControl GetControl()
         {
-            return ServiceHelper.CreateChannel<ISchedulerControl>(DnsHelper.Localhost, "Control", Scheduler.Configuration.Endpoint);
+            return ServiceHelper.CreateChannel<ISchedulerControl>(DnsHelper.Localhost, "Control", Scheduler.Configuration.Endpoint, TimeSpan.FromSeconds(1));
         }
 
         [TestMethod]

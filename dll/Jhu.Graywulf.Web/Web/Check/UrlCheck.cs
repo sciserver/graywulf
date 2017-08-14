@@ -16,6 +16,7 @@ namespace Jhu.Graywulf.Web.Check
         }
 
         public Uri Uri { get; set; }
+        public string Host { get; set; }
         private HttpStatusCode ExpectedStatus;
 
         public UrlCheck(string uri)
@@ -30,6 +31,15 @@ namespace Jhu.Graywulf.Web.Check
             InitializeMembers();
 
             this.Uri = new Uri(uri, UriKind.RelativeOrAbsolute);
+            this.ExpectedStatus = expectedStatus;
+        }
+
+        public UrlCheck(string uri, string host, HttpStatusCode expectedStatus)
+        {
+            InitializeMembers();
+
+            this.Uri = new Uri(uri, UriKind.RelativeOrAbsolute);
+            this.Host = host;
             this.ExpectedStatus = expectedStatus;
         }
 
@@ -48,7 +58,13 @@ namespace Jhu.Graywulf.Web.Check
 
             try
             {
-                var req = HttpWebRequest.Create(Uri);
+                var req = (HttpWebRequest)HttpWebRequest.Create(Uri);
+
+                if (!String.IsNullOrWhiteSpace(Host))
+                {
+                    req.Host = Host;
+                }
+
                 var res = req.GetResponse();
 
                 var status = ((HttpWebResponse)res).StatusCode;

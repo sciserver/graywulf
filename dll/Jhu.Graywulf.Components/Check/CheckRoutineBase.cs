@@ -10,6 +10,7 @@ namespace Jhu.Graywulf.Check
     {
         private bool handleExceptions;
         private List<CheckRoutineStatus> statuses;
+        private CheckResult result;
 
         public bool HandleExceptions
         {
@@ -20,6 +21,12 @@ namespace Jhu.Graywulf.Check
         public IList<CheckRoutineStatus> Statuses
         {
             get { return statuses; }
+        }
+
+        public CheckResult Result
+        {
+            get { return result; }
+            internal set { result = value; }
         }
 
         public abstract CheckCategory Category { get; }

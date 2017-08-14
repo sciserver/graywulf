@@ -44,7 +44,7 @@ namespace Jhu.Graywulf.RemoteService
             string authenticationType;
 
             yield return ReportInfo("Testing remoting server on {0}...", host);
-            var sc = RemoteServiceHelper.GetControlObject(host);
+            var sc = RemoteServiceHelper.GetControlObject(host, TimeSpan.FromSeconds(1));
 
             sc.WhoAmI(out name, out isAuthenticated, out authenticationType);
             yield return ReportInfo("Client user: {0} ({1})", name, authenticationType);

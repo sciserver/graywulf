@@ -111,7 +111,7 @@ namespace Jhu.Graywulf.ServiceModel
         public void CreateService()
         {
             var ep = CreateEndpointUri(hostName, configuration.TcpPort, serviceName);
-            var tcp = CreateNetTcpBinding();
+            var tcp = CreateNetTcpBinding(TimeSpan.FromSeconds(5));
 
             host = new ServiceHost(serviceType, ep);
             endpoint = host.AddServiceEndpoint(contractType, tcp, ep);
@@ -136,12 +136,13 @@ namespace Jhu.Graywulf.ServiceModel
         /// Returns a NetTcpBinding object initialized to support Kerberos authentication over TCP
         /// </summary>
         /// <returns></returns>
-        public static NetTcpBinding CreateNetTcpBinding()
+        public static NetTcpBinding CreateNetTcpBinding(TimeSpan timeout)
         {
             var tcp = new NetTcpBinding();
-            tcp.ReceiveTimeout = TimeSpan.FromHours(2);     // **** TODO
-            tcp.SendTimeout = TimeSpan.FromHours(2);
-            tcp.OpenTimeout = TimeSpan.FromHours(2);
+            tcp.OpenTimeout = timeout;
+            tcp.CloseTimeout = timeout;
+            tcp.SendTimeout = timeout;
+            tcp.ReceiveTimeout = TimeSpan.FromHours(2);
 
             // Configure security to use windows credentials and signed messages
             tcp.Security.Mode = SecurityMode.Transport;
@@ -211,17 +212,16 @@ namespace Jhu.Graywulf.ServiceModel
         /// <param name="tcp"></param>
         /// <param name="endpoint"></param>
         /// <returns></returns>
-        public static T CreateChannel<T>(string host, string serviceName, TcpEndpointConfiguration configuration)
+        public static T CreateChannel<T>(string host, string serviceName, TcpEndpointConfiguration configuration, TimeSpan timeout)
         {
             var fdqn = DnsHelper.GetFullyQualifiedDnsName(host);
             var ep = CreateEndpointAddress(fdqn, "Control", configuration);
-
-            return CreateChannel<T>(ep);
+            return CreateChannel<T>(ep, timeout);
         }
 
-        public static T CreateChannel<T>(EndpointAddress endpoint)
+        public static T CreateChannel<T>(EndpointAddress endpoint, TimeSpan timeout)
         {
-            var tcp = CreateNetTcpBinding();
+            var tcp = CreateNetTcpBinding(timeout);
             var cf = new ChannelFactory<T>(tcp, endpoint);
 
             // Ensure delegation

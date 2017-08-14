@@ -22,14 +22,25 @@ namespace Jhu.Graywulf.RemoteService
     {
         #region Remote object creation functions
 
+        public static IRemoteServiceControl GetControlObject(string host)
+        {
+            return GetControlObject(host, TimeSpan.FromSeconds(5));
+        }
+
         /// <summary>
         /// Returns a proxy to the remote service control object.
         /// </summary>
         /// <param name="host"></param>
         /// <returns></returns>
-        public static IRemoteServiceControl GetControlObject(string host)
+        public static IRemoteServiceControl GetControlObject(string host, TimeSpan timeout)
         {
-            return CreateChannel<IRemoteServiceControl>(host, "Control", RemoteServiceBase.Configuration.Endpoint);
+            return CreateChannel<IRemoteServiceControl>(host, "Control", RemoteServiceBase.Configuration.Endpoint, timeout);
+        }
+
+        public static T CreateObject<T>(string host, bool allowInProcess)
+            where T : IRemoteService
+        {
+            return CreateObject<T>(host, allowInProcess, TimeSpan.FromSeconds(5));
         }
 
         /// <summary>
@@ -42,7 +53,7 @@ namespace Jhu.Graywulf.RemoteService
         /// If the remote service does not serve the requested type of service yet, the
         /// function registers it before creating a proxy.
         /// </remarks>
-        public static T CreateObject<T>(string host, bool allowInProcess)
+        public static T CreateObject<T>(string host, bool allowInProcess, TimeSpan timeout)
             where T : IRemoteService
         {
             var fdqn = DnsHelper.GetFullyQualifiedDnsName(host);
@@ -56,10 +67,10 @@ namespace Jhu.Graywulf.RemoteService
             else
             {
                 // Get the uri to the requested service from the remote server
-                var sc = GetControlObject(fdqn);
+                var sc = GetControlObject(fdqn, timeout);
                 var uri = sc.GetServiceEndpointUri(typeof(T).AssemblyQualifiedName);
                 var ep = CreateEndpointAddress(uri, RemoteServiceBase.Configuration.Endpoint.ServicePrincipalName);
-                return CreateChannel<T>(ep);
+                return CreateChannel<T>(ep, timeout);
             }
         }
 
