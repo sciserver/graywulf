@@ -80,7 +80,7 @@ namespace Jhu.Graywulf.Scheduler
         public void AbortJobsTest()
         {
             // Long job with atomic delay, jobs must be aborted for scheduler to quit
-            var guid = ScheduleTestJob(new TimeSpan(0, 10, 0), JobType.AtomicDelay, QueueType.Long, new TimeSpan(0, 10, 0));
+            var guid = ScheduleTestJob(new TimeSpan(0, 10, 0), JobType.AtomicDelay, QueueType.Long, new TimeSpan(0, 0, 30));
             WaitJobStarted(guid, TimeSpan.FromSeconds(10));
             SchedulerTester.Instance.Stop();
             WaitJobComplete(guid, TimeSpan.FromSeconds(10));

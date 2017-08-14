@@ -40,7 +40,7 @@ namespace Jhu.Graywulf.Scheduler
 
         private ISchedulerControl GetControl()
         {
-            return ServiceHelper.CreateChannel<ISchedulerControl>(DnsHelper.Localhost, "Control", Scheduler.Configuration.Endpoint, TimeSpan.FromSeconds(1));
+            return ServiceHelper.CreateChannel<ISchedulerControl>(DnsHelper.Localhost, "Control", Scheduler.Configuration.Endpoint, TimeSpan.FromSeconds(5));
         }
 
         [TestMethod]
@@ -130,6 +130,10 @@ namespace Jhu.Graywulf.Scheduler
         [TestCategory("Slow")]
         public void StartAndCancelJobTest()
         {
+            // TODO: this test fails because the scheduler takes quite a bit of time
+            // to start. Add delay or logic in TestInitialize to wait for the control service
+            // to start.
+
             var control = GetControl();
 
             var guid = ScheduleTestJob(new TimeSpan(0, 0, 30), JobType.CancelableDelay, QueueType.Long, new TimeSpan(0, 2, 0));
