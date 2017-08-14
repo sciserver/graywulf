@@ -24,7 +24,7 @@
     <div class="dock-bottom gw-list-frame-bottom">
         <div class="gw-list-footer">
             <div class="gw-list-row">
-                <asp:DataPager runat="server" ID="listPager" PagedControlID="tableList" PageSize="20">
+                <asp:DataPager runat="server" ID="listPager" PagedControlID="tableList" PageSize="100">
                     <Fields>
                         <asp:NextPreviousPagerField
                             ShowLastPageButton="false"
