@@ -103,11 +103,6 @@ namespace Jhu.Graywulf.Registry
         DatabaseVersion = Federation | 0x0500,
 
         /// <summary>
-        /// Distributed partitioned view logical definition
-        /// </summary>
-        // TODO: delete DistributedPartitionedView = Federation | 0x0600,
-
-        /// <summary>
         /// Binary code deployment package
         /// </summary>
         DeploymentPackage = Federation | 0x0700,
