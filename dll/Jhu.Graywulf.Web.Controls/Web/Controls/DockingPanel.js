@@ -42,10 +42,10 @@
 
         $.fn.edge = function () {
             return {
-                left: this.margin().left + this.borderWidth().left + this.padding().left,
-                top: this.margin().top + this.borderWidth().top + this.padding().top,
-                right: this.margin().right + this.borderWidth().right + this.padding().right,
-                bottom: this.margin().bottom + this.borderWidth().bottom + this.padding().bottom
+                left: this.margin().left + this.borderWidth().left,
+                top: this.margin().top + this.borderWidth().top,
+                right: this.margin().right + this.borderWidth().right,
+                bottom: this.margin().bottom + this.borderWidth().bottom
             };
         };
 
