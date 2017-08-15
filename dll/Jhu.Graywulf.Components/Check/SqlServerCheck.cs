@@ -29,7 +29,7 @@ namespace Jhu.Graywulf.Check
         {
             var csb = new SqlConnectionStringBuilder(ConnectionString);
 
-            yield return ReportInfo("Testing connection to server: {0}", csb.DataSource);
+            yield return ReportInfo("Testing connection to SQL server: {0}", csb.DataSource);
 
             var cn = new SqlConnection(ConnectionString);
             cn.Open();
