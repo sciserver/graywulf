@@ -277,3 +277,4 @@ FakesAssemblies/
 
 
 /web/Jhu.Graywulf.Web.UI/Scripts/Bootstrap-Lightbox
+/exe/Jhu.Graywulf.TrafficGenerator.CmdLineUtil/App.config
